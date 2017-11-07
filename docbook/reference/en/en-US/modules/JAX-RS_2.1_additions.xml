@@ -21,29 +21,29 @@
     <sect1>
         <title>Server-Sent Events (SSE)</title>
         <para>
-             SSE is a part of HTML standard and now it is supported by many browsers. 
-             It is another server push technology, which provides a way to establish 
-             a one-way channel to continuously send data to client. SSE event is pushed 
-             to the client via a long-running HTTP connection and the client can automatically 
-             reconnect to retrieve missed events after the connection is lost by set 
-             a "Last-Event-ID" HTTP header in the request.
+             SSE is part of HTML standard, currently supported by many browsers. 
+             It is a server push technology, which provides a way to establish 
+             a one-way channel to continuously send data to clients. SSE events are pushed 
+             to the client via a long-running HTTP connection.
+             In case of lost connection, clients can retrieve missed events by setting a
+             "Last-Event-ID" HTTP header in a new request.
         </para>
         <para> 
-             SSE stream has text/event-stream media type and it contains multiple SSE events. 
+             SSE stream has text/event-stream media type and contains multiple SSE events. 
              SSE event is a data structure encoded with UTF-8 and contains fields and comment. 
              The field can be event, data, id, retry and other kinds of field will be ignored.
         </para>
         <para>
-             From JAX-RS 2.1, Server-sent Events APIs are introduced to support send, receive and broadcast SSE event.
+             From JAX-RS 2.1, Server-sent Events APIs are introduced to support sending, receiving and broadcasting SSE events.
         </para>
         <sect2>
             <title>SSE Server</title>
             <para>
-              Like the following example,  SSE resource method has the text/event-stream produce 
-              media type and a injected context parameter SseEventSink. Injected SseEventSink is 
-              the connected SSE stream where events can send. Another injected context Sse is an 
-              entry point for creating event and broadcast SSE event. Here is an example to 
-               demonstrate send SSE events every 200ms and close stream after the "done" event.             
+              As shown in the following example, a SSE resource method has the text/event-stream produce 
+              media type and an injected context parameter SseEventSink. The injected SseEventSink is 
+              the connected SSE stream where events can be sent. Another injected context Sse is an 
+              entry point for creating and broadcasting SSE events. Here is an example to 
+              demonstrate how to send SSE events every 200ms and close the stream after a "done" event.             
             </para>
             <para>
             <example>
@@ -92,11 +92,11 @@
             <title>SSE Broadcasting</title>
             <para>
                With SseBroadcaster, SSE events can be broadcasted to multiple clients simultaneously. 
-               It will iterate all registered SseEventSinks and send event to all requested SSE Stream.  
-               An application can create SseBroadcaster from an injected context Sse.The broadcast 
-               method on a SseBroadcaster is used to send SSE event to all registered clients.
-               The following code snippet is an example to create SseBroadcaster, subscribe 
-               and broadcast event to all subscribed consumers. 
+               It will iterate over all registered SseEventSinks and send events to all requested SSE Stream.  
+               An application can create a SseBroadcaster from an injected context Sse. The broadcast 
+               method on a SseBroadcaster is used to send SSE events to all registered clients.
+               The following code snippet is an example on how to create SseBroadcaster, subscribe 
+               and broadcast events to all subscribed consumers. 
             </para>
             <para>
             <example>
@@ -136,16 +136,16 @@
         <sect2>
             <title>SSE Client</title>
             <para>
-                SseEventSource is the entry point to read and process incoming SSE event. 
+                SseEventSource is the entry point to read and process incoming SSE events. 
                 A SseEventSource instance can be initialized with a WebTarget. Once SseEventSource 
                 is created and connected to a server, registered event consumer will be invoked when 
-                an inbound event arrives. When there is error happens, the exception will be passed 
-                to a registered consumer to process. SseEventSource can automatically reconnect server 
-                and continuously receive pushed events after the connection is lost. SseEventSource 
-                can send lastEventId to server by default when it is reconnected, and server may use 
+                an inbound event arrives. In case of errors, an exception will be passed 
+                to a registered consumer so that it can be processed. SseEventSource can automatically reconnect the server 
+                and continuously receive pushed events after the connection has been lost. SseEventSource 
+                can send lastEventId to the server by default when it is reconnected, and server may use 
                 this id to replay all missed events. But reply event is really upon on SSE resource 
                 method implementation.  If the server responds HTTP 503 with a RETRY_AFTER header, 
-                SseEventSource will automatically schedule a  reconnect task with this RETRY_AFTER 
+                SseEventSource will automatically schedule a reconnect task with this RETRY_AFTER 
                 value. The following code snippet is to create a SseEventSource and print the 
                 inbound event data value and error if it happens.
             </para>
