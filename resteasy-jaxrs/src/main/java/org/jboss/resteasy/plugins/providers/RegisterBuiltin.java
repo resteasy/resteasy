@@ -1,11 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.ext.Providers;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +14,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.ws.rs.ext.Providers;
+
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -137,6 +140,18 @@ public class RegisterBuiltin
          {
             LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
          }
+      }
+      if (AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+         @Override
+         public Boolean run() {
+            final String value = System.getProperty("resteasy.allowGzip");
+            if ("".equals(value)) return Boolean.FALSE;
+            return Boolean.parseBoolean(value);
+         }
+      })) {
+         factory.registerProvider(AcceptEncodingGZIPFilter.class, true);
+         factory.registerProvider(GZIPDecodingInterceptor.class, true);
+         factory.registerProvider(GZIPEncodingInterceptor.class, true);
       }
    }
 
