@@ -22,7 +22,7 @@
     </dependencies>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0.19.SP5</version>
+    <version>3.0.19.SP6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
