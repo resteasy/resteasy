@@ -9,6 +9,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -41,6 +42,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
+
+import java.util.List;
 
 /**
  * @tpSubChapter Validator provider
@@ -237,8 +240,11 @@ public class ValidationExceptionsTest {
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
         Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
         Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
-        String entity = response.readEntity(String.class);
-        logger.info("entity: " + entity);
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+		ResteasyViolationException resteasyViolationException = new ResteasyViolationException(
+				response.readEntity(String.class));
+		List<ResteasyConstraintViolation> classViolations = resteasyViolationException.getClassViolations();
+		Assert.assertEquals(1, classViolations.size());
+		Assert.assertEquals(ValidationExceptionCrazyConstraint.DEFAULT_MESSAGE, classViolations.get(0).getMessage());
+		logger.info("entity: " + resteasyViolationException);
     }
 }

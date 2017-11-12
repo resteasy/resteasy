@@ -14,7 +14,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({FIELD, METHOD, PARAMETER, TYPE})
 @Retention(RUNTIME)
 public @interface ValidationExceptionCrazyConstraint {
-    String message() default "a[][]][][b";
+	
+	String DEFAULT_MESSAGE="a[][]][][b";
+	
+    String message() default DEFAULT_MESSAGE;
 
     Class<?>[] groups() default {};
 
