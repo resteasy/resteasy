@@ -13,22 +13,23 @@
       getting a lot of concurrent clients that are blocking like this, there’s a lot of wasted resources and your
       server does not scale that well.
    </para>
-    <para>
-        The JAX-RS 2.0 specification has added asynchronous HTTP support via two classes.  The @Suspended annotation,
-      and AsyncResponse interface.
-   </para>
-   <para>
-       Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells Resteasy that the HTTP request/response should be detached from the currently
-      executing thread and that the current thread should not try to automatically process the response.
-   </para>
-   <para>
-      The AsyncResponse is the callback object.
-      The act of calling one of the resume() methods will cause a response to be sent back to the client and will also terminate the
-      HTTP request. Here is an example of asynchronous processing:
-   </para>
-
-
-   <programlisting>
+   <sect1>
+      <title>Using the <code>@Suspended</code> annotation</title>
+      <para>
+         The JAX-RS 2.0 specification has added asynchronous HTTP support via two classes.  The <code>@Suspended</code> annotation,
+         and AsyncResponse interface.
+      </para>
+      <para>
+          Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells Resteasy that the HTTP request/response should be detached from the currently
+         executing thread and that the current thread should not try to automatically process the response.
+      </para>
+      <para>
+         The AsyncResponse is the callback object.
+         The act of calling one of the resume() methods will cause a response to be sent back to the client and will also terminate the
+         HTTP request. Here is an example of asynchronous processing:
+      </para>
+   
+      <programlisting>
 import javax.ws.rs.Suspend;
 import javax.ws.rs.core.AsynchronousResponse;
 
@@ -53,22 +54,90 @@ public class SimpleResource
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               response.resume(e);
             }
          }
       };
       t.start();
    }
 }
-   </programlisting>
-    <para>
-        AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
-    </para>
-    <para>
-        <emphasis role="bold">NOTE:</emphasis> The old Resteasy proprietary API for async http has been deprecated and may be removed as soon as Resteasy 3.1.
-        In particular, the Resteasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
-        <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
-        <classname>javax.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
-        which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
-    </para>
+      </programlisting>
+      <para>
+         AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
+      </para>
+      <para>
+         <emphasis role="bold">NOTE:</emphasis> The old Resteasy proprietary API for async http has been deprecated and may be removed as soon as Resteasy 3.1.
+         In particular, the Resteasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
+         <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
+         <classname>javax.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
+         which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
+      </para>
+   </sect1>
+   <sect1>
+      <title>Using Reactive return types</title>
+      <para id="CompletionStage">
+          The JAX-RS 2.1 specification adds support for declaring asynchronous resource methods by
+          returning a <code>CompletionStage</code> instead of using the <code>@Suspended</code>
+          annotation.
+      </para>
+      <para>
+          Whenever a resource method returns a <code>CompletionStage</code>, it will be subscribed to,
+          the request will be suspended, and only resumed when the <code>CompletionStage</code> is
+          resolved either to a value (which is then treated as the return value for the method), or
+          as an error case, in which case the exception will be processed as if it were thrown by the
+          resource method.
+      </para>
+      <para>
+          Here is an example of asynchronous processing using <code>CompletionStage</code>:
+      </para>
+      <programlisting>
+import javax.ws.rs.Suspend;
+import javax.ws.rs.core.AsynchronousResponse;
+
+@Path("/")
+public class SimpleResource
+{
+
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   public CompletionStage&lt;Response&gt; getBasic() throws Exception
+   {
+      final CompletableFuture&lt;Response&gt; response = new CompletableFuture&lt;&gt;();
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               Response jaxrs = Response.ok("basic").type(MediaType.TEXT_PLAIN).build();
+               response.complete(jaxrs);
+            }
+            catch (Exception e)
+            {
+               response.completeExceptionally(e);
+            }
+         }
+      };
+      t.start();
+      return response;
+   }
+}
+     </programlisting>
+     <note>
+        <para>
+           Resteasy <link linkend="Reactive">supports more reactive types for asynchronous programming</link>.
+        </para>
+     </note>
+   </sect1>
+   <sect1>
+      <title>Asynchronous filters</title>
+      <para>
+         It is possible to write <link linkend="Asynchronous_Filter">filters that also turn the request asynchronous</link>. 
+         Whether or not filters turned the request asynchronous
+         before execution of your method makes absolutely no difference to your method: it does not need to be declared asynchronous in
+         order to function as specified. Synchronous methods and asynchronous methods will work as specified by the spec.
+      </para>
+    </sect1>
 </chapter>

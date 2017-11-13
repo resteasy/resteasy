@@ -49,6 +49,44 @@
            filter.filter(requestContext, responseContext);
         }
     </programlisting>
+    <sect2>
+        <title id="Asynchronous_Filter">Asynchronous filters</title>
+        <para>
+            It is possible to turn filters into asynchronous filters, if you need to suspend execution of your filter
+            until a certain resource has become available. This turns the request asynchronous, but requires no change
+            to your resource method declaration. In particular, <link linkend="Asynchronous_HTTP_Request_Processing">synchronous
+            and asynchronous resource methods</link> continue
+            to work as specified, regardless of whether or not a filter turned the request asynchronous. Similarly,
+            one filter turning the request asynchronous requires no change in the declaration of further filters.
+        </para>
+        <para>
+            In order to turn a filter's execution asynchronous, you need to cast the <code>ContainerRequestContext</code> into
+            a <code>SuspendableContainerRequestContext</code> (for pre/post request filters), or cast the <code>ContainerResponseContext</code> into
+            a <code>SuspendableContainerResponseContext</code> (for response filters). 
+        </para>
+        <para>
+            These context objects can turn the current filter's execution to asynchronous by calling the <code>suspend()</code>
+            method. Once asynchronous, the filter chain is suspended, and will only resume after one of the following method
+            is called on the context object:
+        </para>
+        <variablelist>
+            <varlistentry>
+                <term><code>abortWith(Response)</code></term>
+                <listitem>Terminate the filter chain, return the given <code>Response</code> to the client (only for <code>ContainerRequestFilter</code>).</listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><code>resume()</code></term>
+                <listitem>Resume execution of the filter chain by calling the next filter.</listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><code>resume(Throwable)</code></term>
+                <listitem>
+                    Abort execution of the filter chain by throwing the given exception. This behaves as if the filter were synchronous
+                    and threw the given exception.
+                </listitem>
+            </varlistentry>
+        </variablelist>
+    </sect2>
     </sect1>
     <sect1>
         <title>Client Side Filters</title>
