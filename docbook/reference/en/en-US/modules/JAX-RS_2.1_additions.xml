@@ -7,7 +7,21 @@
     </para>
 
     <sect1>
-        <title>Rective Clients API</title>
+        <title><code>CompletionStage</code> support</title>
+        <para>
+            The specification adds support for declaring <link linkend="CompletionStage">asynchronous resource methods by
+            returning a <code>CompletionStage</code></link> instead of using the <code>@Suspended</code>
+            annotation.
+        </para>
+        <note>
+            <para>
+                Resteasy <link linkend="Reactive">supports more reactive types than the specification</link>.
+            </para>
+        </note>
+    </sect1>
+
+    <sect1>
+        <title>Reactive Clients API</title>
         <para>The specification defines a new type of invoker named RxInvoker, and a default
             implementation of this type named CompletionStageRxInvoker.
             CompletionStageRxInvoker implements Java 8's interface CompletionStage.
@@ -18,7 +32,7 @@
         </para>
     </sect1>
 
-    <sect1>
+    <sect1 id="SSE-Server">
         <title>Server-Sent Events (SSE)</title>
         <para>
              SSE is part of HTML standard, currently supported by many browsers. 
@@ -87,6 +101,11 @@
                 </programlisting>
              </example>
             </para>
+            <note>
+               <para>
+                  Resteasy <link linkend="Reactive">supports sending SSE events via reactive types</link>.
+               </para>
+            </note>
         </sect2>
         <sect2>
             <title>SSE Broadcasting</title>
