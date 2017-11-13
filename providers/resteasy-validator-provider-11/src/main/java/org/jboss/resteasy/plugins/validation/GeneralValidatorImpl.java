@@ -11,8 +11,11 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.validation.ConstraintDeclarationException;
+import javax.validation.ConstraintDefinitionException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.GroupDefinitionException;
 import javax.validation.MessageInterpolator;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
@@ -106,13 +109,22 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
          violationsContainer.setFieldsValidated(true);
-         throw new ResteasyViolationException(violationsContainer);
+         throw toValidationException(e, violationsContainer);
       }
       
       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(cvs);
       violationsContainer.setFieldsValidated(true);
    }
+
+	private ValidationException toValidationException(Exception exception,
+			SimpleViolationsContainer simpleViolationsContainer) {
+		if (exception instanceof ConstraintDeclarationException || exception instanceof ConstraintDefinitionException
+				|| exception instanceof GroupDefinitionException) {
+			return (ValidationException) exception;
+		}
+		return new ResteasyViolationException(simpleViolationsContainer);
+	}
 
    @Override
    public void checkViolations(HttpRequest request)
@@ -165,7 +177,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       catch (Exception e)
       {
          violationsContainer.setException(e);
-         throw new ResteasyViolationException(violationsContainer);
+         throw toValidationException(e, violationsContainer);
       }
       violationsContainer.addViolations(cvs);
       if ((violationsContainer.isFieldsValidated()
@@ -191,7 +203,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       catch (Exception e)
       {
          violationsContainer.setException(e);
-         throw new ResteasyViolationException(violationsContainer);
+         throw toValidationException(e, violationsContainer);
       }
       violationsContainer.addViolations(cvs);
       if (violationsContainer.size() > 0)
