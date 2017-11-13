@@ -1,0 +1,63 @@
+<chapter id="Reactive">
+    <title>Reactive programming support</title>
+    <para>
+        JAX-RS 2.1 adds support for returning the <link linkend="CompletionStage">asynchronous 
+        reactive type <code>CompletableFuture</code></link>, but
+        Resteasy supports much more than this, when it comes to asynchronous programming. 
+    </para>
+    <sect1>
+        <title>Plugable reactive types</title>
+        <para>
+            Out of the box, Resteasy supports <code>CompletableFuture</code> for single events, and 
+            <code>org.reactivestreams.Publisher</code> (from <link linkend="http://www.reactive-streams.org">Reactive Streams</link>)
+            for multiple events.
+        </para>
+        <para>
+            The optional modules <code>resteasy-rxjava</code> and 
+            <code>resteasy-rxjava2</code> add support for the <link linkend="https://github.com/ReactiveX/RxJava">RxJava 1 and 2</link>
+            reactive types, such as <code>Single</code> and <code>Observable</code>, which means if you import
+            this dependency you can just start returning reactive types from those frameworks from your resource methods.
+        </para>
+        <para>
+            Adding support for other reactive types can be done by declaring a <code>@Provider</code> for the interfaces
+            <code>AsyncStreamProvider</code> (for streams) and <code>AsyncResponseProvider</code> (for single values), which
+            both have a single method to convert the new reactive type into (respectively) a <code>Publisher</code> (for streams)
+            or a <code>CompletionStage</code> (for single values).
+        </para>
+    </sect1>
+    <sect1>
+        <title>Behavior of reactive types</title>
+        <para>
+            Single-value reactive types behave like the specification of JAX-RS 2.1 wrt. <code>CompletionStage</code>,
+            which is that the reactive value will be subscribed to, the request will be turned asynchronous, and only
+            resumed when the reactive value is resolved to either a value (normal completion), or an exception.
+        </para>
+        <para>
+            Multiple-value reactive types (streams) behave in three possible ways, depending on how the resource method
+            is annotated:
+        </para>
+        <variablelist>
+            <varlistentry>
+                <term>Default case (no special annotation)</term>
+                <listitem>
+                    Collect every value until the stream is complete, then wrap into a <code>java.util.List</code> entity 
+                    and send to the client.
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><code>@Produces(MediaType.SERVER_SENT_EVENTS)</code></term>
+                <listitem>
+                    Send each value as a Server-Sent Event. This is an alternative to the more verbose <link linkend="SSE-Server">SSE
+                    server support in JAX-RS 2.1</link>.
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><code>@Stream</code></term>
+                <listitem>
+                    Write each value to the response as they become available. This is most useful for values you can cut in pieces,
+                    such as strings, bytes, buffers, etc.
+                </listitem>
+            </varlistentry>
+        </variablelist>
+    </sect1>
+</chapter>

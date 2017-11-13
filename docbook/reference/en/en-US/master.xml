@@ -27,6 +27,7 @@
                 <!ENTITY Configuring_Individual_JAX-RS_Resource_Beans SYSTEM "modules/Configuring_Individual_JAX-RS_Resource_Beans.xml">
                 <!ENTITY Asynchronous_HTTP SYSTEM "modules/Asynchronous_HTTP.xml">
                 <!ENTITY Asynchronous_Job SYSTEM "modules/Async_job_service.xml">
+                <!ENTITY Reactive SYSTEM "modules/Reactive.xml">
                 <!ENTITY RESTEasy_Embedded_Container SYSTEM "modules/RESTEasy_Embedded_Container.xml">
                 <!ENTITY RESTEasy_Server-side_Mock_Framework SYSTEM "modules/RESTEasy_Server-side_Mock_Framework.xml">
                 <!ENTITY Securing_JAX-RS_and_RESTeasy SYSTEM "modules/Securing_JAX-RS_and_RESTeasy.xml">
@@ -133,6 +134,7 @@ This one is short
    &Interceptors;
    &Asynchronous_HTTP;
    &Asynchronous_Job;
+   &Reactive;
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
    &Securing_JAX-RS_and_RESTeasy;
