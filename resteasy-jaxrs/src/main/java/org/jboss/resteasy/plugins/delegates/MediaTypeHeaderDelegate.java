@@ -99,6 +99,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public static MediaType parse(String type)
    {
+      if (type == null)
+      {
+          return MediaType.WILDCARD_TYPE;
+      }
       int typeIndex = type.indexOf('/');
       int paramIndex = type.indexOf(';');
       String major = null;
