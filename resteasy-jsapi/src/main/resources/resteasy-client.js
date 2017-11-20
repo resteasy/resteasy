@@ -108,7 +108,7 @@ REST.Request.prototype = {
 				}else if(this.entity instanceof Document){
 					if(!contentTypeSet || REST._isXMLMIME(contentTypeSet))
 						data = this.entity;
-				}else if(this.entity instanceof Object){
+				}else if(this.entity instanceof Object && !(this.entity instanceof FormData)){
 					if(!contentTypeSet || REST._isJSONMIME(contentTypeSet))
 						data = JSON.stringify(this.entity);
 				}
