@@ -107,14 +107,18 @@ public class BaseClientResponse<T> extends ClientResponse<T>
             try
             {
                is = base.streamFactory.getInputStream();
-               byte[] bytes = ReadFromStream.readFromStream(1024, is);
-               is = new ByteArrayInputStream(bytes);
+               if (is != null)
+               {
+                  byte[] bytes = ReadFromStream.readFromStream(1024, is);
+                  is = new ByteArrayInputStream(bytes);
+               }
             }
             catch (IOException e)
             {
                // ignored
             }
          }
+
          final InputStream theIs = is;
          BaseClientResponse tmp = new BaseClientResponse(new BaseClientResponse.BaseClientResponseStreamFactory()
          {
