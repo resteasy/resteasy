@@ -60,7 +60,7 @@ public class SelfExpandingBufferredInputStream extends BufferedInputStream
    }
 
    @Override
-   public int read(byte[] b) throws IOException
+   public synchronized int read(byte[] b) throws IOException
    {
       while (pos + b.length > marklimit)
       {
@@ -79,7 +79,7 @@ public class SelfExpandingBufferredInputStream extends BufferedInputStream
    {
       int lastPos = pos;
       super.reset();
-      super.mark(marklimit * 2);
+      super.mark((marklimit < (Integer.MAX_VALUE - 8) / 2) ? (marklimit * 2) : (Integer.MAX_VALUE - 8));
       pos = lastPos;
    }
 
