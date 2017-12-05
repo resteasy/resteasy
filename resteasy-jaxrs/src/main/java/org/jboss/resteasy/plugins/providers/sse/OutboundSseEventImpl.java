@@ -133,15 +133,10 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
       public OutboundSseEvent build()
       {
-         //TODO:check spec to figure out if this requires
-         /*if (comment == null)
-         {
-            if ((data == null) && (type == null))
-            {
-               throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data and type"));
-            }
-         }*/
-
+        if (this.comment == null && this.data == null)
+        {
+           throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("comment or data"));
+        }
          return new OutboundSseEventImpl(name, id, reconnectDelay, type, mediaType, data, comment);
       }
    }
