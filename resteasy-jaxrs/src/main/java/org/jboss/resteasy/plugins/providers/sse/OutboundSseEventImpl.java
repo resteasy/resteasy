@@ -67,7 +67,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       {
          if (mediaType == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("mediaType"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("mediaType"));
          }
          this.mediaType = mediaType;
          return this;
@@ -83,11 +83,11 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       {
          if (type == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("type"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("type"));
          }
          if (data == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
 
          this.type = new GenericType(type);
@@ -99,11 +99,11 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       {
          if (type == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("type"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("type"));
          }
          if (data == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
 
          this.type = type;
@@ -115,7 +115,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       {
          if (data == null)
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
+            throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
 
          GenericType genericType = null;
