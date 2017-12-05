@@ -61,4 +61,11 @@ public class OutboundSseEventImplTest {
 		}
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void Should_ThrowIllegalArgumentException_When_CommentAndDataAreNull() throws Exception {
+		OutboundSseEvent.Builder builder = new OutboundSseEventImpl.BuilderImpl();
+		builder.comment("comment").build();
+		builder.comment(null).build();
+	}
+
 }
