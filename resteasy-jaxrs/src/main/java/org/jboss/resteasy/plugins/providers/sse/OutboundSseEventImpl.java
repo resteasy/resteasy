@@ -6,6 +6,8 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
+import javax.ws.rs.sse.Sse;
+import javax.ws.rs.sse.SseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
@@ -33,7 +35,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
       private String id;
 
-      private long reconnectDelay = -1;
+      private long reconnectDelay = SseEvent.RECONNECT_NOT_SET;
 
       private GenericType type;
 
@@ -57,7 +59,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       {
          if (milliseconds < 0)
          {
-            milliseconds = -1;
+            milliseconds = SseEvent.RECONNECT_NOT_SET;
          }
          this.reconnectDelay = milliseconds;
          return this;
