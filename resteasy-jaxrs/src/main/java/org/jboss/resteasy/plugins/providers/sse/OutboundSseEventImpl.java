@@ -135,7 +135,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          }
          else
          {
-            data(data.getClass().getClass(), data);
+            data(data.getClass(), data);
          }
 
          return this;
