@@ -19,7 +19,9 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
    private final String id;
 
-   private final GenericType type;
+   private final Class<?> type;
+   
+   private final Type genericType;
 
    private final MediaType mediaType;
 
@@ -37,7 +39,9 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
       private long reconnectDelay = SseEvent.RECONNECT_NOT_SET;
 
-      private GenericType type;
+      private Class<?> type;
+      
+      private Type genericType;
 
       private Object data;
 
@@ -92,7 +96,8 @@ public class OutboundSseEventImpl implements OutboundSseEvent
             throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
 
-         this.type = new GenericType(type);
+         this.type = type;
+         this.genericType = type;
          this.data = data;
          return this;
       }
@@ -108,7 +113,8 @@ public class OutboundSseEventImpl implements OutboundSseEvent
             throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
 
-         this.type = type;
+         this.type = type.getRawType();
+         this.genericType = type.getType();
          this.data = data;
          return this;
       }
@@ -119,18 +125,20 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          {
             throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
-
-         GenericType genericType = null;
+         
          if (data instanceof GenericEntity)
          {
-            genericType = new GenericType(((GenericEntity) data).getType());
+			GenericEntity<?> genericEntity = (GenericEntity<?>) data;
+			this.type = genericEntity.getRawType();
+			this.genericType = genericEntity.getType();
+			this.data = genericEntity.getEntity();
          }
          else
          {
-            genericType = (data == null) ? null : new GenericType(data.getClass());
+            data(data.getClass().getClass(), data);
          }
 
-         return data(genericType, data);
+         return this;
       }
 
       public OutboundSseEvent build()
@@ -139,11 +147,11 @@ public class OutboundSseEventImpl implements OutboundSseEvent
         {
            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("comment or data"));
         }
-         return new OutboundSseEventImpl(name, id, reconnectDelay, type, mediaType, data, comment);
+         return new OutboundSseEventImpl(name, id, reconnectDelay, type, genericType, mediaType, data, comment);
       }
    }
 
-   OutboundSseEventImpl(final String name, final String id, final long reconnectDelay, final GenericType type,
+   OutboundSseEventImpl(final String name, final String id, final long reconnectDelay, final Class<?> type, Type genericType,
          final MediaType mediaType, final Object data, final String comment)
    {
       this.name = name;
@@ -151,6 +159,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       this.id = id;
       this.reconnectDelay = reconnectDelay;
       this.type = type;
+      this.genericType = genericType;
       this.mediaType = mediaType;
       this.data = data;
    }
@@ -177,12 +186,12 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
    public Class<?> getType()
    {
-      return type == null ? null : type.getRawType();
+      return type;
    }
 
    public Type getGenericType()
    {
-      return type == null ? null : type.getType();
+      return genericType;
    }
 
    public MediaType getMediaType()

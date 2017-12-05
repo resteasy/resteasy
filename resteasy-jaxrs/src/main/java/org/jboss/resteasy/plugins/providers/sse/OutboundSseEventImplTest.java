@@ -1,5 +1,9 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -66,6 +70,16 @@ public class OutboundSseEventImplTest {
 		OutboundSseEvent.Builder builder = new OutboundSseEventImpl.BuilderImpl();
 		builder.comment("comment").build();
 		builder.comment(null).build();
+	}
+
+	@Test()
+	public void Should_ReturnTheExactDataType_When_DataIsAGenericEntity() throws Exception {
+		GenericEntity<List<String>> genericEntity = new GenericEntity<List<String>>(new ArrayList<>()) {
+		};
+		OutboundSseEvent outboundSseEvent = new OutboundSseEventImpl.BuilderImpl().data(genericEntity).build();
+		Assert.assertEquals(ArrayList.class, genericEntity.getRawType());
+		Assert.assertEquals(genericEntity.getRawType(), outboundSseEvent.getType());
+		Assert.assertEquals(genericEntity.getType(), outboundSseEvent.getGenericType());
 	}
 
 }
