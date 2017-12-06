@@ -239,6 +239,13 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          deployment.setWiderRequestMatching(wider);
       }
 
+      String looseStep2Matching = getParameter(ResteasyContextParameters.RESTEASY_LOOSE_STEP2_REQUEST_MATCHING);
+      if (looseStep2Matching != null)
+      {
+         boolean looseStep2 = parseBooleanParam(ResteasyContextParameters.RESTEASY_LOOSE_STEP2_REQUEST_MATCHING, looseStep2Matching);
+         deployment.setLooseStep2RequestMatching(looseStep2);
+      }
+      
       String addCharset = getParameter(ResteasyContextParameters.RESTEASY_ADD_CHARSET);
       if (addCharset != null)
       {

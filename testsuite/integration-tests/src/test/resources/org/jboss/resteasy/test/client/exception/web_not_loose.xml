@@ -1,0 +1,8 @@
+<web-app>
+
+    <context-param>
+         <param-name>resteasy.loose.step2.request.matching</param-name>
+         <param-value>false</param-value>
+    </context-param>
+    
+</web-app>
