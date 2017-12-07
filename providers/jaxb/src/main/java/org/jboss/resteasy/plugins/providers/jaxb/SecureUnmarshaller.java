@@ -7,6 +7,9 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
@@ -21,7 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -43,6 +45,46 @@ import org.xml.sax.XMLReader;
  * Created Feb 1, 2012
  */
 public class SecureUnmarshaller implements Unmarshaller {
+	
+   private static class SAXParserProvider
+   {
+      private static final Map<ClassLoader, SAXParserProvider> saxParserProviders = Collections.synchronizedMap(new WeakHashMap<>());
+      private final SAXParserFactory[] factories = new SAXParserFactory[8];
+      
+      private SAXParserProvider()
+      {
+         //NOOP
+      }
+      
+      public static SAXParserProvider getInstance()
+      {
+         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+         SAXParserProvider spp;
+         spp = saxParserProviders.get(tccl);
+         if (spp == null)
+         {
+            spp = new SAXParserProvider();
+            SAXParserProvider s = saxParserProviders.putIfAbsent(tccl, spp);
+            if (s != null) spp = s;
+         }
+         return spp;
+      }
+      
+      public SAXParser getParser(boolean disableExternalEntities, boolean enableSecureProcessingFeature, boolean disableDTDs) throws ParserConfigurationException, SAXException
+      {
+         int index = (disableExternalEntities ? 1 : 0) | (enableSecureProcessingFeature ? 1 << 1 : 0) | (disableDTDs ? 1 << 2 : 0);
+         SAXParserFactory f = factories[index];
+         if (f == null)
+         {
+            f = SAXParserFactory.newInstance();
+            configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+            factories[index] = f;
+         }
+         SAXParser sp = f.newSAXParser();
+         configParser(sp, disableExternalEntities);
+         return sp;
+      }
+   }
 
 	private Unmarshaller delegate;
 	boolean disableExternalEntities;
@@ -158,10 +200,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    {
        try
        {
-          SAXParserFactory spf = SAXParserFactory.newInstance();
-          configureParserFactory(spf);
-          SAXParser sp = spf.newSAXParser();
-          configParser(sp);
+          SAXParser sp = SAXParserProvider.getInstance().getParser(disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
           XMLReader xmlReader = sp.getXMLReader();
           final SAXSource saxSource = new SAXSource(xmlReader, source);
           if (System.getSecurityManager() == null) {
@@ -202,10 +241,7 @@ public class SecureUnmarshaller implements Unmarshaller {
       {
          try
          {
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            configureParserFactory(spf);
-            SAXParser sp = spf.newSAXParser();
-            configParser(sp);
+            SAXParser sp = SAXParserProvider.getInstance().getParser(disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             XMLReader xmlReader = sp.getXMLReader();
             ((SAXSource) source).setXMLReader(xmlReader);
             return delegate.unmarshal(source);
@@ -223,7 +259,7 @@ public class SecureUnmarshaller implements Unmarshaller {
       throw new UnsupportedOperationException(Messages.MESSAGES.unexpectedUse("Source, Class<T>"));
    }
 
-   private void configParser(SAXParser sp) {
+   private static void configParser(SAXParser sp, boolean disableExternalEntities) {
       try {
          if (!disableExternalEntities)
             sp.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "all");
@@ -252,10 +288,7 @@ public class SecureUnmarshaller implements Unmarshaller {
       {
          try
          {
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            configureParserFactory(spf);
-            SAXParser sp = spf.newSAXParser();
-            configParser(sp);
+            SAXParser sp = SAXParserProvider.getInstance().getParser(disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             XMLReader xmlReader = sp.getXMLReader();
             ((SAXSource) source).setXMLReader(xmlReader);
             return delegate.unmarshal(source, declaredType);
@@ -290,8 +323,8 @@ public class SecureUnmarshaller implements Unmarshaller {
    {
       this.delegate = delegate;
    }
-   
-   protected void configureParserFactory(SAXParserFactory factory) throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException
+
+   protected static void configureParserFactory(SAXParserFactory factory, boolean disableExternalEntities, boolean enableSecureProcessingFeature, boolean disableDTDs) throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException
    {
       factory.setFeature("http://xml.org/sax/features/validation", false);
       factory.setFeature("http://xml.org/sax/features/namespaces", true);
