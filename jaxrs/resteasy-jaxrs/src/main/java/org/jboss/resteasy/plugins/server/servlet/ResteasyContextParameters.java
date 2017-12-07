@@ -35,6 +35,7 @@ public interface ResteasyContextParameters
    String RESTEASY_SECURE_PROCESSING_FEATURE = "resteasy.document.secure.processing.feature";
    String RESTEASY_DISABLE_DTDS = "resteasy.document.secure.disableDTDs";
    String RESTEASY_GZIP_MAX_INPUT = "resteasy.gzip.max.input";
+   String RESTEASY_LOOSE_STEP2_REQUEST_MATCHING = "resteasy.loose.step2.request.matching";
    
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";

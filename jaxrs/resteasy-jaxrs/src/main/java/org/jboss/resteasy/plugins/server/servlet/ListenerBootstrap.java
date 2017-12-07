@@ -33,6 +33,7 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    {
       ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       if (deployment == null) deployment = super.createDeployment();
+      deployment.getDefaultContextObjects().put(ResteasyDeployment.class, deployment);
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
       String servletMappingPrefix = getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
