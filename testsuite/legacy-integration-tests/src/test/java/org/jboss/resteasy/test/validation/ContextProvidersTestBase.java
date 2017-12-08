@@ -84,9 +84,11 @@ public abstract class ContextProvidersTestBase {
 
         // Get parts by name.
         ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", c.getName());
+        Assert.assertTrue(RESPONSE_ERROR_MSG, c.getName().startsWith("Bill"));
         String s = entity.getFormDataPart("bob", String.class, null);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", s);
+
+        Assert.assertTrue(RESPONSE_ERROR_MSG, 2 == entity.getFormDataMap().get("bill").size());
 
         // Iterate over list of parts.
         Map<String, List<InputPart>> map = entity.getFormDataMap();
@@ -97,7 +99,7 @@ public abstract class ContextProvidersTestBase {
                 InputPart inputPart = it2.next();
                 if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                     c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                    Assert.assertEquals(RESPONSE_ERROR_MSG, "Bill", c.getName());
+                    Assert.assertTrue(RESPONSE_ERROR_MSG, c.getName().startsWith("Bill"));
                 } else {
                     s = inputPart.getBody(String.class, null);
                     Assert.assertEquals(RESPONSE_ERROR_MSG, "Bob", s);
