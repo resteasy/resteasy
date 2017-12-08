@@ -8,6 +8,67 @@
 
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
+<sect1 id="Migration_to_3_0_19_SP6">
+    <title>Migrating to 3.0.19.SP6</title>
+    
+    <para>
+        A bug discovered in the resource method matching algorithm in Resteasy versions 3.0.19.SPx prior to 3.0.19.SP6
+        allowed Resteasy to consider too many resource methods in responding to requests. There are three stages in
+        the matching algorithm:
+    </para>
+    
+    <orderedlist>
+        <listitem>Use the request path to choose possible resource classes.</listitem>
+        <listitem>Use the request path to choose possible resource methods.</listitem>
+        <listitem>Use the HTTP verb and media types, coming and going, to choose a final resource method.</listitem>
+    </orderedlist>
+    
+    <para>
+        In step 2, the set of potential resource methods are sorted, based on properties of @Path values like number
+        of literals, and only the maximal elements are passed on to step 3. However, the Resteasy implementation prior
+        to 3.0.19.SP6 passes ALL methods to step 3. For example,
+    </para>
+    
+<programlisting>
+   @Path("/")
+   public static class TestResource
+   {
+      @GET
+      @Path("complex/match")
+      public String get()
+      {
+         return "content";
+      }
+
+      @POST
+      @Path("complex/{param}")
+      public String post(@PathParam("param") String param)
+      {
+         return "&lt;" + param + "/&gt;";
+      }
+   }
+</programlisting>
+
+    <para>
+        Both methods can match a request with path "complex/match", but <methodname>get()</methodname> comes
+        out ahead of <methodname>post()</methodname> because it has more literal characters, and 
+        only <methodname>get()</methodname> is considered in step 3. [For more details about the sort, see
+        the specification for JAX-RS 2.0.]
+    </para>
+    
+    <para>
+        Prior to version 3.0.19.SP6, Resteasy passes both methods to step 3. In fact, passing both methods might be considered
+        preferable, since, if the request verb is POST, no matching method will be found. In fact, the matching
+        algorithm is changed in the specification of JAX-RS 2.1 so that it passes all matching resource methods
+        to step 3. However, Resteasy 3.0.x adheres to JAX-RS 2.0, and the bug is fixed in release 3.0.19.SP6.
+    </para>
+    
+    <para>
+        In order to make the older, if incorrect, behavior available, a context-param configuration switch, 
+        "resteasy.loose.step2.request.matching", is introduced in version 3.0.19.SP6. It defaults to "false",
+        but, if it is set to "true", the older, looser behavior is enabled.
+    </para>
+</sect1>
 <sect1>
     <title>Migrating from 3.0.7 to 3.0.9</title>
     <itemizedlist>

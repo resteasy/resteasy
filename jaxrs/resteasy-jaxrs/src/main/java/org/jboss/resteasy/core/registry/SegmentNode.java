@@ -3,10 +3,14 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -52,6 +56,9 @@ public class SegmentNode
    protected String segment;
    protected Map<String, SegmentNode> children = new HashMap<String, SegmentNode>();
    protected List<MethodExpression> targets = new ArrayList<MethodExpression>();
+   protected boolean requestMatchingSet = false;
+   protected boolean looseStep2RequestMatching = false;
+   protected boolean widerRequestMatching = false;
 
    public SegmentNode(String segment)
    {
@@ -78,12 +85,28 @@ public class SegmentNode
       potentials(path, start, potentials);
       Collections.sort(potentials);
 
-      boolean expressionMatched = false;
+      if (!requestMatchingSet)
+      {
+         Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+         ResteasyDeployment deployment = (ResteasyDeployment) contextDataMap.get(ResteasyDeployment.class);
+         if (deployment != null)
+         {
+            looseStep2RequestMatching = deployment.isLooseStep2RequestMatching();
+            widerRequestMatching = deployment.isWiderRequestMatching();
+            requestMatchingSet = true;
+   	     }
+         ResourceMethodRegistry registry = (ResourceMethodRegistry) contextDataMap.get(Registry.class);
+         if (deployment != null)
+         {
+            widerRequestMatching = registry.isWiderMatching();
+         }
+      }
+      MethodExpression matchedExpression = null;
       List<Match> matches = new ArrayList<Match>();
       for (MethodExpression expression : potentials)
       {
          // We ignore locators if the first match was a resource method as per the spec Section 3, Step 2(h)
-         if (expressionMatched && expression.isLocator()) continue;
+         if (matchedExpression != null && expression.isLocator()) continue;
 
          Pattern pattern = expression.getPattern();
          Matcher matcher = pattern.matcher(path);
@@ -91,7 +114,6 @@ public class SegmentNode
 
          if (matcher.matches())
          {
-            expressionMatched = true;
             ResourceInvoker invoker = expression.getInvoker();
             if (invoker instanceof ResourceLocatorInvoker)
             {
@@ -128,7 +150,23 @@ public class SegmentNode
             }
             else
             {
-               matches.add(new Match(expression, matcher));
+               if (looseStep2RequestMatching || widerRequestMatching)
+               {
+                  matches.add(new Match(expression, matcher));    
+               }
+               else if (matchedExpression == null)
+               {
+                  matchedExpression = expression;
+                  matches.add(new Match(expression, matcher));   
+               }
+               else if (matchedExpression.compareTo(expression) == 0)
+               {
+                  matches.add(new Match(expression, matcher));  
+               }
+               else
+               {
+                  break;
+               }
             }
          }
       }

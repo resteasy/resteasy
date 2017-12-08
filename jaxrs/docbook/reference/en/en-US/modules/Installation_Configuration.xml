@@ -552,6 +552,20 @@ public class MyApplication extends Application
                                 Imposes maximum size on decompressed gzipped .
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.loose.step2.request.matching
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                In searching for a matching resource method with which to respond to a request,
+                                consider all resource methods that match the request path. See 
+                                <link linkend='Migration_to_3_0_19_SP6'>Migrating to 3.0.19.SP6</link> for discussion.
+                            </entry>
+                        </row>
+
                     </tbody>
                 </tgroup>
             </table>
