@@ -47,4 +47,5 @@ public interface ResteasyContextParameters
    String RESTEASY_DEPLOYMENTS = "resteasy.deployments";
    String RESTEASY_SERVLET_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
    String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
+   String RESTEASY_LOOSE_STEP2_REQUEST_MATCHING = "resteasy.loose.step2.request.matching";
 }

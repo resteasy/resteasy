@@ -36,8 +36,26 @@ public class ClientErrorTest
 {
    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
+   @Deployment(name = "war1", order = 1)
+   public static Archive<?> deployLoose() {
+       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_loose");
+       war.addClass(PortProviderUtil.class);
+       war.addClass(TestUtil.class);
+       war.setWebXML(ClientErrorTest.class.getPackage(), "web_loose.xml");
+       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+   }
+   
+   @Deployment(name = "war2", order = 2)
+   public static Archive<?> deployNotLoose() {
+       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_not_loose");
+       war.addClass(PortProviderUtil.class);
+       war.addClass(TestUtil.class);
+       war.setWebXML(ClientErrorTest.class.getPackage(), "web_not_loose.xml");
+       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+   }
+   
+   @Deployment(name = "war3", order = 3)
+   public static Archive<?> deployDefault() {
        WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
        war.addClass(PortProviderUtil.class);
        war.addClass(TestUtil.class);
@@ -62,10 +80,11 @@ public class ClientErrorTest
 
    /**
     * @tpTestDetails There are two methods that match path, but only one matches Accept.
-    * @tpSince RESTEasy 3.0.20
+    *                "resteasy.loose.step2.request.matching" defaults to false.
+    * @tpSince RESTEasy 3.0.20, modified for RESTEasy 3.0.25
     */
    @Test
-   public void testComplex()
+   public void testComplexDefault()
    {
       Builder builder = client.target(generateURL("/complex/match")).request();
       builder.header(HttpHeaderNames.ACCEPT, "text/xml");
@@ -73,7 +92,59 @@ public class ClientErrorTest
       try
       {
          response = builder.get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
+      }
+   }
+   
+   /**
+    * @tpTestDetails There are two methods that match path, but only one matches Accept.
+    *                "resteasy.loose.step2.request.matching" is set to true.
+    * @tpSince RESTEasy 3.0.25
+    */
+   @Test
+   public void testComplexLoose()
+   {
+      Builder builder = client.target(generateURL("_loose/complex/match")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      Response response = null;
+      try
+      {
+         response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
+      }
+   }
+   
+   /**
+    * @tpTestDetails There are two methods that match path, but only one matches Accept.
+    *                "resteasy.loose.step2.request.matching" is set to false.
+    * @tpSince RESTEasy 3.0.25
+    */
+   @Test
+   public void testComplexNotLoose()
+   {
+      Builder builder = client.target(generateURL("_not_loose/complex/match")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      Response response = null;
+      try
+      {
+         response = builder.get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
       }
       catch (Exception e)
       {

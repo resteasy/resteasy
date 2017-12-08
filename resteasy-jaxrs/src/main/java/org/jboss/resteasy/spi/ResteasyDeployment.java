@@ -39,6 +39,7 @@ import java.util.Map;
 public class ResteasyDeployment
 {
    protected boolean widerRequestMatching;
+   protected boolean looseStep2RequestMatching = false;
    protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
@@ -972,6 +973,16 @@ public class ResteasyDeployment
       this.widerRequestMatching = widerRequestMatching;
    }
    
+   public boolean isLooseStep2RequestMatching()
+   {
+      return looseStep2RequestMatching;
+   }
+
+   public void setLooseStep2RequestMatching(boolean looseStep2RequestMatching)
+   {
+      this.looseStep2RequestMatching = looseStep2RequestMatching;
+   }
+
    public boolean isAddCharset()
    {
       return addCharset;
