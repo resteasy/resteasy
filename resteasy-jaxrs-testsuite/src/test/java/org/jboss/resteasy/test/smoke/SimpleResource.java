@@ -65,4 +65,11 @@ public class SimpleResource
    {
       return Response.ok().header("header", "headervalue").build();
    }
+
+  @GET
+  @Path("hello")
+  public String sayHello() {
+    return "Hello";
+  }
+
 }
