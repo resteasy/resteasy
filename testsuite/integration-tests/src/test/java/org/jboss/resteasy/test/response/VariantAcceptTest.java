@@ -100,4 +100,20 @@ public class VariantAcceptTest {
         String entity = response.readEntity(String.class);
         assertEquals("Wrong media type on response", TEXT_HTML_WITH_PARAMS.toString(), entity);
     }
+
+    @Test
+    public void testVariantWithQParameter() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        Invocation.Builder request = client.target(generateURL("/simple")).request();
+        request.accept("application/json;q=0.3, application/xml;q=0.2");
+        Response response = request.get();
+        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        assertEquals("application/json", response.getHeaderString("Content-Type"));
+
+        request = client.target(generateURL("/simple")).request();
+        request.accept("application/json;qs=0.5, application/xml;qs=0.9");
+        response = request.get();
+        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        assertEquals("application/xml;charset=UTF-8", response.getHeaderString("Content-Type"));
+    }
 }
