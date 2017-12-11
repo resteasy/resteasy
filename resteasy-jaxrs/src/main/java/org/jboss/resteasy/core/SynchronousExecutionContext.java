@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -171,7 +172,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> {});
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> syncLatch.countDown());
       }
 
       @Override
@@ -184,7 +185,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(), t -> {});
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(), t -> syncLatch.countDown());
       }
 
       @Override
@@ -197,7 +198,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(), t -> {});
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(), t -> syncLatch.countDown());
       }
 
       @Override
