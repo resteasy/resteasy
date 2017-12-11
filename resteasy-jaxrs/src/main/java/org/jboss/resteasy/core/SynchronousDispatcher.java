@@ -189,6 +189,7 @@ public class SynchronousDispatcher implements Dispatcher
       if (response.isCommitted())
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.responseIsCommitted());
+         onComplete.accept(null);
          return;
       }
       Response handledResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
