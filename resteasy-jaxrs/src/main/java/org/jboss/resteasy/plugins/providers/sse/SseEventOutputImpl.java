@@ -72,9 +72,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          if (asyncContext.isSuspended())
          {
-            //resume(null) will call into AbstractAsynchronousResponse.internalResume(Throwable exc)
-            //The null is valid reference for Throwable:http://stackoverflow.com/questions/17576922/why-can-i-throw-null-in-java
-            //Response header will be set with original one
             asyncContext.getAsyncResponse().complete();
          }
       }
