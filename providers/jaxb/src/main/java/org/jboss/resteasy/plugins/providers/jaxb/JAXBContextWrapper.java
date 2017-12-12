@@ -77,7 +77,8 @@ public class JAXBContextWrapper extends JAXBContext
 
    }
 
-   private JAXBContext wrappedContext;
+   private final JAXBContext wrappedContext;
+   private final ThreadLocal<Unmarshaller> unmarshaller = new ThreadLocal<Unmarshaller>();
 
    /**
     * An optional namespace mapper that is used to apply prefixes to elements with a given namespace.
@@ -296,7 +297,13 @@ public class JAXBContextWrapper extends JAXBContext
     */
    public Unmarshaller createUnmarshaller() throws JAXBException
    {
-      return wrappedContext.createUnmarshaller();
+      Unmarshaller u = unmarshaller.get();
+      if (u == null)
+      {
+         u = wrappedContext.createUnmarshaller();
+         unmarshaller.set(u);
+      }
+      return u;
    }
 
    /**
