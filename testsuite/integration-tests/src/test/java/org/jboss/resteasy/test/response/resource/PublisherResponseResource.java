@@ -24,7 +24,7 @@ public class PublisherResponseResource {
    @Path("text")
    @Produces("application/json")
    public Publisher<String> text(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback(""));
 	   return Flowable.fromArray("one", "two");
    }
 
@@ -52,7 +52,7 @@ public class PublisherResponseResource {
    @Path("text-error-immediate")
    @Produces("application/json")
    public Publisher<String> textErrorImmediate(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback(""));
       throw new AsyncResponseException();
    }
 
@@ -60,7 +60,7 @@ public class PublisherResponseResource {
    @Path("text-error-deferred")
    @Produces("application/json")
    public Publisher<String> textErrorDeferred(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback(""));
       return Flowable.error(new AsyncResponseException());
    }
 
