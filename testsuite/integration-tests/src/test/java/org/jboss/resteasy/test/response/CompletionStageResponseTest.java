@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
@@ -66,6 +67,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(1)
    public void testText() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/text")).request();
@@ -87,6 +89,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(2)
    public void testResponse() throws Exception
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
@@ -105,6 +108,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(3)
    public void testTestClass() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/testclass")).request();
@@ -123,6 +127,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(4)
    public void testResponseTestClass() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/responsetestclass")).request();
@@ -139,6 +144,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(5)
    public void testNull() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/null")).request();
@@ -154,6 +160,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(6)
    public void testExceptionDelay() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/delay")).request();
@@ -175,6 +182,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(7)
    public void testExceptionImmediateRuntime() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
@@ -196,6 +204,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(8)
    public void testExceptionImmediateNotRuntime() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
@@ -217,6 +226,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @InSequence(9)
    public void testTextSingle() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/textSingle")).request();

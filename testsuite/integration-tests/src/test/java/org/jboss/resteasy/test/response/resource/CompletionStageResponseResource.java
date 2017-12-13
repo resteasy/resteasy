@@ -26,7 +26,7 @@ public class CompletionStageResponseResource {
    @Path("text")
    @Produces("text/plain")
    public CompletionStage<String> text(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text"));
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -115,7 +115,7 @@ public class CompletionStageResponseResource {
    @Path("exception/delay")
    @Produces("text/plain")
    public CompletionStage<String> exceptionDelay(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/delay"));
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -132,7 +132,7 @@ public class CompletionStageResponseResource {
    @Path("exception/immediate/runtime")
    @Produces("text/plain")
    public CompletionStage<String> exceptionImmediateRuntime(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/immediate/runtime"));
       throw new RuntimeException(EXCEPTION + ": expect stacktrace");
    }
 
@@ -140,7 +140,7 @@ public class CompletionStageResponseResource {
    @Path("exception/immediate/notruntime")
    @Produces("text/plain")
    public CompletionStage<String> exceptionImmediateNotRuntime(@Context HttpRequest req) throws Exception {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/immediate/notruntime"));
       throw new Exception( EXCEPTION + ": expect stacktrace");
    }
 
