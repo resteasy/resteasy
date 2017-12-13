@@ -4,8 +4,8 @@ import javax.ws.rs.container.CompletionCallback;
 
 public class AsyncResponseCallback implements CompletionCallback {
 
-   private static boolean called;
-   private static Throwable error;
+   private static volatile boolean called;
+   private static volatile Throwable error;
 
    public AsyncResponseCallback()
    {
