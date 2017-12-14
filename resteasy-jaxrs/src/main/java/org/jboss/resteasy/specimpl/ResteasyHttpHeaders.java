@@ -144,36 +144,40 @@ public class ResteasyHttpHeaders implements HttpHeaders
    @Override
    public List<MediaType> getAcceptableMediaTypes()
    {
-      String accepts = getHeaderString(ACCEPT);
-      List<MediaType> list = new ArrayList<MediaType>();
-      if (accepts == null){
-          list.add(MediaType.WILDCARD_TYPE);
-      }else{
-          StringTokenizer tokenizer = new StringTokenizer(accepts, ",");
-          while (tokenizer.hasMoreElements())
-          {
-            String item = tokenizer.nextToken().trim();
-            list.add(MediaType.valueOf(item));
-          }
-          MediaTypeHelper.sortByWeight(list);
+      List<String> vals = requestHeaders.get(ACCEPT);
+      if (vals == null || vals.isEmpty()) {
+         return Collections.singletonList(MediaType.WILDCARD_TYPE);
+      } else {
+         List<MediaType> list = new ArrayList<MediaType>();
+         for (String v : vals) {
+            StringTokenizer tokenizer = new StringTokenizer(v, ",");
+            while (tokenizer.hasMoreElements()) {
+               String item = tokenizer.nextToken().trim();
+               list.add(MediaType.valueOf(item));
+            }
+         }
+         MediaTypeHelper.sortByWeight(list);
+         return Collections.unmodifiableList(list);
       }
-      return Collections.unmodifiableList(list);
    }
-
+   
    @Override
    public List<Locale> getAcceptableLanguages()
    {
-      String accepts = getHeaderString(ACCEPT_LANGUAGE);
-      if (accepts == null) return Collections.emptyList();
-      List<Locale> list = new ArrayList<Locale>();
+      List<String> vals = requestHeaders.get(ACCEPT_LANGUAGE);
+      if (vals == null || vals.isEmpty()) {
+         return Collections.emptyList();
+      }
       List<WeightedLanguage> languages = new ArrayList<WeightedLanguage>();
-      StringTokenizer tokenizer = new StringTokenizer(accepts, ",");
-      while (tokenizer.hasMoreElements())
-      {
-         String item = tokenizer.nextToken().trim();
-         languages.add(WeightedLanguage.parse(item));
+      for (String v : vals) {
+         StringTokenizer tokenizer = new StringTokenizer(v, ",");
+         while (tokenizer.hasMoreElements()) {
+            String item = tokenizer.nextToken().trim();
+            languages.add(WeightedLanguage.parse(item));
+         }
       }
       Collections.sort(languages);
+      List<Locale> list = new ArrayList<Locale>(languages.size());
       for (WeightedLanguage language : languages) list.add(language.getLocale());
       return Collections.unmodifiableList(list);
    }
