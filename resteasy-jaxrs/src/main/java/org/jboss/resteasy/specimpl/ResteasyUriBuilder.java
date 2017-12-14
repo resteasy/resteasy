@@ -244,6 +244,11 @@ public class ResteasyUriBuilder extends UriBuilder
       return uriTemplate(uriTemplate);
    }
 
+   public UriBuilder uriFromCharSequence(CharSequence uriTemplate) throws IllegalArgumentException
+   {
+      return uriTemplate(uriTemplate);
+   }
+
    @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
@@ -603,12 +608,11 @@ public class ResteasyUriBuilder extends UriBuilder
       {
     	 StringBuilder tmp = new StringBuilder();
          replaceParameter(paramMap, fromEncodedMap, isTemplate, path, tmp, encodeSlash);
-         String tmpPath = tmp.toString();
          if (userInfo != null || host != null)
          {
-            if (!tmpPath.startsWith("/")) builder.append("/");
+            if (tmp.length() > 0 && tmp.charAt(0) !=  '/') builder.append("/");
          }
-         builder.append(tmpPath);
+         builder.append(tmp);
       }
       if (query != null)
       {
@@ -655,7 +659,7 @@ public class ResteasyUriBuilder extends UriBuilder
 
    public static Matcher createUriParamMatcher(String string)
    {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(string));
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBracesCS(string));
       return matcher;
    }
 
@@ -776,7 +780,7 @@ public class ResteasyUriBuilder extends UriBuilder
 
    private void addToPathParamList(List<String> params, HashSet<String> set, String string)
    {
-      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(string));
+      Matcher matcher = PathHelper.URI_PARAM_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBracesCS(string));
       while (matcher.find())
       {
          String param = matcher.group(1);
@@ -845,7 +849,7 @@ public class ResteasyUriBuilder extends UriBuilder
       ArrayList<String> pathParams = new ArrayList<String>();
       boolean foundParam = false;
 
-      String pathWithoutEnclosedCurlyBraces = PathHelper.replaceEnclosedCurlyBraces(this.path);
+      CharSequence pathWithoutEnclosedCurlyBraces = PathHelper.replaceEnclosedCurlyBracesCS(this.path);
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(pathWithoutEnclosedCurlyBraces);
       StringBuilder newSegment = new StringBuilder();
       int from = 0;

@@ -19,6 +19,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * UriInfo implementation with some added extra methods to help process requests
@@ -51,13 +52,15 @@ public class ResteasyUriInfo implements UriInfo
    private String contextPath;
 
 
-   public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
+   public ResteasyUriInfo(CharSequence absoluteUri, String queryString, String contextPath)
    {
       initialize(absoluteUri, queryString, contextPath);
    }
 
-   protected void initialize(String absoluteUri, String queryString, String contextPath)
-   {ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder) UriBuilder.fromUri(absoluteUri);
+   protected void initialize(CharSequence absoluteUri, String queryString, String contextPath)
+   {
+      ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder) ((ResteasyUriBuilder) RuntimeDelegate.getInstance()
+            .createUriBuilder()).uriFromCharSequence((CharSequence)absoluteUri);
       absolutePath = absoluteBuilder.build();
       requestURI = absoluteBuilder.replaceQuery(queryString).build();
       encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
@@ -420,8 +423,9 @@ public class ResteasyUriInfo implements UriInfo
 
    public void pushMatchedURI(String encoded)
    {
-      if (encoded.endsWith("/")) encoded = encoded.substring(0, encoded.length() - 1);
-      if (encoded.startsWith("/")) encoded = encoded.substring(1);
+      int start = (encoded.startsWith("/")) ? 1 : 0;
+      int end = (encoded.endsWith("/")) ? encoded.length() - 1 : encoded.length();
+      encoded = start < end ? encoded.substring(start, end) : "";
       String decoded = Encode.decode(encoded);
       if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
       encodedMatchedUris.add(0, encoded);

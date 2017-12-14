@@ -71,6 +71,43 @@ public class PathHelper
       return new String(chars);
    }
 
+   /**
+    * A cheaper (memory-wise) version of replaceEnclosedCurlyBraces(String str)
+    */
+   public static CharSequence replaceEnclosedCurlyBracesCS(String str)
+   {
+      int open = 0;
+      CharSequence cs = str;
+      char[] chars = null;
+      for (int i = 0; i < str.length(); i++)
+      {
+         if (cs.charAt(i) == '{')
+         {
+            if (open != 0) {
+               if (cs == str) {
+                  chars = str.toCharArray();
+                  cs = new ArrayCharSequence(chars);
+               }
+               chars[i] = openCurlyReplacement;
+            }
+            open++;
+         }
+         else if (cs.charAt(i) == '}')
+         {
+            open--;
+            if (open != 0)
+            {
+               if (cs == str) {
+                  chars = str.toCharArray();
+                  cs = new ArrayCharSequence(chars);
+               }
+               chars[i] = closeCurlyReplacement;
+            }
+         }
+      }
+      return cs;
+   }
+
    public static String recoverEnclosedCurlyBraces(String str)
    {
       return str.replace(openCurlyReplacement, '{').replace(closeCurlyReplacement, '}');

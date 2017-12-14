@@ -38,7 +38,7 @@ public class ServletUtil
                contextPath += "/";
            contextPath += servletPrefix;
        }
-       return new ResteasyUriInfo(request.getRequestURL().toString(), request.getQueryString(), contextPath);
+       return new ResteasyUriInfo(request.getRequestURL(), request.getQueryString(), contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)
