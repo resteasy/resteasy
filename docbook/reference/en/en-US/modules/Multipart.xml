@@ -278,6 +278,8 @@ public class MultipartFormDataOutput extends MultipartOutput
     public OutputPart addFormData(String key, Object entity, Class type, Type genericType, MediaType mediaType)
 
     public Map<String, OutputPart> getFormData()
+
+    public Map<String, List<OutputPart>> getFormDataMap()
 }
 ]]></programlisting>
       <para>When you want to output multipart/form-data it is as simple as creating a MultipartFormDataOutput object
@@ -302,6 +304,28 @@ public class MyService
     }
 }
 </programlisting>
+       <para>When using form-data format the named content can be a list of OutputPart objects
+           as long as each object in the named list contains a uniform object and media type.
+           In the example below, we are sending back a "multipart/form-data" format which consists
+           of two named list of objects, bill and monica.
+       </para>
+       <programlisting>
+           @Path("/form")
+           public class MyService
+           {
+           @GET
+           @Produces("multipart/form-data")
+           public MultipartFormDataOutput get()
+           {
+           MultipartFormDataOutput output = new MultipartFormDataOutput();
+           output.addPart("smith", new Customer("Joe Smith"), MediaType.APPLICATION_XML_TYPE);
+           output.addPart("monica", new Employee("monica"), MediaType.APPLICATION_JSON_TYPE);
+           output.addPart("smith", new Customer("Deb Smith"), MediaType.APPLICATION_XML_TYPE);
+           output.addPart("smith", new Customer("Buba Smith"), MediaType.APPLICATION_XML_TYPE);
+           return output;
+           }
+           }
+       </programlisting>
    </sect1>
    <sect1 id="multipart_map_output">
       <title>Multipart FormData Output with java.util.Map</title>
