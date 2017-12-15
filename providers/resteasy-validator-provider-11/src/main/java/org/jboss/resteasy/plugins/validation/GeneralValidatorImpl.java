@@ -117,14 +117,16 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       violationsContainer.setFieldsValidated(true);
    }
 
-	private ValidationException toValidationException(Exception exception,
-			SimpleViolationsContainer simpleViolationsContainer) {
-		if (exception instanceof ConstraintDeclarationException || exception instanceof ConstraintDefinitionException
-				|| exception instanceof GroupDefinitionException) {
-			return (ValidationException) exception;
-		}
-		return new ResteasyViolationException(simpleViolationsContainer);
-	}
+   private ValidationException toValidationException(Exception exception, SimpleViolationsContainer simpleViolationsContainer)
+   {
+      if (exception instanceof ConstraintDeclarationException ||
+          exception instanceof ConstraintDefinitionException  ||
+	  exception instanceof GroupDefinitionException)
+      {
+         return (ValidationException) exception;
+      }
+      return new ResteasyViolationException(simpleViolationsContainer);
+   }
 
    @Override
    public void checkViolations(HttpRequest request)
