@@ -121,7 +121,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       if (exception instanceof ConstraintDeclarationException ||
           exception instanceof ConstraintDefinitionException  ||
-	  exception instanceof GroupDefinitionException)
+          exception instanceof GroupDefinitionException)
       {
          return (ValidationException) exception;
       }
