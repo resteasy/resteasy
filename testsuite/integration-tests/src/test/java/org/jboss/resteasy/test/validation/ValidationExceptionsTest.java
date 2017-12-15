@@ -59,11 +59,11 @@ public class ValidationExceptionsTest {
     static ResteasyClient client;
 
     private static final String DEF_EXCEPTION = "constraintDefinitionException";
-	private static final String CUSTOM_DEF_EXCEPTION = "customConstraintDefinitionException";
+    private static final String CUSTOM_DEF_EXCEPTION = "customConstraintDefinitionException";
     private static final String DECL_EXCEPTION = "constraintDeclarationException";
-	private static final String CUSTOM_DECL_EXCEPTION = "customConstraintDeclarationException";
+    private static final String CUSTOM_DECL_EXCEPTION = "customConstraintDeclarationException";
     private static final String GROUP_DEF_EXCEPTION = "groupDefinitionException";
-	private static final String CUSTOM_GROUP_DEF_EXCEPTION = "customGroupDefinitionException";
+    private static final String CUSTOM_GROUP_DEF_EXCEPTION = "customGroupDefinitionException";
     private static final String OTHER_EXCEPTION = "otherException";
     private static final String CRAZY_EXCEPTION = "crazyException";
     private static final String ERROR_MESSAGE = "Expected other response";
@@ -83,7 +83,7 @@ public class ValidationExceptionsTest {
         war.addClass(ValidationExceptionOtherValidator.class);
         war.addClass(ValidationExceptionTestGroup1.class);
         war.addClass(ValidationExceptionTestGroup2.class);
-		war.addClass(ValidationExceptionMapper.class);
+        war.addClass(ValidationExceptionMapper.class);
         return TestUtil.finishContainerPrepare(war, null, resourceClasses);
     }
 
@@ -102,34 +102,34 @@ public class ValidationExceptionsTest {
         return deploy(DEF_EXCEPTION, ValidationExceptionResourceWithIncorrectConstraint.class);
     }
 
-	@Deployment(name = CUSTOM_DEF_EXCEPTION)
-	public static Archive<?> customConstraintDefinitionExceptionDeploy() throws Exception {
-		return deploy(CUSTOM_DEF_EXCEPTION, ValidationExceptionResourceWithIncorrectConstraint.class,
-				ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class);
-	}
+    @Deployment(name = CUSTOM_DEF_EXCEPTION)
+    public static Archive<?> customConstraintDefinitionExceptionDeploy() throws Exception {
+        return deploy(CUSTOM_DEF_EXCEPTION, ValidationExceptionResourceWithIncorrectConstraint.class,
+                      ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class);
+    }
 
     @Deployment(name = DECL_EXCEPTION)
     public static Archive<?> constraintDeclarationExceptionDeploy() throws Exception {
         return deploy(DECL_EXCEPTION, ValidationExceptionSubResourceWithInvalidOverride.class, ValidationExceptionSuperResource.class);
     }
 
-	@Deployment(name = CUSTOM_DECL_EXCEPTION)
-	public static Archive<?> customConstraintDeclarationExceptionDeploy() throws Exception {
-		return deploy(CUSTOM_DECL_EXCEPTION, ValidationExceptionSubResourceWithInvalidOverride.class,
-				ValidationExceptionSuperResource.class,
-				ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class);
-	}
+    @Deployment(name = CUSTOM_DECL_EXCEPTION)
+    public static Archive<?> customConstraintDeclarationExceptionDeploy() throws Exception {
+        return deploy(CUSTOM_DECL_EXCEPTION, ValidationExceptionSubResourceWithInvalidOverride.class,
+                      ValidationExceptionSuperResource.class,
+                      ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class);
+    }
 
     @Deployment(name = GROUP_DEF_EXCEPTION)
     public static Archive<?> groupDefinitionExceptionDeploy() throws Exception {
         return deploy(GROUP_DEF_EXCEPTION, ValidationExceptionResourceWithInvalidConstraintGroup.class);
     }
 
-	@Deployment(name = CUSTOM_GROUP_DEF_EXCEPTION)
-	public static Archive<?> customGroupDefinitionExceptionDeploy() throws Exception {
-		return deploy(CUSTOM_GROUP_DEF_EXCEPTION, ValidationExceptionResourceWithInvalidConstraintGroup.class,
-				ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class);
-	}
+    @Deployment(name = CUSTOM_GROUP_DEF_EXCEPTION)
+    public static Archive<?> customGroupDefinitionExceptionDeploy() throws Exception {
+        return deploy(CUSTOM_GROUP_DEF_EXCEPTION, ValidationExceptionResourceWithInvalidConstraintGroup.class,
+                      ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class);
+    }
 
     @Deployment(name = OTHER_EXCEPTION)
     public static Archive<?> otherExceptionDeploy() throws Exception {
@@ -158,22 +158,20 @@ public class ValidationExceptionsTest {
         Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDefinitionException"));
     }
 
-	@Test
-	@OperateOnDeployment(CUSTOM_DEF_EXCEPTION)
-	public void testCustomConstraintDefinitionException() throws Exception {
-		Response response = client.target(generateURL("/", CUSTOM_DEF_EXCEPTION)).request().post(null);
-		Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-		String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-		Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-		Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
-		String entity = response.readEntity(String.class);
-		logger.info("entity: " + entity);
-		Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDefinitionException"));
-		Assert.assertTrue(ERROR_MESSAGE,
-				entity.contains(
-						ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class
-								.getName()));
-	}
+    @Test
+    @OperateOnDeployment(CUSTOM_DEF_EXCEPTION)
+    public void testCustomConstraintDefinitionException() throws Exception {
+        Response response = client.target(generateURL("/", CUSTOM_DEF_EXCEPTION)).request().post(null);
+        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
+        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
+        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        String entity = response.readEntity(String.class);
+        logger.info("entity: " + entity);
+        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDefinitionException"));
+        Assert.assertTrue(ERROR_MESSAGE,
+                          entity.contains(ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class.getName()));
+    }
 
     /**
      * @tpTestDetails Resource with incorrect constraint declaration, constraint definition exception is expected
@@ -192,23 +190,21 @@ public class ValidationExceptionsTest {
         Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
     }
     
-	@Test
-	@OperateOnDeployment(CUSTOM_DECL_EXCEPTION)
-	public void testCustomConstraintDeclarationException() throws Exception {
-		Response response = client.target(generateURL("/", CUSTOM_DECL_EXCEPTION)).request().post(null);
-		Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"),
-				HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-		String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-		Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-		Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
-		String entity = response.readEntity(String.class);
-		logger.info("entity: " + entity);
-		Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
-		Assert.assertTrue(ERROR_MESSAGE,
-				entity.contains(
-						ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class
-								.getName()));
-	}
+    @Test
+    @OperateOnDeployment(CUSTOM_DECL_EXCEPTION)
+    public void testCustomConstraintDeclarationException() throws Exception {
+        Response response = client.target(generateURL("/", CUSTOM_DECL_EXCEPTION)).request().post(null);
+        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"),
+                            HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
+        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
+        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        String entity = response.readEntity(String.class);
+        logger.info("entity: " + entity);
+        Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
+        Assert.assertTrue(ERROR_MESSAGE,
+                          entity.contains(ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class.getName()));
+        }
 
     /**
      * @tpTestDetails Resource with incorrect group definition, group definition exception is expected
@@ -227,20 +223,20 @@ public class ValidationExceptionsTest {
         Assert.assertTrue(ERROR_MESSAGE, entity.contains("GroupDefinitionException"));
     }
 
-	@Test
-	@OperateOnDeployment(CUSTOM_GROUP_DEF_EXCEPTION)
-	public void testCustomGroupDefinitionException() throws Exception {
-		Response response = client.target(generateURL("/", CUSTOM_GROUP_DEF_EXCEPTION)).request().get();
-		Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-		String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-		Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
-		Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
-		String entity = response.readEntity(String.class);
-		logger.info("entity: " + entity);
-		Assert.assertTrue(ERROR_MESSAGE, entity.contains("GroupDefinitionException"));
-		Assert.assertTrue(ERROR_MESSAGE, entity.contains(
-				ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class.getName()));
-	}
+    @Test
+    @OperateOnDeployment(CUSTOM_GROUP_DEF_EXCEPTION)
+    public void testCustomGroupDefinitionException() throws Exception {
+        Response response = client.target(generateURL("/", CUSTOM_GROUP_DEF_EXCEPTION)).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
+        Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
+        Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
+        String entity = response.readEntity(String.class);
+        logger.info("entity: " + entity);
+        Assert.assertTrue(ERROR_MESSAGE, entity.contains("GroupDefinitionException"));
+        Assert.assertTrue(ERROR_MESSAGE,
+			  entity.contains(ValidationExceptionResourceWithInvalidConstraintGroup.GroupDefinitionExceptionMapper.class.getName()));
+        }
 
     /**
      * @tpTestDetails Tests for: Exception thrown during validation of field, Exception thrown during validation of parameter,
