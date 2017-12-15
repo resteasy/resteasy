@@ -54,4 +54,7 @@ public interface Messages
    
    @Message(id = BASE + 55, value = "A valid XmlRegistry could not be located.")
    String validXmlRegistryCouldNotBeLocated();
+
+   @Message(id = BASE + 60, value = "Could not find user's JAXBContext implementation for media type: %s")
+   String couldNotFindUsersJAXBContext(MediaType mediaType);
 }

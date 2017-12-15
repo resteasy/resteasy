@@ -90,16 +90,15 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       try
       {
          LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-         ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
-         JAXBContextFinder finder = resolver.getContext(type);
-         if (finder == null)
-         {
-            throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+         JAXBContext jaxb = getJAXBContext(type, mediaType);
+
+         if (jaxb == null) {
+            jaxb = getJAXBContextFinder(type, annotations, mediaType);
          }
-         JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
+
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         
+
          Object obj = null;
          if (needsSecurity())
          {
@@ -127,7 +126,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             }
             else
             {
-               obj = unmarshaller.unmarshal(new StreamSource(entityStream));  
+               obj = unmarshaller.unmarshal(new StreamSource(entityStream));
             }
          }
          if (obj instanceof JAXBElement)
@@ -140,6 +139,60 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          {
             return obj;
          }
+      }
+      catch (JAXBException e)
+      {
+         throw new JAXBUnmarshalException(e);
+      }
+   }
+
+   /**
+    * Check for a user provided JAXBContext implementation.  It takes priority over our builtin one.
+    * @param type
+    * @param mediaType
+    * @return
+    * @throws IOException
+    */
+   private javax.xml.bind.JAXBContext getJAXBContext(Class<Object> type, MediaType mediaType) throws IOException {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : getJAXBContext", getClass().getName());
+
+      ContextResolver<javax.xml.bind.JAXBContext> resolver = providers.getContextResolver(
+              javax.xml.bind.JAXBContext.class, mediaType);
+
+      javax.xml.bind.JAXBContext finder = null;
+      if (resolver != null)
+      {
+         finder = resolver.getContext(type);
+         if (finder == null)
+         {
+            throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindUsersJAXBContext(mediaType));
+         }
+      }
+
+      return finder;
+   }
+
+   /**
+    * Check for the resteasy builtin JAXBContext implementation.
+    * @param type
+    * @param annotations
+    * @param mediaType
+    * @return
+    * @throws IOException
+    */
+   private JAXBContext getJAXBContextFinder(Class<Object> type, Annotation[] annotations, MediaType mediaType) throws IOException
+   {
+      try
+      {
+         LogMessages.LOGGER.debugf("Provider : %s,  Method : getJAXBContextFinder", getClass().getName());
+         ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
+         JAXBContextFinder finder = resolver.getContext(type);
+         if (finder == null)
+         {
+            throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+         }
+         JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
+         return jaxb;
       }
       catch (JAXBException e)
       {
@@ -164,7 +217,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * in the same package as the type we're trying to marshall. This method simply locates this class and
     * instantiates it if found.
     *
-    * @param t
     * @param type
     * @return
     */
