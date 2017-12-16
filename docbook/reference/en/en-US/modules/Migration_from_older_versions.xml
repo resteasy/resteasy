@@ -13,6 +13,41 @@
     </para>
 </sect1>
 <sect1>
+    <title>Migrating to 4.0.0</title>
+    <para>
+       Version 4.0.0 of Resteasy is the first release to support JAX-RS 2.1 (see
+        <ulink url="https://jcp.org/en/jsr/detail?id=370">https://jcp.org/en/jsr/detail?id=370</ulink>),
+        which is discussed in <xref linkend="JAX-RS_2.1_additions"/>. Changes not related to the new spec
+        include the following.
+    </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                Prior to release 4.0.0, when bean validation (<xref linkend="Validation"/>) threw instances of exceptions
+            </para>
+            <itemizedlist>
+                <listitem><classname>javax.validation.ConstraintDefinitionException</classname>,</listitem>
+                <listitem><classname>javax.validation.ConstraintDeclarationException</classname>, or</listitem>
+                <listitem><classname>javax.validation.GroupDefinitionException</classname>,</listitem>
+            </itemizedlist>
+            <para>
+                they were wrapped in a
+                <classname>org.jboss.resteasy.api.validation.Resteasy.ResteasyViolationException</classname>,
+                which <classname>org.jboss.resteasy.api.validation.ResteasyViolationExceptionMapper</classname>,
+                the built-in implementation of
+                <classname>javax.ws.rs.ext.ExceptionMapper&lt;javax.validation.ValidationException&gt;</classname>,
+                then turned into descriptive text.
+                As of release 4.0.0, instances of <classname>ConstraintDefinitionException</classname>, etc., are thrown as is.
+                They are still caught by <classname>ResteasyViolationExceptionMapper</classname>, so, in general, there is
+                no detectable change. It should be noted, however, that an implementation of
+                <classname>ExceptionMapper&lt;ResteasyViolationException&gt;</classname>, which, prior to release
+                4.0.0, would have caught wrapped instances of <classname>ConstraintDefinitionException</classname>,
+                will not catch unwrapped instances.
+            </para>
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating to 3.0.17</title>
     <itemizedlist>
         <listitem>
