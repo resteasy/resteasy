@@ -267,11 +267,11 @@ public class Encode
       return builder.toString();
    }
 
-   public static boolean savePathParams(String segment, StringBuilder newSegment, List<String> params)
+   public static boolean savePathParams(String segmentString, StringBuilder newSegment, List<String> params)
    {
       boolean foundParam = false;
       // Regular expressions can have '{' and '}' characters.  Replace them to do match
-      segment = PathHelper.replaceEnclosedCurlyBraces(segment);
+      CharSequence segment = PathHelper.replaceEnclosedCurlyBracesCS(segmentString);
       Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(segment);
       int start = 0;
       while (matcher.find())

@@ -160,8 +160,9 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public static boolean quoted(String str)
    {
-      for (char c : str.toCharArray())
+      for (int i = 0; i < str.length(); i++)
       {
+         char c = str.charAt(i);
          for (char q : quotedChars) if (c == q) return true;
       }
       return false;
@@ -171,7 +172,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    {
       if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       MediaType type = (MediaType) o;
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
 
       buf.append(type.getType().toLowerCase()).append("/").append(type.getSubtype().toLowerCase());
       if (type.getParameters() == null || type.getParameters().size() == 0) return buf.toString();

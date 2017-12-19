@@ -314,7 +314,7 @@ public interface Messages
    String illegalToInjectQueryParam();
 
    @Message(id = BASE + 415, value = "Illegal uri template: %s")
-   String illegalUriTemplate(String template);
+   String illegalUriTemplate(CharSequence template);
 
    @Message(id = BASE + 420, value = "Improperly padded Base64 input.")
    String improperlyPaddedBase64Input();
