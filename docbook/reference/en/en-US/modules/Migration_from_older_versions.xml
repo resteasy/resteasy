@@ -13,18 +13,10 @@
     </para>
 </sect1>
 <sect1>
-    <title>Migrating to 4.0.0</title>
-    <para>
-       Version 4.0.0 of Resteasy is the first release to support JAX-RS 2.1 (see
-        <ulink url="https://jcp.org/en/jsr/detail?id=370">https://jcp.org/en/jsr/detail?id=370</ulink>),
-        which is discussed in <xref linkend="JAX-RS_2.1_additions"/>. Changes not related to the new spec
-        include the following.
-    </para>
+    <title>Migrating from 3.0.x to 4.0.0</title>
     <itemizedlist>
         <listitem>
-            <para>
-                Prior to release 4.0.0, when bean validation (<xref linkend="Validation"/>) threw instances of exceptions
-            </para>
+            In releases 3.0.x, when bean validation (<xref linkend="Validation"/>) threw instances of exceptions
             <itemizedlist>
                 <listitem><classname>javax.validation.ConstraintDefinitionException</classname>,</listitem>
                 <listitem><classname>javax.validation.ConstraintDeclarationException</classname>, or</listitem>
