@@ -71,7 +71,7 @@ public class SseEventSinkClosingTestResource {
 	@GET
 	@Path(CLOSE_WITHOUT_SENDING_PATH)
 	@Produces(MediaType.SERVER_SENT_EVENTS)
-	public void closedWithourSending(@Context ContainerRequestContext requestContext, @Context Sse sse,
+	public void closedWithoutSending(@Context ContainerRequestContext requestContext, @Context Sse sse,
 			@Context SseEventSink sseEventSink) {
 		requestContext.setProperty(RESPONSE_FILTER_INVOCATION_COUNTER_PROPERTY, this.responseFilterCountInvocation);
 		sseEventSink.close();
