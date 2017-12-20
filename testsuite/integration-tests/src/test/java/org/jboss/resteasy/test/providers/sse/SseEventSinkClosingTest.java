@@ -54,7 +54,7 @@ public class SseEventSinkClosingTest {
 	}
 
 	@Test
-	public void Should_NotInvokeResponseFilter_When_ClosingSseEventSinkOnceMessageSent() throws Exception {
+	public void testFilterForEventSent() throws Exception {
 
 		Client client = ClientBuilder.newClient();
 		try {
@@ -80,7 +80,7 @@ public class SseEventSinkClosingTest {
 	}
 
 	@Test
-	public void Should_InvokeResponseFilterOnlyOnce_When_ClosingSseEventSinkWithoutSending() throws Exception {
+	public void testFilterForMethodReturn() throws Exception {
 
 		Client client = ClientBuilder.newClient();
 		try {
