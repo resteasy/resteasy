@@ -20,8 +20,8 @@ public interface InjectorFactory
 {
    ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory factory);
    PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory);
-   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory);
-   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory);
+   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory);
+   ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory);
 
    ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory);
 
