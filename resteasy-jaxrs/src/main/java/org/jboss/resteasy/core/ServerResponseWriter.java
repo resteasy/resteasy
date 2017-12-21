@@ -361,6 +361,21 @@ public class ServerResponseWriter
          map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES.toLowerCase());
          chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
       }
+      boolean hasQ = chosen.getParameters().containsKey("q");
+      boolean hasQs = chosen.getParameters().containsKey("qs");
+      if (hasQ || hasQs)
+      {
+         Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
+         if (hasQ)
+         {
+            map.remove("q");
+         }
+         if (hasQs)
+         {
+            map.remove("qs");
+         }
+         chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+      }
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
    }
    
