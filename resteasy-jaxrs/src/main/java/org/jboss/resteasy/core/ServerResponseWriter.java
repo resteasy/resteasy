@@ -360,7 +360,7 @@ public class ServerResponseWriter
          chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
       }
       boolean hasQ = chosen.getParameters().containsKey("q");
-      boolean hasQs = chosen.getParameters().containsKey("q2");
+      boolean hasQs = chosen.getParameters().containsKey("qs");
       if (hasQ || hasQs)
       {
          Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
