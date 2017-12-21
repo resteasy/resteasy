@@ -317,12 +317,10 @@ public static class TestService
       <para>
 
          RESTEasy allows you to marshall JAXB annotated POJOs to and from JSON. This provider wraps the Jettison JSON
-         library to accomplish this.  You can obtain more information about Jettison and how it works from:
+         library to accomplish this.  You can obtain more information about Jettison and how it works from
+         <ulink url="https://github.com/jettison-json/jettison">https://github.com/jettison-json/jettison</ulink>
       </para>
-  <para>
-     http://jettison.codehaus.org/
-  </para>
-       <para>
+      <para>
            To use this integration with Jettision you need to import the resteasy-jettison-provider Maven module.  Older versions
            of RESTEasy used to include this within the resteasy-jaxb-provider but we decided to modularize it more.
        </para>
