@@ -22,6 +22,8 @@ import java.util.Map;
  */
 public class MediaTypeHelper
 {
+   private static final MediaTypeComparator COMPARATOR = new MediaTypeComparator();
+   
    @SuppressWarnings(value = "unchecked")
    public static MediaType getConsumes(Class declaring, AccessibleObject method)
    {
@@ -168,18 +170,18 @@ public class MediaTypeHelper
 
    public static int compareWeight(MediaType one, MediaType two)
    {
-      return new MediaTypeComparator().compare(one, two);
+      return COMPARATOR.compare(one, two);
    }
 
    public static boolean sameWeight(MediaType one, MediaType two)
    {
-      return new MediaTypeComparator().compare(one, two) == 0;
+      return COMPARATOR.compare(one, two) == 0;
    }
 
    public static void sortByWeight(List<MediaType> types)
    {
       if (types == null || types.size() <= 1) return;
-      Collections.sort(types, new MediaTypeComparator());
+      Collections.sort(types, COMPARATOR);
    }
 
    public static MediaType getBestMatch(List<MediaType> desired, List<MediaType> provided)
