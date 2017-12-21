@@ -227,5 +227,39 @@ public class TestSmoke
 
    }
 
+   @Test
+   public void testAcceptContextTypeQuality() throws Exception {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+
+      POJOResourceFactory noDefaults = new POJOResourceFactory(SimpleResource.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+
+      System.out.println("Expect to see the correct content type with quality parameter");
+
+      {
+
+         MockHttpRequest request = MockHttpRequest.get("/hello");
+         request.accept("application/json;q=0.3, application/xml;q=0.2");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(200, response.getStatus());
+         Assert.assertEquals("application/json", response.getOutputHeaders().getFirst("Content-Type").toString());
+
+      }
+      {
+
+         MockHttpRequest request = MockHttpRequest.get("/hello");
+         request.accept("application/json;qs=0.5, application/xml;qs=0.8");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(200, response.getStatus());
+         Assert.assertEquals("application/xml;charset=UTF-8", response.getOutputHeaders().getFirst("Content-Type").toString());
+
+      }
+   }
 
 }
