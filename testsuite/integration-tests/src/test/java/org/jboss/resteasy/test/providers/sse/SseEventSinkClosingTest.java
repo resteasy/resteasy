@@ -26,8 +26,6 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class SseEventSinkClosingTest {
 
-	private final static Logger logger = Logger.getLogger(SseEventSinkClosingTest.class);
-
 	@Deployment
 	public static Archive<?> deploy() {
 		WebArchive war = TestUtil.prepareArchive(SseEventSinkClosingTest.class.getSimpleName());
