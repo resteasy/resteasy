@@ -131,9 +131,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
       }
-      flushResponseToClient();
       try
       {
+    	 flushResponseToClient();
          writeEvent(event);
 
       }
