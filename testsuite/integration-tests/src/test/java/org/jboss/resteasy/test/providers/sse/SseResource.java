@@ -35,6 +35,7 @@ public class SseResource
 {
 
    private final Object outputLock = new Object();
+   private final Object sseBroadcasterLock = new Object();
 
    @Context
    private Sse sse;
@@ -44,7 +45,7 @@ public class SseResource
 
    private volatile SseEventSink eventSink;
 
-   private SseBroadcaster sseBroadcaster;
+   private volatile SseBroadcaster sseBroadcaster;
 
    private Object openLock = new Object();
 
@@ -138,21 +139,23 @@ public class SseResource
       {
          throw new IllegalStateException("No client connected.");
       }
-      //subscribe
-      if (sseBroadcaster == null)
-      {
-         sseBroadcaster = sse.newBroadcaster();
+      synchronized (this.sseBroadcasterLock) {
+    	  //subscribe
+          if (sseBroadcaster == null)
+          {
+             sseBroadcaster = sse.newBroadcaster();
+          }
       }
       sseBroadcaster.register(sink);
    }
 
    @POST
    @Path("/broadcast")
-   public void broadcast(String message) throws IOException
+   public void broadcast(String message)
    {
-      if (sseBroadcaster == null)
+      if (this.sseBroadcaster == null)
       {
-         sseBroadcaster = sse.newBroadcaster();
+    	  throw new IllegalStateException("No Sse broadcaster created.");
       }
       ExecutorService service = (ExecutorService) servletContext
             .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
