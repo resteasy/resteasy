@@ -6,7 +6,6 @@ import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestConte
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -18,6 +17,8 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.spi.metadata.MethodParameter;
+import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
@@ -33,8 +34,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.sse.SseEventSink;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -64,6 +65,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected GeneralValidator validator;
    protected boolean isValidatable;
    protected boolean methodIsValidatable;
+   protected boolean isSse;
    protected ResourceInfo resourceInfo;
 
    protected boolean expectsBody;
@@ -131,7 +133,36 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
+      
+		if (isSseResourceMethod(method)) 
+		{
+			isSse = true;
+			method.markAsynchronous();
+		}
    }
+   
+	private static boolean isSseResourceMethod(ResourceMethod resourceMethod) {
+		MediaType[] producedMediaTypes = resourceMethod.getProduces();
+		boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
+				&& MediaType.SERVER_SENT_EVENTS_TYPE.equals(producedMediaTypes[0]);
+		if (!onlyProduceServerSentEventsMediaType)
+		{
+			return false;
+		}
+		MethodParameter[] resourceMethodParameters = resourceMethod.getParams();
+		if(resourceMethodParameters != null)
+		{
+			for (MethodParameter resourceMethodParameter : resourceMethodParameters)
+			{
+				if (Parameter.ParamType.CONTEXT.equals(resourceMethodParameter.getParamType())
+						&& SseEventSink.class.equals(resourceMethodParameter.getType()))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
    public void cleanup()
    {
@@ -570,6 +601,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public MediaType[] getConsumes()
    {
       return method.getConsumes();
+   }
+   
+   public boolean isSse() 
+   {
+	 return isSse;
    }
 
    public void markMethodAsAsync()
