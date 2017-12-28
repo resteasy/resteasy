@@ -141,17 +141,39 @@ public class SseEnablingTest {
 	// Server
 	// @GET
 	// @Produces(MediaType.SERVER_SENT_EVENTS)
-	// public void resourceMethod(@Context SseEventSink sseEventSink){
+	// public Response resourceMethod(){
 	// ...
 	// }
 	@Test
 	public void testSseEnabling_5() throws Exception {
+		Client client = ClientBuilder.newClient();
+		try {
+			WebTarget baseTarget = client.target(generateURL()).path(SseEnablingTestResource.PATH);
+			int responseSTatus = baseTarget.path(SseEnablingTestResource.RESOURCE_METHOD_5_PATH)
+					.request(MediaType.SERVER_SENT_EVENTS_TYPE).get().getStatus();
+			Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), responseSTatus);
+		} finally {
+			client.close();
+		}
+	}
+
+	// Client
+	// Accept: text/event-stream
+	//
+	// Server
+	// @GET
+	// @Produces(MediaType.SERVER_SENT_EVENTS)
+	// public void resourceMethod(@Context SseEventSink sseEventSink){
+	// ...
+	// }
+	@Test
+	public void testSseEnabling_6() throws Exception {
 
 		Client client = ClientBuilder.newClient();
 		try {
 			WebTarget baseTarget = client.target(generateURL()).path(SseEnablingTestResource.PATH);
 			try (SseEventSource eventSource = SseEventSource
-					.target(baseTarget.path(SseEnablingTestResource.RESOURCE_METHOD_5_PATH)).build()) {
+					.target(baseTarget.path(SseEnablingTestResource.RESOURCE_METHOD_6_PATH)).build()) {
 				CountDownLatch countDownLatch = new CountDownLatch(1);
 				eventSource.register(event -> {
 					countDownLatch.countDown();

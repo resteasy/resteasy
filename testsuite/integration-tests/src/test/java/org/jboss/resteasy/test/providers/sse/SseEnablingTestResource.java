@@ -24,6 +24,7 @@ public class SseEnablingTestResource {
 	public static final String RESOURCE_METHOD_3_PATH = "resourceMethod3";
 	public static final String RESOURCE_METHOD_4_PATH = "resourceMethod4";
 	public static final String RESOURCE_METHOD_5_PATH = "resourceMethod5";
+	public static final String RESOURCE_METHOD_6_PATH = "resourceMethod6";
 
 	public static String OK_MESSAGE = "OK";
 
@@ -79,7 +80,15 @@ public class SseEnablingTestResource {
 	@Path(RESOURCE_METHOD_5_PATH)
 	@GET
 	@Produces(MediaType.SERVER_SENT_EVENTS)
-	public void resourceMethod_5(@Context SseEventSink sseEventSink, @Context Sse sse) {
+	public Response resourceMethod_5() {
+		return Response.noContent().build();
+	}
+	
+	// Will be called by client with "Accept: text/event-stream"
+	@Path(RESOURCE_METHOD_6_PATH)
+	@GET
+	@Produces(MediaType.SERVER_SENT_EVENTS)
+	public void resourceMethod_6(@Context SseEventSink sseEventSink, @Context Sse sse) {
 		sseEventSink.send(sse.newEvent("data"));
 		sseEventSink.close();
 	}
