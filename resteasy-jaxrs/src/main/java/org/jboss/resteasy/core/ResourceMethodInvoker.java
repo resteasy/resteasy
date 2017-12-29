@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
@@ -65,6 +66,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected GeneralValidator validator;
    protected boolean isValidatable;
    protected boolean methodIsValidatable;
+   @SuppressWarnings("rawtypes")
+   protected AsyncResponseProvider asyncResponseProvider;
+   @SuppressWarnings("rawtypes")
+   AsyncStreamProvider asyncStreamProvider;
    protected boolean isSse;
    protected ResourceInfo resourceInfo;
 
@@ -134,14 +139,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
       
-		if (isSseResourceMethod(method)) 
-		{
-			isSse = true;
-			method.markAsynchronous();
-		}
+      asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
+      if(asyncResponseProvider == null){
+    	  asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
+      }
+      
+      if (isSseResourceMethod(method)) 
+      {
+    	  isSse = true;
+    	  method.markAsynchronous();
+      }
    }
    
-	private static boolean isSseResourceMethod(ResourceMethod resourceMethod) {
+	// spec section 9.3 Server API:
+	// A resource method that injects an SseEventSink and
+	// produces the media type text/event-stream is an SSE resource method.
+	private boolean isSseResourceMethod(ResourceMethod resourceMethod) {
+
+		// First exclusive condition to be a SSE resource method is to only
+		// produce text/event-stream
 		MediaType[] producedMediaTypes = resourceMethod.getProduces();
 		boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
 				&& MediaType.SERVER_SENT_EVENTS_TYPE.equals(producedMediaTypes[0]);
@@ -149,8 +165,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 		{
 			return false;
 		}
+
+		// Second condition to be a SSE resource method is to be injected with a
+		// SseEventSink parameter
 		MethodParameter[] resourceMethodParameters = resourceMethod.getParams();
-		if(resourceMethodParameters != null)
+		if (resourceMethodParameters != null)
 		{
 			for (MethodParameter resourceMethodParameter : resourceMethodParameters)
 			{
@@ -161,6 +180,24 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 				}
 			}
 		}
+
+		// Resteasy specific:
+		// Or the given application should register a
+		// org.jboss.resteasy.spi.AsyncStreamProvider compatible with resource
+		// method return type and the resource method must not be annotated with
+		// any org.jboss.resteasy.annotations.Stream annotation
+		if (asyncStreamProvider != null)
+		{
+			for (Annotation annotation : resourceMethod.getAnnotatedMethod().getAnnotations())
+			{
+				if (annotation.annotationType() == Stream.class)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		return false;
 	}
 
@@ -348,24 +385,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       
       AsyncResponseConsumer asyncStreamResponseConsumer = null;
-      @SuppressWarnings("rawtypes")
-      AsyncResponseProvider asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
-      @SuppressWarnings("rawtypes")
-      AsyncStreamProvider asyncStreamProvider = null;
-      
       if (asyncResponseProvider != null)
       {
          asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
       }
-      else
+      else if (asyncStreamProvider != null)
       {
-         asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
-         if (asyncStreamProvider != null)
-         {
-            asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
-         }
+    	 asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
       }
-      
 
       Object rtn = null;
       try
