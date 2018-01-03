@@ -101,6 +101,11 @@ public class VariantAcceptTest {
         assertEquals("Wrong media type on response", TEXT_HTML_WITH_PARAMS.toString(), entity);
     }
 
+    /**
+     * @tpTestDetails Verifies that the q/qs factors are stripped from the response Content-type header if they are provided
+     * in the request. See RESTEASY-1765.
+     * @tpSince RESTEasy 3.0.25
+     */
     @Test
     public void testVariantWithQParameter() throws Exception {
         ResteasyClient client = new ResteasyClientBuilder().build();
@@ -109,6 +114,7 @@ public class VariantAcceptTest {
         Response response = request.get();
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("application/json", response.getHeaderString("Content-Type"));
+        response.close();
 
         request = client.target(generateURL("/simple")).request();
         request.accept("application/json;qs=0.5, application/xml;qs=0.9");
