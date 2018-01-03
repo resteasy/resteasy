@@ -37,4 +37,10 @@ public class VariantAcceptResource {
         MediaType selected = request.selectVariant(variants).getMediaType();
         return selected.toString();
     }
+
+    @GET
+    @Path("simple")
+    public String simple() {
+        return "Hello";
+    }
 }
