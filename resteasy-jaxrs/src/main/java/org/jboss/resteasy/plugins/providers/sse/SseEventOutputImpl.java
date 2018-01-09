@@ -72,10 +72,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          if (asyncContext.isSuspended())
          {
-            //resume(null) will call into AbstractAsynchronousResponse.internalResume(Throwable exc)
-            //The null is valid reference for Throwable:http://stackoverflow.com/questions/17576922/why-can-i-throw-null-in-java
-            //Response header will be set with original one
-            asyncContext.getAsyncResponse().resume(Response.noContent().build());
+            asyncContext.getAsyncResponse().complete();
          }
       }
 
@@ -85,8 +82,17 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       if (!responseFlushed)
       {
-         //set back to client 200 OK to implies the SseEventOutput is ready
-         BuiltResponse jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
+         BuiltResponse jaxrsResponse = null;
+		 if(this.closed)
+		 {
+			 jaxrsResponse = (BuiltResponse) Response.noContent().build();
+		 }
+		 else
+		 {
+			//set back to client 200 OK to implies the SseEventOutput is ready
+			 jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
+		 }
+		 
          try
          {
             ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
@@ -125,9 +131,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
       }
-      flushResponseToClient();
       try
       {
+    	 flushResponseToClient();
          writeEvent(event);
 
       }
