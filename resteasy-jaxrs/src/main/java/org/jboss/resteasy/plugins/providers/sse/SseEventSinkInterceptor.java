@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
@@ -21,42 +20,19 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      if (requestContext.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE))
+      if (requestContext instanceof PostMatchContainerRequestContext && ((PostMatchContainerRequestContext) requestContext).getResourceMethod().isSse())
       {
-         enableSse(requestContext);
-         return;
-      }
-      if (requestContext instanceof PostMatchContainerRequestContext)
-      {
-         PostMatchContainerRequestContext postContext = (PostMatchContainerRequestContext) requestContext;
-         for (MediaType produce : postContext.getResourceMethod().getProduces())
-         {
-            if (produce.equals(MediaType.SERVER_SENT_EVENTS_TYPE))
-            {
-               enableSse(requestContext);
-               return;
-            }
-         }
-
+    	  SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
+          ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
+          ResteasyProviderFactory.getContextData(Cleanables.class).addCleanable(new Cleanable()
+          {
+             @Override
+             public void clean() throws Exception
+             {
+                sink.flushResponseToClient();
+             }
+          });
       }
    }
 
-   private void enableSse(ContainerRequestContext requestContext)
-   {
-      SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
-      // make sure we register this as being an async method
-      if (requestContext instanceof PostMatchContainerRequestContext)
-      {
-         ((PostMatchContainerRequestContext) requestContext).getResourceMethod().markMethodAsAsync();
-      }
-      ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
-      ResteasyProviderFactory.getContextData(Cleanables.class).addCleanable(new Cleanable()
-      {
-         @Override
-         public void clean() throws Exception
-         {
-            sink.flushResponseToClient();
-         }
-      });
-   }
 }
