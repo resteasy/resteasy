@@ -60,23 +60,15 @@ public abstract class AsyncResponseConsumer
    }
 
    public static AsyncResponseConsumer makeAsyncResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider) {
+	  if(method.isSse())
+	  {
+		  return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);
+	  }
       for (Annotation annotation : method.getMethodAnnotations())
       {
          if(annotation.annotationType() == Stream.class)
          {
             return new AsyncStreamingResponseConsumer(method, asyncStreamProvider);
-         }
-      }
-      HttpHeaders req = ResteasyProviderFactory.getContextData(HttpHeaders.class);
-      // FIXME: probably redundant but I prefer the producer to be explicit and not just
-      // send SSE if the client accepts everything
-      if(req.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE)) {
-         for (MediaType mediaType : method.getProduces())
-         {
-            if(mediaType.equals(MediaType.SERVER_SENT_EVENTS_TYPE))
-            {
-               return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);
-            }
          }
       }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);
