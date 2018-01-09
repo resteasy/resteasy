@@ -172,7 +172,7 @@ public class SseTest
    @InSequence(4)
    public void testBroadcast() throws Exception
    {
-      final CountDownLatch latch = new CountDownLatch(2);
+      final CountDownLatch latch = new CountDownLatch(3);
       Client client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
       final String textMessage = "This is broadcast message";
@@ -198,6 +198,8 @@ public class SseTest
 
       client.target(generateURL("/service/server-sent-events/broadcast")).request()
             .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
+      client2.target(generateURL("/service/sse/broadcast")).request()
+      .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
       Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
 
       //one subscriber is closed and test if another subscriber works
