@@ -136,22 +136,25 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    //We need this to make it async enough
    public CompletionStage<?> send(OutboundSseEvent event, BiConsumer<SseEventSink, Throwable> errorConsumer)
    {
-      if (closed)
+	  synchronized (lock)
       {
-         throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
-      }
-      try
-      {
-    	 flushResponseToClient();
-         writeEvent(event);
+	      if (closed)
+	      {
+	         throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
+	      }
+	      try
+	      {
+	    	 flushResponseToClient();
+	         writeEvent(event);
 
-      }
-      catch (Exception ex)
-      {
-         errorConsumer.accept(this, ex);
-         return CompletableFuture.completedFuture(ex);
-      }
-      return CompletableFuture.completedFuture(event);
+	      }
+	      catch (Exception ex)
+	      {
+	         errorConsumer.accept(this, ex);
+	         return CompletableFuture.completedFuture(ex);
+	      }
+	      return CompletableFuture.completedFuture(event);  
+	  }
    }
 
    protected void writeEvent(OutboundSseEvent event) throws IOException
