@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * 
@@ -11,13 +11,13 @@ import java.util.Set;
  */
 public class PostResourceMethodInvokers {
 
-	private final Set<PostResourceMethodInvoker> invokers;
+	private final List<PostResourceMethodInvoker> invokers;
 
 	public PostResourceMethodInvokers() {
-		this.invokers = new LinkedHashSet<>();
+		this.invokers = new ArrayList<>();
 	}
 
-	public Set<PostResourceMethodInvoker> getInvokers() {
+	public List<PostResourceMethodInvoker> getInvokers() {
 		return this.invokers;
 	}
 
