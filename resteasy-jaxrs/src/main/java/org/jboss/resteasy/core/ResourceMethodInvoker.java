@@ -346,7 +346,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       Object rtn = null;
       try
       {
-         rtn = methodInjector.invoke(request, response, target);
+         rtn = internalInvokeOnTarget(request, response, target);
       }
       catch (RuntimeException ex)
       {
@@ -397,7 +397,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       Object rtn = null;
       try
       {
-         rtn = methodInjector.invoke(request, response, target);
+         rtn = internalInvokeOnTarget(request, response, target);
       }
       catch (RuntimeException ex)
       {
@@ -501,7 +501,23 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       jaxrsResponse.addMethodAnnotations(getMethodAnnotations());
       return jaxrsResponse;
    }
-
+   
+	private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
+		PostResourceMethodInvokers postResourceMethodInvokers = ResteasyProviderFactory
+				.getContextData(PostResourceMethodInvokers.class);
+		try {
+			Object toReturn = this.methodInjector.invoke(request, response, target);
+			if (postResourceMethodInvokers != null) {
+				postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+			}
+			return toReturn;
+		} finally {
+			if (postResourceMethodInvokers != null) {
+				postResourceMethodInvokers.clear();
+			}
+		}
+	}
+   
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
    {
       asyncResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());

@@ -335,6 +335,7 @@ public class SynchronousDispatcher implements Dispatcher
 
       contextDataMap.putAll(defaultContextObjects);
       contextDataMap.put(Cleanables.class, new Cleanables());
+      contextDataMap.put(PostResourceMethodInvokers.class, new PostResourceMethodInvokers());
    }
 
    public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)

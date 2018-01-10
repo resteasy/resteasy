@@ -9,8 +9,8 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
-import org.jboss.resteasy.plugins.server.servlet.Cleanable;
-import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.core.PostResourceMethodInvoker;
+import org.jboss.resteasy.core.PostResourceMethodInvokers;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @Provider
@@ -24,10 +24,10 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
       {
     	  SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
           ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
-          ResteasyProviderFactory.getContextData(Cleanables.class).addCleanable(new Cleanable()
+          ResteasyProviderFactory.getContextData(PostResourceMethodInvokers.class).addInvokers(new PostResourceMethodInvoker()
           {
              @Override
-             public void clean() throws Exception
+             public void invoke()
              {
                 sink.flushResponseToClient();
              }
