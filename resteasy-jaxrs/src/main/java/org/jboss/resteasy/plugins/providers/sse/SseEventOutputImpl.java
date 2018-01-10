@@ -23,6 +23,7 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
@@ -72,11 +73,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 	  synchronized (lock)
 	  {
 	      closed = true;
-	      if (asyncContext.isSuspended() && asyncContext.getAsyncResponse() != null)
+	      if (asyncContext.isSuspended())
 	      {
-	         if (asyncContext.isSuspended())
+	    	 ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
+			 if (asyncResponse != null)
 	         {
-	            asyncContext.getAsyncResponse().complete();
+	        	 asyncResponse.complete();
 	         }
 	      }
 	  }
