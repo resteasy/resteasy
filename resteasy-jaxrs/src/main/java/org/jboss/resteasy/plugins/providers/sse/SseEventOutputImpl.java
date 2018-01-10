@@ -40,6 +40,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private final Map<Class<?>, Object> contextDataMap;
 
    private boolean responseFlushed = false;
+   
+   private final Object lock = new Object();
 
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
    {
@@ -65,49 +67,54 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
 
    @Override
-   public synchronized void close()
+   public void close()
    {
-      closed = true;
-      if (asyncContext.isSuspended() && asyncContext.getAsyncResponse() != null)
-      {
-         if (asyncContext.isSuspended())
-         {
-            asyncContext.getAsyncResponse().complete();
-         }
-      }
-
+	  synchronized (lock)
+	  {
+	      closed = true;
+	      if (asyncContext.isSuspended() && asyncContext.getAsyncResponse() != null)
+	      {
+	         if (asyncContext.isSuspended())
+	         {
+	            asyncContext.getAsyncResponse().complete();
+	         }
+	      }
+	  }
    }
 
-   protected synchronized void flushResponseToClient()
+   protected void flushResponseToClient()
    {
-      if (!responseFlushed)
+	  synchronized (lock)
       {
-         BuiltResponse jaxrsResponse = null;
-		 if(this.closed)
-		 {
-			 jaxrsResponse = (BuiltResponse) Response.noContent().build();
-		 }
-		 else
-		 {
-			//set back to client 200 OK to implies the SseEventOutput is ready
-			 jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
-		 }
-		 
-         try
-         {
-            ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
-                  ResteasyProviderFactory.getInstance(), t -> {
-                  }, true);
-            response.getOutputStream().write(SseConstants.EOL);
-            response.getOutputStream().write(SseConstants.EOL);
-            response.flushBuffer();
-            responseFlushed = true;
-         }
-         catch (IOException e)
-         {
-            close();
-            throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
-         }
+          if (!responseFlushed)
+          {
+             BuiltResponse jaxrsResponse = null;
+    		 if(this.closed)
+    		 {
+    			 jaxrsResponse = (BuiltResponse) Response.noContent().build();
+    		 }
+    		 else
+    		 {
+    			//set back to client 200 OK to implies the SseEventOutput is ready
+    			 jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
+    		 }
+    		 
+             try
+             {
+                ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
+                      ResteasyProviderFactory.getInstance(), t -> {
+                      }, true);
+                response.getOutputStream().write(SseConstants.EOL);
+                response.getOutputStream().write(SseConstants.EOL);
+                response.flushBuffer();
+                responseFlushed = true;
+             }
+             catch (IOException e)
+             {
+                close();
+                throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
+             }
+          }
       }
    }
 
@@ -145,37 +152,40 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       return CompletableFuture.completedFuture(event);
    }
 
-   protected synchronized void writeEvent(OutboundSseEvent event) throws IOException
+   protected void writeEvent(OutboundSseEvent event) throws IOException
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      try
-      {
-         if (event != null)
-         {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            writer.writeTo(event, event.getClass(), null, new Annotation[]
-            {}, event.getMediaType(), null, bout);
-            response.getOutputStream().write(bout.toByteArray());
-            response.flushBuffer();
-         }
-      }
-      catch (IOException e)
-      {
-         //The connection could be broken or closed. whenever IO error happens, mark closed to true to 
-         //stop event writing 
-         close();
-         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
-         throw e;
-      }
-      catch (Exception e)
-      {
-         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
-         throw new ProcessingException(e);
-      }
-      finally
-      {
-         ResteasyProviderFactory.removeContextDataLevel();
-      }
+	  synchronized (lock)
+	  {
+	      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+	      try
+	      {
+	         if (event != null)
+	         {
+	            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+	            writer.writeTo(event, event.getClass(), null, new Annotation[]
+	            {}, event.getMediaType(), null, bout);
+	            response.getOutputStream().write(bout.toByteArray());
+	            response.flushBuffer();
+	         }
+	      }
+	      catch (IOException e)
+	      {
+	         //The connection could be broken or closed. whenever IO error happens, mark closed to true to 
+	         //stop event writing 
+	         close();
+	         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
+	         throw e;
+	      }
+	      catch (Exception e)
+	      {
+	         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
+	         throw new ProcessingException(e);
+	      }
+	      finally
+	      {
+	         ResteasyProviderFactory.removeContextDataLevel();
+	      }
+	  }
    }
 
 }
