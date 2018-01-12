@@ -20,7 +20,7 @@
         <dep.arquillian-wildfly.version>8.2.1.Final</dep.arquillian-wildfly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.classmate>1.3.3</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.8.9</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.8.11</version.com.fasterxml.jackson>
         <version.com.google.inject.guice>4.1.0</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.com.sun.mail>1.5.6</version.com.sun.mail>
