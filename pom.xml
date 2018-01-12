@@ -21,8 +21,8 @@
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
 
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
