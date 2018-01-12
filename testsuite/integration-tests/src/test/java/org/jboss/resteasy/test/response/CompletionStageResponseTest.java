@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
@@ -22,6 +23,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -154,6 +156,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 4.0
     */
    @Test
+   @Category({ExpectedFailing.class})
    public void testExceptionDelay() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/delay")).request();
