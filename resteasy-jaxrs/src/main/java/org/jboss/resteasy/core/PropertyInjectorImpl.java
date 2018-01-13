@@ -187,6 +187,11 @@ public class PropertyInjectorImpl implements PropertyInjector
          }
       }
    }
+   
+   public HashMap<Field, ValueInjector> getFieldMap()
+   {
+      return fieldMap;
+   }
 
    private Field[] getDeclaredFields(final Class<?> clazz)
    {

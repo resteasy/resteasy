@@ -83,8 +83,17 @@ public interface Messages
    @Message(id = BASE + 95, value = "Unable to find CDI class ")
    String unableToFindCDIClass();
    
+   @Message(id = BASE + 97, value = "Unable to find contextual data of type: %s")
+   String unableToFindContextualData(String className);
+   
    @Message(id = BASE + 100, value = "Unable to find ServletContext class.")
    String unableToFindServletContextClass();
+   
+   @Message(id = BASE + 102, value = "Unable to inject Application into {0}", format=Format.MESSAGE_FORMAT)
+   String unableToInjectApplication(String className);
+
+   @Message(id = BASE + 104, value = "Unable to instantiate javassist class: {0}", format=Format.MESSAGE_FORMAT)
+   String unableToInstantiateJavassistClass(String className);
    
    @Message(id = BASE + 105, value = "Unable to lookup BeanManager.")
    String unableToLookupBeanManager();
