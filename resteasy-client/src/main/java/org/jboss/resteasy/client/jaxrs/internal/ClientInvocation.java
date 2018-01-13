@@ -53,14 +53,23 @@ import java.util.concurrent.Future;
 public class ClientInvocation implements Invocation
 {
    protected ResteasyClient client;
+
    protected ClientRequestHeaders headers;
+
    protected String method;
+
    protected Object entity;
+
    protected Type entityGenericType;
+
    protected Class<?> entityClass;
+
    protected Annotation[] entityAnnotations;
+
    protected ClientConfiguration configuration;
+
    protected URI uri;
+
    protected boolean chunked;
 
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing
@@ -68,6 +77,7 @@ public class ClientInvocation implements Invocation
    // the output stream.  It also does not let you modify the request headers before the output stream is available
    // Since MessageBodyWriter allows you to modify headers, you're s
    protected DelegatingOutputStream delegatingOutputStream = new DelegatingOutputStream();
+
    protected OutputStream entityStream = delegatingOutputStream;
 
    public ClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
@@ -101,13 +111,12 @@ public class ClientInvocation implements Invocation
             else
             {
                T rtn = response.readEntity(responseType, annotations);
-               if (InputStream.class.isInstance(rtn)
-                    || Reader.class.isInstance(rtn)
-                    || EventInput.class.isInstance(rtn))
+               if (InputStream.class.isInstance(rtn) || Reader.class.isInstance(rtn)
+                     || EventInput.class.isInstance(rtn))
                {
                   if (response instanceof ClientResponse)
                   {
-                     ClientResponse clientResponse = (ClientResponse)response;
+                     ClientResponse clientResponse = (ClientResponse) response;
                      clientResponse.noReleaseConnection();
                   }
                }
@@ -141,7 +150,8 @@ public class ClientInvocation implements Invocation
          }
          finally
          {
-            if (response.getMediaType() == null) response.close();
+            if (response.getMediaType() == null)
+               response.close();
          }
       }
       try
@@ -168,14 +178,16 @@ public class ClientInvocation implements Invocation
                }
             }
          }
-         if (status >= 300 && status < 400) throw new RedirectionException(response);
+         if (status >= 300 && status < 400)
+            throw new RedirectionException(response);
 
          return handleErrorStatus(response);
       }
       finally
       {
          // close if no content
-         if (response.getMediaType() == null) response.close();
+         if (response.getMediaType() == null)
+            response.close();
       }
 
    }
@@ -192,31 +204,32 @@ public class ClientInvocation implements Invocation
       final int status = response.getStatus();
       switch (status)
       {
-         case 400:
+         case 400 :
             throw new BadRequestException(response);
-         case 401:
+         case 401 :
             throw new NotAuthorizedException(response);
-         case 403:
+         case 403 :
             throw new ForbiddenException(response);
-         case 404:
+         case 404 :
             throw new NotFoundException(response);
-         case 405:
+         case 405 :
             throw new NotAllowedException(response);
-         case 406:
+         case 406 :
             throw new NotAcceptableException(response);
-         case 415:
+         case 415 :
             throw new NotSupportedException(response);
-         case 500:
+         case 500 :
             throw new InternalServerErrorException(response);
-         case 503:
+         case 503 :
             throw new ServiceUnavailableException(response);
-         default:
+         default :
             break;
       }
 
-      if (status >= 400 && status < 500) throw new ClientErrorException(response);
-      if (status >= 500) throw new ServerErrorException(response);
-
+      if (status >= 400 && status < 500)
+         throw new ClientErrorException(response);
+      if (status >= 500)
+         throw new ServerErrorException(response);
 
       throw new WebApplicationException(response);
    }
@@ -349,7 +362,7 @@ public class ClientInvocation implements Invocation
          {
             this.entity = null;
             this.entityClass = null;
-            this.entityGenericType = null;  
+            this.entityGenericType = null;
          }
          else
          {
@@ -368,10 +381,11 @@ public class ClientInvocation implements Invocation
       }
 
       WriterInterceptor[] interceptors = getWriterInterceptors();
-      AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, configuration.getProviderFactory(), entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
+      AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors,
+            configuration.getProviderFactory(), entity, entityClass, entityGenericType, entityAnnotations,
+            headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
       ctx.proceed();
    }
-
 
    public WriterInterceptor[] getWriterInterceptors()
    {
@@ -389,7 +403,6 @@ public class ClientInvocation implements Invocation
    }
 
    // Invocation methods
-
 
    public Configuration getConfiguration()
    {
@@ -441,7 +454,8 @@ public class ClientInvocation implements Invocation
          }
          // spec requires that aborted response go through filter/interceptor chains.
          ClientResponse response = aborted;
-         if (response == null) response = client.httpEngine().invoke(this);
+         if (response == null)
+            response = client.httpEngine().invoke(this);
          response.setProperties(configuration.getMutableProperties());
 
          ClientResponseFilter[] responseFilters = getResponseFilters();
@@ -469,7 +483,8 @@ public class ClientInvocation implements Invocation
       finally
       {
          ResteasyProviderFactory.popContextData(Providers.class);
-         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+         if (current != null)
+            ResteasyProviderFactory.pushContext(Providers.class, current);
       }
    }
 
@@ -478,7 +493,8 @@ public class ClientInvocation implements Invocation
    public <T> T invoke(Class<T> responseType)
    {
       Response response = invoke();
-      if (Response.class.equals(responseType)) return (T)response;
+      if (Response.class.equals(responseType))
+         return (T) response;
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
@@ -487,7 +503,8 @@ public class ClientInvocation implements Invocation
    public <T> T invoke(GenericType<T> responseType)
    {
       Response response = invoke();
-      if (responseType.getRawType().equals(Response.class)) return (T)response;
+      if (responseType.getRawType().equals(Response.class))
+         return (T) response;
       return ClientInvocation.extractResult(responseType, response, null);
    }
 
@@ -504,7 +521,6 @@ public class ClientInvocation implements Invocation
       });
    }
 
-
    @Override
    public <T> Future<T> submit(final Class<T> responseType)
    {
@@ -518,7 +534,7 @@ public class ClientInvocation implements Invocation
       });
    }
 
-  @Override
+   @Override
    public <T> Future<T> submit(final GenericType<T> responseType)
    {
       return client.asyncInvocationExecutor().submit(new Callable<T>()
@@ -531,11 +547,14 @@ public class ClientInvocation implements Invocation
       });
    }
 
-   @SuppressWarnings({ "rawtypes", "unchecked" })
+   @SuppressWarnings(
+   {"rawtypes", "unchecked"})
    @Override
    public <T> Future<T> submit(final InvocationCallback<T> callback)
    {
-      GenericType<T> genericType = (GenericType<T>)new GenericType<Object>() {};
+      GenericType<T> genericType = (GenericType<T>) new GenericType<Object>()
+      {
+      };
       Type[] typeInfo = Types.getActualTypeArgumentsOfAnInterface(callback.getClass(), InvocationCallback.class);
       if (typeInfo != null)
       {
@@ -549,21 +568,25 @@ public class ClientInvocation implements Invocation
          public T call() throws Exception
          {
             T result = null;
-            try {
+            try
+            {
                result = invoke(responseType);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                callback.failed(e);
                throw e;
             }
-            try {
+            try
+            {
                callback.completed(result);
                return result;
             }
-            finally {
+            finally
+            {
                if (result != null && result instanceof Response)
                {
-                  ((Response)result).close();
+                  ((Response) result).close();
                }
             }
          }
