@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

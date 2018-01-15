@@ -21,6 +21,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerResponseContext;
 import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;

@@ -23,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerRequestContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
