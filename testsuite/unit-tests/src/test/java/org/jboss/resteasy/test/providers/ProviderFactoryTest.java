@@ -112,7 +112,7 @@ public class ProviderFactoryTest {
       {
          ResteasyProviderFactory.setInstance(null);
 
-         ResteasyProviderFactory rpf1 = ResteasyProviderFactory.newInstance();
+         ResteasyProviderFactory rpf1 = new ResteasyProviderFactory();
          RegisterBuiltin.register(rpf1);
          rpf1.registerProvider(MyInterceptor.class);
          ResteasyDeployment dep1 = new ResteasyDeployment();
@@ -120,7 +120,7 @@ public class ProviderFactoryTest {
          dep1.setDeploymentSensitiveFactoryEnabled(true);
          dep1.start();
 
-         ResteasyProviderFactory rpf2 = ResteasyProviderFactory.newInstance();
+         ResteasyProviderFactory rpf2 = new ResteasyProviderFactory();
          RegisterBuiltin.register(rpf2);
          rpf2.register(new DynamicFeature()
          {
