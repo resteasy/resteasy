@@ -27,6 +27,8 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 @RunAsClient
 public class SubResourceWarningTest {
 
+   private static int base = TestUtil.getWarningCount("have the same path, [test", false);
+    
    @Deployment
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(SubResourceWarningTest.class.getSimpleName());
@@ -56,6 +58,6 @@ public class SubResourceWarningTest {
    @Test
    public void testWarningMsg () throws Exception {
       int cnt = TestUtil.getWarningCount("have the same path, [test", false);
-      Assert.assertEquals( "Improper log WARNING count",cnt, 2);
+      Assert.assertEquals( "Improper log WARNING count",cnt - base, 2);
    }
 }
