@@ -242,7 +242,7 @@
                     <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <argLine>-Xms512m -Xmx512m</argLine>
+                        <argLine>-Xms512m -Xmx512m ${surefire.system.args}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
