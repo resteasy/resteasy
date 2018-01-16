@@ -16,7 +16,7 @@
     <title>Migrating to 3.0.25</title>
     
     <para>
-        A bug discovered in the resource method matching algorithm in Resteasy versions 3.0.x prior to 3.0.25.Final
+        A bug discovered in the resource method matching algorithm in Resteasy versions 3.0.x prior to 3.0.26.Final-SNAPSHOT
         allowed Resteasy to consider too many resource methods in responding to requests. There are three stages in
         the matching algorithm:
     </para>
@@ -30,7 +30,7 @@
     <para>
         In step 2, the set of potential resource methods are sorted, based on properties of @Path values like number
         of literals, and only the maximal elements are passed on to step 3. However, the Resteasy implementation
-        prior to 3.0.25.Final passes ALL methods to step 3. For example,
+        prior to 3.0.26.Final-SNAPSHOT passes ALL methods to step 3. For example,
     </para>
     
 <programlisting>
@@ -69,7 +69,7 @@
     
     <para>
         In order to make the older, if incorrect, behavior available, a context-param configuration switch, 
-        "resteasy.loose.step2.request.matching", is introduced in version 3.0.25.Final. It defaults to "false",
+        "resteasy.loose.step2.request.matching", is introduced in version 3.0.26.Final-SNAPSHOT. It defaults to "false",
         but, if it is set to "true", the older, looser behavior is enabled.
     </para>
 </sect1>
