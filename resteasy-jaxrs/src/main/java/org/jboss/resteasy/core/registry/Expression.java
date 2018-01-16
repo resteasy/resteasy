@@ -26,7 +26,7 @@ public abstract class Expression implements Comparable<Expression>
    public Expression(String segment, String additionalRegex)
    {
       this.pathExpression = segment;
-      String replacedCurlySegment = PathHelper.replaceEnclosedCurlyBraces(segment);
+      CharSequence replacedCurlySegment = PathHelper.replaceEnclosedCurlyBracesCS(segment);
       literalCharacters = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment).replaceAll("").length();
 
       String[] split = PathHelper.URI_PARAM_PATTERN.split(replacedCurlySegment);
