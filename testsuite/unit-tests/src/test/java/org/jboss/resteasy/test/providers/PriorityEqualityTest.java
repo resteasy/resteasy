@@ -104,7 +104,7 @@ public class PriorityEqualityTest {
     */
    @Test
    public void testParamConverterProvidersFromClass() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
       factory.register(ParamConverterProvider1.class);
       factory.register(ParamConverterProvider2.class);
       Assert.assertEquals(2, factory.getParamConverterProviders().size());
@@ -117,7 +117,7 @@ public class PriorityEqualityTest {
     */
    @Test
    public void testParamConverterProvidersObjects() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
       factory.registerProviderInstance(new ParamConverterProvider1());
       factory.registerProviderInstance(new ParamConverterProvider2());
       Assert.assertEquals(2, factory.getParamConverterProviders().size());
@@ -130,7 +130,7 @@ public class PriorityEqualityTest {
     */
    @Test
    public void testExceptionMappersFromClass() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
       factory.register(ExceptionMapper1.class);
       factory.register(ExceptionMapper2.class);
       Assert.assertEquals(1, factory.getExceptionMappers().size());
@@ -143,7 +143,7 @@ public class PriorityEqualityTest {
     */
    @Test
    public void testExceptionObjects() throws Exception {
-      ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory factory = new ResteasyProviderFactory();
       factory.registerProviderInstance(new ExceptionMapper1());
       factory.registerProviderInstance(new ExceptionMapper2());
       Assert.assertEquals(1, factory.getExceptionMappers().size());
