@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Publisher response type
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -70,7 +70,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testText() throws Exception
@@ -90,7 +90,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>, throws exception immediately.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTextErrorImmediate() throws Exception
@@ -110,7 +110,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>, throws exception in stream.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTextErrorDeferred() throws Exception
@@ -130,7 +130,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testChunked() throws Exception
@@ -144,7 +144,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testSse() throws Exception
@@ -180,7 +180,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method unsubscribes on close for infinite streams.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testInfiniteStreamsSse() throws Exception
@@ -225,7 +225,7 @@ public class PublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method unsubscribes on close for infinite streams.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testInfiniteStreamsChunked() throws Exception

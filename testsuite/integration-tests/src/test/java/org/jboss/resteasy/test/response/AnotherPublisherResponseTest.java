@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Publisher response type
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 public class AnotherPublisherResponseTest {
@@ -50,7 +50,7 @@ public class AnotherPublisherResponseTest {
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testSse() throws Exception

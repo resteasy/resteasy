@@ -19,7 +19,7 @@ import org.junit.Test;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Correct storage of ParamConverterProviders and ExceptionMappers of equal @Priority
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 public class PriorityEqualityTest {
 
@@ -100,7 +100,7 @@ public class PriorityEqualityTest {
    /**
     * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
     *                with the same @Priority.
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testParamConverterProvidersFromClass() throws Exception {
@@ -113,7 +113,7 @@ public class PriorityEqualityTest {
    /**
     * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
     *                with the same @Priority.
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testParamConverterProvidersObjects() throws Exception {
@@ -126,7 +126,7 @@ public class PriorityEqualityTest {
    /**
     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
     *                a given Exception and @Priority.
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionMappersFromClass() throws Exception {
@@ -139,7 +139,7 @@ public class PriorityEqualityTest {
    /**
     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
     *                a given Exception and @Priority.
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionObjects() throws Exception {

@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter ExceptionMappers and ParamConverterProviders
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -80,7 +80,7 @@ public class ProviderPriorityProvidersInApplicationTest {
 
    /**
     * @tpTestDetails Tests that ExceptionMappers are sorted by priority
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
 //   @Test
    public void testExceptionMapper() throws Exception {
@@ -92,7 +92,7 @@ public class ProviderPriorityProvidersInApplicationTest {
    
    /**
     * @tpTestDetails Tests that ParamConverterProviders are sorted by priority
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testParamConverterProvider() throws Exception {

@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter ExceptionMappers and ParamConverterProviders registered programatically
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -81,7 +81,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
    /**
     * @tpTestDetails Tests that Programatically registered ExceptionMappers and
     *                ParamConverterProviders are sorted by priority
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testProgramaticRegistration() throws Exception {

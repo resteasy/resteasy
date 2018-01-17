@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  * @tpTestCaseDetails Check for slash in URL
  */
 @RunWith(Arquillian.class)
@@ -41,7 +41,7 @@ public class PathParamMissingDefaultValueTest {
 
     /**
      * @tpTestDetails Missing @PathParam in BeanParam with no @DefaultValue should get java default value.
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testTrailingSlash() throws Exception {

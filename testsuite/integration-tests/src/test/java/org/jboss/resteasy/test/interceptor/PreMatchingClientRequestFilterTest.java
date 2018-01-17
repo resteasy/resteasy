@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Interceptor
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests @PreMatching annotation on ClientRequestFilter (RESTEASY-1696)
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class PreMatchingClientRequestFilterTest extends ClientTestBase {
    /**
     * @tpTestDetails Test that annotation @PreMatching on an implementation of ClientRequestFilter
     *                is ignored. This annotation is only valid on ContainerRequestFilter implementations.
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void preMatchingTest() throws Exception {

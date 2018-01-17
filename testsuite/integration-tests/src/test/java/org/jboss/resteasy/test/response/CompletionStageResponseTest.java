@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter CompletionStage response type
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class CompletionStageResponseTest {
 
    /**
     * @tpTestDetails Resource method returns CompletionStage<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testText() throws Exception
@@ -86,7 +86,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method returns CompletionStage<Response>.
     * Response has MediaType "text/plain" overriding @Produces("text/xxx").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testResponse() throws Exception
@@ -104,7 +104,7 @@ public class CompletionStageResponseTest {
     * @tpTestDetails Resource method returns CompletionStage<CompletionStageResponseTestClass>,
     * where CompletionStageResponseTestClass is handled by CompletionStageResponseMessageBodyWriter,
     * which has annotation @Produces("abc/xyz").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTestClass() throws Exception
@@ -122,7 +122,7 @@ public class CompletionStageResponseTest {
     * emtity is a CompletionStageResponseTestClass, and where
     * CompletionStageResponseTestClass is handled by CompletionStageResponseMessageBodyWriter,
     * which has annotation @Produces("abc/xyz").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testResponseTestClass() throws Exception
@@ -138,7 +138,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, and it passes
     * null to CompleteableFuture.complete().
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testNull() throws Exception
@@ -153,7 +153,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method passes a WebApplicationException to
     * to CompleteableFuture.completeExceptionally().
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    @Category({ExpectedFailing.class})
@@ -175,7 +175,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, but it
     * throws a RuntimeException without creating a CompletionStage.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionImmediateRuntime() throws Exception
@@ -196,7 +196,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, but it
     * throws an Exception without creating a CompletionStage.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionImmediateNotRuntime() throws Exception
@@ -217,7 +217,7 @@ public class CompletionStageResponseTest {
 
    /**
     * @tpTestDetails Resource method returns CompletionStage<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTextSingle() throws Exception
