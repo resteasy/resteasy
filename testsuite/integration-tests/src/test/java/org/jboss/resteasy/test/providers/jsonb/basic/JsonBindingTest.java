@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
  * Resteasy's JSON-P providers currently supports this.  A general object such as Cat will be processed by
  * the JSON-B provider.
  * @tpChapter Integration test
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -70,7 +70,7 @@ public class JsonBindingTest {
     * response and should contain the same field values as original request.
     *
     * @tpPassCrit The resource returns object with correct values
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void doTestCat() throws Exception {

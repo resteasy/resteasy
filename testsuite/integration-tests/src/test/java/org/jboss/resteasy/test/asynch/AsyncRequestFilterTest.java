@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Async Request Filter test.
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class AsyncRequestFilterTest {
 
     /**
      * @tpTestDetails Interceptors work
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testRequestFilters() throws Exception {
@@ -191,7 +191,7 @@ public class AsyncRequestFilterTest {
 
     /**
      * @tpTestDetails Interceptors work
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testPreMatchRequestFilters() throws Exception {
@@ -306,7 +306,7 @@ public class AsyncRequestFilterTest {
 
     /**
      * @tpTestDetails Interceptors work
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testResponseFilters() throws Exception {
@@ -437,7 +437,7 @@ public class AsyncRequestFilterTest {
     }
     /**
      * @tpTestDetails Interceptors work
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testResponseFilters2() throws Exception {

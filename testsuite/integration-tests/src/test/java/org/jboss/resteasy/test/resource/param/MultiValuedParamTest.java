@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for ParamConverter
- * @tpSince RESTEasy 4.0.
+ * @tpSince RESTEasy 3.5.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -80,7 +80,7 @@ public class MultiValuedParamTest {
 
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testQueryParam() throws Exception {
@@ -116,7 +116,7 @@ public class MultiValuedParamTest {
 
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testHeaderParam() throws Exception {
@@ -151,7 +151,7 @@ public class MultiValuedParamTest {
     
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testMatrixParam() throws Exception {
@@ -186,7 +186,7 @@ public class MultiValuedParamTest {
 
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testCookieParam() throws Exception {
@@ -218,7 +218,7 @@ public class MultiValuedParamTest {
     
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testFormParam() throws Exception {
@@ -253,7 +253,7 @@ public class MultiValuedParamTest {
     
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testPathParam() throws Exception {

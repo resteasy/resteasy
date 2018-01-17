@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class FormEntityTest {
 
     /**
      * @tpTestDetails Retrieve form param and form entity
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testWithEqualsAndEmptyString() throws Exception
@@ -67,7 +67,7 @@ public class FormEntityTest {
     
     /**
      * @tpTestDetails Retrieve form param and form entity
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testWithEquals() throws Exception
@@ -81,7 +81,7 @@ public class FormEntityTest {
     
     /**
      * @tpTestDetails Retrieve form param and form entity
-     * @tpSince RESTEasy 4.0.0
+     * @tpSince RESTEasy 3.5
      */
     @Test
     public void testWithoutEquals() throws Exception

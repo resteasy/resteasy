@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -81,7 +81,7 @@ public class HomecontrolCustomJAXBContextTest {
    /**
     * @tpTestDetails Test that a user provided JAXBContext implementation is use.
     * @tpInfo RESTEASY-1754
-    * @tpSince RESTEasy 4.0.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testMarshallering() throws Exception {

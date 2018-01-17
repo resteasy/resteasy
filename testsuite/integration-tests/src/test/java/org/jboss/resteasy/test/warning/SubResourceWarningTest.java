@@ -20,7 +20,7 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 /**
  * @tpSubChapter Miscellaneous
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  * Created by rsearls on 9/11/17.
  */
 @RunWith(Arquillian.class)

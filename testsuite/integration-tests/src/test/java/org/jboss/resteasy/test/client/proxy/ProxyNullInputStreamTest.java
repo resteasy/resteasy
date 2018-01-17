@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for RESTEASY-1671
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  *
  * Created by rsearls on 8/24/17.
  */

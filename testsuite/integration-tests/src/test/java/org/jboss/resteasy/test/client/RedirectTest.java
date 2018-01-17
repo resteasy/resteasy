@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
