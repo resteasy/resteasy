@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs.engines;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +32,10 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 public class JettyClientEngine implements AsyncClientHttpEngine {
+    public static final String REQUEST_TIMEOUT_MS = JettyClientEngine.class + "$RequestTimeout";
+    // Yeah, this is the Jersey one, but there's no standard one and it makes more sense to reuse than make our own...
+    public static final String FOLLOW_REDIRECTS = "jersey.config.client.followRedirects";
+
     private static final InvocationCallback<ClientResponse> NOP = new InvocationCallback<ClientResponse>() {
         @Override
         public void completed(ClientResponse response) {
@@ -93,8 +98,13 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         final Request request = client.newRequest(invocation.getUri());
         final CompletableFuture<T> future = new RequestFuture<T>(request);
 
+        invocation.getMutableProperties().forEach(request::attribute);
         request.method(invocation.getMethod());
         invocation.getHeaders().asMap().forEach((h, vs) -> vs.forEach(v -> request.header(h, v)));
+        configureTimeout(request);
+        if (request.getAttributes().get(FOLLOW_REDIRECTS) == Boolean.FALSE) {
+            request.followRedirects(false);
+        }
 
         final DeferredContentProvider content;
         if (invocation.getEntity() != null) {
@@ -195,6 +205,23 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             });
         }
         return future;
+    }
+
+    private void configureTimeout(final Request request) {
+        final Object timeout = request.getAttributes().get(REQUEST_TIMEOUT_MS);
+        final long timeoutMs;
+        if (timeout instanceof Duration) {
+            timeoutMs = ((Duration) timeout).toMillis();
+        } else if (timeout instanceof Number) {
+            timeoutMs = ((Number) timeout).intValue();
+        } else if (timeout != null) {
+            timeoutMs = Integer.parseInt(timeout.toString());
+        } else {
+            timeoutMs = -1;
+        }
+        if (timeoutMs > 0) {
+            request.timeout(timeoutMs, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
