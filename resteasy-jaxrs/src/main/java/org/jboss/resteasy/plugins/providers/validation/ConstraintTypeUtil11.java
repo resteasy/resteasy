@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.validation;
+package org.jboss.resteasy.plugins.providers.validation;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -9,7 +9,7 @@ import javax.validation.Path.Node;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
-import org.jboss.resteasy.plugins.validation.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;

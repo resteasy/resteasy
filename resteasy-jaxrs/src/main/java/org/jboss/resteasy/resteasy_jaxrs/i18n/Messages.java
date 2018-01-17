@@ -6,12 +6,14 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 
+import javax.validation.ElementKind;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.util.WeightedLanguage;
 
 /**
@@ -27,6 +29,25 @@ public interface Messages
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
    int BASE = 3000;
    int BASE_ASYNC = 9500;
+   int BASE_VALIDATOR_11 = 8500;
+   
+   @Message(id = BASE_VALIDATOR_11 + 0, value = "ResteasyViolationException has invalid format: %s")
+   String exceptionHasInvalidFormat(String line);
+   
+   @Message(id = BASE_VALIDATOR_11 + 25, value = "Unable to parse ResteasyViolationException")
+   String unableToParseException();
+   
+   @Message(id = BASE_VALIDATOR_11 + 30, value = "unexpected path node type: %s")
+   String unexpectedPathNode(ElementKind kind);
+   
+   @Message(id = BASE_VALIDATOR_11 + 35, value = "unexpected path node type in method violation: %s")
+   String unexpectedPathNodeViolation(ElementKind kind);
+   
+   @Message(id = BASE_VALIDATOR_11 + 40, value = "unexpected violation type: %s")
+   String unexpectedViolationType(ConstraintType.Type type);
+   
+   @Message(id = BASE_VALIDATOR_11 + 45, value = "unknown object passed as constraint violation: %s")
+   String unknownObjectPassedAsConstraintViolation(Object o);
    
    @Message(id = BASE_ASYNC + 0, value = "-- already canceled")
    String alreadyCanceled();
