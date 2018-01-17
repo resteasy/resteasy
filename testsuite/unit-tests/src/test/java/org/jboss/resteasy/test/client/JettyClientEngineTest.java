@@ -2,16 +2,21 @@ package org.jboss.resteasy.test.client;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Random;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -104,6 +109,31 @@ public class JettyClientEngineTest {
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
+
+    @Test
+    public void testTimeout() throws Exception {
+        server.setHandler(new AbstractHandler() {
+            @Override
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError(e);
+                }
+                baseRequest.setHandled(true);
+            }
+        });
+
+        try {
+            client().target(baseUri()).request()
+                .property(JettyClientEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(500))
+                .get();
+            fail();
+        } catch (ProcessingException e) {
+            assertTrue(e.getCause() instanceof TimeoutException);
+        }
     }
 
     public URI baseUri() {
