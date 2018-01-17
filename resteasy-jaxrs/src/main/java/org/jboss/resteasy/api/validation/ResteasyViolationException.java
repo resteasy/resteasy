@@ -18,11 +18,9 @@ import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
+import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil11;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-import org.jboss.resteasy.plugins.validation.ConstraintTypeUtil11;
-import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
-import org.jboss.resteasy.plugins.validation.SimpleViolationsContainer;
-import org.jboss.resteasy.plugins.validation.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -38,6 +36,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class ResteasyViolationException extends ConstraintViolationException
 {  
    private static final long serialVersionUID = 2623733139912277260L;
+   public static final String SUPPRESS_VIOLATION_PATH = "resteasy.validation.suppress.path";
    
    private List<CloneableMediaType> accept;
    private Exception exception;
@@ -338,7 +337,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
-         String s = context.getParameter(GeneralValidatorImpl.SUPPRESS_VIOLATION_PATH);
+         String s = context.getParameter(SUPPRESS_VIOLATION_PATH);
          if (s != null)
          {
             suppressPath = Boolean.parseBoolean(s);
