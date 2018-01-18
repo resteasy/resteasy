@@ -8,6 +8,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
@@ -37,7 +38,6 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 
@@ -58,16 +58,21 @@ public class GzipTest {
     protected static final Logger logger = LogManager.getLogger(GzipTest.class.getName());
 
     @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
-        war.addClasses(GzipIGZIP.class, Pair.class);
-        // Activate gzip compression:
-        war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
-        return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+    public static Archive<?> deploySimpleResourceWithGzipEnabled() {
+        return getDeployment(true);
+    }
+
+    @Deployment(name = "gzipDefault")
+    public static Archive<?> deploySimpleResourceWithGzipDefault() {
+        return getDeployment(false);
     }
 
     private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, GzipTest.class.getSimpleName());
+        return generateURL(path, "-gzipEnabled");
+    }
+
+    private String generateURL(String path, String suffix) {
+        return PortProviderUtil.generateURL(path, GzipTest.class.getSimpleName() + suffix);
     }
 
     @Before
@@ -297,4 +302,35 @@ public class GzipTest {
         Assert.assertTrue(message.contains("RESTEASY003357"));
         Assert.assertTrue(message.contains("10000000"));
     }
+
+    /**
+     * @tpTestDetails Test that the response doesn't contain a content-encoding: gzip header, if gzip is not enabled server-side.
+     * @tpInfo RESTEASY-1735
+     * @tpSince RESTEasy 3.0.25.Final
+     */
+    @Test
+    @OperateOnDeployment("gzipDefault")
+    public void testNoContentEncodingHeaderWhenDisabled() throws Exception {
+        CloseableHttpClient client = HttpClientBuilder.create().disableContentCompression().build();
+        HttpGet get = new HttpGet(generateURL("/encoded/text", "-gzipDefault"));
+        get.addHeader("Accept-Encoding", "gzip, deflate");
+        HttpResponse response = client.execute(get);
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+        Assert.assertNull("The response contains a Content-Encoding: gzip header.", response.getFirstHeader("Content-Encoding"));
+
+        String entity = EntityUtils.toString(response.getEntity());
+        Assert.assertEquals("Response contains wrong content", "HELLO WORLD", entity);
+    }
+
+    private static Archive<?> getDeployment(boolean gzipEnabled) {
+        String deploymentNameSuffix = (gzipEnabled) ? "-gzipEnabled" : "-gzipDefault";
+        WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName() + deploymentNameSuffix);
+        war.addClasses(GzipIGZIP.class, Pair.class);
+        if (gzipEnabled) {
+            // Activate gzip compression:
+            war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+        }
+        return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+    }
+
 }
