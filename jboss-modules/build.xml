@@ -79,6 +79,10 @@
             <maven-resource group="org.reactivestreams" artifact="reactive-streams"/>
         </module-def>
 
+        <module-def name="org.eclipse.microprofile.restclient">
+            <maven-resource group="org.eclipse.microprofile.rest.client" artifact="microprofile-rest-client-api"/>
+        </module-def>
+
         <module-def name="com.fasterxml.jackson.core.jackson-core">
             <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-core"/>
         </module-def>
@@ -94,11 +98,11 @@
         <module-def name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8">
             <maven-resource group="com.fasterxml.jackson.datatype" artifact="jackson-datatype-jdk8"/>
         </module-def>
-        
+
         <module-def name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310">
             <maven-resource group="com.fasterxml.jackson.datatype" artifact="jackson-datatype-jsr310"/>
         </module-def>
-                
+
         <module-def name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider">
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-json-provider"/>
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-base"/>
@@ -136,7 +140,7 @@
         <module-def name="org.jboss.resteasy.resteasy-crypto">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto"/>
         </module-def>
-        
+
         <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson-provider"/>
         </module-def>
@@ -162,7 +166,7 @@
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>  
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
         </module-def>
 
@@ -200,7 +204,7 @@
         <module-def name="org.jboss.resteasy.resteasy-spring">
             <maven-resource-bundle group="org.jboss.resteasy" artifact="resteasy-spring" subdir="bundled/resteasy-spring-jar"/>
         </module-def>
-        
+
         <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-11"/>
         </module-def>
