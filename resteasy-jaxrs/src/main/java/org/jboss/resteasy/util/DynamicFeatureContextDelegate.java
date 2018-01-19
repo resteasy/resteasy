@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.ContextResolver;
@@ -142,6 +143,11 @@ public class DynamicFeatureContextDelegate extends FeatureContextDelegate
 			LogMessages.LOGGER.providerCantBeDynamicallyBoundToMethod(componentClass, MessageBodyReader.class);
 			return false;
 		}
+		else if(ResteasyProviderFactory.isA(componentClass, DynamicFeature.class, contracts))
+		{
+			LogMessages.LOGGER.providerCantBeDynamicallyBoundToMethod(componentClass, DynamicFeature.class);
+			return false;
+		}
 		return true;
 	}
 	
@@ -166,6 +172,11 @@ public class DynamicFeatureContextDelegate extends FeatureContextDelegate
 		else if(ResteasyProviderFactory.isA(component, MessageBodyReader.class, contracts))
 		{
 			LogMessages.LOGGER.providerCantBeDynamicallyBoundToMethod(component.getClass(), MessageBodyReader.class);
+			return false;
+		}
+		else if(ResteasyProviderFactory.isA(component, DynamicFeature.class, contracts))
+		{
+			LogMessages.LOGGER.providerCantBeDynamicallyBoundToMethod(component.getClass(), DynamicFeature.class);
 			return false;
 		}
 		return true;
