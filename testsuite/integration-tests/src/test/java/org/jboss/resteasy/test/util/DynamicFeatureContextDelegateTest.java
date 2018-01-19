@@ -9,6 +9,9 @@ import java.lang.reflect.Type;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -99,6 +102,15 @@ public class DynamicFeatureContextDelegateTest {
 		}
 
 	}
+	
+	@Provider
+	public static class CustomDynamicFeature implements DynamicFeature {
+
+		@Override
+		public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+		}
+
+	}
 
 	@Test
 	public void testContextResolverRegistration() throws Exception {
@@ -138,6 +150,16 @@ public class DynamicFeatureContextDelegateTest {
 		Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null, MediaType.APPLICATION_JSON_TYPE));
 		featureContext.register(CustomObjectMessageBodyReader.class);
 		Assert.assertNull(resteasyProviderFactory.getMessageBodyReader(CustomObject.class, CustomObject.class, null, MediaType.APPLICATION_JSON_TYPE));
+	}
+	
+	@Test
+	public void testDynamicFeatureRegistration() throws Exception {
+		ResteasyProviderFactory resteasyProviderFactory = new ResteasyProviderFactory();
+		DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
+		featureContext.register(new CustomDynamicFeature());
+		Assert.assertTrue(resteasyProviderFactory.getServerDynamicFeatures().isEmpty());
+		featureContext.register(CustomDynamicFeature.class);
+		Assert.assertTrue(resteasyProviderFactory.getServerDynamicFeatures().isEmpty());
 	}
 
 }
