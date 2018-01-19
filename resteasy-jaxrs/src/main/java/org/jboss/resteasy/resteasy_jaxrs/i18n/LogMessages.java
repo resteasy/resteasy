@@ -172,6 +172,11 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 195, value = "The following sub-resource methods and sub-resource locators have the same path, [%s].  The paths should be unique.  [%s]")
    void uriAmbiguity(String path, String methodList);
+   
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 196, value = "Component of type %s can't be dynamically bound to a resource method as a %s provider.")
+   void providerCantBeDynamicallyBoundToMethod(Class<?> componentClass, Class<?> providerType);
+
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
