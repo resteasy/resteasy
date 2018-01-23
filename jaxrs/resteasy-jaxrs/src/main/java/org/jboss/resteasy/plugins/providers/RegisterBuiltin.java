@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
@@ -92,6 +93,7 @@ public class RegisterBuiltin
             return Boolean.parseBoolean(value);
          }
       })) {
+         factory.registerProvider(AcceptEncodingGZIPInterceptor.class, true);
          factory.registerProvider(AcceptEncodingGZIPFilter.class, true);
          factory.registerProvider(GZIPDecodingInterceptor.class, true);
          factory.registerProvider(GZIPEncodingInterceptor.class, true);
