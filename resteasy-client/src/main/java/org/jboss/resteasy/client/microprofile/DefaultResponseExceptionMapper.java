@@ -19,7 +19,7 @@ public class DefaultResponseExceptionMapper implements ResponseExceptionMapper {
 
     @Override
     public boolean handles(int status, MultivaluedMap headers) {
-        return status>400;
+        return status>=400;
     }
 
     @Override
