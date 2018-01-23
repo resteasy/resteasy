@@ -128,12 +128,13 @@ public class JaxrsInterceptorRegistry<T>
             if (nameBound.size() > 0)
             {
                Application application = ResteasyProviderFactory.getContextData(Application.class);
+               Class<?> appClass = getActualClass(application.getClass());
                // must match all namebound annotations
                for (Class<? extends Annotation> annotation : nameBound)
                {
                   if (!targetClass.isAnnotationPresent(annotation) &&
                           !target.isAnnotationPresent(annotation)
-                          && (application == null || !application.getClass().isAnnotationPresent(annotation)))
+                          && (application == null || !appClass.isAnnotationPresent(annotation)))
                   {
                      return null;
                   }
@@ -382,5 +383,18 @@ public class JaxrsInterceptorRegistry<T>
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
       factory.setOrder(priority);
       register(factory);
+   }
+   
+   protected static Class<?> getActualClass(Class<?> clazz)
+   {
+      while (clazz != null)
+      {
+         if (!clazz.isSynthetic())
+         {
+            return clazz;
+         }
+         clazz = clazz.getSuperclass();
+      }
+      throw new RuntimeException(); // Shouldn't get here.
    }
 }
