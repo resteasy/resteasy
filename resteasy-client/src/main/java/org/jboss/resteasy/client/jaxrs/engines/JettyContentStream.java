@@ -24,6 +24,7 @@ class JettyContentStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
+        checkClose();
         if (!buf.hasRemaining()) {
             flush();
         }
@@ -32,6 +33,7 @@ class JettyContentStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int off, int rem) {
+        checkClose();
         while (true) {
             if (!buf.hasRemaining() || rem == 0) {
                 flush();
@@ -47,6 +49,7 @@ class JettyContentStream extends OutputStream {
 
     @Override
     public void flush() {
+        checkClose();
         buf.flip();
         if (buf.limit() == 0) {
             bufs.release(buf);
@@ -61,6 +64,12 @@ class JettyContentStream extends OutputStream {
         if (buf != null) {
             flush();
             buf = null;
+        }
+    }
+
+    private void checkClose() {
+        if (out.isClosed()) {
+            throw new IllegalStateException("closed");
         }
     }
 
