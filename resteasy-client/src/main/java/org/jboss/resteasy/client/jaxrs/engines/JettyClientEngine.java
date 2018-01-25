@@ -133,11 +133,11 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             }
 
             @Override
-            public void onContent(Response response, ByteBuffer content) {
+            public void onContent(Response response, ByteBuffer buf) {
                 final ByteBufferPool bufs = client.getByteBufferPool();
-                final ByteBuffer copy = bufs.acquire(content.remaining(), false);
-                copy.limit(content.remaining());
-                copy.put(content);
+                final ByteBuffer copy = bufs.acquire(buf.remaining(), false);
+                copy.limit(buf.remaining());
+                copy.put(buf);
                 copy.flip();
                 stream.offer(copy, new ReleaseCallback(bufs, copy));
             }
@@ -198,6 +198,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
                     } catch (IOException e) {
                         request.abort(e);
                         future.completeExceptionally(e);
+                        callback.failed(e);
                     } finally {
                         content.close();
                     }

@@ -16,8 +16,9 @@ class JettyResponseStream extends InputStream {
 
     void offer(ByteBuffer content, Callback callback) {
         if (closed) {
-            callback.succeeded();
-            return;
+            final IllegalStateException x = new IllegalStateException("closed");
+            callback.failed(x);
+            throw x;
         }
         chunks.add(new Chunk(content, callback));
     }
