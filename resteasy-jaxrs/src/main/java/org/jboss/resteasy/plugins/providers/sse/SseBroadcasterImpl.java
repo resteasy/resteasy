@@ -7,6 +7,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -25,9 +28,24 @@ public class SseBroadcasterImpl implements SseBroadcaster
    private final List<Consumer<SseEventSink>> closeConsumers = new CopyOnWriteArrayList<>();
    
    private final AtomicBoolean closed = new AtomicBoolean();
+   
+   // Used to perform a mutual exclusion between register and close operations
+   // since every registered SseEventSink needs to be closed when
+   // SseBroadcaster.close() is invoked to prevent leaks due to SseEventSink
+   // never closed.
+   // Actually most of the time when a SseEventSink is registered to a
+   // SseBroadcaster, user is expected its termination to be handled by the
+   // SseBroadcaster itself. So user will never call SseEventSink.close() on
+   // each SseEventSink he registers but instead he will just call
+   // SseBroadcaster.close().
+   private final Lock readLock;
+   private final Lock writeLock;
 
    public SseBroadcasterImpl()
    {
+	   	ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+	  	this.readLock = readWriteLock.readLock();
+	  	this.writeLock = readWriteLock.writeLock();
    }
 
    @Override
@@ -37,12 +55,20 @@ public class SseBroadcasterImpl implements SseBroadcaster
 	   {
 		   return;
 	   }
-      //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
-      //is it necessay to close the subsribed SseEventSink ?
-      outputQueue.forEach(eventSink -> {
-         eventSink.close();
-         notifyOnCloseListeners(eventSink);
-      });
+	   writeLock.lock();
+	   try
+	   {
+	      //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
+	      //is it necessay to close the subsribed SseEventSink ?
+	      outputQueue.forEach(eventSink -> {
+	         eventSink.close();
+	         notifyOnCloseListeners(eventSink);
+	      });
+	   }
+	   finally
+	   {
+		   writeLock.unlock();
+	   }
    }
    
    private void checkClosed()
@@ -98,7 +124,22 @@ public class SseBroadcasterImpl implements SseBroadcaster
    public void register(SseEventSink sseEventSink)
    {
 	  checkClosed();
-      outputQueue.add(sseEventSink);
+	  if(readLock.tryLock())
+	  {
+		  try
+		  {
+			  checkClosed();
+			  outputQueue.add(sseEventSink);  
+		  }
+		  finally
+		  {
+			  readLock.unlock();
+		  }
+	  }
+	  else
+	  {
+		  throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
+	  }
    }
 
    @Override
