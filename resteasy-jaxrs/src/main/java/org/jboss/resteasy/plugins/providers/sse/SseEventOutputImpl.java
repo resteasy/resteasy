@@ -86,6 +86,16 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    protected void flushResponseToClient()
    {
+		try
+		{
+			internalFlushResponseToClient(false);
+		} catch (IOException e) 
+		{
+		}
+   }
+   
+   private void internalFlushResponseToClient(boolean throwIOException) throws IOException
+   {
 	  synchronized (lock)
       {
           if (!responseFlushed)
@@ -114,6 +124,10 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
              catch (IOException e)
              {
                 close();
+                if (throwIOException)
+                {
+                	throw e;
+                }
                 throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
              }
           }
@@ -144,7 +158,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 	      }
 	      try
 	      {
-	    	 flushResponseToClient();
+	    	 internalFlushResponseToClient(true);
 	         writeEvent(event);
 
 	      }

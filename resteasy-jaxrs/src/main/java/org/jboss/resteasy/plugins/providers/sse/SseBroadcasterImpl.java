@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -38,13 +39,10 @@ public class SseBroadcasterImpl implements SseBroadcaster
 	   }
       //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
       //is it necessay to close the subsribed SseEventSink ?
-      outputQueue.forEach(evenSink -> {
-         evenSink.close();
-         closeConsumers.forEach(consumer -> {
-            consumer.accept(evenSink);
-         });
+      outputQueue.forEach(eventSink -> {
+         eventSink.close();
+         notifyOnCloseListeners(eventSink);
       });
-      outputQueue.clear();
    }
    
    private void checkClosed()
@@ -54,7 +52,34 @@ public class SseBroadcasterImpl implements SseBroadcaster
 		   throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
 	   }
    }
-
+   
+   private void notifyOnCloseListeners(SseEventSink eventSink)
+   {
+	   // First remove the eventSink from the outputQueue to ensure that
+	   // concurrent calls to this method will notify listeners only once for a
+	   // given eventSink instance.
+	   if (outputQueue.remove(eventSink))
+	   {
+			closeConsumers.forEach(consumer -> {
+				consumer.accept(eventSink);
+			});
+	   }
+   }
+   
+   private void notifyOnErrorListeners(SseEventSink eventSink, Throwable throwable)
+   {
+		// We have to notify close listeners if the SSE event output has been
+		// closed (either by client closing the connection (IOException) or by
+		// calling SseEventSink.close() (IllegalStateException) on the server
+		// side).
+		if (throwable instanceof IOException || throwable instanceof IllegalStateException) {
+			notifyOnCloseListeners(eventSink);
+		}
+		onErrorConsumers.forEach(consumer -> {
+			consumer.accept(eventSink, throwable);
+		});
+   }
+   
    @Override
    public void onError(BiConsumer<SseEventSink, Throwable> onError)
    {
@@ -84,26 +109,20 @@ public class SseBroadcasterImpl implements SseBroadcaster
       return CompletableFuture.runAsync(() -> {
          outputQueue.forEach(eventSink -> {
             SseEventOutputImpl outputImpl = (SseEventOutputImpl) eventSink;
-            if (!outputImpl.isClosed())
+            try
+			{
+				outputImpl.send(event).whenComplete((object, err) -> {
+					if (err != null) {
+						notifyOnErrorListeners(eventSink, err);
+					}
+				});
+			}
+            catch (IllegalStateException e)
             {
-               outputImpl.send(event, callAllErrConsumers());
-            }
-            else
-            {
-               outputQueue.remove(eventSink);
-            }
+				notifyOnErrorListeners(eventSink, e);
+			}
          });
       });
-   }
-
-   BiConsumer<SseEventSink, Throwable> callAllErrConsumers()
-   {
-      return (eventSink, err) -> {
-         onErrorConsumers.forEach(consumer -> {
-            consumer.accept(eventSink, err);
-         });
-      };
-
    }
 
 }
