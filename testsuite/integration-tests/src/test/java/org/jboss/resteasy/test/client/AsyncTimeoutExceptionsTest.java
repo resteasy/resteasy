@@ -190,7 +190,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
         Future<Response> future = base.request().async().get();
         Response response = null;
         try {
-            response = future.get(5, TimeUnit.SECONDS);
+            response = future.get(1, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
         }
@@ -284,7 +284,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
         Future<Response> future = base.request().async().get(new ResponseCallback());
         Response response = null;
         try {
-            response = future.get(5, TimeUnit.SECONDS);
+            response = future.get(1, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
         }
