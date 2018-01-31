@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
@@ -24,7 +25,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.DeferredContentProvider;
+import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
@@ -106,12 +107,17 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             request.followRedirects(false);
         }
 
-        final DeferredContentProvider content;
+//        final DeferredContentProvider content;
         if (invocation.getEntity() != null) {
-            content = new DeferredContentProvider();
-            request.content(content);
-        } else {
-            content = null;
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            try {
+                invocation.writeRequestBody(os);
+            } catch (IOException e) {
+                future.completeExceptionally(e);
+                callback.failed(e);
+                return future;
+            }
+            request.content(new BytesContentProvider(os.toByteArray()));
         }
 
         request.send(new Response.Listener.Adapter() {
@@ -165,9 +171,9 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
             @Override
             public void onComplete(Result result) {
-                if (content != null) {
-                    content.close();
-                }
+//                if (content != null) {
+//                    content.close();
+//                }
                 try {
                     if (extractor != null) {
                         stream.close();
@@ -189,22 +195,28 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             }
         });
 
-        if (content != null) {
-            client.getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        invocation.writeRequestBody(new JettyContentStream(client.getByteBufferPool(), content));
-                    } catch (IOException e) {
-                        request.abort(e);
-                        future.completeExceptionally(e);
-                        callback.failed(e);
-                    } finally {
-                        content.close();
-                    }
-                }
-            });
-        }
+//        if (content != null) {
+//            client.getExecutor().execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    final JettyContentStream stream = new JettyContentStream(client.getByteBufferPool(), content);
+//                    try {
+//                        invocation.writeRequestBody(stream);
+//                    } catch (IOException e) {
+//                        request.abort(e);
+//                        future.completeExceptionally(e);
+//                        callback.failed(e);
+//                    } finally {
+//                        try {
+//                            stream.close();
+//                        } catch (IOException e) {
+//                            // ignore
+//                        }
+//                        content.close();
+//                    }
+//                }
+//            });
+//        }
         return future;
     }
 
