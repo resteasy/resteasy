@@ -99,7 +99,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 
    private PropertyInjector getPropertyInjector()
    {
-      return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
+      return new CdiPropertyInjector(new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance()), clazz);
    }
    
    private void validate(HttpRequest request, T instance)

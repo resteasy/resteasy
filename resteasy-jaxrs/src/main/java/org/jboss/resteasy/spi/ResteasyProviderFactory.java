@@ -1570,7 +1570,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
          ParamConverterProvider paramConverterProvider = (ParamConverterProvider) injectedInstance(provider);
-         injectProperties(provider);
+         injectProperties(paramConverterProvider);
          if (sortedParamConverterProviders == null)
          {
             sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>(parent.getSortedParamConverterProviders()));
