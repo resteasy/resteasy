@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -17,10 +18,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Request;
@@ -82,33 +85,23 @@ public class JettyClientEngineTest {
 
     @Test
     public void testBigly() throws Exception {
-        server.setHandler(new AbstractHandler() {
-            @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
-                baseRequest.setHandled(true);
-                response.setStatus(200);
-                int read;
-                final byte[] data = new byte[1024];
-                final ServletInputStream in = request.getInputStream();
-                final ServletOutputStream out = response.getOutputStream();
-                while ((read = in.read(data)) != -1) {
-                    out.write(data, 0, read);
-                }
-            }
-        });
-
-        final StringBuilder builder = new StringBuilder();
-        final Random r = new Random();
-        for (int i = 0; i < 2 * 1024 * 1024; i++) {
-            builder.append((char) ('a' + (char) r.nextInt('z' - 'a')));
-            if (i % 100 == 0) builder.append('\n');
-        }
-        final byte[] valuableData = builder.toString().getBytes(StandardCharsets.UTF_8);
+        server.setHandler(new EchoHandler());
+        final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
         final Response response = client().target(baseUri()).request()
                 .post(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE));
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
+
+    private String randomAlpha() {
+        final StringBuilder builder = new StringBuilder();
+        final Random r = new Random();
+        for (int i = 0; i < 20 * 1024 * 1024; i++) {
+            builder.append((char) ('a' + (char) r.nextInt('z' - 'a')));
+            if (i % 100 == 0) builder.append('\n');
+        }
+        return builder.toString();
     }
 
     @Test
@@ -136,7 +129,44 @@ public class JettyClientEngineTest {
         }
     }
 
+    @Test
+    public void testDeferContent() throws Exception {
+        server.setHandler(new EchoHandler());
+        final byte[] valuableData = randomAlpha().getBytes(StandardCharsets.UTF_8);
+        final Response response = client().target(baseUri()).request()
+                .post(Entity.entity(new StreamingOutput() {
+                    @Override
+                    public void write(OutputStream output) throws IOException, WebApplicationException {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new AssertionError(e);
+                        }
+                        output.write(valuableData);
+                    }
+                }, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
+
     public URI baseUri() {
         return URI.create("http://localhost:" + ((ServerConnector) server.getConnectors()[0]).getLocalPort());
+    }
+
+    static class EchoHandler extends AbstractHandler {
+        @Override
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+            baseRequest.setHandled(true);
+            response.setStatus(200);
+            int read;
+            final byte[] data = new byte[1024];
+            final ServletInputStream in = request.getInputStream();
+            final ServletOutputStream out = response.getOutputStream();
+            while ((read = in.read(data)) != -1) {
+                out.write(data, 0, read);
+            }
+        }
     }
 }
