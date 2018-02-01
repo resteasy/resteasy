@@ -149,7 +149,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
       //return event immediately and doesn't block anything
       return CompletableFuture.runAsync(() -> {
          outputQueue.forEach(eventSink -> {
-            SseEventOutputImpl outputImpl = (SseEventOutputImpl) eventSink;
+            SseEventSink outputImpl = eventSink;
             try
 			{
 				outputImpl.send(event).whenComplete((object, err) -> {
