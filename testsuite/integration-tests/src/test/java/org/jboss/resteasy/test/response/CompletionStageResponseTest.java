@@ -183,6 +183,7 @@ public class CompletionStageResponseTest {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
+      System.out.println("entity: " + entity);
       Assert.assertEquals(500, response.getStatus());
       Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
 
@@ -204,6 +205,7 @@ public class CompletionStageResponseTest {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
+      System.out.println("entity: " + entity);
       Assert.assertEquals(500, response.getStatus());
       Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
       response.close();
