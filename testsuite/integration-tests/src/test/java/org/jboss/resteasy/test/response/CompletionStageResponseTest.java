@@ -42,9 +42,11 @@ public class CompletionStageResponseTest {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
-      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
+      Archive<?> ar = TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
+      System.out.println(ar.toString(true));
+      return ar;
    }
 
    private String generateURL(String path) {
@@ -215,6 +217,11 @@ public class CompletionStageResponseTest {
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
+   }
+   
+   @Test
+   public void toFail() throws Exception {
+	   Assert.fail();
    }
 
    /**
