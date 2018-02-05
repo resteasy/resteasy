@@ -11,8 +11,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import javax.ws.rs.ext.RuntimeDelegate;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -98,7 +100,15 @@ public class ClientBuilderTest {
         client.close();
         Response response = base.request().get();
     }
-
+    
+    @Test
+    public void testLinkBuilder() throws Exception {
+       Link link = RuntimeDelegate.getInstance().createLinkBuilder()
+             .baseUri("http://jboss.org/resteasy").rel("relation relation2").title("titleX")
+             .param("param1", "value1").param("param2", "value2")
+             .type(MediaType.APPLICATION_OCTET_STREAM).build();
+       Assert.assertNotNull("Build link failed", link);
+    }
     public static class FeatureReturningFalse implements Feature {
         @Override
         public boolean configure(FeatureContext context) {
