@@ -281,17 +281,17 @@ public class AsynchronousInvoke implements AsyncInvoker
 
    public <T> Future<T> patch(Entity<?> entity, Class<T> responseType)
    {
-      return method(HttpMethod.PATCH, entity, responseType);
+      return method("PATCH", entity, responseType);
    }
 
    public <T> Future<T> patch(Entity<?> entity, GenericType<T> responseType)
    {
-      return method(HttpMethod.PATCH, entity, responseType);
+      return method("PATCH", entity, responseType);
    }
 
    public <T> Future<T> patch(Entity<?> entity, InvocationCallback<T> callback)
    {
-      return method(HttpMethod.PATCH, entity, callback);
+      return method("PATCH", entity, callback);
    }
 
 

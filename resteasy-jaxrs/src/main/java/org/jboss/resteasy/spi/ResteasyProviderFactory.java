@@ -104,6 +104,21 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings("unchecked")
 public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
+   public static final boolean EE8_PREVIEW_MODE;
+   static {
+      boolean sseAvailable = false;
+      try
+      {
+         Class<?> sse = Class.forName("javax.ws.rs.sse.Sse");
+         sseAvailable = true;
+      }
+      catch (ClassNotFoundException e)
+      {
+         //ignore
+      }
+      EE8_PREVIEW_MODE = sseAvailable;
+   }
+   
    /**
     * Allow us to sort message body implementations that are more specific for their types
     * i.e. MessageBodyWriter<Object> is less specific than MessageBodyWriter<String>.
@@ -2037,7 +2052,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          newContracts.put(Feature.class, priority);
 
       }
-      if (isA(provider, RxInvokerProvider.class, contracts))
+      if (EE8_PREVIEW_MODE && isA(provider, RxInvokerProvider.class, contracts))
       {
          int priority = getPriority(priorityOverride, contracts, RxInvokerProvider.class, provider);
          newContracts.put(RxInvokerProvider.class, priority);

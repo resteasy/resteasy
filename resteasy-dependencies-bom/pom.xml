@@ -35,7 +35,8 @@
         <version.javax.activation>1.1.1</version.javax.activation>
         <version.javax.enterprise.cdi-api>1.2</version.javax.enterprise.cdi-api>
         <version.javax.json.bind-api>1.0</version.javax.json.bind-api>
-        <version.javax.ws.rs-api>1.0.0.Alpha1</version.javax.ws.rs-api>
+        <version.javax.ws.rs20-api>1.0.0.Final</version.javax.ws.rs20-api>
+        <version.javax.ws.rs-api>1.0.0.Final</version.javax.ws.rs-api>
         <version.junit>4.12</version.junit>
         <version.log4j>2.9.1</version.log4j>
         <version.net.jcip.jcip-annotations>1.0</version.net.jcip.jcip-annotations>
@@ -182,6 +183,12 @@
                 <groupId>org.jboss.spec.javax.ws.rs</groupId>
                 <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
                 <version>${version.javax.ws.rs-api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.spec.javax.ws.rs</groupId>
+                <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+                <version>${version.javax.ws.rs20-api}</version>
             </dependency>
 
             <dependency>

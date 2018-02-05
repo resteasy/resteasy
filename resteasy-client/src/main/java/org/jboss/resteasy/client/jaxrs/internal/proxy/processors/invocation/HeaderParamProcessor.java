@@ -1,6 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -15,9 +15,9 @@ public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
    }
 
    @Override
-   protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object object)
+   protected ClientInvocationBuilderInterface apply(ClientInvocationBuilderInterface target, Object object)
    {
-      return (ClientInvocationBuilder)target.header(paramName, object);
+      return (ClientInvocationBuilderInterface)target.header(paramName, object);
    }
 
 }
