@@ -4,7 +4,7 @@ import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ClientContext;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.DefaultEntityExtractorFactory;
@@ -117,14 +117,14 @@ public class ClientInvoker implements MethodInvoker
          }
       }
 
-      ClientInvocationBuilder builder = null;
+      ClientInvocationBuilderInterface builder = null;
       if (accepts != null)
       {
-         builder = (ClientInvocationBuilder)target.request(accepts);
+         builder = (ClientInvocationBuilderInterface)target.request(accepts);
       }
       else
       {
-         builder = (ClientInvocationBuilder)target.request();
+         builder = (ClientInvocationBuilderInterface)target.request();
       }
 
       for (int i = 0; i < processors.length; i++)

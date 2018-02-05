@@ -31,12 +31,14 @@ import com.github.fge.jsonpatch.JsonPatchException;
 @Priority(Integer.MAX_VALUE)
 public class PatchMethodFilter implements ContainerRequestFilter
 {
+   private static final MediaType APPLICATION_JSON_PATCH_JSON_TYPE = new MediaType("application", "json-patch+json");
+   
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
       //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
       if (requestContext.getMethod().equals("PATCH")
-            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.equals(requestContext.getMediaType()))
+            && APPLICATION_JSON_PATCH_JSON_TYPE.equals(requestContext.getMediaType()))
       {
 
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);

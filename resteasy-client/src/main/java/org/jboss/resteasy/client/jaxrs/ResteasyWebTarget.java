@@ -1,8 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -19,7 +19,7 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
    }
 
    @Override
-   protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object object)
+   protected ClientInvocationBuilderInterface apply(ClientInvocationBuilderInterface target, Object object)
    {
       Form form = null;
       Object entity = target.getInvocation().getEntity();

@@ -25,7 +25,7 @@ import java.util.Locale;
  * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @version $Revision: 1 $
  */
-public class ClientInvocationBuilder implements Invocation.Builder
+public class ClientInvocationBuilder implements ClientInvocationBuilderInterface
 {
    protected ClientInvocation invocation;
 

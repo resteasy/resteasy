@@ -5,6 +5,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Configuration;
@@ -339,12 +340,22 @@ public class ClientWebTarget implements ResteasyWebTarget
       }
       return  new ClientWebTarget(client, copy, configuration);
    }
+   
+   private ClientInvocationBuilderInterface newInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
+   {
+      try {
+         Class<?> clazz = Class.forName("org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder");
+         return (ClientInvocationBuilderInterface)clazz.getConstructor(ResteasyClient.class, URI.class, ClientConfiguration.class).newInstance(client, uri, configuration);
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
 
    @Override
    public Invocation.Builder request()
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.setChunked(chunked);
       return builder;
    }
@@ -353,7 +364,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
       return builder;
@@ -363,7 +374,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
       return builder;

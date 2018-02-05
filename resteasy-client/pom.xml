@@ -22,6 +22,12 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
+                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -45,16 +51,103 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
     <profiles>
+        <profile>
+            <id>jaxrs20</id>
+            <activation>
+                <property>
+                    <name>jaxrs20</name>
+                </property>
+            </activation>
+            <dependencies>
+		        <dependency>
+		            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+		            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+		        </dependency>
+            </dependencies>
+            <build>
+                <directory>target/jaxrs20</directory>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-jaxrs20-sources</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <sources>
+                                        <source>${basedir}/src/main/jaxrs20/</source>
+                                    </sources>
+                                </configuration>
+				            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <classifier>jaxrs20</classifier>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <configuration>
+                            <classifier>jaxrs20-sources</classifier>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jaxrs21</id>
+            <activation>
+                <property>
+                    <name>!jaxrs20</name>
+                </property>
+            </activation>
+            <dependencies>
+		        <dependency>
+		            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+		            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+		        </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-jaxrs21-sources</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <sources>
+                                        <source>${basedir}/src/main/jaxrs21/</source>
+                                    </sources>
+                                </configuration>
+				            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>i18n</id>
             <activation>
