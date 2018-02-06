@@ -198,11 +198,6 @@
             <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
             <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
               -Dsun.reflect.debugModuleAccessChecks=true
-              --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
-              --add-exports=java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
-              --add-exports=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
-              --add-exports=java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED
-              --add-exports=java.xml/com.sun.xml.internal.stream=ALL-UNNAMED
             </modular.jdk.props>
           </properties>
           <build>
