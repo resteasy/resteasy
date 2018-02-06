@@ -100,7 +100,11 @@ public class ClientBuilderTest {
         client.close();
         Response response = base.request().get();
     }
-    
+    /**
+     * @tpTestDetails Create link instance with jaxrs spec apis to check there is no NPE thrown
+     * @tpPassCrit Link object is successfully created
+     * @tpSince RESTEasy 3.5
+     */
     @Test
     public void testLinkBuilder() throws Exception {
        Link link = RuntimeDelegate.getInstance().createLinkBuilder()
