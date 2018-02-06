@@ -1,5 +1,5 @@
 install:
- - mvn clean
+ - mvn clean; java -version
 script:
  - mvn -B -fae -Dserver.version=$SERVER_VERSION install
 
