@@ -185,15 +185,17 @@ public class CompletionStageResponseTest {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
-      System.out.println("entity: " + entity);
+      System.out.println("testExceptionImmediateRuntime(): entity: \"" + entity + "\"");
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+//      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
 
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
-      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals(200, response.getStatus());
+      System.out.println("status: " + response.getStatus());
       response.close();
+      Assert.fail("testExceptionImmediateRuntime()");
    }
 
    /**
@@ -207,7 +209,7 @@ public class CompletionStageResponseTest {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
-      System.out.println("entity: " + entity);
+      System.out.println("testExceptionImmediateNotRuntime(): entity: \"" + entity + "\"");
       Assert.assertEquals(500, response.getStatus());
       Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
       response.close();
@@ -215,8 +217,10 @@ public class CompletionStageResponseTest {
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
-      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals(200, response.getStatus());
+      System.out.println("status: " + response.getStatus());
       response.close();
+      Assert.fail("testExceptionImmediateNotRuntime()");
    }
    
    @Test
