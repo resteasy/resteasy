@@ -9,6 +9,7 @@ import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
@@ -134,7 +135,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public boolean isBuiltin = false;
 
       public Class<?> template = null;
-      
+
       public int priority = Priorities.USER;
 
       protected SortedKey(Class<?> intf, T reader, Class<?> readerClass, int priority, boolean isBuiltin)
@@ -192,7 +193,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
            return obj;
        }
    }
-   
+
    protected static class ExtSortedKey<T> extends SortedKey<T>
    {
       protected ExtSortedKey(Class<?> intf, T reader, Class<?> readerClass, int priority, boolean isBuiltin)
@@ -209,7 +210,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          super(intf, reader, readerClass);
       }
-      
+
       @Override
       public int compareTo(SortedKey<T> tMessageBodyKey)
       {
@@ -225,7 +226,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          return -1;
       }
    }
-   
+
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
@@ -303,7 +304,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * If local is true, copies components needed by client configuration,
-    * so that parent is not referenced. 
+    * so that parent is not referenced.
     * @param parent
     * @param local
     */
@@ -317,7 +318,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       properties = new ConcurrentHashMap<String, Object>();
       properties.putAll(parent.getProperties());
       enabledFeatures = new CopyOnWriteArraySet<Feature>();
-      
+
       if (local)
       {
          classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
@@ -444,7 +445,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers = map;
       return map;
    }
-   
+
    protected Map<Class<?>, SortedKey<ExceptionMapper>> getSortedExceptionMappers()
    {
       if (sortedExceptionMappers == null && parent != null) return parent.getSortedExceptionMappers();
@@ -480,7 +481,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (stringConverters == null && parent != null) return parent.getStringConverters();
       return stringConverters;
    }
-   
+
    public List<ParamConverterProvider> getParamConverterProviders()
    {
       if (paramConverterProviders != null)
@@ -495,7 +496,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       paramConverterProviders = list;
       return list;
    }
-   
+
    protected Set<ExtSortedKey<ParamConverterProvider>> getSortedParamConverterProviders()
    {
       if (sortedParamConverterProviders == null && parent != null) return parent.getSortedParamConverterProviders();
@@ -892,7 +893,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (tClass == null) throw new IllegalArgumentException(Messages.MESSAGES.tClassParameterNull());
       if (headerDelegates == null && parent != null) return parent.createHeaderDelegate(tClass);
-      
+
       Class<?> clazz = tClass;
       while (clazz != null)
       {
@@ -908,10 +909,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          clazz = clazz.getSuperclass();
       }
-      
+
       return createHeaderDelegateFromInterfaces(tClass.getInterfaces());
    }
-   
+
    protected <T> HeaderDelegate<T> createHeaderDelegateFromInterfaces(Class<?>[] interfaces)
    {
       HeaderDelegate<T> delegate = null;
@@ -2057,6 +2058,25 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          int priority = getPriority(priorityOverride, contracts, RxInvokerProvider.class, provider);
          newContracts.put(RxInvokerProvider.class, priority);
       }
+      if (isA(provider, ResponseExceptionMapper.class, contracts))
+      {
+         try {
+            Object mapper = provider.newInstance();
+            registerProviderInstance(mapper, contracts, null, false);
+
+            if(contracts!=null) {
+               Integer prio = contracts.get(ResponseExceptionMapper.class) != null ? contracts.get(ResponseExceptionMapper.class) :
+                       ((ResponseExceptionMapper) mapper).getPriority();
+
+               newContracts.put(ResponseExceptionMapper.class, prio);
+            } else {
+               newContracts.put(ResponseExceptionMapper.class, ((ResponseExceptionMapper) mapper).getPriority());
+            }
+         } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to register provider", e);
+         }
+      }
       providerClasses.add(provider);
       getClassContracts().put(provider, newContracts);
    }
@@ -2441,6 +2461,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          newContracts.put(Feature.class, priority);
 
       }
+      if (isA(provider, ResponseExceptionMapper.class, contracts))
+      {
+         if(contracts!=null) {
+            Integer prio = contracts.get(ResponseExceptionMapper.class) != null ? contracts.get(ResponseExceptionMapper.class) :
+                    ((ResponseExceptionMapper) provider).getPriority();
+            newContracts.put(ResponseExceptionMapper.class, prio);
+         } else {
+            newContracts.put(ResponseExceptionMapper.class, ((ResponseExceptionMapper) provider).getPriority());
+         }
+      }
       providerInstances.add(provider);
       getClassContracts().put(provider.getClass(), newContracts);
    }
@@ -2514,7 +2544,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return null;
    }
-   
+
    public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType, Annotation[] annotations, MediaType accept)
    {
       Map<MessageBodyWriter<?>, Class<?>> map = new HashMap<MessageBodyWriter<?>, Class<?>>();
@@ -2534,7 +2564,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return map;
    }
-   
+
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
@@ -3035,7 +3065,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return new LinkBuilderImpl();
    }
-   
+
    public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz) {
       for (Entry<Class<?>, Map<Class<?>, Integer>> entry : classContracts.entrySet()) {
          if (entry.getValue().containsKey(RxInvokerProvider.class)) {

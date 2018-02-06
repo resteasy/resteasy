@@ -11,11 +11,11 @@
     <name>RESTEasy JAX-RS Implementation</name>
     <description/>
     <packaging>jar</packaging>
-    
+
     <properties>
         <version.xerces.xercesImpl>2.9.1</version.xerces.xercesImpl>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -75,7 +75,7 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-io</groupId>
 	        <artifactId>commons-io</artifactId>
@@ -121,6 +121,16 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile.rest.client</groupId>
+            <artifactId>microprofile-rest-client-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -331,5 +341,5 @@
             </build>
         </profile>
     </profiles>
-    
+
 </project>

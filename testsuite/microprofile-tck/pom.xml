@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-testsuite</artifactId>
+    <version>3.5.0-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>microprofile-tck-runner</artifactId>
+  <name>MicroProfile Rest Client TCK</name>
+  <packaging>jar</packaging>
+
+  <properties>
+    <version.arquillian>1.1.13.Final</version.arquillian>
+    <version.microprofile.restclient>1.1-SNAPSHOT</version.microprofile.restclient>
+    <version.microprofile-config>1.2</version.microprofile-config>
+    <version.wildfly-microprofile-config>1.2.1</version.wildfly-microprofile-config>
+  </properties>
+
+  <dependencies>
+
+    <!-- REST Client implementation-->
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-cdi</artifactId>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Config Implementation -->
+
+    <dependency>
+      <groupId>org.eclipse.microprofile.config</groupId>
+      <artifactId>microprofile-config-api</artifactId>
+      <version>${version.microprofile-config}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-microprofile-config-implementation</artifactId>
+      <version>${version.wildfly-microprofile-config}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Microprofile TCK tests -->
+
+    <dependency>
+      <groupId>org.eclipse.microprofile.rest.client</groupId>
+      <artifactId>microprofile-rest-client-tck</artifactId>
+      <version>${version.microprofile.restclient}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- TCK Support  -->
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>2.10.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.arquillian.testng</groupId>
+      <artifactId>arquillian-testng-container</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se-core</artifactId>
+      <version>2.4.5.Final</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-weld-embedded</artifactId>
+      <version>2.0.0.Beta5</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-json-p-provider</artifactId>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.0.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>uk.co.deliverymind</groupId>
+        <artifactId>wiremock-maven-plugin</artifactId>
+        <version>2.7.0</version>
+        <executions>
+          <execution>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <dir>target/classes</dir>
+              <params>--port=8765 --verbose</params>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.20</version>
+        <configuration>
+
+          <dependenciesToScan>
+            <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
+          </dependenciesToScan>
+          <excludes>
+
+            <!--
+              the dependency on MP config in the resteasy client is not desireable
+              this requires further thought
+            -->
+            <exclude>org.eclipse.microprofile.rest.client.tck.DefaultExceptionMapperConfigTest</exclude>
+
+            <!-- Challenged, see  https://github.com/eclipse/microprofile-rest-client/pull/69 -->
+            <exclude>org.eclipse.microprofile.rest.client.tck.InvokeWithJsonPProviderTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.InvokeWithBuiltProvidersTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.InvokeWithRegisteredProvidersTest</exclude>
+            <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIInvokeWithRegisteredProvidersTest</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>
