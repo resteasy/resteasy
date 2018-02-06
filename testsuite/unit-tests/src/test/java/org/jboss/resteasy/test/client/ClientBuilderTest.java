@@ -101,7 +101,11 @@ public class ClientBuilderTest {
         client.close();
         Response response = base.request().get();
     }
-    
+    /**
+     * @tpTestDetails Create link instance with jaxrs spec apis to check there is no NPE thrown
+     * @tpPassCrit Link object is successfully created
+     * @tpSince RESTEasy 3.5
+     */
     @Test
     public void testLinkBuilder() throws Exception {
        Link link = RuntimeDelegate.getInstance().createLinkBuilder()
@@ -109,7 +113,6 @@ public class ClientBuilderTest {
              .param("param1", "value1").param("param2", "value2")
              .type(MediaType.APPLICATION_OCTET_STREAM).build();
        Assert.assertNotNull("Build link failed", link);
-
     }
 
     public static class FeatureReturningFalse implements Feature {
