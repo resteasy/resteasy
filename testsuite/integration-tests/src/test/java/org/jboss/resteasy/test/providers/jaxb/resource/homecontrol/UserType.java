@@ -54,7 +54,7 @@ import java.util.List;
         "roles"
 })
 public class UserType {
-
+   @XmlElement(namespace = "http://creaity.de/homecontrol/rest/types/v1")
    protected String id;
    @XmlElement(required = true)
    protected UserType.Credentials credentials;
