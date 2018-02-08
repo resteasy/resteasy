@@ -137,30 +137,28 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public boolean setTimeout(long time, TimeUnit unit) throws IllegalStateException
          {
+            getAsyncContext().setTimeout(-1);
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
-               Thread thread = creatingThread.get();
-               if (thread != null && thread != Thread.currentThread()) {
-                  // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
-                  if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
-                     return false;
-                  }
-                  Runnable task = new Runnable() {
-                     @Override
-                     public void run()
-                     {
-                        LogMessages.LOGGER.debug(Messages.MESSAGES.scheduledTimeout());
-                        handleTimeout();
-                     }
-                  };
-                  LogMessages.LOGGER.debug(Messages.MESSAGES.schedulingTimeout());
-                  timeoutFuture = asyncScheduler.schedule(task, time, unit);
-               } else {
-                  AsyncContext asyncContext = getAsyncContext();
-                  long l = unit.toMillis(time);
-                  asyncContext.setTimeout(l);
+               if (done || cancelled)
+                  return false;
+
+               // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+               if (timeoutFuture != null && !timeoutFuture.cancel(false))
+               {
+                  return false;
                }
+               Runnable task = new Runnable()
+               {
+                  @Override
+                  public void run()
+                  {
+                     LogMessages.LOGGER.debug(Messages.MESSAGES.scheduledTimeout());
+                     handleTimeout();
+                  }
+               };
+               LogMessages.LOGGER.debug(Messages.MESSAGES.schedulingTimeout());
+               timeoutFuture = asyncScheduler.schedule(task, time, unit);
 
             }
             return true;
