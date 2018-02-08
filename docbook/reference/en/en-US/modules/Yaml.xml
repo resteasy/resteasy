@@ -5,6 +5,8 @@
 
       RESTEasy comes with built in support for YAML using the SnakeYAML library. To enable YAML support,
       you need to drop in the SnakeYaml 1.8 jar and the resteasy-yaml-provider.jar (whatever the current version is) in RestEASY's classpath.
+      Then you need to manually register the org.jboss.resteasy.plugins.providers.YamlProvider provider. Note this feature is currently
+      deprecated due to security vulnerabilities and will likely be removed in the future.
    </para>
    <para>
 

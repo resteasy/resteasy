@@ -35,6 +35,7 @@ import java.util.Set;
 @Provider
 @Consumes({"text/yaml", "text/x-yaml", "application/x-yaml"})
 @Produces({"text/yaml", "text/x-yaml", "application/x-yaml"})
+@Deprecated
 public class YamlProvider extends AbstractEntityProvider<Object> {
 
     // MessageBodyReader
