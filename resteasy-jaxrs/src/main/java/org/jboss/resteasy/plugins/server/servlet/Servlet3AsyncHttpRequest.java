@@ -148,6 +148,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                {
                   return false;
                }
+               if (time <= 0) return true;
                Runnable task = new Runnable()
                {
                   @Override
