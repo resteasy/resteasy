@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -33,6 +34,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 public class JettyClientEngine implements AsyncClientHttpEngine {
+    private static final AtomicBoolean WARN_BUF = new AtomicBoolean();
     public static final String REQUEST_TIMEOUT_MS = JettyClientEngine.class + "$RequestTimeout";
     // Yeah, this is the Jersey one, but there's no standard one and it makes more sense to reuse than make our own...
     public static final String FOLLOW_REDIRECTS = "jersey.config.client.followRedirects";
@@ -95,9 +97,21 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
      */
     @SuppressWarnings("resource")
     @Override
-    public <T> Future<T> submit(ClientInvocation invocation, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
+    public <T> Future<T> submit(ClientInvocation invocation, boolean bufIn, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
+        final boolean buffered;
+        if (!bufIn && extractor != null) {
+            if (!WARN_BUF.getAndSet(true)) {
+                System.err.println("TODO: ResultExtractor is synchronous and may not be used without buffering - forcing buffer mode.");
+            }
+            buffered = true;
+        } else {
+            buffered = bufIn;
+        }
+
         final Request request = client.newRequest(invocation.getUri());
         final CompletableFuture<T> future = new RequestFuture<T>(request);
+        // readEntity calls releaseConnection which calls cancel, so don't let that interrupt us
+        final AtomicBoolean completing = new AtomicBoolean();
 
         invocation.getMutableProperties().forEach(request::attribute);
         request.method(invocation.getMethod());
@@ -114,7 +128,9 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
                 invocation.writeRequestBody(os);
             } catch (IOException e) {
                 future.completeExceptionally(e);
-                callback.failed(e);
+                if (callback != null) {
+                    callback.failed(e);
+                }
                 return future;
             }
             request.content(new BytesContentProvider(os.toByteArray()));
@@ -126,14 +142,15 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
             @Override
             public void onHeaders(Response response) {
-                cr = new JettyClientResponse(invocation.getClientConfiguration(), stream, () -> future.cancel(true));
+                cr = new JettyClientResponse(invocation.getClientConfiguration(), stream, () -> {
+                    if (!completing.get()) {
+                        future.cancel(true);
+                    }
+                });
                 cr.setProperties(invocation.getMutableProperties());
                 cr.setStatus(response.getStatus());
                 cr.setHeaders(extract(response.getHeaders()));
                 if (!buffered) {
-                    if (extractor != null) {
-                        throw new IllegalStateException("TODO: ResultExtractor is synchronous and may not be used without buffering.");
-                    }
                     complete();
                 }
             }
@@ -160,6 +177,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             }
 
             private void complete() {
+                completing.set(true);
                 // TODO: dangerous cast, see javadoc!
                 complete(extractor == null ? (T) cr : extractor.extractResult(cr));
             }
@@ -185,13 +203,17 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
             private void complete(T result) {
                 future.complete(result);
-                callback.completed(result);
+                if (callback != null) {
+                    callback.completed(result);
+                }
             }
 
             private void failed(Throwable t) {
                 final RuntimeException x = clientException(t, cr);
                 future.completeExceptionally(x);
-                callback.failed(x);
+                if (callback != null) {
+                    callback.failed(x);
+                }
             }
         });
 
