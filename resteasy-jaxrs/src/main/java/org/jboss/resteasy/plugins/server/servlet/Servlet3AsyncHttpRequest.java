@@ -137,31 +137,29 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public boolean setTimeout(long time, TimeUnit unit) throws IllegalStateException
          {
+            //getAsyncContext().setTimeout(-1);
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
-               Thread thread = creatingThread.get();
-               if (thread != null && thread != Thread.currentThread()) {
-                  // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
-                  if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
-                     return false;
-                  }
-                  Runnable task = new Runnable() {
-                     @Override
-                     public void run()
-                     {
-                        LogMessages.LOGGER.debug(Messages.MESSAGES.scheduledTimeout());
-                        handleTimeout();
-                     }
-                  };
-                  LogMessages.LOGGER.debug(Messages.MESSAGES.schedulingTimeout());
-                  timeoutFuture = asyncScheduler.schedule(task, time, unit);
-               } else {
-                  AsyncContext asyncContext = getAsyncContext();
-                  long l = unit.toMillis(time);
-                  asyncContext.setTimeout(l);
-               }
+               if (done || cancelled)
+                  return false;
 
+               // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+               if (timeoutFuture != null && !timeoutFuture.cancel(false))
+               {
+                  return false;
+               }
+               if (time <= 0) return true;
+               Runnable task = new Runnable()
+               {
+                  @Override
+                  public void run()
+                  {
+                     LogMessages.LOGGER.debug(Messages.MESSAGES.scheduledTimeout());
+                     handleTimeout();
+                  }
+               };
+               LogMessages.LOGGER.debug(Messages.MESSAGES.schedulingTimeout());
+               timeoutFuture = asyncScheduler.schedule(task, time, unit);
             }
             return true;
          }
@@ -322,6 +320,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          AsyncContext asyncContext = servletRequest.startAsync();
          asyncContext.addListener(asynchronousResponse);
          wasSuspended = true;
+         //set time out to -1 and resteasy will take care of timeout 
+         asyncContext.setTimeout(-1);
          return asyncContext;
       }
 
