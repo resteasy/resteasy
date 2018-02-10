@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.response;
 
+import java.net.InetAddress;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -36,6 +38,7 @@ import org.junit.runner.RunWith;
 public class CompletionStageResponseTest {
 
    static Client client;
+   static boolean serverIsLocal;
 
    @Deployment
    public static Archive<?> deploy() {
@@ -49,13 +52,20 @@ public class CompletionStageResponseTest {
       return ar;
    }
 
-   private String generateURL(String path) {
+   private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, CompletionStageResponseTest.class.getSimpleName());
    }
 
    @BeforeClass
-   public static void setup() {
+   public static void setup() throws Exception {
       client = ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/host")).request();
+      Response response = request.get();
+      String host = response.readEntity(String.class);
+      System.out.println("host: " + host);
+      InetAddress addr = InetAddress.getByName(host);
+      System.out.println("local: " + addr.isLoopbackAddress());
+      serverIsLocal = addr.isLoopbackAddress();
    }
 
    @AfterClass
@@ -182,18 +192,18 @@ public class CompletionStageResponseTest {
    @Test
    public void testExceptionImmediateRuntime() throws Exception
    {
-	   System.out.println("HOST: " + System.getProperty("node"));
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
       System.out.println("testExceptionImmediateRuntime(): entity: \"" + entity + "\"");
       Assert.assertEquals(500, response.getStatus());
-//      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
-
+      if (serverIsLocal) {
+    	  Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
-//      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(200, response.getStatus());
       System.out.println("status: " + response.getStatus());
       response.close();
       Assert.fail("testExceptionImmediateRuntime()");
@@ -207,19 +217,21 @@ public class CompletionStageResponseTest {
    @Test
    public void testExceptionImmediateNotRuntime() throws Exception
    {
-	   System.out.println("HOST: " + System.getProperty("node"));
+      System.out.println("HOST: " + System.getProperty("node"));
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
       System.out.println("testExceptionImmediateNotRuntime(): entity: \"" + entity + "\"");
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      if (serverIsLocal) {
+         Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       response.close();
       
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
-//      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(200, response.getStatus());
       System.out.println("status: " + response.getStatus());
       response.close();
       Assert.fail("testExceptionImmediateNotRuntime()");
@@ -227,7 +239,7 @@ public class CompletionStageResponseTest {
    
    @Test
    public void toFail() throws Exception {
-	   Assert.fail();
+      Assert.fail();
    }
 
    /**
