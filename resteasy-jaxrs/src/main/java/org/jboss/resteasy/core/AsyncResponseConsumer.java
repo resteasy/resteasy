@@ -49,6 +49,7 @@ public abstract class AsyncResponseConsumer
       contextDataMap = ResteasyProviderFactory.getContextDataMap();
       dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+      System.out.println("AsyncResponseConsumer(): httpRequest: " + httpRequest);
       if(httpRequest.getAsyncContext().isSuspended())
          asyncResponse = httpRequest.getAsyncContext().getAsyncResponse();
       else

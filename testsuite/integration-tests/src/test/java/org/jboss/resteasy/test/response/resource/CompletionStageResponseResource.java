@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.spi.HttpRequest;
 
@@ -156,5 +157,11 @@ public class CompletionStageResponseResource {
    public String callbackCalledWithError() {
       AsyncResponseCallback.assertCalled(true);
       return "OK";
+   }
+   
+   @GET
+   @Path("host")
+   public String getHost(@Context UriInfo uri) {
+      return uri.getRequestUri().getHost();
    }
 }

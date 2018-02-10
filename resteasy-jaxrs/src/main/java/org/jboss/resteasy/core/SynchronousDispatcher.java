@@ -150,6 +150,12 @@ public class SynchronousDispatcher implements Dispatcher
          }
          else
          {
+        	System.out.println("SynchronousDispatcher: rethrowing " + e);
+        	Throwable cause = e.getCause();
+        	while (cause != null) {
+        		System.out.println("  cause: " + cause);
+        		cause = cause.getCause();
+        	}
             rethrow(e);
          }
       }

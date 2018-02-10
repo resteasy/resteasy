@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.response;
 
+import java.net.InetAddress;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -36,24 +38,32 @@ import org.junit.runner.RunWith;
 public class CompletionStageResponseTest {
 
    static Client client;
+   static boolean serverIsLocal;
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
-      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
+      Archive<?> ar = TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
+      System.out.println(ar.toString(true));
+      return ar;
    }
 
-   private String generateURL(String path) {
+   private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, CompletionStageResponseTest.class.getSimpleName());
    }
 
    @BeforeClass
-   public static void setup() {
+   public static void setup() throws Exception {
       client = ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/host")).request();
+      Response response = request.get();
+      String host = response.readEntity(String.class);
+      InetAddress addr = InetAddress.getByName(host);
+      serverIsLocal = addr.isLoopbackAddress();
    }
 
    @AfterClass
@@ -182,10 +192,11 @@ public class CompletionStageResponseTest {
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
       Response response = request.get();
-      String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
-
+      String entity = response.readEntity(String.class);
+      if (serverIsLocal) {
+    	  Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
@@ -203,9 +214,11 @@ public class CompletionStageResponseTest {
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
       Response response = request.get();
-      String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      String entity = response.readEntity(String.class);
+      if (serverIsLocal) {
+         Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       response.close();
       
       // make sure the completion callback was called with with an error
