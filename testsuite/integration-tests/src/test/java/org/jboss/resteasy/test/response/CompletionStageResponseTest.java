@@ -182,6 +182,7 @@ public class CompletionStageResponseTest {
    @Test
    public void testExceptionImmediateRuntime() throws Exception
    {
+	   System.out.println("HOST: " + System.getProperty("node"));
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
@@ -206,6 +207,7 @@ public class CompletionStageResponseTest {
    @Test
    public void testExceptionImmediateNotRuntime() throws Exception
    {
+	   System.out.println("HOST: " + System.getProperty("node"));
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
