@@ -1527,12 +1527,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return isA(target.getClass(), type, contracts);
    }
 
-   public static boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
+   protected boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
    {
       return isA(target, type, contracts == null ? null : contracts.keySet());
    }
    
-   public static boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
+   protected boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
    {
       return isA(target.getClass(), type, contracts);
    }
