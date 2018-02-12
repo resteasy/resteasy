@@ -18,6 +18,9 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -49,6 +52,7 @@ public final class FindAnnotation
 
 
    private static final Class<? extends Annotation>[] JSON_BINDING_ANNOTATIONS =
+         ResteasyProviderFactory.EE8_PREVIEW_MODE ? 
            (Class<? extends Annotation>[]) new Class[]{
                    JsonbCreator.class,
                    JsonbNillable.class,
@@ -62,7 +66,7 @@ public final class FindAnnotation
                    JsonbTransient.class,
                    JsonbTypeDeserializer.class,
                    JsonbAnnotation.class
-           };
+           } : (Class<? extends Annotation>[]) new Class[]{};
 
    private FindAnnotation()
    {
