@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.jackson2;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.Jaxrs21;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
@@ -16,6 +17,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -33,6 +35,8 @@ import static org.hamcrest.CoreMatchers.containsString;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+// Because it loads project.version of RESTEasy not the *jaxrs20 version
+@Category(Jaxrs21.class)
 public class CustomJackson2ProviderTest {
 
     private static Client client;
