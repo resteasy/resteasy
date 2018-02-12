@@ -36,6 +36,11 @@ Resteasy version for unit-tests and for client side of integration tests can be 
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dversion.resteasy.testsuite=RESTEASY_VERSION
 
+### Jax-rs 2.0 mode
+By default integration tests run with jax-rs 2.1 implementation enabled on the server side.
+To run jax-rs 2.0 compatible mode use:
+> mvn clean verify -Djaxrs20
+
 ### IPv6 testing
 Use ``ipv6`` property and specify IP address for EAP binding for IPv6 testing. Example:
  
