@@ -437,7 +437,7 @@ public class ResourceBuilder
       public ResourceConstructorBuilder(ResourceClassBuilder resourceClassBuilder, Constructor constructor)
       {
          this.resourceClassBuilder = resourceClassBuilder;
-         this.constructor = new ResourceConstructor(resourceClassBuilder.resourceClass, constructor);
+         this.constructor = new DefaultResourceConstructor(resourceClassBuilder.resourceClass, constructor);
       }
       public ConstructorParameterBuilder param(int i)
       {
