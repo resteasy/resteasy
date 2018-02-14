@@ -22,6 +22,7 @@ import org.jboss.resteasy.test.response.resource.PublisherResponseResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,6 +45,8 @@ public class AnotherPublisherResponseTest {
       war.addClass(AnotherPublisherResponseTest.class);
       war.addClass(Jaxrs21.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
+      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+              + "Dependencies: org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class, PortProviderUtil.class);
    }
