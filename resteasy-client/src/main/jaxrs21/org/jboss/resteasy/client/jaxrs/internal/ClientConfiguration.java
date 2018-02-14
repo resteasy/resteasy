@@ -28,6 +28,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -283,6 +284,15 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    
    public <I extends RxInvoker<?>> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
    {
-      return providerFactory.getRxInvokerProvider(clazz);
+      Map<Class<?>, Map<Class<?>, Integer>> classContracts = providerFactory.getClassContracts();
+      for (Entry<Class<?>, Map<Class<?>, Integer>> entry : classContracts.entrySet()) {
+         if (entry.getValue().containsKey(RxInvokerProvider.class)) {
+            RxInvokerProvider<?> rip = (RxInvokerProvider<?>)providerFactory.createProviderInstance(entry.getKey());
+            if (rip.isProviderFor(clazz)) {
+               return (RxInvokerProvider<I>)rip;
+            }
+         }
+      }
+      return null;
    }
 }

@@ -3065,16 +3065,4 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return new LinkBuilderImpl();
    }
-
-   public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz) {
-      for (Entry<Class<?>, Map<Class<?>, Integer>> entry : classContracts.entrySet()) {
-         if (entry.getValue().containsKey(RxInvokerProvider.class)) {
-            RxInvokerProvider<?> rip = (RxInvokerProvider<?>)createProviderInstance(entry.getKey());
-            if (rip.isProviderFor(clazz)) {
-               return (RxInvokerProvider<I>)rip;
-            }
-         }
-      }
-      return null;
-   }
 }
