@@ -517,11 +517,11 @@ public class ResourceBuilder
 
    public static class ResourceMethodBuilder extends ResourceLocatorBuilder<ResourceMethodBuilder>
    {
-      ResourceMethod method;
+      DefaultResourceMethod method;
 
       ResourceMethodBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
       {
-         this.method = new ResourceMethod(resourceClassBuilder.resourceClass, method, annotatedMethod);
+         this.method = new DefaultResourceMethod(resourceClassBuilder.resourceClass, method, annotatedMethod);
          this.locator = this.method;
          this.resourceClassBuilder = resourceClassBuilder;
       }
