@@ -454,7 +454,7 @@ public class ResourceBuilder
    public static class ResourceLocatorBuilder<T extends ResourceLocatorBuilder<T>>
    {
 
-      ResourceLocator locator;
+      DefaultResourceLocator locator;
       ResourceClassBuilder resourceClassBuilder;
 
       ResourceLocatorBuilder()
@@ -464,7 +464,7 @@ public class ResourceBuilder
       public ResourceLocatorBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
       {
          this.resourceClassBuilder = resourceClassBuilder;
-         this.locator = new ResourceLocator(resourceClassBuilder.resourceClass, method, annotatedMethod);
+         this.locator = new DefaultResourceLocator(resourceClassBuilder.resourceClass, method, annotatedMethod);
       }
 
       public T returnType(Class<?> type)
