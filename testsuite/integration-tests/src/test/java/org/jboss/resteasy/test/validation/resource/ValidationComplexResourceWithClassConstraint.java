@@ -7,7 +7,7 @@ import javax.ws.rs.PathParam;
 
 @Path("/{s}/{t}")
 @ValidationComplexClassConstraint(5)
-public class ValidationComplexResourceWithClassConstraint {
+public class ValidationComplexResourceWithClassConstraint implements ValidationComplexResourceWithClassConstraintInterface {
     @NotNull
     public String s;
     @NotNull
@@ -24,5 +24,15 @@ public class ValidationComplexResourceWithClassConstraint {
 
     public String toString() {
         return "ValidationComplexResourceWithClassConstraint(\"" + s + "\", \"" + t + "\")";
+    }
+
+    @Override
+    public String getS() {
+        return s;
+    }
+
+    @Override
+    public String getT() {
+        return t;
     }
 }
