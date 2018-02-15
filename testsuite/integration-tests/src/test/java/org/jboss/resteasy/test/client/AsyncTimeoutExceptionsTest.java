@@ -105,7 +105,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
 
         RequestConfig reqConfig = RequestConfig.custom()   // apache HttpClient specific
                 .setConnectTimeout(2000)
-                .setSocketTimeout(2000)
+                .setSocketTimeout(-1)
                 .setConnectionRequestTimeout(200)
                 .build();
         CloseableHttpClient httpClient = HttpClientBuilder.create()
