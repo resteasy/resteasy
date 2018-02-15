@@ -41,6 +41,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexProxyResourc
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithArray;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithClassConstraint;
+import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithClassConstraintInterface;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithFieldAndProperty;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithGraph;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithInvalidField;
@@ -152,8 +153,8 @@ public class ValidationComplexTest {
         return war;
     }
 
-    public static Archive<?> basicDeployment(Class<?> clazz) {
-        WebArchive war = TestUtil.prepareArchive(BASIC_DEPLOYMENT + clazz.getSimpleName());
+    public static Archive<?> basicDeployment(Class<?>... clazz) {
+        WebArchive war = TestUtil.prepareArchive(BASIC_DEPLOYMENT + clazz[0].getSimpleName());
         war = addBasicClasses(war);
         return TestUtil.finishContainerPrepare(war, null, clazz);
     }
@@ -196,7 +197,7 @@ public class ValidationComplexTest {
 
     @Deployment(name = "basicDeploymentTestResourceWithClassConstraint")
     public static Archive<?> basicDeploymentTestResourceWithClassConstraint() {
-        return basicDeployment(ValidationComplexResourceWithClassConstraint.class);
+        return basicDeployment(ValidationComplexResourceWithClassConstraint.class, ValidationComplexResourceWithClassConstraintInterface.class);
     }
 
     @Deployment(name = "basicDeploymentTestResourceWithGraph")
@@ -267,7 +268,7 @@ public class ValidationComplexTest {
 
     @Deployment(name = "basicDeploymentTestResourceWithOtherGroups")
     public static Archive<?> basicDeploymentTestResourceWithOtherGroups() {
-        return basicDeployment(ValidationComplexResourceWithOtherGroups.class);
+        return basicDeployment(ValidationComplexResourceWithOtherGroups.class, ValidationComplexResourceWithClassConstraintInterface.class);
     }
 
     /**
