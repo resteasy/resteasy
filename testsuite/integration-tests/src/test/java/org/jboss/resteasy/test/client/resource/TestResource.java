@@ -99,25 +99,4 @@ public class TestResource
    {
       return Response.ok(s).build();
    }
-   
-   @Path("redirect/{p}")
-   @GET
-   public Response redirect(@PathParam("p") String p)
-   {
-      return Response.temporaryRedirect(PortProviderUtil.createURI("/redirected", p)).build();
-   }
-
-   @Path("redirected")
-   @GET
-   public Response redirected()
-   {
-      return Response.ok("OK").build();
-   }
-
-   @Path("post-redirect")
-   @POST
-   public Response postRedirect(String p)
-   {
-      return Response.seeOther(PortProviderUtil.createURI("/redirected", p)).build();
-   }
 }
