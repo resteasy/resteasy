@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class FavoriteMovie {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace = "http://abc.com")
     protected String title;
 
     /**
