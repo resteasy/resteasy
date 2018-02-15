@@ -62,6 +62,6 @@ public class ValidationThroughRestTest {
         Response response = builder.post(Entity.entity("-1", MediaType.APPLICATION_JSON_TYPE));
         String responseBody = response.readEntity(String.class);
         Assert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
-        Assert.assertThat("Wrong validation error", responseBody, containsString("may not be null"));
+        Assert.assertTrue("Wrong validation error", responseBody.contains("may not be null") || responseBody.contains("must not be null"));
     }
 }
