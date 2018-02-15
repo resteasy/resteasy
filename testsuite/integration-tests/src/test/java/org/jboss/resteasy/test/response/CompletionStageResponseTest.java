@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.response;
 
+import java.net.InetAddress;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -37,6 +39,7 @@ import org.junit.runner.RunWith;
 public class CompletionStageResponseTest {
 
    static Client client;
+   static boolean serverIsLocal;
 
    @Deployment
    public static Archive<?> deploy() {
@@ -50,13 +53,21 @@ public class CompletionStageResponseTest {
             AsyncResponseCallback.class);
    }
 
-   private String generateURL(String path) {
+   private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, CompletionStageResponseTest.class.getSimpleName());
    }
 
    @BeforeClass
-   public static void setup() {
+   public static void setup() throws Exception {
       client = ClientBuilder.newClient();
+      
+      // Undertow's default behavior is to send an HTML error page only if the client and 
+      // server are communicating on a loopback connection. Otherwise, it returns "".
+      Invocation.Builder request = client.target(generateURL("/host")).request();
+      Response response = request.get();
+      String host = response.readEntity(String.class);
+      InetAddress addr = InetAddress.getByName(host);
+      serverIsLocal = addr.isLoopbackAddress();
    }
 
    @AfterClass
@@ -187,8 +198,9 @@ public class CompletionStageResponseTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
-
+      if (serverIsLocal) {
+    	  Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
@@ -208,7 +220,9 @@ public class CompletionStageResponseTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      if (serverIsLocal) {
+         Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
+      }
       response.close();
       
       // make sure the completion callback was called with with an error
