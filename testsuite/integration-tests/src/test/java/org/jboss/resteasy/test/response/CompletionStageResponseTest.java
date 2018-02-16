@@ -2,8 +2,6 @@ package org.jboss.resteasy.test.response;
 
 import java.net.InetAddress;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
@@ -14,6 +12,7 @@ import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
+import org.jboss.resteasy.test.response.resource.CompletionStageProxy;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageBodyWriter;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseResource;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseTestClass;
@@ -29,6 +28,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.Future;
+
 /**
  * @tpSubChapter CompletionStage response type
  * @tpChapter Integration tests
@@ -38,13 +39,14 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class CompletionStageResponseTest {
 
-   static Client client;
    static boolean serverIsLocal;
+   static ResteasyClient client;
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
+      war.addClass(CompletionStageProxy.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.reactivestreams\n"));
@@ -59,7 +61,7 @@ public class CompletionStageResponseTest {
 
    @BeforeClass
    public static void setup() throws Exception {
-      client = ClientBuilder.newClient();
+      client = new ResteasyClientBuilder().build();
       
       // Undertow's default behavior is to send an HTML error page only if the client and 
       // server are communicating on a loopback connection. Otherwise, it returns "".
@@ -245,4 +247,39 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
    }
+
+   /**
+    * @tpTestDetails Resource method returns CompletionStage<String>, data are computed after end-point method ends
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void getDataWithDelayTest() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/sleep")).request();
+      Future<Response> future = request.async().get();
+      Assert.assertFalse(future.isDone());
+      Response response = future.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+   }
+
+
+   /**
+    * @tpTestDetails Resource method returns CompletionStage<String>, client try to use proxy
+    *                Regression check for https://issues.jboss.org/browse/RESTEASY-1798
+    *                                       - RESTEasy proxy client can't use RxClient and CompletionStage
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   @Category({ExpectedFailing.class})
+   public void proxyTest() throws Exception
+   {
+      CompletionStageProxy proxy = client.target(generateURL("/")).proxy(CompletionStageProxy.class);
+      Future<String> future = proxy.sleep().toCompletableFuture();
+      Assert.assertFalse(future.isDone());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO, future.get());
+   }
+
+
 }

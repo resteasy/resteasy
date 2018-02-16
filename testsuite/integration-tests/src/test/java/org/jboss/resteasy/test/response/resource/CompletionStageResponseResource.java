@@ -164,4 +164,21 @@ public class CompletionStageResponseResource {
    public String getHost(@Context UriInfo uri) {
       return uri.getRequestUri().getHost();
    }
+
+   @GET
+   @Path("sleep")
+   @Produces("text/plain")
+   public CompletionStage<String> sleep() {
+      CompletableFuture<String> cs = new CompletableFuture<>();
+      ExecutorService executor = Executors.newSingleThreadExecutor();
+      executor.submit(() -> {
+         try {
+            Thread.sleep(3000L);
+         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+         }
+         cs.complete(HELLO);
+      });
+      return cs;
+   }
 }
