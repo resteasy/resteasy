@@ -652,13 +652,11 @@ public class ClientInvocation implements Invocation
          });
 
          Optional<Throwable> prioritised = Optional.empty();
-         for (Optional<Throwable> throwable : errors.keySet()) {
-            if(throwable.isPresent()) {
-               if(!prioritised.isPresent())
-                  prioritised = throwable;
-               else if(errors.get(throwable)<errors.get(prioritised))
-                  prioritised = throwable;
-
+         for (Map.Entry<Optional<Throwable>,Integer> errorEntry : errors.entrySet()) {
+            if(errorEntry.getKey().isPresent()) {
+               if(!prioritised.isPresent() || errorEntry.getValue() < errors.get(prioritised)) {
+                  prioritised = errorEntry.getKey();
+               }
             }
          }
 

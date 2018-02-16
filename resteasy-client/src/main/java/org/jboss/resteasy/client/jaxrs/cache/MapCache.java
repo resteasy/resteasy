@@ -33,7 +33,7 @@ public class MapCache implements BrowserCache
       }
       if (accept.isWildcardType()) {
          // if the client accepts */*, return just the first entry for requested URL
-         return parent.get(parent.keySet().iterator().next());
+         return parent.entrySet().iterator().next().getValue();
       } else if (accept.isWildcardSubtype()) {
          // if the client accepts <media>/*, return the first entry which media type starts with <media>/
          for (Map.Entry<String, Entry> parentEntry : parent.entrySet()) {
