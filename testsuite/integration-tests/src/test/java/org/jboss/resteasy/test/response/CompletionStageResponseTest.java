@@ -2,8 +2,6 @@ package org.jboss.resteasy.test.response;
 
 import java.net.InetAddress;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
@@ -14,6 +12,7 @@ import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
+import org.jboss.resteasy.test.response.resource.CompletionStageProxy;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageBodyWriter;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseResource;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseTestClass;
@@ -29,22 +28,25 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.Future;
+
 /**
  * @tpSubChapter CompletionStage response type
  * @tpChapter Integration tests
- * @tpSince RESTEasy 4.0
+ * @tpSince RESTEasy 3.5
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CompletionStageResponseTest {
 
-   static Client client;
    static boolean serverIsLocal;
+   static ResteasyClient client;
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
+      war.addClass(CompletionStageProxy.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.reactivestreams\n"));
@@ -59,7 +61,7 @@ public class CompletionStageResponseTest {
 
    @BeforeClass
    public static void setup() throws Exception {
-      client = ClientBuilder.newClient();
+      client = new ResteasyClientBuilder().build();
       
       // Undertow's default behavior is to send an HTML error page only if the client and 
       // server are communicating on a loopback connection. Otherwise, it returns "".
@@ -79,7 +81,7 @@ public class CompletionStageResponseTest {
 
    /**
     * @tpTestDetails Resource method returns CompletionStage<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testText() throws Exception
@@ -100,7 +102,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method returns CompletionStage<Response>.
     * Response has MediaType "text/plain" overriding @Produces("text/xxx").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testResponse() throws Exception
@@ -118,7 +120,7 @@ public class CompletionStageResponseTest {
     * @tpTestDetails Resource method returns CompletionStage<CompletionStageResponseTestClass>,
     * where CompletionStageResponseTestClass is handled by CompletionStageResponseMessageBodyWriter,
     * which has annotation @Produces("abc/xyz").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTestClass() throws Exception
@@ -136,7 +138,7 @@ public class CompletionStageResponseTest {
     * emtity is a CompletionStageResponseTestClass, and where
     * CompletionStageResponseTestClass is handled by CompletionStageResponseMessageBodyWriter,
     * which has annotation @Produces("abc/xyz").
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testResponseTestClass() throws Exception
@@ -152,7 +154,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, and it passes
     * null to CompleteableFuture.complete().
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testNull() throws Exception
@@ -167,7 +169,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method passes a WebApplicationException to
     * to CompleteableFuture.completeExceptionally().
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    @Category({ExpectedFailing.class})
@@ -189,7 +191,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, but it
     * throws a RuntimeException without creating a CompletionStage.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionImmediateRuntime() throws Exception
@@ -211,7 +213,7 @@ public class CompletionStageResponseTest {
    /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, but it
     * throws an Exception without creating a CompletionStage.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testExceptionImmediateNotRuntime() throws Exception
@@ -234,7 +236,7 @@ public class CompletionStageResponseTest {
 
    /**
     * @tpTestDetails Resource method returns CompletionStage<String>.
-    * @tpSince RESTEasy 4.0
+    * @tpSince RESTEasy 3.5
     */
    @Test
    public void testTextSingle() throws Exception
@@ -245,4 +247,39 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
    }
+
+   /**
+    * @tpTestDetails Resource method returns CompletionStage<String>, data are computed after end-point method ends
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void getDataWithDelayTest() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/sleep")).request();
+      Future<Response> future = request.async().get();
+      Assert.assertFalse(future.isDone());
+      Response response = future.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+   }
+
+
+   /**
+    * @tpTestDetails Resource method returns CompletionStage<String>, client try to use proxy
+    *                Regression check for https://issues.jboss.org/browse/RESTEASY-1798
+    *                                       - RESTEasy proxy client can't use RxClient and CompletionStage
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   @Category({ExpectedFailing.class})
+   public void proxyTest() throws Exception
+   {
+      CompletionStageProxy proxy = client.target(generateURL("/")).proxy(CompletionStageProxy.class);
+      Future<String> future = proxy.sleep().toCompletableFuture();
+      Assert.assertFalse(future.isDone());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO, future.get());
+   }
+
+
 }
