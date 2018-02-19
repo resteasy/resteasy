@@ -122,6 +122,11 @@ public class CompletionStageResponseResource {
       executor.submit(
             new Runnable() {
                public void run() {
+                  try {
+                     Thread.sleep(3000L); // make sure that response will be created after end-point method ends
+                  } catch (InterruptedException e) {
+                     throw new RuntimeException(e);
+                  }
                   Response response = Response.status(444).entity(EXCEPTION).build();
                   cs.completeExceptionally(new WebApplicationException(response));
                }
