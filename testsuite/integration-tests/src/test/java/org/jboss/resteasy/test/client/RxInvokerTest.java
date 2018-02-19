@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.client;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -576,14 +577,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientMethodGenericTypeEntity() throws Exception
    {
       doTestRxClientMethodGenericTypeEntity(false);
       doTestRxClientMethodGenericTypeEntity(true);
    }
-   
+
    void doTestRxClientMethodGenericTypeEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -592,6 +593,32 @@ public class RxInvokerTest extends ClientTestBase
       CompletableFuture<String> cs = (CompletableFuture<String>) invoker.method("METHOD", Entity.entity("methodEntity", MediaType.TEXT_PLAIN_TYPE), STRING_TYPE);
       String response = cs.get();
       Assert.assertEquals("methodEntity", response);
+      Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
+      client.close();
+   }
+
+   /**
+    * @tpTestDetails end-point method returns String data after some delay (3s)
+    *                client use RxInvoker. Data should not be prepared right after CompletionStage object are returned from client
+    *                CompletionStage should return correct data after 3s delay
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void testGetDataWithDelay() throws Exception
+   {
+      doTestGetDataWithDelay(false);
+      doTestGetDataWithDelay(true);
+   }
+
+   void doTestGetDataWithDelay(boolean useCustomInvoker) throws Exception
+   {
+      final Client client = newClient(useCustomInvoker);
+      Builder builder = client.target(generateURL("/sleep")).request();
+      RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
+      Future<String> future = ((CompletableFuture<String>) invoker.get(String.class)).toCompletableFuture();
+      Assert.assertFalse(future.isDone());
+      String response = future.get();
+      Assert.assertEquals("get", response);
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
