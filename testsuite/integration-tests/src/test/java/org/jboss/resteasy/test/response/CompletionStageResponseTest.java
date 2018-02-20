@@ -172,7 +172,6 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
-   @Category({ExpectedFailing.class})
    public void testExceptionDelay() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/delay")).request();
