@@ -25,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletApp;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletAsyncResponseBlockingQueue;
@@ -44,7 +43,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -360,7 +358,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void isDoneWhenTimedOutTest() throws Exception
    {
       setTimeoutTestInternal();
@@ -447,14 +444,12 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void setTimeoutTest() throws Exception
    {
       setTimeoutTestInternal();
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void updateTimeoutTest() throws Exception
    {
       invokeClear();
@@ -474,7 +469,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeOutWaitsForeverTest() throws Exception
    {
       String responseMsg = "handleTimeOutWaitsForeverTest";
@@ -488,7 +482,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeoutCancelsTest() throws Exception
    {
       invokeClear();
@@ -502,7 +495,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeoutResumesTest() throws Exception
    {
       invokeClear();
