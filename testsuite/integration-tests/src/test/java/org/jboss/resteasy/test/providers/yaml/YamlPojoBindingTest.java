@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.yaml;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.test.providers.yaml.resource.YamlPojoBindingNestedObject;
 import org.jboss.resteasy.test.providers.yaml.resource.YamlPojoBindingObject;
 import org.jboss.resteasy.test.providers.yaml.resource.YamlResource;
@@ -14,7 +13,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.yaml.snakeyaml.Yaml;
 
