@@ -20,7 +20,7 @@
          and AsyncResponse interface.
       </para>
       <para>
-          Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells Resteasy that the HTTP request/response should be detached from the currently
+          Injecting an AsynchronousResponse as a parameter to your jax-rs methods tells RESTEasy that the HTTP request/response should be detached from the currently
          executing thread and that the current thread should not try to automatically process the response.
       </para>
       <para>
@@ -66,8 +66,8 @@ public class SimpleResource
          AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
       </para>
       <para>
-         <emphasis role="bold">NOTE:</emphasis> The old Resteasy proprietary API for async http has been deprecated and may be removed as soon as Resteasy 3.1.
-         In particular, the Resteasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
+         <emphasis role="bold">NOTE:</emphasis> The old RESTEasy proprietary API for async http has been deprecated and may be removed as soon as RESTEasy 3.1.
+         In particular, the RESTEasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
          <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
          <classname>javax.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
          which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
@@ -127,7 +127,7 @@ public class SimpleResource
      </programlisting>
      <note>
         <para>
-           Resteasy <link linkend="Reactive">supports more reactive types for asynchronous programming</link>.
+           RESTEasy <link linkend="Reactive">supports more reactive types for asynchronous programming</link>.
         </para>
      </note>
    </sect1>

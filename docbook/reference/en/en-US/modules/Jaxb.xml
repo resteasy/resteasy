@@ -153,7 +153,7 @@ public class PrettyProcessor implements DecoratorProcessor<Marshaller, Pretty>
 @Produces("application/xml")
 public SomeJAXBObject get() {...}
 </programlisting>
-        <para>If you are confused, check the Resteasy source code for the implementation of @XmlHeader</para>
+        <para>If you are confused, check the RESTEasy source code for the implementation of @XmlHeader</para>
     </sect1>
    <sect1 id="Pluggable_JAXBContext_s_with_ContextResolvers">
       <title>Pluggable JAXBContext's with ContextResolvers</title>
@@ -229,12 +229,12 @@ public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
    <sect1 id="JAXB_+_XML_provider">
       <title>JAXB + XML provider</title>
        <para>
-           Resteasy is required to provide JAXB provider support for XML.  It has a few extra annotations
+           RESTEasy is required to provide JAXB provider support for XML.  It has a few extra annotations
            that can help code your app.
        </para>
        <sect2 id="XmlHeader">
            <title>@XmlHeader and @Stylesheet</title>
-           <para>Sometimes when outputting XML documents you may want to set an XML header. Resteasy provides
+           <para>Sometimes when outputting XML documents you may want to set an XML header. RESTEasy provides
            the @org.jboss.resteasy.annotations.providers.jaxb.XmlHeader annotation for this.  For example:</para>
 <programlisting><![CDATA[
 @XmlRootElement
@@ -274,7 +274,7 @@ public static class TestService
                details on how you can use substitution values provided by resteasy.
                </para>
            <para>
-               Resteasy also has a convenience annotation for stylesheet headers.  For example:
+               RESTEasy also has a convenience annotation for stylesheet headers.  For example:
            </para>
 <programlisting><![CDATA[
 @XmlRootElement
@@ -772,7 +772,7 @@ public List<Customer> getCustomerSet()
 
   <sect2 id="json_list">
     <title>JSON and JAXB Collections/arrays</title>
-    <para>Resteasy supports using collections with JSON.  It encloses lists, sets, or arrays of returned JAXB objects within a simple
+    <para>RESTEasy supports using collections with JSON.  It encloses lists, sets, or arrays of returned JAXB objects within a simple
     JSON array.  For example:</para>
 <programlisting>
 @XmlRootElement
@@ -950,7 +950,7 @@ public static class MyResource
     
   <sect2 id="json_map">
     <title>JSON and JAXB maps</title>
-    <para>Resteasy supports using maps with JSON.  It encloses maps returned JAXB objects within a simple
+    <para>RESTEasy supports using maps with JSON.  It encloses maps returned JAXB objects within a simple
     JSON map.  For example:</para>
 <programlisting>
 @XmlRootElement

@@ -1,13 +1,13 @@
 <chapter id="json">
     <title>JSON Support via Jackson</title>
-    <para>Besides the Jettision JAXB adapter for JSON, Resteasy also supports integration with the Jackson project.
+    <para>Besides the Jettision JAXB adapter for JSON, RESTEasy also supports integration with the Jackson project.
         Many users find the output from Jackson much nicer than the Badger format or Mapped format provided by Jettison.
         For more on Jackson 2, see <ulink url="http://wiki.fasterxml.com/JacksonHome">http://wiki.fasterxml.com/JacksonHome</ulink>.
         Besides JAXB like APIs, it has a JavaBean based model, described at
         <ulink url="http://wiki.fasterxml.com/JacksonDataBinding">http://wiki.fasterxml.com/JacksonDataBinding</ulink>,
         which allows you to easily marshal Java objects to and from JSON.
-        Resteasy integrates with the JavaBean model.
-        While Jackson does come with its own JAX-RS integration, Resteasy expanded it a little, as decribed below.
+        RESTEasy integrates with the JavaBean model.
+        While Jackson does come with its own JAX-RS integration, RESTEasy expanded it a little, as decribed below.
     </para>
     <para>
     <emphasis role="bold">NOTE.</emphasis> The resteasy-jackson-provider module, which is based on the outdated Jackson 1.9.x, is
@@ -17,8 +17,8 @@
     
     <sect1>
         <title>Using Jackson 1.9.x Outside of WildFly</title>
-        <para>If you're deploying Resteasy outside of WildFly,
-        add the Resteasy Jackson provder to your WAR pom.xml build:</para>
+        <para>If you're deploying RESTEasy outside of WildFly,
+        add the RESTEasy Jackson provder to your WAR pom.xml build:</para>
         <programlisting><![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
@@ -29,16 +29,16 @@
     </sect1>
     <sect1>
         <title>Using Jackson 1.9.x Inside WildFly 8</title>
-        <para>If you're deploying Resteasy with WildFly 8,
+        <para>If you're deploying RESTEasy with WildFly 8,
         there's nothing you need to do except to make sure
-        you've updated your installation with the latest and greatest Resteasy.  See the
+        you've updated your installation with the latest and greatest RESTEasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
         of this documentation for more details.</para>
     </sect1>
     <sect1>
         <title>Using Jackson 2 Outside of WildFly</title>
-        <para>If you're deploying Resteasy outside of WildFly,
-        add the Resteasy Jackson provder to your WAR pom.xml build:</para>
+        <para>If you're deploying RESTEasy outside of WildFly,
+        add the RESTEasy Jackson provder to your WAR pom.xml build:</para>
         <programlisting><![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
@@ -49,16 +49,16 @@
     </sect1>
     <sect1>
         <title>Using Jackson 2 Inside WildFly 9 and above</title>
-        <para>If you're deploying Resteasy with WildFly 9 or above,
+        <para>If you're deploying RESTEasy with WildFly 9 or above,
         there's nothing you need to do except to make sure
-        you've updated your installation with the latest and greatest Resteasy.  See the
+        you've updated your installation with the latest and greatest RESTEasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
         of this documentation for more details.</para>
     </sect1>
     <sect1>
-        <title>Additional Resteasy Specifics</title>
+        <title>Additional RESTEasy Specifics</title>
 
-    <para>The first extra piece that Resteasy added to the integration was
+    <para>The first extra piece that RESTEasy added to the integration was
         to support "application/*+json". Jackson would only accept "application/json" and "text/json" as valid
         media types. This allows you to create json-based media types and still
         let Jackson marshal things for you. For example:
@@ -72,7 +72,7 @@ public class MyService {
     public Customer[] getCustomers() {}
 }
 ]]></programlisting>
-    <para>Another problem that occurs is when you are using the Resteasy JAXB providers alongside Jackson.
+    <para>Another problem that occurs is when you are using the RESTEasy JAXB providers alongside Jackson.
         You may want to use Jettison and JAXB to output your JSON instead of Jackson. In this case, you must
         either not install the Jackson provider, or use the annotation
         @org.jboss.resteasy.annotations.providers.NoJackson
@@ -125,7 +125,7 @@ public class MyService {
     <sect1 id="JSONP_Support">
         <title>JSONP Support</title>
         <para>
-            If you're using Jackson, Resteasy has <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> that you can turn on by adding
+            If you're using Jackson, RESTEasy has <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> that you can turn on by adding
             the provider <literal>org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor</literal> (Jackson2JsonpInterceptor if you're using the Jackson2 provider)
             to your deployments.
             If the media type of the response is json and a callback query parameter is given, the response will be a javascript snippet with
@@ -182,7 +182,7 @@ org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
     <sect1 id="Jackson_JSON_Decorator">
         <title>Jackson JSON Decorator</title>
         <para>
-            If you are using the Jackson 2 provider, Resteasy has provided a pretty-printing annotation simliar with the one in JAXB provider:
+            If you are using the Jackson 2 provider, RESTEasy has provided a pretty-printing annotation simliar with the one in JAXB provider:
 <programlisting>
 org.jboss.resteasy.annotations.providers.jackson.Formatted
 </programlisting>
@@ -251,7 +251,7 @@ public class ObjectFilterModifier extends ObjectWriterModifier {
 }
 ]]>
 </programlisting>
-       Here the method <methodname>modify()</methodname> will take care of filtering all properties except "name" property before write. To make this work, we need let Resteasy know this mapping info. This can be easily set either in a WriterInterceptor:
+       Here the method <methodname>modify()</methodname> will take care of filtering all properties except "name" property before write. To make this work, we need let RESTEasy know this mapping info. This can be easily set either in a WriterInterceptor:
 <programlisting>
 <![CDATA[
 @Provider
@@ -293,7 +293,7 @@ public class ObjectWriterModifierFilter implements Filter {
 }
 ]]>
 </programlisting>
-Resteasy get this modfiler from ThreadLocal variable and configure to modify ObjectWriter before write to response.
+RESTEasy get this modfiler from ThreadLocal variable and configure to modify ObjectWriter before write to response.
         </para>
     </sect1>
 </chapter>

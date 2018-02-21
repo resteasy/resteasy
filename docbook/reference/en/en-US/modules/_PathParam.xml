@@ -177,7 +177,7 @@ public interface PathSegment {
 </para>
 <para>
 
-You can have Resteasy inject a PathSegment instead of a value with your @PathParam.
+You can have RESTEasy inject a PathSegment instead of a value with your @PathParam.
 </para>
 <para>
 

@@ -57,7 +57,7 @@ NOTE: You can only use auto-proxied beans with our base Spring integration.   Yo
 <sect2 id="SpringMVC">
    <title>Spring MVC Integration</title>
    <para> 
-      RESTEasy can also integrate with the Spring DispatcherServlet.  The advantages of using this are that you have a simpler web.xml file, you can dispatch to either Spring controllers or Resteasy from under the same base URL, and finally, the most important, you can use Spring ModelAndView objects as return arguments from @GET resource methods.  Setup requires you using the Spring DispatcherServlet in your web.xml file, as well as importing the springmvc-resteasy.xml file into your base Spring beans xml file.   Here's an example web.xml file:
+      RESTEasy can also integrate with the Spring DispatcherServlet.  The advantages of using this are that you have a simpler web.xml file, you can dispatch to either Spring controllers or RESTEasy from under the same base URL, and finally, the most important, you can use Spring ModelAndView objects as return arguments from @GET resource methods.  Setup requires you using the Spring DispatcherServlet in your web.xml file, as well as importing the springmvc-resteasy.xml file into your base Spring beans xml file.   Here's an example web.xml file:
    </para>
 <programlisting>
 &lt;web-app&gt;
@@ -87,7 +87,7 @@ NOTE: You can only use auto-proxied beans with our base Spring integration.   Yo
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 ">
 
-    <!-- Import basic SpringMVC Resteasy integration -->
+    <!-- Import basic SpringMVC RESTEasy integration -->
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....
 ]]>
@@ -95,7 +95,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <para>
         You can specify resteasy configuration options by overriding the resteasy.deployment bean which is an instance
         of org.jboss.resteasy.spi.ResteasyDeployment.  Here's an example of adding media type suffix mappings as well
-        as enabling the Resteasy asynchronous job service.
+        as enabling the RESTEasy asynchronous job service.
     </para>
 <programlisting>
 <![CDATA[
@@ -108,7 +108,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         ">
 
-    <!-- Import basic SpringMVC Resteasy integration -->
+    <!-- Import basic SpringMVC RESTEasy integration -->
     <import resource="classpath:springmvc-resteasy.xml" />
 
     <!-- override the bean definition for deployment -->
@@ -164,7 +164,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
-    <!-- required Resteasy Configuration Switch directs auto scanning
+    <!-- required RESTEasy Configuration Switch directs auto scanning
          of the archive for JAX-RS resource files
     -->
     <context-param>

@@ -66,8 +66,8 @@
    </para>
    </sect1>
    <sect1 id="builtinException">
-     <title>Resteasy Built-in Internally-Thrown Exceptions</title>
-     <para>Resteasy has a set of built-in exceptions that are thrown by it when it encounters errors during dispatching or marshalling.  They all
+     <title>RESTEasy Built-in Internally-Thrown Exceptions</title>
+     <para>RESTEasy has a set of built-in exceptions that are thrown by it when it encounters errors during dispatching or marshalling.  They all
            revolve around specific HTTP error codes.  You can find them in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's 
            a list of them:</para>
 <table frame="topbot">
@@ -111,17 +111,17 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <row>
 <entry>Failure</entry>
 <entry>N/A</entry>
-<entry>Internal Resteasy.  Not logged</entry>
+<entry>Internal RESTEasy.  Not logged</entry>
 </row>
 <row>
 <entry>LoggableFailure</entry>
 <entry>N/A</entry>
-<entry>Internal Resteasy error.  Logged</entry>
+<entry>Internal RESTEasy error.  Logged</entry>
 </row>
 <row>
 <entry>DefaultOptionsMethodException</entry>
 <entry>N/A</entry>
-<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, Resteasy provides a default behavior by throwing this exception</entry>
+<entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, RESTEasy provides a default behavior by throwing this exception</entry>
 </row>
 <row>
 <entry>UnrecognizedPropertyExceptionHandler</entry>
@@ -133,8 +133,8 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 </table>
 </sect1>
 <sect1 id="overring_resteasy_exceptions">
-   <title>Overriding Resteasy Builtin Exceptions</title>
-   <para>You may override Resteasy built-in exceptions by writing an ExceptionMapper for the exception.  For that matter, you can write an ExceptionMapper
+   <title>Overriding RESTEasy Builtin Exceptions</title>
+   <para>You may override RESTEasy built-in exceptions by writing an ExceptionMapper for the exception.  For that matter, you can write an ExceptionMapper
    for any thrown exception including WebApplicationException</para>
 </sect1>
 </chapter>

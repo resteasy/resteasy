@@ -1,6 +1,6 @@
 <chapter id="Multipart">
    <title>Multipart Providers</title>
-   <para>Resteasy has rich support for the "multipart/*" and "multipart/form-data" mime types.  The multipart mime
+   <para>RESTEasy has rich support for the "multipart/*" and "multipart/form-data" mime types.  The multipart mime
       format is used to pass lists of content bodies.  Multiple content bodies are embedded in one message.
       "multipart/form-data" is often found in web application HTML Form documents and is generally used to
       upload files.  The form-data format is the same as other multipart formats, except that each inlined piece
@@ -46,7 +46,7 @@ public interface InputPart
       <para>MultipartInput is a simple interface that allows you to get access to each part of the multipart message.
       Each part is represented by an InputPart interface. Each part has a set of headers associated with it
       You can unmarshall the part by calling one of the getBody() methods.  The Type genericType parameter can be null,
-      but the Class type parameter must be set.  Resteasy will find a MessageBodyReader based on the media type
+      but the Class type parameter must be set.  RESTEasy will find a MessageBodyReader based on the media type
       of the part as well as the type information you pass in.  The following piece of code is unmarshalling
       parts which are XML into a JAXB annotated class called Customer.
       </para>
@@ -219,7 +219,7 @@ public class OutputPart
 }
 ]]></programlisting>
       <para>When you want to output multipart data it is as simple as creating a MultipartOutput object
-      and calling addPart() methods.  Resteasy will automatically find a MessageBodyWriter
+      and calling addPart() methods.  RESTEasy will automatically find a MessageBodyWriter
       to marshall your entity objects.  Like MultipartInput, sometimes you may have marshalling
       which is sensitive to generic type metadata.  In that case, use GenericType.  Most of the time though
       passing in an Object and its MediaType is enough.  In the example below, we are sending
@@ -283,7 +283,7 @@ public class MultipartFormDataOutput extends MultipartOutput
 }
 ]]></programlisting>
       <para>When you want to output multipart/form-data it is as simple as creating a MultipartFormDataOutput object
-      and calling addFormData() methods.  Resteasy will automatically find a MessageBodyWriter
+      and calling addFormData() methods.  RESTEasy will automatically find a MessageBodyWriter
       to marshall your entity objects.  Like MultipartInput, sometimes you may have marshalling
       which is sensitive to generic type metadata.  In that case, use GenericType.  Most of the time though
       passing in an Object and its MediaType is enough.  In the example below, we are sending
@@ -370,7 +370,7 @@ public class MultipartRelatedOutput extends MultipartOutput
       <para>When you want to output multipart/related it is as simple as creating a MultipartRelatedOutput object
       and calling addPart() methods. The first added part will be used as the root part of the multipart/related
       message.
-      Resteasy will automatically find a MessageBodyWriter to marshall your entity objects. Like MultipartInput,
+      RESTEasy will automatically find a MessageBodyWriter to marshall your entity objects. Like MultipartInput,
       sometimes you may have marshalling which is sensitive to generic type metadata. In that case, use
       GenericType.  Most of the time though passing in an Object and its MediaType is enough.  In the example
       below, we are sending back a "multipart/related" format back to the calling client. We are sending a
@@ -549,8 +549,8 @@ public class XopService {
       <title>Note about multipart parsing and working with other frameworks</title>
       <para>There are a lot of frameworks doing multipart parsing automatically with the help of filters and interceptors.
       Like org.jboss.seam.web.MultipartFilter in Seam or org.springframework.web.multipart.MultipartResolver in Spring.
-      However the incoming multipart request stream can be parsed only once. Resteasy users working with multipart should
-      make sure that nothing parses the stream before Resteasy gets it.</para>
+      However the incoming multipart request stream can be parsed only once. RESTEasy users working with multipart should
+      make sure that nothing parses the stream before RESTEasy gets it.</para>
    </sect1>
    <sect1 id="multipart_overwrite_default_content_type">
       <title>Overwriting the default fallback content type for multipart messages</title>

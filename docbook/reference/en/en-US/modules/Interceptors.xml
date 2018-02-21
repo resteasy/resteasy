@@ -135,7 +135,7 @@
             to register the filters and interceptors you want for the specific resource method.  @NameBinding works a lot
             like CDI interceptors.  You annotate a custom annotation with @NameBinding and then apply that custom annotation
             to your filter and resource method. The custom annotation must use @Retention(RetentionPolicy.RUNTIME) in order for the
-            attribute to be picked up by the Resteasy runtime code when it is deployed.
+            attribute to be picked up by the RESTEasy runtime code when it is deployed.
         </para>
         <programlisting>
             @NameBinding

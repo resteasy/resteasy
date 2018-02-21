@@ -6,12 +6,27 @@
     </para>
 </chapter>
 
+<chapter id="Migration_to_3_5">
+<title>Migration to RESTEasy 3.5 series</title>
+  <para>
+    RESTEasy 3.5 series is a spin-off of the old RESTEasy 3.0 series, featuring JAX-RS 2.1 implementation.
+  </para>
+  <para>
+    The reason why 3.5 comes from 3.0 instead of the 3.1 / 4.0 development streams is basically providing
+    users with a selection of RESTEasy 4 critical / strategic new features, while ensuring full backward
+    compatiblity. As a consequence, no major issues are expected when upgrading RESTEasy from 3.0.x to 3.5.x.
+  </para>
+  <para>
+    The natural upgrade path for users already on RESTEasy 3.1 series is straight to RESTEasy 4 instead.
+  </para>
+</chapter>
+
 <chapter id="Migration_to_3_1">
-<title>Migration to Resteasy 3.1</title>
+<title>Migration to RESTEasy 3.1 series</title>
 
     <para>
-    In a minor release like 3.1.0.Final, as opposed to a point release like 3.0.19.Final, the scope of 
-    permissible changes is broadened. User discernible changes in Resteasy 3.1.0.Final include
+    RESTEasy 3.1.0.Final release comes with many changes compared to previous 3.0 point releases.
+    User discernible changes in RESTEasy 3.1.0.Final include
     </para>
     
     <itemizedlist>
@@ -25,52 +40,52 @@
     <para>
     In this chapter we focus on changes that might cause existing code to fail or behave in new ways.
     The audience for this discussion may be partitioned into three subsets, depending on the version
-    of Resteasy currently in use, the API currently in use, and the API to be used after an upgrade
-    to Resteasy 3.1. The following APIs are available:
+    of RESTEasy currently in use, the API currently in use, and the API to be used after an upgrade
+    to RESTEasy 3.1. The following APIs are available:
     </para>
     
     <orderedlist>
       <listitem>
-      <para><emphasis role="bold">Resteasy 2</emphasis>: Resteasy 2 conforms to the JAX-RS 1 specification, and adds a
+      <para><emphasis role="bold">RESTEasy 2</emphasis>: RESTEasy 2 conforms to the JAX-RS 1 specification, and adds a
       variety of additional facilities, such as a client API, a caching system, an interceptor framework, etc. 
-      All of these user facing classes and interfaces comprise the Resteasy 2 API.</para>
+      All of these user facing classes and interfaces comprise the RESTEasy 2 API.</para>
       </listitem>
       <listitem>
-      <para><emphasis role="bold">Resteasy 3</emphasis>: Resteasy 3 conforms to the JAX-RS 2 specification, and adds some additional
-      facilities. Many of the non-spec facilities from the Resteasy 2 API are formalized, in altered form,
+      <para><emphasis role="bold">RESTEasy 3</emphasis>: RESTEasy 3 conforms to the JAX-RS 2 specification, and adds some additional
+      facilities. Many of the non-spec facilities from the RESTEasy 2 API are formalized, in altered form,
       in JAX-RS 2, in which case the older facilites are deprecated. The non-deprecated user facing classes and interfaces in
-      Resteasy 3 comprise the Resteasy 3 API.</para>
+      RESTEasy 3 comprise the RESTEasy 3 API.</para>
       </listitem>
     </orderedlist>
     
     <para>
     These definitions are rather informal and imprecise, since the user facing classes / interfaces in Resteasy
-    3.0.19.Final, for example, are a proper superset of the user facing classes / interfaces in Resteasy 3.0.1.Final.
+    3.0.19.Final, for example, are a proper superset of the user facing classes / interfaces in RESTEasy 3.0.1.Final.
     For this discussion, we identify the API with the version currently in use in a given project.
     </para>
     
     <para>
-    Now, there are three potential target audiences of users planning to upgrade to Resteasy 3.1.0.Final:
+    Now, there are three potential target audiences of users planning to upgrade to RESTEasy 3.1.0.Final:
     </para>
     
     <orderedlist>
       <listitem>
-      <para>Those currently using Resteasy API 3 with some Resteasy 3.0.x release</para>
+      <para>Those currently using RESTEasy API 3 with some RESTEasy 3.0.x release</para>
       </listitem>
       <listitem>
-      <para>Those currently using Resteasy API 2 with some Resteasy 2.x or 3.0.x release and planning
-      to upgrade to Resteasy API 3</para>
+      <para>Those currently using RESTEasy API 2 with some RESTEasy 2.x or 3.0.x release and planning
+      to upgrade to RESTEasy API 3</para>
       </listitem>
       <listitem>
-      <para>Those currently using Resteasy API 2 with some Resteasy 2.x or 3.0.x release and planning
-      to continue to use Resteasy API 2</para>
+      <para>Those currently using RESTEasy API 2 with some RESTEasy 2.x or 3.0.x release and planning
+      to continue to use RESTEasy API 2</para>
       </listitem>
     </orderedlist>
     
     <para>
-    Of these, users in Group 2 have the most work to do in upgrading from Resteasy API 2 to Resteasy API 3.
+    Of these, users in Group 2 have the most work to do in upgrading from RESTEasy API 2 to RESTEasy API 3.
     They should consult the separate guide
-    <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">Upgrading from Resteasy 2 to Resteasy 3</ulink>.
+    <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">Upgrading from RESTEasy 2 to RESTEasy 3</ulink>.
     </para>
 
     <para>
@@ -79,11 +94,11 @@
     are a few changes that they should be aware of.
     </para>
     
-    <sect1>
-    <title>Upgrading with Resteasy 3 API</title>
+<sect1>
+    <title>Upgrading with RESTEasy 3 API</title>
     
     <para>
-    All Resteasy changes are documented in JIRA issues. Issues that describe detectable changes in
+    All RESTEasy changes are documented in JIRA issues. Issues that describe detectable changes in
     release 3.1.0.Final that might impact existing applications include
     </para>
     
@@ -113,7 +128,7 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
       <listitem>
       <ulink url="https://issues.jboss.org/browse/RESTEASY-1433">RESTEASY-1433: Compile with JDK 1.8 source/target version</ulink>
       <para>
-      As it says. Depending on the application, it might be necessary to recompile with a target of JDK 1.8 so that calls to Resteasy code
+      As it says. Depending on the application, it might be necessary to recompile with a target of JDK 1.8 so that calls to RESTEasy code
       can work.
       </para>
       </listitem>
@@ -121,7 +136,7 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
       <listitem>
       <ulink url="https://issues.jboss.org/browse/RESTEASY-1484">RESTEASY-1484: CVE-2016-6346: Abuse of GZIPInterceptor in can lead to denial of service attack</ulink>
       <para>
-      Prior to release 3.1.0.Final, the default behavior of Resteasy was to use GZIP to compress and decompress messages
+      Prior to release 3.1.0.Final, the default behavior of RESTEasy was to use GZIP to compress and decompress messages
       whenever "gzip" appeared in the Content-Encoding header.
       However, decompressing messages can lead to security issues, so, as of release 3.1.0.Final, GZIP compression has to
       be enabled explicitly. For details, see Chapter <link linkend='gzip'>GZIP Compression/Decompression</link>.
@@ -132,10 +147,10 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
       </listitem>
       
       <listitem>
-      <ulink url="https://issues.jboss.org/browse/RESTEASY-1531">RESTEASY-1531: Restore removed Resteasy internal classes into a deprecated/disabled module</ulink>
+      <ulink url="https://issues.jboss.org/browse/RESTEASY-1531">RESTEASY-1531: Restore removed RESTEasy internal classes into a deprecated/disabled module</ulink>
       <para>
-      This issue is related to refactoring deprecated elements of the Resteasy 2 API into a separate module, and, ideally,
-      would have no bearing at all on Resteasy 3. However, a reorganization of packages has led to moving some
+      This issue is related to refactoring deprecated elements of the RESTEasy 2 API into a separate module, and, ideally,
+      would have no bearing at all on RESTEasy 3. However, a reorganization of packages has led to moving some
       non-deprecated API elements in the resteasy-jaxrs module:
       </para>
       
@@ -163,13 +178,13 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
 </sect1>
 
 <sect1>
-    <title>Upgrading with Resteasy 2 API</title>
+    <title>Upgrading with RESTEasy 2 API</title>
     
     <para>
     Most of the deprecated classes and interfaces
-    from Resteasy 2 have been segregated in a separate module, resteasy-legacy, as of release 3.1.0.Final.
+    from RESTEasy 2 have been segregated in a separate module, resteasy-legacy, as of release 3.1.0.Final.
     A few remain in module resteasy-jaxrs for technical reasons. Eventually, all such classes and interfaces will be
-    removed from Resteasy. Most of the relocated elements are internal, so ensuring that resteasy-legacy is on the
+    removed from RESTEasy. Most of the relocated elements are internal, so ensuring that resteasy-legacy is on the
     classpath will make most changes undetectable. One way to do that, of course, is to include it in an application's
     WAR. In the context of WildFly, it is also possible to use a jboss-deployment-structure.xml file in the 
     WEB-INF directory of your WAR file. For example:
