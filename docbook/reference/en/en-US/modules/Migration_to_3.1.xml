@@ -6,12 +6,27 @@
     </para>
 </chapter>
 
+<chapter id="Migration_to_3_5">
+<title>Migration to RESTEasy 3.5 series</title>
+  <para>
+    RESTEasy 3.5 series is a spin-off of the old RESTEasy 3.0 series, featuring JAX-RS 2.1 implementation.
+  </para>
+  <para>
+    The reason why 3.5 comes from 3.0 instead of the 3.1 / 4.0 development streams is basically providing
+    users with a selection of RESTEasy 4 critical / strategic new features, while ensuring full backward
+    compatiblity. As a consequence, no major issues are expected when upgrading RESTEasy from 3.0.x to 3.5.x.
+  </para>
+  <para>
+    The natural upgrade path for users already on RESTEasy 3.1 series is straight to RESTEasy 4 instead.
+  </para>
+</chapter>
+
 <chapter id="Migration_to_3_1">
-<title>Migration to RESTEasy 3.1</title>
+<title>Migration to RESTEasy 3.1 series</title>
 
     <para>
-    In a minor release like 3.1.0.Final, as opposed to a point release like 3.0.19.Final, the scope of 
-    permissible changes is broadened. User discernible changes in RESTEasy 3.1.0.Final include
+    RESTEasy 3.1.0.Final release comes with many changes compared to previous 3.0 point releases.
+    User discernible changes in RESTEasy 3.1.0.Final include
     </para>
     
     <itemizedlist>
@@ -79,7 +94,7 @@
     are a few changes that they should be aware of.
     </para>
     
-    <sect1>
+<sect1>
     <title>Upgrading with RESTEasy 3 API</title>
     
     <para>
