@@ -32,7 +32,7 @@ After pulling down a clone of the RESTEasy repository run
 
 	mvn install
 
-Currently it can be built only JDK 1.8.
+Currently it can be built using JDK 1.8 and 9.
 
 ### Requirements
 - Java Cryptography Extension [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
