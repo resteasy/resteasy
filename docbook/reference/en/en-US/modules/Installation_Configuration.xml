@@ -29,8 +29,10 @@
             in a META-INF/services/javax.ws.rs.ext.Providers file. 
         </para>
         <para>
-            The following table specifies which of the RESTEasy modules currently shipped with WildFly are loaded by default
-            when JAX-RS services are deployed and which aren't.
+            To get an idea of which RESTEasy modules are loaded by default when JAX-RS services are deployed, please
+            see the table below, which refers to a recent WildFly ditribution patched with the current RESTEasy
+            distribution. Clearly, future and unpatched WildFly distributions might differ a bit in terms of modules
+            enabled by default, as the container actually controls this too.
         </para>
         <para>
             <table>
