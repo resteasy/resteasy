@@ -154,6 +154,7 @@ This one is short
    &I18N;
    &Maven_and_RESTEasy;
    &Deprecated_security_modules;
+   &Migration_to_3_5;
    &Migration_to_3_1;
    &Migration_from_older_versions;
    &Books;
