@@ -123,6 +123,7 @@ This one is short
     &Json-p;
     &Multipart;
     &Yaml;
+   &JAX-RS_2.1_additions;
    &StringConverter;
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;
@@ -155,7 +156,6 @@ This one is short
    &Deprecated_security_modules;
    &Migration_to_3_1;
    &Migration_from_older_versions;
-   &JAX-RS_2.1_additions;
    &Books;
 </book>
 
