@@ -130,7 +130,7 @@ public class RxInvokerTest extends ClientTestBase
    }
 
    @Test
-   public void TestRxClientGet() throws Exception
+   public void testRxClientGet() throws Exception
    {
       doTestRxClientGet(false);
       doTestRxClientGet(true);

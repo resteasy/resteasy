@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.jsonb.basic.resource;
 
 import javax.json.bind.annotation.JsonbPropertyOrder;
+import javax.json.bind.annotation.JsonbTransient;
 
 /**
  * Created by rsearls.
@@ -8,21 +9,31 @@ import javax.json.bind.annotation.JsonbPropertyOrder;
 @JsonbPropertyOrder({"color", "sort", "name", "domesticated"})
 public class Cat {
 
+   public static final Integer DEFAULT_TRANSIENT_VAR_VALUE = -1;
+
    private String name;
    private String sort;
    private String color;
    private boolean domesticated;
 
+   /**
+    * This variable should be processed by Jackson2, but this variable should be ignored by JSON-B.
+    */
+   @JsonbTransient
+   private int transientVar;
+
    // json-b needs the default constructor
    public Cat() {
       super();
+      transientVar = DEFAULT_TRANSIENT_VAR_VALUE;
    }
 
-   public Cat(String name, String sort, String color, boolean domesticated) {
+   public Cat(String name, String sort, String color, boolean domesticated, int transientVar) {
       this.name = name;
       this.sort = sort;
       this.color = color;
       this.domesticated = domesticated;
+      this.transientVar = transientVar;
    }
 
    public String getName() {
@@ -59,6 +70,25 @@ public class Cat {
    public Cat setDomesticated(boolean domesticated) {
       this.domesticated = domesticated;
       return this;
+   }
+
+   public int getTransientVar() {
+      return transientVar;
+   }
+
+   public void setTransientVar(int transientVar) {
+      this.transientVar = transientVar;
+   }
+
+   @Override
+   public String toString() {
+      return "Cat - custom toString format {" +
+              "name='" + name + '\'' +
+              ", sort='" + sort + '\'' +
+              ", color='" + color + '\'' +
+              ", domesticated=" + domesticated +
+              ", transientVar=" + transientVar +
+              '}';
    }
 }
 
