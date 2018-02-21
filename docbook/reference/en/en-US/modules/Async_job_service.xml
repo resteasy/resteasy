@@ -27,7 +27,7 @@ Location: http://example.com/asynch/jobs/3332334
 /asynch/jobs/{job-id}?wait={millisconds}|nowait=true
 </programlisting>
    <para>You can perform the GET, POST, and DELETE operations on this job URL.  GET returns whatever the JAX-RS resource method you invoked
-   returned as a response if the job was completed.  If the job has not completed, this GET will return a response code of 202, Accepted.  Invoking GET does not remove the job, so you can call it multiple times.  When Resteasy's job queue gets full, it will evict
+   returned as a response if the job was completed.  If the job has not completed, this GET will return a response code of 202, Accepted.  Invoking GET does not remove the job, so you can call it multiple times.  When RESTEasy's job queue gets full, it will evict
 the least recently used job from memory.  You can manually clean up after yourself by calling DELETE on the URI.  POST does
 a read of the JOB response and will remove the JOB it has been completed.
 </para>

@@ -111,7 +111,7 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <row>
 <entry>Failure</entry>
 <entry>N/A</entry>
-<entry>Internal Resteasy.  Not logged</entry>
+<entry>Internal RESTEasy.  Not logged</entry>
 </row>
 <row>
 <entry>LoggableFailure</entry>

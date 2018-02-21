@@ -169,7 +169,7 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
     Most of the deprecated classes and interfaces
     from RESTEasy 2 have been segregated in a separate module, resteasy-legacy, as of release 3.1.0.Final.
     A few remain in module resteasy-jaxrs for technical reasons. Eventually, all such classes and interfaces will be
-    removed from Resteasy. Most of the relocated elements are internal, so ensuring that resteasy-legacy is on the
+    removed from RESTEasy. Most of the relocated elements are internal, so ensuring that resteasy-legacy is on the
     classpath will make most changes undetectable. One way to do that, of course, is to include it in an application's
     WAR. In the context of WildFly, it is also possible to use a jboss-deployment-structure.xml file in the 
     WEB-INF directory of your WAR file. For example:

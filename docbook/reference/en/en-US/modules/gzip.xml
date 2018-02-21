@@ -152,7 +152,7 @@ Client client = new ResteasyClientBuilder() // Activate gzip compression on clie
    
    <para>
    The designation of a compressible entity by the use of the <classname>@GZIP</classname> annotation is a
-   built in, specific instance of a more general facility supported by Resteasy.  There are three components
+   built in, specific instance of a more general facility supported by RESTEasy.  There are three components
    to this facility.
    </para>
    
@@ -214,7 +214,7 @@ public class ClientContentEncodingAnnotationFilter implements WriterInterceptor
    </orderedlist>
    
    <para>
-      The annotation <classname>@GZIP</classname> is built into Resteasy, but 
+      The annotation <classname>@GZIP</classname> is built into RESTEasy, but 
       <classname>ClientContentEncodingAnnotationFeature</classname> and <classname>ServerContentEncodingAnnotationFeature</classname>
       will also recognize application defined annotations. For example,
    </para>

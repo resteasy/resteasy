@@ -23,7 +23,7 @@
    </para>
    
    <para>
-   Each message is prefixed by the project code "RESTEASY" followed by an ID which is unique to Resteasy. These IDs belong to the
+   Each message is prefixed by the project code "RESTEASY" followed by an ID which is unique to RESTEasy. These IDs belong to the
    following ranges:
    </para>
 
