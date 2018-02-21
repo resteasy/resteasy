@@ -511,7 +511,10 @@ name: b
            Network communication between the client and server is handled by default in RESTEasy.
            The interface between the RESTEasy Client Framework and the network
            is defined by RESTEasy's <code class="classname">ClientHttpEngine</code> interface.
-           RESTEasy ships with multiple implementations of this interface. The default
+           RESTEasy ships with multiple implementations of this interface.
+       </para>
+       <para>
+           The default
            implementation is <code class="classname">ApacheHttpClient43Engine</code>, which uses
            version 4.3 of the <code class="classname">HttpClient</code> from the Apache
            <code class="classname">HttpComponents</code> project.
@@ -520,10 +523,15 @@ name: b
            RESTEasy automatically selects one of these two
            <code class="classname">ClientHttpEngine</code> implementations based upon the
            detection of the Apache version.
+       </para>
+       <para>
            <code class="classname">ApacheHttpAsyncClient4Engine</code>, instead, is built on top
            of <emphasis>HttpAsyncClient</emphasis> (still from the Apache
            <emphasis>HttpComponents</emphasis> project) with internally dispatches requests
-           using a non-blocking IO model. Finally,
+           using a non-blocking IO model.
+       </para>
+       <para>
+           Finally,
            <code class="classname">InMemoryClientEngine</code> is
            an implementation that dispatches requests to a server in the same JVM and
            <code class="classname">URLConnectionEngine</code> is an implementation that uses
@@ -658,6 +666,20 @@ ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient,
            }
 });
        </programlisting>
+
+    <section id="http_redirect">
+      <title>HTTP redirect</title>
+      <para>
+         The <classname>ClientHttpEngine</classname> implementations based on Apache
+         <classname>HttpClient</classname> support HTTP redirection.
+         The feaure is disabled by default and has to be enabled by users explicitly:
+         <programlisting>
+ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
+engine.setFollowRedirects(true);
+Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+     </programlisting>
+      </para>
+    </section>
 
     <section id="apache_pre_4_3">
         <title>Apache HTTP Client pre-4.3 APIs</title>
