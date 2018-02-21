@@ -3,7 +3,7 @@
 
 <para>
 
-Because Resteasy is deployed as a servlet, you must use standard web.xml constraints to enable authentication and authorization.  
+Because RESTEasy is deployed as a servlet, you must use standard web.xml constraints to enable authentication and authorization.  
 </para>
 <para>
 
@@ -31,9 +31,9 @@ To get around this problem you will need to use the security annotations defined
 </para>
 <para>
 
-Resteasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   By default though, Resteasy does not recognize these annotations.  You have to 
-configure Resteasy to turn on role-based security by setting a context parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
-functionality instead of Resteasy.
+RESTEasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   By default though, RESTEasy does not recognize these annotations.  You have to 
+configure RESTEasy to turn on role-based security by setting a context parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
+functionality instead of RESTEasy.
 
 </para>
 <programlisting>
@@ -47,15 +47,15 @@ functionality instead of Resteasy.
 </web-app>]]>
 </programlisting>
 
-<para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the Resteasy JAX-RS war file that you are using in your JAX-RS classes and set up a security constraint that permits all of these roles access to every URL handled by the JAX-RS runtime.  You'll just have to trust that Resteasy JAX-RS authorizes properly.
+<para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the RESTEasy JAX-RS war file that you are using in your JAX-RS classes and set up a security constraint that permits all of these roles access to every URL handled by the JAX-RS runtime.  You'll just have to trust that RESTEasy JAX-RS authorizes properly.
 </para>
 <para>
 
-How does Resteasy do authorization?  Well, its really simple.  It just sees if a method is annotated with @RolesAllowed and then just does HttpServletRequest.isUserInRole.  If one of the @RolesAllowed passes, then allow the request, otherwise, a response is sent back with a 401 (Unauthorized) response code.
+How does RESTEasy do authorization?  Well, its really simple.  It just sees if a method is annotated with @RolesAllowed and then just does HttpServletRequest.isUserInRole.  If one of the @RolesAllowed passes, then allow the request, otherwise, a response is sent back with a 401 (Unauthorized) response code.
 </para>
 <para>
 
-So, here's an example of a modified RESTEasy WAR file.  You'll notice that every role declared is allowed access to every URL controlled by the Resteasy servlet.
+So, here's an example of a modified RESTEasy WAR file.  You'll notice that every role declared is allowed access to every URL controlled by the RESTEasy servlet.
 </para>
 <para>
 

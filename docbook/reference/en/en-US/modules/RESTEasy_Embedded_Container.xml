@@ -1,7 +1,7 @@
 <chapter id="RESTEasy_Embedded_Container">
 <title>Embedded Containers</title>
 
-    <para>Resteasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use Resteasy in
+    <para>RESTEasy has a few different plugins for different embedabble HTTP and/or Servlet containers if use RESTEasy in
     a test environment, or within an environment where you do not want a Servlet engine dependency.</para>
     <section>
         <title>Undertow</title>
@@ -114,7 +114,7 @@ public class UndertowTest
         <title>Sun JDK HTTP Server</title>
         <para>
             The Sun JDK comes with a simple HTTP server implementation (com.sun.net.httpserver.HttpServer) which you
-            can run Resteasy on top of.
+            can run RESTEasy on top of.
         </para>
     <programlisting> <![CDATA[
       HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
@@ -227,7 +227,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
     <section>
         <title>Netty</title>
         <para>
-            Resteasy has integration with the popular Netty project as well..
+            RESTEasy has integration with the popular Netty project as well..
         </para>
     <programlisting> <![CDATA[
    public static void start(ResteasyDeployment deployment) throws Exception
@@ -254,7 +254,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
   <section>
     <title>Vert.x</title>
     <para>
-      Resteasy has integration with the popular Vert.x project as well..
+      RESTEasy has integration with the popular Vert.x project as well..
     </para>
     <programlisting> <![CDATA[
    public static void start(VertxResteasyDeployment deployment) throws Exception
@@ -282,7 +282,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
     <para>When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind to
     not block this thread and respect the Vert.x programming model, see the related Vert.x <ulink url="http://vertx.io/docs/vertx-core/java/#_don_t_block_me">manual page</ulink>.</para>
 
-    <para>Vert.x extends the Resteasy registry to  provide a new binding scope that creates resources per Event Loop:</para>
+    <para>Vert.x extends the RESTEasy registry to  provide a new binding scope that creates resources per Event Loop:</para>
     <programlisting> <![CDATA[
   VertxResteasyDeployment deployment = new VertxResteasyDeployment();
   // Create an instance of resource per Event Loop
@@ -292,7 +292,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
     <para>The per instance binding scope caches the same resource instance for each event loop providing the same
     concurrency model than a verticle deployed multiple times.</para>
 
-    <para>Vert.x can also embed a Resteasy deployment, making easy to use Jax-RS annotated controller in Vert.x applications: </para>
+    <para>Vert.x can also embed a RESTEasy deployment, making easy to use Jax-RS annotated controller in Vert.x applications: </para>
     <programlisting> <![CDATA[
   Vertx vertx = Vertx.vertx();
   HttpServer server = vertx.createHttpServer();

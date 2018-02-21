@@ -15,7 +15,7 @@
         </para>
         <note>
             <para>
-                Resteasy <link linkend="Reactive">supports more reactive types than the specification</link>.
+                RESTEasy <link linkend="Reactive">supports more reactive types than the specification</link>.
             </para>
         </note>
     </sect1>
@@ -103,7 +103,7 @@
             </para>
             <note>
                <para>
-                  Resteasy <link linkend="Reactive">supports sending SSE events via reactive types</link>.
+                  RESTEasy <link linkend="Reactive">supports sending SSE events via reactive types</link>.
                </para>
             </note>
         </sect2>
