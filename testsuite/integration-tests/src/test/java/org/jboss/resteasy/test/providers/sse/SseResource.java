@@ -51,8 +51,6 @@ public class SseResource
 
    private volatile boolean sending = true;
 
-   private volatile boolean isServiceAvailable = false;
-
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
 
    private final static Logger logger = Logger.getLogger(SseResource.class);
@@ -300,27 +298,6 @@ public class SseResource
    public void testErrorConsumer(@Context SseEventSink eventSink)
    {
       throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
-   }
-
-   @GET
-   @Path("/retryafter")
-   @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void sendMessage(@Context SseEventSink sink)
-   {
-      if (!isServiceAvailable)
-      {
-         isServiceAvailable = true;
-         throw new WebApplicationException(Response.status(503).header(HttpHeaders.RETRY_AFTER, String.valueOf(1))
-               .build());
-      }
-      else
-      {
-         try (SseEventSink s = sink)
-         {
-            s.send(sse.newEvent("ServiceAvailable"));
-            isServiceAvailable = false;
-         }
-      }
    }
 
    @GET
