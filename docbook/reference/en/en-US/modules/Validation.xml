@@ -108,12 +108,12 @@ public class TestClassValidator implements ConstraintValidator<TestClassConstrai
    
    <para>
    If a validation problem occurs, either a problem with the validation definitions or a constraint violation,
-   Resteasy will set the return header <classname>org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER</classname>
+   RESTEasy will set the return header <classname>org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER</classname>
    ("validation-exception") to "true".
    </para>
    
    <para>
-   If Resteasy detects a structural validation problem, such as a validation annotation with a 
+   If RESTEasy detects a structural validation problem, such as a validation annotation with a 
    missing validator class, it will return a String representation of a 
    <classname>javax.validation.ValidationException</classname>.  For example
    </para>
@@ -123,9 +123,9 @@ javax.validation.ValidationException: HV000028: Unexpected exception during isVa
 ]]></programlisting>
    
    <para>
-   If any constraint violations are detected, Resteasy will return a report in one of a variety
+   If any constraint violations are detected, RESTEasy will return a report in one of a variety
    of formats.  If one of "application/xml" or "application/json" occur in the "Accept" request header,
-   Resteasy will return an appropriately marshalled instance of
+   RESTEasy will return an appropriately marshalled instance of
    <classname>org.jboss.resteasy.api.validation.ViolationReport</classname>:
    </para>
 
@@ -244,7 +244,7 @@ public class ConstraintType
    </para>
    
    <para>If neither "application/xml" or "application/json" occur in the "Accept" request header,
-   Resteasy returns a report with a String representation of each
+   RESTEasy returns a report with a String representation of each
    <classname>ResteasyConstraintViolation</classname>, where
    each field is delimited by '[' and ']', followed by a '\r', with a final '\r' at the end.
    For example,

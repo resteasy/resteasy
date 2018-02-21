@@ -69,7 +69,7 @@
                         yes
                     </entry>
                     <entry>
-                        Resteasy CDI integration
+                        RESTEasy CDI integration
                     </entry>
                 </row>
                 <row>
@@ -124,7 +124,7 @@
                         yes
                     </entry>
                     <entry>
-                        Core Resteasy libraries for server and client.  You will need to include this in your deployment
+                        Core RESTEasy libraries for server and client.  You will need to include this in your deployment
                         if you are only using JAX-RS client.
                     </entry>
                 </row>
@@ -306,7 +306,7 @@
         </para>
         <para>
             Also, RESTEasy context-params (see <xref linkend="configuration_switches"/>)
-            are available if you want to tweak or turn on/off any specific Resteasy feature.
+            are available if you want to tweak or turn on/off any specific RESTEasy feature.
         </para>
         <para>
             Since we're not using a &lt;servlet-mapping&gt; element, we must define a
@@ -400,7 +400,7 @@ public class MyApplication extends Application
         <title>Older servlet containers</title>
         <para>
             The <literal>resteasy-servlet-initializer</literal> artifact will not work in Servlet versions older than
-            3.0.  You'll then have to manually declare the Resteasy servlet in your WEB-INF/web.xml file of your WAR project,
+            3.0.  You'll then have to manually declare the RESTEasy servlet in your WEB-INF/web.xml file of your WAR project,
             and you'll have to use an <classname>Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>)
             which explicitly lists resources and providers. For example:
         </para>
@@ -438,7 +438,7 @@ public class MyApplication extends Application
     </section>
     <section id="configuration_switches">
         <title>Configuration switches</title>
-        <para>Resteasy receives configuration options from &lt;context-param&gt; elements.</para>
+        <para>RESTEasy receives configuration options from &lt;context-param&gt; elements.</para>
         <para>
             <table frame="topbot">
                 <tgroup cols="3" rowsep="1" colsep="1">
@@ -464,7 +464,7 @@ public class MyApplication extends Application
                                 no default
                             </entry>
                             <entry>
-                                If the url-pattern for the Resteasy servlet-mapping is not /*
+                                If the url-pattern for the RESTEasy servlet-mapping is not /*
                             </entry>
                         </row>
                         <row>
@@ -732,7 +732,7 @@ public class MyApplication extends Application
                             </entry>
                             <entry>
                                 If a resource method returns a text/* or application/xml* media type without
-                                an explicit charset, Resteasy will add "charset=UTF-8" to the returned
+                                an explicit charset, RESTEasy will add "charset=UTF-8" to the returned
                                 Content-Type header. Note that the charset defaults to UTF-8 in this case,
                                 independent of the setting of this parameter.
                             </entry>
@@ -744,7 +744,7 @@ public class MyApplication extends Application
         <para>
             <emphasis role="bold">Note. </emphasis>
             The resteasy.servlet.mapping.prefix &lt;context param&gt; variable must be set if your servlet-mapping for
-            the Resteasy servlet has a url-pattern other than /*. For example, if the url-pattern is
+            the RESTEasy servlet has a url-pattern other than /*. For example, if the url-pattern is
         </para>
         <para>
             <programlisting>
@@ -845,14 +845,14 @@ public abstract class Application
         <para>
             This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
             you are and read the configuration section above on installing in Servlet 3.0.
-            The initialization of Resteasy can be performed within a ServletContextListener instead of within the
-            Servlet. You may need this if you are writing custom Listeners that need to interact with Resteasy at boot
-            time. An example of this is the Resteasy Spring integration that requires a Spring ServletContextListener.
+            The initialization of RESTEasy can be performed within a ServletContextListener instead of within the
+            Servlet. You may need this if you are writing custom Listeners that need to interact with RESTEasy at boot
+            time. An example of this is the RESTEasy Spring integration that requires a Spring ServletContextListener.
             The org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap class is a ServletContextListener that
             configures an instance of an ResteasyProviderFactory and Registry. You can obtain instances of a
             ResteasyProviderFactory and Registry from the ServletContext attributes
             org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry. From these instances you
-            can programmatically interact with Resteasy registration interfaces.
+            can programmatically interact with RESTEasy registration interfaces.
         </para>
 
         <programlisting><![CDATA[
@@ -885,11 +885,11 @@ public abstract class Application
         <para>
             This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
             you are and read the configuration section above on installing in Servlet 3.0.
-            The downside of running Resteasy as a Servlet is that you cannot have static resources like .html and .jpeg
+            The downside of running RESTEasy as a Servlet is that you cannot have static resources like .html and .jpeg
             files in the
-            same path as your JAX-RS services. Resteasy allows you to run as a Filter instead. If a JAX-RS resource is
+            same path as your JAX-RS services. RESTEasy allows you to run as a Filter instead. If a JAX-RS resource is
             not
-            found under the URL requested, Resteasy will delegate back to the base servlet container to resolve URLs.
+            found under the URL requested, RESTEasy will delegate back to the base servlet container to resolve URLs.
         </para>
 
         <programlisting><![CDATA[
@@ -917,7 +917,7 @@ public abstract class Application
     <title>Client side</title>
     
     <para>
-        JAX-RS 2.0 conforming implementations such as Resteasy support a client side framework which simplifies
+        JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
         communicating with restful applications. In Resteasy, the minimal set of modules needed for the client framework
         consists of resteasy-jaxrs and resteasy-client. You can access them by way of maven:
     </para>

@@ -136,7 +136,7 @@ Customer cust = (Customer)input.getEntity(Customer.class, privateKey, cert);
     know how to parse a multipart message and Doseta doesn't. Its up to you
     what you want to use.</para>
 
-    <para>Resteasy has two different interfaces for creating a
+    <para>RESTEasy has two different interfaces for creating a
     multipart/signed message. One for input, one for output. If your client or
     server wants to send an HTTP request or response with an multipart/signed
     body, it uses the

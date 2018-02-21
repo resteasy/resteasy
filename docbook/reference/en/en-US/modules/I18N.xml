@@ -2,7 +2,7 @@
    <title>Internationalization and Localization</title>
 
    <para>
-   With the help of the JBoss Logging project, all log and exception messages in Resteasy are internationalized. That is, they
+   With the help of the JBoss Logging project, all log and exception messages in RESTEasy are internationalized. That is, they
    have a default value in English which can be overridden in any given locale by a file which gives translated values. For
    more information about internationalization and localization in Java, see, for example, 
    <ulink url="http://docs.oracle.com/javase/tutorial/i18n">http://docs.oracle.com/javase/tutorial/i18n</ulink>. For more about
@@ -15,7 +15,7 @@
    <section>
    <title>Internationalization</title>
    <para>
-   Each module in Resteasy that produces any text in the form of logging messages or exception messages
+   Each module in RESTEasy that produces any text in the form of logging messages or exception messages
    has an interface named org.jboss.resteasy...i18n.Messages which contains the default messages. Those
    modules which do any logging also have an interface named org.jboss.resteasy...i18n.LogMessages which gives access to an
    underlying logger. With the exception of the resteasy-jaxrs module, all messages are in the Messages class. resteasy-jaxrs
@@ -205,7 +205,7 @@ throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocal
    <title>Localization</title>
    
    <para>
-   When Resteasy is built with the "i18n" profile, a template properties file containing the default messages
+   When RESTEasy is built with the "i18n" profile, a template properties file containing the default messages
    is created in a subdirectory of target/generated-translation-files. In the jaxb provider, for example,
    the
    </para>

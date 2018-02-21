@@ -1,7 +1,7 @@
 <chapter id="json-p">
     <title>JSON Support via Java EE 7 JSON-P API</title>
     <para>No, this is not the JSONP you are thinking of!  JSON-P is a new Java EE 7 JSON parsing API.  Horrible name for
-        a new JSON parsing API!  What were they thinking?  Anyways, Resteasy has
+        a new JSON parsing API!  What were they thinking?  Anyways, RESTEasy has
         a provider for it.  If you are using WildFly, it is required by Java EE 7 so you will have it automatically bundled.
         Otherwise, use this maven dependency.
     </para>

@@ -3,12 +3,12 @@
     <para>
         JAX-RS 2.1 adds support for returning the <link linkend="CompletionStage">asynchronous 
         reactive type <code>CompletableFuture</code></link>, but
-        Resteasy supports much more than this, when it comes to asynchronous programming. 
+        RESTEasy supports much more than this, when it comes to asynchronous programming. 
     </para>
     <sect1>
         <title>Plugable reactive types</title>
         <para>
-            Out of the box, Resteasy supports <code>CompletableFuture</code> for single events, and 
+            Out of the box, RESTEasy supports <code>CompletableFuture</code> for single events, and 
             <code>org.reactivestreams.Publisher</code> (from <link linkend="http://www.reactive-streams.org">Reactive Streams</link>)
             for multiple events.
         </para>

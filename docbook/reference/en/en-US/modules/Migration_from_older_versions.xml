@@ -1,14 +1,14 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from Resteasy 2 to Resteasy 3</title>
+    <title>Migrating from RESTEasy 2 to RESTEasy 3</title>
     
     <para>
-        Many facilities from Resteasy 2 appear in a different form in Resteasy 3. For example, much
-        of the client framework in Resteasy 2 is formalized, in modified form, in JAX-RS 2.0. Resteasy
+        Many facilities from RESTEasy 2 appear in a different form in RESTEasy 3. For example, much
+        of the client framework in RESTEasy 2 is formalized, in modified form, in JAX-RS 2.0. Resteasy
         versions 3.0.x implement both the older deprecated form and the newer conformant form. The
-        deprecated form is finally removed in Resteasy 3.1.0.Final. For more information on upgrading
-        from various deprecated facilities in Resteasy 2, see
+        deprecated form is finally removed in RESTEasy 3.1.0.Final. For more information on upgrading
+        from various deprecated facilities in RESTEasy 2, see
         <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf</ulink>
     </para>
 </sect1>
@@ -43,11 +43,11 @@
     <title>Migrating to 3.0.17</title>
     <itemizedlist>
         <listitem>
-        Module resteasy-spring is now included in the Resteasy distribution zip file. For more information see 
+        Module resteasy-spring is now included in the RESTEasy distribution zip file. For more information see 
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1354">https://issues.jboss.org/browse/RESTEASY-1354</ulink>.
         </listitem>
         <listitem>
-        Resteasy client proxies now support an <methodname>as()</methodname> method for casting to subinterfaces.
+        RESTEasy client proxies now support an <methodname>as()</methodname> method for casting to subinterfaces.
         For more information see 
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1332">https://issues.jboss.org/browse/RESTEASY-1332</ulink>.
         </listitem>
@@ -57,7 +57,7 @@
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1325">https://issues.jboss.org/browse/RESTEASY-1325</ulink>.
         </listitem>
         <listitem>
-        Resteasy Spring integration now includes a Spring Boot Starter. For more information see
+        RESTEasy Spring integration now includes a Spring Boot Starter. For more information see
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1305">https://issues.jboss.org/browse/RESTEASY-1305</ulink>.
         </listitem>
         <listitem>
@@ -65,7 +65,7 @@
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1297">https://issues.jboss.org/browse/RESTEASY-1297</ulink>.
         </listitem>
         <listitem>
-        Resteasy has a new builtin producer that implements <classname>MessageBodyWriter&lt;Number&gt;</classname>. For more information see
+        RESTEasy has a new builtin producer that implements <classname>MessageBodyWriter&lt;Number&gt;</classname>. For more information see
         <ulink url="https://issues.jboss.org/browse/RESTEASY-1282">https://issues.jboss.org/browse/RESTEASY-1282</ulink>.
         </listitem>
         <listitem>
@@ -78,11 +78,11 @@
     <title>Migrating from 3.0.13 to 3.0.14</title>
     <itemizedlist>
         <listitem>
-        Resteasy introduces a <classname>@QueryParam</classname> annotation which allows capturing the name of
+        RESTEasy introduces a <classname>@QueryParam</classname> annotation which allows capturing the name of
         a query parameter. See <ulink url="https://issues.jboss.org/browse/RESTEASY-715">https://issues.jboss.org/browse/RESTEASY-715</ulink>
         for more information.
         </listitem>
-        <listitem>Resteasy now supports WADL. See <xref linkend="WADL"/> for more information. Also see
+        <listitem>RESTEasy now supports WADL. See <xref linkend="WADL"/> for more information. Also see
         <ulink url="https://issues.jboss.org/browse/RESTEASY-166">https://issues.jboss.org/browse/RESTEASY-166</ulink>. 
         </listitem>
     </itemizedlist>
@@ -90,7 +90,7 @@
 <sect1>
     <title>Migrating from 3.0.12 to 3.0.13</title>
     <itemizedlist>
-        <listitem>Resteasy 3 log messages and exceptions are now internationalized. See
+        <listitem>RESTEasy 3 log messages and exceptions are now internationalized. See
 <xref linkend="I18N"/> for more information. Also see 
 <ulink url="https://issues.jboss.org/browse/RESTEASY-1224">https://issues.jboss.org/browse/RESTEASY-1224</ulink>. 
         </listitem>
@@ -167,8 +167,8 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
     <title>Migrating from 3.0 to 3.0.4</title>
     <itemizedlist>
         <listitem>
-            Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the Resteasy <literal>ServletContainerInitializer</literal>.
-            This allows tighter integration with Resteasy much like you have within JBoss/WildFly.  Check out 
+            Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the RESTEasy <literal>ServletContainerInitializer</literal>.
+            This allows tighter integration with RESTEasy much like you have within JBoss/WildFly.  Check out 
             <xref linkend="Installation_Configuration"/> for more information.
         </listitem>
     </itemizedlist>
@@ -183,11 +183,11 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
         </listitem>
         <listitem>
             The JAX-RS TCK has become very strict with a ton more tests.  I can't remember them all, but there are a number
-            of edge cases which earlier Resteasy releases misinterpreted.
+            of edge cases which earlier RESTEasy releases misinterpreted.
         </listitem>
         <listitem>
             Any Failure exceptions in the SPI now have a corresponding JAX-RS 2.0 exception, so they have been deprecated
-            Resteasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.
+            RESTEasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.
         </listitem>
         <listitem>
             A number of SPIs have changed.  Shouldn't be an issue for those of you who use Restasy as-is.  Specifically
@@ -203,17 +203,17 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
             algorithm is quite poor so there are a number of resource schemes that will no longer match.
             For example, resource classes are scanned for a best match, other are ignored in the match.
             Resource locators are not visited unless they are a best match over resource methods.  There is one config switch
-            I added so that Resteasy will ignore the Spec defined class expression filtering step and instead match
+            I added so that RESTEasy will ignore the Spec defined class expression filtering step and instead match
             base on the full expressions of each JAX-RS method.  resteasy.wider.request.matching.  Set that to true
             and you will at least be able to avoid that.
         </listitem>
         <listitem>
             The JAX-RS TCK has become very strict with a ton more tests.  I can't remember them all, but there are a number
-            of edge cases which earlier Resteasy releases misinterpreted.
+            of edge cases which earlier RESTEasy releases misinterpreted.
         </listitem>
         <listitem>
             Any Failure exceptions in the SPI now have a corresponding JAX-RS 2.0 exception, so they have been deprecated
-            Resteasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.
+            RESTEasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.
         </listitem>
         <listitem>
             A number of SPIs have changed.  Shouldn't be an issue for those of you who use Restasy as-is.  Specifically
@@ -263,7 +263,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
     <title>Migrating from 2.x to 3.0-beta-1</title>
     <itemizedlist>
         <listitem>
-            Resteasy manual client API, interceptors, StringConverters, StringParamterConverters, and Async HTTP APIs have all been
+            RESTEasy manual client API, interceptors, StringConverters, StringParamterConverters, and Async HTTP APIs have all been
             deprecated and will be removed possibly in a later release.  There is now a JAX-RS 2.0 equivalent for each
             of these things.
         </listitem>
@@ -284,7 +284,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
             The new JAX-RS 2.0 client-side filters will not be bound and run when you are using Resteasy's old client api.
         </listitem>
         <listitem>
-            On server-side, all old Resteasy interceptors can run in parallel with the new JAX-RS 2.0 filter and interceptor
+            On server-side, all old RESTEasy interceptors can run in parallel with the new JAX-RS 2.0 filter and interceptor
             interfaces.
         </listitem>
         <listitem>
@@ -312,7 +312,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
     <title>Migrating from 2.3.0 to 2.3.1</title>
     <itemizedlist>
         <listitem>
-            sjsxp has been removed as a dependency for the Resteasy JAXB provider
+            sjsxp has been removed as a dependency for the RESTEasy JAXB provider
         </listitem>
     </itemizedlist>
 </sect1>
@@ -348,7 +348,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
         <listitem>
 	  Some subtle changes were made to ExceptionMapper handling so that you can write ExceptionMappers for any exception thrown internally or within
 	  your application.  See JIRA Issue RESTEASY-595 for more details.  This may have an effect on existing applications that have an ExceptionMapper
-	  for RuntimeException in that you will start to see Resteasy internal exceptions being caught by this kind of ExceptionMapper.
+	  for RuntimeException in that you will start to see RESTEasy internal exceptions being caught by this kind of ExceptionMapper.
         </listitem>
         <listitem>
             The resteasy-cache (Server-side cache) will now invalidate the cache when a PUT, POST, or DELETE is done on a particular URI.
@@ -379,7 +379,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
     <title>Migrating from 2.0.x to 2.1</title>
     <itemizedlist>
         <listitem>
-            Slf4j is no longer the default logging mechanism for resteasy. Resteasy also no longer ships with SLF4J
+            Slf4j is no longer the default logging mechanism for resteasy. RESTEasy also no longer ships with SLF4J
             libraries. Please read the logging
             section in the Installation and Configuration chapter for more details.
         </listitem>
@@ -414,7 +414,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
             <listitem>
                 As per required by the spec List or array injection of empty values will return an empty collection
                 or array, not null. I.e.
-                (@QueryParam("name") List&lt;String&gt; param) param will be an empty List. Resteasy 1.2.x and
+                (@QueryParam("name") List&lt;String&gt; param) param will be an empty List. RESTEasy 1.2.x and
                 earlier would return null.
             </listitem>
             <listitem>

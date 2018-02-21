@@ -4,7 +4,7 @@
 <sect1>
    <title>GZIP Compression/Decompression</title>
    <para>
-    Resteasy supports (though not by default - see below)
+    RESTEasy supports (though not by default - see below)
     GZIP decompression.  If properly configured,
     the client framework or a JAX-RS service, upon receiving
     a message body with a Content-Encoding of "gzip",
@@ -13,10 +13,10 @@
     set the Accept-Encoding header to be "gzip, deflate" so you do not
     have to set this header yourself.
     </para>
-    <para>Resteasy also supports (though not by default - see below) automatic
+    <para>RESTEasy also supports (though not by default - see below) automatic
     compression.  If the client framework is sending a request
     or the server is sending a response with the Content-Encoding header
-    set to "gzip", Resteasy will (if properly configured)
+    set to "gzip", RESTEasy will (if properly configured)
     do the compression. So that you do not
     have to set the Content-Encoding header directly, you can use the
     @org.jboss.resteasy.annotation.GZIP annotation.
@@ -49,7 +49,7 @@ public class MyService {
    
    <para><emphasis role="bold">Note.</emphasis> Decompression carries a risk of attack
    from a bad actor that can package an entity that will expand greatly. Consequently,
-   Resteasy disables GZIP compression / decompression by default.
+   RESTEasy disables GZIP compression / decompression by default.
    </para>
    
    <para>
@@ -104,7 +104,7 @@ public class MyService {
    named accordingly in javax.ws.rs.ext.Providers. However, they continue to exist in
    <classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> in module
    resteasy-legacy, so, if resteasy-legacy is available, the original names can be used.
-   See Chapter <link linkend='Migration_to_3_1'>Migration to Resteasy 3.1</link> for more
+   See Chapter <link linkend='Migration_to_3_1'>Migration to RESTEasy 3.1</link> for more
    information.
    </para>
 
