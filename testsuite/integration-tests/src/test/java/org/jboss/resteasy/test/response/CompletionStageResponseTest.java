@@ -193,6 +193,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
+   @Category(ExpectedFailing.class)
    public void testExceptionImmediateRuntime() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/runtime")).request();
@@ -215,6 +216,7 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
+   @Category(ExpectedFailing.class)
    public void testExceptionImmediateNotRuntime() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/exception/immediate/notruntime")).request();

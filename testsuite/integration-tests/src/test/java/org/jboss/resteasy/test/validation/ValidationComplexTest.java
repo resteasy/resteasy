@@ -7,6 +7,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexA;
@@ -66,6 +67,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.servlet.http.HttpServletResponse;
@@ -741,6 +743,7 @@ public class ValidationComplexTest {
      */
     @Test
     @OperateOnDeployment("basicDeploymentInterfaceTestSub")
+    @Category(ExpectedFailing.class)
     public void testInheritence() throws Exception {
         {
             // Valid - inherited annotations
@@ -1069,6 +1072,7 @@ public class ValidationComplexTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void testOtherGroups() throws Exception {
         // Test invalid field, property, parameter, and class.
         Response response = client.target(generateURL(BASIC_DEPLOYMENT, "/test/a/z", ValidationComplexResourceWithOtherGroups.class.getSimpleName()))

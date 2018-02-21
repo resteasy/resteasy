@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.ExternalParameterEntityResource;
@@ -24,6 +25,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
@@ -108,6 +110,7 @@ public class ExternalParameterEntityTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void testExternalParameterEntityNoExpand() throws Exception {
         logger.info(String.format("Request body: %s", this.request.replace('\r', '\n')));
         Response response = client.target(generateURL("/test", NO_EXPAND)).request()

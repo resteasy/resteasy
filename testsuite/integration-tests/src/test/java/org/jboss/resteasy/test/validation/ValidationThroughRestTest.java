@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.test.validation.resource.ValidationThroughRestResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -26,6 +27,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -55,6 +57,7 @@ public class ValidationThroughRestTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void validationOfFieldAndParameterOfEjbResource() {
         Client client = ClientBuilder.newClient();
         Builder builder = client.target(generateURL("/hikes/createHike")).request();

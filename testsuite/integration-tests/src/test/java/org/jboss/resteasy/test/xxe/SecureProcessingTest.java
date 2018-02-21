@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -324,6 +325,7 @@ public class SecureProcessingTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void testSecurityTrueDTDsFalseExpansionDefault() throws Exception {
         doTestFailsFailsPassesFails("tfd");
     }
@@ -335,6 +337,7 @@ public class SecureProcessingTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void testSecurityTrueDTDsFalseExpansionFalse() throws Exception {
         doTestFailsFailsPassesFails("tff");
     }

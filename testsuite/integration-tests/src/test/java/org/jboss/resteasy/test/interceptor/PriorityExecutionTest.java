@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.interceptor;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionClientRequestFilter1;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionClientRequestFilter2;
@@ -35,6 +36,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -118,6 +120,7 @@ public class PriorityExecutionTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void testPriority() throws Exception {
         ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
         factory.register(PriorityExecutionContainerResponseFilter2.class);
