@@ -9,11 +9,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
+import org.jboss.resteasy.test.providers.resource.ContractsData;
 import org.junit.Assert;
 import org.junit.Test;
 
 /***
- * 
+ *
  * @author Nicolas NESMON
  *
  */
@@ -28,6 +29,13 @@ public class OutboundSseEventImplTest {
 	@Test(expected = NullPointerException.class)
 	public void Should_ThrowNullPointerException_When_MediaTypeIsNull() throws Exception {
 		new OutboundSseEventImpl.BuilderImpl().mediaType(null).build();
+	}
+
+	@Test
+	public void testGetOutboundSseEventGetMediaType() throws Exception {
+		OutboundSseEvent outboundSseEvent = new OutboundSseEventImpl.BuilderImpl()
+				.mediaType(MediaType.APPLICATION_XML_TYPE).comment("comment").build();
+		Assert.assertEquals(MediaType.APPLICATION_XML_TYPE, outboundSseEvent.getMediaType());
 	}
 
 	@Test()
@@ -83,4 +91,18 @@ public class OutboundSseEventImplTest {
 		Assert.assertEquals(genericEntity.getType(), outboundSseEvent.getGenericType());
 	}
 
+	@Test
+	public void testGetOutboundSseEventGetType() throws Exception {
+		OutboundSseEvent outboundSseEvent = new OutboundSseEventImpl.BuilderImpl()
+				.data(ContractsData.class, new ContractsData()).build();
+		Assert.assertEquals(ContractsData.class, outboundSseEvent.getType());
+		Assert.assertEquals(ContractsData.class, outboundSseEvent.getGenericType());
+	}
+
+	@Test
+	public void testGetOutboundSseEventGetTypeNull() throws Exception {
+		OutboundSseEvent outboundSseEvent = new OutboundSseEventImpl.BuilderImpl()
+				.comment("comment").build();
+		Assert.assertEquals(null, outboundSseEvent.getType());
+	}
 }
