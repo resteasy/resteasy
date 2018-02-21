@@ -2,19 +2,19 @@
     <title>Installation/Configuration</title>
 
     <para>
-        Resteasy is installed and configured in different ways depending on which environment you are running in.
-        If you are running in WildFly, Resteasy is already bundled and integrated completely
+        RESTEasy is installed and configured in different ways depending on which environment you are running in.
+        If you are running in WildFly, RESTEasy is already bundled and integrated completely
         so there is very little you have to do. If you are running in a different environment, there is some manual
         installation and configuration you will have to do.
     </para>
 
     <section id="resteasy_modules_in_wildfly">
-        <title>Resteasy modules in WildFly</title>
+        <title>RESTEasy modules in WildFly</title>
         <para>
-            In WildFly, Resteasy and the JAX-RS 2.0 API are automatically loaded into your deployment's classpath
+            In WildFly, RESTEasy and the JAX-RS API are automatically loaded into your deployment's classpath
             if and only if you are deploying a JAX-RS application (as determined by the presence
-            of JAX-RS annotations). However, only some Resteasy features are automatically loaded. See Table 3.1. 
-            If you need any of those libraries which are not loaded automatically, you'll have bring them in
+            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1. 
+            If you need any of those libraries which are not loaded automatically, you'll have to bring them in
             with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:  
         </para>
         <programlisting><![CDATA[
@@ -29,7 +29,7 @@
             in a META-INF/services/javax.ws.rs.ext.Providers file. 
         </para>
         <para>
-            The following table specifies which of the Resteasy modules currently shipped with WildFly are loaded by default
+            The following table specifies which of the RESTEasy modules currently shipped with WildFly are loaded by default
             when JAX-RS services are deployed and which aren't.
         </para>
         <para>
@@ -266,9 +266,9 @@
         </para>
     
         <section id="other_resteasy_modules">
-        <title>Other Resteasy modules</title>
+        <title>Other RESTEasy modules</title>
             <para>
-                Not all Resteasy modules are bundled with WildFly. For example,
+                Not all RESTEasy modules are bundled with WildFly. For example,
                 resteasy-fastinfoset-provider and resteasy-wadl are not included among the
                 modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
                 to use them in your application, you can include them in your WAR as you would if you were
@@ -276,9 +276,9 @@
         </para>
         </section>
 	    <section id="upgrading-wildfly">
-	        <title>Upgrading Resteasy within WildFly</title>
+	        <title>Upgrading RESTEasy within WildFly</title>
 	        <para>
-	            Resteasy is bundled with WildFly, but you may want to upgrade Resteasy in WildFly to the latest version.  The Resteasy
+	            RESTEasy is bundled with WildFly, but you may want to upgrade RESTEasy in WildFly to the latest version.  The RESTEasy
 	            distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip.  Unzip this file
 	            within the modules/system/layers/base/ directory of the WildFly distribution.  This will configure WildFly
 	            to use new versions of the modules listed in <xref linkend="resteasy_modules_in_wildfly"/>.
@@ -287,9 +287,9 @@
     </section>
         
     <section>
-        <title>Deploying a Resteasy application to WildFly</title>
+        <title>Deploying a RESTEasy application to WildFly</title>
         <para>
-            Resteasy is bundled with WildFly and completely integrated as per the requirements of Java EE 7.
+            RESTEasy is bundled with WildFly and completely integrated as per the requirements of Java EE.
             You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your JAX-RS services and providers.
             All you have to provide is your JAX-RS service and provider classes packaged
             within a WAR either as POJOs, CDI beans, or EJBs.
@@ -305,7 +305,7 @@
 </web-app>]]></programlisting>
         </para>
         <para>
-            Also, Resteasy context-params (see <xref linkend="configuration_switches"/>)
+            Also, RESTEasy context-params (see <xref linkend="configuration_switches"/>)
             are available if you want to tweak or turn on/off any specific Resteasy feature.
         </para>
         <para>
@@ -336,7 +336,7 @@ public class MyApplication extends Application
         
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
-            not all Resteasy modules are bundled with WildFly. For example,
+            not all RESTEasy modules are bundled with WildFly. For example,
             resteasy-fastinfoset-provider and resteasy-wadl are not included among the
             modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
             to use them in your application, you can include them in your WAR as you would if you were
@@ -347,10 +347,10 @@ public class MyApplication extends Application
     <section id="standalone_resteasy">
         <title>Deploying to other servlet containers</title>
         <para>
-            If you are using Resteasy outside of WildFly, in a standalone servlet container like Tomcat or Jetty, for example,
-            you will need to include the appropriate Resteasy jars in your WAR file.  You will need the core classes
+            If you are using RESTEasy outside of WildFly, in a standalone servlet container like Tomcat or Jetty, for example,
+            you will need to include the appropriate RESTEasy jars in your WAR file.  You will need the core classes
             in the resteasy-jaxrs module, and you may need additional facilities like the resteasy-jaxb-provider module.
-            We strongly suggest that you use Maven to build your WAR files as Resteasy is split into
+            We strongly suggest that you use Maven to build your WAR files as RESTEasy is split into
             a bunch of different modules:
         </para>
         <programlisting><![CDATA[
@@ -371,9 +371,9 @@ public class MyApplication extends Application
         </para>
         <para>
             If you are not using Maven, you can include the necessary jars by hand. If you download
-            Resteasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
+            RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
             for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.             
-            If you unzip it you will see a lib/ directory that contains the libraries needed by Resteasy.
+            If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
             Copy these, as needed, into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
@@ -382,7 +382,7 @@ public class MyApplication extends Application
         <title>Servlet 3.0 containers</title>
         
         <para>
-            Resteasy uses the <literal>ServletContainerInitializer</literal> integration interface in Servlet 3.0 containers
+            RESTEasy uses the <literal>ServletContainerInitializer</literal> integration interface in Servlet 3.0 containers
             to initialize an application, automatically scanning for resources and providers. To enable automatic
             scanning, you must also include the <literal>resteasy-servlet-initializer</literal> artifact in your WAR
             file as well:
@@ -428,7 +428,7 @@ public class MyApplication extends Application
 </web-app>]]></programlisting>
         </para>
         <para>
-            The Resteasy servlet is responsible for initializing some basic components of Resteasy.
+            The RESTEasy servlet is responsible for initializing some basic components of Resteasy.
         </para>
         <para>
             <emphasis role="bold">Note.</emphasis> It is likely that support for pre-3.0 Servlet specifications
@@ -840,7 +840,7 @@ public abstract class Application
     </section>
 
     <section id="listener">
-        <title>Resteasy as a ServletContextListener</title>
+        <title>RESTEasy as a ServletContextListener</title>
 
         <para>
             This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
@@ -880,7 +880,7 @@ public abstract class Application
 </web-app>]]></programlisting>
     </section>
     <section id="filter">
-        <title>Resteasy as a Servlet Filter</title>
+        <title>RESTEasy as a Servlet Filter</title>
 
         <para>
             This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
