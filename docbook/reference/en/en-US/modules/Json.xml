@@ -31,7 +31,7 @@
         <title>Using Jackson 1.9.x Inside WildFly 8</title>
         <para>If you're deploying RESTEasy with WildFly 8,
         there's nothing you need to do except to make sure
-        you've updated your installation with the latest and greatest Resteasy.  See the
+        you've updated your installation with the latest and greatest RESTEasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
         of this documentation for more details.</para>
     </sect1>
@@ -51,7 +51,7 @@
         <title>Using Jackson 2 Inside WildFly 9 and above</title>
         <para>If you're deploying RESTEasy with WildFly 9 or above,
         there's nothing you need to do except to make sure
-        you've updated your installation with the latest and greatest Resteasy.  See the
+        you've updated your installation with the latest and greatest RESTEasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
         of this documentation for more details.</para>
     </sect1>

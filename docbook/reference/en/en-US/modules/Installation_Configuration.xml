@@ -60,7 +60,7 @@
                         yes
                     </entry>
                     <entry>
-                        Resteasy's atom library
+                        RESTEasy's atom library
                     </entry>
                 </row>
                 <row>
@@ -160,7 +160,7 @@
                         yes
                     </entry>
                     <entry>
-                        Resteasy's Javascript API
+                        RESTEasy's Javascript API
                     </entry>
                 </row>
                 <row>
@@ -248,7 +248,7 @@
                         yes
                     </entry>
                     <entry>
-                        Resteasy's interface to Hibernate Bean Validation 1.1
+                        RESTEasy's interface to Hibernate Bean Validation 1.1
                     </entry>
                 </row>
                 <row>
@@ -430,7 +430,7 @@ public class MyApplication extends Application
 </web-app>]]></programlisting>
         </para>
         <para>
-            The RESTEasy servlet is responsible for initializing some basic components of Resteasy.
+            The RESTEasy servlet is responsible for initializing some basic components of RESTEasy.
         </para>
         <para>
             <emphasis role="bold">Note.</emphasis> It is likely that support for pre-3.0 Servlet specifications
@@ -920,7 +920,7 @@ public abstract class Application
     
     <para>
         JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
-        communicating with restful applications. In Resteasy, the minimal set of modules needed for the client framework
+        communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
         consists of resteasy-jaxrs and resteasy-client. You can access them by way of maven:
     </para>
     

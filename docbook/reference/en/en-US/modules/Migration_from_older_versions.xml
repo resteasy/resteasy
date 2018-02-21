@@ -281,7 +281,7 @@ See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jb
             Most add() methods have been removed or made protected in ResteasyProviderFactory.  Use registerProvider() and registerProviderInstance() methods.
         </listitem>
         <listitem>
-            The new JAX-RS 2.0 client-side filters will not be bound and run when you are using Resteasy's old client api.
+            The new JAX-RS 2.0 client-side filters will not be bound and run when you are using RESTEasy's old client api.
         </listitem>
         <listitem>
             On server-side, all old RESTEasy interceptors can run in parallel with the new JAX-RS 2.0 filter and interceptor

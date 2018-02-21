@@ -62,7 +62,7 @@ public class MyAtomService
         return feed;
     }
 }]]></programlisting>
-      <para>Because Resteasy's atom provider is JAXB based, you are not limited to sending atom objects using XML.
+      <para>Because RESTEasy's atom provider is JAXB based, you are not limited to sending atom objects using XML.
          You can automatically re-use all the other JAXB providers that RESTEasy has like JSON and fastinfoset.
          All you have to do is have "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
          @Consumes("application/atom+fastinfoset")

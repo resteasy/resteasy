@@ -33,7 +33,7 @@ To get around this problem you will need to use the security annotations defined
 
 RESTEasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   By default though, RESTEasy does not recognize these annotations.  You have to 
 configure RESTEasy to turn on role-based security by setting a context parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
-functionality instead of Resteasy.
+functionality instead of RESTEasy.
 
 </para>
 <programlisting>

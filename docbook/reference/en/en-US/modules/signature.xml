@@ -63,7 +63,7 @@
       <listitem>
         <para>Algorithm used to hash and sign the message. RSA signing and
         SHA256 hashing is the only supported algorithm at the moment by
-        Resteasy.</para>
+        RESTEasy.</para>
       </listitem>
     </varlistentry>
 

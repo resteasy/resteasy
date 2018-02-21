@@ -363,7 +363,7 @@ public class MultipartProvider implements MessageBodyReader {
       
       <para>
       
-         By default, Resteasy's built-in unmarshaller for org.w3c.dom.Document documents will not expand external entities,
+         By default, RESTEasy's built-in unmarshaller for org.w3c.dom.Document documents will not expand external entities,
          replacing them by the empty string instead. It can be configured to replace external entities by values defined in the
          DTD by setting the context parameter
    
