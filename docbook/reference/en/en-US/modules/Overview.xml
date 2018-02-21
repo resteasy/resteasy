@@ -3,9 +3,9 @@
 
 <para>
 
-JAX-RS 2.0, JSR-339, is a new JCP specification that provides a Java API for RESTful Web Services over the HTTP protocol.
-    Resteasy is an portable implementation of this specification which can run in any Servlet container. Tighter
+JAX-RS 2.0 (JSR-339) and JAX-RS 2.1 (JSR-370), are JCP specifications that provide a Java API for RESTful Web Services over the HTTP protocol.
+    RESTEasy is a portable implementation of these specifications which can run in any Servlet container. Tighter
     integration with WildFly application server is also available to make the user experience nicer in that environment.
-    Resteasy also comes with additional features on top of plain JAX-RS functionalities.
+    RESTEasy also comes with additional features on top of plain JAX-RS functionalities.
 </para>
 </chapter>
