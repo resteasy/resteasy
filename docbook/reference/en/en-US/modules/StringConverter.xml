@@ -129,7 +129,7 @@ public class DateParamConverter implements ParamConverter&lt;Date&gt; {
    
    <para>
    In addition to the JAX-RS <classname>javax.ws.rs.ext.ParamConverterProvider</classname>,
-   Resteasy also has its own <classname>org.jboss.resteasy.StringParameterUnmarshaller</classname>, defined
+   RESTEasy also has its own <classname>org.jboss.resteasy.StringParameterUnmarshaller</classname>, defined
    </para>
    
    <programlisting>
@@ -299,7 +299,7 @@ MultivaluedMap&lt;String, String&gt; getMatrixParameters();
    </orderedlist>
       
    <para>
-   Resteasy adopts the convention that multiple instances of a matrix parameter with the same name
+   RESTEasy adopts the convention that multiple instances of a matrix parameter with the same name
    are treated as a collection. For example,
    </para>
    <programlisting>
@@ -326,7 +326,7 @@ public MultivaluedMap&lt;String, String&gt; getRequestHeaders();
    
    <para>
    in <classname>javax.ws.rs.core.HttpHeaders</classname> returns a <classname>MultivaluedMap</classname>.
-   It is natural, then, for Resteasy to treat
+   It is natural, then, for RESTEasy to treat
    </para>
    
    <programlisting>
@@ -346,7 +346,7 @@ x-header: a, b, c
    specifications. Typically, multiple name=value cookie pairs are separated by ";". However, unlike
    the case with query and matrix parameters, there is no specified JAX-RS method that returns a
    collection of cookie values. Consequently, if two cookies with the same name are received on
-   the server and directed to a collection typed parameter, Resteasy will inject only the second one.
+   the server and directed to a collection typed parameter, RESTEasy will inject only the second one.
    Note, in fact, that the method
    </para>
    
@@ -472,7 +472,7 @@ list segments: 3
    
    <para>
    In the JAX-RS semantics, a <classname>ParamConverter</classname> is supposed to convert a single <classname>String</classname> that
-   represents an individual object. Resteasy extends the semantics to allow a <classname>ParamConverter</classname>
+   represents an individual object. RESTEasy extends the semantics to allow a <classname>ParamConverter</classname>
    to parse the <classname>String</classname> representation of multiple objects and generate a <classname>List&lt;T&gt;</classname>,
    <classname>Set&lt;T&gt;</classname>, <classname>SortedSet&lt;T&gt;</classname>, array, or, indeed, any multivalued data structure
    whatever. First, consider the resource

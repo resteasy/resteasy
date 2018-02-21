@@ -1,5 +1,5 @@
 <chapter id="Atom">
-   <title>Resteasy Atom Support</title>
+   <title>RESTEasy Atom Support</title>
    <para>
       From W3.org (http://tools.ietf.org/html/rfc4287):
    </para>
@@ -19,14 +19,14 @@
       queues, or simply a nice format for sending or receiving data in bulk from a service.
    </para>
    <sect1 id="resteasy_atom">
-      <title>Resteasy Atom API and Provider</title>
+      <title>RESTEasy Atom API and Provider</title>
       <para>RESTEasy has defined a simple object model in Java to represent Atom and uses JAXB to marshal and unmarshal
          it. The
          main classes are in the org.jboss.resteasy.plugins.providers.atom package and are Feed, Entry, Content, and
          Link. If you
          look at the source, you'd see that these are annotated with JAXB annotations. The distribution contains
          the javadocs for this project and are a must to learn the model. Here is a simple example of sending
-         an atom feed using the Resteasy API.
+         an atom feed using the RESTEasy API.
       </para>
       <programlisting><![CDATA[
 import org.jboss.resteasy.plugins.providers.atom.Content;
@@ -63,7 +63,7 @@ public class MyAtomService
     }
 }]]></programlisting>
       <para>Because Resteasy's atom provider is JAXB based, you are not limited to sending atom objects using XML.
-         You can automatically re-use all the other JAXB providers that Resteasy has like JSON and fastinfoset.
+         You can automatically re-use all the other JAXB providers that RESTEasy has like JSON and fastinfoset.
          All you have to do is have "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
          @Consumes("application/atom+fastinfoset")
       </para>

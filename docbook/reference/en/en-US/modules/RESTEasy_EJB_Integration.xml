@@ -3,7 +3,7 @@
 
 <para>
 
-To integrate with EJB you must first modify your EJB's published interfaces.  Resteasy currently only has simple portable integration with EJBs so you must also manually configure your Resteasy WAR.
+To integrate with EJB you must first modify your EJB's published interfaces.  RESTEasy currently only has simple portable integration with EJBs so you must also manually configure your RESTEasy WAR.
 </para>
 <para>
 
@@ -11,7 +11,7 @@ To integrate with EJB you must first modify your EJB's published interfaces.  Re
 </para>
 <para>
 
-Resteasy currently only has simple integration with EJBs.  To make an EJB a JAX-RS resource, you must annotate an SLSB's @Remote or @Local interface with JAX-RS annotations:
+RESTEasy currently only has simple integration with EJBs.  To make an EJB a JAX-RS resource, you must annotate an SLSB's @Remote or @Local interface with JAX-RS annotations:
 </para>
 <para>
 
@@ -73,7 +73,7 @@ This is the only portable way we can offer EJB integration.  Future versions of 
 </para>
 <para>
 
-If you're using Resteasy with an EAR and EJB, a good structure to have is:
+If you're using RESTEasy with an EAR and EJB, a good structure to have is:
 </para>
 <para>
 
@@ -86,12 +86,12 @@ my-ear.ear
        ----WEB-INF/lib (nothing)
 |------lib/
        |
-       ----All Resteasy jar files
+       ----All RESTEasy jar files
 </programlisting>
 </para>
 <para>
 
-From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib.  OR.  Just place the Resteasy jar dependencies in your application server's system classpath.  (i.e. In JBoss put them in server/default/lib)
+From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib.  OR.  Just place the RESTEasy jar dependencies in your application server's system classpath.  (i.e. In JBoss put them in server/default/lib)
 </para>
 <para>
 

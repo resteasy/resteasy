@@ -104,7 +104,7 @@ Accept: application/json
       @Consumes and @Produces can list multiple media types that they support. The client's Accept header can also send
       multiple types it might like to receive. More specific media types are chosen first. The client Accept header or
       @Produces @Consumes can also specify weighted preferences that are used to match up requests with resource
-      methods. This is best explained by RFC 2616 section 14.1 . Resteasy supports this complex way of doing content
+      methods. This is best explained by RFC 2616 section 14.1 . RESTEasy supports this complex way of doing content
       negotiation.
    </para>
    <para>

@@ -101,7 +101,7 @@ public class MyClass
         <title>Configuring Stage</title>
         <para>
             You can configure the stage Guice uses to deploy your modules by specific a context param, resteasy.guice.stage.
-            If this value is not specified, Resteasy uses whatever Guice's default is.
+            If this value is not specified, RESTEasy uses whatever Guice's default is.
         </para>
 <programlisting>
 <![CDATA[

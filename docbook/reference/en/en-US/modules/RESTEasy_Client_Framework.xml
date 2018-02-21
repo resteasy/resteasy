@@ -221,7 +221,7 @@ public interface LibraryService {
     <section id="Response_proxies">
         <title>Response proxies</title>
         <para>
-           A further extension implemented by the Resteasy client proxy framework is the "response proxy facility",
+           A further extension implemented by the RESTEasy client proxy framework is the "response proxy facility",
            where a client proxy method returns an interface that represents the information
            contained in a <classname>javax.ws.rs.core.Response</classname>. Such an interface must be annotated with
            <classname>@ResponseObject</classname> from package <classname>org.jboss.resteasy.annotations</classname>,
@@ -303,7 +303,7 @@ Content-Type: text/plain;charset=UTF-8
         
         <para>
            Note that there is one other method in <classname>TestResponseObject</classname>, <methodname>response()</methodname>,
-           that has no annotation. When Resteasy sees a method in an interface annotated with <classname>@ResponseObject</classname>
+           that has no annotation. When RESTEasy sees a method in an interface annotated with <classname>@ResponseObject</classname>
            that returns a <classname>javax.ws.rs.core.Response</classname> (or a subclass thereof), it will return a
            <classname>org.jboss.resteasy.client.jaxrs.internal.ClientResponse</classname>. For example,
         </para>
@@ -393,7 +393,7 @@ nextlink: http://localhost:8081/test/link-header/next-link
            to <classname>ResponseObjectInterface</classname>. Note that, unlike
            <methodname>ResponseObjectInterface.nextLink()</methodname>, <methodname>followNextLink()</methodname>
            is annotated with <classname>@GET</classname>; that is, it qualifies as (the client proxy to) a resource
-           method. When executing <methodname>followNextLink()</methodname>, Resteasy will retrieve the value
+           method. When executing <methodname>followNextLink()</methodname>, RESTEasy will retrieve the value
            of the <classname>Link</classname> returned by <methodname>TestResource.getWithHeader()</methodname>
            and then will make a GET invocation on the <classname>URL</classname> in that <classname>Link</classname>.
            Calling
@@ -404,7 +404,7 @@ nextlink: http://localhost:8081/test/link-header/next-link
         </programlisting>
         
         <para>
-           causes Resteasy to retrieve the <classname>URL</classname> http://localhost:8081/test/link-header/next-link
+           causes RESTEasy to retrieve the <classname>URL</classname> http://localhost:8081/test/link-header/next-link
            from the call to <methodname>TestResource.getWithHeader()</methodname> and then perform a GET on it,
            invoking <methodname>TestResource.getHeaderForward()</methodname>:
         </para>

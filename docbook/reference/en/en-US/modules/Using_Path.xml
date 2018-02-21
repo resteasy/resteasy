@@ -30,7 +30,7 @@ public class Library {
 </para>
 <para>
 
-Let's say you have the Resteasy servlet configured and reachable at a root path of http://myhost.com/services.  The requests would be handled by the Library class:
+Let's say you have the RESTEasy servlet configured and reachable at a root path of http://myhost.com/services.  The requests would be handled by the Library class:
 </para>
 <para>
 

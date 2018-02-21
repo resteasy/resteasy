@@ -6,7 +6,7 @@ JBoss's Maven Repository is at:
    </para>
    <para>
 
-      Here's the pom.xml fragment to use. Resteasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.5.0-SNAPSHOT with the current Resteasy version you want to use.
+      Here's the pom.xml fragment to use. RESTEasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.5.0-SNAPSHOT with the current RESTEasy version you want to use.
    </para>
 <programlisting>
 <![CDATA[
@@ -43,7 +43,7 @@ JBoss's Maven Repository is at:
       <artifactId>resteasy-multipart-provider</artifactId>
       <version>3.5.0-SNAPSHOT</version>
    </dependency>
-   <!-- Resteasy Server Cache -->
+   <!-- RESTEasy Server Cache -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-cache-core</artifactId>
