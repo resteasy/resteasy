@@ -111,29 +111,29 @@ public class ClientResponseRedirectTest extends ClientTestBase{
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setInstanceFollowRedirects(false);
         conn.setRequestMethod("GET");
-        for (Object name : conn.getHeaderFields().keySet()) {
-            logger.info(name);
-        }
-        logger.info("The response from the server was: " + conn.getResponseCode());
-        Assert.assertEquals(HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
+//        for (Object name : conn.getHeaderFields().keySet()) {
+//            logger.debug(name);
+//        }
+        Assert.assertEquals("The response from the server was: " + conn.getResponseCode(),
+                HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
     }
 
     private void testRedirect(ClientResponse response) {
         MultivaluedMap headers = response.getResponseHeaders();
-        logger.info("size: " + headers.size());
-        for (Object name : headers.keySet()) {
-            logger.info(name + ":" + headers.getFirst(name.toString()));
-        }
+//        logger.debug("size: " + headers.size());
+//        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+//            logger.debug(entry.getKey() + ":" + entry.getValue().get(0));
+//        }
         Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
     }
 
     @SuppressWarnings(value = "unchecked")
     private void testRedirect(Response response) {
         MultivaluedMap headers = response.getHeaders();
-        logger.info("size: " + headers.size());
-        for (Object name : headers.keySet()) {
-            logger.info(name + ":" + headers.getFirst(name.toString()));
-        }
+//        logger.debug("size: " + headers.size());
+//        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
+//            logger.debug(entry.getKey() + ":" + entry.getValue().get(0));
+//        }
         Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
     }
 

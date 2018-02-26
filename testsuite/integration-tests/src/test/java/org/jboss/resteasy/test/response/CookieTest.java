@@ -10,18 +10,16 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,16 +68,15 @@ public class CookieTest {
         Response response = client.target(generateURL("/cookie/weird")).request().get();
         Assert.assertEquals(response.getStatus(), 200);
         Map<String, NewCookie> cookies = response.getCookies();
-        for (String key : cookies.keySet()) {
-            logger.info("[" + key + "] >>>>>> " + cookies.get(key) + "");
-        }
-        for (String header : response.getStringHeaders().keySet()) {
-            logger.info("header: " + header);
-            List<String> values = response.getStringHeaders().get(header);
-            for (String val : values) {
-                logger.info("    " + val);
-            }
-        }
+//        for (Map.Entry<String, NewCookie> cookieEntry : cookies.entrySet()) {
+//            logger.debug("[" + cookieEntry.getKey() + "] >>>>>> " + cookieEntry.getValue() + "");
+//        }
+//        for (Map.Entry<String, List<String>> headerEntry : response.getStringHeaders().entrySet()) {
+//            logger.debug("header: " + headerEntry.getKey());
+//            for (String val : headerEntry.getValue()) {
+//                logger.debug("    " + val);
+//            }
+//        }
         Assert.assertTrue("Cookie in the response doesn't contain 'guid', which was in the cookie send by the server.",
                 cookies.containsKey("guid"));
         response.close();
@@ -95,19 +92,17 @@ public class CookieTest {
     public void testStandardCookie() {
         Response response = client.target(generateURL("/cookie/standard")).request().get();
         Assert.assertEquals(response.getStatus(), 200);
-        Map<String, NewCookie> cookies = response.getCookies();
-        for (String key : cookies.keySet()) {
-            logger.info("[" + key + "] >>>>>> " + cookies.get(key) + "");
+        for (Map.Entry<String, NewCookie> cookieEntry : response.getCookies().entrySet()) {
+//            logger.debug("[" + cookieEntry.getKey() + "] >>>>>> " + cookieEntry.getValue() + "");
             Assert.assertEquals("Cookie content in the response doesn't match the cookie content send by the server.",
-                    "UserID=JohnDoe;Version=1;Max-Age=3600", cookies.get(key).toString());
+                    "UserID=JohnDoe;Version=1;Max-Age=3600", cookieEntry.getValue().toString());
         }
-        for (String header : response.getStringHeaders().keySet()) {
-            logger.info("header: " + header);
-            List<String> values = response.getStringHeaders().get(header);
-            for (String val : values) {
-                logger.info("    " + val);
-            }
-        }
+//        for (Map.Entry<String, List<String>> headerEntry : response.getStringHeaders().entrySet()) {
+//            logger.debug("header: " + headerEntry.getKey());
+//            for (String val : headerEntry.getValue()) {
+//                logger.debug("    " + val);
+//            }
+//        }
         response.close();
     }
 
