@@ -27,9 +27,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 
 /**
  * @tpSubChapter Parameters
@@ -87,10 +85,9 @@ public class CookieInjectionTest {
         try {
             Response response = target.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            MultivaluedMap<String, String> headers = response.getStringHeaders();
-            for (Object key : headers.keySet()) {
-                logger.info(key + ": " + headers.get(key));
-            }
+//            for (Map.Entry<String, List<String>> headerEntry : response.getStringHeaders().entrySet()) {
+//                logger.debug(headerEntry.getKey() + ": " + headerEntry.getValue());
+//            }
             response.close();
         } catch (Exception e) {
             throw new RuntimeException(e);

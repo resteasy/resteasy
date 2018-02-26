@@ -84,9 +84,9 @@ public class CookieInjectionTest {
             Response response = target.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             MultivaluedMap<String, String> headers = response.getStringHeaders();
-            for (Object key : headers.keySet()) {
-                logger.info(key + ": " + headers.get(key));
-            }
+//            for (Map.Entry<String, List<String>> headerEntry : response.getStringHeaders().entrySet()) {
+//                logger.debug(headerEntry.getKey() + ": " + headerEntry.getValue());
+//            }
             response.close();
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -124,13 +124,9 @@ public class ContextProvidersTest {
             Assert.assertEquals("Wrong response", "Bob", s);
 
             // Iterate over list of parts.
-            Map<String, List<InputPart>> map = entity.getFormDataMap();
-            for (Iterator<String> it = map.keySet().iterator(); it.hasNext(); ) {
-                String key = it.next();
-                logger.info("key: " + key);
-                List<InputPart> list = map.get(key);
-                for (Iterator<InputPart> it2 = list.iterator(); it2.hasNext(); ) {
-                    InputPart inputPart = it2.next();
+            for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
+//                logger.debug("key: " + formDataEntry.getKey());
+                for (InputPart inputPart : formDataEntry.getValue()) {
                     if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                         c = inputPart.getBody(ContextProvidersCustomer.class, null);
                         Assert.assertEquals("Wrong response", "Bill", c.getName());
@@ -229,13 +225,9 @@ public class ContextProvidersTest {
             Assert.assertEquals("Wrong response", "Bob", c.getName());
 
             // Iterate over map of parts.
-            Map<String, List<InputPart>> map = entity.getFormDataMap();
-            Set<String> customers = new HashSet<String>();
-            for (Iterator<String> it = map.keySet().iterator(); it.hasNext(); ) {
-                String key = it.next();
-                List<InputPart> list = map.get(key);
-                for (Iterator<InputPart> it2 = list.iterator(); it2.hasNext(); ) {
-                    InputPart inputPart = it2.next();
+            Set<String> customers = new HashSet<>();
+            for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
+                for (InputPart inputPart : formDataEntry.getValue()) {
                     customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
                 }
             }
@@ -271,9 +263,9 @@ public class ContextProvidersTest {
             Assert.assertTrue(keys.contains("bob"));
             Assert.assertThat("Missing key from response", keys, hasItems("bill"));
             Assert.assertThat("Missing key from response", keys, hasItems("bob"));
-            Set<String> parts = new HashSet<String>();
-            for (Iterator<InputPart> it = map.values().iterator(); it.hasNext(); ) {
-                parts.add(it.next().getBody(String.class, null));
+            Set<String> parts = new HashSet<>();
+            for (InputPart inputPart : map.values()) {
+                parts.add(inputPart.getBody(String.class, null));
             }
             Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
             Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
