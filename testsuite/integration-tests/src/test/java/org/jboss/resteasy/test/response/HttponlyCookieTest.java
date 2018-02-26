@@ -56,8 +56,7 @@ public class HttponlyCookieTest {
    public void testHttponlyTrue() {
       WebTarget target = client.target(generateURL("/cookie/true"));
       Response response = target.request().get();
-      String key = response.getCookies().keySet().iterator().next();
-      NewCookie cookie = response.getCookies().get(key);
+      NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();
       Assert.assertNotNull(cookie);
       Assert.assertTrue(cookie.isHttpOnly());
    }
@@ -66,8 +65,7 @@ public class HttponlyCookieTest {
    public void testHttponlyDefault() {
       WebTarget target = client.target(generateURL("/cookie/default"));
       Response response = target.request().get();
-      String key = response.getCookies().keySet().iterator().next();
-      NewCookie cookie = response.getCookies().get(key);
+      NewCookie cookie = response.getCookies().entrySet().iterator().next().getValue();;
       Assert.assertNotNull(cookie);
       Assert.assertFalse(cookie.isHttpOnly());
    }
