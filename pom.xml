@@ -98,8 +98,10 @@
             <modules>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
+                <module>resteasy-jaxrs/jaxrs20</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
+                <module>resteasy-client/jaxrs20</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -151,8 +153,10 @@
             <modules>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
+                <module>resteasy-jaxrs/jaxrs20</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
+                <module>resteasy-client/jaxrs20</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
