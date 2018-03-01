@@ -242,6 +242,8 @@ public class SseEventSourceImpl implements SseEventSource
          //close httpEngine to close connection
          resteasyWebTarget.getResteasyClient().httpEngine().close();
          executor.shutdownNow();
+
+         onCompleteConsumers.forEach(Runnable::run);
       }
       try
       {
