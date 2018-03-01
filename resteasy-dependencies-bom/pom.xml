@@ -69,7 +69,7 @@
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.microprofile.restclient>1.0</version.microprofile.restclient>
         <version.microprofile.config>1.1</version.microprofile.config>
-        <version.org.slf4j>1.7.22</version.org.slf4j>
+        <version.org.slf4j>1.7.25</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>3.0.6.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.1.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
