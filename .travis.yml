@@ -21,5 +21,4 @@ cache:
 addons:
   apt:
     packages:
-      - oracle-java8-installer
-#      - oracle-java9-installer
+      - oracle-java8-unlimited-jce-policy
