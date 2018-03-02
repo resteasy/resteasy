@@ -43,7 +43,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
 
    public SseBroadcasterImpl()
    {
-	   	ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+	   	ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 	  	this.readLock = readWriteLock.readLock();
 	  	this.writeLock = readWriteLock.writeLock();
    }
@@ -124,21 +124,15 @@ public class SseBroadcasterImpl implements SseBroadcaster
    public void register(SseEventSink sseEventSink)
    {
 	  checkClosed();
-	  if(readLock.tryLock())
+	  readLock.lock();
+	  try
 	  {
-		  try
-		  {
-			  checkClosed();
-			  outputQueue.add(sseEventSink);  
-		  }
-		  finally
-		  {
-			  readLock.unlock();
-		  }
+      		  checkClosed();
+	          outputQueue.add(sseEventSink);  
 	  }
-	  else
+	  finally
 	  {
-		  throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
+		  readLock.unlock();
 	  }
    }
 
