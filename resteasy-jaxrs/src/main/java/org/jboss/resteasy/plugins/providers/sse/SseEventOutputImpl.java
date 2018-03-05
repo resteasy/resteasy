@@ -157,7 +157,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 	      }
 	      catch (Exception ex)
 	      {
-	         return CompletableFuture.completedFuture(ex);
+	    	 CompletableFuture<Void> completableFuture =  new CompletableFuture<>();
+	    	 completableFuture.completeExceptionally(ex);
+	         return completableFuture;
 	      }
 	      return CompletableFuture.completedFuture(event);  
 	  }
