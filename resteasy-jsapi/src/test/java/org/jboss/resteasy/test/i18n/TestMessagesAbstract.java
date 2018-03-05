@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.i18n;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import org.jboss.resteasy.spi.metadata.DefaultResourceClass;
 import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
@@ -34,7 +35,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       {
          Class<?> clazz = TestMessagesAbstract.class;
          Method method = TestMessagesAbstract.class.getMethod("testLocale");
-         ResourceClass resourceClass = new ResourceClass(TestMessagesAbstract.class, "path");
+         ResourceClass resourceClass = new DefaultResourceClass(TestMessagesAbstract.class, "path");
          ResourceMethod resourceMethod = new DefaultResourceMethod(resourceClass, method, method);
          ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
          InjectorFactory injectorFactory = new InjectorFactoryImpl();

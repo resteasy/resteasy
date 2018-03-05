@@ -58,7 +58,7 @@ public class ResourceBuilder
 {
    public static class ResourceClassBuilder
    {
-      final ResourceClass resourceClass;
+      final DefaultResourceClass resourceClass;
       List<FieldParameter> fields = new ArrayList<FieldParameter>();
       List<SetterParameter> setters = new ArrayList<SetterParameter>();
       List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
@@ -66,7 +66,7 @@ public class ResourceBuilder
 
       public ResourceClassBuilder(Class<?> root, String path)
       {
-         this.resourceClass = new ResourceClass(root, path);
+         this.resourceClass = new DefaultResourceClass(root, path);
       }
 
       public ResourceMethodBuilder method(Method method)
@@ -494,7 +494,7 @@ public class ResourceBuilder
       public ResourceClassBuilder buildMethod()
       {
          ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (locator.resourceClass.path != null) builder.path(locator.resourceClass.path);
+         if (locator.resourceClass.getPath() != null) builder.path(locator.resourceClass.getPath());
          if (locator.path != null) builder.path(locator.path);
          String pathExpression = builder.getPath();
          if (pathExpression == null)
@@ -629,7 +629,7 @@ public class ResourceBuilder
       public ResourceClassBuilder buildMethod()
       {
          ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (method.resourceClass.path != null) builder.path(method.resourceClass.path);
+         if (method.resourceClass.getPath() != null) builder.path(method.resourceClass.getPath());
          if (method.path != null) builder.path(method.path);
          String pathExpression = builder.getPath();
          if (pathExpression == null)
