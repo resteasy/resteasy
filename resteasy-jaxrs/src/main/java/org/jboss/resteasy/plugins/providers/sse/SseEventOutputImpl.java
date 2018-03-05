@@ -143,13 +143,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public CompletionStage<?> send(OutboundSseEvent event)
    {
-      return send(event, (a, b) -> {
-      });
-   }
-
-   //We need this to make it async enough
-   public CompletionStage<?> send(OutboundSseEvent event, BiConsumer<SseEventSink, Throwable> errorConsumer)
-   {
 	  synchronized (lock)
       {
 	      if (closed)
@@ -164,7 +157,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 	      }
 	      catch (Exception ex)
 	      {
-	         errorConsumer.accept(this, ex);
 	         return CompletableFuture.completedFuture(ex);
 	      }
 	      return CompletableFuture.completedFuture(event);  
