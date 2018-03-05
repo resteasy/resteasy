@@ -27,6 +27,7 @@ import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -248,6 +249,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Set<Class<?>> featureClasses;
    protected Set<Object> featureInstances;
 
+   protected ResourceBuilder resourceBuilder;
+
 
    public ResteasyProviderFactory()
    {
@@ -322,6 +325,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
       headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
+
+      resourceBuilder = new ResourceBuilder();
 
       initializeRegistriesAndFilters();
 
@@ -2780,5 +2785,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
       }
       return null;
+   }
+
+   public ResourceBuilder getResourceBuilder() {
+      return resourceBuilder;
    }
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Locale;
 
 import org.jboss.resteasy.spi.metadata.DefaultResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
@@ -39,7 +40,8 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          ResourceMethod resourceMethod = new DefaultResourceMethod(resourceClass, method, method);
          ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
          InjectorFactory injectorFactory = new InjectorFactoryImpl();
-         POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
+         ResourceBuilder resourceBuilder = new ResourceBuilder();
+         POJOResourceFactory resourceFactory = new POJOResourceFactory(resourceBuilder, clazz);
          testMethod = new ResourceMethodInvoker(resourceMethod, injectorFactory, resourceFactory, providerFactory);
       }
       catch (NoSuchMethodException e)
