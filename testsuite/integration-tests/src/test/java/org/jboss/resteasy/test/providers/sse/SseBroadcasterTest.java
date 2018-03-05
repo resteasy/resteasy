@@ -21,8 +21,10 @@ import org.junit.Test;
  */
 public class SseBroadcasterTest {
 
+	// We are expecting this test to throw an IllegalStateException every time a
+	// method from SseBroadcasterImpl is invoked on a closed instance.
 	@Test
-	public void Should_ThrowIllegalStateException_When_BroadcasterIsClosed() throws Exception {
+	public void testIllegalStateExceptionForClosedBroadcaster() throws Exception {
 		SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 		sseBroadcasterImpl.close();
 
@@ -53,9 +55,10 @@ public class SseBroadcasterTest {
 		}
 	}
 
+	// We are expecting this test to close all registered event sinks and invoke
+	// close listeners when broadcaster is closed
 	@Test
-	public void Should_closeAllRegisteredEventSinkAndInvokeCloseListeners_When_BroadcasterIsBeingClosed()
-			throws Exception {
+	public void testClose() throws Exception {
 		SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 
 		SseEventSink sseEventSink1 = newSseEventSink();
@@ -79,8 +82,10 @@ public class SseBroadcasterTest {
 		Assert.assertTrue(sseEventSink2.isClosed());
 	}
 
+	// We are expecting this test to invoke both close and error listeners when
+	// event sink has been closed on server side
 	@Test
-	public void Should_InvokeCloseAndErrorListeners_When_EventSinkHasBeenClosedOnServerSide() throws Exception {
+	public void testCloseAndErrorListenersForClosedEventSink() throws Exception {
 		SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 
 		SseEventSink sseEventSink = newSseEventSink();
@@ -105,8 +110,10 @@ public class SseBroadcasterTest {
 		}
 	}
 
+	// We are expecting this test to invoke both close and error listeners when
+	// event sink has been closed on client side (disconnected)
 	@Test
-	public void Should_InvokeCloseAndErrorListeners_When_EventSinkHasBeenClosedOnClientSide() throws Exception {
+	public void testCloseAndErrorListenersForDisconnectedEventSink() throws Exception {
 		SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 
 		SseEventSink sseEventSink = newSseEventSink(new IOException());
@@ -130,8 +137,10 @@ public class SseBroadcasterTest {
 		}
 	}
 
+	// We are expecting this test to only invoke error listeners on broadcasting
+	// error other than IOException
 	@Test
-	public void Should_InvokeErrorListeners_On_BroadcastingErrorOtherThanIOException() throws Exception {
+	public void testErrorListeners() throws Exception {
 		SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
 
 		SseEventSink sseEventSink = newSseEventSink(new RuntimeException());
@@ -166,7 +175,7 @@ public class SseBroadcasterTest {
 
 			@Override
 			public CompletionStage<?> send(OutboundSseEvent event) {
-				if(closed){
+				if (closed) {
 					throw new IllegalStateException();
 				}
 				CompletableFuture<Object> completableFuture = new CompletableFuture<>();
