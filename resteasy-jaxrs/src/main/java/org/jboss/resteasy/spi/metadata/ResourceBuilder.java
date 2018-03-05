@@ -683,17 +683,17 @@ public class ResourceBuilder
    }
 
 
-   public static ResourceClassBuilder rootResource(Class<?> root)
+   public ResourceClassBuilder rootResource(Class<?> root)
    {
       return new ResourceClassBuilder(root, "/");
    }
 
-   public static ResourceClassBuilder rootResource(Class<?> root, String path)
+   protected ResourceClassBuilder rootResource(Class<?> root, String path)
    {
       return new ResourceClassBuilder(root, path);
    }
 
-   public static ResourceClassBuilder locator(Class<?> root)
+   protected ResourceClassBuilder locator(Class<?> root)
    {
       return new ResourceClassBuilder(root, null);
    }
@@ -705,7 +705,7 @@ public class ResourceBuilder
     * @param annotatedResourceClass
     * @return
     */
-   public static ResourceConstructor constructor(Class<?> annotatedResourceClass)
+   public ResourceConstructor constructor(Class<?> annotatedResourceClass)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
       if (constructor == null)
@@ -725,17 +725,17 @@ public class ResourceBuilder
     *
     * @return
     */
-   public static ResourceClass rootResourceFromAnnotations(Class<?> clazz)
+   public ResourceClass rootResourceFromAnnotations(Class<?> clazz)
    {
       return fromAnnotations(false, clazz);
    }
 
-   public static ResourceClass locatorFromAnnotations(Class<?> clazz)
+   public ResourceClass locatorFromAnnotations(Class<?> clazz)
    {
       return fromAnnotations(true, clazz);
    }
 
-   private static ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
+   private ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
       // stupid hack for Weld as it loses generic type information, but retains annotations.
       if (!clazz.isInterface() && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class) && clazz.isSynthetic())
@@ -773,7 +773,7 @@ public class ResourceBuilder
     * @param implementation The resource method or sub-resource method / sub-resource locator implementation
     * @return The annotated resource method or sub-resource method / sub-resource locator.
     */
-   public static Method findAnnotatedMethod(final Class<?> root, final Method implementation)
+   public Method findAnnotatedMethod(final Class<?> root, final Method implementation)
    {
       if (implementation.isSynthetic())
       {
@@ -868,7 +868,7 @@ public class ResourceBuilder
       return null;
    }
 
-   protected static void processFields(ResourceClassBuilder resourceClassBuilder, Class<?> root)
+   protected void processFields(ResourceClassBuilder resourceClassBuilder, Class<?> root)
    {
       do
       {
@@ -878,7 +878,7 @@ public class ResourceBuilder
       } while (root != null && !root.equals(Object.class));
    }
 
-   protected static void processSetters(ResourceClassBuilder resourceClassBuilder, Class<?> root)
+   protected void processSetters(ResourceClassBuilder resourceClassBuilder, Class<?> root)
    {
       HashSet<Long> hashes = new HashSet<Long>();
       do
@@ -888,7 +888,7 @@ public class ResourceBuilder
       } while (root != null && !root.equals(Object.class));
    }
 
-   protected static void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, final Class<?> root)
+   protected void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, final Class<?> root)
    {
       Field[] fieldList = new Field[0];
       try {
@@ -914,7 +914,7 @@ public class ResourceBuilder
          builder.buildField();
       }
    }
-   protected static void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root, Set<Long> visitedHashes)
+   protected void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root, Set<Long> visitedHashes)
    {
       Method[] methodList = new Method[0];
       try {
@@ -954,7 +954,7 @@ public class ResourceBuilder
       }
    }
 
-   protected static void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
+   protected void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
    {
       Method method = findAnnotatedMethod(root, implementation);
       if (method != null)

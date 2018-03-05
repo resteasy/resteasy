@@ -15,7 +15,7 @@ public class VertxResteasyDeployment extends ResteasyDeployment
       Registry registry = super.getRegistry();
       if (!(registry instanceof VertxRegistry))
       {
-         registry = new VertxRegistry(registry);
+         registry = new VertxRegistry(registry, getProviderFactory().getResourceBuilder());
       }
       return (VertxRegistry) registry;
    }
