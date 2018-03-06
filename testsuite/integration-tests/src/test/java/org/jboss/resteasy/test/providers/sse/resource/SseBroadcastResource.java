@@ -67,10 +67,14 @@ public class SseBroadcastResource {
         if (this.sseBroadcaster == null) {
             throw new IllegalStateException("No Sse broadcaster created.");
         }
-        this.sseBroadcaster.broadcast(sse.newEvent(message)).thenAccept((Object obj) -> {
+
+        this.eventSink.close();
+        logger.info("Sink closed: " + eventSink.isClosed());
+        /*this.sseBroadcaster.broadcast(sse.newEvent(message)).thenAccept((Object obj) -> {
             this.eventSink.close();
             logger.info("Sink closed: " + eventSink.isClosed());
-        });
+        });*/
+        this.sseBroadcaster.broadcast(sse.newEvent(message));
     }
 
     @GET
