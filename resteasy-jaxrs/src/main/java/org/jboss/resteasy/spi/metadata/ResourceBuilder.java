@@ -45,6 +45,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
@@ -682,6 +683,16 @@ public class ResourceBuilder
       }
    }
 
+   private final List<ResourceClassProcessor> processors = new ArrayList<>();
+
+   /**
+    * Register a new {@link ResourceClassProcessor} which will be used to post-process all
+    * {@link ResourceClass} instances created from the builder.
+    */
+   public void registerResourceClassProcessor(ResourceClassProcessor processor)
+   {
+      this.processors.add(processor);
+   }
 
    public ResourceClassBuilder rootResource(Class<?> root)
    {
@@ -717,7 +728,8 @@ public class ResourceBuilder
       {
          for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
       }
-      return builder.buildConstructor().buildClass().getConstructor();
+      ResourceClass resourceClass = applyProcessors(builder.buildConstructor().buildClass());
+      return resourceClass.getConstructor();
    }
 
    /**
@@ -763,7 +775,7 @@ public class ResourceBuilder
          processFields(builder, clazz);
       }
       processSetters(builder, clazz);
-      return builder.buildClass();
+      return applyProcessors(builder.buildClass());
    }
 
    /**
@@ -1000,6 +1012,20 @@ public class ResourceBuilder
          }
          resourceLocatorBuilder.buildMethod();
       }
+   }
+
+   /**
+    * Apply the list of {@link ResourceClassProcessor} to the supplied {@link ResourceClass}.
+    */
+   private ResourceClass applyProcessors(ResourceClass original)
+   {
+      ResourceClass current = original;
+      for (ResourceClassProcessor processor : processors)
+      {
+         current = processor.process(current);
+         Objects.requireNonNull(current, "ResourceClassProcessor must not return null");
+      }
+      return current;
    }
 
 }
