@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import javax.swing.plaf.TableHeaderUI;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -55,7 +56,7 @@ public class SseBroadcastTest {
      * @tpInfo RESTEASY-1680
      * @tpSince RESTEasy 3.5.0
      */
-    //@Test
+    @Test
     public void testBroadcasterMultipleSinks() throws Exception {
         final CountDownLatch latch = new CountDownLatch(3);
         final AtomicInteger errors = new AtomicInteger(0);
@@ -122,7 +123,7 @@ public class SseBroadcastTest {
      * @tpInfo RESTEASY-1680
      * @tpSince RESTEasy 3.5.0
      */
-    //@Test
+    @Test
     public void testBroadcasterOnCloseCallbackCloseBroadsCasterOnServer() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger errors = new AtomicInteger(0);
@@ -164,21 +165,15 @@ public class SseBroadcastTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    //@Category(ExpectedFailing.class) // RESTEASY-1819
     public void testBroadcasterOnCloseCallbackCloseSinkOnServer() throws Exception {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicInteger errors = new AtomicInteger(0);
         Client client = new ResteasyClientBuilder().build();
         WebTarget target = client.target(generateURL("/broadcast/subscribe"));
 
-        SseEventSource msgEventSource = SseEventSource.target(target).build();
-
+        SseEventSource msgEventSource = SseEventSource.target(target).reconnectingEvery(5, TimeUnit.MINUTES).build();
         try (SseEventSource eventSource = msgEventSource) {
             eventSource.register(event -> {
                 Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
-                latch.countDown();
             }, ex -> {
-                errors.incrementAndGet();
                 logger.error(ex.getMessage(), ex);
             });
             eventSource.open();
@@ -186,54 +181,10 @@ public class SseBroadcastTest {
             client.target(generateURL("/broadcast/listeners")).request().get();
             client.target(generateURL("/broadcast/startAndClose")).request()
                     .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-            Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
         } finally {
             client.close();
         }
 
-        Client checkClient = new ResteasyClientBuilder().build();
-        logger.info("Check on closed was called.");
-        boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
-        Assert.assertTrue(onCloseCalled);
-        checkClient.close();
-        removeBroadcaster();
-    }
-
-    /**
-     * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called
-     * after the client connection is closed.
-     * @tpInfo RESTEASY-1680
-     * @tpSince RESTEasy 3.5.0
-     */
-    @Test
-    @Category(ExpectedFailing.class) // RESTEASY-1819
-    public void testBroadcasterOnCloseCallbackCloseClientConnection() throws Exception {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicInteger errors = new AtomicInteger(0);
-        Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/broadcast/subscribe"));
-
-        SseEventSource msgEventSource = SseEventSource.target(target).build();
-
-        try (SseEventSource eventSource = msgEventSource) {
-            eventSource.register(event -> {
-                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
-                latch.countDown();
-            }, ex -> {
-                errors.incrementAndGet();
-                logger.error(ex.getMessage(), ex);
-            });
-            eventSource.open();
-
-            client.target(generateURL("/broadcast/listeners")).request().get();
-            client.target(generateURL("/broadcast/start")).request()
-                    .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-            Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
-        } finally {
-            client.close();
-        }
-
-        Thread.sleep(5000);
         Client checkClient = new ResteasyClientBuilder().build();
         boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
         Assert.assertTrue(onCloseCalled);

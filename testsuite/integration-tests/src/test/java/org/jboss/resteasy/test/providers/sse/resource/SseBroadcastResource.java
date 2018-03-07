@@ -62,18 +62,13 @@ public class SseBroadcastResource {
 
     @POST
     @Path("/startAndClose")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void broadcastAndClose(String message, @Context Sse sse, @Context SseEventSink sseEventSink) throws IOException {
+    public void broadcastAndClose(String message, @Context Sse sse) throws IOException, InterruptedException {
         if (this.sseBroadcaster == null) {
             throw new IllegalStateException("No Sse broadcaster created.");
         }
 
         this.eventSink.close();
         logger.info("Sink closed: " + eventSink.isClosed());
-        /*this.sseBroadcaster.broadcast(sse.newEvent(message)).thenAccept((Object obj) -> {
-            this.eventSink.close();
-            logger.info("Sink closed: " + eventSink.isClosed());
-        });*/
         this.sseBroadcaster.broadcast(sse.newEvent(message));
     }
 
