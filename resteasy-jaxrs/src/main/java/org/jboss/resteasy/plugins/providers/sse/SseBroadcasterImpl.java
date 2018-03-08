@@ -43,119 +43,121 @@ public class SseBroadcasterImpl implements SseBroadcaster
 
    public SseBroadcasterImpl()
    {
-	   	ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
-	  	this.readLock = readWriteLock.readLock();
-	  	this.writeLock = readWriteLock.writeLock();
+      ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+      this.readLock = readWriteLock.readLock();
+      this.writeLock = readWriteLock.writeLock();
    }
 
    @Override
    public void close()
    {
-	   if (!closed.compareAndSet(false, true))
-	   {
-		   return;
-	   }
-	   writeLock.lock();
-	   try
-	   {
-	      //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
-	      //is it necessay to close the subsribed SseEventSink ?
-	      outputQueue.forEach(eventSink -> {
-	         eventSink.close();
-	         notifyOnCloseListeners(eventSink);
-	      });
-	   }
-	   finally
-	   {
-		   writeLock.unlock();
-	   }
+      if (!closed.compareAndSet(false, true))
+      {
+         return;
+      }
+      writeLock.lock();
+      try
+      {
+         //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
+         //is it necessay to close the subsribed SseEventSink ?
+         outputQueue.forEach(eventSink -> {
+            eventSink.close();
+            notifyOnCloseListeners(eventSink);
+         });
+      }
+      finally
+      {
+         writeLock.unlock();
+      }
    }
    
    private void checkClosed()
    {
-	   if (closed.get())
-	   {
-		   throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
-	   }
+      if (closed.get())
+      {
+         throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
+      }
    }
    
    private void notifyOnCloseListeners(SseEventSink eventSink)
    {
-	   // First remove the eventSink from the outputQueue to ensure that
-	   // concurrent calls to this method will notify listeners only once for a
-	   // given eventSink instance.
-	   if (outputQueue.remove(eventSink))
-	   {
-			closeConsumers.forEach(consumer -> {
-				consumer.accept(eventSink);
-			});
-	   }
+      // First remove the eventSink from the outputQueue to ensure that
+      // concurrent calls to this method will notify listeners only once for a
+      // given eventSink instance.
+      if (outputQueue.remove(eventSink))
+      {
+         closeConsumers.forEach(consumer -> {
+            consumer.accept(eventSink);
+         });
+      }
    }
    
    private void notifyOnErrorListeners(SseEventSink eventSink, Throwable throwable)
    {
-		// We have to notify close listeners if the SSE event output has been
-		// closed (either by client closing the connection (IOException) or by
-		// calling SseEventSink.close() (IllegalStateException) on the server
-		// side).
-		if (throwable instanceof IOException || throwable instanceof IllegalStateException) {
-			notifyOnCloseListeners(eventSink);
-		}
-		onErrorConsumers.forEach(consumer -> {
-			consumer.accept(eventSink, throwable);
-		});
+      // We have to notify close listeners if the SSE event output has been
+      // closed (either by client closing the connection (IOException) or by
+      // calling SseEventSink.close() (IllegalStateException) on the server
+      // side).
+      if (throwable instanceof IOException || throwable instanceof IllegalStateException)
+      {
+         notifyOnCloseListeners(eventSink);
+      }
+      onErrorConsumers.forEach(consumer -> {
+         consumer.accept(eventSink, throwable);
+      });
    }
    
    @Override
    public void onError(BiConsumer<SseEventSink, Throwable> onError)
    {
-	  checkClosed();
+      checkClosed();
       onErrorConsumers.add(onError);
    }
 
    @Override
    public void onClose(Consumer<SseEventSink> onClose)
    {
-	  checkClosed();
+      checkClosed();
       closeConsumers.add(onClose);
    }
 
    @Override
    public void register(SseEventSink sseEventSink)
    {
-	  checkClosed();
-	  readLock.lock();
-	  try
-	  {
-      		  checkClosed();
-	          outputQueue.add(sseEventSink);  
-	  }
-	  finally
-	  {
-		  readLock.unlock();
-	  }
+      checkClosed();
+      readLock.lock();
+      try
+      {
+         checkClosed();
+         outputQueue.add(sseEventSink);
+      }
+      finally
+      {
+         readLock.unlock();
+      }
    }
 
    @Override
    public CompletionStage<?> broadcast(OutboundSseEvent event)
    {
-	  checkClosed();
+      checkClosed();
       //return event immediately and doesn't block anything
       return CompletableFuture.runAsync(() -> {
          outputQueue.forEach(eventSink -> {
             SseEventSink outputImpl = eventSink;
             try
-			{
-				outputImpl.send(event).whenComplete((object, err) -> {
-					if (err != null) {
-						notifyOnErrorListeners(eventSink, err);
-					}
-				});
-			}
+            {
+               outputImpl.send(event).whenComplete((object, err) -> {
+                  if (err != null)
+                  {
+                     notifyOnErrorListeners(eventSink, err);
+                  }
+               });
+            }
             catch (IllegalStateException e)
             {
-				notifyOnErrorListeners(eventSink, e);
-			}
+               notifyOnErrorListeners(eventSink, e);
+            }
          });
       });
    }
