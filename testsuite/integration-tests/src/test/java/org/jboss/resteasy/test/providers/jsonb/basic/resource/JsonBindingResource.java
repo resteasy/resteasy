@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.jsonb.basic.resource;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -55,5 +56,21 @@ public class JsonBindingResource {
       }
       return "{\"color\":\"tabby\",\"sort\":\"semi-british\",\"name\":\"Rosa\",\"domesticated\":true,\"transientVar\":\""
       + RETURNED_TRANSIENT_VALUE + "\"}";
+   }
+
+   @Path("get/cat")
+   @GET
+   @Produces("application/json")
+   public Cat getCat() {
+      return new Cat("a", "b", "c", true, 0);
+   }
+
+
+   @Path("repeater")
+   @POST
+   @Produces("application/json")
+   @Consumes("application/json")
+   public Cat repeater(Cat cat) {
+      return cat;
    }
 }
