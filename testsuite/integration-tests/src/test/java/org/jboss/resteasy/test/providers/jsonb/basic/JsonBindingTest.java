@@ -17,13 +17,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 /**
  * @tpSubChapter Json-binding provider.JAX-RS 2.1 spec (JSR-370), section 11.2.7 states,
@@ -131,4 +138,42 @@ public class JsonBindingTest {
    }
 
 
+   /**
+    * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
+    *                Client send GET request to server
+    *                Server returns Cat object, custom provider uses toString method, that doesn't doesn't create correct JSON data
+    *                Client receive data with "json" media type, but data was created by toString method
+    *                JSON-B on client should throw user-friendly exception, because toString method doesn't create correct JSON data
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void negativeScenarioOnClient() throws Exception {
+      // call and log get request
+      WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/get/cat", CUSTOM_JSON_PROVIDER));
+      Response response = target.request().get();
+      String responseAsString = response.readEntity(String.class);
+      Assert.assertThat("Server should use custom JSON provider", responseAsString, containsString(Cat.CUSTOM_TO_STRING_FORMAT));
+      logger.info("Response as a String: " + responseAsString);
+      response.close();
+
+      // call get request, try to get Cat data
+      response = target.request().get();
+      try {
+         Cat wrongObject = response.readEntity(Cat.class);
+         logger.info("JSON-B parse server toString method, although JSON-B should not do that. Received object:");
+         logger.info(wrongObject.toString());;
+         Assert.fail("Client should throw exception because JSON-B should not be able to parse wrong data");
+      }
+      catch (Throwable e) {
+         StringWriter errors = new StringWriter();
+         e.printStackTrace(new PrintWriter(errors));
+         String stackTraceString = errors.toString();
+         logger.info("StackTrace of exception:");
+         logger.info(stackTraceString);
+         for (String stackTraceLine : stackTraceString.split(System.lineSeparator())) {
+            Assert.assertThat("User-unfriendly error message in JSON-B", stackTraceLine,
+                    not(containsString("Messages (implementation not found)")));
+         }
+      }
+   }
 }
