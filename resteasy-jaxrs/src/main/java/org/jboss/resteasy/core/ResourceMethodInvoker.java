@@ -116,8 +116,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
       writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
 
-
-      // we register with parent to lisen for redeploy evens
+      // register with parent to listen for redeploy events
       providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
       providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
       providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
