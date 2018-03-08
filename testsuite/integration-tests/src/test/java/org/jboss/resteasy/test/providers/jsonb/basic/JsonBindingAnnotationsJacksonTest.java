@@ -4,8 +4,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
+import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomRepeaterProvider;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingResource;
+import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,6 +25,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -100,7 +105,6 @@ public class JsonBindingAnnotationsJacksonTest {
       Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
               json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
    }
-
    /**
     * @tpTestDetails JSON-B is not used on both server and client
     *                check that @JsonbTransient annotation is ignored
@@ -119,5 +123,36 @@ public class JsonBindingAnnotationsJacksonTest {
       logger.info("Request entity: " + entity);
       Assert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
               json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
+   }
+
+   /**
+    * @tpTestDetails JSON-B is not used on client, JSON-B is used on server
+    *                client uses custom json provider that returns corrupted json data
+    *                client sends corrupted json data to server
+    *                JSON-B provider on server should throw relevant exception
+    *                Server should returns relevant error message in response
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void negativeScenarioOnServer() throws Exception {
+
+      try {
+         ResteasyClient client = new ResteasyClientBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
+         String charset = "UTF-8";
+         WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/repeater", WAR_WITH_JSONB));
+         MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+         Entity<Cat> entity = Entity.entity(
+                 new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+         logger.info("Request entity: " + entity);
+         Response response = target.request().post(entity);
+         // check response
+         int responseCode = response.getStatus();
+         Assert.assertThat("Wrong response code", responseCode, is(400));
+         String responseBody = response.readEntity(String.class);
+         Assert.assertTrue("Wrong response error message: " + responseBody,
+                 responseBody.startsWith("javax.ws.rs.ProcessingException: RESTEASY008200"));
+      } finally {
+         client.close();
+      }
    }
 }
