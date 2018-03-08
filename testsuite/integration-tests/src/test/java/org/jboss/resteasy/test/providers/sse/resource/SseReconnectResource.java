@@ -59,7 +59,6 @@ public class SseReconnectResource {
         {
             endTime = System.currentTimeMillis() - startTime;
             long elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(endTime);
-            System.out.println("ELAPSED:" + elapsedSeconds);
             Assert.assertTrue(elapsedSeconds >= 2);
             try (SseEventSink s = sink)
             {
