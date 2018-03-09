@@ -82,7 +82,7 @@ public class RESTEASY1325Test
                           ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
                              @Override
                              protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
-                                System.out.println("HTTP response from resteasy: "+msg);
+//                                System.out.println("HTTP response from resteasy: "+msg);
                                  Assert.assertEquals(HttpResponseStatus.OK, msg.status());
                              }
                           });

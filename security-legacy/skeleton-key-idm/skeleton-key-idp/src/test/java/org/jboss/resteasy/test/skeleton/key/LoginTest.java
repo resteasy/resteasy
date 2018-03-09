@@ -31,13 +31,13 @@ public class LoginTest extends SkeletonTestBase
    @Test
    public void testLogin() throws Exception
    {
-      System.out.println(realmInfo.getAuthorizationUrl());
+//      System.out.println(realmInfo.getAuthorizationUrl());
       WebTarget authUrl = client.target(realmInfo.getAuthorizationUrl())
               .queryParam("client_id", "loginclient")
               .queryParam("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
       String form = authUrl.request().get(String.class);
-      System.out.println(form);
+//      System.out.println(form);
 
       Pattern p = Pattern.compile("action=\"([^\"]+)\"");
       Matcher matcher = p.matcher(form);
@@ -54,13 +54,13 @@ public class LoginTest extends SkeletonTestBase
               .param("client_id", "loginclient")
               .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
-      System.out.println("LoginUrl: " + loginUrl);
+//      System.out.println("LoginUrl: " + loginUrl);
       Response response = client.target(loginUrl).request().post(Entity.form(loginform));
       Assert.assertEquals(302, response.getStatus());
       URI uri = response.getLocation();
       response.close();
       Assert.assertNotNull(uri);
-      System.out.println(uri);
+//      System.out.println(uri);
       Pattern q = Pattern.compile("code=([^&]+)");
       matcher = q.matcher(uri.getRawQuery());
       String code = null;
@@ -68,7 +68,7 @@ public class LoginTest extends SkeletonTestBase
       {
          code = matcher.group(1);
       }
-      System.out.println("Code: " + code);
+//      System.out.println("Code: " + code);
       Assert.assertNotNull(code);
       WebTarget codes = client.target(realmInfo.getCodeUrl());
       Form codeForm = new Form()
@@ -76,10 +76,10 @@ public class LoginTest extends SkeletonTestBase
               .param("client_id", "loginclient")
               .param("Password", "clientpassword");
       Response res = codes.request().post(Entity.form(codeForm));
-      if (res.getStatus() == 400)
-      {
-         System.out.println(res.readEntity(String.class));
-      }
+//      if (res.getStatus() == 400)
+//      {
+//         System.out.println(res.readEntity(String.class));
+//      }
       Assert.assertEquals(200, res.getStatus());
       AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
       res.close();
@@ -96,13 +96,13 @@ public class LoginTest extends SkeletonTestBase
    @Test
    public void testScoped() throws Exception
    {
-      System.out.println(realmInfo.getAuthorizationUrl());
+//      System.out.println(realmInfo.getAuthorizationUrl());
       WebTarget authUrl = client.target(realmInfo.getAuthorizationUrl())
               .queryParam("client_id", "oauthclient")
               .queryParam("redirect_uri", "http://localhost:8081/oauthclient/redirect");
 
       String form = authUrl.request().get(String.class);
-      System.out.println(form);
+//      System.out.println(form);
 
       Pattern p = Pattern.compile("action=\"([^\"]+)\"");
       Matcher matcher = p.matcher(form);
@@ -130,13 +130,13 @@ public class LoginTest extends SkeletonTestBase
               .param("scope", scopeParam)
               .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
-      System.out.println("LoginUrl: " + loginUrl);
+//      System.out.println("LoginUrl: " + loginUrl);
       Response response = client.target(loginUrl).request().post(Entity.form(loginform));
       Assert.assertEquals(302, response.getStatus());
       URI uri = response.getLocation();
       response.close();
       Assert.assertNotNull(uri);
-      System.out.println(uri);
+//      System.out.println(uri);
       Pattern q = Pattern.compile("code=([^&]+)");
       matcher = q.matcher(uri.getRawQuery());
       String code = null;
@@ -144,7 +144,7 @@ public class LoginTest extends SkeletonTestBase
       {
          code = matcher.group(1);
       }
-      System.out.println("Code: " + code);
+//      System.out.println("Code: " + code);
       Assert.assertNotNull(code);
       WebTarget codes = client.target(realmInfo.getCodeUrl());
       Form codeForm = new Form()
@@ -152,10 +152,10 @@ public class LoginTest extends SkeletonTestBase
               .param("client_id", "oauthclient")
               .param("Password", "clientpassword");
       Response res = codes.request().post(Entity.form(codeForm));
-      if (res.getStatus() == 400)
-      {
-         System.out.println(res.readEntity(String.class));
-      }
+//      if (res.getStatus() == 400)
+//      {
+//         System.out.println(res.readEntity(String.class));
+//      }
       Assert.assertEquals(200, res.getStatus());
       AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
       res.close();

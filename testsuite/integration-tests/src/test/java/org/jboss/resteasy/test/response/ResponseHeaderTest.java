@@ -60,7 +60,7 @@ public class ResponseHeaderTest {
       if (obj instanceof ArrayList) {
          List<Object> objs = (List<Object>)obj;
          if (objs.size() != 2) {
-        	 System.err.println(objs);
+//        	 System.err.println(objs);
             Assert.fail("2 array objects expected " + objs.size() + " were returned");
          }
 

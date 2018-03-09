@@ -21,7 +21,7 @@ public class EchoTest
       WebTarget keystoneServer = client.target("http://localhost:8080/keystone-server");
       SkeletonKeyAdminClient admin = new SkeletonKeyClientBuilder().username("admin").password("geheim").idp(keystoneServer).admin();
       User user = admin.users().get("1");
-      System.out.println(user);
+//      System.out.println(user);
    }
 
    @Test
@@ -31,11 +31,11 @@ public class EchoTest
       WebTarget keystoneServer = client.target("http://localhost:8080/keystone-server");
       ResteasyWebTarget adminServerTarget = client.target("http://localhost:8080/keystone-server");
       String token = new SkeletonKeyClientBuilder().username("admin").password("geheim").idp(keystoneServer).signed("Keystone", adminServerTarget);
-      System.out.println("token: " + token);
+//      System.out.println("token: " + token);
       Mappers.registerContextResolver(adminServerTarget.configuration());
       SkeletonKeyAdminClient admin = adminServerTarget.proxy(SkeletonKeyAdminClient.class);
       User user = admin.users().get("1");
-      System.out.println(user);
+//      System.out.println(user);
    }
 
 }

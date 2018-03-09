@@ -61,9 +61,9 @@ public class ServletInitializerTwoTest {
     public void testEndpoint() throws Exception {
         Response response = ResteasyClientBuilder.newClient()
             .target(baseUri.toString() + "two/test/17").request().get();
-        System.out.println("Status: " + response.getStatus());
+//        System.out.println("Status: " + response.getStatus());
         String entity = response.readEntity(String.class);
-        System.out.println("Result: " + entity);
+//        System.out.println("Result: " + entity);
         assertEquals(200, response.getStatus());
         Assert.assertEquals("17", entity);
     }

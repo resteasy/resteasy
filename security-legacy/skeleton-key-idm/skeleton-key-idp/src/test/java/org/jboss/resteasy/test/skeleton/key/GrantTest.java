@@ -41,7 +41,7 @@ public class GrantTest extends SkeletonTestBase
       Form form = new Form();
       form.param(RequiredCredentialRepresentation.PASSWORD, "userpassword")
           .param("client_id", "wburke");
-      System.out.println(realmInfo.getGrantUrl());
+//      System.out.println(realmInfo.getGrantUrl());
       Response response = client.target(realmInfo.getGrantUrl()).request().post(Entity.form(form));
       if (response.getStatus() != 200)
       {
@@ -61,7 +61,7 @@ public class GrantTest extends SkeletonTestBase
    @Test
    public void testPem() throws Exception
    {
-      System.out.println("*******************");
+//      System.out.println("*******************");
       if (Security.getProvider("BC") == null) Security.addProvider(new BouncyCastleProvider());
       KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
       StringWriter writer = new StringWriter();
@@ -69,7 +69,7 @@ public class GrantTest extends SkeletonTestBase
       pemWriter.writeObject(keyPair.getPublic());
       pemWriter.flush();
       String s = writer.toString();
-      System.out.println(s);
+//      System.out.println(s);
       s = PemUtils.removeBeginEnd(s);
 
       PublicKey pk = PemUtils.decodePublicKey(s);

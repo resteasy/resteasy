@@ -82,7 +82,7 @@ public class ProfilingTest
          Builder request = client.target("/").request();
          request.post(Entity.entity(new Customer("bill", "burke"), "application/json"), String.class);
       }
-      long end = System.currentTimeMillis() - start;
-      System.out.println(ITERATIONS + " iterations took " + end + "ms");
+//      long end = System.currentTimeMillis() - start;
+//      System.out.println(ITERATIONS + " iterations took " + end + "ms");
    }
 }

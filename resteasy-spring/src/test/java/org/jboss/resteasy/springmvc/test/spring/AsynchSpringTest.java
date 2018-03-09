@@ -55,10 +55,10 @@ public class AsynchSpringTest
       @PUT
       public void put(String content) throws Exception
       {
-         System.out.println("IN PUT!!!!");
+//         System.out.println("IN PUT!!!!");
          Assert.assertEquals("content", content);
          Thread.sleep(500);
-         System.out.println("******* countdown ****");
+//         System.out.println("******* countdown ****");
          latch.countDown();
       }
    }
@@ -101,7 +101,7 @@ public class AsynchSpringTest
          long end = System.currentTimeMillis() - start;
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
-         System.out.println("JOB: " + jobUrl);
+//         System.out.println("JOB: " + jobUrl);
          response.close();
          
          Builder jobBuilder = client.target(jobUrl).request();
@@ -140,7 +140,7 @@ public class AsynchSpringTest
          response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl1 = response.getHeaderString(HttpHeaders.LOCATION);
-         System.out.println("JOB: " + jobUrl1);
+//         System.out.println("JOB: " + jobUrl1);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          response.close();
 
@@ -181,7 +181,7 @@ public class AsynchSpringTest
          response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
-         System.out.println("JOB: " + jobUrl2);
+//         System.out.println("JOB: " + jobUrl2);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          response.close();
 

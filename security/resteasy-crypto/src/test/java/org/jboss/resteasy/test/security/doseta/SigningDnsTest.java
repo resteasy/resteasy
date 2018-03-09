@@ -149,7 +149,7 @@ public class SigningDnsTest
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input, "hello world");
-         System.out.println(signature);
+//         System.out.println(signature);
       }
 
    }
