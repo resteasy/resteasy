@@ -56,7 +56,7 @@ public class JaxrsAsyncTest
    @Test(timeout=REQUEST_TIMEOUT)
    public void testInjectionFailure()
    {
-      System.out.println("***INJECTION FAILURE***");
+//      System.out.println("***INJECTION FAILURE***");
       Response response = client.target(BASE_URI).path("jaxrs/injection-failure/abcd").request().get();
       Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
       response.close();
@@ -65,7 +65,7 @@ public class JaxrsAsyncTest
    @Test(timeout=REQUEST_TIMEOUT)
    public void testMethodFailure() throws Exception
    {
-      System.out.println("***method FAILURE***");
+//      System.out.println("***method FAILURE***");
       Response response = client.target(BASE_URI).path("jaxrs/method-failure").request().get();
       Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
       response.close();
@@ -83,8 +83,8 @@ public class JaxrsAsyncTest
    {
       Response response = client.target(BASE_URI).path("jaxrs").request().get();
       Assert.assertEquals(200, response.getStatus());
-      System.out.println(response.getHeaders().size());
-      System.out.println(response.getHeaders().keySet().iterator().next());
+//      System.out.println(response.getHeaders().size());
+//      System.out.println(response.getHeaders().keySet().iterator().next());
       Assert.assertEquals("hello", response.readEntity(String.class));
       response.close();
    }

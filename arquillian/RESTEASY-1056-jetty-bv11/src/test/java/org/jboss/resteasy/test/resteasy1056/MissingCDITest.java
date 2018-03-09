@@ -46,9 +46,9 @@ public class MissingCDITest {
     @Test
     public void testMissingCDIValid() throws Exception {
         Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/17").request().get();
-        System.out.println("Status: " + response.getStatus());
+//        System.out.println("Status: " + response.getStatus());
         String entity = response.readEntity(String.class);
-        System.out.println("Result: " + entity);
+//        System.out.println("Result: " + entity);
         assertEquals(200, response.getStatus());
         Assert.assertEquals("17", entity);
     }
@@ -56,9 +56,9 @@ public class MissingCDITest {
     @Test
     public void testMissingCDIInvalid() throws Exception {
         Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/0").request().get();
-        System.out.println("Status: " + response.getStatus());
+//        System.out.println("Status: " + response.getStatus());
         String entity = response.readEntity(String.class);
-        System.out.println("Result: " + entity);
+//        System.out.println("Result: " + entity);
         assertEquals(400, response.getStatus());
         ResteasyViolationException e = new ResteasyViolationException(entity);
         countViolations(e, 1, 0, 0, 0, 1, 0);

@@ -85,9 +85,8 @@ public class MockedProfilingTest
          deployment.getDispatcher().invoke(request, response);
          stream.reset();
       }
-      long end = System.currentTimeMillis() - start;
-
-      System.out.println("Time took: " + end);
+//      long end = System.currentTimeMillis() - start;
+//      System.out.println("Time took: " + end);
 
    }
 }

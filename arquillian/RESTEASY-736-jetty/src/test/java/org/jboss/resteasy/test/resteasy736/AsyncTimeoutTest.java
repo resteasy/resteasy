@@ -44,23 +44,23 @@ public class AsyncTimeoutTest {
 
     @Test
     public void testAsynchTimeout() throws Exception {
-        System.out.println("url = " + url);
+//        System.out.println("url = " + url);
         Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "test/").request();
         long start = System.currentTimeMillis();
-        System.out.println("start:   " + start);
+//        System.out.println("start:   " + start);
         Response response = null;
         try {
             response = request.get();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         } finally {
-            System.out.println("finish:  " + System.currentTimeMillis());
+//            System.out.println("finish:  " + System.currentTimeMillis());
             long elapsed = System.currentTimeMillis() - start;
-            System.out.println("elapsed: " + elapsed + " ms");
+//            System.out.println("elapsed: " + elapsed + " ms");
             ;
-            System.out.println("status: " + response.getStatus());
+//            System.out.println("status: " + response.getStatus());
             assertTrue(response != null);
-            System.out.println("response: " + response.readEntity(String.class));
+//            System.out.println("response: " + response.readEntity(String.class));
             Assert.assertEquals("Status is wrong", 503, response.getStatus());
             assertTrue(elapsed < 10000);
         }

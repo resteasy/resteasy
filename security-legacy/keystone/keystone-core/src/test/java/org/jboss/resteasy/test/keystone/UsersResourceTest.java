@@ -81,10 +81,10 @@ public class UsersResourceTest
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
-      String user = target.request().get(String.class);
-      System.out.println(user);
+//      String user = target.request().get(String.class);
+//      System.out.println(user);
       User u = target.request().get(User.class);
-      System.out.println(u);
+//      System.out.println(u);
       Assert.assertEquals("wburke", u.getUsername());
       Assert.assertEquals("Bill Burke", u.getName());
       Assert.assertEquals("bburke@redhat.com", u.getEmail());
@@ -107,10 +107,10 @@ public class UsersResourceTest
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
-      String user = target.request().get(String.class);
-      System.out.println(user);
+//      String user = target.request().get(String.class);
+//      System.out.println(user);
       User u = target.request().get(User.class);
-      System.out.println(u);
+//      System.out.println(u);
       Assert.assertEquals("5", u.getId());
       Assert.assertEquals("wburke", u.getUsername());
       Assert.assertEquals("Bill Burke", u.getName());

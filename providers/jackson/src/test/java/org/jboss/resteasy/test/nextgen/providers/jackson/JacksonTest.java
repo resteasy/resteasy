@@ -219,7 +219,7 @@ public class JacksonTest extends BaseResourceTest
       WebTarget target = client.target(generateURL("/products/333"));
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
-      System.out.println(entity);
+//      System.out.println(entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity);
       response.close();
@@ -227,7 +227,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-      System.out.println(entity2);
+//      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity2);
       response2.close();
@@ -240,7 +240,7 @@ public class JacksonTest extends BaseResourceTest
       WebTarget target = client.target(generateURL("/xml/products/333"));
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
-      System.out.println(entity);
+//      System.out.println(entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(entity.startsWith("{\"product"));
       response.close();
@@ -249,7 +249,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/xml/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-      System.out.println(entity2);
+//      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertTrue(entity2.startsWith("[{\"product"));
       response2.close();
@@ -267,7 +267,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-      System.out.println(entity2);
+//      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
       response2.close();
 

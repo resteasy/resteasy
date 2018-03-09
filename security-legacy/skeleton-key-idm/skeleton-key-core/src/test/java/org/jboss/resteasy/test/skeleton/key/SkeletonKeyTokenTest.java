@@ -27,7 +27,7 @@ public class SkeletonKeyTokenTest
       scope2.add("one", "buyer");
       scope2.add("two", "seller");
       String json = JsonSerialization.toString(scope2, true);
-      System.out.println(json);
+//      System.out.println(json);
 
 
    }
@@ -41,7 +41,7 @@ public class SkeletonKeyTokenTest
       token.addAccess("bar").addRole("user");
 
       String json = JsonSerialization.toString(token, true);
-      System.out.println(json);
+//      System.out.println(json);
 
       token = JsonSerialization.fromString(SkeletonKeyToken.class, json);
       Assert.assertEquals("111", token.getId());
@@ -66,7 +66,7 @@ public class SkeletonKeyTokenTest
               .content(tokenBytes)
               .rsa256(keyPair.getPrivate());
 
-      System.out.println(encoded);
+//      System.out.println(encoded);
 
       JWSInput input = new JWSInput(encoded);
       byte[] content = input.getContent();

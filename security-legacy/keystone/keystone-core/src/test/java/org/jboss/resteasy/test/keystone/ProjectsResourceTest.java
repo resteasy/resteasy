@@ -82,10 +82,10 @@ public class ProjectsResourceTest
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
-      String project = target.request().get(String.class);
-      System.out.println(project);
+//      String project = target.request().get(String.class);
+//      System.out.println(project);
       Project u = target.request().get(Project.class);
-      System.out.println(u);
+//      System.out.println(u);
       Assert.assertEquals("Resteasy", u.getName());
       Assert.assertEquals("The Best of REST", u.getDescription());
       Assert.assertTrue(u.getEnabled());
@@ -112,10 +112,10 @@ public class ProjectsResourceTest
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
-      String project = target.request().get(String.class);
-      System.out.println(project);
+//      String project = target.request().get(String.class);
+//      System.out.println(project);
       Project u = target.request().get(Project.class);
-      System.out.println(u);
+//      System.out.println(u);
       Assert.assertEquals("5", u.getId());
       Assert.assertEquals("Resteasy", u.getName());
       Assert.assertEquals("The Best of REST", u.getDescription());

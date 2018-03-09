@@ -88,10 +88,10 @@ public class BasicAuthTest
       @GET
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+//         System.out.println("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+//            System.out.println("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";
@@ -119,10 +119,10 @@ public class BasicAuthTest
    {
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+//         System.out.println("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+//            System.out.println("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";

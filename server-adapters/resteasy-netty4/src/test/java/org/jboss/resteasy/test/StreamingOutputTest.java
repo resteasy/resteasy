@@ -116,7 +116,7 @@ public class StreamingOutputTest
       long start = System.currentTimeMillis();
       testStreamingOutput();
       long end = System.currentTimeMillis() - start;
-      System.out.println(end);
+//      System.out.println(end);
       Assert.assertTrue(end < 1000);
       t.join();
       Assert.assertTrue(pass);
