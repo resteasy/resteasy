@@ -289,6 +289,7 @@ public class SseEventSourceImpl implements SseEventSource
       public void run()
       {
          SseEventInputImpl eventInput = null;
+         long delay = reconnectDelay;
          try
          {
             final Invocation.Builder request = buildRequest();
@@ -302,7 +303,7 @@ public class SseEventSourceImpl implements SseEventSource
             if (ex.hasRetryAfter())
             {
                Date requestTime = new Date();
-               reconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
             }
             onErrorConsumers.forEach(consumer -> {
                consumer.accept(ex);
@@ -326,7 +327,7 @@ public class SseEventSourceImpl implements SseEventSource
          {
             if (eventInput == null || eventInput.isClosed())
             {
-               reconnect(reconnectDelay);
+               reconnect(delay);
                break;
             }
             else
@@ -335,6 +336,10 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
+                  if (event.isReconnectDelaySet())
+                  {
+                     delay = event.getReconnectDelay();
+                  }
                   onEventConsumers.forEach(consumer -> {
                      consumer.accept(event);
                   });
@@ -366,10 +371,7 @@ public class SseEventSourceImpl implements SseEventSource
          {
             lastEventId = event.getId();
          }
-         if (event.isReconnectDelaySet())
-         {
-            reconnectDelay = event.getReconnectDelay();
-         }
+
       }
 
       private Invocation.Builder buildRequest()
