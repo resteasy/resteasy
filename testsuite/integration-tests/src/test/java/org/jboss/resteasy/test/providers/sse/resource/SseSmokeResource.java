@@ -22,4 +22,14 @@ public class SseSmokeResource {
                  .data(new SseSmokeUser("Zeytin", "zeytin@resteasy.org")).build());
         }
     }
+
+    @GET
+    @Path("/eventssimple")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    public void sentSimpleEvents(@Context SseEventSink sseEventSink, @Context Sse sse) {
+
+        try (SseEventSink sink = sseEventSink) {
+            sseEventSink.send(sse.newEvent("data"));
+        }
+    }
 }
