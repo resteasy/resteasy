@@ -54,7 +54,7 @@ public class ProgammaticTest {
       Field configurable = ProgrammaticResource.class.getDeclaredField("configurable");
       Constructor<?> constructor = ProgrammaticResource.class.getConstructor(Configurable.class);
 
-      ResourceClass resourceclass = new ResourceBuilder().buildRootResource(ProgrammaticResource.class)
+      ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
               .constructor(constructor).param(0).context().buildConstructor()
               .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
               .method(put).put().path("test").consumes("text/plain").param(0).messageBody().buildMethod()
@@ -89,7 +89,7 @@ public class ProgammaticTest {
       Field uriInfo = ProgrammaticResource.class.getDeclaredField("uriInfo");
       Field configurable = ProgrammaticResource.class.getDeclaredField("configurable");
 
-      ResourceClass resourceclass = new ResourceBuilder().buildRootResource(ProgrammaticResource.class)
+      ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
             .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
             .field(uriInfo).context().buildField()
             .field(configurable).context().buildField()
@@ -119,7 +119,7 @@ public class ProgammaticTest {
       Field configurable = ProgrammaticResource.class.getDeclaredField("configurable");
       Constructor<?> constructor = ProgrammaticResource.class.getConstructor(Configurable.class);
 
-      ResourceClass resourceclass = new ResourceBuilder().buildRootResource(ProgrammaticResource.class)
+      ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
               .constructor(constructor).param(0).context().buildConstructor()
               .method(get).get().path("test").produces("text/html;charset=UTF-16").param(0).queryParam("a").buildMethod()
               .field(uriInfo).context().buildField()
