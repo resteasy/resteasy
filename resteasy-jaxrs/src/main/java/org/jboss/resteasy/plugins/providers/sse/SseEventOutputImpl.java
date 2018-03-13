@@ -86,6 +86,16 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    protected void flushResponseToClient()
    {
+		try
+		{
+			internalFlushResponseToClient(false);
+		} catch (IOException e) 
+		{
+		}
+   }
+   
+   private void internalFlushResponseToClient(boolean throwIOException) throws IOException
+   {
 	  synchronized (lock)
       {
           if (!responseFlushed)
@@ -114,6 +124,10 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
              catch (IOException e)
              {
                 close();
+                if (throwIOException)
+                {
+                	throw e;
+                }
                 throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
              }
           }
@@ -129,13 +143,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public CompletionStage<?> send(OutboundSseEvent event)
    {
-      return send(event, (a, b) -> {
-      });
-   }
-
-   //We need this to make it async enough
-   public CompletionStage<?> send(OutboundSseEvent event, BiConsumer<SseEventSink, Throwable> errorConsumer)
-   {
 	  synchronized (lock)
       {
 	      if (closed)
@@ -144,14 +151,15 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 	      }
 	      try
 	      {
-	    	 flushResponseToClient();
+	    	 internalFlushResponseToClient(true);
 	         writeEvent(event);
 
 	      }
 	      catch (Exception ex)
 	      {
-	         errorConsumer.accept(this, ex);
-	         return CompletableFuture.completedFuture(ex);
+	    	 CompletableFuture<Void> completableFuture =  new CompletableFuture<>();
+	    	 completableFuture.completeExceptionally(ex);
+	         return completableFuture;
 	      }
 	      return CompletableFuture.completedFuture(event);  
 	  }

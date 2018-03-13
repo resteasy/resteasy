@@ -757,4 +757,7 @@ public interface Messages
    String unableToInstantiateAsyncStreamProvider();
    @Message(id = BASE + 1092, value = "SseEventSink is closed")
    String sseEventSinkIsClosed();
+   
+   @Message(id = BASE + 1093, value = "SseBroadcaster is closed")
+   String sseBroadcasterIsClosed();
 }
