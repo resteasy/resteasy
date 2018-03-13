@@ -34,7 +34,7 @@ public class POJOResourceFactory implements ResourceFactory
    {
       this.resourceBuilder = resourceBuilder;
       this.scannableClass = scannableClass;
-      this.resourceClass = resourceBuilder.rootResourceFromAnnotations(scannableClass);
+      this.resourceClass = resourceBuilder.getRootResourceFromAnnotations(scannableClass);
    }
 
    public POJOResourceFactory(ResourceClass resourceClass)
@@ -52,7 +52,7 @@ public class POJOResourceFactory implements ResourceFactory
    public void registered(ResteasyProviderFactory factory)
    {
       ResourceConstructor constructor = resourceClass.getConstructor();
-      if (constructor == null) constructor = resourceBuilder.constructor(resourceClass.getClazz());
+      if (constructor == null) constructor = resourceBuilder.getConstructor(resourceClass.getClazz());
       if (constructor == null)
       {
          throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForClass(scannableClass.getName()));

@@ -101,13 +101,13 @@ public class ResourceMethodRegistry implements Registry
 
    public void addSingletonResource(Object singleton)
    {
-      ResourceClass resourceClass = resourceBuilder.rootResourceFromAnnotations(singleton.getClass());
+      ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(singleton.getClass());
       addResourceFactory(new SingletonResource(singleton, resourceClass));
    }
 
    public void addSingletonResource(Object singleton, String basePath)
    {
-      ResourceClass resourceClass = resourceBuilder.rootResourceFromAnnotations(singleton.getClass());
+      ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(singleton.getClass());
       addResourceFactory(new SingletonResource(singleton, resourceClass), basePath);
    }
 
@@ -221,13 +221,13 @@ public class ResourceMethodRegistry implements Registry
          {
             for (Class<?> intf : clazz.getInterfaces())
             {
-               ResourceClass resourceClass = resourceBuilder.rootResourceFromAnnotations(intf);
+               ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(intf);
                register(ref, base, resourceClass);
             }
          }
          else
          {
-            ResourceClass resourceClass = resourceBuilder.rootResourceFromAnnotations(clazz);
+            ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(clazz);
             register(ref, base, resourceClass);
          }
       }
@@ -237,7 +237,7 @@ public class ResourceMethodRegistry implements Registry
       {
          for (Method method : getDeclaredMethods(clazz))
          {
-            Method _method = resourceBuilder.findAnnotatedMethod(clazz, method);
+            Method _method = resourceBuilder.getAnnotatedMethod(clazz, method);
             if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers()))
             {
                LogMessages.LOGGER.JAXRSAnnotationsFoundAtNonPublicMethod(method.getDeclaringClass().getName(), method.getName());

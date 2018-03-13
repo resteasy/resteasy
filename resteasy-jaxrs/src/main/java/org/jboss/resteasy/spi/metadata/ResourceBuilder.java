@@ -694,21 +694,44 @@ public class ResourceBuilder
       this.processors.add(processor);
    }
 
-   public ResourceClassBuilder rootResource(Class<?> root)
+   @Deprecated
+   public static ResourceClassBuilder rootResource(Class<?> root)
+   {
+      return new ResourceBuilder().buildRootResource(root);
+   }
+
+   public ResourceClassBuilder buildRootResource(Class<?> root)
    {
       return new ResourceClassBuilder(root, "/");
    }
 
-   protected ResourceClassBuilder rootResource(Class<?> root, String path)
+   @Deprecated
+   public static ResourceClassBuilder rootResource(Class<?> root, String path)
+   {
+      return new ResourceBuilder().buildRootResource(root, path);
+   }
+
+   protected ResourceClassBuilder buildRootResource(Class<?> root, String path)
    {
       return new ResourceClassBuilder(root, path);
    }
 
-   protected ResourceClassBuilder locator(Class<?> root)
+   @Deprecated
+   public static ResourceClassBuilder locator(Class<?> root)
+   {
+      return new ResourceBuilder().buildLocator(root);
+   }
+
+   protected ResourceClassBuilder buildLocator(Class<?> root)
    {
       return new ResourceClassBuilder(root, null);
    }
 
+   @Deprecated
+   public static ResourceConstructor constructor(Class<?> annotatedResourceClass)
+   {
+      return new ResourceBuilder().getConstructor(annotatedResourceClass);
+   }
 
    /**
     * Picks a constructor from an annotated resource class based on spec rules
@@ -716,14 +739,14 @@ public class ResourceBuilder
     * @param annotatedResourceClass
     * @return
     */
-   public ResourceConstructor constructor(Class<?> annotatedResourceClass)
+   public ResourceConstructor getConstructor(Class<?> annotatedResourceClass)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
       if (constructor == null)
       {
          throw new RuntimeException(Messages.MESSAGES.couldNotFindConstructor(annotatedResourceClass.getName()));
       }
-      ResourceConstructorBuilder builder = rootResource(annotatedResourceClass).constructor(constructor);
+      ResourceConstructorBuilder builder = buildRootResource(annotatedResourceClass).constructor(constructor);
       if (constructor.getParameterTypes() != null)
       {
          for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
@@ -732,17 +755,29 @@ public class ResourceBuilder
       return resourceClass.getConstructor();
    }
 
+   @Deprecated
+   public static ResourceClass rootResourceFromAnnotations(Class<?> clazz)
+   {
+      return new ResourceBuilder().getRootResourceFromAnnotations(clazz);
+   }
+
    /**
     * Build metadata from annotations on classes and methods
     *
     * @return
     */
-   public ResourceClass rootResourceFromAnnotations(Class<?> clazz)
+   public ResourceClass getRootResourceFromAnnotations(Class<?> clazz)
    {
       return fromAnnotations(false, clazz);
    }
 
-   public ResourceClass locatorFromAnnotations(Class<?> clazz)
+   @Deprecated
+   public static ResourceClass locatorFromAnnotations(Class<?> clazz)
+   {
+      return new ResourceBuilder().getLocatorFromAnnotations(clazz);
+   }
+
+   public ResourceClass getLocatorFromAnnotations(Class<?> clazz)
    {
       return fromAnnotations(true, clazz);
    }
@@ -757,12 +792,12 @@ public class ResourceBuilder
 
 
       ResourceClassBuilder builder = null;
-      if (isLocator) builder = locator(clazz);
+      if (isLocator) builder = buildLocator(clazz);
       else
       {
          Path path = clazz.getAnnotation(Path.class);
-         if (path == null) builder = rootResource(clazz, null);
-         else builder = rootResource(clazz, path.value());
+         if (path == null) builder = buildRootResource(clazz, null);
+         else builder = buildRootResource(clazz, path.value());
       }
       for (Method method : clazz.getMethods())
       {
@@ -778,6 +813,12 @@ public class ResourceBuilder
       return applyProcessors(builder.buildClass());
    }
 
+   @Deprecated
+   public static Method findAnnotatedMethod(final Class<?> root, final Method implementation)
+   {
+      return new ResourceBuilder().getAnnotatedMethod(root, implementation);
+   }
+
    /**
     * Find the annotated resource method or sub-resource method / sub-resource locator in the class hierarchy.
     *
@@ -785,7 +826,7 @@ public class ResourceBuilder
     * @param implementation The resource method or sub-resource method / sub-resource locator implementation
     * @return The annotated resource method or sub-resource method / sub-resource locator.
     */
-   public Method findAnnotatedMethod(final Class<?> root, final Method implementation)
+   public Method getAnnotatedMethod(final Class<?> root, final Method implementation)
    {
       if (implementation.isSynthetic())
       {
@@ -968,7 +1009,7 @@ public class ResourceBuilder
 
    protected void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
    {
-      Method method = findAnnotatedMethod(root, implementation);
+      Method method = getAnnotatedMethod(root, implementation);
       if (method != null)
       {
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);

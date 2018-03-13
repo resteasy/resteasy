@@ -31,13 +31,13 @@ public class LocatorRegistry
       {
          for (Class<?> intf : clazz.getInterfaces())
          {
-            ResourceClass resourceClass = resourceBuilder.locatorFromAnnotations(intf);
+            ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(intf);
             register(resourceClass);
          }
       }
       else
       {
-         ResourceClass resourceClass = resourceBuilder.locatorFromAnnotations(clazz);
+         ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(clazz);
          register(resourceClass);
       }
    }
