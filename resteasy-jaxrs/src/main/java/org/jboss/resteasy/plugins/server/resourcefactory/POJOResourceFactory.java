@@ -25,11 +25,21 @@ public class POJOResourceFactory implements ResourceFactory
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
+   public POJOResourceFactory(Class<?> scannableClass)
+   {
+      this(new ResourceBuilder(), scannableClass);
+   }
+
    public POJOResourceFactory(ResourceBuilder resourceBuilder, Class<?> scannableClass)
    {
       this.resourceBuilder = resourceBuilder;
       this.scannableClass = scannableClass;
       this.resourceClass = resourceBuilder.rootResourceFromAnnotations(scannableClass);
+   }
+
+   public POJOResourceFactory(ResourceClass resourceClass)
+   {
+      this(new ResourceBuilder(), resourceClass);
    }
 
    public POJOResourceFactory(ResourceBuilder resourceBuilder, ResourceClass resourceClass)
