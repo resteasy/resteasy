@@ -50,6 +50,7 @@ public class ResteasyWadlServlet extends HttpServlet {
         if (this.services == null) scanResources();
         if (this.services == null) {
             resp.sendError(503, Messages.MESSAGES.noResteasyDeployments());
+            return;
         }
         resp.setContentType(MediaType.APPLICATION_XML);
         this.apiWriter.writeWadl(uri, req, resp, services);
