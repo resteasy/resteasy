@@ -327,7 +327,14 @@ public class SseEventSourceImpl implements SseEventSource
          }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-            if (eventInput == null || eventInput.isClosed())
+
+            if (eventInput == null)
+            {
+               //http 204 no content
+               break;
+            }
+
+            if (eventInput.isClosed())
             {
                reconnect(delay);
                break;
@@ -345,6 +352,9 @@ public class SseEventSourceImpl implements SseEventSource
                   onEventConsumers.forEach(consumer -> {
                      consumer.accept(event);
                   });
+               } else {
+                  //event sink closed
+                  break;
                }
             }
          }

@@ -82,7 +82,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
       }
    }
-
+   
    protected void flushResponseToClient()
    {
       try
