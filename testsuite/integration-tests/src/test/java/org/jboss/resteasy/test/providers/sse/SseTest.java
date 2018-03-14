@@ -478,8 +478,7 @@ public class SseTest
    {
       Client client = ClientBuilder.newBuilder().build();
       final AtomicInteger errors = new AtomicInteger(0);
-      //WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
-      WebTarget target = client.target("http://localhost:9090/SseTest/service/server-sent-events/noContent");
+      WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
       try (SseEventSource source = SseEventSource.target(target).build())
       {
          source.register(event -> {
