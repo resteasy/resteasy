@@ -85,10 +85,11 @@ public class SigningTest
    }
 
    @Test
-   public void testMe() throws Exception
+   public void testMe()
    {
       URL url = Thread.currentThread().getContextClassLoader().getResource("dns/zones");
-//      System.out.println(url.getFile());
+      Assert.assertTrue("'zones' string not in " + url.getFile(), url.getFile().contains("zones"));
+      Assert.assertTrue("'dns' string not in " + url.getFile(), url.getFile().contains("dns"));
    }
 
    @BeforeClass

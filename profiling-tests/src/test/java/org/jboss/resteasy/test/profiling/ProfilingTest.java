@@ -76,7 +76,7 @@ public class ProfilingTest
       Client client = new ResteasyClientBuilder().httpEngine(engine).build();
       final int ITERATIONS = 1000;
 
-      long start = System.currentTimeMillis();
+//      long start = System.currentTimeMillis();
       for (int i = 0; i < ITERATIONS; i++)
       {
          Builder request = client.target("/").request();

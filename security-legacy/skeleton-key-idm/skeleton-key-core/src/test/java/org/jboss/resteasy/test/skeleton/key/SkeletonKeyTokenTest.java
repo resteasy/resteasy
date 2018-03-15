@@ -27,9 +27,8 @@ public class SkeletonKeyTokenTest
       scope2.add("one", "buyer");
       scope2.add("two", "seller");
       String json = JsonSerialization.toString(scope2, true);
-//      System.out.println(json);
-
-
+      String expected = "{\"one\":[\"admin\",\"buyer\"],\"two\":[\"seller\"]}";
+      Assert.assertEquals("Received: " + json + ", expected: " + expected, expected, json);
    }
 
    @Test
