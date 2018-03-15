@@ -299,6 +299,11 @@ public class SseEventSourceImpl implements SseEventSource
             {
                eventInput = request.get(SseEventInputImpl.class);
             }
+            //if 200< response code <300 and response contentType is null, fail the connection. 
+            if (eventInput == null)
+            {
+               state.set(State.CLOSED);
+            }
          }
          catch (ServiceUnavailableException ex)
          {
@@ -306,6 +311,10 @@ public class SseEventSourceImpl implements SseEventSource
             {
                Date requestTime = new Date();
                delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+            }
+            else
+            {
+               state.set(State.CLOSED);
             }
             onErrorConsumers.forEach(consumer -> {
                consumer.accept(ex);
@@ -327,14 +336,7 @@ public class SseEventSourceImpl implements SseEventSource
          }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-
-            if (eventInput == null)
-            {
-               //http 204 no content
-               break;
-            }
-
-            if (eventInput.isClosed())
+            if (eventInput == null || eventInput.isClosed())
             {
                reconnect(delay);
                break;

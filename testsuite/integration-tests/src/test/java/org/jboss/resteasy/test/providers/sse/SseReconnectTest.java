@@ -88,7 +88,7 @@ public class SseReconnectTest {
      * @tpInfo RESTEASY-1680
      * @tpSince RESTEasy 3.5.0
      */
-    //@Test
+    @Test
     public void testSseEndpointUnavailable() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger errors = new AtomicInteger(0);
