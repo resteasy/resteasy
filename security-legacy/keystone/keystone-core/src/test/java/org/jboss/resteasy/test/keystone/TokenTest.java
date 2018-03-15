@@ -277,13 +277,15 @@ public class TokenTest
 
 
       CMSSignedData data = new CMSSignedData(signed);
-      byte[] bytes = (byte[])data.getSignedContent().getContent();
-      System.out.println("BYTES: " + new String(bytes));
-      System.out.println("size:" + signed.length);
-      System.out.println("Base64.size: " + Base64.encodeBytes(signed).length());
+//      byte[] bytes = (byte[])data.getSignedContent().getContent();
+//      System.out.println("BYTES: " + new String(bytes));
+//      System.out.println("size:" + signed.length);
+//      int length = Base64.encodeBytes(signed).length();
+//      System.out.println("Base64.size: " + length);
 
-      SignerInformation signer = (SignerInformation)data.getSignerInfos().getSigners().iterator().next();
-      System.out.println("valid: " + signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey())));
+      SignerInformation signer = data.getSignerInfos().getSigners().iterator().next();
+      boolean valid = signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey()));
+      System.out.println("valid: " + valid);
       client.close();
 
 
