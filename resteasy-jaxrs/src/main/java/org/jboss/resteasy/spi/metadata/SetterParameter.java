@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi.metadata;
 
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -19,6 +20,7 @@ public class SetterParameter extends Parameter
       super(declaredClass, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0]);
       this.setter = setter;
       this.annotatedMethod = annotatedMethod;
+      this.paramName = Introspector.decapitalize(setter.getName().substring(3));
    }
 
    public Method getSetter()

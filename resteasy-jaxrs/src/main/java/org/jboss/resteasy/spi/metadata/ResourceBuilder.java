@@ -2,6 +2,12 @@ package org.jboss.resteasy.spi.metadata;
 
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.annotations.NewCookieParam;
+import org.jboss.resteasy.annotations.NewFormParam;
+import org.jboss.resteasy.annotations.NewHeaderParam;
+import org.jboss.resteasy.annotations.NewMatrixParam;
+import org.jboss.resteasy.annotations.NewPathParam;
+import org.jboss.resteasy.annotations.NewQueryParam;
 import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -271,6 +277,11 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
             parameter.paramName = queryParam.value();
          }
+         else if (findAnnotation(annotations, NewQueryParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.QUERY_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if(( query = findAnnotation(annotations, Query.class))!= null)
          {
             parameter.paramType = Parameter.ParamType.QUERY;
@@ -281,20 +292,40 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.HEADER_PARAM;
             parameter.paramName = header.value();
          }
+         else if (findAnnotation(annotations, NewHeaderParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.HEADER_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.FORM_PARAM;
             parameter.paramName = formParam.value();
+         }
+         else if (findAnnotation(annotations, NewFormParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.FORM_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
             parameter.paramName = cookie.value();
          }
+         else if (findAnnotation(annotations, NewCookieParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.PATH_PARAM;
             parameter.paramName = uriParam.value();
+         }
+         else if (findAnnotation(annotations, NewPathParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.PATH_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((form = findAnnotation(annotations, Form.class)) != null)
          {
@@ -309,6 +340,11 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
             parameter.paramName = matrix.value();
+         }
+         else if (findAnnotation(annotations, NewMatrixParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
          {

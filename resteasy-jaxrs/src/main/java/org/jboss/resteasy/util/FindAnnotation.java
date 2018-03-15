@@ -13,11 +13,20 @@ import javax.json.bind.annotation.JsonbTypeDeserializer;
 import javax.json.bind.annotation.JsonbTypeSerializer;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+
+import org.jboss.resteasy.annotations.NewCookieParam;
+import org.jboss.resteasy.annotations.NewFormParam;
+import org.jboss.resteasy.annotations.NewHeaderParam;
+import org.jboss.resteasy.annotations.NewMatrixParam;
+import org.jboss.resteasy.annotations.NewPathParam;
+import org.jboss.resteasy.annotations.NewQueryParam;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -42,7 +51,14 @@ public final class FindAnnotation
                    CookieParam.class,
                    PathParam.class,
                    MatrixParam.class,
-                   Context.class
+                   FormParam.class,
+                   Context.class,
+                   NewQueryParam.class,
+                   NewHeaderParam.class,
+                   NewCookieParam.class,
+                   NewPathParam.class,
+                   NewMatrixParam.class,
+                   NewFormParam.class,
            };
 
    private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};
