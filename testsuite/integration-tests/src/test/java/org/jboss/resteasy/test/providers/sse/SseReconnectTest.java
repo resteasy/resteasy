@@ -105,7 +105,7 @@ public class SseReconnectTest {
                     latch.countDown();
                 }, ex -> {
                     errors.incrementAndGet();
-                    Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+                    Assert.assertTrue("ServiceUnavailable exception is expected", ex instanceof ServiceUnavailableException);
                 });
                 eventSource.open();
 
@@ -119,4 +119,113 @@ public class SseReconnectTest {
         }
     }
 
-}
+    /**
+     * @tpTestDetails SseSink on the server is closed. Check, that the reconnection time of the SseEventSource consumer
+     * is the default value (500ms)
+     * @tpInfo RESTEASY-1680
+     * @tpSince RESTEasy 3.5.1
+     */
+    @Test
+    public void testSseEndpointDefaultReconnect() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicInteger errors = new AtomicInteger(0);
+        final List<String> results = new ArrayList<String>();
+        Client client = ClientBuilder.newBuilder().build();
+        try {
+            WebTarget target = client.target(generateURL("/reconnect/default"));
+            SseEventSource msgEventSource = SseEventSource.target(target).build();
+            try (SseEventSource eventSource = msgEventSource) {
+                eventSource.register(event -> {
+                    results.add(event.readData(String.class));
+                    latch.countDown();
+                }, ex -> {
+                    errors.incrementAndGet();
+                });
+                eventSource.open();
+
+                boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+                Assert.assertEquals(0, errors.get());
+                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+
+            }
+            Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+
+        } finally {
+            client.close();
+        }
+    }
+
+    /**
+     * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After" from the SSE endpoint. Check that SseEventSource
+     * retries after the specified period. Then with the same SseEventSource, SseSink on the server is closed. Check,
+     * that the reconnection time of the SseEventSource consumer is back to default value (500ms)
+     * @tpInfo RESTEASY-1831
+     * @tpSince RESTEasy 3.5.1
+     */
+    @Test
+    public void testSseEndpointUnavailableThenDefaultReconnect() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(2);
+        final AtomicInteger errors = new AtomicInteger(0);
+        final List<String> results = new ArrayList<String>();
+        Client client = ClientBuilder.newBuilder().build();
+        try {
+            WebTarget target = client.target(generateURL("/reconnect/unavailableAndDefault"));
+            SseEventSource msgEventSource = SseEventSource.target(target).build();
+            try (SseEventSource eventSource = msgEventSource) {
+                eventSource.register(event -> {
+                    results.add(event.readData(String.class));
+                    latch.countDown();
+                }, ex -> {
+                    errors.incrementAndGet();
+                });
+                eventSource.open();
+
+                boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+                Assert.assertEquals(1, errors.get());
+                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+
+            }
+            Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+
+        } finally {
+            client.close();
+        }
+    }
+
+    /**
+     * @tpTestDetails SseOutboundEvent sets reconnectDelay() to 3000ms. SseSink on the server is closed. Check, that
+     * the reconnection time of the SseEventSource is kept with the next client reconnection
+     * @tpInfo RESTEASY-1831
+     * @tpSince RESTEasy 3.5.1
+     */
+    @Test
+    public void testSseEndpointSseOutboundEventReconnectDelay() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(2);
+        final AtomicInteger errors = new AtomicInteger(0);
+        final List<String> results = new ArrayList<String>();
+        Client client = ClientBuilder.newBuilder().build();
+        try {
+            WebTarget target = client.target(generateURL("/reconnect/reconnectDelay"));
+            SseEventSource msgEventSource = SseEventSource.target(target).build();
+            try (SseEventSource eventSource = msgEventSource) {
+                eventSource.register(event -> {
+                    results.add(event.readData(String.class));
+                    latch.countDown();
+                }, ex -> {
+                    errors.incrementAndGet();
+                });
+                eventSource.open();
+
+                boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+                Assert.assertEquals(0, errors.get());
+                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+
+            }
+            Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+
+        } finally {
+            client.close();
+        }
+    }
+
+    }
