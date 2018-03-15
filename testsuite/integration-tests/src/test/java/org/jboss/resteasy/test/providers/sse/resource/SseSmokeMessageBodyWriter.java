@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 @Provider
 @Produces("text/plain")
@@ -29,7 +30,7 @@ public class SseSmokeMessageBodyWriter implements MessageBodyWriter<SseSmokeUser
 
     public void writeTo(SseSmokeUser arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
                         MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(arg6));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(arg6, StandardCharsets.UTF_8));
         bw.write(getStringRepresentation(arg0));
         bw.flush();
     }
