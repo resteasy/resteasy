@@ -6,7 +6,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
