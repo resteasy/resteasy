@@ -79,7 +79,7 @@ public class MockedProfilingTest
          deployment.getDispatcher().invoke(request, response);
          stream.reset();
       }
-      long start = System.currentTimeMillis();
+//      long start = System.currentTimeMillis();
       for (int i = 0; i < INTERATIONS; i++)
       {
          deployment.getDispatcher().invoke(request, response);

@@ -266,7 +266,7 @@ public class JacksonTest extends BaseResourceTest
       response.close();
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
-      String entity2 = response2.readEntity(String.class);
+//      String entity2 = response2.readEntity(String.class);
 //      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
       response2.close();

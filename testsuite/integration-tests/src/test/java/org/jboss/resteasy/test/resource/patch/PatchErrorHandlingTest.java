@@ -61,7 +61,7 @@ public class PatchErrorHandlingTest {
     public void testMalformedPatchDocument() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
-        Response response = base.request().post(Entity.<Student>entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
+        base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
         WebTarget patchTarget = client.target(generateURL("/students/1"));
         javax.json.JsonArray patchRequest = Json.createArrayBuilder()
@@ -94,7 +94,7 @@ public class PatchErrorHandlingTest {
     public void testResourceNotFound() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
-        Response response = base.request().post(Entity.<Student>entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
+        base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
         WebTarget patchTarget = client.target(generateURL("/students/1088"));
         javax.json.JsonArray patchRequest = Json.createArrayBuilder()
@@ -114,7 +114,7 @@ public class PatchErrorHandlingTest {
     public void testConflictingState() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
-        Response response = base.request().post(Entity.<Student>entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
+        base.request().post(Entity.entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
 
         WebTarget patchTarget = client.target(generateURL("/students/1"));
         javax.json.JsonArray patchRequest = Json.createArrayBuilder()
