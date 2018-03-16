@@ -19,19 +19,33 @@ import org.jboss.resteasy.spi.metadata.ResourceConstructor;
  */
 public class POJOResourceFactory implements ResourceFactory
 {
+   private final ResourceBuilder resourceBuilder;
    private final Class<?> scannableClass;
    private final ResourceClass resourceClass;
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
+   @Deprecated
    public POJOResourceFactory(Class<?> scannableClass)
    {
+      this(new ResourceBuilder(), scannableClass);
+   }
+
+   public POJOResourceFactory(ResourceBuilder resourceBuilder, Class<?> scannableClass)
+   {
+      this.resourceBuilder = resourceBuilder;
       this.scannableClass = scannableClass;
-      this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(scannableClass);
+      this.resourceClass = resourceBuilder.getRootResourceFromAnnotations(scannableClass);
    }
 
    public POJOResourceFactory(ResourceClass resourceClass)
    {
+      this(new ResourceBuilder(), resourceClass);
+   }
+
+   public POJOResourceFactory(ResourceBuilder resourceBuilder, ResourceClass resourceClass)
+   {
+      this.resourceBuilder = resourceBuilder;
       this.scannableClass = resourceClass.getClazz();
       this.resourceClass = resourceClass;
    }
@@ -39,7 +53,7 @@ public class POJOResourceFactory implements ResourceFactory
    public void registered(ResteasyProviderFactory factory)
    {
       ResourceConstructor constructor = resourceClass.getConstructor();
-      if (constructor == null) constructor = ResourceBuilder.constructor(resourceClass.getClazz());
+      if (constructor == null) constructor = resourceBuilder.getConstructor(resourceClass.getClazz());
       if (constructor == null)
       {
          throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForClass(scannableClass.getName()));
