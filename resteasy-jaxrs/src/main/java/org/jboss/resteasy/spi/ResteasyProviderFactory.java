@@ -27,6 +27,8 @@ import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -248,6 +250,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Set<Class<?>> featureClasses;
    protected Set<Object> featureInstances;
 
+   protected ResourceBuilder resourceBuilder;
+
 
    public ResteasyProviderFactory()
    {
@@ -322,6 +326,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
       headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
+
+      resourceBuilder = new ResourceBuilder();
 
       initializeRegistriesAndFilters();
 
@@ -1870,6 +1876,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException("Failed to register provider", e);
          }
       }
+      if (isA(provider, ResourceClassProcessor.class, contracts))
+      {
+         addResourceClassProcessor(provider);
+      }
    }
 
    /**
@@ -2181,6 +2191,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          } else {
             newContracts.put(ResponseExceptionMapper.class, ((ResponseExceptionMapper) provider).getPriority());
          }
+      }
+      if (isA(provider, ResourceClassProcessor.class, contracts))
+      {
+         addResourceClassProcessor((ResourceClassProcessor) provider);
       }
    }
 
@@ -2780,5 +2794,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
       }
       return null;
+   }
+
+   protected void addResourceClassProcessor(Class<ResourceClassProcessor> processorClass)
+   {
+      ResourceClassProcessor processor = createProviderInstance(processorClass);
+      addResourceClassProcessor(processor);
+   }
+
+   protected void addResourceClassProcessor(ResourceClassProcessor processor)
+   {
+      resourceBuilder.registerResourceClassProcessor(processor);
+   }
+
+   public ResourceBuilder getResourceBuilder() {
+      return resourceBuilder;
    }
 }

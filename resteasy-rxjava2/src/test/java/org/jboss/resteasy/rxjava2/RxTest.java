@@ -10,6 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -31,7 +32,8 @@ public class RxTest
       server.setRootResourcePath("/");
       server.start();
       dispatcher = server.getDeployment().getDispatcher();
-      POJOResourceFactory noDefaults = new POJOResourceFactory(RxResource.class);
+      ResourceBuilder resourceBuilder = new ResourceBuilder();
+      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceBuilder, RxResource.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
    }
 
