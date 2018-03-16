@@ -26,17 +26,18 @@ public class LocatorRegistry
    public LocatorRegistry(Class<?> clazz, ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
+      ResourceBuilder resourceBuilder = providerFactory.getResourceBuilder();
       if (Proxy.isProxyClass(clazz))
       {
          for (Class<?> intf : clazz.getInterfaces())
          {
-            ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(intf);
+            ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(intf);
             register(resourceClass);
          }
       }
       else
       {
-         ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(clazz);
+         ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(clazz);
          register(resourceClass);
       }
    }

@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.i18n;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import org.jboss.resteasy.spi.metadata.DefaultResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
@@ -11,6 +13,7 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.DefaultResourceMethod;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.junit.Test;
@@ -33,11 +36,12 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       {
          Class<?> clazz = TestMessagesAbstract.class;
          Method method = TestMessagesAbstract.class.getMethod("testLocale");
-         ResourceClass resourceClass = new ResourceClass(TestMessagesAbstract.class, "path");
-         ResourceMethod resourceMethod = new ResourceMethod(resourceClass, method, method);
+         ResourceClass resourceClass = new DefaultResourceClass(TestMessagesAbstract.class, "path");
+         ResourceMethod resourceMethod = new DefaultResourceMethod(resourceClass, method, method);
          ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
          InjectorFactory injectorFactory = new InjectorFactoryImpl();
-         POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
+         ResourceBuilder resourceBuilder = new ResourceBuilder();
+         POJOResourceFactory resourceFactory = new POJOResourceFactory(resourceBuilder, clazz);
          testMethod = new ResourceMethodInvoker(resourceMethod, injectorFactory, resourceFactory, providerFactory);
       }
       catch (NoSuchMethodException e)
