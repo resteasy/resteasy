@@ -25,6 +25,7 @@ public class POJOResourceFactory implements ResourceFactory
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
+   @Deprecated
    public POJOResourceFactory(Class<?> scannableClass)
    {
       this(new ResourceBuilder(), scannableClass);
