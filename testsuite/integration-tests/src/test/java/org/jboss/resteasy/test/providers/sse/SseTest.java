@@ -86,6 +86,8 @@ public class SseTest
             throw new RuntimeException(ex);
          });
          eventSource.open();
+         //Let's wait for SseEventSource to be connected
+         TimeUnit.SECONDS.sleep(3);
 
          Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
@@ -195,6 +197,10 @@ public class SseTest
       SseEventSource eventSource2 = SseEventSource.target(target2).build();
       eventSource2.register(checkConsumer);
       eventSource2.open();
+      
+      //Let's wait for all SseEventSource to be connected
+      TimeUnit.SECONDS.sleep(3);
+      
       //Test for eventSource subscriber
 
       client.target(generateURL("/service/server-sent-events/broadcast")).request()
@@ -270,6 +276,8 @@ public class SseTest
             throw new RuntimeException(ex);
          });
          eventSource.open();
+         //Let's wait for SseEventSource to be connected
+         TimeUnit.SECONDS.sleep(3);
 
          Client messageClient = new ResteasyClientBuilder().build();
          WebTarget messageTarget = messageClient
@@ -293,32 +301,32 @@ public class SseTest
       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
       List<Throwable> errorList = new ArrayList<Throwable>();
-      Thread t = new Thread(new Runnable()
+      try (SseEventSource eventSource = SseEventSource.target(target).build())
       {
-         @Override
-         public void run()
+         Thread t = new Thread(new Runnable()
          {
-            try (SseEventSource eventSource = SseEventSource.target(target).build())
+            @Override
+            public void run()
             {
-               eventSource.register(event -> {
-                  latch.countDown();
-               }, ex -> {
-                  if (ex instanceof InternalServerErrorException)
-                  {
-                     errorList.add(ex);
+                  eventSource.register(event -> {
                      latch.countDown();
-                  }
-               });
-               eventSource.open();
+                  }, ex -> {
+                     if (ex instanceof InternalServerErrorException)
+                     {
+                        errorList.add(ex);
+                        latch.countDown();
+                     }
+                  });
+                  eventSource.open();
             }
+         });
+         t.start();
+         if (latch.await(30, TimeUnit.SECONDS))
+         {
+            t.interrupt();
          }
-      });
-      t.start();
-      if (latch.await(30, TimeUnit.SECONDS))
-      {
-         t.interrupt();
+         Assert.assertFalse("InternalServerErrorException isn't processed in error consumer", errorList.isEmpty());
       }
-      Assert.assertFalse("InternalServerErrorException isn't processed in error consumer", errorList.isEmpty());
    }
 
    @Test
@@ -343,6 +351,8 @@ public class SseTest
             throw new RuntimeException(ex);
          });
          eventSource.open();
+         //Let's wait for SseEventSource to be connected
+         TimeUnit.SECONDS.sleep(3);
 
          Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));

@@ -173,7 +173,6 @@ public class SseEventSourceImpl implements SseEventSource
       }
       EventHandler handler = new EventHandler(reconnectDelay, lastEventId);
       executor.submit(handler);
-      handler.awaitConnected();
    }
 
    @Override
@@ -267,22 +266,18 @@ public class SseEventSourceImpl implements SseEventSource
    private class EventHandler implements Runnable
    {
 
-      private final CountDownLatch connectedLatch;
-
       private String lastEventId;
 
       private long reconnectDelay;
 
       public EventHandler(final long reconnectDelay, final String lastEventId)
       {
-         this.connectedLatch = new CountDownLatch(1);
          this.reconnectDelay = reconnectDelay;
          this.lastEventId = lastEventId;
       }
 
       private EventHandler(final EventHandler anotherHandler)
       {
-         this.connectedLatch = anotherHandler.connectedLatch;
          this.reconnectDelay = anotherHandler.reconnectDelay;
          this.lastEventId = anotherHandler.lastEventId;
       }
@@ -327,13 +322,6 @@ public class SseEventSourceImpl implements SseEventSource
             });
             state.set(State.CLOSED);
          }
-         finally
-         {
-            if (connectedLatch != null)
-            {
-               connectedLatch.countDown();
-            }
-         }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
@@ -360,19 +348,6 @@ public class SseEventSourceImpl implements SseEventSource
                }
             }
          }
-      }
-
-      public void awaitConnected()
-      {
-         try
-         {
-            connectedLatch.await(30, TimeUnit.SECONDS);
-         }
-         catch (InterruptedException ex)
-         {
-            Thread.currentThread().interrupt();
-         }
-
       }
 
       private void onEvent(final InboundSseEvent event)
