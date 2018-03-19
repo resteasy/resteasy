@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>25</version>
+        <version>26</version>
         <relativePath/>
     </parent>
 
@@ -33,6 +33,7 @@
         <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
+        <version.surefire.plugin>2.18.1</version.surefire.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
