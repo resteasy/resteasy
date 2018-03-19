@@ -150,7 +150,7 @@
             </goals>
             <configuration>
               <dir>target/classes</dir>
-              <params>--port=8765 --verbose</params>
+              <params>--port=8765</params>
             </configuration>
           </execution>
         </executions>
