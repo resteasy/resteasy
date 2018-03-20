@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ JBoss, Home of Professional Open Source.
   ~ Copyright 2010, Red Hat, Inc., and individual contributors
@@ -21,20 +20,24 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
+<module name="javax.json.api" xmlns="urn:jboss:module:1.5">
 
-<module xmlns="urn:jboss:module:1.5" name="org.eclipse.yasson">
     <properties>
-        <property name="jboss.api" value="private"/>
+        <property name="jboss.api" value="public"/>
     </properties>
-    
     <resources>
         <!-- Insert resources here -->
     </resources>
-
     <dependencies>
-        <module name="javax.json.bind.api"/>
-        <module name="javax.json.api"/>
-        <module name="javax.api"/>
-        <module name="javax.enterprise.api"/>
+        <!-- The 1.0 RI ships with the API bundled. We can just export the API from the 1.0 RI if it's present. -->
+        <module name="org.glassfish.javax.json" services="import">
+            <exports>
+                <include-set>
+                    <path name="javax/json"/>
+                    <path name="javax/json/spi"/>
+                    <path name="javax/json/stream"/>
+                </include-set>
+            </exports>
+        </module>
     </dependencies>
 </module>
