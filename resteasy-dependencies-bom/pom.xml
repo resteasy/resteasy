@@ -34,6 +34,7 @@
         <version.io.undertow>1.4.18.Final</version.io.undertow>
         <version.javax.activation>1.1.1</version.javax.activation>
         <version.javax.enterprise.cdi-api>1.2</version.javax.enterprise.cdi-api>
+        <version.javax.json-api>1.1.2</version.javax.json-api>
         <version.javax.json.bind-api>1.0</version.javax.json.bind-api>
         <version.javax.ws.rs-api>1.0.0.Final</version.javax.ws.rs-api>
         <version.junit>4.12</version.junit>
@@ -51,7 +52,7 @@
         <version.org.eclipse.jetty>9.4.7.v20170914</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>1.0</version.org.eclipse.yasson>
         <version.org.glassfish.javax.el>3.0.1-b08</version.org.glassfish.javax.el>
-        <version.org.glassfish.javax.json>1.1</version.org.glassfish.javax.json>
+        <version.org.glassfish.javax.json>1.1.2</version.org.glassfish.javax.json>
         <version.org.hibernate.hibernate-validator>5.2.4.Final</version.org.hibernate.hibernate-validator>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
         <version.org.infinispan>8.2.8.Final</version.org.infinispan>
@@ -347,6 +348,11 @@
                 <artifactId>cdi-api</artifactId>
                 <version>${version.javax.enterprise.cdi-api}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.json</groupId>
+                <artifactId>javax.json-api</artifactId>
+                <version>${version.javax.json-api}</version>
             </dependency>
             <dependency>
                 <groupId>javax.json.bind</groupId>
