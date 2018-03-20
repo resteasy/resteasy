@@ -49,12 +49,6 @@
           ~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
           -->
 
-        <module-def name="org.bouncycastle">
-            <maven-resource group="org.bouncycastle" artifact="bcprov-jdk15on"/>
-            <maven-resource group="org.bouncycastle" artifact="bcmail-jdk15on"/>
-            <maven-resource group="org.bouncycastle" artifact="bcpkix-jdk15on"/>
-        </module-def>
-
         <module-def name="org.codehaus.jackson.jackson-core-asl">
             <maven-resource group="org.codehaus.jackson" artifact="jackson-core-asl"/>
         </module-def>
@@ -107,6 +101,10 @@
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-json-provider"/>
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-base"/>
             <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
+        </module-def>
+
+        <module-def name="javax.json.api">
+            <maven-resource group="javax.json" artifact="javax.json-api"/>
         </module-def>
 
         <module-def name="javax.json.bind.api">

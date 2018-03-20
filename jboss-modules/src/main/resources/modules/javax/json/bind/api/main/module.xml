@@ -22,7 +22,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="javax.json.bind.api">
+<module xmlns="urn:jboss:module:1.5" name="javax.json.bind.api">
 
     <properties>
         <property name="jboss.api" value="public"/>
@@ -33,5 +33,6 @@
     </resources>
 
     <dependencies>
+        <module name="javax.json.api"/>
     </dependencies>
 </module>
