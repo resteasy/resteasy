@@ -189,29 +189,6 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
-        <profile>
-          <id>jdk9</id>
-          <activation>
-            <jdk>9</jdk>
-          </activation>
-          <properties>
-            <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
-            <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
-            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
-              -Dsun.reflect.debugModuleAccessChecks=true
-            </modular.jdk.props>
-          </properties>
-          <build>
-            <plugins>
-              <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                  <additionalparam>--add-modules=ALL-SYSTEM</additionalparam>
-                </configuration>
-              </plugin>
-            </plugins>
-          </build>
-        </profile>
     </profiles>
 
     <contributors>
