@@ -467,12 +467,9 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void reconnect(Response previousResponse, final long delay)
       {
-         if (previousResponse != null)
-         {
-            //Let's close the previous response to release any resource (pooled connection) before trying again.
-            previousResponse.close();
-         }
-
+         // Let's close the previous response to  be sure to release any resource (pooled connection) before trying again.
+         // previousResponse must/will not be null when this method is called.
+         previousResponse.close();
          if (state.get() != State.OPEN)
          {
             return;
