@@ -239,7 +239,7 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
-      internalClose(null);
+      internalClose();
       try
       {
          if (!executor.awaitTermination(timeout, unit))
@@ -257,16 +257,13 @@ public class SseEventSourceImpl implements SseEventSource
       return true;
    }
    
-   private void internalClose(Throwable throwable ){
+   private void internalClose(){
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) target;
          //close httpEngine to close connection
          resteasyWebTarget.getResteasyClient().httpEngine().close();
          executor.shutdownNow();
-         if(throwable!=null){
-            notifyErrorConsumers(throwable);
-         }
          notifyCompleteConsumers();
       }
    }
@@ -341,7 +338,7 @@ public class SseEventSourceImpl implements SseEventSource
       {
          SseEventInputImpl eventInput = null;
          long delay = reconnectDelay;
-         Response response =null;
+         Response response = null;
          
          try
          {
@@ -367,7 +364,7 @@ public class SseEventSourceImpl implements SseEventSource
                      }
                      break;
                   case 204 :
-                     internalClose(null);
+                     internalClose();
                      break;
                   case 503 :
                      ServiceUnavailableException serviceUnavailableException = new ServiceUnavailableException(
@@ -394,7 +391,8 @@ public class SseEventSourceImpl implements SseEventSource
          catch (Throwable e)
          {
             // Fail connection is an unrecoverable error so we have to notify error consumers.
-            internalClose(e);
+            notifyErrorConsumers(e);
+            internalClose();
          }
          finally
          {
