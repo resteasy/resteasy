@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -336,56 +336,74 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
+         if (state.get() != State.OPEN)
+         {
+            return;
+         }
+         
          SseEventInputImpl eventInput = null;
          long delay = reconnectDelay;
          Response response = null;
-         
          try
          {
-            final Invocation.Builder request = buildRequest();
-            if (state.get() == State.OPEN)
+            Date requestTime = new Date();
+            try
             {
-               Date requestTime = new Date();
-               response = request.get();
-               switch (response.getStatus())
+               response = buildRequest().get();
+            }
+            catch (ProcessingException e)
+            {
+               if (State.CLOSED == state.get())
                {
-                  case 200 :
-                     MediaType mediaType = response.getMediaType();
-                     //We don't want to include charset and other params in the check
-                     if (MediaType.SERVER_SENT_EVENTS_TYPE.getType().equals(mediaType.getType())
-                           && MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype().equals(mediaType.getSubtype()))
-                     {
-                        eventInput = response.readEntity(SseEventInputImpl.class);
-                     }
-                     else
-                     {
-                        // Throw exception.
-                        ClientInvocation.handleErrorStatus(response);
-                     }
-                     break;
-                  case 204 :
-                     internalClose();
-                     break;
-                  case 503 :
-                     ServiceUnavailableException serviceUnavailableException = new ServiceUnavailableException(
-                           response);
-                     if (serviceUnavailableException.hasRetryAfter())
-                     {
-                        delay = serviceUnavailableException.getRetryTime(requestTime).getTime() - requestTime.getTime();
-                        // No need to notify error consumers since it is not an unrecoverable error.
-                        // 503 with retry after is an error whose recovery mechanism is reconnect so it's not unrecoverable.
-                     }
-                     else
-                     {
-                        // 503 without retry after is an error without recovery mechanism so we have to notify on error consumers.
-                        throw serviceUnavailableException;
-                     }
-                     break;
-                  default :
+                  // At this stage the ProcessingException can be either a
+                  // normal consequence of the 'close(...)' method invocation
+                  // and in this case it's not an error at all, or a real
+                  // error due to IO problem.
+                  // So instead of notifying error consumers of something that
+                  // may not be an error at all, it is acceptable to do
+                  // nothing since user already asked to close the
+                  // SseEventSource anyway.
+                  return;
+               }
+               throw e;
+            }
+            switch (response.getStatus())
+            {
+               case 200 :
+                  MediaType mediaType = response.getMediaType();
+                  //We don't want to include charset and other params in the check
+                  if (MediaType.SERVER_SENT_EVENTS_TYPE.getType().equals(mediaType.getType())
+                        && MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype().equals(mediaType.getSubtype()))
+                  {
+                     eventInput = response.readEntity(SseEventInputImpl.class);
+                  }
+                  else
+                  {
                      // Throw exception.
                      ClientInvocation.handleErrorStatus(response);
-                     break;
-               }
+                  }
+                  break;
+               case 204 :
+                  internalClose();
+                  break;
+               case 503 :
+                  ServiceUnavailableException serviceUnavailableException = new ServiceUnavailableException(response);
+                  if (serviceUnavailableException.hasRetryAfter())
+                  {
+                     delay = serviceUnavailableException.getRetryTime(requestTime).getTime() - requestTime.getTime();
+                     // No need to notify error consumers since it is not an unrecoverable error.
+                     // 503 with retry after is an error whose recovery mechanism is reconnect so it's not unrecoverable.
+                  }
+                  else
+                  {
+                     // 503 without retry after is an error without recovery mechanism so we have to notify on error consumers.
+                     throw serviceUnavailableException;
+                  }
+                  break;
+               default :
+                  // Throw exception.
+                  ClientInvocation.handleErrorStatus(response);
+                  break;
             }
          }
          catch (Throwable e)
