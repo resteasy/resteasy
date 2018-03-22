@@ -196,34 +196,38 @@ public class SseEventSourceTest {
    @Test
    public void testFailConnectionOn200AndWrongContentType() throws InterruptedException
    {
-      CountDownLatch latch = new CountDownLatch(2);
-      Client client = ClientBuilder.newBuilder().build();
-      try
+      for (MediaType mediaType : new MediaType[]
+      {MediaType.TEXT_PLAIN_TYPE, MediaType.WILDCARD_TYPE})
       {
-         WebTarget webTarget = client.target(generateURL("/sse/genericResponse"))
-               .queryParam(SseSmokeResource.RESPONSE_STATUS, Status.OK.name())
-               .queryParam(SseSmokeResource.RESPONSE_CONTENT_TYPE, MediaType.TEXT_PLAIN_TYPE)
-               .queryParam(SseSmokeResource.RESPONSE_CONTENT, "data: Hi guys\n\n");
-         try (SseEventSource eventSource = SseEventSource.target(webTarget).build())
+         Client client = ClientBuilder.newBuilder().build();
+         try
          {
-            eventSource.register(event -> {
-            }, ex -> {
-               latch.countDown();
-            }, () -> {
-               latch.countDown();
-            });
-            eventSource.open();
-            boolean waitResult = latch.await(20, TimeUnit.SECONDS);
-            Assert.assertTrue("The SseEventSource connection was supposed to fail", waitResult);
-            Assert.assertFalse(eventSource.isOpen());
+            CountDownLatch latch = new CountDownLatch(2);
+            WebTarget webTarget = client.target(generateURL("/sse/genericResponse"))
+                  .queryParam(SseSmokeResource.RESPONSE_STATUS, Status.OK.name())
+                  .queryParam(SseSmokeResource.RESPONSE_CONTENT_TYPE, mediaType)
+                  .queryParam(SseSmokeResource.RESPONSE_CONTENT, "data: Hi guys\n\n");
+            try (SseEventSource eventSource = SseEventSource.target(webTarget).build())
+            {
+               eventSource.register(event -> {
+               }, ex -> {
+                  latch.countDown();
+               }, () -> {
+                  latch.countDown();
+               });
+               eventSource.open();
+               boolean waitResult = latch.await(20, TimeUnit.SECONDS);
+               Assert.assertTrue("The SseEventSource connection was supposed to fail", waitResult);
+               Assert.assertFalse(eventSource.isOpen());
+            }
+         }
+         finally
+         {
+            client.close();
          }
       }
-      finally
-      {
-         client.close();
-      }
    }
-   
+
    // We are expecting the SseEventSource to close itself and not try to reconnect on a 204 response.
    // In this case, it must be closed and must notify:
    // - completion listener since no further events will be received.

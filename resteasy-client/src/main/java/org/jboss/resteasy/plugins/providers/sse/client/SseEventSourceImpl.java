@@ -341,17 +341,30 @@ public class SseEventSourceImpl implements SseEventSource
       {
          SseEventInputImpl eventInput = null;
          long delay = reconnectDelay;
+         Response response =null;
          
          try
          {
             final Invocation.Builder request = buildRequest();
             if (state.get() == State.OPEN)
             {
-               Response response = request.get();
+               Date requestTime = new Date();
+               response = request.get();
                switch (response.getStatus())
                {
                   case 200 :
-                     eventInput = response.readEntity(SseEventInputImpl.class);
+                     MediaType mediaType = response.getMediaType();
+                     //We don't want to include charset and other params in the check
+                     if (MediaType.SERVER_SENT_EVENTS_TYPE.getType().equals(mediaType.getType())
+                           && MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype().equals(mediaType.getSubtype()))
+                     {
+                        eventInput = response.readEntity(SseEventInputImpl.class);
+                     }
+                     else
+                     {
+                        // Throw exception.
+                        ClientInvocation.handleErrorStatus(response);
+                     }
                      break;
                   case 204 :
                      internalClose(null);
@@ -361,7 +374,6 @@ public class SseEventSourceImpl implements SseEventSource
                            response);
                      if (serviceUnavailableException.hasRetryAfter())
                      {
-                        Date requestTime = new Date();
                         delay = serviceUnavailableException.getRetryTime(requestTime).getTime() - requestTime.getTime();
                         // No need to notify error consumers since it is not an unrecoverable error.
                         // 503 with retry after is an error whose recovery mechanism is reconnect so it's not unrecoverable.
@@ -369,18 +381,19 @@ public class SseEventSourceImpl implements SseEventSource
                      else
                      {
                         // 503 without retry after is an error without recovery mechanism so we have to notify on error consumers.
-                        internalClose(serviceUnavailableException);
+                        throw serviceUnavailableException;
                      }
                      break;
                   default :
-                     // Fail connection is an uncoverable error so we have to notify error consumers.
-                     internalClose(ClientInvocation.handleErrorStatus(response));
+                     // Throw exception.
+                     ClientInvocation.handleErrorStatus(response);
                      break;
                }
             }
          }
          catch (Throwable e)
          {
+            // Fail connection is an unrecoverable error so we have to notify error consumers.
             internalClose(e);
          }
          finally
@@ -395,7 +408,7 @@ public class SseEventSourceImpl implements SseEventSource
          {
             if (eventInput == null || eventInput.isClosed())
             {
-               reconnect(delay);
+               reconnect(response, delay);
                break;
             }
             else
@@ -454,8 +467,14 @@ public class SseEventSourceImpl implements SseEventSource
          return request;
       }
 
-      private void reconnect(final long delay)
+      private void reconnect(Response previousResponse, final long delay)
       {
+         if (previousResponse != null)
+         {
+            //Let's close the previous response to release any resource (pooled connection) before trying again.
+            previousResponse.close();
+         }
+
          if (state.get() != State.OPEN)
          {
             return;
