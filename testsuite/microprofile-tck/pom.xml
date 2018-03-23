@@ -88,6 +88,7 @@
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -159,10 +160,9 @@
             </goals>
             <configuration>
               <dependenciesToScan>
-              <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
+                <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
               </dependenciesToScan>
               <excludes>
-
                 <!--
                   the dependency on MP config in the resteasy client is not desireable
                   this requires further thought
@@ -170,7 +170,6 @@
                 <exclude>**/DefaultExceptionMapperConfigTest.java</exclude>
 
                 <!-- Challenged, see  https://github.com/eclipse/microprofile-rest-client/pull/69 -->
-                <!--<exclude>org.eclipse.microprofile.rest.client.tck.InvokeWithJsonPProviderTest</exclude>-->
                 <exclude>**/InvokeWithJsonPProviderTest.java</exclude>
                 <exclude>**/InvokeWithBuiltProvidersTest.java</exclude>
                 <exclude>**/InvokeWithRegisteredProvidersTest.java</exclude>
