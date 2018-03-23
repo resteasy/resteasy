@@ -59,7 +59,7 @@
         <version.org.infinispan>8.2.8.Final</version.org.infinispan>
         <version.org.jacoco>0.7.9</version.org.jacoco>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
-        <org.jboss.arquillian.container>2.0.0.Beta5</org.jboss.arquillian.container>
+        <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Beta5</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging>3.3.1.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.1.0.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
@@ -144,12 +144,6 @@
                 <artifactId>classmate</artifactId>
                 <!-- Make sure the version matches the one used by Hibernate Validator itself -->
                 <version>${version.com.fasterxml.classmate}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-embedded</artifactId>
-                <version>${org.jboss.arquillian.container}</version>
             </dependency>
 
             <dependency>
@@ -562,6 +556,11 @@
 
             <!-- testsuite dependencies -->
             <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>${version.com.github.tomakehurst.wiremock}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jacoco</groupId>
                 <artifactId>org.jacoco.ant</artifactId>
                 <version>${version.org.jacoco}</version>
@@ -586,6 +585,11 @@
                 <version>${dep.arquillian-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-embedded</artifactId>
+                <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.jms</groupId>
@@ -725,6 +729,11 @@
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se</artifactId>
                 <version>${version.weld}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se-core</artifactId>
+                <version>${version.org.jboss.weld.se.weld-se-core}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.core</groupId>
