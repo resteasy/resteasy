@@ -21,12 +21,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.annotations.NewCookieParam;
-import org.jboss.resteasy.annotations.NewFormParam;
-import org.jboss.resteasy.annotations.NewHeaderParam;
-import org.jboss.resteasy.annotations.NewMatrixParam;
-import org.jboss.resteasy.annotations.NewPathParam;
-import org.jboss.resteasy.annotations.NewQueryParam;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -54,14 +48,15 @@ public final class FindAnnotation
                    MatrixParam.class,
                    FormParam.class,
                    Context.class,
-                   NewQueryParam.class,
-                   NewHeaderParam.class,
-                   NewCookieParam.class,
-                   NewPathParam.class,
-                   NewMatrixParam.class,
-                   NewFormParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.QueryParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.HeaderParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.CookieParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.PathParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.MatrixParam.class,
+                   org.jboss.resteasy.annotations.jaxrs.FormParam.class,
            };
 
+   @SuppressWarnings("rawtypes")
    private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};
 
 

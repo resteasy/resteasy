@@ -1,12 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.annotations.NewCookieParam;
-import org.jboss.resteasy.annotations.NewFormParam;
-import org.jboss.resteasy.annotations.NewHeaderParam;
-import org.jboss.resteasy.annotations.NewMatrixParam;
-import org.jboss.resteasy.annotations.NewPathParam;
-import org.jboss.resteasy.annotations.NewQueryParam;
 import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
@@ -167,7 +161,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new QueryParamInjector(type, genericType, injectTarget, queryParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewQueryParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class) != null)
       {
          return new QueryParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
@@ -178,7 +172,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new HeaderParamInjector(type, genericType, injectTarget, header.value(), defaultVal, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewHeaderParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class) != null)
       {
          return new HeaderParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
       }
@@ -186,7 +180,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewFormParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class) != null)
       {
          return new FormParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
@@ -194,7 +188,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new CookieParamInjector(type, genericType, injectTarget, cookie.value(), defaultVal, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewCookieParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class) != null)
       {
          return new CookieParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
       }
@@ -202,7 +196,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewPathParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class) != null)
       {
          return new PathParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
@@ -235,7 +229,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, NewMatrixParam.class) != null)
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class) != null)
       {
          return new MatrixParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }

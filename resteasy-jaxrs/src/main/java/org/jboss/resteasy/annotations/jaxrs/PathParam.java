@@ -1,4 +1,4 @@
-package org.jboss.resteasy.annotations;
+package org.jboss.resteasy.annotations.jaxrs;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD, PARAMETER })
-public @interface NewCookieParam
+public @interface PathParam
 {
-
+   String value() default "";
 }
