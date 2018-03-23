@@ -1,59 +1,58 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.annotations.NewCookieParam;
-import org.jboss.resteasy.annotations.NewFormParam;
-import org.jboss.resteasy.annotations.NewHeaderParam;
-import org.jboss.resteasy.annotations.NewMatrixParam;
-import org.jboss.resteasy.annotations.NewPathParam;
-import org.jboss.resteasy.annotations.NewQueryParam;
+import org.jboss.resteasy.annotations.jaxrs.FormParam;
+import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
+import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.jboss.resteasy.annotations.jaxrs.QueryParam;
+import org.jboss.resteasy.annotations.jaxrs.CookieParam;
 
 @Path("/")
 public class NewParamAnnotationsResource
 {
 
    private String cookieParam0;
-   @NewCookieParam
+   @CookieParam
    private String cookieParam1;
    private String cookieParam2;
 
    private String formParam0;
-   @NewFormParam
+   @FormParam
    private String formParam1;
    private String formParam2;
 
    private String headerParam0;
-   @NewHeaderParam
+   @HeaderParam
    private String headerParam1;
    private String headerParam2;
 
    private String matrixParam0;
-   @NewMatrixParam
+   @MatrixParam
    private String matrixParam1;
    private String matrixParam2;
 
    private String pathParam0;
-   @NewPathParam
+   @PathParam
    private String pathParam1;
    private String pathParam2;
 
    private String queryParam0;
-   @NewQueryParam
+   @QueryParam
    private String queryParam1;
    private String queryParam2;
 
 
    public NewParamAnnotationsResource(
-         @NewCookieParam String cookieParam0,
-         @NewFormParam String formParam0,
-         @NewHeaderParam String headerParam0,
-         @NewMatrixParam String matrixParam0,
-         @NewPathParam String pathParam0,
-         @NewQueryParam String queryParam0
+         @CookieParam String cookieParam0,
+         @FormParam String formParam0,
+         @HeaderParam String headerParam0,
+         @MatrixParam String matrixParam0,
+         @PathParam String pathParam0,
+         @QueryParam String queryParam0
          )
    {
       this.cookieParam0 = cookieParam0;
@@ -69,7 +68,7 @@ public class NewParamAnnotationsResource
       return cookieParam2;
    }
    
-   @NewCookieParam
+   @CookieParam
    public void setCookieParam2(String cookieParam2)
    {
       this.cookieParam2 = cookieParam2;
@@ -80,7 +79,7 @@ public class NewParamAnnotationsResource
       return formParam2;
    }
    
-   @NewFormParam
+   @FormParam
    public void setFormParam2(String formParam2)
    {
       this.formParam2 = formParam2;
@@ -96,7 +95,7 @@ public class NewParamAnnotationsResource
       return headerParam2;
    }
    
-   @NewHeaderParam
+   @HeaderParam
    public void setHeaderParam2(String headerParam2)
    {
       this.headerParam2 = headerParam2;
@@ -107,13 +106,13 @@ public class NewParamAnnotationsResource
       return matrixParam2;
    }
    
-   @NewMatrixParam
+   @MatrixParam
    public void setMatrixParam2(String matrixParam2)
    {
       this.matrixParam2 = matrixParam2;
    }
    
-   @NewPathParam
+   @PathParam
    public void setPathParam2(String pathParam2)
    {
       this.pathParam2 = pathParam2;
@@ -124,7 +123,7 @@ public class NewParamAnnotationsResource
       return queryParam2;
    }
    
-   @NewQueryParam
+   @QueryParam
    public void setQueryParam2(String queryParam2)
    {
       this.queryParam2 = queryParam2;
@@ -133,42 +132,42 @@ public class NewParamAnnotationsResource
    @POST
    @Path("{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}")
    public Response post(
-         @NewCookieParam String cookieParam3,
-         @NewFormParam String formParam3,
-         @NewHeaderParam String headerParam3,
-         @NewMatrixParam String matrixParam3,
-         @NewPathParam String pathParam3, 
-         @NewQueryParam String queryParam3)
+         @CookieParam String cookieParam3,
+         @FormParam String formParam3,
+         @HeaderParam String headerParam3,
+         @MatrixParam String matrixParam3,
+         @PathParam String pathParam3, 
+         @QueryParam String queryParam3)
    {
-      System.err.println("cookieParam0: "+cookieParam0);
-      System.err.println("cookieParam1: "+cookieParam1);
-      System.err.println("cookieParam2: "+cookieParam2);
-      System.err.println("cookieParam3: "+cookieParam3);
-
-      System.err.println("formParam0: "+formParam0);
-      System.err.println("formParam1: "+formParam1);
-      System.err.println("formParam2: "+formParam2);
-      System.err.println("formParam3: "+formParam3);
-
-      System.err.println("headerParam0: "+headerParam0);
-      System.err.println("headerParam1: "+headerParam1);
-      System.err.println("headerParam2: "+headerParam2);
-      System.err.println("headerParam3: "+headerParam3);
-
-      System.err.println("matrixParam0: "+matrixParam0);
-      System.err.println("matrixParam1: "+matrixParam1);
-      System.err.println("matrixParam2: "+matrixParam2);
-      System.err.println("matrixParam3: "+matrixParam3);
-
-      System.err.println("pathParam0: "+pathParam0);
-      System.err.println("pathParam1: "+pathParam1);
-      System.err.println("pathParam2: "+pathParam2);
-      System.err.println("pathParam3: "+pathParam3);
-
-      System.err.println("queryParam0: "+queryParam0);
-      System.err.println("queryParam1: "+queryParam1);
-      System.err.println("queryParam2: "+queryParam2);
-      System.err.println("queryParam3: "+queryParam3);
+//      System.err.println("cookieParam0: "+cookieParam0);
+//      System.err.println("cookieParam1: "+cookieParam1);
+//      System.err.println("cookieParam2: "+cookieParam2);
+//      System.err.println("cookieParam3: "+cookieParam3);
+//
+//      System.err.println("formParam0: "+formParam0);
+//      System.err.println("formParam1: "+formParam1);
+//      System.err.println("formParam2: "+formParam2);
+//      System.err.println("formParam3: "+formParam3);
+//
+//      System.err.println("headerParam0: "+headerParam0);
+//      System.err.println("headerParam1: "+headerParam1);
+//      System.err.println("headerParam2: "+headerParam2);
+//      System.err.println("headerParam3: "+headerParam3);
+//
+//      System.err.println("matrixParam0: "+matrixParam0);
+//      System.err.println("matrixParam1: "+matrixParam1);
+//      System.err.println("matrixParam2: "+matrixParam2);
+//      System.err.println("matrixParam3: "+matrixParam3);
+//
+//      System.err.println("pathParam0: "+pathParam0);
+//      System.err.println("pathParam1: "+pathParam1);
+//      System.err.println("pathParam2: "+pathParam2);
+//      System.err.println("pathParam3: "+pathParam3);
+//
+//      System.err.println("queryParam0: "+queryParam0);
+//      System.err.println("queryParam1: "+queryParam1);
+//      System.err.println("queryParam2: "+queryParam2);
+//      System.err.println("queryParam3: "+queryParam3);
 
       if(      !"cookieParam0".equals(cookieParam0)
             || !"cookieParam1".equals(cookieParam1)
