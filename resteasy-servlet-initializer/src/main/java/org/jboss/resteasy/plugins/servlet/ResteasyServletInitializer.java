@@ -115,8 +115,11 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
          if (!mapping.startsWith("/")) mapping = "/" + mapping;
          String prefix = mapping;
          if (!prefix.equals("/") && prefix.endsWith("/")) prefix = prefix.substring(0, prefix.length() - 1);
-         if (mapping.endsWith("/")) mapping += "*";
-         else mapping += "/*";
+         if (!mapping.endsWith("/*")) 
+         {
+            if (mapping.endsWith("/")) mapping += "*";
+            else mapping += "/*";
+         }
          // resteasy.servlet.mapping.prefix
          reg.setInitParameter("resteasy.servlet.mapping.prefix", prefix);
          reg.addMapping(mapping);
