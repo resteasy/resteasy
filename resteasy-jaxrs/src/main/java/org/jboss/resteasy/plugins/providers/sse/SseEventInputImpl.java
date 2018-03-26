@@ -45,8 +45,8 @@ public class SseEventInputImpl implements EventInput, Closeable
    @Override
    public void close() throws IOException
    {
-      this.inputStream.close();
       isClosed = true;
+      this.inputStream.close();
    }
 
    public boolean isClosed()
@@ -54,7 +54,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       return isClosed;
    }
 
-   public InboundSseEvent read() throws IllegalStateException
+   public InboundSseEvent read() throws IOException
    {
       byte[] chunk = null;
       try
@@ -72,12 +72,14 @@ public class SseEventInputImpl implements EventInput, Closeable
          try
          {
             close();
+            
          }
          catch (IOException e)
          {
             //TODO: add a log message
          }
-         throw new RuntimeException(Messages.MESSAGES.readEventException(), e1);
+         throw e1;
+        
       }
 
       final ByteArrayInputStream entityStream = new ByteArrayInputStream(chunk);
@@ -156,7 +158,7 @@ public class SseEventInputImpl implements EventInput, Closeable
          }
          catch (IOException e)
          {
-            throw new RuntimeException(Messages.MESSAGES.readEventException(), e);
+            throw new IOException(Messages.MESSAGES.readEventException(), e);
          }
       }
       return eventBuilder.build();

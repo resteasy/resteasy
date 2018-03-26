@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse.client;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -343,19 +344,29 @@ public class SseEventSourceImpl implements SseEventSource
             }
             else
             {
-               InboundSseEvent event = eventInput.read();
-               if (event != null)
+               try
                {
-                  onEvent(event);
-                  if (event.isReconnectDelaySet())
+                  InboundSseEvent event = eventInput.read();
+                  if (event != null)
                   {
-                     delay = event.getReconnectDelay();
+                     onEvent(event);
+                     if (event.isReconnectDelaySet())
+                     {
+                        delay = event.getReconnectDelay();
+                     }
+                     onEventConsumers.forEach(consumer -> {
+                        consumer.accept(event);
+                     });
                   }
-                  onEventConsumers.forEach(consumer -> {
-                     consumer.accept(event);
-                  });
-               } else {
-                  //event sink closed
+                  else
+                  {
+                     //event sink closed
+                     break;
+                  }
+               }
+               catch (IOException e)
+               {
+                  reconnect(delay);
                   break;
                }
             }
