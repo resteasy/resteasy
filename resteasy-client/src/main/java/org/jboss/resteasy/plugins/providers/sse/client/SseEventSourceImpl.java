@@ -351,18 +351,16 @@ public class SseEventSourceImpl implements SseEventSource
             {
                response = buildRequest().get();
             }
-            catch (ProcessingException e)
+            catch (ProcessingException | IllegalArgumentException e)
             {
                if (State.CLOSED == state.get())
                {
-                  // At this stage the ProcessingException can be either a
-                  // normal consequence of the 'close(...)' method invocation
-                  // and in this case it's not an error at all, or a real
-                  // error due to IO problem.
-                  // So instead of notifying error consumers of something that
-                  // may not be an error at all, it is acceptable to do
-                  // nothing since user already asked to close the
-                  // SseEventSource anyway.
+                  // At this stage the ProcessingException can be either a normal consequence of the 'close(...)' method invocation
+                  // and in this case it's not an error at all, or a real error due to IO problem.
+                  // So instead of notifying error consumers of something that may not be an error at all, it is acceptable to do
+                  // nothing since user already asked to close the SseEventSource anyway.
+                  //
+                  // IllegalStateException should always be a normal consequence of the 'close(...)' method invocation.
                   return;
                }
                throw e;
@@ -372,10 +370,26 @@ public class SseEventSourceImpl implements SseEventSource
                case 200 :
                   MediaType mediaType = response.getMediaType();
                   //We don't want to include charset and other params in the check
-                  if (MediaType.SERVER_SENT_EVENTS_TYPE.getType().equals(mediaType.getType())
+                  if (mediaType != null && MediaType.SERVER_SENT_EVENTS_TYPE.getType().equals(mediaType.getType())
                         && MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype().equals(mediaType.getSubtype()))
                   {
-                     eventInput = response.readEntity(SseEventInputImpl.class);
+                     try
+                     {
+                        eventInput = response.readEntity(SseEventInputImpl.class);
+                     }
+                     catch (ProcessingException | IllegalArgumentException e)
+                     {
+                        if (State.CLOSED == state.get())
+                        {
+                           // At this stage the ProcessingException or IllegalStateException can be either a normal consequence of
+                           // the 'close(...)' method invocation and in this case it's not an error at all, or a real error due to 
+                           // IO/response processing problems.
+                           // So instead of notifying error consumers of something that may not be an error at all, it is acceptable to do
+                           // nothing since user already asked to close the SseEventSource anyway.
+                           return;
+                        }
+                        throw e;
+                     }
                   }
                   else
                   {
@@ -485,8 +499,9 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void reconnect(Response previousResponse, final long delay)
       {
-         // Let's close the previous response to  be sure to release any resource (pooled connection) before trying again.
-         // previousResponse must/will not be null when this method is called.
+         // Let's close the previous response to be sure to release any resource (pooled connections) before trying again.
+         // It is useful since only the response headers may have been processed and the response entity ignored.
+         // previousRepsonse must/will not be null when this method is called.
          previousResponse.close();
          if (state.get() != State.OPEN)
          {
