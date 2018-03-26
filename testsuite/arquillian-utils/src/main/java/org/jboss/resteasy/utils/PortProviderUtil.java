@@ -126,15 +126,25 @@ public class PortProviderUtil {
      * Generate a URL incorporating the configured port.
      *
      * @param path the path
+     * @parm testName the test name 
      * @return a full URL
      */
     public static String generateURL(String path, String testName) {
+        return generateURL(path, testName,  getHost(), getPort());
+    }
+    /**
+     * Generate a URL with port, hostname
+     *
+     * @param path the path
+     * @return a full URL
+     */
+    public static String generateURL(String path, String testName, String hostName, int port) {
         // ipv4
         if (!ipv6) {
-            return String.format("http://%s:%d/%s%s", getHost(), getPort(), testName, path);
+            return String.format("http://%s:%d/%s%s", hostName, port, testName, path);
         }
         // ipv6
-        return String.format("http://[%s]:%d/%s%s", getHost(), getPort(), testName, path);
+        return String.format("http://[%s]:%d/%s%s", hostName, port, testName, path);
     }
 
     /**
