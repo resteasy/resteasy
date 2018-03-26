@@ -246,27 +246,48 @@ public class SseTest
    //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will 
    //disconnect the connection, but events is continued to add to eventsStore. SseEventSource will automatically reconnect
    //with LastEventId and receive the missed events  
-   //TODO: look at how can we mock a connection loss for this test
-   //@Test
+   @Test
    @InSequence(5)
    public void testReconnect() throws Exception
    {
+      int proxyPort = 9090;
+      SimpleProxyServer proxy = new SimpleProxyServer(PortProviderUtil.getHost(), PortProviderUtil.getPort(), proxyPort);
+      proxy.start();
       final CountDownLatch latch = new CountDownLatch(10);
-      final CountDownLatch closeLatch = new CountDownLatch(1);
       final List<String> results = new ArrayList<String>();
       final AtomicInteger errors = new AtomicInteger(0);
       ResteasyClient client = new ResteasyClientBuilder().connectionPoolSize(10).build();
-      WebTarget target = client.target(generateURL("/service/server-sent-events"));
-      try (SseEventSource eventSource = SseEventSource.target(target).reconnectingEvery(1, TimeUnit.SECONDS).build())
+      String requestPath = PortProviderUtil.generateURL("/service/server-sent-events",
+            SseTest.class.getSimpleName(), PortProviderUtil.getHost(), proxyPort);
+      WebTarget target = client.target(requestPath);
+      try (SseEventSource eventSource = SseEventSource.target(target).reconnectingEvery(500, TimeUnit.MILLISECONDS).build())
       {
          Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
          eventSource.register(event -> {
             results.add(event.toString());
             latch.countDown();
-            closeLatch.countDown();
+            if (latch.getCount() == 8)
+            {
+               new Thread()
+               {
+                  public void run()
+                  {
+                     proxy.stop();
+                     try
+                     {
+                        Thread.sleep(300);
+                     }
+                     catch (Exception e)
+                     {
+                        logger.error("Exception thrown when sleep some time to start proxy ", e);
+                     }
+                     proxy.start();
+                  }
+               }.start();
+            }
          }, ex -> {
             errors.incrementAndGet();
-            logger.error(ex.getMessage(), ex);
+            logger.error("test reconnect error", ex);
             throw new RuntimeException(ex);
          });
          eventSource.open();
@@ -282,8 +303,10 @@ public class SseTest
          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          Assert.assertTrue("10 events are expected, but is : " + results.size(), results.size() == 10);
          target.request().delete();
+         proxy.stop();
       }
    }
+
 
    @Test
    @InSequence(6)

@@ -9,6 +9,8 @@ import javax.json.bind.annotation.JsonbTransient;
 @JsonbPropertyOrder({"color", "sort", "name", "domesticated"})
 public class Cat {
 
+   public static final String CUSTOM_TO_STRING_FORMAT = "custom toString format";
+
    public static final Integer DEFAULT_TRANSIENT_VAR_VALUE = -1;
 
    private String name;
@@ -82,13 +84,8 @@ public class Cat {
 
    @Override
    public String toString() {
-      return "Cat - custom toString format {" +
-              "name='" + name + '\'' +
-              ", sort='" + sort + '\'' +
-              ", color='" + color + '\'' +
-              ", domesticated=" + domesticated +
-              ", transientVar=" + transientVar +
-              '}';
+      return String.format("Cat - %s {name='%s', sort='%s', color='%s', domesticated=%s, transientVar=%s}",
+              CUSTOM_TO_STRING_FORMAT, name, sort, color, domesticated, transientVar);
    }
 }
 

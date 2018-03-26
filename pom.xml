@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>25</version>
+        <version>26</version>
         <relativePath/>
     </parent>
 
@@ -33,6 +33,7 @@
         <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
+        <version.surefire.plugin>2.18.1</version.surefire.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -187,29 +188,6 @@
                     </dependency>
                 </dependencies>
             </dependencyManagement>
-        </profile>
-        <profile>
-          <id>jdk9</id>
-          <activation>
-            <jdk>9</jdk>
-          </activation>
-          <properties>
-            <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
-            <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
-            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
-              -Dsun.reflect.debugModuleAccessChecks=true
-            </modular.jdk.props>
-          </properties>
-          <build>
-            <plugins>
-              <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                  <additionalparam>--add-modules=ALL-SYSTEM</additionalparam>
-                </configuration>
-              </plugin>
-            </plugins>
-          </build>
         </profile>
     </profiles>
 
