@@ -66,7 +66,7 @@ public class SseResource
    {
       synchronized (outputLock)
       {
-         if (this.eventSink != null)
+         if (this.eventSink != null && !this.eventSink.isClosed())
          {
             throw new IllegalStateException("Server sink already served.");
          }
@@ -118,11 +118,6 @@ public class SseResource
          {
             event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(i + "-" + message).build();
             eventsStore.add(event);
-         }
-         //disconnect after 3 messages
-         if (i == 3)
-         {
-            close();
          }
          if (eventSink != null)
          {
