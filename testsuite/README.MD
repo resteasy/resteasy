@@ -12,6 +12,27 @@ categories for tests, server setup task etc.
 - integration-tests-spring - tests for resteasy integration with spring
 - unit-tests - standalone tests not running in container
 
+## Guidance for new tests
+* Keep structure of the tests [example](integration-tests/src/test/java/org/jboss/resteasy/test/resource/param/CookieInjectionTest.java).
+* Document test class and all tests within test class see [Test Documentation](#Test Documentation). It will help others to understand.
+* Provide RESTEASY jira number if possible, it will help to track the issue in the future.
+* For integration tests avoid using concrete address like "http://localhost:8080". Tests don't need to be run always on the default hostname/port.
+See example above.
+* If you keep in mind above points, you will help us to keep Resteasy testsuite organized and stable.
+
+### Dependencies
+* Dependencies for testsuite are managed from single point ``../resteasy-dependencies-bom/pom.xml``
+* Pom file above contains all dependencies versions managed via dependency management.
+* Use the pom above to specify dependency version and in your pom in testsuite module use only:
+
+```
+<dependency>
+      <groupId>group.id</groupId>
+      <artifactId>arttifact.id</artifactId>
+      <!-- If needed <scope>test</scope> -->
+</dependency>
+```
+
 ## Running testsuite module
 
 ### All tests
@@ -108,14 +129,6 @@ for i in $(find . | grep "src/main/java$"); do echo $i; cp -r $i/* $SOURCES/; do
 
 Run following command to generate html report (property `sources.path` is optional):
 > mvn verify -Dserver.home=PATH_TO_WIDLFLY_HOME -DskipTests -Djacoco.generate.report -Dsources.path=$SOURCES
-
-## Guidance for new tests
-* Keep structure of the tests [example](integration-tests/src/test/java/org/jboss/resteasy/test/resource/param/CookieInjectionTest.java).
-* Document test class and all tests within test class see [Test Documentation](#Test Documentation). It will help others to understand.
-* Provide RESTEASY jira number if possible, it will help to track the issue in the future.
-* For integration tests avoid using concrete address like "http://localhost:8080". Tests don't need to be run always on the default hostname/port.
-See example above.
-* If you keep in mind above points, you will help us to keep Resteasy testsuite organized and stable. 
 
 ## Test documentation
 With each new test write appropriate javadoc documentation.
