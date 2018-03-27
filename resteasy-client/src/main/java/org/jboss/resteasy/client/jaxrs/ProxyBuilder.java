@@ -8,6 +8,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.SubResourceInvoker;
 import org.jboss.resteasy.util.IsHttpMethod;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -59,6 +60,10 @@ public class ProxyBuilder<T>
          if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
          {
             invoker = new SubResourceInvoker((ResteasyWebTarget)base, method, config);
+         }
+         else if (httpMethods == null) {
+            // ignore methods without http method annotations
+            continue;
          }
          else
          {
