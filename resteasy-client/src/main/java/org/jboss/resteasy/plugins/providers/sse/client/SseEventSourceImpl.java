@@ -30,9 +30,7 @@ public class SseEventSourceImpl implements SseEventSource
    public static final long RECONNECT_DEFAULT = 500;
 
    private final WebTarget target;
-
-   private static final long CLOSE_WAIT = 30;
-
+   
    private final long reconnectDelay;
 
    private final boolean disableKeepAlive;
@@ -179,12 +177,6 @@ public class SseEventSourceImpl implements SseEventSource
    public boolean isOpen()
    {
       return state.get() == State.OPEN;
-   }
-
-   @Override
-   public void close()
-   {
-      this.close(CLOSE_WAIT, TimeUnit.SECONDS);
    }
 
    @Override
