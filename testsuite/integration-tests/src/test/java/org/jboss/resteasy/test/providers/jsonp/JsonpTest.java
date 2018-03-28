@@ -17,7 +17,9 @@ import org.junit.runner.RunWith;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -144,7 +146,23 @@ public class JsonpTest {
        doTestStructure("UTF-32");
        doTestStructure(null);
     }
-    
+
+    @Test
+    public void testJsonString() throws Exception {
+       WebTarget target = client.target(generateURL("/test/json/string"));
+       JsonString jsonString = Json.createValue("Resteasy");
+       JsonString result = target.request().post(Entity.json(jsonString), JsonString.class);
+       Assert.assertTrue("JsonString object with Hello Resteasy value is expected", result.getString().equals("Hello Resteasy"));
+    }
+
+    @Test
+    public void testJsonNumber() throws Exception {
+       WebTarget target = client.target(generateURL("/test/json/number"));
+       JsonNumber jsonNumber = Json.createValue(100);
+       JsonNumber result = target.request().post(Entity.json(jsonNumber), JsonNumber.class);
+       Assert.assertTrue("JsonNumber object with 200 value is expected", result.intValue() == 200);
+    }
+
     private void doTestStructure(String charset) {
         WebTarget target = client.target(generateURL("/test/json/structure"));
         MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
