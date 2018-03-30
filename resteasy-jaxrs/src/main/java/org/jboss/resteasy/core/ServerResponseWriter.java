@@ -11,6 +11,8 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -201,8 +203,13 @@ public class ServerResponseWriter
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
          ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
         		 requestContext, responseFilters, onComplete, continuation);
+
+         RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+
+         final long timestamp = logger.timestamp(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY);
          // filter calls the continuation
          responseContext.filter();
+         logger.logDuration(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY, responseFilters.length, timestamp);
       }
       else
       {

@@ -53,4 +53,14 @@ public class SingletonResource implements ResourceFactory
    public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
    {
    }
+
+   public String traceInfo() {
+      StringBuilder builder = new StringBuilder();
+      builder.append("[")
+              .append("SINGLETON").append("|")
+              .append(resourceClass.getClazz()).append("|")
+              .append(obj.toString())
+              .append("]");
+      return builder.toString();
+   }
 }

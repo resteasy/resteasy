@@ -2,6 +2,9 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
@@ -33,6 +36,15 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    {
       ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       if (deployment == null) deployment = super.createDeployment();
+
+      String tracingType = getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+      ResteasyProviderFactory.setTracingType(RESTEasyTracingUtils.getTracingConfig(tracingType));
+
+      String tracingThreshold = getParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+      ResteasyProviderFactory.setTracingThreshold(RESTEasyTracingUtils.getTracingThreshold(tracingThreshold));
+
+      RESTEasyTracingUtils.initTracingSupport(ResteasyProviderFactory.getTracingType(), ResteasyProviderFactory.getTracingThreshold(), null);
+
       deployment.getDefaultContextObjects().put(ResteasyDeployment.class, deployment);
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);

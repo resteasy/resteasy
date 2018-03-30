@@ -37,6 +37,9 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -90,25 +93,37 @@ public class SynchronousDispatcher implements Dispatcher
       return unwrappedExceptions;
    }
 
-   public Response preprocess(HttpRequest request)
-   {
+   /*
+    * TODO: refactor this method
+    * This only used by org.jboss.restesy.springmvc.ResteasyHandlerMapping
+    * And most of the code is same with the other preprocess method.
+    * We should consider to refactor this method to reuse part of the code with
+    * another one.
+    */
+   public Response preprocess(HttpRequest request) {
+
       Response aborted = null;
-      try
-      {
-         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
-         {
+
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+
+      try {
+         final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
+         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors) {
+            final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH);
             preprocessor.preProcess(request);
+            tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH, timestamp, preprocessor.getClass().toString());
          }
+         tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY, totalTimestamp, this.requestPreprocessors.size());
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
          // FIXME: support async
          PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, null);
          aborted = requestContext.filter();
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          //logger.error("Failed in preprocess, mapping exception", e);
          aborted = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
-     }
+      }
+
+
       return aborted;
    }
 
@@ -117,40 +132,39 @@ public class SynchronousDispatcher implements Dispatcher
     *
     * @return true if request should continue
     */
-   protected void preprocess(HttpRequest request, HttpResponse response, Runnable continuation)
-   {
+   protected void preprocess(HttpRequest request, HttpResponse response, Runnable continuation) {
       Response aborted = null;
       PreMatchContainerRequestContext requestContext = null;
-      try
-      {
-         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
-         {
+
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+
+      try {
+         final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
+         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors) {
+            final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH);
             preprocessor.preProcess(request);
+            tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH, timestamp, preprocessor.getClass().toString());
          }
+         tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY, totalTimestamp, this.requestPreprocessors.size());
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
-         requestContext = new PreMatchContainerRequestContext(request, requestFilters, 
-               () -> { 
-                  continuation.run();
-                  return null;
-               });
+         requestContext = new PreMatchContainerRequestContext(request, requestFilters,
+                 () -> {
+                    continuation.run();
+                    return null;
+                 });
          aborted = requestContext.filter();
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          //logger.error("Failed in preprocess, mapping exception", e);
          // we only want to catch exceptions happening in the filters, not in the continuation
-         if(requestContext == null || !requestContext.startedContinuation())
-         {
-            writeException(request, response, e, t -> {});
+         if (requestContext == null || !requestContext.startedContinuation()) {
+            writeException(request, response, e, t -> {
+            });
             return;
-         }
-         else
-         {
+         } else {
             rethrow(e);
          }
       }
-      if (aborted != null)
-      {
+      if (aborted != null) {
          writeResponse(request, response, aborted);
          return;
       }
@@ -400,6 +414,9 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
+         RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+         logger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
+
          jaxrsResponse = invoker.invoke(request, response);
          if (request.getAsyncContext().isSuspended())
          {
@@ -435,6 +452,9 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          jaxrsResponse = invoker.invoke(request, response);
+         RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+         logger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
+
          if (request.getAsyncContext().isSuspended())
          {
             /**
