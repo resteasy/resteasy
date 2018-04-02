@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
@@ -150,5 +152,26 @@ public class SseEventSourceTest {
             client.close();
         }
     }
+    
+   @Test
+   public void testCloseSseEventSource() throws Exception
+   {
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget anyTarget = client.target("anyTarget");
+         SseEventSource sseEventSource = SseEventSource.target(anyTarget).build();
+         sseEventSource.close();
+         try (Response response = client.target(generateURL("/sse/eventssimple"))
+               .request(MediaType.SERVER_SENT_EVENTS_TYPE).get();)
+         {
+            Assert.assertEquals(200, response.getStatus());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
 
 }
