@@ -74,6 +74,17 @@
         support chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
+
+        <para>
+        RESTEasy defaults to using Apache AsyncHttpClient as the HTTP engine.  As an drop in replacement, you may select
+        a Jetty 9.4 based HTTP engine.  The Jetty implementation is newer and therefore not as well tested, but if
+        you run Jetty as your server already, it is nice to have a common vendor.  The Jetty Server can even share
+        execution resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
+        </para>
+
+        <programlisting>
+          ResteasyClient client = new ResteasyClientBuilder().clientEngine(new JettyClientEngine(new HttpClient())).build();
+        </programlisting>
     </section>
     <para>
 
