@@ -395,24 +395,23 @@
                             <configuration>
                                 <excludes>
                                      <!-- Tests requires excluding JsonBindingProvider-->
-                                     <exclude>**/JsonBindingTest.java</exclude>
+                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
                                 </excludes>
-                                <classpathDependencyExcludes>
-                                    <classpathDependencyExcludes>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExcludes>
-                                </classpathDependencyExcludes>
                             </configuration>
                         </execution>
                         <execution>
-                            <!-- Add JsonBindingProvider tests here-->
-                            <id>jsonb-test</id>
+                            <id>disable-jsonb-client</id>
                             <phase>test</phase>
                             <goals>
                                 <goal>test</goal>
                             </goals>
                             <configuration>
                                 <includes>
-                                    <include>**/JsonBindingTest.java</include>
+                                    <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                 </includes>
+                                <classpathDependencyExcludes>
+                                    <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
+                                </classpathDependencyExcludes>
                             </configuration>
                         </execution>
                     </executions>

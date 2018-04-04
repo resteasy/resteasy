@@ -245,7 +245,7 @@ public class ObservableRxInvokerImpl implements ObservableRxInvoker
 			builder.executor(executorService);
 		}
 		SseEventSourceImpl sseEventSource = (SseEventSourceImpl) builder.build();
-		//		sseEventSource.open(null, verb, entity, mediaType);
+		sseEventSource.setAlwasyReconnect(false);
 		return sseEventSource;
 	}
 

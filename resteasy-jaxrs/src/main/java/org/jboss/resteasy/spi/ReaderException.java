@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ReaderException extends LoggableFailure
+public class ReaderException extends Failure
 {
    public ReaderException(String s, Response response)
    {

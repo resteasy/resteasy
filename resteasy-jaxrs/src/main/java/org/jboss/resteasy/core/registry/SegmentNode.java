@@ -19,10 +19,12 @@ import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -367,7 +369,6 @@ public class SegmentNode
       for (MediaType accept : requestAccepts) weightedAccepts.add(WeightedMediaType.parse(accept));
 
       List<Match> list = new ArrayList<Match>();
-
       boolean methodMatch = false;
       boolean consumeMatch = false;
 
@@ -397,7 +398,9 @@ public class SegmentNode
          {
             HashSet<String> allowed = new HashSet<String>();
             for (Match match : matches)
+            {
                allowed.addAll(((ResourceMethodInvoker) match.expression.getInvoker()).getHttpMethods());
+            }
 
             if (httpMethod.equalsIgnoreCase("HEAD") && allowed.contains("GET"))
             {
@@ -406,19 +409,45 @@ public class SegmentNode
 
             if (allowed.contains("GET")) allowed.add("HEAD");
             allowed.add("OPTIONS");
-            String allowHeaderValue = "";
+            StringBuilder allowHeaders = new StringBuilder("");
             boolean first = true;
             for (String allow : allowed)
             {
                if (first) first = false;
-               else allowHeaderValue += ", ";
-               allowHeaderValue += allow;
+               else allowHeaders.append(", ");
+               allowHeaders.append(allow);
             }
-
+            String allowHeaderValue = allowHeaders.toString();
+            
             if (httpMethod.equals("OPTIONS"))
             {
-               Response res = Response.ok(allowHeaderValue,  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(), res);
+              
+               ResponseBuilder resBuilder =  Response.ok(allowHeaderValue.toString(),  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue.toString());
+               
+               if (allowed.contains("PATCH"))
+               {  
+                  Set<MediaType> patchAccepts = new HashSet<MediaType>(8);
+                  for (Match match : matches)
+                  {
+                     if (((ResourceMethodInvoker) match.expression.getInvoker()).getHttpMethods().contains("PATCH"))
+                     {
+                        patchAccepts.addAll(Arrays.asList(((ResourceMethodInvoker) match.expression.getInvoker())
+                              .getConsumes()));
+                     }
+                  }
+                  StringBuilder acceptPatch = new StringBuilder("");
+                  first = true;
+                  for (MediaType mediaType : patchAccepts)
+                  {
+                     if (first)
+                        first = false;
+                     else
+                        acceptPatch.append(", ");
+                     acceptPatch.append(mediaType.toString());
+                  }
+                  resBuilder.header(HttpHeaderNames.ACCEPT_PATCH, acceptPatch.toString());
+               }
+               throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(), resBuilder.build());
             }
             else
             {

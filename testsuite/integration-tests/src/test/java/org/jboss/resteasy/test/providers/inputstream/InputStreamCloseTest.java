@@ -36,9 +36,7 @@ public class InputStreamCloseTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(InputStreamCloseTest.class.getSimpleName());
         war.addClass(InputStreamCloseInputStream.class);
-        Archive ar = TestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
-        ar.toString(true);
-        return ar;
+        return TestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
     }
 
     private String generateURL(String path) {
