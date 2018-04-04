@@ -446,14 +446,12 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void setTimeoutTest() throws Exception
    {
       setTimeoutTestInternal();
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void updateTimeoutTest() throws Exception
    {
       invokeClear();
@@ -473,7 +471,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeOutWaitsForeverTest() throws Exception
    {
       String responseMsg = "handleTimeOutWaitsForeverTest";
@@ -487,7 +484,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeoutCancelsTest() throws Exception
    {
       invokeClear();
@@ -501,7 +497,6 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
-   @Category({ExpectedFailing.class}) // See RESTEASY-1446
    public void handleTimeoutResumesTest() throws Exception
    {
       invokeClear();
