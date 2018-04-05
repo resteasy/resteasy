@@ -40,8 +40,6 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final long reconnectDelay;
 
-   private final boolean disableKeepAlive;
-
    private final ScheduledExecutorService executor;
 
    private enum State {
@@ -66,8 +64,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       private long reconnect = RECONNECT_DEFAULT;
 
-      private boolean disableKeepAlive = false;
-
       public SourceBuilder()
       {
          //NOOP
@@ -75,7 +71,7 @@ public class SseEventSourceImpl implements SseEventSource
 
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(target, reconnect, disableKeepAlive, false);
+         return new SseEventSourceImpl(target, reconnect, false);
       }
 
       @Override
@@ -104,11 +100,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(target, RECONNECT_DEFAULT, false, open);
+      this(target, RECONNECT_DEFAULT, open);
    }
 
-   private SseEventSourceImpl(final WebTarget target, long reconnectDelay, final boolean disableKeepAlive,
-         final boolean open)
+   private SseEventSourceImpl(final WebTarget target, long reconnectDelay, final boolean open)
    {
       if (target == null)
       {
@@ -116,7 +111,6 @@ public class SseEventSourceImpl implements SseEventSource
       }
       this.target = target;
       this.reconnectDelay = reconnectDelay;
-      this.disableKeepAlive = disableKeepAlive;
 
       ScheduledExecutorService scheduledExecutor = null;
       if (target instanceof ResteasyWebTarget)
@@ -465,10 +459,42 @@ public class SseEventSourceImpl implements SseEventSource
          {
             request.header(SseConstants.LAST_EVENT_ID_HEADER, lastEventId);
          }
-         if (disableKeepAlive)
-         {
-            request.header(HttpHeaders.CONNECTION, "close");
-         }
+         // We have to set Connection header to 'close' in order to
+         // disable persistent connection because of Apache HttpClient.
+         // Explanation:
+         // When dealing with persistent connections the connection
+         // provider implementation (Apache HttpClient or JAVA
+         // HttpUrlConnection) will try to reuse them when it is
+         // possible.
+         // One condition for a persistent connection to be reused is
+         // that it content should have been fully consumed
+         // (inputStream.read()=-1) else the connection won't be reused.
+         // Both Apache HttpClient and JAVA HttpUrlConnection advise us
+         // when it is possible to consume the whole response content
+         // by reading the inputStream and once done to invoke
+         // inputStream.close().
+         // However in many case, we are not interested in reading the
+         // whole response content and we just want to close the
+         // inputStream right away even if the remote side has not finish
+         // pushing content (SseEventSink not close on server side for
+         // example).
+         // - JAVA HttpUrlConnection allows us to invoke
+         // inputStream.close() to do so in a non blocking fashion (it
+         // will try to read the whole content in hurry mode without
+         // blocking. If it succeeds the connection will be reused else
+         // it will be discarded).
+         // - At the opposite invoking inputStream.close() on the Apache
+         // HTTPClient will block until the whole response content has
+         // been read. And depending on the remote side we can be blocked
+         // for really long...
+         // One solution provided by Apache HTTPClient to do so is
+         // invoking CloseableHttpResponse.close() instead. But it will
+         // not try to do best effort like JAVA HttpUrlConnection, it
+         // will discard the connection even if the whole response
+         // content can be read.
+         // http://hc.apache.org/httpcomponents-client-4.4.x/tutorial/html/fundamentals.html#d5e145
+         // https://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+         request.header(HttpHeaders.CONNECTION, "close");
          return request;
       }
 
@@ -483,7 +509,7 @@ public class SseEventSourceImpl implements SseEventSource
             // Let's close the previous response to be sure to release any
             // resource (pooled connections) before trying again. It is mostly 
             // useful when only the response headers may have been processed and the
-            // response entity ignored (503 with rety-after for example).
+            // response entity ignored (503 with retry-after for example).
             //
             // previousResponse must/will not be null when this method is called.
             previousResponse.close();

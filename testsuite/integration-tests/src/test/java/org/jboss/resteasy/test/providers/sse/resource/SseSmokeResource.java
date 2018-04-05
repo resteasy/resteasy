@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.providers.sse.resource;
 
+
+import javax.ejb.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -8,9 +10,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
+@Singleton
 @Path("/sse")
 public class SseSmokeResource {
-
+   
     @GET
     @Path("/events")
     @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -32,4 +35,12 @@ public class SseSmokeResource {
             sseEventSink.send(sse.newEvent("data"));
         }
     }
+    
+   @GET
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sentEventAndStayOpen(@Context SseEventSink sseEventSink, @Context Sse sse)
+   {
+      sseEventSink.send(sse.newEvent("data"));
+   }
+   
 }

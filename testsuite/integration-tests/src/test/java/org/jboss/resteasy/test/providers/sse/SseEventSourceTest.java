@@ -153,17 +153,29 @@ public class SseEventSourceTest {
         }
     }
     
+   //We are expecting the SseEventSource:
+   //- to not close the client instance once SseEventSource.close() is invoked.
+   //- to close the connection without blocking event if the connection is still open on remote side.
    @Test
    public void testCloseSseEventSource() throws Exception
    {
       Client client = ClientBuilder.newBuilder().build();
       try
       {
-         WebTarget anyTarget = client.target("anyTarget");
-         SseEventSource sseEventSource = SseEventSource.target(anyTarget).build();
-         sseEventSource.close();
-         try (Response response = client.target(generateURL("/sse/eventssimple"))
-               .request(MediaType.SERVER_SENT_EVENTS_TYPE).get();)
+         try (SseEventSource sseEventSource = SseEventSource.target(client.target(generateURL("/sse"))).build())
+         {
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            sseEventSource.register(sseEvent -> {
+               countDownLatch.countDown();
+            });
+            sseEventSource.open();
+            if (!countDownLatch.await(5, TimeUnit.SECONDS))
+            {
+               Assert.fail("Timeout while waiting for SSE event");
+            }
+         }
+         try (Response response = client.target(generateURL("/sse/eventssimple")).request(MediaType.SERVER_SENT_EVENTS_TYPE)
+               .get();)
          {
             Assert.assertEquals(200, response.getStatus());
          }
