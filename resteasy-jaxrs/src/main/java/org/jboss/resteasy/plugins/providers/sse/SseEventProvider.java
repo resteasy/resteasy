@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -164,6 +165,22 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
    {
+	  if (mediaType.getParameters() != null)
+	  {
+		  Map<String, String> map = mediaType.getParameters();
+		  String elementType = map.get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+		  if (elementType != null)
+		  {
+			  int i = elementType.indexOf("/");
+			  if (i < 0)
+			  {
+				  throw new WebApplicationException(Messages.MESSAGES.failureParsingMediaType(elementType));
+			  }
+			  String t = elementType.substring(0, i);
+			  String st = elementType.substring(i + 1);
+			  mediaType = new MediaType(t, st); // charset ??
+		  }
+	  }
       return new SseEventInputImpl(annotations, mediaType, httpHeaders, entityStream);
    }
 

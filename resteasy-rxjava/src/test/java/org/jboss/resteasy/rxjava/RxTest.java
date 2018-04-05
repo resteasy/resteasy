@@ -67,13 +67,13 @@ public class RxTest
       String data = client.target(generateURL("/single")).request().get(String.class);
       assertEquals("got it", data);
 
-      String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
-      assertArrayEquals(new String[] {"one", "two"}, data2);
+//      String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
+//      assertArrayEquals(new String[] {"one", "two"}, data2);
 
       data = client.target(generateURL("/context/single")).request().get(String.class);
       assertEquals("got it", data);
 
-      data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
-      assertArrayEquals(new String[] {"one", "two"}, data2);
+//      data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
+//      assertArrayEquals(new String[] {"one", "two"}, data2);
    }
 }

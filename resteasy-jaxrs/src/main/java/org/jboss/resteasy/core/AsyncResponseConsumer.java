@@ -68,7 +68,7 @@ public abstract class AsyncResponseConsumer
       {
          if(annotation.annotationType() == Stream.class)
          {
-            return new AsyncStreamingResponseConsumer(method, asyncStreamProvider);
+            return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);     
          }
       }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);

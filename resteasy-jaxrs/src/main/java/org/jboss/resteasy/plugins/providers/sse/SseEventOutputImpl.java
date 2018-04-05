@@ -3,9 +3,11 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.BiConsumer;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
@@ -15,6 +17,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -108,8 +111,14 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             else
             {
                //set back to client 200 OK to implies the SseEventOutput is ready
-               jaxrsResponse = (BuiltResponse) Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
-            }
+             ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
+             jaxrsResponse = (BuiltResponse) Response.ok("").build();
+             MediaType elementType = ServerResponseWriter.getResponseMediaType(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), method);
+             Map<String, String> parameterMap = new HashMap<String, String>();
+             parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
+             MediaType mediaType = new MediaType(MediaType.SERVER_SENT_EVENTS_TYPE.getType(), MediaType.SERVER_SENT_EVENTS_TYPE.getSubtype(), parameterMap);
+             jaxrsResponse = (BuiltResponse) Response.ok().type(mediaType).build();
+          }
 
             try
             {

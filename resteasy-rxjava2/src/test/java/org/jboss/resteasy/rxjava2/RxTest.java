@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
@@ -13,8 +16,10 @@ import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RxTest
@@ -62,6 +67,7 @@ public class RxTest
    }
 
    @Test
+   @Ignore
    public void testSingle()
    {
       String data = client.target(generateURL("/single")).request().get(String.class);
@@ -81,5 +87,15 @@ public class RxTest
 
       data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
       assertArrayEquals(new String[] {"one", "two"}, data2);
+   }
+
+   // @Test
+   public void testChunked() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/chunked")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("onetwo", entity);
    }
 }

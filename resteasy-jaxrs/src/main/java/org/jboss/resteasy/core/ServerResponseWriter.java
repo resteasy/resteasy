@@ -145,11 +145,21 @@ public class ServerResponseWriter
 
    public static void setResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
+	   MediaType mt = getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
+	   if (mt != null)
+	   {
+		   jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
+	   }
+   }
+   
+   public static MediaType getResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
+   {
+	  MediaType mt = null;
       if (jaxrsResponse.getEntity() != null)
       {
-        if (jaxrsResponse.getMediaType() == null)
+        if ((mt = jaxrsResponse.getMediaType()) == null)
         {
-           setDefaultContentType(request, jaxrsResponse, providerFactory, method);
+           mt = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
         }
         
         boolean addCharset = true;
@@ -160,25 +170,16 @@ public class ServerResponseWriter
         }
         if (addCharset)
         {
-           MediaType mt = null;
-           Object o = jaxrsResponse.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
-           if (o instanceof MediaType)
-           {
-              mt = (MediaType) o;
-           }
-           else
-           {
-              mt = MediaType.valueOf(o.toString());
-           }
            if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
            {
               if (MediaTypeHelper.isTextLike(mt))
               {
-                 jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()).toString());
+                 mt = mt.withCharset(StandardCharsets.UTF_8.toString());
               }
            }
         }
       }
+      return mt;
    }
 
    private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, 
@@ -220,6 +221,12 @@ public class ServerResponseWriter
    }
    
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
+   {
+	   MediaType chosen = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
+	   jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
+   }
+   
+   protected static MediaType getDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
       // chosen and method can be null.
@@ -374,7 +381,7 @@ public class ServerResponseWriter
          }
          chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
       }
-      jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
+      return chosen;
    }
    
    private static MediaType chooseFromM(MediaType currentChoice, List<SortableMediaType> M, boolean hasStarStar, boolean hasApplicationStar)
