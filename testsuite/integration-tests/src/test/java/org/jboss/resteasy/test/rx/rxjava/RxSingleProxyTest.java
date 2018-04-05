@@ -1,0 +1,372 @@
+package org.jboss.resteasy.test.rx.rxjava;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.InternalServerErrorException;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.rxjava.SingleRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
+import org.jboss.resteasy.test.rx.resource.TestException;
+import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
+import org.jboss.resteasy.test.rx.resource.Thing;
+import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResource;
+import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResourceImpl;
+import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import rx.Single;
+
+
+/**
+ * @tpSubChapter Reactive classes
+ * @tpChapter Integration tests
+ * @tpSince RESTEasy 4.0
+ */
+@RunWith(Arquillian.class)
+@RunAsClient
+public class RxSingleProxyTest {
+   
+   private static ResteasyClient client;
+   private static RxSingleResource proxy;
+   private static CountDownLatch latch;
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
+   
+   private static List<Thing>  xThingList =  new ArrayList<Thing>();
+   private static List<Thing>  aThingList =  new ArrayList<Thing>();
+   
+   static {
+      for (int i = 0; i < 3; i++) {xThingList.add(new Thing("x"));}
+      for (int i = 0; i < 3; i++) {aThingList.add(new Thing("a"));}
+   }
+
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(RxSingleProxyTest.class.getSimpleName());
+      war.addClass(Thing.class);
+      war.addClass(RxScheduledExecutorService.class);
+      war.addClass(TestException.class);
+      war.addAsLibrary(TestUtil.resolveDependency("io.reactivex:rxjava:1.3.2"));
+      war.addAsLibrary(TestUtil.resolveDependency("org.jboss.resteasy:resteasy-rxjava:4.0.0-SNAPSHOT"));
+      return TestUtil.finishContainerPrepare(war, null, RxSingleResourceImpl.class, TestExceptionMapper.class);
+   }
+
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, RxSingleProxyTest.class.getSimpleName());
+   }
+
+   //////////////////////////////////////////////////////////////////////////////
+   @BeforeClass
+   public static void beforeClass() throws Exception {
+      client = new ResteasyClientBuilder().build();
+      client.register(SingleRxInvokerProvider.class);
+      proxy = client.target(generateURL("/")).proxy(RxSingleResource.class);
+   }
+
+   @Before
+   public void before() throws Exception {
+      latch = new CountDownLatch(1);
+      value.set(null);
+   }
+   
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
+
+   //////////////////////////////////////////////////////////////////////////////
+   @Test
+   public void testGet() throws Exception {
+      Single<String> single = proxy.get();
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("x", value.get());
+   }
+
+   @Test
+   public void testGetThing() throws Exception {
+      Single<Thing> single = proxy.getThing();
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("x"), value.get());
+   }
+
+   @Test
+   public void testGetThingList() throws Exception {
+      Single<List<Thing>> single = proxy.getThingList();
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(xThingList, value.get());
+   }
+
+   @Test
+   public void testPut() throws Exception {
+      Single<String> single = proxy.put("a");
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("a", value.get());
+  }
+
+   @Test
+   public void testPutThing() throws Exception {
+      Single<Thing> single = proxy.putThing("a");
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("a"), value.get());
+   }
+
+   @Test
+   public void testPutThingList() throws Exception {
+      Single<List<Thing>> single = proxy.putThingList("a");
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(aThingList, value.get());
+   }
+
+   @Test
+   public void testPost() throws Exception {
+      Single<String> single = proxy.post("a");
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("a", value.get());
+   }
+
+   @Test
+   public void testPostThing() throws Exception {
+      Single<Thing> single = proxy.postThing("a");
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("a"), value.get());
+   }
+
+   @Test
+   public void testPostThingList() throws Exception {
+      Single<List<Thing>> single = proxy.postThingList("a");
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(aThingList, value.get());
+   }
+
+   @Test
+   public void testDelete() throws Exception {
+      Single<String> single = proxy.delete();
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("x", value.get());
+   }
+
+   @Test
+   public void testDeleteThing() throws Exception {
+      Single<Thing> single = proxy.deleteThing();
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("x"), value.get());
+  }
+
+   @Test
+   public void testDeleteThingList() throws Exception {
+      Single<List<Thing>> single = proxy.deleteThingList();
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(xThingList, value.get());
+   }
+
+   @Test
+   @Ignore // TODO Fix
+   public void testHead() throws Exception {
+      Single<String> single = proxy.head();
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      Assert.assertNull(value.get());
+   }
+
+   @Test
+   public void testOptions() throws Exception {
+      Single<String> single = proxy.options();
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("x", value.get());
+   }
+
+   @Test
+   public void testOptionsThing() throws Exception {
+      Single<Thing> single = proxy.optionsThing();
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("x"), value.get());
+   }
+
+   @Test
+   public void testOptionsThingList() throws Exception {
+      Single<List<Thing>> single = proxy.optionsThingList();
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(xThingList, value.get());
+   }
+
+   @Test
+   @Ignore // TRACE is disabled by default in Wildfly
+   public void testTrace() throws Exception {
+      Single<String> single = proxy.trace();
+      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      latch.await();
+      Assert.assertEquals("x", value.get());
+  }
+
+   @Test
+   @Ignore // TRACE is disabled by default in Wildfly
+   public void testTraceThing() throws Exception {
+      Single<Thing> single = proxy.traceThing();
+      single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(new Thing("x"), value.get());
+    }
+
+   @Test
+   @Ignore // TRACE is disabled by default in Wildfly
+   public void testTraceThingList() throws Exception {
+      Single<List<Thing>> single = proxy.traceThingList();
+      single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});
+      latch.await();
+      Assert.assertEquals(xThingList, value.get());
+   }
+   
+   @Test
+   public void testScheduledExecutorService () throws Exception {
+      {
+         RxScheduledExecutorService.used = false;
+         Single<String> single = proxy.get();
+         single.subscribe((String s) -> {value.set(s); latch.countDown();});
+         latch.await();
+         Assert.assertFalse(RxScheduledExecutorService.used);
+         Assert.assertEquals("x", value.get());
+      }
+
+      {
+        latch = new CountDownLatch(1);
+         RxScheduledExecutorService.used = false;
+         RxScheduledExecutorService executor = new RxScheduledExecutorService();
+         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         client.register(SingleRxInvokerProvider.class);
+         RxSingleResource proxy = client.target(generateURL("/")).proxy(RxSingleResource.class);
+         Single<String> single = proxy.get();
+         single.subscribe((String s) -> {value.set(s); latch.countDown();});
+         latch.await();
+         Assert.assertTrue(RxScheduledExecutorService.used);
+         Assert.assertEquals("x", value.get());
+      }
+   }
+   
+   @Test
+   public void testUnhandledException() throws Exception {
+      Single<Thing> single = (Single<Thing>) proxy.exceptionUnhandled();
+      single.subscribe(
+            (Thing t) -> {},
+            (Throwable t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Throwable t = unwrap((Throwable) value.get(), InternalServerErrorException.class);
+      Assert.assertNotNull(t);
+      Assert.assertTrue(t.getMessage().contains("500"));
+   }
+   
+   @Test
+   public void testHandledException() throws Exception {
+      Single<Thing> single = (Single<Thing>) proxy.exceptionHandled();
+      single.subscribe(
+            (Thing t) -> {},
+            (Throwable t) -> {value.set(t); latch.countDown();});
+      latch.await();
+      Throwable t = unwrap((Throwable) value.get(), ClientErrorException.class);
+      Assert.assertNotNull(t);
+      Assert.assertTrue(t.getMessage().contains("444"));
+   }
+   
+   @Test
+   public void testGetTwoClients() throws Exception {
+      CountDownLatch cdl = new CountDownLatch(2);
+      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
+      
+      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      client1.register(SingleRxInvokerProvider.class);
+      RxSingleResource proxy1 = client1.target(generateURL("/")).proxy(RxSingleResource.class);
+         
+      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      client2.register(SingleRxInvokerProvider.class);
+      RxSingleResource proxy2 = client2.target(generateURL("/")).proxy(RxSingleResource.class);
+      
+      Single<String> single1 = proxy1.get();
+      Single<String> single2 = proxy2.get();
+      single1.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      single2.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      
+      cdl.await();
+      Assert.assertEquals(2, list.size());
+      for (int i = 0; i < 2; i++) {
+         Assert.assertEquals("x", list.get(i));
+      }
+   }
+   
+   @Test
+   public void testGetTwoProxies() throws Exception {
+      CountDownLatch cdl = new CountDownLatch(2);
+      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
+
+      RxSingleResource proxy1 = client.target(generateURL("/")).proxy(RxSingleResource.class);
+      RxSingleResource proxy2 = client.target(generateURL("/")).proxy(RxSingleResource.class);
+      
+      Single<String> single1 = proxy1.get();
+      Single<String> single2 = proxy2.get();
+      single1.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      single2.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      
+      cdl.await();
+      Assert.assertEquals(2, list.size());
+      for (int i = 0; i < 2; i++) {
+         Assert.assertEquals("x", list.get(i));
+      }
+   }
+   
+   @Test
+   public void testGetTwoSingles() throws Exception {
+      CountDownLatch cdl = new CountDownLatch(2);
+      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
+      
+      Single<String> single1 = proxy.get();
+      Single<String> single2 = proxy.get();
+      single1.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      single2.subscribe((String s) -> {list.add(s); cdl.countDown();});
+      
+      cdl.await();
+      Assert.assertEquals(2, list.size());
+      for (int i = 0; i < 2; i++) {
+         Assert.assertEquals("x", list.get(i));
+      }
+   }
+   
+   private Throwable unwrap(Throwable t, Class<?> clazz) {
+      while (t != null) {
+         if (t.getClass().equals(clazz)) {
+            return t;
+         }
+         t = t.getCause();
+      }
+      return null;
+   }
+}

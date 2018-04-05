@@ -471,7 +471,9 @@ public class SseTest
       WebTarget target = client.target(generateURL("/service/server-sent-events/events"));
       Response response = target.request().get();
       Assert.assertEquals("response OK is expected", response.getStatus(), 200);
-      Assert.assertEquals("text/event-stream is expected", response.getMediaType(), MediaType.SERVER_SENT_EVENTS_TYPE);
+      MediaType mt = response.getMediaType();
+      mt = new MediaType(mt.getType(), mt.getSubtype());
+      Assert.assertEquals("text/event-stream is expected", mt, MediaType.SERVER_SENT_EVENTS_TYPE);
       client.close();
    }
    @Test
