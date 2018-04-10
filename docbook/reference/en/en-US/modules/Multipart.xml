@@ -443,7 +443,7 @@ public interface CustomerPortal {
     @Path("issues/{id}")
     @Consumes("multipart/form-data")
     @PUT
-    public void putProblem(@MultipartForm CustomerProblemForm, 
+    public void putProblem(@MultipartForm CustomerProblemForm,
                            @PathParam("id") int id);
 }
 
@@ -472,6 +472,120 @@ public class CustomerPortalServer {
     }
 }
 </programlisting>
+       <para>In addition to the XML data format, you can also use JSON formatted data to represent your POJO classes.
+           To achieve this goal, you need to plug in a JSON provider into your project. For example,
+           you can add RESTEasy Jackson2 Provider into your project's dependency scope:
+       </para>
+<programlisting><![CDATA[
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jackson2-provider</artifactId>
+    <version>${resteasy.ver}</version>
+</dependency>
+]]></programlisting>
+       <para>
+           And then you can write an ordinary POJO class, which Jackson2 can automatically serialize/deserialize it in
+           JSON format:
+       </para>
+<programlisting>
+public class JsonUser {
+    private String name;
+
+    public JsonUser() {
+    }
+
+    public JsonUser(final String name) {
+    this.name = name;
+    }
+
+    public String getName() {
+    return name;
+    }
+
+    public void setName(String name) {
+    this.name = name;
+    }
+}
+</programlisting>
+       <para>The resource class can be written like this:</para>
+<programlisting>
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.annotations.providers.multipart.PartType;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+
+@Path("/")
+public class JsonFormResource {
+
+    public JsonFormResource() {
+    }
+
+    public static class Form {
+
+    @FormParam("user")
+    @PartType("application/json")
+    private JsonUser user;
+
+    public Form() {
+    }
+
+    public Form(final JsonUser user) {
+    this.user = user;
+    }
+
+    public JsonUser getUser() {
+      return user;
+    }
+    }
+
+    @PUT
+    @Path("form/class")
+    @Consumes("multipart/form-data")
+    public String putMultipartForm(@MultipartForm Form form) {
+         return form.getUser().getName();
+    }
+}
+</programlisting>
+       <para>As the code shown above, you can see the PartType of JsonUser is marked as "application/json",
+           and it's included in the "@MultipartForm Form" class instance.
+       </para>
+       <para>To send request to the resource method, you need to send JSON formatted data
+           that is corresponding with the JsonUser class. The easiest to do this is to use a proxy class that has
+           the same definition like the resource class. Here is the sample code of the proxy class that is corresponding
+           with the JsonFormResource class:
+       </para>
+<programlisting>
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+
+@Path("/")
+public interface JsonForm {
+
+@PUT
+@Path("form/class")
+@Consumes("multipart/form-data")
+  String putMultipartForm(@MultipartForm JsonFormResource.Form form);
+}
+</programlisting>
+       <para>And then you can use the proxy class above to send request to the resource method correctly.
+           Here is the sample code:</para>
+<programlisting>
+ResteasyClient client = new ResteasyClientBuilder().build();
+...
+JsonForm proxy = client.target("your_request_url_address").proxy(JsonForm.class);
+String name = proxy.putMultipartForm(new JsonFormResource.Form(new JsonUser("bill")));
+...
+</programlisting>
+       <para>And if your client side has Jackson2 provider included, your request will be marshaled correctly,
+           and your JsonUser data will be converted into JSON format and then send to the server side.
+           You can also use hand-crafted JSON data as your request and send it to server side, but you have to
+           make sure the request data is in correct form then.</para>
    </sect1>
    <sect1 id="xop_with_multipart_related">
       <title>XML-binary Optimized Packaging (Xop)</title>
@@ -486,7 +600,7 @@ public class CustomerPortalServer {
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public static class Xop {
-    
+
     private Customer bill;
     private Customer monica;
 
@@ -576,7 +690,7 @@ public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInter
 </programlisting>
       </para>
    </sect1>
-   
+
   <sect1 id="multipart_overwrite_content_type">
       <title>Overwriting the content type for multipart messages</title>
       <para>Using an interceptor and the <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code>
@@ -585,7 +699,7 @@ public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInter
       <methodname>org.jboss.resteasy.plugins.providers.multipart.InputPart.setMediaType()</methodname>.
       For example:
       </para>
-    
+
 <programlisting>
 @POST
 @Path("query")
@@ -599,13 +713,13 @@ public Response setMediaType(MultipartInput input) throws IOException
     String s = part.getBody(String.class, null);
     ...
 }
-</programlisting>  
-      
+</programlisting>
+
   </sect1>
-  
+
   <sect1 id="multipart_overwrite_default_charset">
       <title>Overwriting the default fallback charset for multipart messages</title>
-      
+
       <para>Sometimes, a part may have a Content-Type header with no charset parameter.  If the
       <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> property is set and the value has a charset parameter,
       that value will be appended to an existing Content-Type header that has no charset parameter.
@@ -613,7 +727,7 @@ public Response setMediaType(MultipartInput input) throws IOException
       <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
       (actual value "resteasy.provider.multipart.inputpart.defaultCharset"):
       </para>
-      
+
 <programlisting>
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
