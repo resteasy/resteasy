@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.annotation.Priority;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -15,11 +16,17 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -34,6 +41,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
    private static final MediaType APPLICATION_JSON_PATCH_JSON_TYPE = new MediaType("application", "json-patch+json");
    
    @Override
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
       //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
@@ -51,33 +59,43 @@ public class PatchMethodFilter implements ContainerRequestFilter
             throw new ProcessingException("Get method not found and patch method failed");
          }
          ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
-         Object object = methodInvoker.invokeDryRun(request, response);
-
-         ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
-         MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
-               object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
-               MediaType.APPLICATION_JSON_TYPE);
-         msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
-               MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
-         ObjectMapper mapper = new ObjectMapper();
-         JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
-         JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
-
-         JsonNode result = null;
+         Object object;
          try
          {
-            result = patch.apply(targetJson);
+            object = methodInvoker.invokeDryRun(request, response);
+            ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
+            MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
+                  object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
+                  MediaType.APPLICATION_JSON_TYPE);
+            msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
+                  MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
+            JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+            JsonNode result = patch.apply(targetJson);
+            ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
+            mapper.writeValue(targetOutputStream, result);
+            request.setInputStream(new ByteArrayInputStream(targetOutputStream.toByteArray()));
+            request.setHttpMethod("PATCH");
+         }
+         catch (ProcessingException pe)
+         {
+            Throwable c = pe.getCause();
+            if (c != null && c instanceof ApplicationException) {
+               c = c.getCause();
+               if (c != null && c instanceof NotFoundException) {
+                  throw (NotFoundException)c;
+               }
+            }
+            throw pe;
+         }
+         catch (JsonMappingException | JsonParseException e) {
+            throw new BadRequestException(e);
          }
          catch (JsonPatchException e)
          {
-            throw new ProcessingException(e);
+            throw new Failure(e, HttpResponseCodes.SC_CONFLICT);
          }
-         ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
-         mapper.writeValue(targetOutputStream, result);
-         request.setInputStream(new ByteArrayInputStream(targetOutputStream.toByteArray()));
-
-         request.setHttpMethod("PATCH");
-
       }
 
    }
