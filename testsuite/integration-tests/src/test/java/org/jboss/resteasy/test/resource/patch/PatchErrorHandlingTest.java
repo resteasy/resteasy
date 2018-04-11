@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.patch;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -13,7 +12,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.json.Json;
@@ -57,7 +55,6 @@ public class PatchErrorHandlingTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Category(ExpectedFailing.class) // RESTEASY-1823
     public void testMalformedPatchDocument() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
@@ -90,7 +87,6 @@ public class PatchErrorHandlingTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Category(ExpectedFailing.class) // RESTEASY-1823
     public void testResourceNotFound() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
@@ -110,7 +106,6 @@ public class PatchErrorHandlingTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Category(ExpectedFailing.class) // RESTEASY-1823
     public void testConflictingState() throws Exception {
         WebTarget base = client.target(generateURL("/students"));
         Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
