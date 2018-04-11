@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.jboss.resteasy.plugins.providers.jsonb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
@@ -61,12 +60,8 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          return jsonb.fromJson(entityStream, genericType);
       } catch (Throwable e)
       {
-         if (LogMessages.LOGGER.isDebugEnabled()) {
-            LogMessages.LOGGER.debugf(Messages.MESSAGES.jsonBDeserializationError(e.toString()));
-         }
- 
          // detail text provided in logger message
-         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(""));
+         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e));
       }
    }
 
