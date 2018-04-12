@@ -127,7 +127,6 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.microprofile.rest.client</groupId>
             <artifactId>microprofile-rest-client-api</artifactId>
@@ -145,110 +144,34 @@
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-jaxrs21-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources-jaxrs21/</directory>
+                                    <excludes>
+                                        <exclude>**/junk/**</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <profiles>
-        <profile>
-            <id>jaxrs20</id>
-            <activation>
-                <property>
-                    <name>jaxrs20</name>
-                </property>
-            </activation>
-            <dependencies>
-		        <dependency>
-		            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-		            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-		        </dependency>
-            </dependencies>
-            <build>
-                <directory>target/jaxrs20</directory>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>add-jaxrs20-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>add-resource</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/src/main/resources-jaxrs20/</directory>
-                                            <excludes>
-                                                <exclude>**/junk/**</exclude>
-                                            </excludes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-				            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <classifier>jaxrs20</classifier>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <configuration>
-                            <classifier>jaxrs20-sources</classifier>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jaxrs21</id>
-            <activation>
-                <property>
-                    <name>!jaxrs20</name>
-                </property>
-            </activation>
-            <dependencies>
-		        <dependency>
-		            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-		            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-		        </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>add-jaxrs21-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>add-resource</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/src/main/resources-jaxrs21/</directory>
-                                            <excludes>
-                                                <exclude>**/junk/**</exclude>
-                                            </excludes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-				            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <!-- exclude integrations tests which are known to fail -->
             <id>exclude-known-tests-failures</id>

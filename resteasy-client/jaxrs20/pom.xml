@@ -20,14 +20,8 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-jaxrs-20</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
