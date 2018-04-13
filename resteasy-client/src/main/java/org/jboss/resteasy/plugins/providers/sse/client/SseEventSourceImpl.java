@@ -13,15 +13,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.apache.http.HttpHeaders;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -36,12 +40,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final long reconnectDelay;
 
-   private final boolean disableKeepAlive;
-
    private final ScheduledExecutorService executor;
 
    private enum State {
-      PENDING, OPEN, CLOSED
+      PENDING, CONNECTING, OPEN, CLOSED
    }
 
    private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
@@ -51,6 +53,10 @@ public class SseEventSourceImpl implements SseEventSource
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
 
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
+   
+   // No need to be volatile since visibility is guarantees by the fact that it will always be set before setting 
+   // AtomicReference state to 'OPEN' and read only if AtomicReference state is set to 'OPEN'.
+   private Response response;
 
    protected static class SourceBuilder extends Builder
    {
@@ -58,24 +64,14 @@ public class SseEventSourceImpl implements SseEventSource
 
       private long reconnect = RECONNECT_DEFAULT;
 
-      private String name = null;
-
-      private boolean disableKeepAlive = false;
-
       public SourceBuilder()
       {
          //NOOP
       }
 
-      public Builder named(String name)
-      {
-         this.name = name;
-         return this;
-      }
-
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(target, name, reconnect, disableKeepAlive, false);
+         return new SseEventSourceImpl(target, reconnect, false);
       }
 
       @Override
@@ -104,11 +100,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(target, null, RECONNECT_DEFAULT, false, open);
+      this(target, RECONNECT_DEFAULT, open);
    }
 
-   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean disableKeepAlive,
-         final boolean open)
+   private SseEventSourceImpl(final WebTarget target, long reconnectDelay, final boolean open)
    {
       if (target == null)
       {
@@ -116,12 +111,7 @@ public class SseEventSourceImpl implements SseEventSource
       }
       this.target = target;
       this.reconnectDelay = reconnectDelay;
-      this.disableKeepAlive = disableKeepAlive;
 
-      if (name == null)
-      {
-         name = String.format("sse-event-source(%s)", target.getUri());
-      }
       ScheduledExecutorService scheduledExecutor = null;
       if (target instanceof ResteasyWebTarget)
       {
@@ -168,7 +158,7 @@ public class SseEventSourceImpl implements SseEventSource
 
    public void open(String lastEventId)
    {
-      if (!state.compareAndSet(State.PENDING, State.OPEN))
+      if (!state.compareAndSet(State.PENDING, State.CONNECTING))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
@@ -180,7 +170,8 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean isOpen()
    {
-      return state.get() == State.OPEN;
+      State currentState = state.get();
+      return currentState == State.OPEN  || currentState == State.CONNECTING;
    }
 
    @Override
@@ -237,11 +228,21 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
-      if (state.getAndSet(State.CLOSED) != State.CLOSED)
+      State currentState = state.getAndSet(State.CLOSED);
+      if (currentState != State.CLOSED)
       {
-         ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) target;
-         //close httpEngine to close connection
-         resteasyWebTarget.getResteasyClient().httpEngine().close();
+         if(currentState == State.OPEN)
+         {
+            try
+            {
+               //close response to close connection
+               //If already close it's fine since multiple invocation of close has no further effect.
+               response.close();
+            }
+            catch (ProcessingException e)
+            {
+            }
+         }
          executor.shutdownNow();
 
          onCompleteConsumers.forEach(Runnable::run);
@@ -291,27 +292,109 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
-         SseEventInputImpl eventInput = null;
-         long delay = reconnectDelay;
+         if (state.get() != State.CONNECTING)
+         {
+            return;
+         }
+         
+         Response localResponse = null;
          try
          {
-            final Invocation.Builder request = buildRequest();
-            if (state.get() == State.OPEN)
+            SseEventInputImpl eventInput = null;
+            try
             {
-               eventInput = request.get(SseEventInputImpl.class);
+               // Let's make request and get response.
+               localResponse = buildRequest().buildGet().invoke();
+
+               // if response code is not 2xx, fail the connection.
+               if (localResponse.getStatusInfo().getFamily() != Family.SUCCESSFUL)
+               {
+                  // Throw instance of WebApplicationException based on response code.
+                  ClientInvocation.handleErrorStatus(localResponse);
+                  return;
+               }
+
+               // Let's try to get response content.
+               try
+               {
+                  eventInput = localResponse.readEntity(SseEventInputImpl.class);
+               }
+               catch (IllegalStateException e)
+               {
+                  // If cannot get response content because of IllegalStateException, it's maybe because
+                  // someone has invoked 'SseEventSourceImpl.close()', in this case we are fine this is not an 
+                  // error let's just return.
+                  // If no one has has invoked 'SseEventSourceImpl.close()' let's propagate this unexpected error.
+                  if (state.get() != State.CLOSED)
+                  {
+                     throw e;
+                  }
+                  return;
+               }
+
+               // If no response content, fail the connection. 
+               if (eventInput == null)
+               {
+                  state.set(State.CLOSED);
+                  return;
+               }
             }
-            //if 200< response code <300 and response contentType is null, fail the connection. 
-            if (eventInput == null)
+            finally
             {
-               state.set(State.CLOSED);
+               connectedLatch.countDown();
             }
+            
+            // response must be set before switching to OPEN state to ensure that it will be visible
+            // in close method.
+            response = localResponse;
+            // Let's switch state from CONNECTING to OPEN if possible and process event stream.
+            if (state.compareAndSet(State.CONNECTING, State.OPEN))
+            {
+               long delay = reconnectDelay;
+               while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
+               {
+                  if (eventInput.isClosed())
+                  {
+                     reconnect(State.OPEN, response, delay);
+                     break;
+                  }
+                  try
+                  {
+                     InboundSseEvent event = eventInput.read();
+                     if (event != null)
+                     {
+                        onEvent(event);
+                        if (event.isReconnectDelaySet())
+                        {
+                           delay = event.getReconnectDelay();
+                        }
+                        onEventConsumers.forEach(consumer -> {
+                           consumer.accept(event);
+                        });
+                     }
+                     else
+                     {
+                        //event sink closed
+                        state.set(State.CLOSED);
+                        break;
+                     }
+                  }
+                  catch (IOException e)
+                  {
+                     reconnect(State.OPEN, response, delay);
+                     break;
+                  }
+               }
+            }
+            
          }
          catch (ServiceUnavailableException ex)
          {
             if (ex.hasRetryAfter())
             {
                Date requestTime = new Date();
-               delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               long delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               reconnect(State.CONNECTING, localResponse, delay);
             }
             else
             {
@@ -330,49 +413,19 @@ public class SseEventSourceImpl implements SseEventSource
          }
          finally
          {
-            if (connectedLatch != null)
-            {
-               connectedLatch.countDown();
-            }
-         }
-         while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
-         {
-            if (eventInput == null || eventInput.isClosed())
-            {
-               reconnect(delay);
-               break;
-            }
-            else
+            if (localResponse != null)
             {
                try
                {
-                  InboundSseEvent event = eventInput.read();
-                  if (event != null)
-                  {
-                     onEvent(event);
-                     if (event.isReconnectDelaySet())
-                     {
-                        delay = event.getReconnectDelay();
-                     }
-                     onEventConsumers.forEach(consumer -> {
-                        consumer.accept(event);
-                     });
-                  }
-                  else
-                  {
-                     //event sink closed
-                     break;
-                  }
+                  localResponse.close();
                }
-               catch (IOException e)
+               catch (ProcessingException e)
                {
-                  reconnect(delay);
-                  break;
                }
             }
          }
       }
-
+      
       public void awaitConnected()
       {
          try
@@ -406,30 +459,67 @@ public class SseEventSourceImpl implements SseEventSource
          {
             request.header(SseConstants.LAST_EVENT_ID_HEADER, lastEventId);
          }
-         if (disableKeepAlive)
-         {
-            request.header(HttpHeaders.CONNECTION, "close");
-         }
+         // We have to set Connection header to 'close' in order to
+         // disable persistent connection because of Apache HttpClient.
+         // Explanation:
+         // When dealing with persistent connections the connection
+         // provider implementation (Apache HttpClient or JAVA
+         // HttpUrlConnection) will try to reuse them when it is
+         // possible.
+         // One condition for a persistent connection to be reused is
+         // that it content should have been fully consumed
+         // (inputStream.read()=-1) else the connection won't be reused.
+         // Both Apache HttpClient and JAVA HttpUrlConnection advise us
+         // when it is possible to consume the whole response content
+         // by reading the inputStream and once done to invoke
+         // inputStream.close().
+         // However in many case, we are not interested in reading the
+         // whole response content and we just want to close the
+         // inputStream right away even if the remote side has not finish
+         // pushing content (SseEventSink not close on server side for
+         // example).
+         // - JAVA HttpUrlConnection allows us to invoke
+         // inputStream.close() to do so in a non blocking fashion (it
+         // will try to read the whole content in hurry mode without
+         // blocking. If it succeeds the connection will be reused else
+         // it will be discarded).
+         // - At the opposite invoking inputStream.close() on the Apache
+         // HTTPClient will block until the whole response content has
+         // been read. And depending on the remote side we can be blocked
+         // for really long...
+         // One solution provided by Apache HTTPClient to do so is
+         // invoking CloseableHttpResponse.close() instead. But it will
+         // not try to do best effort like JAVA HttpUrlConnection, it
+         // will discard the connection even if the whole response
+         // content can be read.
+         // http://hc.apache.org/httpcomponents-client-4.4.x/tutorial/html/fundamentals.html#d5e145
+         // https://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+         request.header(HttpHeaders.CONNECTION, "close");
          return request;
       }
 
-      private void reconnect(final long delay)
+      // Note: With an executor bounded to one thread, no really need to
+      // close the previous response here since it will be closed in the finally
+      // block of the run method before executing again. It is useful if the executor has
+      // more than one thread.
+      private void reconnect(State expectedState, Response previousResponse, final long delay)
       {
-         if (state.get() != State.OPEN)
+         if (state.compareAndSet(expectedState, State.CONNECTING))
          {
-            return;
-         }
-
-         EventHandler processor = new EventHandler(this);
-         if (delay > 0)
-         {
+            // Let's close the previous response to be sure to release any
+            // resource (pooled connections) before trying again. It is mostly 
+            // useful when only the response headers may have been processed and the
+            // response entity ignored (503 with retry-after for example).
+            //
+            // previousResponse must/will not be null when this method is called.
+            previousResponse.close();
+            EventHandler processor = new EventHandler(this);
+            // Zero and negative delays are also allowed in schedule methods, and are treated as requests
+            // for immediate execution. 
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
          }
-         else
-         {
-            executor.submit(processor);
-         }
       }
+      
    }
 
 }
