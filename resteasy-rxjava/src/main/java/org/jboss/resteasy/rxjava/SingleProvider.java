@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 
 import rx.Single;
@@ -12,7 +13,7 @@ import rx.Subscription;
 import rx.plugins.RxJavaHooks;
 
 @Provider
-public class SingleProvider implements AsyncResponseProvider<Single<?>>
+public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
 
    static
@@ -41,6 +42,12 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
    public CompletionStage<?> toCompletionStage(Single<?> asyncResponse)
    {
       return new SingleAdaptor<>(asyncResponse);
+   }
+
+   @Override
+   public Single<?> fromCompletionStage(CompletionStage<?> completionStage)
+   {
+      return Single.from(completionStage.toCompletableFuture());
    }
 
 }

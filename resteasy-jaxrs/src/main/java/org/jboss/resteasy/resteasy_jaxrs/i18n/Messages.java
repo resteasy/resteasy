@@ -760,6 +760,10 @@ public interface Messages
    String unableToInstantiateAsyncStreamProvider();
    @Message(id = BASE + 1092, value = "SseEventSink is closed")
    String sseEventSinkIsClosed();
+   @Message(id = BASE + 1095, value = "Unable to instantiate AsyncClientResponseProvider")
+   String unableToInstantiateAsyncClientResponseProvider();
+   @Message(id = BASE + 1096, value = "Unable to instantiate AsyncClientStreamProvider")
+   String unableToInstantiateAsyncClientStreamProvider();
    
    @Message(id = BASE + 1093, value = "SseBroadcaster is closed")
    String sseBroadcasterIsClosed();
