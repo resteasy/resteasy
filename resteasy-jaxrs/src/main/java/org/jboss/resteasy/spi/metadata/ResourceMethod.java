@@ -1,51 +1,21 @@
 package org.jboss.resteasy.spi.metadata;
 
-import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.core.MediaType;
+
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
+ * @author Christian Kaltepoth
  */
-public class ResourceMethod extends ResourceLocator
+public interface ResourceMethod extends ResourceLocator
 {
-   private static final MediaType[] empty = {};
-   protected Set<String> httpMethods = new HashSet<String>();
-   protected MediaType[] produces = empty;
-   protected MediaType[] consumes = empty;
-   protected boolean asynchronous;
+  Set<String> getHttpMethods();
 
-   public ResourceMethod(ResourceClass declaredClass, Method method, Method annotatedMethod)
-   {
-      super(declaredClass, method, annotatedMethod);
-   }
+  MediaType[] getProduces();
 
-   public Set<String> getHttpMethods()
-   {
-      return httpMethods;
-   }
+  MediaType[] getConsumes();
 
-   public MediaType[] getProduces()
-   {
-      return produces;
-   }
+  boolean isAsynchronous();
 
-   public MediaType[] getConsumes()
-   {
-      return consumes;
-   }
-
-   public boolean isAsynchronous()
-   {
-      return asynchronous;
-   }
-
-   public void markAsynchronous()
-   {
-      asynchronous = true;
-   }
+  void markAsynchronous();
 }
