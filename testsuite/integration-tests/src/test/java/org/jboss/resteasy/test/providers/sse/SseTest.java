@@ -484,7 +484,9 @@ public class SseTest
       final List<String> results = new ArrayList<String>();
       Client client = ClientBuilder.newBuilder().build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
-      try (SseEventSource source = SseEventSource.target(target).build())
+      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
+      sourceImpl.setAlwasyReconnect(false);
+      try (SseEventSource source = sourceImpl)
       {
          source.register(event -> results.add(event.readData()));
          source.open();
@@ -505,7 +507,9 @@ public class SseTest
       Client client = ClientBuilder.newBuilder().build();
       final AtomicInteger errors = new AtomicInteger(0);
       WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
-      try (SseEventSource source = SseEventSource.target(target).build())
+      SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
+      sourceImpl.setAlwasyReconnect(false);
+      try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
             System.out.println(event);
