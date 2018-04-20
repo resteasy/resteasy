@@ -18,13 +18,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -53,6 +53,8 @@ public class SseEventSourceImpl implements SseEventSource
    
    private boolean alwaysReconnect;
 
+   private ClientResponse response;
+   
    public static class SourceBuilder extends Builder
    {
       private WebTarget target = null;
@@ -252,11 +254,8 @@ public class SseEventSourceImpl implements SseEventSource
    {
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
-         ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) target;
-         //close httpEngine to close connection
-         resteasyWebTarget.getResteasyClient().httpEngine().close();
+         response.closeHttpResponse();
          executor.shutdownNow();
-
          onCompleteConsumers.forEach(Runnable::run);
       }
       try
@@ -339,7 +338,7 @@ public class SseEventSourceImpl implements SseEventSource
             {
                request = requestBuilder.build(verb, entity);
             }
-            Response response = request.invoke();
+            response = (ClientResponse) request.invoke();
             if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
             {
                onConnection();

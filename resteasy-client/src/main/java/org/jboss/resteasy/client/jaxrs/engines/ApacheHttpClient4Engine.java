@@ -6,6 +6,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -40,6 +41,8 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
+
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -355,6 +358,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
          public void releaseConnection() throws IOException
          {
+           
             // Apache Client 4 is stupid,  You have to get the InputStream and close it if there is an entity
             // otherwise the connection is never released.  There is, of course, no close() method on response
             // to make this easier.
@@ -401,6 +405,22 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
             }
           }
+
+         @Override
+         public void closeHttpResponse()
+         {
+            if (res instanceof CloseableHttpResponse)
+            {
+               try
+               {
+                  ((CloseableHttpResponse) res).close();
+               }
+               catch (IOException e)
+               {
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.couldNotCloseHttpResponse(), e);
+               }
+            }
+         }
       };
       response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
