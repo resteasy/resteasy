@@ -402,5 +402,10 @@ public abstract class ClientResponse extends BuiltResponse
    {
        if (bufferedEntity == null) super.abortIfClosed();
    }
+   
+   public void closeHttpResponse()
+   {
+        
+   }
 
 }

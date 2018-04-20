@@ -16,12 +16,16 @@ import java.util.function.Consumer;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -54,6 +58,7 @@ public class SseEventSourceImpl implements SseEventSource
    
    private boolean alwaysReconnect;
 
+   private ClientResponse response;
    protected static class SourceBuilder extends Builder
    {
       private WebTarget target = null;
@@ -243,11 +248,8 @@ public class SseEventSourceImpl implements SseEventSource
    {
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
-         ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) target;
-         //close httpEngine to close connection
-         resteasyWebTarget.getResteasyClient().httpEngine().close();
+         response.closeHttpResponse();
          executor.shutdownNow();
-
          onCompleteConsumers.forEach(Runnable::run);
       }
       try
@@ -304,10 +306,11 @@ public class SseEventSourceImpl implements SseEventSource
          long delay = reconnectDelay;
          try
          {
-            final Invocation.Builder request = buildRequest();
+            final  ClientInvocation invocation = (ClientInvocation) buildRequest().buildGet();
             if (state.get() == State.OPEN)
             {
-               eventInput = request.get(SseEventInputImpl.class);
+               response = (ClientResponse)invocation.invoke();
+               eventInput = ClientInvocation.extractResult(new GenericType<SseEventInputImpl>(SseEventInputImpl.class), response, null);
             }
             //if 200< response code <300 and response contentType is null, fail the connection. 
             if (eventInput == null && !alwaysReconnect)
