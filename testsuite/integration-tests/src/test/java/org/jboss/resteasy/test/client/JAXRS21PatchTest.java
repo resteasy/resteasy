@@ -99,10 +99,9 @@ public class JAXRS21PatchTest extends ClientTestBase {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Category(ExpectedFailing.class) // RESTEASY-1822
     public void testOptionsContainsAcceptPatch() throws Exception {
         Response res = client.target(generateURL("/test")).request().options();
-        Assert.assertEquals("text/plain;charset=UTF-8", res.getHeaderString("Accept-Patch"));
+        Assert.assertEquals("text/plain", res.getHeaderString("Accept-Patch"));
         res.close();
     }
 

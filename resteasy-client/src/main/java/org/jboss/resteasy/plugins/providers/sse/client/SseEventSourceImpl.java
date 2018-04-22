@@ -38,7 +38,7 @@ public class SseEventSourceImpl implements SseEventSource
    private final long reconnectDelay;
 
    private final boolean disableKeepAlive;
-
+   
    private final ScheduledExecutorService executor;
 
    private enum State {
@@ -52,6 +52,8 @@ public class SseEventSourceImpl implements SseEventSource
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
 
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
+   
+   private boolean alwaysReconnect;
 
    public static class SourceBuilder extends Builder
    {
@@ -126,6 +128,8 @@ public class SseEventSourceImpl implements SseEventSource
       this.target = target;
       this.reconnectDelay = reconnectDelay;
       this.disableKeepAlive = disableKeepAlive;
+      //tck requries this
+      this.alwaysReconnect = true;
 
       if (name == null)
       {
@@ -287,6 +291,11 @@ public class SseEventSourceImpl implements SseEventSource
       return true;
    }
 
+   public void setAlwasyReconnect(boolean always)
+   {
+      this.alwaysReconnect = always;
+   }
+   
    private class EventHandler implements Runnable
    {
 
@@ -344,7 +353,7 @@ public class SseEventSourceImpl implements SseEventSource
                }
             }
             //if 200< response code <300 and response contentType is null, fail the connection. 
-            if (eventInput == null)
+            if (eventInput == null && !alwaysReconnect)
             {
                state.set(State.CLOSED);
             }
@@ -404,7 +413,8 @@ public class SseEventSourceImpl implements SseEventSource
                   else
                   {
                      //event sink closed
-                     break;
+                     if (!alwaysReconnect)
+                        break;
                   }
                }
                catch (IOException e)
@@ -476,4 +486,5 @@ public class SseEventSourceImpl implements SseEventSource
       }
    }
 
+   
 }

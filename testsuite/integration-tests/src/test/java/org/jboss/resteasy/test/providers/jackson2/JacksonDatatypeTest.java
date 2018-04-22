@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailing;
+import org.jboss.resteasy.category.NotForWildFly101;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
@@ -38,8 +38,7 @@ import static org.hamcrest.core.StringContains.containsString;
 @RunWith(Arquillian.class)
 @RunAsClient
 // This test passes with WildFly master branch, but don't pass with WildFly 10.1
-// Next annotation needs to be removed after new version of WildFly would be used - FIXME
-@Category({ExpectedFailing.class})
+@Category({NotForWildFly101.class})
 public class JacksonDatatypeTest {
     private static final String DEFAULT_DEPLOYMENT = String.format("%sDefault",
             JacksonDatatypeTest.class.getSimpleName());
