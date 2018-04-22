@@ -23,7 +23,6 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${project.version}</version>
-        <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
@@ -51,12 +50,14 @@
     <dependency>
         <groupId>io.reactivex</groupId>
         <artifactId>rxjava-reactive-streams</artifactId>
-        <version>1.2.1</version>
     </dependency>
     <dependency>
         <groupId>io.reactivex</groupId>
         <artifactId>rxjava</artifactId>
-        <version>1.3.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
     </dependency>
   </dependencies>
 </project>

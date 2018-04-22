@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -22,6 +23,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
 @Produces(
@@ -51,6 +53,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;
+      boolean textLike = MediaTypeHelper.isTextLike(mediaType);
       if (event.getComment() != null)
       {
          for (final String comment : event.getComment().split("\n"))
@@ -114,22 +117,37 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      @Override
                      public void write(int b) throws IOException
                      {
-                        if (b == '\n' || b == '\r')
+                        if (textLike)
                         {
-                           if (!isNewLine)
-                           {
-                              entityStream.write(SseConstants.EOL);
-                           }
-                           isNewLine = true;
+                            if (b == '\n' || b == '\r')
+                            {
+                               if (!isNewLine)
+                               {
+                                  entityStream.write(SseConstants.EOL);
+                               }
+                               isNewLine = true;
+                            }
+                            else
+                            {
+                               if (isNewLine)
+                               {
+                                  entityStream.write(SseConstants.DATA_LEAD);
+                               }
+                               entityStream.write(b);
+                               isNewLine = false;
+                            }   
                         }
                         else
                         {
-                           if (isNewLine)
-                           {
-                              entityStream.write(SseConstants.DATA_LEAD);
-                           }
-                           entityStream.write(b);
-                           isNewLine = false;
+                            if (b == '\n' || b == '\r' || b == '\\')
+                            {
+                                entityStream.write('\\');
+                                entityStream.write(b);
+                            }
+                            else
+                            {
+                                entityStream.write(b);
+                            }
                         }
                      }
 
@@ -142,6 +160,10 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      @Override
                      public void close() throws IOException
                      {
+                        if (!textLike)
+                        {
+                            entityStream.write(SseConstants.EOL);
+                        }
                         entityStream.close();
                      }
                   });
@@ -164,6 +186,22 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
    {
+     if (mediaType.getParameters() != null)
+     {
+        Map<String, String> map = mediaType.getParameters();
+        String elementType = map.get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+        if (elementType != null)
+        {
+           int i = elementType.indexOf("/");
+           if (i < 0)
+           {
+              throw new WebApplicationException(Messages.MESSAGES.failureParsingMediaType(elementType));
+           }
+           String t = elementType.substring(0, i);
+           String st = elementType.substring(i + 1);
+           mediaType = new MediaType(t, st); // charset ??
+        }
+     }
       return new SseEventInputImpl(annotations, mediaType, httpHeaders, entityStream);
    }
 

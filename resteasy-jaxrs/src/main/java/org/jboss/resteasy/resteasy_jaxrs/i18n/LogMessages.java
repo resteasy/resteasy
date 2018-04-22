@@ -158,7 +158,7 @@ public interface LogMessages extends BasicLogger
    void skipIllegalField(String filed, String value);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 185, value = "Skip unkown field [%s]")
+   @Message(id = BASE + 185, value = "Skip unknown field [%s]")
    void skipUnkownFiled(String filed);
    
    @LogMessage(level = Level.WARN)

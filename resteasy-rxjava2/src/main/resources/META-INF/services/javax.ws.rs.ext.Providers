@@ -1,3 +1,9 @@
 org.jboss.resteasy.rxjava2.SingleProvider
+org.jboss.resteasy.rxjava2.SingleRxInvokerImpl
+org.jboss.resteasy.rxjava2.SingleRxInvokerProvider
 org.jboss.resteasy.rxjava2.ObservableProvider
+org.jboss.resteasy.rxjava2.ObservableRxInvokerImpl
+org.jboss.resteasy.rxjava2.ObservableRxInvokerProvider
 org.jboss.resteasy.rxjava2.FlowableProvider
+org.jboss.resteasy.rxjava2.FlowableRxInvokerImpl
+org.jboss.resteasy.rxjava2.FlowableRxInvokerProvider

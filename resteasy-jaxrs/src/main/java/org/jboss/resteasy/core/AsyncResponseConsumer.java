@@ -68,7 +68,7 @@ public abstract class AsyncResponseConsumer
       {
          if(annotation.annotationType() == Stream.class)
          {
-            return new AsyncStreamingResponseConsumer(method, asyncStreamProvider);
+            return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);     
          }
       }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);
@@ -288,11 +288,15 @@ public abstract class AsyncResponseConsumer
       public void subscribe(Object rtn)
       {
          @SuppressWarnings({ "unchecked", "rawtypes" })
-         Publisher<?> stage = ((AsyncStreamProvider)asyncStreamProvider).toAsyncStream(rtn);
-         stage.subscribe(this);
+         Publisher<?> publisher = ((AsyncStreamProvider)asyncStreamProvider).toAsyncStream(rtn);
+         publisher.subscribe(this);
       }
    }
 
+   /*
+    * This class is not currently used, having been replaced by AsyncStreamSseResponseConsumer even for 
+    * non-SSE connections.
+    */
    private static class AsyncStreamingResponseConsumer extends AsyncStreamResponseConsumer 
    {
       private boolean sentEntity;
@@ -402,7 +406,9 @@ public abstract class AsyncResponseConsumer
       protected void doComplete()
       {
          // don't call super.doComplete which completes the asyncContext because Sse does that
-         subscription.cancel();
+    	  // we can be done by exception before we've even subscribed
+          if(subscription != null)
+             subscription.cancel();
          sseEventSink.close();
       }
 
