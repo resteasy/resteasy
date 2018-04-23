@@ -74,17 +74,6 @@
         support chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
-
-        <para>
-        RESTEasy defaults to using Apache AsyncHttpClient as the HTTP engine.  As an drop in replacement, you may select
-        a Jetty 9.4 based HTTP engine.  The Jetty implementation is newer and therefore not as well tested, but if
-        you run Jetty as your server already, it is nice to have a common vendor.  The Jetty Server can even share
-        execution resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
-        </para>
-
-        <programlisting>
-          ResteasyClient client = new ResteasyClientBuilder().clientEngine(new JettyClientEngine(new HttpClient())).build();
-        </programlisting>
     </section>
     <para>
 
@@ -542,6 +531,11 @@ name: b
            using a non-blocking IO model.
        </para>
        <para>
+           <code class="classname">JettyClientEngine</code> is built on top
+           of <emphasis>Eclipse Jetty</emphasis> HTTP engine, which is possibly an interesting
+           option for those already running on the Jetty server.
+       </para>
+       <para>
            Finally,
            <code class="classname">InMemoryClientEngine</code> is
            an implementation that dispatches requests to a server in the same JVM and
@@ -569,6 +563,10 @@ name: b
                    <row>
                        <entry>ApacheHttpAsyncClient4Engine</entry>
                        <entry>Uses HttpComponents HttpAsyncClient</entry>
+                   </row>
+                   <row>
+                       <entry>JettyClientEngine</entry>
+                       <entry>Uses Eclipse Jetty</entry>
                    </row>
                    <row>
                        <entry>InMemoryClientEngine</entry>
@@ -899,6 +897,20 @@ httpClient.getConnectionManager().shutdown();
                 using InvocationCallbacks, the response is always fully buffered in memory.
             </para>
         </sect2>
+    </section>
+
+    <section id="jetty_client">
+        <title>Jetty Client Engine</title>
+        <para>
+            As a drop in replacement, RESTEasy allows selecting a Jetty 9.4+ based HTTP engine.
+            The Jetty implementation is newer and lessl tested, but if may end up being a good choice
+            when relying on Jetty as server side already.  The Jetty Server can even share execution
+            resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
+        </para>
+        <programlisting>
+   ResteasyClient client = new ResteasyClientBuilder().clientEngine(
+      new JettyClientEngine(new HttpClient())).build();
+        </programlisting>
     </section>
 
    </section>

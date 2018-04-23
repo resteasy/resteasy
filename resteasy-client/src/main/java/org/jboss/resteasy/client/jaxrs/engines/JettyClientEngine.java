@@ -95,7 +95,6 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
      *
      * @see AsyncClientHttpEngine#submit(ClientInvocation, boolean, InvocationCallback, org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine.ResultExtractor)
      */
-    @SuppressWarnings("resource")
     @Override
     public <T> Future<T> submit(ClientInvocation invocation, boolean bufIn, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
         final boolean buffered;
@@ -121,7 +120,6 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             request.followRedirects(false);
         }
 
-//        final DeferredContentProvider content;
         if (invocation.getEntity() != null) {
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
             try {
@@ -176,6 +174,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
                 }
             }
 
+            @SuppressWarnings("unchecked")
             private void complete() {
                 completing.set(true);
                 // TODO: dangerous cast, see javadoc!
@@ -189,9 +188,6 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
             @Override
             public void onComplete(Result result) {
-//                if (content != null) {
-//                    content.close();
-//                }
                 try {
                     if (extractor != null) {
                         stream.close();
@@ -216,29 +212,6 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
                 }
             }
         });
-
-//        if (content != null) {
-//            client.getExecutor().execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    final JettyContentStream stream = new JettyContentStream(client.getByteBufferPool(), content);
-//                    try {
-//                        invocation.writeRequestBody(stream);
-//                    } catch (IOException e) {
-//                        request.abort(e);
-//                        future.completeExceptionally(e);
-//                        callback.failed(e);
-//                    } finally {
-//                        try {
-//                            stream.close();
-//                        } catch (IOException e) {
-//                            // ignore
-//                        }
-//                        content.close();
-//                    }
-//                }
-//            });
-//        }
         return future;
     }
 
