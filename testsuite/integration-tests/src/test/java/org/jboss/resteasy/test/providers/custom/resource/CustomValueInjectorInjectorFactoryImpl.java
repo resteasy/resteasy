@@ -14,11 +14,11 @@ import java.lang.reflect.Type;
 
 public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl {
     @Override
-    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type,
+    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
                                                   Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
         final CustomValueInjectorHello hello = FindAnnotation.findAnnotation(annotations, CustomValueInjectorHello.class);
         if (hello == null) {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, factory);
+            return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
         } else {
             return new ValueInjector() {
                 public Object inject(HttpRequest request, HttpResponse response) {

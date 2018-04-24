@@ -41,7 +41,7 @@ import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class InjectorFactoryImpl implements InjectorFactory
 {
    @Override
@@ -134,11 +134,41 @@ public class InjectorFactoryImpl implements InjectorFactory
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type,
                                                  Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
    {
-      return createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, true, providerFactory);
+      ValueInjector res = createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, false, providerFactory);
+      if (res != null) {
+         return res;
+      } else {
+         return createParameterExtractorUsingProprietaryAnnotations(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, true, providerFactory);
+      }
+   }
+
+   @Override
+   @Deprecated
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+                                                 Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
+   {
+      ValueInjector res = createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, false, providerFactory);
+      if (res != null) {
+         return res;
+      } else {
+         return createParameterExtractorUsingProprietaryAnnotations(injectTargetClass, injectTarget, null, type, genericType, annotations, true, providerFactory);
+      }
    }
 
    @Override
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
+   {
+      ValueInjector res = createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, false, providerFactory);
+      if (res != null) {
+         return res;
+      } else {
+         return createParameterExtractorUsingProprietaryAnnotations(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, useDefault, providerFactory);
+      }
+   }
+   
+   @Override
+   @Deprecated
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
       boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
@@ -153,52 +183,29 @@ public class InjectorFactoryImpl implements InjectorFactory
       FormParam formParam;
       Form form;
       Suspend suspend;
-      Suspended suspended;
-      Query query;
-
 
       if ((queryParam = findAnnotation(annotations, QueryParam.class)) != null)
       {
          return new QueryParamInjector(type, genericType, injectTarget, queryParam.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class) != null)
-      {
-         return new QueryParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
-      }
-      else if((query = findAnnotation(annotations, Query.class)) != null) {
+      else if(findAnnotation(annotations, Query.class) != null) {
          return new QueryInjector(type, providerFactory);
       }
       else if ((header = findAnnotation(annotations, HeaderParam.class)) != null)
       {
          return new HeaderParamInjector(type, genericType, injectTarget, header.value(), defaultVal, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class) != null)
-      {
-         return new HeaderParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
-      }
       else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
       {
          return new FormParamInjector(type, genericType, injectTarget, formParam.value(), defaultVal, encode, annotations, providerFactory);
-      }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class) != null)
-      {
-         return new FormParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
       else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
       {
          return new CookieParamInjector(type, genericType, injectTarget, cookie.value(), defaultVal, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class) != null)
-      {
-         return new CookieParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
-      }
       else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null)
       {
          return new PathParamInjector(type, genericType, injectTarget, uriParam.value(), defaultVal, encode, annotations, providerFactory);
-      }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class) != null)
-      {
-         return new PathParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
       else if ((form = findAnnotation(annotations, Form.class)) != null)
       {
@@ -229,10 +236,6 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, encode, annotations, providerFactory);
       }
-      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class) != null)
-      {
-         return new MatrixParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
-      }
       else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
       {
          return new SuspendInjector(suspend.value(), type);
@@ -241,13 +244,55 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return new ContextParameterInjector(null, type, providerFactory);
       }
-      else if ((suspended = findAnnotation(annotations, Suspended.class)) != null)
+      else if (findAnnotation(annotations, Suspended.class) != null)
       {
          return new AsynchronousResponseInjector();
       }
       else if (javax.ws.rs.container.AsyncResponse.class.isAssignableFrom(type))
       {
          return new AsynchronousResponseInjector();
+      }
+      else if (useDefault)
+      {
+         return new MessageBodyParameterInjector(injectTargetClass, injectTarget, type, genericType, annotations, providerFactory);
+      }
+      else
+      {
+         return null;
+      }
+   }
+   
+   private ValueInjector createParameterExtractorUsingProprietaryAnnotations(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type,
+         Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
+   {
+      DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
+      boolean encode = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
+      String defaultVal = null;
+      if (defaultValue != null) defaultVal = defaultValue.value();
+
+      if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class) != null)
+      {
+         return new QueryParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
+      }
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class) != null)
+      {
+         return new HeaderParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
+      }
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class) != null)
+      {
+         return new FormParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
+      }
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class) != null)
+      {
+         return new CookieParamInjector(type, genericType, injectTarget, defaultName, defaultVal, annotations, providerFactory);
+      }
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class) != null)
+      {
+         return new PathParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
+      }
+      else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class) != null)
+      {
+         return new MatrixParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations, providerFactory);
       }
       else if (useDefault)
       {

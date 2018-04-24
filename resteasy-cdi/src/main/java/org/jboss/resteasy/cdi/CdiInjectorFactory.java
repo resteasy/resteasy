@@ -113,9 +113,23 @@ public class CdiInjectorFactory implements InjectorFactory
       return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass, factory), resourceClass, sessionBeanInterface, manager);
    }
 
+   @Deprecated
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+         Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
+   {
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
+   }
+
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       return delegate.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, factory);
+   }
+
+   @Deprecated
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+         Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory)
+   {
+      return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, useDefault, factory);
    }
 
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type,

@@ -17,10 +17,10 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
     @SuppressWarnings("unchecked")
     @Override
     public ValueInjector createParameterExtractor(Class injectTargetClass,
-                                                  AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
+                                                  AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
         final HttpRequestParameterInjectorClassicParam param = FindAnnotation.findAnnotation(annotations, HttpRequestParameterInjectorClassicParam.class);
         if (param == null) {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type,
+            return super.createParameterExtractor(injectTargetClass, injectTarget, type,
                     genericType, annotations, factory);
         } else {
             return new ValueInjector() {

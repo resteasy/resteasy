@@ -25,10 +25,10 @@ public class RequestScopedBeanQualifierInjectorFactoryImpl extends InjectorFacto
     @SuppressWarnings("rawtypes")
     @Override
     public ValueInjector createParameterExtractor(Class injectTargetClass,
-                                                  AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
+                                                  AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
         final Qualifier qualifier = FindAnnotation.findAnnotation(annotations, Qualifier.class);
         if (qualifier == null) {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type,
+            return super.createParameterExtractor(injectTargetClass, injectTarget, type,
                     genericType, annotations, factory);
         } else {
             return new ValueInjector() {
