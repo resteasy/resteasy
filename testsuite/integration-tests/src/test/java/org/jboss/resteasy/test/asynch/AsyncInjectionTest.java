@@ -14,6 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.UndertowTestRunner;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContext;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextAsyncSpecifier;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterface;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterfaceInjector;
@@ -55,7 +56,8 @@ public class AsyncInjectionTest {
         WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
-              AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class);
+              AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
+              AsyncInjectionContextAsyncSpecifier.class);
     }
 
     private String generateURL(String path) {
