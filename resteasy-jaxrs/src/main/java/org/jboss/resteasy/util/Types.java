@@ -12,6 +12,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Type conversions and generic type manipulations
@@ -406,25 +407,7 @@ public class Types
             Type newType = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
             actuals[i] = newType == null ? param.getActualTypeArguments()[i] : newType;
          }
-         return new ParameterizedType() {
-            @Override
-            public Type[] getActualTypeArguments()
-            {
-               return actuals;
-            }
-
-            @Override
-            public Type getRawType()
-            {
-               return param.getRawType();
-            }
-
-            @Override
-            public Type getOwnerType()
-            {
-               return param.getOwnerType();
-            }
-         };
+         return new ResteasyParameterizedType(actuals, param.getRawType(), param.getOwnerType());
       }
       else if (type instanceof GenericArrayType)
       {
@@ -683,5 +666,85 @@ public class Types
       {
          return EMPTY_TYPE_ARRAY;
       }
+   }
+   
+   public static class ResteasyParameterizedType implements ParameterizedType {
+
+      private Type[] actuals;
+      private Type rawType;
+      private Type ownerType;
+
+      public ResteasyParameterizedType(Type[] actuals, Type rawType, Type ownerType)
+      {
+         this.actuals = actuals;
+         this.rawType = rawType;
+         this.ownerType = ownerType;
+      }
+
+      @Override
+      public Type[] getActualTypeArguments()
+      {
+         return actuals;
+      }
+
+      @Override
+      public Type getRawType()
+      {
+         return rawType;
+      }
+
+      @Override
+      public Type getOwnerType()
+      {
+         return ownerType;
+      }
+      
+      @Override
+      public boolean equals(Object other)
+      {
+         if(other == null)
+            return false;
+         if(other instanceof ParameterizedType == false)
+            return false;
+         ParameterizedType b = (ParameterizedType) other;
+         return Objects.deepEquals(getActualTypeArguments(), b.getActualTypeArguments())
+               && Objects.equals(getRawType(), b.getRawType())
+               && Objects.equals(getOwnerType(), b.getOwnerType());
+      }
+      
+      @Override
+      public int hashCode()
+      {
+         int ret = 31;
+         ret = 37 * ret + Arrays.hashCode(getActualTypeArguments());
+         ret = 37 * ret + getRawType().hashCode();
+         ret = 37 * ret + Objects.hashCode(getOwnerType());
+         return ret;
+      }
+      
+      @Override
+      public String toString()
+      {
+         StringBuilder sb = new StringBuilder();
+         if(getOwnerType() != null)
+            sb.append(getOwnerType()).append(".");
+         sb.append(getRawType());
+         if(actuals != null && actuals.length > 0) 
+         {
+            sb.append("<");
+            boolean first = true;
+            for (Type actual : actuals)
+            {
+               if(first)
+                  first = false;
+               else
+                  sb.append(", ");
+               sb.append(actual);
+            }
+            sb.append(">");
+         }
+         return sb.toString();
+      }
+
    }
 }
