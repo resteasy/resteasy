@@ -69,6 +69,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -217,6 +218,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, AsyncClientResponseProvider> asyncClientResponseProviders;
    protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
+   protected Map<Type, ContextInjector> contextInjectors;
    protected Map<Class<?>, StringConverter> stringConverters;
    protected Set<ExtSortedKey<ParamConverterProvider>> sortedParamConverterProviders;
    protected List<ParamConverterProvider> paramConverterProviders;
@@ -330,6 +332,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
       asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
       sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<ExtSortedKey<ParamConverterProvider>>());
       stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
@@ -447,6 +450,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (asyncStreamProviders == null && parent != null) return parent.getAsyncStreamProviders();
       return asyncStreamProviders;
+   }
+
+   public Map<Type, ContextInjector> getContextInjectors()
+   {
+      if (contextInjectors == null && parent != null) return parent.getContextInjectors();
+      return contextInjectors;
    }
 
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
@@ -588,6 +597,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public static <T> T getContextData(Class<T> type)
    {
       return (T) getContextDataMap().get(type);
+   }
+
+   public <T> T getContextData(Class<T> rawType, Type genericType)
+   {
+      T ret = (T) getContextDataMap().get(rawType);
+      if(ret != null)
+         return ret;
+      ContextInjector contextInjector = getContextInjectors().get(genericType);
+      if(contextInjector == null) 
+      {
+         Type newGenericType = new Types.ResteasyParameterizedType(new Type[]{genericType}, CompletionStage.class, null);
+         contextInjector = getContextInjectors().get(newGenericType);
+      }
+      if(contextInjector != null)
+         return (T) contextInjector.resolve(rawType, genericType, null);
+      return null;
    }
 
    public static <T> T popContextData(Class<T> type)
@@ -1299,6 +1324,36 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncStreamProviders.put(asyncClass, provider);
    }
 
+   protected void addContextInjector(Class<? extends ContextInjector> providerClass)
+   {
+      ContextInjector provider = createProviderInstance(providerClass);
+       addContextInjector(provider, providerClass);
+   }
+
+   protected void addContextInjector(ContextInjector provider)
+   {
+       addContextInjector(provider, provider.getClass());
+   }
+
+   protected void addContextInjector(ContextInjector provider, Class providerClass)
+   {
+      Type injectedType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextInjector.class)[0];
+      injectedType = Types.resolveTypeVariables(providerClass, injectedType);
+      addContextInjector(provider, injectedType);
+   }
+
+   protected void addContextInjector(ContextInjector provider, Type injectedType)
+   {
+      injectProperties(provider.getClass(), provider);
+
+      if (contextInjectors == null)
+      {
+         contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+         contextInjectors.putAll(parent.getContextInjectors());
+      }
+      contextInjectors.put(injectedType, provider);
+   }
+
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       ContextResolver writer = createProviderInstance(resolver);
@@ -1838,6 +1893,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
+      if (isA(provider, ContextInjector.class, contracts))
+      {
+         try
+         {
+            addContextInjector(provider);
+            int priority = getPriority(priorityOverride, contracts, ContextInjector.class, provider);
+            newContracts.put(ContextInjector.class, priority);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextInjector(), e);
+         }
+      }
       if (isA(provider, StringConverter.class, contracts))
       {
          addStringConverter(provider);
@@ -2082,6 +2150,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          catch (Exception e)
          {
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
+         }
+      }
+      if (isA(provider, ContextInjector.class, contracts))
+      {
+         try
+         {
+            addContextInjector((ContextInjector)provider);
+            int priority = getPriority(priorityOverride, contracts, ContextInjector.class, provider.getClass());
+            newContracts.put(ContextInjector.class, priority);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextInjector(), e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))

@@ -780,4 +780,7 @@ public interface Messages
    
    @Message(id = BASE + 1093, value = "SseBroadcaster is closed")
    String sseBroadcasterIsClosed();
+
+   @Message(id = BASE + 1094, value = "Unable to instantiate ContextInjector")
+   String unableToInstantiateContextInjector();
 }

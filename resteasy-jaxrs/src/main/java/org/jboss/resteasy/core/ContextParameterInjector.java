@@ -73,7 +73,7 @@ public class ContextParameterInjector implements ValueInjector
          try
          {
            
-            Object delegate = ResteasyProviderFactory.getContextData(type);
+            Object delegate = factory.getContextData(rawType, genericType);
             if (delegate == null)
             {
                String name = method.getName();
