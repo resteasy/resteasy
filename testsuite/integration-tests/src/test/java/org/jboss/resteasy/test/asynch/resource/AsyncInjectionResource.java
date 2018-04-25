@@ -117,4 +117,18 @@ public class AsyncInjectionResource
       
       return Response.ok("resource").build();
    }
+
+   @Path("/interface")
+   @GET
+   public Response asyncInjectionInterface(@Context AsyncInjectionContextInterface resolvedContextParam,
+         @Context CompletionStage<AsyncInjectionContextInterface> asyncContextParam)
+         throws InterruptedException, ExecutionException
+   {
+      if (resolvedContextParam == null || resolvedContextParam.foo() != 42)
+         return Response.serverError().entity("Missing injected resolved context param").build();
+      if (asyncContextParam == null || asyncContextParam.toCompletableFuture().get().foo() != 42)
+         return Response.serverError().entity("Missing injected async context param").build();
+
+      return Response.ok("resource").build();
+   }
 }

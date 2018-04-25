@@ -15,6 +15,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.UndertowTestRunner;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContext;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterface;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterfaceInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
@@ -51,7 +53,9 @@ public class AsyncInjectionTest {
     public static Archive<?> createTestArchive() {
 
         WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, AsyncInjectionContext.class, AsyncInjectionContextInjector.class);
+        return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
+              AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
+              AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class);
     }
 
     private String generateURL(String path) {
@@ -67,6 +71,23 @@ public class AsyncInjectionTest {
         Client client = ClientBuilder.newClient();
 
         WebTarget base = client.target(generateURL("/"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection works for interfaces
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionInterface() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/interface"));
 
         Response response = base.request()
            .get();
