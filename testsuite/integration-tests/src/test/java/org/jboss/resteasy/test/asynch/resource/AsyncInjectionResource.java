@@ -8,6 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.spi.HttpRequest;
+
 @Path("/")
 public class AsyncInjectionResource
 {
@@ -53,7 +55,7 @@ public class AsyncInjectionResource
    }
    
    @GET
-   public Response asyncInjection(@Context AsyncInjectionContext resolvedContextParam,
+   public Response asyncInjectionPoints(@Context AsyncInjectionContext resolvedContextParam,
          @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
          throws InterruptedException, ExecutionException
    {
@@ -77,6 +79,42 @@ public class AsyncInjectionResource
       if (asyncContextConstructor == null || asyncContextConstructor.toCompletableFuture().get().foo() != 42)
          return Response.serverError().entity("Missing injected async context constructor").build();
 
+      return Response.ok("resource").build();
+   }
+
+   @Path("/resolved")
+   @GET
+   public Response asyncInjectionResolved(@Context AsyncInjectionContext resolvedContextParam,
+         @Context CompletionStage<AsyncInjectionContext> asyncContextParam,
+         @Context HttpRequest request)
+         throws InterruptedException, ExecutionException
+   {
+      if (resolvedContextParam == null || resolvedContextParam.foo() != 42)
+         return Response.serverError().entity("Missing injected resolved context param").build();
+      if (asyncContextParam == null || asyncContextParam.toCompletableFuture().get().foo() != 42)
+         return Response.serverError().entity("Missing injected async context param").build();
+
+      if(request.getAsyncContext().isSuspended())
+         return Response.serverError().entity("Suspended request").build();
+      
+      return Response.ok("resource").build();
+   }
+
+   @Path("/suspended")
+   @GET
+   public Response asyncInjectionSuspended(@AsyncInjectionContextAsyncSpecifier @Context AsyncInjectionContext resolvedContextParam,
+         @AsyncInjectionContextAsyncSpecifier @Context CompletionStage<AsyncInjectionContext> asyncContextParam,
+         @Context HttpRequest request)
+         throws InterruptedException, ExecutionException
+   {
+      if (resolvedContextParam == null || resolvedContextParam.foo() != 42)
+         return Response.serverError().entity("Missing injected resolved context param").build();
+      if (asyncContextParam == null || asyncContextParam.toCompletableFuture().get().foo() != 42)
+         return Response.serverError().entity("Missing injected async context param").build();
+
+      if(!request.getAsyncContext().isSuspended())
+         return Response.serverError().entity("Non-suspended request").build();
+      
       return Response.ok("resource").build();
    }
 }

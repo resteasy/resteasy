@@ -66,12 +66,45 @@ public class AsyncInjectionTest {
     public void testAsyncInjection() throws Exception {
         Client client = ClientBuilder.newClient();
 
-        // Create book.
         WebTarget base = client.target(generateURL("/"));
 
         Response response = base.request()
            .get();
-        assertEquals(200, response.getStatus());
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection does not suspend request if already resolved
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionResolved() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/resolved"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection suspends request if not yet resolved
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionSuspended() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/suspended"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
         client.close();
     }
