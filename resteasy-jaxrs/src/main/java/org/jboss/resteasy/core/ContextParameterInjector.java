@@ -28,13 +28,15 @@ import java.util.concurrent.CompletionStage;
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector
 {
-   private Class type;
+   private Class rawType;
    private Class proxy;
    private ResteasyProviderFactory factory;
+   private Type genericType;
 
-   public ContextParameterInjector(Class proxy, Class type, ResteasyProviderFactory factory)
+   public ContextParameterInjector(Class proxy, Class rawType, Type genericType, ResteasyProviderFactory factory)
    {
-      this.type = type;
+      this.rawType = rawType;
+      this.genericType = genericType;
       this.proxy = proxy;
       this.factory = factory;
    }
@@ -59,6 +61,8 @@ public class ContextParameterInjector implements ValueInjector
 
    private CompletionStage<Object> unwrapIfRequired(Object contextData)
    {
+      if(rawType != CompletionStage.class && contextData instanceof CompletionStage)
+         return (CompletionStage<Object>) contextData;
       return CompletableFuture.completedFuture(contextData);
    }
 
@@ -82,7 +86,7 @@ public class ContextParameterInjector implements ValueInjector
                {
                   return method.invoke(factory, objects);
                }
-               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(type.getName()));
+               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
             }
             return method.invoke(delegate, objects);
          }
@@ -139,8 +143,8 @@ public class ContextParameterInjector implements ValueInjector
         }
         else
         {
-            Class[] intfs = {type};
-            return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+            Class[] intfs = {rawType};
+            return Proxy.newProxyInstance(rawType.getClassLoader(), intfs, new GenericDelegatingProxy());
         }
     }
 }
