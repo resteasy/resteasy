@@ -34,6 +34,9 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @tpSubChapter Validation
  * @tpChapter Integration tests
@@ -123,7 +126,8 @@ public class ValidationJaxbTest {
         violation = r.getClassViolations().iterator().next();
         Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());
         violation = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "post.arg0", violation.getPath());
+        String[] paths = new String[]{"post.arg0", "post.foo"};
+        Assert.assertTrue(UNEXPECTED_VALIDATION_ERROR_MSG + paths, Arrays.asList(paths).contains(violation.getPath()));
         response.close();
     }
 
