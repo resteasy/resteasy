@@ -18,6 +18,9 @@ import javax.ws.rs.NotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,51 +45,47 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
    }
 
-   protected Object createResource(HttpRequest request, HttpResponse response)
+   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response)
    {
-      Object resource = this.resource.createResource(request, response, providerFactory);
-      return createResource(request, response, resource);
+      return this.resource.createResource(request, response, providerFactory)
+            .thenCompose(resource -> createResource(request, response, resource));
 
    }
 
-   protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
+   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, Object locator)
    {
       ResteasyUriInfo uriInfo = request.getUri();
-      Object[] args = new Object[0];
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
-      try
-      {
-         args = methodInjector.injectArguments(request, response);
-      }
-      catch (NotFoundException failure)
-      {
-         if (lastException != null) throw lastException;
-         throw failure;
-      }
-      try
-      {
-         uriInfo.pushCurrentResource(locator);
-         Object subResource = method.getMethod().invoke(locator, args);
-         if (subResource instanceof Class)
-         {
-            subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
-         }
-         return subResource;
+      return methodInjector.injectArguments(request, response)
+         .exceptionally(t -> {
+            if(t.getCause() instanceof NotFoundException && lastException != null)
+               throw lastException;
+            throw (CompletionException)t;
+         }).thenApply(args -> {
+            try
+            {
+               uriInfo.pushCurrentResource(locator);
+               Object subResource = method.getMethod().invoke(locator, args);
+               if (subResource instanceof Class)
+               {
+                  subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
+               }
+               return subResource;
 
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new InternalServerErrorException(e);
-      }
-      catch (InvocationTargetException e)
-      {
-         throw new ApplicationException(e.getCause());
-      }
-      catch (SecurityException e)
-      {
-         throw new ApplicationException(e.getCause());
-      }
-
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new InternalServerErrorException(e);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new ApplicationException(e.getCause());
+            }
+            catch (SecurityException e)
+            {
+               throw new ApplicationException(e.getCause());
+            }
+         });
    }
 
    public Method getMethod()
@@ -94,19 +93,19 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       return method.getMethod();
    }
 
-   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
+   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
    {
-      Object target = createResource(request, response);
-      return invokeOnTargetObject(request, response, target);
+      return createResource(request, response)
+            .thenCompose(target -> invokeOnTargetObject(request, response, target));
    }
 
-   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
+   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      Object target = createResource(request, response, locator);
-      return invokeOnTargetObject(request, response, target);
+      return createResource(request, response, locator)
+            .thenCompose(target -> invokeOnTargetObject(request, response, target));
    }
 
-   protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected CompletionStage<BuiltResponse> invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

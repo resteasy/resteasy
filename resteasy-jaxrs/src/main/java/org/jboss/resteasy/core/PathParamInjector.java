@@ -17,6 +17,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -72,7 +74,8 @@ public class PathParamInjector implements ValueInjector
       return (List.class.equals(type) || ArrayList.class.equals(type)) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       if (extractor == null) // we are a PathSegment
       {
@@ -95,15 +98,15 @@ public class PathParamInjector implements ValueInjector
          {
             PathSegment[] segments = new PathSegment[segmentList.size()];
             segments = segmentList.toArray(segments);
-            return segments;
+            return CompletableFuture.completedFuture(segments);
          }
          else if (pathSegmentList)
          {
-            return segmentList;
+            return CompletableFuture.completedFuture(segmentList);
          }
          else
          {
-            return segmentList.get(segmentList.size() - 1);
+            return CompletableFuture.completedFuture(segmentList.get(segmentList.size() - 1));
          }
       }
       else
@@ -113,25 +116,26 @@ public class PathParamInjector implements ValueInjector
          {
             if (extractor.isCollectionOrArray())
             {
-               return extractor.extractValues(null);
+               return CompletableFuture.completedFuture(extractor.extractValues(null));
             }
             else
             {
-               return extractor.extractValue(null);
+               return CompletableFuture.completedFuture(extractor.extractValue(null));
             }
          }
          if (extractor.isCollectionOrArray())
          {
-            return extractor.extractValues(list);
+            return CompletableFuture.completedFuture(extractor.extractValues(list));
          }
          else
          {
-            return extractor.extractValue(list.get(list.size() - 1));
+            return CompletableFuture.completedFuture(extractor.extractValue(list.get(list.size() - 1)));
          }
       }
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectPathParam());
    }

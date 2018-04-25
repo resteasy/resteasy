@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * This ConstructorInjector implementation uses CDI's BeanManager to obtain
@@ -36,7 +38,8 @@ public class CdiConstructorInjector implements ConstructorInjector
       this.manager = manager;
    }
 
-   public Object construct()
+   @Override
+   public CompletionStage<Object> construct()
    {
       Set<Bean<?>> beans = manager.getBeans(type);
       
@@ -65,20 +68,21 @@ public class CdiConstructorInjector implements ConstructorInjector
       
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
-      return manager.getReference(bean, type, context);
+      return CompletableFuture.completedFuture(manager.getReference(bean, type, context));
    }
 
-   public Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException
+   @Override
+   public CompletionStage<Object> construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException
    {
       return construct();
    }
 
-   public Object[] injectableArguments()
+   public CompletionStage<Object[]> injectableArguments()
    {
-      return new Object[0];
+      return CompletableFuture.completedFuture(new Object[0]);
    }
 
-   public Object[] injectableArguments(HttpRequest request, HttpResponse response) throws Failure
+   public CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response) throws Failure
    {
       return injectableArguments();
    }

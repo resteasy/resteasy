@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -14,7 +16,7 @@ public interface PropertyInjector
     *
     * @param target
     */
-   void inject(Object target);
+   CompletionStage<Void> inject(Object target);
 
    /**
     * Inject values into annotated properties (fields/setter methods) of the target object.
@@ -25,5 +27,5 @@ public interface PropertyInjector
     * @param target
     * @throws Failure
     */
-   void inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException;
+   CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException;
 }

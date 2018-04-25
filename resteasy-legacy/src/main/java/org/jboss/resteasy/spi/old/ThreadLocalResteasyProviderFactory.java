@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -92,15 +93,15 @@ public class ThreadLocalResteasyProviderFactory extends org.jboss.resteasy.spi.o
    }
 
    @Override
-   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
+   public <T> CompletionStage<T> injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {
       return getDelegate().injectedInstance(clazz, request, response);
    }
 
    @Override
-   public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
+   public CompletionStage<Void> injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
-      getDelegate().injectProperties(obj, request, response);
+      return getDelegate().injectProperties(obj, request, response);
    }
 
    public static void push(ResteasyProviderFactory factory)
@@ -474,9 +475,9 @@ public class ThreadLocalResteasyProviderFactory extends org.jboss.resteasy.spi.o
    }
 
    @Override
-   public void injectProperties(Object obj)
+   public CompletionStage<Void> injectProperties(Object obj)
    {
-      getDelegate().injectProperties(obj);
+      return getDelegate().injectProperties(obj);
    }
 
    @Override

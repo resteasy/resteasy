@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -81,67 +83,83 @@ public class ResourcePropertyInjector implements PropertyInjector
       }
    }
 
-   public void inject(HttpRequest request, HttpResponse response, Object target) throws Failure
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure
    {
+      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (FieldInjector injector : fields)
       {
-         try
-         {
-            injector.param.getField().set(target, injector.injector.inject(request, response));
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
-
+         ret = ret.thenCompose(v -> 
+            injector.injector.inject(request, response)
+            .thenAccept(value -> {
+               try
+               {
+                  injector.param.getField().set(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+         }));
       }
       for (SetterInjector injector : setters)
       {
-         try
-         {
-            injector.param.getSetter().invoke(target, injector.injector.inject(request, response));
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new ApplicationException(e.getCause());
-         }
-
+         ret = ret.thenCompose(v -> 
+            injector.injector.inject(request, response)
+            .thenAccept(value -> {
+                     try
+                     {
+                        injector.param.getSetter().invoke(target, value);
+                     }
+                     catch (IllegalAccessException e)
+                     {
+                        throw new InternalServerErrorException(e);
+                     }
+                     catch (InvocationTargetException e)
+                     {
+                        throw new ApplicationException(e.getCause());
+                     }
+                  }));
       }
+      return ret;
    }
 
-   public void inject(Object target)
+   public CompletionStage<Void> inject(Object target)
    {
+      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (FieldInjector injector : fields)
       {
-         try
-         {
-            injector.param.getField().set(target, injector.injector.inject());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
-
+         ret = ret.thenCompose(v -> 
+            injector.injector.inject()
+            .thenAccept(value -> {
+               try
+               {
+                  injector.param.getField().set(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+         }));
       }
       for (SetterInjector injector : setters)
       {
-         try
-         {
-            injector.param.getSetter().invoke(target, injector.injector.inject());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new ApplicationException(e.getCause());
-         }
-
+         ret = ret.thenCompose(v -> 
+            injector.injector.inject()
+            .thenAccept(value -> {
+                     try
+                     {
+                        injector.param.getSetter().invoke(target, value);
+                     }
+                     catch (IllegalAccessException e)
+                     {
+                        throw new InternalServerErrorException(e);
+                     }
+                     catch (InvocationTargetException e)
+                     {
+                        throw new ApplicationException(e.getCause());
+                     }
+                  }));
       }
+      return ret;
    }
 }

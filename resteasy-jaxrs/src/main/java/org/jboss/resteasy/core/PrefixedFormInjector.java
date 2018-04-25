@@ -7,6 +7,8 @@ import org.jboss.resteasy.util.PrefixedFormFieldsHttpRequest;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Extension of {@link FormInjector} that handles prefixes for associated classes.
@@ -29,11 +31,11 @@ public class PrefixedFormInjector extends FormInjector
     * {@inheritDoc} Wraps the request in a
     */
    @Override
-   public Object inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       if (!containsPrefixedFormFieldsWithValue(request.getDecodedFormParameters()))
       {
-         return null;
+         return CompletableFuture.completedFuture(null);
       }
       return doInject(prefix, request, response);
    }
@@ -41,7 +43,7 @@ public class PrefixedFormInjector extends FormInjector
    /**
     * Calls the super {@link #inject(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse)} method.
     */
-   protected Object doInject(String prefix, HttpRequest request, HttpResponse response)
+   protected CompletionStage<Object> doInject(String prefix, HttpRequest request, HttpResponse response)
    {
       return super.inject(new PrefixedFormFieldsHttpRequest(prefix, request), response);
    }

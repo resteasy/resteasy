@@ -1,6 +1,9 @@
 package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Provider;
+
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -30,11 +33,12 @@ public class GuiceResourceFactory implements ResourceFactory
       propertyInjector = factory.getInjectorFactory().createPropertyInjector(scannableClass, factory);
    }
 
-   public Object createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
+   @Override
+   public CompletionStage<Object> createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
    {
       final Object resource = provider.get();
-      propertyInjector.inject(request, response, resource);
-      return resource;
+      return propertyInjector.inject(request, response, resource)
+    		  .thenApply(v -> resource);
    }
 
    public void requestFinished(final HttpRequest request, final HttpResponse response, final Object resource)

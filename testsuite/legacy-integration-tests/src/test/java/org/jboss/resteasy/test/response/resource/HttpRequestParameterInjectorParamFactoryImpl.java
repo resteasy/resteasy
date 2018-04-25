@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactoryImpl {
     @SuppressWarnings("unchecked")
@@ -24,14 +26,16 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
                     genericType, annotations, factory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return ResteasyProviderFactory.getContextData(HttpServletRequest.class)
-                            .getParameter(param.value());
+                @Override
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                   return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
+                         .getParameter(param.value()));
                 }
 
-                public Object inject() {
-                    // do nothing.
-                    return null;
+                @Override
+                public CompletionStage<Object> inject() {
+                   // do nothing.
+                   return CompletableFuture.completedFuture(null);
                 }
             };
         }
@@ -44,14 +48,16 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
             return super.createParameterExtractor(parameter, providerFactory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return ResteasyProviderFactory.getContextData(HttpServletRequest.class)
-                            .getParameter(param.value());
+                @Override
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                   return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
+                         .getParameter(param.value()));
                 }
 
-                public Object inject() {
-                    // do nothing.
-                    return null;
+                @Override
+                public CompletionStage<Object> inject() {
+                   // do nothing.
+                   return CompletableFuture.completedFuture(null);
                 }
             };
         }

@@ -13,6 +13,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -37,18 +39,20 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
       }
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
-      if (type.equals(Cookie.class)) return cookie;
+      if (type.equals(Cookie.class)) return CompletableFuture.completedFuture(cookie);
 
-      if (cookie == null) return extractValues(null);
+      if (cookie == null) return CompletableFuture.completedFuture(extractValues(null));
       List<String> values = new ArrayList<String>();
       values.add(cookie.getValue());
-      return extractValues(values);
+      return CompletableFuture.completedFuture(extractValues(values));
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
    }

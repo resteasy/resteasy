@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.core.ValueInjector;
 
 /**
@@ -19,7 +21,7 @@ public interface MethodInjector
     * @return
     * @throws Failure
     */
-   Object invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException;
+   CompletionStage<Object> invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException;
 
    /**
     * Create the arguments that would be used to invoke the method in the context of an HTTP request.
@@ -29,7 +31,7 @@ public interface MethodInjector
     * @return
     * @throws Failure
     */
-   Object[] injectArguments(HttpRequest request, HttpResponse response) throws Failure;
+   CompletionStage<Object[]> injectArguments(HttpRequest request, HttpResponse response) throws Failure;
 
    ValueInjector[] getParams();
 

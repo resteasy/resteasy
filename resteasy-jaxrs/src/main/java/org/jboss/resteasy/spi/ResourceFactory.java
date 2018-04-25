@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
+
 /**
  * Implementations of this interface are registered through the Registry class.
  *
@@ -30,7 +32,7 @@ public interface ResourceFactory
     * @param factory
     * @return
     */
-   Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory);
+   CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory);
 
 
    /**

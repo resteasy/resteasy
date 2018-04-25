@@ -80,6 +80,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -2482,7 +2484,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       ConstructorInjector constructorInjector = createConstructorInjector(clazz);
 
-      T provider = (T) constructorInjector.construct();
+      T provider = (T) constructorInjector.construct().toCompletableFuture().getNow(null);
       return provider;
    }
 
@@ -2506,14 +2508,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-      Object obj = null;
       ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-      obj = constructorInjector.construct();
-
-      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
-
-      propertyInjector.inject(obj);
-      return (T) obj;
+      return (T)constructorInjector.construct()
+      .thenCompose(obj -> {
+         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
+         return propertyInjector.inject(obj).thenApply(val -> obj);
+      }).toCompletableFuture().getNow(null);
    }
 
    /**
@@ -2523,7 +2523,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param <T>
     * @return
     */
-   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
+   public <T> CompletionStage<T> injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       Object obj = null;
@@ -2587,8 +2587,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      propertyInjector.inject(request, response, obj);
-      return (T) obj;
+      Object ret = obj;
+      return propertyInjector.inject(request, response, obj)
+            .thenApply(v -> (T)ret);
    }
 
    public void injectProperties(Class declaring, Object obj)
@@ -2596,14 +2597,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       getInjectorFactory().createPropertyInjector(declaring, this).inject(obj);
    }
 
-   public void injectProperties(Object obj)
+   public CompletionStage<Void> injectProperties(Object obj)
    {
-      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
+      return getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
    }
 
-   public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
+   public CompletionStage<Void> injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
-      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj);
+      return getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj);
    }
 
 

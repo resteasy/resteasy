@@ -17,6 +17,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,20 +39,27 @@ public class ContextParameterInjector implements ValueInjector
       this.factory = factory;
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
-      if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface() || type.equals(SseEventSink.class))
+      if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
+      if (!rawType.isInterface() || rawType.equals(SseEventSink.class))
       {
-         return ResteasyProviderFactory.getContextData(type);
+         return unwrapIfRequired(factory.getContextData(rawType, genericType));
       }
-      else if (type.equals(Sse.class))
+      else if (rawType.equals(Sse.class))
       {
-         return new SseImpl();
+         return CompletableFuture.completedFuture(new SseImpl());
       }
-      return createProxy();
+      // FIXME: do not proxy for CompletionStage!
+      return CompletableFuture.completedFuture(createProxy());
+   }
+
+   private CompletionStage<Object> unwrapIfRequired(Object contextData)
+   {
+      return CompletableFuture.completedFuture(contextData);
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
@@ -91,25 +101,27 @@ public class ContextParameterInjector implements ValueInjector
       }
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (type.equals(Application.class) || type.equals(SseEventSink.class))
+      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class))
       {
-         return ResteasyProviderFactory.getContextData(type);
+         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType));
       }
-      else if (type.equals(Sse.class))
+      else if (rawType.equals(Sse.class))
       {
-         return new SseImpl();
+         return CompletableFuture.completedFuture(new SseImpl());
       }
-      else if (!type.isInterface())
+      else if (!rawType.isInterface())
       {
-         Object delegate = ResteasyProviderFactory.getContextData(type);
-         if (delegate != null) return delegate;
+         Object delegate = factory.getContextData(rawType, genericType);
+         if (delegate != null) return unwrapIfRequired(delegate);
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
-      return createProxy();
+      // FIXME: do not proxy for CompletionStage!
+      return CompletableFuture.completedFuture(createProxy());
    }
 
     protected Object createProxy()

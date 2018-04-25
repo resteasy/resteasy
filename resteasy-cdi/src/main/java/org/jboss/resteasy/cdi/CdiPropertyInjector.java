@@ -31,6 +31,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * JAX-RS property injection is performed twice on CDI Beans. Firstly by the JaxrsInjectionTarget
@@ -62,21 +64,23 @@ public class CdiPropertyInjector implements PropertyInjector
    }
    
    @Override
-   public void inject(Object target)
+   public CompletionStage<Void> inject(Object target)
    {
       if (injectorEnabled)
       {
-         delegate.inject(target);
+         return delegate.inject(target);
       }
+      return CompletableFuture.completedFuture(null);
    }
 
    @Override
-   public void inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException
    {
       if (injectorEnabled)
       {
-         delegate.inject(request, response, target);
+         return delegate.inject(request, response, target);
       }
+      return CompletableFuture.completedFuture(null);
    }
 
    @Override

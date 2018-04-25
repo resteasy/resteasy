@@ -11,6 +11,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,13 +26,15 @@ public class HeaderParamInjector extends StringParameterInjector implements Valu
       super(type, genericType, header, HeaderParam.class, defaultValue, target, annotations, factory);
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
-      return extractValues(list);
+      return CompletableFuture.completedFuture(extractValues(list));
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectHeaderParam());
    }

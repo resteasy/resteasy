@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core;
 
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
@@ -15,7 +17,7 @@ public interface ValueInjector
     *
     * @return
     */
-   Object inject();
+   CompletionStage<Object> inject();
 
    /**
     * Inject inside the context of an HTTP request.
@@ -24,5 +26,5 @@ public interface ValueInjector
     * @param response
     * @return
     */
-   Object inject(HttpRequest request, HttpResponse response);
+   CompletionStage<Object> inject(HttpRequest request, HttpResponse response);
 }

@@ -14,6 +14,8 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,12 +30,13 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
       super(type, genericType, header, FormParam.class, defaultValue, target, annotations, factory);
       this.encode = encode;
    }
-
-   public Object inject(HttpRequest request, HttpResponse response)
+   
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       List<String> list = request.getDecodedFormParameters().get(paramName);
       if (list == null)
       {
+         // FIXME: looks like a bug, no?
          extractValues(null);
       }
       else if (encode)
@@ -45,10 +48,10 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
          }
          list = encodedList;
       }
-      return extractValues(list);
+      return CompletableFuture.completedFuture(extractValues(list));
    }
 
-   public Object inject()
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectFormParam());
    }

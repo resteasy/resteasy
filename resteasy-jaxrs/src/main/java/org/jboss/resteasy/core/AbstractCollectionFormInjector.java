@@ -7,6 +7,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,17 +42,21 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
     * {@inheritDoc} Creates a collection instance and fills it with content by using the super implementation.
     */
    @Override
-   public Object inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       T result = createInstance(collectionType);
+      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (String collectionPrefix : findMatchingPrefixesWithNoneEmptyValues(request.getDecodedFormParameters()))
       {
          Matcher matcher = pattern.matcher(collectionPrefix);
          matcher.matches();
          String key = matcher.group(1);
-         addTo(result, key, super.doInject(collectionPrefix, request, response));
+         ret = ret.thenCompose(v -> super.doInject(collectionPrefix, request, response)
+               .thenAccept(value -> {
+                  addTo(result, key, value);
+               }));
       }
-      return result;
+      return ret.thenApply(v -> result);
    }
 
    /**

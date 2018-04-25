@@ -16,6 +16,8 @@ import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,22 +48,24 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       throw new NotFoundException(message, cause);
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       if (encode)
       {
          List<String> list = request.getUri().getQueryParameters(false).get(encodedName);
-         return extractValues(list);
+         return CompletableFuture.completedFuture(extractValues(list));
       }
       else
       {
          List<String> list = request.getUri().getQueryParameters().get(paramName);
-         return extractValues(list);
+         return CompletableFuture.completedFuture(extractValues(list));
 
       }
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectQueryParam());
    }

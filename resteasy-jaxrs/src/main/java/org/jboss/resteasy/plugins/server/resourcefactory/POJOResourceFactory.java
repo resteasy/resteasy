@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.resourcefactory;
 
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -62,11 +64,10 @@ public class POJOResourceFactory implements ResourceFactory
       this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(resourceClass, factory);
    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      Object obj = constructorInjector.construct(request, response);
-      propertyInjector.inject(request, response, obj);
-      return obj;
+      return constructorInjector.construct(request, response)
+         .thenCompose(obj -> propertyInjector.inject(request, response, obj).thenApply(v -> obj));
    }
 
    public void unregistered()

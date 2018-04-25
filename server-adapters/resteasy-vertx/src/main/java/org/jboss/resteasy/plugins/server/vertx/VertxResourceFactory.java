@@ -8,6 +8,8 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -36,7 +38,7 @@ public class VertxResourceFactory implements ResourceFactory
    }
 
    @Override
-   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       Context ctx = Vertx.currentContext();
       if (ctx != null)
@@ -44,10 +46,12 @@ public class VertxResourceFactory implements ResourceFactory
          Object resource = ctx.get(id);
          if (resource == null)
          {
-            resource = delegate.createResource(request, response, factory);
-            ctx.put(id, resource);
+            return delegate.createResource(request, response, factory).thenApply(newResource -> {
+               ctx.put(id, newResource);
+               return newResource;
+            });
          }
-         return resource;
+         return CompletableFuture.completedFuture(resource);
       } else
       {
          throw new IllegalStateException();

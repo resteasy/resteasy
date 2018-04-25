@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,15 +40,17 @@ public class FormInjector implements ValueInjector
 
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
-      Object target = constructorInjector.construct();
-      propertyInjector.inject(request, response, target);
-      return target;
+      return constructorInjector.construct()
+            .thenCompose(target -> propertyInjector.inject(request, response, target)
+                                    .thenApply(v -> target));
    }
 }

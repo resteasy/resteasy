@@ -8,6 +8,9 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import javax.ws.rs.core.Response;
 
 /**
@@ -30,24 +33,26 @@ public class SuspendInjector implements ValueInjector
       this.suspend = suspend;
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       final ResteasyAsynchronousContext asynchronousContext = request.getAsyncContext();
       final ResteasyAsynchronousResponse asynchronousResponse = asynchronousContext.suspend(suspend);
       ResourceMethodInvoker invoker = (ResourceMethodInvoker)request.getAttribute(ResourceMethodInvoker.class.getName());
       invoker.initializeAsync(asynchronousResponse);
-      return new AsynchronousResponse()
+      return CompletableFuture.completedFuture(new AsynchronousResponse()
       {
          @Override
          public void setResponse(Response response)
          {
             asynchronousResponse.resume(response);
          }
-      };
+      });
    }
 }

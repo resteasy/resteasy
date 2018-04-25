@@ -8,6 +8,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -124,12 +126,13 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
    }
 
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
    {
       Object o = getBody();
       if (o != null)
       {
-         return o;
+         return CompletableFuture.completedFuture(o);
       }
       MediaType mediaType = request.getHttpHeaders().getMediaType();
       if (mediaType == null)
@@ -201,7 +204,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
             final byte[] bytes = isba.toByteArray();
-            return new MarshalledEntity()
+            return CompletableFuture.completedFuture(new MarshalledEntity()
             {
                @Override
                public byte[] getMarshalledBytes()
@@ -214,11 +217,11 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                {
                   return obj;
                }
-            };
+            });
          }
          else
          {
-            return obj;
+            return CompletableFuture.completedFuture(obj);
          }
       }
       catch (Exception e)
@@ -234,7 +237,8 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       }
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject()
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectMessageBody(this.target));
    }

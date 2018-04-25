@@ -16,6 +16,8 @@ import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Provider
 public class RequestScopedBeanQualifierInjectorFactoryImpl extends InjectorFactoryImpl implements
@@ -32,13 +34,15 @@ public class RequestScopedBeanQualifierInjectorFactoryImpl extends InjectorFacto
                     genericType, annotations, factory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return beanFactory.getBean(qualifier.value());
+                @Override
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                   return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
                 }
 
-                public Object inject() {
-                    // do nothing.
-                    return null;
+                @Override
+                public CompletionStage<Object> inject() {
+                   // do nothing.
+                   return CompletableFuture.completedFuture(null);
                 }
             };
         }
@@ -51,13 +55,15 @@ public class RequestScopedBeanQualifierInjectorFactoryImpl extends InjectorFacto
             return super.createParameterExtractor(parameter, providerFactory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return beanFactory.getBean(qualifier.value());
+                @Override
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                   return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
                 }
 
-                public Object inject() {
-                    // do nothing.
-                    return null;
+                @Override
+                public CompletionStage<Object> inject() {
+                   // do nothing.
+                   return CompletableFuture.completedFuture(null);
                 }
             };
         }
