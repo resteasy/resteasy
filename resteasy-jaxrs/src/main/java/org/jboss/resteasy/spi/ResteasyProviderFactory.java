@@ -599,6 +599,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return (T) getContextDataMap().get(type);
    }
 
+   public boolean hasAsyncContextData(Type genericType) {
+      Type newGenericType = new Types.ResteasyParameterizedType(new Type[]{genericType}, CompletionStage.class, null);
+      return getContextInjectors().containsKey(newGenericType);
+   }
+   
    public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations)
    {
       T ret = (T) getContextDataMap().get(rawType);

@@ -51,7 +51,7 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
-      if (!rawType.isInterface() || rawType.equals(SseEventSink.class))
+      if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
          return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations));
       }
@@ -59,7 +59,6 @@ public class ContextParameterInjector implements ValueInjector
       {
          return CompletableFuture.completedFuture(new SseImpl());
       }
-      // FIXME: do not proxy for CompletionStage!
       return CompletableFuture.completedFuture(createProxy());
    }
 
@@ -67,12 +66,12 @@ public class ContextParameterInjector implements ValueInjector
    {
       if(rawType != CompletionStage.class && contextData instanceof CompletionStage) {
          // FIXME: do not unwrap if we have no request?
-         // make request async
          if(request != null )
          {
             boolean resolved = ((CompletionStage<Object>) contextData).toCompletableFuture().isDone();
             if(!resolved)
             {
+               // make request async
                if(!request.getAsyncContext().isSuspended())
                   request.getAsyncContext().suspend();
                
@@ -132,7 +131,7 @@ public class ContextParameterInjector implements ValueInjector
    public CompletionStage<Object> inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class))
+      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
          return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations));
       }
@@ -147,7 +146,6 @@ public class ContextParameterInjector implements ValueInjector
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
-      // FIXME: do not proxy for CompletionStage!
       return CompletableFuture.completedFuture(createProxy());
    }
 
