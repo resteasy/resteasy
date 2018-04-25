@@ -138,7 +138,7 @@ public class JsonBindingAnnotationsJacksonTest {
     */
    @Test
    public void negativeScenarioOnServer() throws Exception {
-
+      LogCounter errorLogCounter = new LogCounter("ERROR", false);
       try {
          ResteasyClient client = new ResteasyClientBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
          String charset = "UTF-8";
@@ -148,6 +148,8 @@ public class JsonBindingAnnotationsJacksonTest {
                  new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
          logger.info("Request entity: " + entity);
          Response response = target.request().post(entity);
+         // check server logs
+         Assert.assertThat("Server prints some error messages during the request", errorLogCounter.count(), is(0));
          // check response
          int responseCode = response.getStatus();
          Assert.assertThat("Wrong response code", responseCode, is(400));
