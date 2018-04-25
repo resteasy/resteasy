@@ -360,6 +360,8 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                     <executions>
+
+                        <!-- default test execution -->
                         <execution>
                             <id>default-test</id>
                             <phase>test</phase>
@@ -369,10 +371,17 @@
                             <configuration>
                                 <excludes>
                                      <!-- Tests requires excluding JsonBindingProvider-->
-                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                    <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                    <exclude>**/AllowGzipOnServerAllowGzipOnClientTest.java</exclude>
+                                    <exclude>**/AllowGzipOnServerNotAllowGzipOnClientTest.java</exclude>
                                 </excludes>
+                                <systemPropertyVariables combine.children="append">
+                                    <allow.gzip.server.jvm.arg>-Dplaceholder=placeholder</allow.gzip.server.jvm.arg>
+                                </systemPropertyVariables>
                             </configuration>
                         </execution>
+
+                        <!-- execution with excluded JSON-B -->
                         <execution>
                             <id>disable-jsonb-client</id>
                             <phase>test</phase>
@@ -386,8 +395,32 @@
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
                                 </classpathDependencyExcludes>
+                                <systemPropertyVariables combine.children="append">
+                                    <allow.gzip.server.jvm.arg>-Dplaceholder=placeholder</allow.gzip.server.jvm.arg>
+                                </systemPropertyVariables>
                             </configuration>
                         </execution>
+
+                        <!-- execution allows gzip interceptors on server by -Dallow.gzip property -->
+                        <execution>
+                            <id>allowGzip_on_server.allowGzip_on_client</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <trimStackTrace>false</trimStackTrace>
+                                <skip>false</skip>
+                                <systemPropertyVariables combine.children="append">
+                                    <allow.gzip.server.jvm.arg>-Dresteasy.allowGzip=true</allow.gzip.server.jvm.arg>
+                                </systemPropertyVariables>
+                                <includes>
+                                    <include>**/AllowGzipOnServerAllowGzipOnClientTest.java</include>
+                                    <include>**/AllowGzipOnServerNotAllowGzipOnClientTest.java</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+
                     </executions>
             </plugin>
         </plugins>
