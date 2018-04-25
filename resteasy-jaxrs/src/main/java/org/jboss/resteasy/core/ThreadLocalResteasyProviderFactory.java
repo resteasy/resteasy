@@ -606,9 +606,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public <T> T getContextData(Class<T> rawType, Type genericType)
+   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations)
    {
-      return getDelegate().getContextData(rawType, genericType);
+      return getDelegate().getContextData(rawType, genericType, annotations);
    }
    
    @Override

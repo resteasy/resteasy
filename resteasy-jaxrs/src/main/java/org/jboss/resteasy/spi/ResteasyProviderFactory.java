@@ -599,7 +599,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return (T) getContextDataMap().get(type);
    }
 
-   public <T> T getContextData(Class<T> rawType, Type genericType)
+   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations)
    {
       T ret = (T) getContextDataMap().get(rawType);
       if(ret != null)
@@ -611,7 +611,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextInjector = getContextInjectors().get(newGenericType);
       }
       if(contextInjector != null)
-         return (T) contextInjector.resolve(rawType, genericType, null);
+         return (T) contextInjector.resolve(rawType, genericType, annotations);
       return null;
    }
 

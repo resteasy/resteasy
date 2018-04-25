@@ -13,11 +13,13 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -32,13 +34,15 @@ public class ContextParameterInjector implements ValueInjector
    private Class proxy;
    private ResteasyProviderFactory factory;
    private Type genericType;
+   private Annotation[] annotations;
 
-   public ContextParameterInjector(Class proxy, Class rawType, Type genericType, ResteasyProviderFactory factory)
+   public ContextParameterInjector(Class proxy, Class rawType, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       this.rawType = rawType;
       this.genericType = genericType;
       this.proxy = proxy;
       this.factory = factory;
+      this.annotations = annotations;
    }
 
    @Override
@@ -49,7 +53,7 @@ public class ContextParameterInjector implements ValueInjector
       if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
       if (!rawType.isInterface() || rawType.equals(SseEventSink.class))
       {
-         return unwrapIfRequired(factory.getContextData(rawType, genericType));
+         return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations));
       }
       else if (rawType.equals(Sse.class))
       {
@@ -59,10 +63,29 @@ public class ContextParameterInjector implements ValueInjector
       return CompletableFuture.completedFuture(createProxy());
    }
 
-   private CompletionStage<Object> unwrapIfRequired(Object contextData)
+   private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData)
    {
-      if(rawType != CompletionStage.class && contextData instanceof CompletionStage)
+      if(rawType != CompletionStage.class && contextData instanceof CompletionStage) {
+         // FIXME: do not unwrap if we have no request?
+         // make request async
+         if(request != null )
+         {
+            boolean resolved = ((CompletionStage<Object>) contextData).toCompletableFuture().isDone();
+            if(!resolved)
+            {
+               if(!request.getAsyncContext().isSuspended())
+                  request.getAsyncContext().suspend();
+               
+               Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+               // Don't forget to restore the context
+               return ((CompletionStage<Object>) contextData).thenApply(value -> {
+                  ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+                  return value;
+               });
+            }
+         }
          return (CompletionStage<Object>) contextData;
+      }
       return CompletableFuture.completedFuture(contextData);
    }
 
@@ -73,7 +96,7 @@ public class ContextParameterInjector implements ValueInjector
          try
          {
            
-            Object delegate = factory.getContextData(rawType, genericType);
+            Object delegate = factory.getContextData(rawType, genericType, annotations);
             if (delegate == null)
             {
                String name = method.getName();
@@ -111,7 +134,7 @@ public class ContextParameterInjector implements ValueInjector
       //if (type.equals(Providers.class)) return factory;
       if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class))
       {
-         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType));
+         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations));
       }
       else if (rawType.equals(Sse.class))
       {
@@ -119,8 +142,8 @@ public class ContextParameterInjector implements ValueInjector
       }
       else if (!rawType.isInterface())
       {
-         Object delegate = factory.getContextData(rawType, genericType);
-         if (delegate != null) return unwrapIfRequired(delegate);
+         Object delegate = factory.getContextData(rawType, genericType, annotations);
+         if (delegate != null) return unwrapIfRequired(null, delegate);
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
