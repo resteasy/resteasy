@@ -22,7 +22,7 @@ public class PortProviderUtil {
     private static int port;
 
     // HOST_PROPERTY_NAME is enforced by maven-enforcer-plugin
-    private static String host = System.getProperty(HOST_PROPERTY_NAME);
+    private static String host = System.getProperty(HOST_PROPERTY_NAME, "localhost");
 
     public static final String ASYNC_JOB_SERVICE_CONTEXT_KEY = "resteasy.async.job.service.enabled";
 
