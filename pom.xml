@@ -30,7 +30,7 @@
         <!-- maven-javadoc-plugin -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
+        <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.surefire.plugin>2.19.1</version.surefire.plugin>
@@ -217,7 +217,7 @@
                     <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <argLine>-Xms512m -Xmx512m ${surefire.system.args}</argLine>
+                        <argLine>${surefire.system.args}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
