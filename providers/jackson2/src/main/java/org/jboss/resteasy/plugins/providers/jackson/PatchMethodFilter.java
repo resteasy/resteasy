@@ -57,7 +57,23 @@ public class PatchMethodFilter implements ContainerRequestFilter
             throw new ProcessingException("Get method not found and patch method failed");
          }
          ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
+<<<<<<< HEAD
          Object object;
+=======
+         Object object = methodInvoker.invokeDryRun(request, response).toCompletableFuture().getNow(null);
+
+         ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
+         MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
+               object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
+               MediaType.APPLICATION_JSON_TYPE);
+         msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
+               MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
+         ObjectMapper mapper = new ObjectMapper();
+         JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
+         JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+
+         JsonNode result = null;
+>>>>>>> Fixed bug with PatchMethodFilter due to my changes
          try
          {
             object = methodInvoker.invokeDryRun(request, response);
