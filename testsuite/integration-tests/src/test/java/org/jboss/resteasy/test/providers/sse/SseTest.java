@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -493,8 +492,7 @@ public class SseTest
       }
       catch (InterruptedException e)
       {
-         // falls through
-         e.printStackTrace();
+         logger.info("Thread sleep interruped", e);
       }
      
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
@@ -511,8 +509,7 @@ public class SseTest
       }
       catch (InterruptedException e)
       {
-         // falls through
-         e.printStackTrace();
+         logger.info("Thread sleep interruped", e);
       }
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
    }
@@ -539,8 +536,7 @@ public class SseTest
       }
       catch (InterruptedException e)
       {
-         // falls through
-         e.printStackTrace();
+         logger.info("Thread sleep interruped", e);
       }
       Assert.assertTrue("error is not expected", errors.get() == 0);
    }
