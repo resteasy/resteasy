@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs.engines;
+package org.jboss.resteasy.client.jaxrs.engines.jetty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
