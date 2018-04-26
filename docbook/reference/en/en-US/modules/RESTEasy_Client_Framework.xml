@@ -907,6 +907,10 @@ httpClient.getConnectionManager().shutdown();
             when relying on Jetty as server side already.  The Jetty Server can even share execution
             resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
         </para>
+        <para>
+            The Jetty engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-jetty</emphasis>
+            artifact to the Maven project; then the client can be built as follows:
+        </para>
         <programlisting>
    ResteasyClient client = new ResteasyClientBuilder().clientEngine(
       new JettyClientEngine(new HttpClient())).build();
