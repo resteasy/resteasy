@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.asynch.resource;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -19,6 +18,7 @@ public class AsyncInjectionContextInjector implements ContextInjector<Completion
          Class<? extends CompletionStage<AsyncInjectionContext>> rawType, Type genericType, Annotation[] annotations)
    {
       boolean async = false;
+      boolean error = false;
       for (Annotation annotation : annotations)
       {
          if(annotation.annotationType() == AsyncInjectionContextAsyncSpecifier.class)
@@ -26,10 +26,16 @@ public class AsyncInjectionContextInjector implements ContextInjector<Completion
             async = true;
             break;
          }
+         if(annotation.annotationType() == AsyncInjectionContextErrorSpecifier.class)
+         {
+            error = true;
+            break;
+         }
       }
       if(async)
       {
          CompletableFuture<AsyncInjectionContext> ret = new CompletableFuture<>();
+         boolean finalError = error;
          new Thread(() -> {
             try
             {
@@ -38,8 +44,17 @@ public class AsyncInjectionContextInjector implements ContextInjector<Completion
             {
                throw new RuntimeException(e);
             }
-            ret.complete(new AsyncInjectionContext());
+            if(finalError)
+               ret.completeExceptionally(new AsyncInjectionException("Async exception"));
+            else
+               ret.complete(new AsyncInjectionContext());
          }).start();
+         return ret;
+      }
+      if(error)
+      {
+         CompletableFuture<AsyncInjectionContext> ret = new CompletableFuture<>();
+         ret.completeExceptionally(new AsyncInjectionException("Async exception"));
          return ret;
       }
       return CompletableFuture.completedFuture(new AsyncInjectionContext());

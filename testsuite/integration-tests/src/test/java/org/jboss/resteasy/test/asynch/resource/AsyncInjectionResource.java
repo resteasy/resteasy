@@ -131,4 +131,24 @@ public class AsyncInjectionResource
 
       return Response.ok("resource").build();
    }
+
+   @Path("/exception")
+   @GET
+   public Response asyncInjectionInterface(@AsyncInjectionContextErrorSpecifier @Context AsyncInjectionContext resolvedContextParam,
+         @AsyncInjectionContextErrorSpecifier @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
+         throws InterruptedException, ExecutionException
+   {
+      return Response.serverError().entity("Should have thrown").build();
+   }
+
+   @Path("/exception-async")
+   @GET
+   public Response asyncInjectionInterfaceAsync(@AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
+         @Context AsyncInjectionContext resolvedContextParam,
+         @AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
+         @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
+         throws InterruptedException, ExecutionException
+   {
+      return Response.serverError().entity("Should have thrown").build();
+   }
 }

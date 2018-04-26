@@ -15,9 +15,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.UndertowTestRunner;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContext;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextAsyncSpecifier;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextErrorSpecifier;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterface;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterfaceInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionException;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionExceptionMapper;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
@@ -57,7 +60,8 @@ public class AsyncInjectionTest {
         return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
-              AsyncInjectionContextAsyncSpecifier.class);
+              AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,
+              AsyncInjectionException.class, AsyncInjectionExceptionMapper.class);
     }
 
     private String generateURL(String path) {
@@ -128,6 +132,40 @@ public class AsyncInjectionTest {
         Response response = base.request()
            .get();
         assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection with exceptions
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionException() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/exception"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection with async exceptions
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionExceptionAsync() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/exception-async"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
         
         client.close();
     }
