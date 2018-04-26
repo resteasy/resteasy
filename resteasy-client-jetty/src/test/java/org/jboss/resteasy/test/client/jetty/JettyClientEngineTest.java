@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.jetty;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -31,7 +31,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.JettyClientEngine;
+import org.jboss.resteasy.client.jaxrs.engines.jetty.JettyClientEngine;
 import org.junit.After;
 import org.junit.Test;
 
