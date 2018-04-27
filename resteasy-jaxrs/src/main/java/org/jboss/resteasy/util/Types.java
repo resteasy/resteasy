@@ -707,19 +707,19 @@ public class Types
          if(other instanceof ParameterizedType == false)
             return false;
          ParameterizedType b = (ParameterizedType) other;
-         return Objects.deepEquals(getActualTypeArguments(), b.getActualTypeArguments())
-               && Objects.equals(getRawType(), b.getRawType())
-               && Objects.equals(getOwnerType(), b.getOwnerType());
+         // WARNING: contract defined by ParameterizedType
+         return Arrays.equals(actuals, b.getActualTypeArguments())
+               && Objects.equals(rawType, b.getRawType())
+               && Objects.equals(ownerType, b.getOwnerType());
       }
       
       @Override
       public int hashCode()
       {
-         int ret = 31;
-         ret = 37 * ret + Arrays.hashCode(getActualTypeArguments());
-         ret = 37 * ret + getRawType().hashCode();
-         ret = 37 * ret + Objects.hashCode(getOwnerType());
-         return ret;
+         // WARNING: stay true to http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
+         return Arrays.hashCode(actuals)
+            ^ Objects.hashCode(ownerType)
+            ^ Objects.hashCode(rawType);
       }
       
       @Override
