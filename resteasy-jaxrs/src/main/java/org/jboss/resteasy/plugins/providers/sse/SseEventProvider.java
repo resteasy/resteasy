@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -22,18 +23,23 @@ import javax.ws.rs.sse.OutboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
 @Produces(
-{"text/event-stream"})
+{"text/event-stream", "application/x-stream-general"})
 @Consumes(
-{"text/event-stream"})
+{"text/event-stream", "application/x-stream-general"})
 public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
+   public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
+   
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return OutboundSseEvent.class.isAssignableFrom(type) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
+      return OutboundSseEvent.class.isAssignableFrom(type) && 
+            (MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType) ||
+             GENERAL_STREAM_TYPE.isCompatible(mediaType));
    }
 
    @Override
@@ -51,6 +57,8 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;
+      boolean textLike = MediaTypeHelper.isTextLike(mediaType);
+      boolean escape = event instanceof OutboundSseEventImpl ? ((OutboundSseEventImpl)event).isEscape() : false;
       if (event.getComment() != null)
       {
          for (final String comment : event.getComment().split("\n"))
@@ -114,22 +122,37 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      @Override
                      public void write(int b) throws IOException
                      {
-                        if (b == '\n' || b == '\r')
+                        if (textLike)
                         {
-                           if (!isNewLine)
-                           {
-                              entityStream.write(SseConstants.EOL);
-                           }
-                           isNewLine = true;
+                            if (b == '\n' || b == '\r')
+                            {
+                               if (!isNewLine)
+                               {
+                                  entityStream.write(SseConstants.EOL);
+                               }
+                               isNewLine = true;
+                            }
+                            else
+                            {
+                               if (isNewLine)
+                               {
+                                  entityStream.write(SseConstants.DATA_LEAD);
+                               }
+                               entityStream.write(b);
+                               isNewLine = false;
+                            }   
                         }
                         else
                         {
-                           if (isNewLine)
-                           {
-                              entityStream.write(SseConstants.DATA_LEAD);
-                           }
-                           entityStream.write(b);
-                           isNewLine = false;
+                            if (escape && (b == '\n' || b == '\r' || b == '\\'))
+                            {
+                                entityStream.write('\\');
+                                entityStream.write(b);
+                            }
+                            else
+                            {
+                                entityStream.write(b);
+                            }
                         }
                      }
 
@@ -142,6 +165,10 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      @Override
                      public void close() throws IOException
                      {
+                        if (!textLike)
+                        {
+                            entityStream.write(SseConstants.EOL);
+                        }
                         entityStream.close();
                      }
                   });
@@ -156,7 +183,9 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
    @Override
    public boolean isReadable(Class<?> cls, Type type, Annotation[] annotations, MediaType mediaType)
    {
-      return SseEventInputImpl.class.isAssignableFrom(cls) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
+      return SseEventInputImpl.class.isAssignableFrom(cls) && 
+            (MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType) ||
+             GENERAL_STREAM_TYPE.isCompatible(mediaType));
    }
 
    @Override
@@ -164,7 +193,17 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
    {
-      return new SseEventInputImpl(annotations, mediaType, httpHeaders, entityStream);
+     MediaType streamType = mediaType;
+     if (mediaType.getParameters() != null)
+     {
+        Map<String, String> map = mediaType.getParameters();
+        String elementType = map.get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+        if (elementType != null)
+        {
+           mediaType = MediaType.valueOf(elementType);
+        }
+     }
+      return new SseEventInputImpl(annotations, streamType, mediaType, httpHeaders, entityStream);
    }
 
 }

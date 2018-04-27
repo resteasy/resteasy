@@ -271,7 +271,6 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
-   @Category({ExpectedFailing.class})
    public void proxyTest() throws Exception
    {
       CompletionStageProxy proxy = client.target(generateURL("/")).proxy(CompletionStageProxy.class);

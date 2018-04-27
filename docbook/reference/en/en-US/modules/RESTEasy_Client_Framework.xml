@@ -79,7 +79,7 @@
 
     </para>
 
-    <section>
+    <section id="proxies">
         <title>RESTEasy Proxy Framework</title>
     <para>
 

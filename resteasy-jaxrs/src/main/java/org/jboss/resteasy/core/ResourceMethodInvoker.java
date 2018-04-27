@@ -159,7 +159,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 		// produce text/event-stream
 		MediaType[] producedMediaTypes = resourceMethod.getProduces();
 		boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
-				&& MediaType.SERVER_SENT_EVENTS_TYPE.equals(producedMediaTypes[0]);
+				&& MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(producedMediaTypes[0]);
 		if (!onlyProduceServerSentEventsMediaType)
 		{
 			return false;
@@ -383,14 +383,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
       
-      AsyncResponseConsumer asyncStreamResponseConsumer = null;
+      AsyncResponseConsumer asyncResponseConsumer = null;
       if (asyncResponseProvider != null)
       {
-         asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
+         asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
       }
       else if (asyncStreamProvider != null)
       {
-    	 asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
+    	 asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
       }
 
       Object rtn = null;
@@ -400,14 +400,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       catch (RuntimeException ex)
       {
-         if (asyncStreamResponseConsumer != null)
+         if (asyncResponseConsumer != null)
          {
             // WARNING: this can throw if the exception is not mapped by the user, in
             // which case we haven't completed the connection and called the callbacks
             try 
             {
-               AsyncResponseConsumer consumer = asyncStreamResponseConsumer;
-               asyncStreamResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
+               AsyncResponseConsumer consumer = asyncResponseConsumer;
+               asyncResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
             }
             catch(UnhandledException x) 
             {
@@ -436,9 +436,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       }
 
-      if(asyncStreamResponseConsumer != null)
+      if(asyncResponseConsumer != null)
       {
-         asyncStreamResponseConsumer.subscribe(rtn);
+         asyncResponseConsumer.subscribe(rtn);
          return null;
       }
       if (request.getAsyncContext().isSuspended())
