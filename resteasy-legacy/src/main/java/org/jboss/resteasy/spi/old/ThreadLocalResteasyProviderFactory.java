@@ -35,6 +35,7 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.ContextInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -652,5 +653,17 @@ public class ThreadLocalResteasyProviderFactory extends org.jboss.resteasy.spi.o
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
+   }
+   
+   @Override
+   public Map<Type, ContextInjector> getContextInjectors() 
+   {
+	   return getDelegate().getContextInjectors();
+   }
+   
+   @Override
+   public Map<Type, ContextInjector> getAsyncContextInjectors() 
+   {
+	   return getDelegate().getAsyncContextInjectors();
    }
 }

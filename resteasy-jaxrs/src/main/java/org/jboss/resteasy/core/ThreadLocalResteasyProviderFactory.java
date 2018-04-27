@@ -616,7 +616,13 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       return getDelegate().getContextInjectors();
    }
-   
+
+   @Override
+   public Map<Type, ContextInjector> getAsyncContextInjectors()
+   {
+      return getDelegate().getAsyncContextInjectors();
+   }
+
    @Override
    public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

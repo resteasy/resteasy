@@ -81,6 +81,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
@@ -219,6 +220,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Type, ContextInjector> contextInjectors;
+   protected Map<Type, ContextInjector> asyncContextInjectors;
    protected Map<Class<?>, StringConverter> stringConverters;
    protected Set<ExtSortedKey<ParamConverterProvider>> sortedParamConverterProviders;
    protected List<ParamConverterProvider> paramConverterProviders;
@@ -333,6 +335,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
       contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+      asyncContextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
       sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<ExtSortedKey<ParamConverterProvider>>());
       stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
@@ -456,6 +459,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (contextInjectors == null && parent != null) return parent.getContextInjectors();
       return contextInjectors;
+   }
+
+   public Map<Type, ContextInjector> getAsyncContextInjectors()
+   {
+      if (asyncContextInjectors == null && parent != null) return parent.getAsyncContextInjectors();
+      return asyncContextInjectors;
    }
 
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
@@ -610,26 +619,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if(ret != null)
          return ret;
       ContextInjector contextInjector = getContextInjectors().get(genericType);
-      Type wrappedType = null;
-      if(contextInjector == null && unwrapAsync) 
+      boolean async = false;
+      if(contextInjector == null && unwrapAsync)
       {
-         for (ContextInjector injector : getContextInjectors().values())
-         {
-            Type[] typeArgs = Types.getActualTypeArgumentsOfAnInterface(injector.getClass(), ContextInjector.class);
-            Type unwrappedType = typeArgs[1];
-            if(unwrappedType.equals(genericType))
-            {
-               contextInjector = injector;
-               wrappedType = typeArgs[0];
-               break;
-            }
-         }
+         contextInjector = getAsyncContextInjectors().get(genericType);
+         async = true;
       }
+      
       if(contextInjector != null)
       {
          ret = (T) contextInjector.resolve(rawType, genericType, annotations);
-         if(wrappedType != null && ret != null)
+         if(async && ret != null)
          {
+            Type wrappedType = Types.getActualTypeArgumentsOfAnInterface(contextInjector.getClass(), ContextInjector.class)[0];
             Class<?> rawWrappedType = Types.getRawType(wrappedType);
             AsyncResponseProvider converter = getAsyncResponseProvider(rawWrappedType);
             // OK this is plain lying
@@ -1375,6 +1377,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextInjectors.putAll(parent.getContextInjectors());
       }
       contextInjectors.put(injectedWrappedType, provider);
+      
+      if(!Objects.equals(injectedWrappedType, injectedUnwrappedType))
+      {
+         if (asyncContextInjectors == null)
+         {
+            asyncContextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+            asyncContextInjectors.putAll(parent.getAsyncContextInjectors());
+         }
+         asyncContextInjectors.put(injectedUnwrappedType, provider);
+      }
    }
 
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
