@@ -60,7 +60,9 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          .exceptionally(t -> {
             if(t.getCause() instanceof NotFoundException && lastException != null)
                throw lastException;
-            throw (CompletionException)t;
+            SynchronousDispatcher.rethrow(t);
+            // never reached
+            return null;
          }).thenApply(args -> {
             try
             {

@@ -539,7 +539,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             postResourceMethodInvokers.clear();
          }
          if(exception != null)
-            throw (CompletionException)exception;
+         {
+            SynchronousDispatcher.rethrow(exception);
+            // never reached
+            return null;
+         }
          return ret;
 		});
 	}
