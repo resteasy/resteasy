@@ -10,6 +10,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.annotations.Stream;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -28,6 +30,7 @@ public class RxResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("observable")
    @GET
+   @Stream
    public Observable<String> observable()
    {
       return Observable.fromArray("one", "two");
@@ -36,6 +39,7 @@ public class RxResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("flowable")
    @GET
+   @Stream
    public Flowable<String> flowable()
    {
       return Flowable.fromArray("one", "two");
@@ -63,6 +67,7 @@ public class RxResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("context/observable")
    @GET
+   @Stream
    public Observable<String> contextObservable(@Context UriInfo uriInfo)
    {
       return Observable.<String>create(foo -> {
@@ -85,6 +90,7 @@ public class RxResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("context/flowable")
    @GET
+   @Stream
    public Flowable<String> contextFlowable(@Context UriInfo uriInfo)
    {
       return Flowable.<String>create(foo -> {

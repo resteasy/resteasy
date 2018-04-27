@@ -243,5 +243,10 @@ public class InboundSseEventImpl implements InboundSseEvent
       return "InboundSseEvent{id=" + id + '\'' + ", comment=" + (comment == null ? "[]" : '\'' + comment + '\'')
             + ", data=" + s + '}';
    }
+   
+   public MediaType getMediaType()
+   {
+	   return mediaType;
+   }
 
 }
