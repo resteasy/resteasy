@@ -2612,7 +2612,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> CompletionStage<T> injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-      Object obj = null;
+      CompletionStage<Object> constructStage = null;
       if (constructor == null)
       {
          // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
@@ -2625,7 +2625,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                Object[] args = {null};
                try
                {
-                  obj = constructor.newInstance(args);
+                  constructStage = CompletableFuture.completedFuture(constructor.newInstance(args));
                }
                catch (InstantiationException e)
                {
@@ -2644,7 +2644,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                try
                {
-                  obj = constructor.newInstance();
+                  constructStage = CompletableFuture.completedFuture(constructor.newInstance());
                }
                catch (InstantiationException e)
                {
@@ -2668,14 +2668,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       else
       {
          ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         obj = constructorInjector.construct(request, response);
+         constructStage = constructorInjector.construct(request, response);
 
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      Object ret = obj;
-      return propertyInjector.inject(request, response, obj)
-            .thenApply(v -> (T)ret);
+      return constructStage.thenCompose(obj -> propertyInjector.inject(request, response, obj)
+                                          .thenApply(v -> (T)obj));
    }
 
    public void injectProperties(Class declaring, Object obj)

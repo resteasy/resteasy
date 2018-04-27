@@ -319,29 +319,13 @@ public class SynchronousDispatcher implements Dispatcher
          @Override
          public <T> T getResource(Class<T> resourceClass)
          {
-            try
-            {
-               // FIXME: provide clue that we can't unwrap CS
-               return providerFactory.injectedInstance(resourceClass, request, response).toCompletableFuture().get();
-            }
-            catch (InterruptedException | ExecutionException e)
-            {
-               throw new RuntimeException(e);
-            }
+            return providerFactory.injectedInstance(resourceClass, request, response).toCompletableFuture().getNow(null);
          }
 
          @Override
          public <T> T initResource(T resource)
          {
-            try
-            {
-               // FIXME: provide clue that we can't unwrap CS
-               providerFactory.injectProperties(resource, request, response).toCompletableFuture().get();
-            }
-            catch (InterruptedException | ExecutionException e)
-            {
-               throw new RuntimeException(e);
-            }
+            providerFactory.injectProperties(resource, request, response).toCompletableFuture().getNow(null);
             return resource;
          }
       };
