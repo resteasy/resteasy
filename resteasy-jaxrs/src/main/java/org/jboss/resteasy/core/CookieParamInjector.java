@@ -40,7 +40,7 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
       if (type.equals(Cookie.class)) return CompletableFuture.completedFuture(cookie);
@@ -52,7 +52,7 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
    }

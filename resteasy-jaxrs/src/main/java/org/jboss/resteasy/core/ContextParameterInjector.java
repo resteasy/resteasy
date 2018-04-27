@@ -46,14 +46,14 @@ public class ContextParameterInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
       if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
-         return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations));
+         return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
       }
       else if (rawType.equals(Sse.class))
       {
@@ -62,9 +62,9 @@ public class ContextParameterInjector implements ValueInjector
       return CompletableFuture.completedFuture(createProxy());
    }
 
-   private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData)
+   private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData, boolean unwrapAsync)
    {
-      if(rawType != CompletionStage.class && contextData instanceof CompletionStage) {
+      if(unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
          // FIXME: do not unwrap if we have no request?
          if(request != null )
          {
@@ -95,7 +95,7 @@ public class ContextParameterInjector implements ValueInjector
          try
          {
            
-            Object delegate = factory.getContextData(rawType, genericType, annotations);
+            Object delegate = factory.getContextData(rawType, genericType, annotations, false);
             if (delegate == null)
             {
                String name = method.getName();
@@ -128,12 +128,12 @@ public class ContextParameterInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       //if (type.equals(Providers.class)) return factory;
       if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
-         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations));
+         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations, unwrapAsync));
       }
       else if (rawType.equals(Sse.class))
       {
@@ -141,8 +141,8 @@ public class ContextParameterInjector implements ValueInjector
       }
       else if (!rawType.isInterface())
       {
-         Object delegate = factory.getContextData(rawType, genericType, annotations);
-         if (delegate != null) return unwrapIfRequired(null, delegate);
+         Object delegate = factory.getContextData(rawType, genericType, annotations, unwrapAsync);
+         if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 

@@ -604,13 +604,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return getContextInjectors().containsKey(newGenericType);
    }
    
-   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations)
+   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync)
    {
       T ret = (T) getContextDataMap().get(rawType);
       if(ret != null)
          return ret;
       ContextInjector contextInjector = getContextInjectors().get(genericType);
-      if(contextInjector == null) 
+      if(contextInjector == null && unwrapAsync) 
       {
          Type newGenericType = new Types.ResteasyParameterizedType(new Type[]{genericType}, CompletionStage.class, null);
          contextInjector = getContextInjectors().get(newGenericType);
@@ -2570,7 +2570,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       ConstructorInjector constructorInjector = createConstructorInjector(clazz);
 
-      T provider = (T) constructorInjector.construct().toCompletableFuture().getNow(null);
+      T provider = (T) constructorInjector.construct(false).toCompletableFuture().getNow(null);
       return provider;
    }
 
@@ -2595,10 +2595,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-      return (T)constructorInjector.construct()
+      return (T)constructorInjector.construct(false)
       .thenCompose(obj -> {
          PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
-         return propertyInjector.inject(obj).thenApply(val -> obj);
+         return propertyInjector.inject(obj, false).thenApply(val -> obj);
       }).toCompletableFuture().getNow(null);
    }
 
@@ -2609,10 +2609,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param <T>
     * @return
     */
-   public <T> CompletionStage<T> injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
+   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-      CompletionStage<Object> constructStage = null;
+      Object obj = null;
       if (constructor == null)
       {
          // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
@@ -2625,7 +2625,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                Object[] args = {null};
                try
                {
-                  constructStage = CompletableFuture.completedFuture(constructor.newInstance(args));
+                  obj = constructor.newInstance(args);
                }
                catch (InstantiationException e)
                {
@@ -2644,7 +2644,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                try
                {
-                  constructStage = CompletableFuture.completedFuture(constructor.newInstance());
+                  obj = constructor.newInstance();
                }
                catch (InstantiationException e)
                {
@@ -2668,28 +2668,28 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       else
       {
          ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         constructStage = constructorInjector.construct(request, response);
+         obj = constructorInjector.construct(request, response, false).toCompletableFuture().getNow(null);
 
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      return constructStage.thenCompose(obj -> propertyInjector.inject(request, response, obj)
-                                          .thenApply(v -> (T)obj));
+      propertyInjector.inject(request, response, obj, false).toCompletableFuture().getNow(null);
+      return (T)obj;
    }
 
    public void injectProperties(Class declaring, Object obj)
    {
-      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj);
+      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj, false).toCompletableFuture().getNow(null);
    }
 
-   public CompletionStage<Void> injectProperties(Object obj)
+   public void injectProperties(Object obj)
    {
-      return getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj, false).toCompletableFuture().getNow(null);
    }
 
-   public CompletionStage<Void> injectProperties(Object obj, HttpRequest request, HttpResponse response)
+   public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
-      return getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj, false).toCompletableFuture().getNow(null);
    }
 
 

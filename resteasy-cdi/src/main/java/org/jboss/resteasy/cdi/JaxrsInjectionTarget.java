@@ -55,11 +55,11 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 
       if ((request != null) && (response != null))
       {
-         propertyInjector.inject(request, response, instance);
+         propertyInjector.inject(request, response, instance, false);
       }
       else
       {
-         propertyInjector.inject(instance);
+         propertyInjector.inject(instance, false);
       }
       
       if (request != null)

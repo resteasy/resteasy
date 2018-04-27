@@ -75,7 +75,7 @@ public class PathParamInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       if (extractor == null) // we are a PathSegment
       {
@@ -135,7 +135,7 @@ public class PathParamInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectPathParam());
    }

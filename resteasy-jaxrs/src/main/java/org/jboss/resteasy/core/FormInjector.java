@@ -41,16 +41,16 @@ public class FormInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
-      return constructorInjector.construct()
-            .thenCompose(target -> propertyInjector.inject(request, response, target)
+      return constructorInjector.construct(unwrapAsync)
+            .thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
                                     .thenApply(v -> target));
    }
 }

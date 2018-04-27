@@ -144,7 +144,7 @@ public class InterceptorRegistry<T>
       @Override
       public Object postMatch(Class declaring, AccessibleObject target)
       {
-         final Object inter = constructorInjector.construct().toCompletableFuture().getNow(null);
+         final Object inter = constructorInjector.construct(false).toCompletableFuture().getNow(null);
          return binding(declaring, target, inter);
       }
    }

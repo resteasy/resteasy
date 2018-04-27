@@ -31,21 +31,21 @@ public class PrefixedFormInjector extends FormInjector
     * {@inheritDoc} Wraps the request in a
     */
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       if (!containsPrefixedFormFieldsWithValue(request.getDecodedFormParameters()))
       {
          return CompletableFuture.completedFuture(null);
       }
-      return doInject(prefix, request, response);
+      return doInject(prefix, request, response, unwrapAsync);
    }
 
    /**
     * Calls the super {@link #inject(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse)} method.
     */
-   protected CompletionStage<Object> doInject(String prefix, HttpRequest request, HttpResponse response)
+   protected CompletionStage<Object> doInject(String prefix, HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
-      return super.inject(new PrefixedFormFieldsHttpRequest(prefix, request), response);
+      return super.inject(new PrefixedFormFieldsHttpRequest(prefix, request), response, unwrapAsync);
    }
 
    /**

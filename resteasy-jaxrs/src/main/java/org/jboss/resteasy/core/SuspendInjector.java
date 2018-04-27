@@ -34,13 +34,13 @@ public class SuspendInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       final ResteasyAsynchronousContext asynchronousContext = request.getAsyncContext();
       final ResteasyAsynchronousResponse asynchronousResponse = asynchronousContext.suspend(suspend);

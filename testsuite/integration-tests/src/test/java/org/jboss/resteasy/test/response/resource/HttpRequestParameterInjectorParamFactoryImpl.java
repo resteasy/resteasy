@@ -27,13 +27,13 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
         } else {
             return new ValueInjector() {
                @Override
-               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
                   return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
                         .getParameter(param.value()));
                }
 
                @Override
-               public CompletionStage<Object> inject() {
+               public CompletionStage<Object> inject(boolean unwrapAsync) {
                   // do nothing.
                   return CompletableFuture.completedFuture(null);
                }
@@ -49,13 +49,13 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
         } else {
             return new ValueInjector() {
                @Override
-               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
                   return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
                         .getParameter(param.value()));
                }
 
                @Override
-               public CompletionStage<Object> inject() {
+               public CompletionStage<Object> inject(boolean unwrapAsync) {
                   // do nothing.
                   return CompletableFuture.completedFuture(null);
                }

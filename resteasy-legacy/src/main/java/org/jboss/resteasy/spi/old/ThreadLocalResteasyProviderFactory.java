@@ -93,15 +93,15 @@ public class ThreadLocalResteasyProviderFactory extends org.jboss.resteasy.spi.o
    }
 
    @Override
-   public <T> CompletionStage<T> injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
+   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {
       return getDelegate().injectedInstance(clazz, request, response);
    }
 
    @Override
-   public CompletionStage<Void> injectProperties(Object obj, HttpRequest request, HttpResponse response)
+   public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
-      return getDelegate().injectProperties(obj, request, response);
+      getDelegate().injectProperties(obj, request, response);
    }
 
    public static void push(ResteasyProviderFactory factory)
@@ -475,9 +475,9 @@ public class ThreadLocalResteasyProviderFactory extends org.jboss.resteasy.spi.o
    }
 
    @Override
-   public CompletionStage<Void> injectProperties(Object obj)
+   public void injectProperties(Object obj)
    {
-      return getDelegate().injectProperties(obj);
+      getDelegate().injectProperties(obj);
    }
 
    @Override

@@ -66,8 +66,8 @@ public class POJOResourceFactory implements ResourceFactory
 
    public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      return constructorInjector.construct(request, response)
-         .thenCompose(obj -> propertyInjector.inject(request, response, obj).thenApply(v -> obj));
+      return constructorInjector.construct(request, response, true)
+         .thenCompose(obj -> propertyInjector.inject(request, response, obj, true).thenApply(v -> obj));
    }
 
    public void unregistered()

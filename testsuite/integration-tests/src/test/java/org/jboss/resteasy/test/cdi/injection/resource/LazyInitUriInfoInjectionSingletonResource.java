@@ -30,7 +30,7 @@ public class LazyInitUriInfoInjectionSingletonResource implements ResourceFactor
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            return factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj)
+            return factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj, true)
                   .thenApply(v -> obj);
         }
         return CompletableFuture.completedFuture(obj);

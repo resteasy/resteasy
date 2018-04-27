@@ -64,21 +64,21 @@ public class CdiPropertyInjector implements PropertyInjector
    }
    
    @Override
-   public CompletionStage<Void> inject(Object target)
+   public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
       if (injectorEnabled)
       {
-         return delegate.inject(target);
+         return delegate.inject(target, unwrapAsync);
       }
       return CompletableFuture.completedFuture(null);
    }
 
    @Override
-   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException
    {
       if (injectorEnabled)
       {
-         return delegate.inject(request, response, target);
+         return delegate.inject(request, response, target, unwrapAsync);
       }
       return CompletableFuture.completedFuture(null);
    }

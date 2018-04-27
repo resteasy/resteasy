@@ -59,7 +59,8 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
    }
 
-   public CompletionStage<Object[]> injectableArguments(HttpRequest input, HttpResponse response)
+   @Override
+   public CompletionStage<Object[]> injectableArguments(HttpRequest input, HttpResponse response, boolean unwrapAsync)
    {
       if (params != null && params.length > 0)
       {
@@ -69,7 +70,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          for (ValueInjector extractor : params)
          {
             int ifinal = i++;
-            stage = stage.thenCompose(v -> extractor.inject(input, response).thenAccept(value -> args[ifinal] = value));
+            stage = stage.thenCompose(v -> extractor.inject(input, response, unwrapAsync).thenAccept(value -> args[ifinal] = value));
          }
          return stage.thenApply(v -> args);
       }
@@ -77,7 +78,8 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return CompletableFuture.completedFuture(null);
    }
 
-   public CompletionStage<Object[]> injectableArguments()
+   @Override
+   public CompletionStage<Object[]> injectableArguments(boolean unwrapAsync)
    {
       if (params != null && params.length > 0)
       {
@@ -87,7 +89,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          for (ValueInjector extractor : params)
          {
             int ifinal = i++;
-            stage = stage.thenCompose(v -> extractor.inject().thenAccept(value -> args[ifinal] = value));
+            stage = stage.thenCompose(v -> extractor.inject(unwrapAsync).thenAccept(value -> args[ifinal] = value));
          }
          return stage.thenApply(v -> args);
       }
@@ -95,9 +97,9 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return CompletableFuture.completedFuture(null);
    }
 
-   public CompletionStage<Object> construct(HttpRequest request, HttpResponse httpResponse) throws Failure, ApplicationException, WebApplicationException
+   public CompletionStage<Object> construct(HttpRequest request, HttpResponse httpResponse, boolean unwrapAsync) throws Failure, ApplicationException, WebApplicationException
    {
-      return injectableArguments(request, httpResponse)
+      return injectableArguments(request, httpResponse, unwrapAsync)
       .exceptionally(e -> {
          throw new InternalServerErrorException(Messages.MESSAGES.failedProcessingArguments(constructor.toString()), e);
       }).thenApply(args -> {
@@ -148,9 +150,10 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       });
    }
 
-   public CompletionStage<Object> construct()
+   @Override
+   public CompletionStage<Object> construct(boolean unwrapAsync)
    {
-      return injectableArguments()
+      return injectableArguments(unwrapAsync)
             .thenApply(args -> {
                try
                {

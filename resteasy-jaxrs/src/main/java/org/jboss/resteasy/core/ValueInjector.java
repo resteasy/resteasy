@@ -17,7 +17,7 @@ public interface ValueInjector
     *
     * @return
     */
-   CompletionStage<Object> inject();
+   CompletionStage<Object> inject(boolean unwrapAsync);
 
    /**
     * Inject inside the context of an HTTP request.
@@ -26,5 +26,5 @@ public interface ValueInjector
     * @param response
     * @return
     */
-   CompletionStage<Object> inject(HttpRequest request, HttpResponse response);
+   CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync);
 }

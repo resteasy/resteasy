@@ -31,7 +31,8 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
       this.encode = encode;
    }
    
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       List<String> list = request.getDecodedFormParameters().get(paramName);
       if (list == null)
@@ -51,7 +52,8 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
       return CompletableFuture.completedFuture(extractValues(list));
    }
 
-   public CompletionStage<Object> inject()
+   @Override
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectFormParam());
    }

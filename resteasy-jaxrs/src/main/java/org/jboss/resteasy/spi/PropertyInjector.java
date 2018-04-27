@@ -16,7 +16,7 @@ public interface PropertyInjector
     *
     * @param target
     */
-   CompletionStage<Void> inject(Object target);
+   CompletionStage<Void> inject(Object target, boolean unwrapAsync);
 
    /**
     * Inject values into annotated properties (fields/setter methods) of the target object.
@@ -27,5 +27,5 @@ public interface PropertyInjector
     * @param target
     * @throws Failure
     */
-   CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure, WebApplicationException, ApplicationException;
+   CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
 }

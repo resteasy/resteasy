@@ -33,14 +33,14 @@ public class QueryInjector implements ValueInjector {
    }
 
    @Override
-   public CompletionStage<Object> inject() {
+   public CompletionStage<Object> inject(boolean unwrapAsync) {
       throw new IllegalStateException("You cannot inject outside the scope of an HTTP request");
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
-      return constructorInjector.construct()
-            .thenCompose(target -> propertyInjector.inject(request, response, target)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+      return constructorInjector.construct(unwrapAsync)
+            .thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
                                  .thenApply(v -> target));
    }
 }

@@ -359,7 +359,7 @@ public class ResteasyDeployment
       dispatcher.getDefaultContextObjects().put(Application.class, app);
       ResteasyProviderFactory.pushContext(Application.class, app);
       PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
-      propertyInjector.inject(app);
+      propertyInjector.inject(app, false);
       return app;
    }
 

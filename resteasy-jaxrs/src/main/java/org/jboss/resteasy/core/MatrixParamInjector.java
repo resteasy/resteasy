@@ -32,7 +32,7 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       ArrayList<String> values = new ArrayList<String>();
       if (encode)
@@ -63,7 +63,7 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectMatrixParam());
    }

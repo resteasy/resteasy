@@ -89,7 +89,7 @@ public class ResteasyWebArgumentResolver implements WebArgumentResolver
 
             return new CookieParamInjector(type, genericType, method,
                     cookieParam.value(), defaultVal, annotations, factory).inject(request,
-                    null);
+                    null, false);
          }
       }
       return null;

@@ -42,7 +42,7 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
     * {@inheritDoc} Creates a collection instance and fills it with content by using the super implementation.
     */
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       T result = createInstance(collectionType);
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
@@ -51,7 +51,7 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
          Matcher matcher = pattern.matcher(collectionPrefix);
          matcher.matches();
          String key = matcher.group(1);
-         ret = ret.thenCompose(v -> super.doInject(collectionPrefix, request, response)
+         ret = ret.thenCompose(v -> super.doInject(collectionPrefix, request, response, unwrapAsync)
                .thenAccept(value -> {
                   addTo(result, key, value);
                }));

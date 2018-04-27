@@ -24,12 +24,12 @@ public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl 
         } else {
             return new ValueInjector() {
                 @Override
-                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
                     return CompletableFuture.completedFuture(hello.value());
                 }
 
                 @Override
-                public CompletionStage<Object> inject() {
+                public CompletionStage<Object> inject(boolean unwrapAsync) {
                    // do nothing.
                    return CompletableFuture.completedFuture(hello.value());
                 }
@@ -45,12 +45,12 @@ public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl 
         } else {
             return new ValueInjector() {
                 @Override
-                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response) {
+                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
                     return CompletableFuture.completedFuture(hello.value());
                 }
 
                 @Override
-                public CompletionStage<Object> inject() {
+                public CompletionStage<Object> inject(boolean unwrapAsync) {
                    // do nothing.
                    return CompletableFuture.completedFuture(hello.value());
                 }

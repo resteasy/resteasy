@@ -36,7 +36,7 @@ public class SingletonResource implements ResourceFactory
 
    public void registered(ResteasyProviderFactory factory)
    {
-      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj);
+      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj, false);
    }
 
    public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)

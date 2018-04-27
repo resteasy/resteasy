@@ -93,7 +93,7 @@ public class MethodInjectorImpl implements MethodInjector
             for (ValueInjector extractor : params)
             {
                int j = i++;
-               ret = ret.thenCompose(v -> extractor.inject(input, response)
+               ret = ret.thenCompose(v -> extractor.inject(input, response, true)
                                        .thenApply(value -> args[j] = value));
             }
             return ret.thenApply(v -> args);

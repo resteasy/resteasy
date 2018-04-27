@@ -37,7 +37,7 @@ public class GuiceResourceFactory implements ResourceFactory
    public CompletionStage<Object> createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
    {
       final Object resource = provider.get();
-      return propertyInjector.inject(request, response, resource)
+      return propertyInjector.inject(request, response, resource, true)
     		  .thenApply(v -> resource);
    }
 

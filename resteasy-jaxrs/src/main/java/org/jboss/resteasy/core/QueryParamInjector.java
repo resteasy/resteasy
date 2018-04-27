@@ -49,7 +49,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       if (encode)
       {
@@ -65,7 +65,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectQueryParam());
    }

@@ -127,7 +127,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
 
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       Object o = getBody();
       if (o != null)
@@ -238,7 +238,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectMessageBody(this.target));
    }

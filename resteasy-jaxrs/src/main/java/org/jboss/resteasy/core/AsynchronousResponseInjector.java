@@ -26,13 +26,13 @@ public class AsynchronousResponseInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectAsynchronousResponse());
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       ResteasyAsynchronousResponse asynchronousResponse = null;
       if (timeout == -1)

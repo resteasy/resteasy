@@ -138,12 +138,12 @@ public class PropertyInjectorImpl implements PropertyInjector
    }
 
    @Override
-   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         ret = ret.thenCompose(v -> entry.getValue().inject(request, response)
+         ret = ret.thenCompose(v -> entry.getValue().inject(request, response, unwrapAsync)
                .thenAccept(value -> {
                try
                {
@@ -157,7 +157,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       }
       for (SetterMethod setter : setters)
       {
-         ret = ret.thenCompose(v -> setter.extractor.inject(request, response)
+         ret = ret.thenCompose(v -> setter.extractor.inject(request, response, unwrapAsync)
                .thenAccept(value -> {
                try
                {
@@ -177,12 +177,12 @@ public class PropertyInjectorImpl implements PropertyInjector
    }
 
    @Override
-   public CompletionStage<Void> inject(Object target)
+   public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         ret = ret.thenCompose(v -> entry.getValue().inject()
+         ret = ret.thenCompose(v -> entry.getValue().inject(unwrapAsync)
                .thenAccept(value -> {
                try
                {
@@ -196,7 +196,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       }
       for (SetterMethod setter : setters)
       {
-         ret = ret.thenCompose(v -> setter.extractor.inject()
+         ret = ret.thenCompose(v -> setter.extractor.inject(unwrapAsync)
                .thenAccept(value -> {
                try
                {

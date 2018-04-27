@@ -319,13 +319,13 @@ public class SynchronousDispatcher implements Dispatcher
          @Override
          public <T> T getResource(Class<T> resourceClass)
          {
-            return providerFactory.injectedInstance(resourceClass, request, response).toCompletableFuture().getNow(null);
+            return providerFactory.injectedInstance(resourceClass, request, response);
          }
 
          @Override
          public <T> T initResource(T resource)
          {
-            providerFactory.injectProperties(resource, request, response).toCompletableFuture().getNow(null);
+            providerFactory.injectProperties(resource, request, response);
             return resource;
          }
       };

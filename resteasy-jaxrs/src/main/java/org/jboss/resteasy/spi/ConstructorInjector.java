@@ -15,7 +15,7 @@ public interface ConstructorInjector
     *
     * @return
     */
-   CompletionStage<Object> construct();
+   CompletionStage<Object> construct(boolean unwrapAsync);
 
    /**
     * construct inside the scope of an HTTP request.
@@ -25,7 +25,7 @@ public interface ConstructorInjector
     * @return
     * @throws Failure
     */
-   CompletionStage<Object> construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException;
+   CompletionStage<Object> construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
 
    /**
     * Create an arguments list from injectable tings outside the scope of an HTTP request.  Useful for singleton factories
@@ -34,7 +34,7 @@ public interface ConstructorInjector
     *
     * @return
     */
-   CompletionStage<Object[]> injectableArguments();
+   CompletionStage<Object[]> injectableArguments(boolean unwrapAsync);
 
    /**
     * Create an argument list inside the scope of an HTTP request.
@@ -46,5 +46,5 @@ public interface ConstructorInjector
     * @return
     * @throws Failure
     */
-   CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response) throws Failure;
+   CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure;
 }

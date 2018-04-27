@@ -83,13 +83,14 @@ public class ResourcePropertyInjector implements PropertyInjector
       }
    }
 
-   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target) throws Failure
+   @Override
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (FieldInjector injector : fields)
       {
          ret = ret.thenCompose(v -> 
-            injector.injector.inject(request, response)
+            injector.injector.inject(request, response, unwrapAsync)
             .thenAccept(value -> {
                try
                {
@@ -104,7 +105,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       for (SetterInjector injector : setters)
       {
          ret = ret.thenCompose(v -> 
-            injector.injector.inject(request, response)
+            injector.injector.inject(request, response, unwrapAsync)
             .thenAccept(value -> {
                      try
                      {
@@ -123,13 +124,14 @@ public class ResourcePropertyInjector implements PropertyInjector
       return ret;
    }
 
-   public CompletionStage<Void> inject(Object target)
+   @Override
+   public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (FieldInjector injector : fields)
       {
          ret = ret.thenCompose(v -> 
-            injector.injector.inject()
+            injector.injector.inject(unwrapAsync)
             .thenAccept(value -> {
                try
                {
@@ -144,7 +146,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       for (SetterInjector injector : setters)
       {
          ret = ret.thenCompose(v -> 
-            injector.injector.inject()
+            injector.injector.inject(unwrapAsync)
             .thenAccept(value -> {
                      try
                      {

@@ -39,7 +39,7 @@ public class CdiConstructorInjector implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object> construct()
+   public CompletionStage<Object> construct(boolean unwrapAsync)
    {
       Set<Bean<?>> beans = manager.getBeans(type);
       
@@ -72,18 +72,20 @@ public class CdiConstructorInjector implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object> construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException
+   public CompletionStage<Object> construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException
    {
-      return construct();
+      return construct(unwrapAsync);
    }
 
-   public CompletionStage<Object[]> injectableArguments()
+   @Override
+   public CompletionStage<Object[]> injectableArguments(boolean unwrapAsync)
    {
       return CompletableFuture.completedFuture(new Object[0]);
    }
 
-   public CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response) throws Failure
+   @Override
+   public CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure
    {
-      return injectableArguments();
+      return injectableArguments(unwrapAsync);
    }
 }

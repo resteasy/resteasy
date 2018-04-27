@@ -27,14 +27,14 @@ public class HeaderParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response)
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
       return CompletableFuture.completedFuture(extractValues(list));
    }
 
    @Override
-   public CompletionStage<Object> inject()
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectHeaderParam());
    }
