@@ -1,7 +1,8 @@
 package org.jboss.resteasy.rxjava;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
-import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -30,30 +29,30 @@ public class RxTest
 {
 	private static NettyJaxrsServer server;
 
-	private static Dispatcher dispatcher;
 	private static CountDownLatch latch;
 	private static AtomicReference<Object> value = new AtomicReference<Object>();
 
-	@SuppressWarnings("deprecation")
-    @BeforeClass
-	public static void beforeClass() throws Exception
-	{
-		server = new NettyJaxrsServer();
-		server.setPort(TestPortProvider.getPort());
-		server.setRootResourcePath("/");
-		server.start();
-		dispatcher = server.getDeployment().getDispatcher();
-		POJOResourceFactory noDefaults = new POJOResourceFactory(RxResource.class);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-	}
+   @BeforeClass
+   public static void beforeClass() throws Exception
+   {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      List<Class> classes = server.getDeployment().getActualResourceClasses();
+      classes.add(RxResource.class);
+      List<Class> providers = server.getDeployment().getActualProviderClasses();
+      providers.add(RxInjector.class);
+      server.getDeployment().registration();
+   }
 
-	@AfterClass
-	public static void afterClass() throws Exception
-	{
-		server.stop();
-		server = null;
-		dispatcher = null;
-	}
+   @AfterClass
+   public static void afterClass() throws Exception
+   {
+      server.stop();
+      server = null;
+   }
+
 
 	private ResteasyClient client;
 
@@ -122,4 +121,14 @@ public class RxTest
 		latch.await();
 		assertArrayEquals(new String[] {"one", "two"}, data.toArray());
 	}
+
+   @Test
+   public void testInjection()
+   {
+      Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
+      assertEquals((Integer)42, data);
+
+      data = client.target(generateURL("/injection-async")).request().get(Integer.class);
+      assertEquals((Integer)42, data);
+   }
 }
