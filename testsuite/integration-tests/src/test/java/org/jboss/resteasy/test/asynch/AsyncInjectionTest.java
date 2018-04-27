@@ -48,8 +48,8 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Async Request Filter test.
  * @tpSince RESTEasy 4.0.0
  */
-//@RunWith(Arquillian.class)
-@RunWith(UndertowTestRunner.class)
+@RunWith(Arquillian.class)
+//@RunWith(UndertowTestRunner.class)
 @RunAsClient
 public class AsyncInjectionTest {
     protected static final Logger log = LogManager.getLogger(AsyncInjectionTest.class.getName());
