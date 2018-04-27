@@ -22,6 +22,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterfaceInj
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionException;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionExceptionMapper;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource2;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter3;
@@ -61,7 +62,8 @@ public class AsyncInjectionTest {
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
               AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,
-              AsyncInjectionException.class, AsyncInjectionExceptionMapper.class);
+              AsyncInjectionException.class, AsyncInjectionExceptionMapper.class,
+              AsyncInjectionResource2.class);
     }
 
     private String generateURL(String path) {
@@ -166,6 +168,23 @@ public class AsyncInjectionTest {
         Response response = base.request()
            .get();
         assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection in places where it does not work
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionExceptionLate() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/late"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
         client.close();
     }

@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -134,7 +135,7 @@ public class AsyncInjectionResource
 
    @Path("/exception")
    @GET
-   public Response asyncInjectionInterface(@AsyncInjectionContextErrorSpecifier @Context AsyncInjectionContext resolvedContextParam,
+   public Response asyncInjectionException(@AsyncInjectionContextErrorSpecifier @Context AsyncInjectionContext resolvedContextParam,
          @AsyncInjectionContextErrorSpecifier @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
          throws InterruptedException, ExecutionException
    {
@@ -143,12 +144,29 @@ public class AsyncInjectionResource
 
    @Path("/exception-async")
    @GET
-   public Response asyncInjectionInterfaceAsync(@AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
+   public Response asyncInjectionExceptionAsync(@AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
          @Context AsyncInjectionContext resolvedContextParam,
          @AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
          @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
          throws InterruptedException, ExecutionException
    {
       return Response.serverError().entity("Should have thrown").build();
+   }
+
+   @Path("/late")
+   @GET
+   public Response asyncInjectionLate(@Context ResourceContext resourceContext)
+         throws InterruptedException, ExecutionException
+   {
+      AsyncInjectionResource2 resource = resourceContext.getResource(AsyncInjectionResource2.class);
+      if(resource == null)
+         return Response.serverError().entity("Resource should not have been null").build();
+      if(resource.asyncContextField == null || resource.asyncContextField.toCompletableFuture().get().foo() != 42)
+         return Response.serverError().entity("Context field problem").build();
+      if(resource.resolvedContextField != null)
+         return Response.serverError().entity("Resolved context field problem").build();
+      if(resource.resolvedContextFieldAsync != null)
+         return Response.serverError().entity("Resolved async context field problem").build();
+      return Response.ok("resource").build();
    }
 }
