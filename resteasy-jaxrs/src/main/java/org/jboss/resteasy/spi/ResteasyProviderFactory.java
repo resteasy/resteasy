@@ -610,14 +610,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if(ret != null)
          return ret;
       ContextInjector contextInjector = getContextInjectors().get(genericType);
+      Type wrappedType = null;
       if(contextInjector == null && unwrapAsync) 
       {
-         Type newGenericType = new Types.ResteasyParameterizedType(new Type[]{genericType}, CompletionStage.class, null);
-         contextInjector = getContextInjectors().get(newGenericType);
+         for (ContextInjector injector : getContextInjectors().values())
+         {
+            Type[] typeArgs = Types.getActualTypeArgumentsOfAnInterface(injector.getClass(), ContextInjector.class);
+            Type unwrappedType = typeArgs[1];
+            if(unwrappedType.equals(genericType))
+            {
+               contextInjector = injector;
+               wrappedType = typeArgs[0];
+               break;
+            }
+         }
       }
       if(contextInjector != null)
-         return (T) contextInjector.resolve(rawType, genericType, annotations);
-      return null;
+      {
+         ret = (T) contextInjector.resolve(rawType, genericType, annotations);
+         if(wrappedType != null && ret != null)
+         {
+            Class<?> rawWrappedType = Types.getRawType(wrappedType);
+            AsyncResponseProvider converter = getAsyncResponseProvider(rawWrappedType);
+            // OK this is plain lying
+            ret = (T) converter.toCompletionStage(ret);
+         }
+      }
+      return ret;
    }
 
    public static <T> T popContextData(Class<T> type)
@@ -1342,12 +1361,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addContextInjector(ContextInjector provider, Class providerClass)
    {
-      Type injectedType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextInjector.class)[0];
-      injectedType = Types.resolveTypeVariables(providerClass, injectedType);
-      addContextInjector(provider, injectedType);
+      Type[] typeArgs = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextInjector.class);
+      addContextInjector(provider, typeArgs[0], typeArgs[1]);
    }
 
-   protected void addContextInjector(ContextInjector provider, Type injectedType)
+   protected void addContextInjector(ContextInjector provider, Type injectedWrappedType, Type injectedUnwrappedType)
    {
       injectProperties(provider.getClass(), provider);
 
@@ -1356,7 +1374,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
          contextInjectors.putAll(parent.getContextInjectors());
       }
-      contextInjectors.put(injectedType, provider);
+      contextInjectors.put(injectedWrappedType, provider);
    }
 
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)

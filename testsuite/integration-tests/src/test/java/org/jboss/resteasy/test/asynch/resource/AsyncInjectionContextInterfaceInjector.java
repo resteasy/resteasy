@@ -10,7 +10,7 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.ContextInjector;
 
 @Provider
-public class AsyncInjectionContextInterfaceInjector implements ContextInjector<CompletionStage<AsyncInjectionContextInterface>>
+public class AsyncInjectionContextInterfaceInjector implements ContextInjector<CompletionStage<AsyncInjectionContextInterface>, AsyncInjectionContextInterface>
 {
 
    @Override
