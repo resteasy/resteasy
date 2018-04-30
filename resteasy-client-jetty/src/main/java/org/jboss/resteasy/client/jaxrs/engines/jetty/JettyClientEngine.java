@@ -177,6 +177,9 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             @SuppressWarnings("unchecked")
             private void complete() {
                 completing.set(true);
+                if (buffered) {
+                    cr.bufferEntity();
+                }
                 // TODO: dangerous cast, see javadoc!
                 complete(extractor == null ? (T) cr : extractor.extractResult(cr));
             }
