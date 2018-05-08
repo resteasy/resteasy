@@ -11,6 +11,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Random;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletInputStream;
@@ -94,6 +96,31 @@ public class JettyClientEngineTest {
         assertArrayEquals(valuableData, response.readEntity(byte[].class));
     }
 
+    @Test
+    public void testFutureResponse() throws Exception {
+        server.setHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<Response> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit();
+
+        final Response resp = response.get(10, TimeUnit.SECONDS);
+        assertEquals(200, resp.getStatus());
+        assertEquals(valuableData, resp.readEntity(String.class));
+    }
+
+    @Test
+    public void testFutureString() throws Exception {
+        server.setHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<String> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit(String.class);
+
+        final String result = response.get(10, TimeUnit.SECONDS);
+        assertEquals(valuableData, result);
+    }
+
     private String randomAlpha() {
         final StringBuilder builder = new StringBuilder();
         final Random r = new Random();
@@ -159,6 +186,12 @@ public class JettyClientEngineTest {
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
             baseRequest.setHandled(true);
+            String type = request.getContentType();
+            if (type == null) {
+                type = MediaType.TEXT_PLAIN;
+            }
+
+            response.setContentType(type);
             response.setStatus(200);
             int read;
             final byte[] data = new byte[1024];
