@@ -13,28 +13,25 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.UndertowTestRunner;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionBooleanInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionByteInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionCharInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContext;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextAsyncSpecifier;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextErrorSpecifier;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterface;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionContextInterfaceInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionDoubleInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionException;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionExceptionMapper;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionFloatInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionIntInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionLongInjector;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionPrimitiveInjectorSpecifier;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionResource2;
-import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
-import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
-import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter3;
-import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter;
-import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter1;
-import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter2;
-import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter3;
-import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilterResource;
-import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter;
-import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter1;
-import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter2;
-import org.jboss.resteasy.test.asynch.resource.AsyncResponseFilter3;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionShortInjector;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -63,7 +60,11 @@ public class AsyncInjectionTest {
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
               AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,
               AsyncInjectionException.class, AsyncInjectionExceptionMapper.class,
-              AsyncInjectionResource2.class);
+              AsyncInjectionResource2.class, AsyncInjectionPrimitiveInjectorSpecifier.class,
+              AsyncInjectionBooleanInjector.class, AsyncInjectionCharInjector.class,
+              AsyncInjectionByteInjector.class, AsyncInjectionShortInjector.class,
+              AsyncInjectionIntInjector.class, AsyncInjectionLongInjector.class,
+              AsyncInjectionFloatInjector.class, AsyncInjectionDoubleInjector.class);
     }
 
     private String generateURL(String path) {
@@ -181,6 +182,23 @@ public class AsyncInjectionTest {
         Client client = ClientBuilder.newClient();
 
         WebTarget base = client.target(generateURL("/late"));
+
+        Response response = base.request()
+           .get();
+        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+        
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Async Injection of primitive types
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testAsyncInjectionPrimitives() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        WebTarget base = client.target(generateURL("/primitives"));
 
         Response response = base.request()
            .get();

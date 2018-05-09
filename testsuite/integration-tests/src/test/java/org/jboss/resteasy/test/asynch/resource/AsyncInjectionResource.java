@@ -10,6 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.test.asynch.resource.AsyncInjectionPrimitiveInjectorSpecifier.Type;
 
 @Path("/")
 public class AsyncInjectionResource
@@ -167,6 +168,124 @@ public class AsyncInjectionResource
          return Response.serverError().entity("Resolved context field problem").build();
       if(resource.resolvedContextFieldAsync != null)
          return Response.serverError().entity("Resolved async context field problem").build();
+      return Response.ok("resource").build();
+   }
+
+   @Path("/primitives")
+   @GET
+   public Response asyncInjectionPrimitives(@Context Boolean boolBoxedTrue,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Boolean boolBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Boolean boolBoxedNull2,
+         @Context boolean bool,
+         
+         @Context Character charBoxedS,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Character charBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Character charBoxedNull2,
+         @Context char c,
+         
+         @Context Byte byteBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Byte byteBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Byte byteBoxedNull2,
+         @Context byte b,
+
+         @Context Short shortBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Short shortBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Short shortBoxedNull2,
+         @Context short s,
+
+         @Context Integer intBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Integer intBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Integer intBoxedNull2,
+         @Context int i,
+
+         @Context Long longBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Long longBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Long longBoxedNull2,
+         @Context long l,
+
+         @Context Float floatBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Float floatBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Float floatBoxedNull2,
+         @Context float f,
+
+         @Context Double doubleBoxed42,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Double doubleBoxedNull,
+         @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Double doubleBoxedNull2,
+         @Context double d)
+         throws InterruptedException, ExecutionException
+   {
+      if(boolBoxedTrue == null || !boolBoxedTrue.booleanValue())
+         return Response.serverError().entity("Missing boxed boolean").build();
+      if(boolBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed boolean").build();
+      if(boolBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed boolean 2").build();
+      if(!bool)
+         return Response.serverError().entity("Missing boolean").build();
+
+      if(charBoxedS == null || charBoxedS.charValue() != 's')
+         return Response.serverError().entity("Missing boxed char").build();
+      if(charBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed char").build();
+      if(charBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed char 2").build();
+      if(c != 's')
+         return Response.serverError().entity("Missing char").build();
+
+      if(byteBoxed42 == null || byteBoxed42.intValue() != 42)
+         return Response.serverError().entity("Missing boxed byte").build();
+      if(byteBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed byte").build();
+      if(byteBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed byte 2").build();
+      if(b != 42)
+         return Response.serverError().entity("Missing byte").build();
+
+      if(shortBoxed42 == null || shortBoxed42.intValue() != 42)
+         return Response.serverError().entity("Missing boxed short").build();
+      if(shortBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed short").build();
+      if(shortBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed short 2").build();
+      if(s != 42)
+         return Response.serverError().entity("Missing short").build();
+
+      if(intBoxed42 == null || intBoxed42.intValue() != 42)
+         return Response.serverError().entity("Missing boxed int").build();
+      if(intBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed int").build();
+      if(intBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed int 2").build();
+      if(i != 42)
+         return Response.serverError().entity("Missing int").build();
+
+      if(longBoxed42 == null || longBoxed42.intValue() != 42)
+         return Response.serverError().entity("Missing boxed long").build();
+      if(longBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed long").build();
+      if(longBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed long 2").build();
+      if(l != 42)
+         return Response.serverError().entity("Missing long").build();
+
+      if(floatBoxed42 == null || floatBoxed42.floatValue() != 4.2f)
+         return Response.serverError().entity("Missing boxed float").build();
+      if(floatBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed float").build();
+      if(floatBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed float 2").build();
+      if(f != 4.2f)
+         return Response.serverError().entity("Missing float").build();
+
+      if(doubleBoxed42 == null || doubleBoxed42.doubleValue() != 4.2)
+         return Response.serverError().entity("Missing boxed double").build();
+      if(doubleBoxedNull != null)
+         return Response.serverError().entity("Non-null boxed double").build();
+      if(doubleBoxedNull2 != null)
+         return Response.serverError().entity("Non-null boxed double 2").build();
+      if(d != 4.2)
+         return Response.serverError().entity("Missing double").build();
+
       return Response.ok("resource").build();
    }
 }
