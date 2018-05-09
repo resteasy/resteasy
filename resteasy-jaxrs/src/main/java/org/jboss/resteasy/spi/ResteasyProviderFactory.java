@@ -95,36 +95,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings({"unchecked", "deprecation"})
 public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
-   private static RESTEasyTracingConfig tracingType;
-
-   public static RESTEasyTracingConfig getTracingType() {
-      return tracingType;
-   }
-
-   public static void setTracingType(RESTEasyTracingConfig tracingType) {
-      ResteasyProviderFactory.tracingType = tracingType;
-   }
-
-   private static RESTEasyTracingLevel tracingThreshold;
-
-   public static RESTEasyTracingLevel getTracingThreshold() {
-      return tracingThreshold;
-   }
-
-   private static RESTEasyTracingLogger tracingLogger;
-
-   public static RESTEasyTracingLogger getTracingLogger() {
-      return tracingLogger;
-   }
-
-   public static void setTracingLogger(RESTEasyTracingLogger tracingLogger) {
-      ResteasyProviderFactory.tracingLogger = tracingLogger;
-   }
-
-   public static void setTracingThreshold(RESTEasyTracingLevel tracingThreshold) {
-      ResteasyProviderFactory.tracingThreshold = tracingThreshold;
-   }
-
    /**
     * Allow us to sort message body implementations that are more specific for their types
     * i.e. MessageBodyWriter<Object> is less specific than MessageBodyWriter<String>.

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.jetty;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -11,6 +11,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Random;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletInputStream;
@@ -31,7 +33,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.JettyClientEngine;
+import org.jboss.resteasy.client.jaxrs.engines.jetty.JettyClientEngine;
 import org.junit.After;
 import org.junit.Test;
 
@@ -92,6 +94,31 @@ public class JettyClientEngineTest {
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
+
+    @Test
+    public void testFutureResponse() throws Exception {
+        server.setHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<Response> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit();
+
+        final Response resp = response.get(10, TimeUnit.SECONDS);
+        assertEquals(200, resp.getStatus());
+        assertEquals(valuableData, resp.readEntity(String.class));
+    }
+
+    @Test
+    public void testFutureString() throws Exception {
+        server.setHandler(new EchoHandler());
+        final String valuableData = randomAlpha();
+        final Future<String> response = client().target(baseUri()).request()
+                .buildPost(Entity.entity(valuableData, MediaType.APPLICATION_OCTET_STREAM_TYPE))
+                .submit(String.class);
+
+        final String result = response.get(10, TimeUnit.SECONDS);
+        assertEquals(valuableData, result);
     }
 
     private String randomAlpha() {
@@ -159,6 +186,12 @@ public class JettyClientEngineTest {
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
             baseRequest.setHandled(true);
+            String type = request.getContentType();
+            if (type == null) {
+                type = MediaType.TEXT_PLAIN;
+            }
+
+            response.setContentType(type);
             response.setStatus(200);
             int read;
             final byte[] data = new byte[1024];

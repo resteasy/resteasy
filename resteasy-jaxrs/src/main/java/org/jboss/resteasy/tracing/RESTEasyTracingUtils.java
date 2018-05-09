@@ -5,7 +5,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class RESTEasyTracingUtils {
             tracingLogger = RESTEasyTracingLogger.empty();
         }
 
-        ResteasyProviderFactory.setTracingLogger(tracingLogger);
+        request.setAttribute(RESTEasyTracingLogger.PROPERTY_NAME, tracingLogger);
     }
 
     /**
@@ -107,17 +107,16 @@ public class RESTEasyTracingUtils {
      * <p>
      * By default tracing support is switched OFF.
      */
-    public static RESTEasyTracingConfig getTracingConfig(String tracingText) {
+    public static RESTEasyTracingConfig getTracingConfig(Configuration configuration) {
+        final Object tracingText = configuration.getProperty(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+        final RESTEasyTracingConfig result;
+
         if (tracingText != null) {
-            if (tracingText.equals(ResteasyContextParameters.RESTEASY_TRACING_TYPE_ALL)) {
-                return RESTEasyTracingConfig.ALL;
-            } else if (tracingText.equals(ResteasyContextParameters.RESTEASY_TRACING_TYPE_OFF)) {
-                return RESTEasyTracingConfig.OFF;
-            } else if (tracingText.equals(ResteasyContextParameters.RESTEASY_TRACING_TYPE_ON_DEMAND)) {
-                return RESTEasyTracingConfig.ON_DEMAND;
-            }
+            result = RESTEasyTracingConfig.valueOf((String) tracingText);
+        } else {
+            result = DEFAULT_CONFIGURATION_TYPE;
         }
-        return RESTEasyTracingConfig.OFF;
+        return result;
     }
 
     /**
@@ -135,17 +134,9 @@ public class RESTEasyTracingUtils {
      *
      * @return tracing level threshold.
      */
-    public static RESTEasyTracingLevel getTracingThreshold(String threadshold) {
-        if (threadshold != null) {
-            if (threadshold.equals(ResteasyContextParameters.RESTEASY_TRACING_LEVEL_SUMMARY)) {
-                return RESTEasyTracingLevel.SUMMARY;
-            } else if (threadshold.equals(ResteasyContextParameters.RESTEASY_TRACING_LEVEL_TRACE)) {
-                return RESTEasyTracingLevel.TRACE;
-            } else if (threadshold.equals(ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE)) {
-                return RESTEasyTracingLevel.VERBOSE;
-            }
-        }
-        return RESTEasyTracingLogger.DEFAULT_LEVEL;
+    public static RESTEasyTracingLevel getTracingThreshold(Configuration configuration) {
+        final Object thresholdText = configuration.getProperty(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+        return (thresholdText == null) ? RESTEasyTracingLogger.DEFAULT_LEVEL : RESTEasyTracingLevel.valueOf((String) thresholdText);
     }
 
     private static RESTEasyTracingLevel getTracingThreshold(RESTEasyTracingLevel appThreshold, HttpRequest request) {

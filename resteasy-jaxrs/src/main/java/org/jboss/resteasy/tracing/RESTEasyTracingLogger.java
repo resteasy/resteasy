@@ -1,7 +1,6 @@
 package org.jboss.resteasy.tracing;
 
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -106,9 +105,12 @@ public abstract class RESTEasyTracingLogger {
      * @return returns instance of {@code TracingLogger} from {@code ResteasyProviderFactory}. Does not return {@code null}.
      */
     public static RESTEasyTracingLogger getInstance(HttpRequest request) {
-        // TODO: support request scope
-        RESTEasyTracingLogger logger = ResteasyProviderFactory.getTracingLogger();
-        return (logger == null) ? EMPTY : logger;
+        if (request == null) {
+            //not server side
+            return EMPTY;
+        }
+        final RESTEasyTracingLogger tracingLogger = (RESTEasyTracingLogger) request.getAttribute(PROPERTY_NAME);
+        return (tracingLogger != null) ? tracingLogger : EMPTY;
     }
 
     public static RESTEasyTracingLogger empty() {
