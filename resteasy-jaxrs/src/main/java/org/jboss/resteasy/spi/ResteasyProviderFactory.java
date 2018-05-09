@@ -609,8 +609,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    public boolean hasAsyncContextData(Type genericType) {
-      Type newGenericType = new Types.ResteasyParameterizedType(new Type[]{genericType}, CompletionStage.class, null);
-      return getContextInjectors().containsKey(newGenericType);
+      return getAsyncContextInjectors().containsKey(Types.boxPrimitives(genericType));
    }
    
    public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync)
@@ -622,7 +621,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       boolean async = false;
       if(contextInjector == null && unwrapAsync)
       {
-         contextInjector = getAsyncContextInjectors().get(genericType);
+         contextInjector = getAsyncContextInjectors().get(Types.boxPrimitives(genericType));
          async = true;
       }
       

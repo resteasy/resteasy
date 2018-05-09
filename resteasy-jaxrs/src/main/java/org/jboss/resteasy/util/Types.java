@@ -747,4 +747,25 @@ public class Types
       }
 
    }
+
+   public static Type boxPrimitives(Type genericType)
+   {
+      if(genericType == Boolean.TYPE)
+         return Boolean.class;
+      if(genericType == Character.TYPE)
+         return Character.class;
+      if(genericType == Byte.TYPE)
+         return Byte.class;
+      if(genericType == Short.TYPE)
+         return Short.class;
+      if(genericType == Integer.TYPE)
+         return Integer.class;
+      if(genericType == Long.TYPE)
+         return Long.class;
+      if(genericType == Float.TYPE)
+         return Float.class;
+      if(genericType == Double.TYPE)
+         return Double.class;
+      return genericType;
+   }
 }
