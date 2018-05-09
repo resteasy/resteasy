@@ -48,7 +48,7 @@ public class RESTEasyTracingUtils {
             tracingLogger = RESTEasyTracingLogger.empty();
         }
 
-        ResteasyProviderFactory.setTracingLogger(tracingLogger);
+        request.setAttribute(RESTEasyTracingLogger.PROPERTY_NAME, tracingLogger);
     }
 
     /**

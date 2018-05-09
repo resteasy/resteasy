@@ -111,16 +111,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return tracingThreshold;
    }
 
-   private static RESTEasyTracingLogger tracingLogger;
-
-   public static RESTEasyTracingLogger getTracingLogger() {
-      return tracingLogger;
-   }
-
-   public static void setTracingLogger(RESTEasyTracingLogger tracingLogger) {
-      ResteasyProviderFactory.tracingLogger = tracingLogger;
-   }
-
    public static void setTracingThreshold(RESTEasyTracingLevel tracingThreshold) {
       ResteasyProviderFactory.tracingThreshold = tracingThreshold;
    }

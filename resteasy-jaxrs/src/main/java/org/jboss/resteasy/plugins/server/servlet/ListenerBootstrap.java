@@ -43,8 +43,6 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       String tracingThreshold = getParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
       ResteasyProviderFactory.setTracingThreshold(RESTEasyTracingUtils.getTracingThreshold(tracingThreshold));
 
-      RESTEasyTracingUtils.initTracingSupport(ResteasyProviderFactory.getTracingType(), ResteasyProviderFactory.getTracingThreshold(), null);
-
       deployment.getDefaultContextObjects().put(ResteasyDeployment.class, deployment);
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);

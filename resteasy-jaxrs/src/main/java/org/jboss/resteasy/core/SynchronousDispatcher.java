@@ -221,6 +221,10 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
+      RESTEasyTracingUtils.initTracingSupport(ResteasyProviderFactory.getTracingType(),
+              ResteasyProviderFactory.getTracingThreshold(), request);
+      RESTEasyTracingUtils.logStart(request);
+
       try
       {
          pushContextObjects(request, response);
