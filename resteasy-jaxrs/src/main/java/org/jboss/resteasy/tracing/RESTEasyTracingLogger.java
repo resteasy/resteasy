@@ -1,7 +1,6 @@
 package org.jboss.resteasy.tracing;
 
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 

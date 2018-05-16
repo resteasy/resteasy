@@ -37,11 +37,11 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       if (deployment == null) deployment = super.createDeployment();
 
-      String tracingType = getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
-      ResteasyProviderFactory.setTracingType(RESTEasyTracingUtils.getTracingConfig(tracingType));
-
-      String tracingThreshold = getParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
-      ResteasyProviderFactory.setTracingThreshold(RESTEasyTracingUtils.getTracingThreshold(tracingThreshold));
+//      String tracingType = getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+//      ResteasyProviderFactory.setTracingType(RESTEasyTracingUtils.getTracingConfig(tracingType));
+//
+//      String tracingThreshold = getParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+//      ResteasyProviderFactory.setTracingThreshold(RESTEasyTracingUtils.getTracingThreshold(tracingThreshold));
 
       deployment.getDefaultContextObjects().put(ResteasyDeployment.class, deployment);
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
