@@ -58,7 +58,7 @@ public class SseEventSourceImpl implements SseEventSource
    
    private boolean alwaysReconnect;
 
-   private ClientResponse response;
+   private volatile ClientResponse response;
    protected static class SourceBuilder extends Builder
    {
       private WebTarget target = null;
@@ -248,7 +248,10 @@ public class SseEventSourceImpl implements SseEventSource
    {
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
-         response.closeHttpResponse();
+         if (response != null)
+         {
+            response.closeHttpResponse();
+         }
          executor.shutdownNow();
          onCompleteConsumers.forEach(Runnable::run);
       }
