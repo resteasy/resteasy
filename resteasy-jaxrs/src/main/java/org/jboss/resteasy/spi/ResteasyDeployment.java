@@ -11,6 +11,7 @@ import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.GetRestful;
@@ -95,6 +96,17 @@ public class ResteasyDeployment
       // this allows each WAR to have their own set of providers 
       if (providerFactory == null) providerFactory = ResteasyProviderFactory.newInstance();
       providerFactory.setRegisterBuiltins(registerBuiltin);
+      Object context = getDefaultContextObjects().get(ResteasyConfiguration.class);
+      if (context != null) {
+         final Object tracingText = ((ResteasyConfiguration) context).getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+         if (tracingText != null) {
+            providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
+         }
+         final Object thresholdText = ((ResteasyConfiguration) context).getInitParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+         if (thresholdText != null) {
+            providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, thresholdText);
+         }
+      }
 
       if (deploymentSensitiveFactoryEnabled)
       {

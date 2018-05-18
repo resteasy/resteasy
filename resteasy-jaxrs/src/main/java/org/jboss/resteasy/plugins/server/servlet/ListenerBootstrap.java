@@ -2,6 +2,9 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
@@ -33,6 +36,7 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    {
       ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       if (deployment == null) deployment = super.createDeployment();
+
       deployment.getDefaultContextObjects().put(ResteasyDeployment.class, deployment);
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
