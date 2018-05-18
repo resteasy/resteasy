@@ -101,6 +101,18 @@ public class UriBuilderTest {
             builder = builder.resolveTemplates(values);
             template = builder.toTemplate();
             Assert.assertEquals(ERROR_MSG, template, "http://localhost/x/y/z?name=42");
+
+            // RESTEASY-1878 - test if regex templates work
+            // see javax.ws.rs.core.UriBuilder class description for info about regex template parameters
+            builder = UriBuilder.fromUri("{id: [0-9]+}");
+            Assert.assertEquals(new URI("123"), builder.build("123"));
+
+            builder = UriBuilder.fromUri("{id: [0-9]+}");
+            Assert.assertEquals(new URI("abcd"), builder.build("abcd"));
+
+            builder = UriBuilder.fromUri("/resources/{id: [0-9]+}");
+            Assert.assertEquals(new URI("/resources/123"), builder.build("123"));
+            // end of RESTEASY-1878
         }
 
         // test587
