@@ -44,7 +44,7 @@ public class ValidationSurpressPathDefaultTest extends ValidationSuppressPathTes
      */
     @Test
     public void testInputViolations() throws Exception {
-        doTestInputViolations("s", "t", "", "post.arg0");
+        doTestInputViolations("s", "t", "", new String[]{"post.arg0", "post.foo"});
     }
 
     /**

@@ -17,7 +17,9 @@ import javax.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,12 +47,14 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    {
       this.constructor = constructor;
       params = new ValueInjector[constructor.getParameterTypes().length];
+      Parameter[] reflectionParameters = constructor.getParameters();
       for (int i = 0; i < constructor.getParameterTypes().length; i++)
       {
          Class type = constructor.getParameterTypes()[i];
          Type genericType = constructor.getGenericParameterTypes()[i];
          Annotation[] annotations = constructor.getParameterAnnotations()[i];
-         params[i] = factory.getInjectorFactory().createParameterExtractor(constructor.getDeclaringClass(), constructor, type, genericType, annotations, factory);
+         String name = reflectionParameters[i].getName();
+         params[i] = factory.getInjectorFactory().createParameterExtractor(constructor.getDeclaringClass(), constructor, name, type, genericType, annotations, factory);
       }
    }
 

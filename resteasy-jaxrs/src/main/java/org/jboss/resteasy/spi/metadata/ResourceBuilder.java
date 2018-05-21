@@ -272,6 +272,11 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
             parameter.paramName = queryParam.value();
          }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.QUERY_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if(( query = findAnnotation(annotations, Query.class))!= null)
          {
             parameter.paramType = Parameter.ParamType.QUERY;
@@ -282,20 +287,40 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.HEADER_PARAM;
             parameter.paramName = header.value();
          }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.HEADER_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.FORM_PARAM;
             parameter.paramName = formParam.value();
+         }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.FORM_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
             parameter.paramName = cookie.value();
          }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
+            // don't touch paramName, which is already set
+         }
          else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.PATH_PARAM;
             parameter.paramName = uriParam.value();
+         }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.PATH_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((form = findAnnotation(annotations, Form.class)) != null)
          {
@@ -310,6 +335,11 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
             parameter.paramName = matrix.value();
+         }
+         else if (findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class) != null)
+         {
+            parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
+            // don't touch paramName, which is already set
          }
          else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
          {

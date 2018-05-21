@@ -11,6 +11,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+    </properties>
+
     <artifactId>resteasy-integration-tests</artifactId>
     <name>RESTEasy Main testsuite: Integration tests</name>
 
@@ -425,5 +429,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
