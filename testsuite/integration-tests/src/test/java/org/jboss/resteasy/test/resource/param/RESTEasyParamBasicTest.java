@@ -8,7 +8,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicCustomValuesResource;
@@ -129,7 +128,6 @@ public class RESTEasyParamBasicTest {
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @Category(ExpectedFailing.class)
     public void customValuesTest() {
         Response response = client.target(generateURL("/custom/values/a/pathParam0/pathParam1/pathParam2/pathParam3"))
                 .queryParam("queryParam0", "queryParam0")
