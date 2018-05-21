@@ -86,8 +86,8 @@ public class ResteasyUriBuilder extends UriBuilder
       return impl;
    }
 
-   public static final Pattern opaqueUri = Pattern.compile("^([^:/?#]+):([^/].*)");
-   public static final Pattern hierarchicalUri = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+   public static final Pattern opaqueUri = Pattern.compile("^([^:/?#{]+):([^/].*)");
+   public static final Pattern hierarchicalUri = Pattern.compile("^(([^:/?#{]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
    private static final Pattern hostPortPattern = Pattern.compile("([^/:]+):(\\d+)");
    private static final Pattern squareHostBrackets = Pattern.compile( "(\\[(([0-9A-Fa-f]{0,4}:){2,7})([0-9A-Fa-f]{0,4})%?.*\\]):(\\d+)" );
 
