@@ -3,6 +3,7 @@ package org.jboss.resteasy.spi.metadata;
 import org.jboss.resteasy.util.Types;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 /**
@@ -30,9 +31,10 @@ public class DefaultResourceLocator implements ResourceLocator
       this.genericReturnType = Types.resolveTypeVariables(resourceClass.getClazz(), method.getGenericReturnType());
       this.returnType = Types.getRawType(genericReturnType);
       this.params = new MethodParameter[method.getParameterTypes().length];
+      Parameter[] reflectionParameters = method.getParameters();
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
-         this.params[i] = new MethodParameter(this, method.getParameterTypes()[i], method.getGenericParameterTypes()[i], annotatedMethod.getParameterAnnotations()[i]);
+         this.params[i] = new MethodParameter(this, reflectionParameters[i].getName(), method.getParameterTypes()[i], method.getGenericParameterTypes()[i], annotatedMethod.getParameterAnnotations()[i]);
       }
    }
 

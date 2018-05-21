@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +84,7 @@ public class PathSuppressionTest {
      */
     @Test
     public void testInputSuppressPathDefault() throws Exception {
-        doTestInputViolations("default", "s", "t", "", "test.arg0");
+        doTestInputViolations("default", "s", "t", "", new String[]{"test.arg0", "test.u"});
     }
 
     /**
@@ -91,7 +93,7 @@ public class PathSuppressionTest {
      */
     @Test
     public void testInputSuppressPathFalse() throws Exception {
-        doTestInputViolations("false", "s", "t", "", "test.arg0");
+        doTestInputViolations("false", "s", "t", "", new String[]{"test.arg0", "test.u"});
     }
 
     /**
@@ -130,7 +132,7 @@ public class PathSuppressionTest {
         doTestReturnValueViolations("true", "*");
     }
 
-    public void doTestInputViolations(String suppress, String fieldPath, String propertyPath, String classPath, String parameterPath) throws Exception {
+    public void doTestInputViolations(String suppress, String fieldPath, String propertyPath, String classPath, String... parameterPaths) throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/all/a/b/c", "RESTEASY-945-" + suppress)).request().get();
         Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
         Assert.assertTrue("Header has wrong format", header instanceof String);
@@ -147,7 +149,7 @@ public class PathSuppressionTest {
         Assert.assertEquals("Expected validation error is not in response", classPath, violation.getPath());
 
         violation = report.getParameterViolations().iterator().next();
-        Assert.assertEquals("Expected validation error is not in response", parameterPath, violation.getPath());
+        Assert.assertTrue("Expected validation error is not in response: " + parameterPaths, Arrays.asList(parameterPaths).contains(violation.getPath()));
         response.close();
     }
 

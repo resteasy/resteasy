@@ -1,6 +1,7 @@
 package org.jboss.resteasy.spi.metadata;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -19,9 +20,10 @@ public class DefaultResourceConstructor implements ResourceConstructor
       if (constructor.getParameterTypes() != null)
       {
          this.params = new ConstructorParameter[constructor.getParameterTypes().length];
+         Parameter[] reflectionParameters = constructor.getParameters();
          for (int i = 0; i < constructor.getParameterTypes().length; i++)
          {
-            this.params[i] = new ConstructorParameter(this, constructor.getParameterTypes()[i], constructor.getGenericParameterTypes()[i], constructor.getParameterAnnotations()[i]);
+            this.params[i] = new ConstructorParameter(this, reflectionParameters[i].getName(), constructor.getParameterTypes()[i], constructor.getGenericParameterTypes()[i], constructor.getParameterAnnotations()[i]);
          }
       }
    }
