@@ -1411,6 +1411,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
    {
+      // RESTEASY-1725
+      if (providerClass.getName().contains("$$Lambda$")) {
+         throw new RuntimeException(Messages.MESSAGES.registeringContextResolverAsLambda());
+      }
       Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
       addContextResolver(provider, parameter, providerClass, builtin);
    }
