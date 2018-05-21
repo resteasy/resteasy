@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+       ~ JBoss, Home of Professional Open Source.
+  ~ Copyright 2013, Red Hat, Inc., and individual contributors
+  ~ as indicated by the @author tags. See the copyright.txt file in the
+  ~ distribution for a full listing of individual contributors.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <module name="RegexpSingleline">
+        <!-- \s matches whitespace character, $ matches end of line. -->
+        <property name="format" value="\s+$"/>
+        <property name="message" value="Line has trailing spaces."/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="@cs-: (\w+) \((\w|\s)+\)"/>
+            <property name="checkFormat" value="$1"/>
+            <property name="influenceFormat" value="0"/>
+        </module>
+
+        <property name="cacheFile" value="${checkstyle.cache.file}"/>
+
+        <!-- Checks for imports                              -->
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true"/>
+        </module>
+        <module name="RedundantImport"/>
+
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="true" />
+        </module>
+
+        <!-- Modifier Checks                                    -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+
+        <!-- Checks for blocks.                              -->
+        <!--<module name="LeftCurly">
+            <property name="option" value="eol"/>
+        </module>
+        <module name="NeedBraces"/>
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+        </module>
+
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>-->
+
+        <!-- Checks for common coding problems               -->
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="IllegalInstantiation"/>
+
+        <!-- final parameters check, enabled only for constructors -->
+        <module name="FinalParameters">
+            <property name="tokens" value="CTOR_DEF"/>
+        </module>
+
+        <!-- Miscellaneous other checks.                   -->
+        <module name="UpperEll"/>
+        <module name="PackageAnnotation"/>
+        <module name="CovariantEquals"/>
+        <module name="ArrayTypeStyle"/>
+
+        <!-- Checks for System.out -->
+        <module name="Regexp">
+            <property name="format" value="System\.out"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+
+        <!-- Checks for System.err -->
+        <module name="Regexp">
+            <property name="format" value="System\.err"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+
+        <!-- Checks for printStackTrace -->
+        <module name="Regexp">
+            <property name="format" value="printStackTrace\(\)"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+        
+    </module>
+
+</module>
+
+
