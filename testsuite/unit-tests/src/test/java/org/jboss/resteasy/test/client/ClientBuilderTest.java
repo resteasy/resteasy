@@ -14,6 +14,7 @@ import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -113,6 +114,48 @@ public class ClientBuilderTest {
              .type(MediaType.APPLICATION_OCTET_STREAM).build();
        Assert.assertNotNull("Build link failed", link);
     }
+
+    @Test
+    public void testRegisterContextResolverClass() {
+        ClientBuilder.newBuilder()
+                .register(new CustomContextResolver())
+                .build();
+    }
+
+    @Test
+    public void testRegisterContextResolverAnonymousClass() {
+        ClientBuilder.newBuilder()
+                .register(new ContextResolver<MyObject>() {
+
+                    @Override
+                    public MyObject getContext(Class<?> type) {
+                        return null;
+                    }
+
+                })
+                .build();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testRegisterContextResolverLambda() {
+        ClientBuilder.newBuilder()
+                .register((ContextResolver<MyObject>) type -> null)
+                .build();
+    }
+
+    public static class MyObject {
+
+    }
+
+    public static class CustomContextResolver implements ContextResolver<MyObject> {
+
+        @Override
+        public MyObject getContext(Class<?> type) {
+            return null;
+        }
+
+    }
+
     public static class FeatureReturningFalse implements Feature {
         @Override
         public boolean configure(FeatureContext context) {

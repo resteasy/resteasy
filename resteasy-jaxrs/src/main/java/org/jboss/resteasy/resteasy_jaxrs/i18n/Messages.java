@@ -783,4 +783,7 @@ public interface Messages
 
    @Message(id = BASE + 1094, value = "Unable to instantiate ContextInjector")
    String unableToInstantiateContextInjector();
+
+   @Message(id = BASE + 1097, value = "Registering a context resolver doesn't support lambdas")
+   String registeringContextResolverAsLambda();
 }
