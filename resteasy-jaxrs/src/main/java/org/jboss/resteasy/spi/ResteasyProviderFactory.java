@@ -300,6 +300,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             enabledFeatures.addAll(parent.enabledFeatures);
          }
       }
+      
+      resourceBuilder = new ResourceBuilder();
    }
 
    protected void initialize()
@@ -1878,7 +1880,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, ResourceClassProcessor.class, contracts))
       {
-         addResourceClassProcessor(provider);
+         int priority = getPriority(priorityOverride, contracts, ResourceClassProcessor.class, provider);
+         addResourceClassProcessor(provider, priority);
+         newContracts.put(ResourceClassProcessor.class, priority);
       }
    }
 
@@ -2194,7 +2198,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, ResourceClassProcessor.class, contracts))
       {
-         addResourceClassProcessor((ResourceClassProcessor) provider);
+         int priority = getPriority(priorityOverride, contracts, ResourceClassProcessor.class, provider.getClass());
+         addResourceClassProcessor((ResourceClassProcessor) provider, priority);
+         newContracts.put(ResourceClassProcessor.class, priority);
       }
    }
 
@@ -2796,15 +2802,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
-   protected void addResourceClassProcessor(Class<ResourceClassProcessor> processorClass)
+   protected void addResourceClassProcessor(Class<ResourceClassProcessor> processorClass, int priority)
    {
       ResourceClassProcessor processor = createProviderInstance(processorClass);
-      addResourceClassProcessor(processor);
+      addResourceClassProcessor(processor, priority);
    }
 
-   protected void addResourceClassProcessor(ResourceClassProcessor processor)
+   protected void addResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {
-      resourceBuilder.registerResourceClassProcessor(processor);
+      resourceBuilder.registerResourceClassProcessor(processor, priority);
    }
 
    public ResourceBuilder getResourceBuilder() {
