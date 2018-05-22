@@ -36,6 +36,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexClassValidat
 import org.jboss.resteasy.test.validation.resource.ValidationComplexClassValidator2;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexClassValidatorSubInheritance;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexClassValidatorSuperInheritance;
+import org.jboss.resteasy.test.validation.resource.ValidationComplexOtherGroupValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexProxyInterface;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexProxyResource;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations;
@@ -128,7 +129,8 @@ public class ValidationComplexTest {
                 ValidationComplexFoo.class, ValidationComplexClassConstraint.class,
                 ValidationComplexInterfaceSub.class, ValidationComplexClassInheritanceSuperConstraint.class,
                 ValidationComplexClassValidatorSuperInheritance.class,
-                ValidationComplexClassConstraint2.class, ValidationComplexClassValidator2.class);
+                ValidationComplexClassConstraint2.class, ValidationComplexClassValidator2.class,
+                ValidationComplexOtherGroupValidator.class);
         // Arquillian in the deployment
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                 new LoggingPermission("control", ""),
