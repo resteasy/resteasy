@@ -36,6 +36,7 @@ public class TestPortProvider
    /**
     * Create a Resteasy client proxy with an empty base request path.
     *
+    * @param <T> type
     * @param clazz the client interface class
     * @return the proxy object
     */
@@ -47,6 +48,7 @@ public class TestPortProvider
    /**
     * Create a Resteasy client proxy.
     *
+    * @param <T> type
     * @param clazz the client interface class
     * @param path the base request path
     * @return the proxy object
@@ -72,6 +74,7 @@ public class TestPortProvider
     *
     * @param path the request path
     * @return a full URL
+    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found 
     */
    public static URL createURL(String path) throws MalformedURLException
    {
