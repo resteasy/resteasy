@@ -6,7 +6,7 @@ import java.io.StringWriter;
 /**
  * A ExceptionAdapter.
  *
- * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public class ExceptionAdapter extends RuntimeException
@@ -27,7 +27,7 @@ public class ExceptionAdapter extends RuntimeException
    /**
     * Create a new ExceptionAdapter.
     *
-    * @param e
+    * @param e exception
     */
    public ExceptionAdapter(Exception e)
    {
@@ -44,9 +44,9 @@ public class ExceptionAdapter extends RuntimeException
    }
 
    /**
-    * FIXME Comment this
+    * Prints stack trace.
     *
-    * @see @see java.lang.Throwable#printStackTrace()
+    * @see java.lang.Throwable#printStackTrace()
     */
    public void printStackTrace()
    {
@@ -54,10 +54,10 @@ public class ExceptionAdapter extends RuntimeException
    }
 
    /**
-    * FIXME Comment this
+    * Prints stack trace.
     *
-    * @param s
-    * @see @see java.lang.Throwable#printStackTrace(java.io.PrintStream)
+    * @param s print stream
+    * @see java.lang.Throwable#printStackTrace(java.io.PrintStream)
     */
    public void printStackTrace(java.io.PrintStream s)
    {
@@ -69,10 +69,10 @@ public class ExceptionAdapter extends RuntimeException
    }
 
    /**
-    * FIXME Comment this
+    * Prints stack trace.
     *
-    * @param s
-    * @see @see java.lang.Throwable#printStackTrace(java.io.PrintWriter)
+    * @param s print writer
+    * @see java.lang.Throwable#printStackTrace(java.io.PrintWriter)
     */
    public void printStackTrace(java.io.PrintWriter s)
    {
@@ -87,7 +87,7 @@ public class ExceptionAdapter extends RuntimeException
    /**
     * Rethrows the original exception class.
     *
-    * @throws Exception
+    * @throws Exception exception
     */
    public void rethrow() throws Exception
    {

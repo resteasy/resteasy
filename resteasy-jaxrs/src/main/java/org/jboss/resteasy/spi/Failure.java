@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * This exception should only be used by Resteasy integrators.  Applications code should use WebApplicationException.
- * <p/>
+ * <p>
  * This is thrown by Restasy runtime when a failure occurs.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

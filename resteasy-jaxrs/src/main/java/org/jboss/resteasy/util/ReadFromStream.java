@@ -13,10 +13,10 @@ public class ReadFromStream
    /**
     * Stuff the contents of a InputStream into a byte buffer.  Reads until EOF (-1).
     *
-    * @param bufferSize
-    * @param entityStream
-    * @return
-    * @throws IOException
+    * @param bufferSize buffer size
+    * @param entityStream entity input stream
+    * @return bytes read
+    * @throws IOException if I/O error occurred
     */
    public static byte[] readFromStream(int bufferSize, InputStream entityStream)
            throws IOException

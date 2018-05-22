@@ -23,8 +23,8 @@ public class LocaleHelper
     * HTTP 1.1 has different String format for language than what java.util.Locale does '-' instead of '_'
     * as a separator
     *
-    * @param value
-    * @return
+    * @param value locale
+    * @return converted language format string
     */
    public static String toLanguageString(Locale value)
    {

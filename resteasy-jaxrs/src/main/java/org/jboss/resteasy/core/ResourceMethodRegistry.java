@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Registry of resources and methods/classes that can dispatch HTTP method requests
+ * Registry of resources and methods/classes that can dispatch HTTP method requests.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -70,9 +70,9 @@ public class ResourceMethodRegistry implements Registry
    }
 
    /**
-    * Register a vanilla JAX-RS resource class
+    * Register a vanilla JAX-RS resource class.
     *
-    * @param clazz
+    * @param clazz class
     */
    public void addPerRequestResource(Class clazz)
    {
@@ -155,7 +155,7 @@ public class ResourceMethodRegistry implements Registry
     * Bind an endpoint ResourceFactory.  ResourceFactory.getScannableClass() defines what class should be scanned
     * for JAX-RS annotations.  The class and any implemented interfaces are scanned for annotations.
     *
-    * @param ref
+    * @param ref resource factory
     */
    public void addResourceFactory(ResourceFactory ref)
    {
@@ -166,7 +166,7 @@ public class ResourceMethodRegistry implements Registry
     * ResourceFactory.getScannableClass() defines what class should be scanned
     * for JAX-RS annotations.    The class and any implemented interfaces are scanned for annotations.
     *
-    * @param ref
+    * @param ref resource factory
     * @param base base URI path for any resources provided by the factory, in addition to rootPath
     */
    public void addResourceFactory(ResourceFactory ref, String base)
@@ -189,7 +189,7 @@ public class ResourceMethodRegistry implements Registry
     * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
     * of the clazz parameter.
     *
-    * @param ref
+    * @param ref resource factory
     * @param base  base URI path for any resources provided by the factory, in addition to rootPath
     * @param clazz specific class
     */
@@ -204,7 +204,7 @@ public class ResourceMethodRegistry implements Registry
     * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
     * of the clazz parameter.
     *
-    * @param ref
+    * @param ref resource factory
     * @param base    base URI path for any resources provided by the factory, in addition to rootPath
     * @param classes specific class
     */
@@ -361,9 +361,9 @@ public class ResourceMethodRegistry implements Registry
    }
 
    /**
-    * Find all endpoints reachable by clazz and unregister them
+    * Find all endpoints reachable by clazz and unregister them.
     *
-    * @param clazz
+    * @param clazz class
     */
    public void removeRegistrations(Class clazz)
    {
@@ -419,9 +419,9 @@ public class ResourceMethodRegistry implements Registry
    }
 
    /**
-    * Number of endpoints registered
+    * Number of endpoints registered.
     *
-    * @return
+    * @return number of endpoints registered
     */
    public int getSize()
    {
@@ -430,9 +430,9 @@ public class ResourceMethodRegistry implements Registry
    }
 
    /**
-    * Find a resource to invoke on
+    * Find a resource to invoke on.
     *
-    * @return
+    * @return resource invoker
     */
    public ResourceInvoker getResourceInvoker(HttpRequest request)
    {

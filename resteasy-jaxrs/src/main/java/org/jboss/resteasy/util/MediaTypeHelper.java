@@ -86,8 +86,8 @@ public class MediaTypeHelper
    /**
     * subtypes like application/*+xml
     *
-    * @param subtype
-    * @return
+    * @param subtype subtype
+    * @return true if subtype is composite
     */
    public static boolean isCompositeWildcardSubtype(String subtype)
    {
@@ -97,8 +97,8 @@ public class MediaTypeHelper
    /**
     * subtypes like application/*+xml
     *
-    * @param subtype
-    * @return
+    * @param subtype subtype
+    * @return true if subtype is wildcard composite
     */
    public static boolean isWildcardCompositeSubtype(String subtype)
    {

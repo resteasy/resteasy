@@ -7,10 +7,10 @@ package org.jboss.resteasy.spi;
 public interface HeaderValueProcessor
 {
    /**
-    * Convert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString()
+    * Convert an object to a header string.  First try StringConverter, then HeaderDelegate, then object.toString().
     *
-    * @param object
-    * @return
+    * @param object header object
+    * @return header string representation
     */
    String toHeaderString(Object object);
 }

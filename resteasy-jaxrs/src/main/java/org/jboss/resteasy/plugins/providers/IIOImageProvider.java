@@ -38,12 +38,29 @@ import java.util.Locale;
 public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
 {
    /**
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @return
-    * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
-    *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+    * Ascertain if the MessageBodyReader can produce an instance of a
+    * particular type. The {@code type} parameter gives the
+    * class of the instance that should be produced, the {@code genericType} parameter
+    * gives the {@link java.lang.reflect.Type java.lang.reflect.Type} of the instance
+    * that should be produced.
+    * E.g. if the instance to be produced is {@code List<String>}, the {@code type} parameter
+    * will be {@code java.util.List} and the {@code genericType} parameter will be
+    * {@link java.lang.reflect.ParameterizedType java.lang.reflect.ParameterizedType}.
+    *
+    * @param type        the class of instance to be produced.
+    * @param genericType the type of instance to be produced. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the formal type of the method parameter as returned by
+    *                    {@code Method.getGenericParameterTypes}.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be initialized with the produced instance. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the annotations on that parameter returned by
+    *                    {@code Method.getParameterAnnotations}.
+    * @param mediaType   the media type of the HTTP entity, if one is not
+    *                    specified in the request then {@code application/octet-stream} is
+    *                    used.
+    * @return {@code true} if the type is supported, otherwise {@code false}.
     */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -51,19 +68,44 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
    }
 
    /**
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @param mediaType
-    * @param httpHeaders
-    * @param entityStream
-    * @return
-    * @throws IOException
-    * @throws WebApplicationException
-    * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-    *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
-    *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-    *      java.io.InputStream)
+    * Read a type from the {@link InputStream}.
+    * <p>
+    * In case the entity input stream is empty, the reader is expected to either return a
+    * Java representation of a zero-length entity or throw a {@link javax.ws.rs.core.NoContentException}
+    * in case no zero-length entity representation is defined for the supported Java type.
+    * A {@code NoContentException}, if thrown by a message body reader while reading a server
+    * request entity, is automatically translated by JAX-RS server runtime into a {@link javax.ws.rs.BadRequestException}
+    * wrapping the original {@code NoContentException} and rethrown for a standard processing by
+    * the registered {@link javax.ws.rs.ext.ExceptionMapper exception mappers}.
+    * </p>
+    *
+    * @param type         the type that is to be read from the entity stream.
+    * @param genericType  the type of instance to be produced. E.g. if the
+    *                     message body is to be converted into a method parameter, this will be
+    *                     the formal type of the method parameter as returned by
+    *                     {@code Method.getGenericParameterTypes}.
+    * @param annotations  an array of the annotations on the declaration of the
+    *                     artifact that will be initialized with the produced instance. E.g.
+    *                     if the message body is to be converted into a method parameter, this
+    *                     will be the annotations on that parameter returned by
+    *                     {@code Method.getParameterAnnotations}.
+    * @param mediaType    the media type of the HTTP entity.
+    * @param httpHeaders  the read-only HTTP headers associated with HTTP entity.
+    * @param entityStream the {@link InputStream} of the HTTP entity. The
+    *                     caller is responsible for ensuring that the input stream ends when the
+    *                     entity has been consumed. The implementation should not close the input
+    *                     stream.
+    * @return the type that was read from the stream. In case the entity input stream is empty, the reader
+    *         is expected to either return an instance representing a zero-length entity or throw
+    *         a {@link javax.ws.rs.core.NoContentException} in case no zero-length entity representation is
+    *         defined for the supported Java type.
+    * @throws java.io.IOException if an IO error arises. In case the entity input stream is empty
+    *                             and the reader is not able to produce a Java representation for
+    *                             a zero-length entity, {@code NoContentException} is expected to
+    *                             be thrown.
+    * @throws javax.ws.rs.WebApplicationException
+    *                             if a specific HTTP error response needs to be produced.
+    *                             Only effective if thrown prior to the response being committed.
     */
    public IIOImage readFrom(Class<IIOImage> type,
                             Type genericType,
@@ -87,12 +129,16 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
    }
 
    /**
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @return
-    * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
-    *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+    * Ascertain if the MessageBodyWriter supports a particular type.
+    *
+    * @param type        the class of instance that is to be written.
+    * @param genericType the type of instance to be written, obtained either
+    *                    by reflection of a resource method return type or via inspection
+    *                    of the returned instance. {@link javax.ws.rs.core.GenericEntity}
+    *                    provides a way to specify this information at runtime.
+    * @param annotations an array of the annotations attached to the message entity instance.
+    * @param mediaType   the media type of the HTTP entity.
+    * @return {@code true} if the type is supported, otherwise {@code false}.
     */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -100,19 +146,23 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
    }
 
    /**
-    * @param t
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @param mediaType
-    * @param httpHeaders
-    * @param entityStream
-    * @throws IOException
-    * @throws WebApplicationException
-    * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-    *      java.lang.Class, java.lang.reflect.Type,
-    *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
-    *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+    * Write a type to an HTTP message. The message header map is mutable
+    * but any changes must be made before writing to the output stream since
+    * the headers will be flushed prior to writing the message body.
+    *
+    * @param t            the instance to write.
+    * @param type         the class of instance that is to be written.
+    * @param genericType  the type of instance to be written. {@link javax.ws.rs.core.GenericEntity}
+    *                     provides a way to specify this information at runtime.
+    * @param annotations  an array of the annotations attached to the message entity instance.
+    * @param mediaType    the media type of the HTTP entity.
+    * @param httpHeaders  a mutable map of the HTTP message headers.
+    * @param entityStream the {@link OutputStream} for the HTTP entity. The
+    *                     implementation should not close the output stream.
+    * @throws java.io.IOException if an IO error arises.
+    * @throws javax.ws.rs.WebApplicationException
+    *                             if a specific HTTP error response needs to be produced.
+    *                             Only effective if thrown prior to the message being committed.
     */
    public void writeTo(IIOImage t,
                        Class<?> type,

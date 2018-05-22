@@ -16,7 +16,7 @@ public class GetRestful
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
-    * @param clazz
+    * @param clazz class
     * @return list of class and intertfaces that have jax-rs annotations
     */
    public static Class getRootResourceClass(Class clazz)
@@ -27,7 +27,7 @@ public class GetRestful
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
-    * @param clazz
+    * @param clazz class
     * @return list of class and interfaces that have jax-rs annotations
     */
    public static boolean isSubResourceClass(Class clazz)
@@ -51,7 +51,7 @@ public class GetRestful
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
-    * @param clazz
+    * @param clazz class
     * @return list of class and interfaces that have jax-rs annotations
     */
    public static Class getSubResourceClass(Class clazz)
@@ -75,7 +75,7 @@ public class GetRestful
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
-    * @param clazz
+    * @param clazz class
     * @return list of class and interfaces that have jax-rs annotations
     */
    public static Class<?>[] getSubResourceClasses(Class<?> clazz)

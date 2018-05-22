@@ -12,8 +12,8 @@ import java.lang.reflect.Type;
 /**
  * A AbstractEntityProvider.
  *
- * @param <T>
- * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
+ * @param <T> type
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public abstract class AbstractEntityProvider<T>

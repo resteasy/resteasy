@@ -28,9 +28,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * Provider that reads and writes org.w3c.dom.Document
+ * Provider that reads and writes org.w3c.dom.Document.
  *
- * @author <a href="sduskis@gmail.com>Solomon Duskis</a>
+ * @author <a href="sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: $
  */
 @Provider

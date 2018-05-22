@@ -8,7 +8,7 @@ import java.util.BitSet;
  * URL-encoding utility for each URL part according to the RFC specs
  *
  * @author stephane@epardaud.fr
- * @see http://www.ietf.org/rfc/rfc3986.txt
+ * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC-3986</a>
  */
 public class URLUtils
 {
@@ -30,7 +30,7 @@ public class URLUtils
    }
 
    /**
-    * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+    * sub-delims = "!" / "$" / "&#x26;" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
     */
    public final static BitSet SUB_DELIMS = new BitSet();
 
@@ -190,7 +190,7 @@ public class URLUtils
 
    /**
     * pchar = unreserved | escaped | sub-delims | ":" | "@"
-    * <p/>
+    * <p>
     * Note: we don't allow escaped here since we will escape it ourselves, so we don't want to allow them in the
     * unescaped sequences
     */
@@ -205,7 +205,7 @@ public class URLUtils
    }
 
    /**
-    * path_segment = pchar <without> ";"
+    * path_segment = pchar &#x3C;without&#x3E; ";"
     */
    public final static BitSet PATH_SEGMENT = new BitSet();
 
@@ -217,7 +217,7 @@ public class URLUtils
    }
 
    /**
-    * path_param_name = pchar <without> ";" | "="
+    * path_param_name = pchar &#x3C;without&#x3E; ";" | "="
     */
    public final static BitSet PATH_PARAM_NAME = new BitSet();
 
@@ -230,7 +230,7 @@ public class URLUtils
    }
 
    /**
-    * path_param_value = pchar <without> ";"
+    * path_param_value = pchar &#x3C;without&#x3E; ";"
     */
    public final static BitSet PATH_PARAM_VALUE = new BitSet();
 
@@ -273,6 +273,8 @@ public class URLUtils
    /**
     * Encodes a string to be a valid path parameter name, which means it can contain PCHAR* without "=" or ";". Uses
     * UTF-8.
+    * @param pathParamName path parameter name
+    * @return encoded string
     */
    public static String encodePathParamName(final String pathParamName)
    {
@@ -289,6 +291,8 @@ public class URLUtils
 
    /**
     * Encodes a string to be a valid path parameter value, which means it can contain PCHAR* without ";". Uses UTF-8.
+    * @param pathParamValue path parameter value
+    * @return encoded string
     */
    public static String encodePathParamValue(final String pathParamValue)
    {
@@ -304,8 +308,10 @@ public class URLUtils
    }
 
    /**
-    * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "&" | "+". Uses
+    * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "&#x26;" | "+". Uses
     * UTF-8.
+    * @param queryNameOrValue query
+    * @return encoded string
     */
    public static String encodeQueryNameOrValue(final String queryNameOrValue)
    {
@@ -322,7 +328,9 @@ public class URLUtils
 
    /**
     * Encodes a string to be a valid query with no parenthesis, which means it can contain PCHAR* | "?" | "/" without
-    * "=" | "&" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
+    * "=" | "&#x26;" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
+    * @param queryNameOrValueNoParen query
+    * @return encoded string
     */
    public static String encodeQueryNameOrValueNoParen(final String queryNameOrValueNoParen)
    {
@@ -342,6 +350,8 @@ public class URLUtils
    /**
     * Encodes a string to be a valid path segment, which means it can contain PCHAR* only (do not put path parameters or
     * they will be escaped. Uses UTF-8.
+    * @param pathSegment path segment
+    * @return encoded string
     */
    public static String encodePathSegment(final String pathSegment)
    {
@@ -359,7 +369,11 @@ public class URLUtils
    /**
     * Encodes a string to be a valid URI part, with the given characters allowed. The rest will be encoded.
     *
-    * @throws java.io.UnsupportedEncodingException
+    * @param part uri part
+    * @param charset charset
+    * @param allowed allowed characters
+    * @throws java.io.UnsupportedEncodingException if the named charset is not supported
+    * @return encoded string
     *
     */
    public static String encodePart(final String part, final String charset, final BitSet allowed) throws UnsupportedEncodingException

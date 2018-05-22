@@ -30,8 +30,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  *
  * Copyright Mar 6, 2012
  * 
- * @TODO Need to work on representation of exceptions
- * @TODO Add javadoc.
+ * {@literal @}TODO Need to work on representation of exceptions
+ * {@literal @}TODO Add javadoc.
  */
 public class ResteasyViolationException extends ConstraintViolationException
 {  
@@ -55,7 +55,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    
    /**
     * New constructor
-    * @param constraintViolations
+    * @param constraintViolations set of constraint violations
     */
    public ResteasyViolationException(Set<? extends ConstraintViolation<?>> constraintViolations)
    {
@@ -68,8 +68,8 @@ public class ResteasyViolationException extends ConstraintViolationException
    /**
     * New constructor
     * 
-    * @param constraintViolations
-    * @param accept
+    * @param constraintViolations set of constraint violations
+    * @param accept list of accept media types
     */
    public ResteasyViolationException(Set<? extends ConstraintViolation<?>> constraintViolations, List<MediaType> accept)
    {
@@ -81,7 +81,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    /**
     * New constructor
     * 
-    * @param container
+    * @param container violation container
     */
    public ResteasyViolationException(SimpleViolationsContainer container)
    {
@@ -92,8 +92,8 @@ public class ResteasyViolationException extends ConstraintViolationException
    /**
     * New constructor
     * 
-    * @param container
-    * @param accept
+    * @param container violation container
+    * @param accept list of accept media types
     */
    
    public ResteasyViolationException(SimpleViolationsContainer container, List<MediaType> accept)

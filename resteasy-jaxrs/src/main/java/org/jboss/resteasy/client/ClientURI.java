@@ -6,15 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotate a predefined URL (as opposed to a @PAthParam /@QueryParam)
+ * Used to annotate a predefined URL (as opposed to a @PathParam /@QueryParam)
  * in a Proxied client.<br>
- * <p/>
+ * <p>
  * For Example:
- * <p/>
+ * <p>
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon</a>
  * @version $Revision: 1 $
- * @GET MyDTO getDTO(@ClientURI String uri);
+ * {@literal @}GET MyDTO getDTO(@ClientURI String uri);
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

@@ -82,12 +82,12 @@ public final class FindAnnotation
    }
 
    /**
-    * FIXME Comment this
+    * Finds annotation.
     *
-    * @param <T>
-    * @param searchList
-    * @param annotation
-    * @return
+    * @param <T> type
+    * @param searchList array of annotations
+    * @param annotation expected annotation class
+    * @return annotation or null
     */
    public static <T> T findAnnotation(Annotation[] searchList, Class<T> annotation)
    {
@@ -101,7 +101,6 @@ public final class FindAnnotation
       }
       return null;
    }
-
 
    public static Class<? extends Annotation>[] findJaxRSAnnotations(Annotation[] searchList)
    {
@@ -141,8 +140,8 @@ public final class FindAnnotation
     * Returns an array of annotations the specified method of
     * a resource class.
     *
-    * @param method
-    * @return
+    * @param method method
+    * @return array of annotations
     */
    public static Annotation[] getResourcesAnnotations(Method method)
    {
@@ -159,12 +158,13 @@ public final class FindAnnotation
    }
 
    /**
-    * Look for an annotation in a list of annotations.  If not there, see if it is on the type provided
+    * Look for an annotation in a list of annotations.  If not there, see if it is on the type provided.
     *
-    * @param type
-    * @param annotations
-    * @param annnotation
-    * @return
+    * @param <T> type
+    * @param type type class
+    * @param annotations array of annotations
+    * @param annotation expected annotation
+    * @return annotation or null
     */
    public static <T extends Annotation> T findAnnotation(Class<?> type, Annotation[] annotations, Class<T> annotation)
    {

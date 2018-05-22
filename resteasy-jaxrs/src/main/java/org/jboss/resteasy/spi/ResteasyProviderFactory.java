@@ -124,8 +124,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    
    /**
     * Allow us to sort message body implementations that are more specific for their types
-    * i.e. MessageBodyWriter<Object> is less specific than MessageBodyWriter<String>.
-    * <p/>
+    * i.e. MessageBodyWriter&#x3C;Object&#x3E; is less specific than MessageBodyWriter&#x3C;String&#x3E;.
+    * <p>
     * This helps out a lot when the desired media type is a wildcard and to weed out all the possible
     * default mappings.
     */
@@ -299,7 +299,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * Copies a specific component registry when a new
     * provider is added. Otherwise delegates to the parent.
     *
-    * @param parent
+    * @param parent provider factory
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
@@ -309,8 +309,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * If local is true, copies components needed by client configuration,
     * so that parent is not referenced.
-    * @param parent
-    * @param local
+    * @param parent provider factory
+    * @param local local
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
    {
@@ -518,9 +518,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Copy
+    * Gets provide classes.
     *
-    * @return
+    * @return set of provider classes
     */
    public Set<Class<?>> getProviderClasses()
    {
@@ -532,9 +532,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Copy
+    * Gets provider instances.
     *
-    * @return
+    * @return set of provider instances
     */
    public Set<Object> getProviderInstances()
    {
@@ -596,9 +596,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Append interceptor predence
+    * Append interceptor predence.
     *
-    * @param precedence
+    * @param precedence precedence
     */
    @Deprecated
    public void appendInterceptorPrecedence(String precedence)
@@ -617,7 +617,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * @param after         put newPrecedence after this
-    * @param newPrecedence
+    * @param newPrecedence new precedence
     */
    @Deprecated
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
@@ -637,7 +637,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * @param before        put newPrecedence before this
-    * @param newPrecedence
+    * @param newPrecedence new precedence
     */
    @Deprecated
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
@@ -718,9 +718,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Will not initialize singleton if not set
+    * Will not initialize singleton if not set.
     *
-    * @return
+    * @return provider factory singleton
     */
    public static ResteasyProviderFactory peekInstance()
    {
@@ -748,9 +748,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    final static Object RD_LOCK = new Object();
 
    /**
-    * Initializes ResteasyProviderFactory singleton if not set
+    * Initializes ResteasyProviderFactory singleton if not set.
     *
-    * @return
+    * @return singleton provider factory
     */
    public static ResteasyProviderFactory getInstance()
    {
@@ -857,7 +857,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * This method retained for jaxrs-legacy code.  This method is deprecated and is replace
     * by method, getClientRequestFilterRegistry().
-    * @return
+    * @return interceptor registry
     */
    @Deprecated
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
@@ -974,11 +974,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * Specify the provider class.  This is there jsut in case the provider instance is a proxy.  Proxies tend
-    * to lose generic type information
+    * to lose generic type information.
     *
-    * @param provider
-    * @param providerClass
-    * @param isBuiltin
+    * @param provider message reader
+    * @param providerClass provider class
+    * @param priority priority
+    * @param isBuiltin built-in
     */
 
    protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, int priority, boolean isBuiltin)
@@ -1060,9 +1061,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * Specify the provider class.  This is there jsut in case the provider instance is a proxy.  Proxies tend
     * to lose generic type information
     *
-    * @param provider
-    * @param providerClass
-    * @param isBuiltin
+    * @param provider message reader
+    * @param providerClass provider class
+    * @param priority priority
+    * @param isBuiltin built-in
     */
    protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority, boolean isBuiltin)
    {
@@ -1140,7 +1142,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Always returns server MBRs
+    * Always returns server MBRs.
     *
     * @param type        the class of the object that is to be read.
     * @param genericType the type of object to be produced. E.g. if the
@@ -1153,8 +1155,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     *                    be the annotations on that parameter returned by
     *                    {@code Class.getParameterAnnotations}.
     * @param mediaType   the media type of the data that will be read.
-    * @param <T>
-    * @return
+    * @param <T> type
+    * @return message reader
     */
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -1569,8 +1571,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * Convert an object to a string.  First try StringConverter then, object.ToString()
     *
-    * @param object
-    * @return
+    * @param object object
+    * @param clazz class
+    * @param genericType generic type
+    * @param annotations array of annotation
+    * @return string representation
     */
    public String toString(Object object, Class clazz, Type genericType, Annotation[] annotations)
    {
@@ -1615,10 +1620,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * Checks to see if RuntimeDelegate is a ResteasyProviderFactory
-    * If it is, then use that, otherwise use this
+    * If it is, then use that, otherwise use this.
     *
-    * @param aClass
-    * @return
+    * @param aClass class of the header
+    * @return header delegate
     */
    public HeaderDelegate getHeaderDelegate(Class<?> aClass)
    {
@@ -1638,7 +1643,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * Register a @Provider class.  Can be a MessageBodyReader/Writer or ExceptionMapper.
     *
-    * @param provider
+    * @param provider provider class
+    * @param isBuiltin built-in
     */
    public void registerProvider(Class provider, boolean isBuiltin)
    {
@@ -2098,7 +2104,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * Register a @Provider object.  Can be a MessageBodyReader/Writer or ExceptionMapper.
     *
-    * @param provider
+    * @param provider provider instance
     */
    public void registerProviderInstance(Object provider)
    {
@@ -2592,7 +2598,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Always gets server MBW
+    * Always gets server MBW.
     *
     * @param type        the class of the object that is to be written.
     * @param genericType the type of object to be written. E.g. if the
@@ -2604,8 +2610,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     *                    the annotations on that field returned by
     *                    {@code Field.getDeclaredAnnotations}.
     * @param mediaType   the media type of the data that will be written.
-    * @param <T>
-    * @return
+    * @param <T> type
+    * @return message writer
     */
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -2647,13 +2653,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
 
    /**
-    * this is a spec method that is unsupported.  it is an optional method anyways.
+    * This is a spec method that is unsupported.  It is an optional method anyways.
     *
-    * @param applicationConfig
-    * @param endpointType
-    * @return
-    * @throws IllegalArgumentException
-    * @throws UnsupportedOperationException
+    * @param applicationConfig application
+    * @param endpointType endpoint type
+    * @return endpoint
+    * @throws IllegalArgumentException if applicationConfig is null
+    * @throws UnsupportedOperationException allways throw since this method is not supported
     */
    public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
@@ -2682,12 +2688,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * Create an instance of a class using provider allocation rules of the specification as well as the InjectorFactory
-    * <p/>
-    * only does constructor injection
+    * only does constructor injection.
     *
-    * @param clazz
-    * @param <T>
-    * @return
+    * @param clazz class 
+    * @param <T> type
+    * @return provider instance of type T
     */
    public <T> T createProviderInstance(Class<? extends T> clazz)
    {
@@ -2708,11 +2713,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Property and constructor injection using the InjectorFactory
+    * Property and constructor injection using the InjectorFactory.
     *
-    * @param clazz
-    * @param <T>
-    * @return
+    * @param clazz class
+    * @param <T> type
+    * @return instance of type T
     */
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
@@ -2728,11 +2733,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    /**
-    * Property and constructor injection using the InjectorFactory
+    * Property and constructor injection using the InjectorFactory.
     *
-    * @param clazz
-    * @param <T>
-    * @return
+    * @param clazz class
+    * @param request http request
+    * @param response http response
+    * @param <T> type
+    * @return instance of type T
     */
    public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
    {

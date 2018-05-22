@@ -149,6 +149,8 @@ public class Encode
 
    /**
     * Keep encoded values "%..." and template parameters intact.
+    * @param value query string
+    * @return encoded query string
     */
    public static String encodeQueryString(String value)
    {
@@ -157,6 +159,8 @@ public class Encode
 
    /**
     * Keep encoded values "%...", matrix parameters, template parameters, and '/' characters intact.
+    * @param value path
+    * @return encoded path
     */
    public static String encodePath(String value)
    {
@@ -165,6 +169,8 @@ public class Encode
 
    /**
     * Keep encoded values "%...", matrix parameters and template parameters intact.
+    * @param value path segment
+    * @return encoded path segment
     */
    public static String encodePathSegment(String value)
    {
@@ -173,6 +179,8 @@ public class Encode
 
    /**
     * Keep encoded values "%..." and template parameters intact.
+    * @param value uri fragment
+    * @return encoded uri fragment
     */
    public static String encodeFragment(String value)
    {
@@ -181,6 +189,8 @@ public class Encode
 
    /**
     * Keep encoded values "%..." and template parameters intact.
+    * @param value matrix parameter
+    * @return encoded matrix parameter
     */
    public static String encodeMatrixParam(String value)
    {
@@ -189,6 +199,8 @@ public class Encode
 
    /**
     * Keep encoded values "%..." and template parameters intact.
+    * @param value query parameter
+    * @return encoded query parameter
     */
    public static String encodeQueryParam(String value)
    {
@@ -241,8 +253,8 @@ public class Encode
    /**
     * Encode '%' if it is not an encoding sequence
     *
-    * @param string
-    * @return
+    * @param string value to encode
+    * @return encoded value
     */
    public static String encodeNonCodes(String string)
    {
@@ -291,9 +303,9 @@ public class Encode
    /**
     * Keep encoded values "%..." and template parameters intact i.e. "{x}"
     *
-    * @param segment
-    * @param encoding
-    * @return
+    * @param segment value to encode
+    * @param encoding encoding
+    * @return encoded value
     */
    public static String encodeValue(String segment, String[] encoding)
    {
@@ -317,11 +329,13 @@ public class Encode
 
    /**
     * Encode via <a href="http://ietf.org/rfc/rfc3986.txt">RFC 3986</a>.  PCHAR is allowed allong with '/'
-    * <p/>
+    * <p>
     * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    * sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
+    * sub-delims  = "!" / "$" / "&#x26;" / "'" / "(" / ")"
     * / "*" / "+" / "," / ";" / "="
     * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+    * @param segment value to encode
+    * @return encoded value
     */
    public static String encodePathAsIs(String segment)
    {
@@ -331,8 +345,8 @@ public class Encode
    /**
     * Keep any valid encodings from string i.e. keep "%2D" but don't keep "%p"
     *
-    * @param segment
-    * @return
+    * @param segment value to encode
+    * @return encoded value
     */
    public static String encodePathSaveEncodings(String segment)
    {
@@ -343,11 +357,13 @@ public class Encode
 
    /**
     * Encode via <a href="http://ietf.org/rfc/rfc3986.txt">RFC 3986</a>.  PCHAR is allowed allong with '/'
-    * <p/>
+    * <p>
     * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    * sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
+    * sub-delims  = "!" / "$" / "&#x26;" / "'" / "(" / ")"
     * / "*" / "+" / "," / ";" / "="
     * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+    * @param segment value to encode
+    * @return encoded value
     */
    public static String encodePathSegmentAsIs(String segment)
    {
@@ -357,8 +373,8 @@ public class Encode
    /**
     * Keep any valid encodings from string i.e. keep "%2D" but don't keep "%p"
     *
-    * @param segment
-    * @return
+    * @param segment value to encode
+    * @return encoded value
     */
    public static String encodePathSegmentSaveEncodings(String segment)
    {
@@ -371,8 +387,8 @@ public class Encode
    /**
     * Encodes everything of a query parameter name or value.
     *
-    * @param nameOrValue
-    * @return
+    * @param nameOrValue value to encode
+    * @return encoded value
     */
    public static String encodeQueryParamAsIs(String nameOrValue)
    {
@@ -382,8 +398,8 @@ public class Encode
    /**
     * Keep any valid encodings from string i.e. keep "%2D" but don't keep "%p"
     *
-    * @param segment
-    * @return
+    * @param segment value to encode
+    * @return encoded value
     */
    public static String encodeQueryParamSaveEncodings(String segment)
    {
@@ -468,8 +484,8 @@ public class Encode
    /**
     * decode an encoded map
     *
-    * @param map
-    * @return
+    * @param map map
+    * @return decoded map
     */
    public static MultivaluedMap<String, String> decode(MultivaluedMap<String, String> map)
    {
@@ -495,9 +511,9 @@ public class Encode
    /**
     * decode an encoded map
     *
-    * @param map
-    * @param charset
-    * @return
+    * @param map map
+    * @param charset charset
+    * @return decoded map
     */
    public static MultivaluedMap<String, String> decode(MultivaluedMap<String, String> map, String charset)
    {

@@ -3,7 +3,7 @@ package org.jboss.resteasy.spi;
 /**
  * Implement this interface and annotate your class with @Provider to provide marshalling and unmarshalling
  * of string-based, @HeaderParam, @MatrixParam, @QueryParam, and/or @PathParam injected values.
- * <p/>
+ * <p>
  * Use this when toString(), valueOf, and/or constructor(String) can not satisfy your marshalling requirements.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -11,7 +11,7 @@ package org.jboss.resteasy.spi;
  * 
  * @deprecated Replaced by javax.ws.rs.ext.ParamConverter
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.ext.ParamConverter
  */
 @Deprecated
