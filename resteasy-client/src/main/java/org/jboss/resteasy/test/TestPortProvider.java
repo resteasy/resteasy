@@ -20,6 +20,8 @@ public class TestPortProvider
 {
    /**
     * Creates a ResteasyWebTarget using base request path.
+    * @param path the path
+    * @return web resource target
     */
    public static ResteasyWebTarget createTarget(String path)
    {
@@ -29,6 +31,7 @@ public class TestPortProvider
    /**
     * Create a Resteasy client proxy with an empty base request path.
     *
+    * @param <T> type
     * @param clazz the client interface class
     * @return the proxy object
     */
@@ -40,9 +43,10 @@ public class TestPortProvider
    /**
     * Create a Resteasy client proxy.
     *
+    * @param <T> type
     * @param clazz the client interface class
+    * @param url request url
     * @return the proxy object
-    * @path the base request path
     */
    public static <T> T createProxy(Class<T> clazz, String url)
    {
@@ -66,6 +70,7 @@ public class TestPortProvider
     *
     * @param path the request path
     * @return a full URL
+    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found 
     */
    public static URL createURL(String path) throws MalformedURLException
    {
