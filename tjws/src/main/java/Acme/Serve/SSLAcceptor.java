@@ -289,6 +289,7 @@ public class SSLAcceptor implements Acceptor
     * Set the requested properties for this server socket.
     *
     * @param ssocket The server socket to be configured
+    * @param clientAuth client authentication needed
     */
    protected void initServerSocket(ServerSocket ssocket, boolean clientAuth)
    {

@@ -14,9 +14,9 @@ import Acme.Serve.Serve;
 /**
  * 
  * This cannot be restarted once stopped.
- * <p/>
+ * <p>
  * All properties can be set by a Properties map.  See more info at <a href="http://tjws.sourceforge.net/">TJWS Website</a>
- * <p/>
+ * <p>
  * Server will not run unless you set the port or ssl port properties.  You cannot run both an SSL and Non-SSL listener.
  * Create a new server if you want to do that.
  *

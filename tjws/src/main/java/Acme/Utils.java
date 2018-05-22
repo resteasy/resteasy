@@ -187,7 +187,7 @@ public class Utils
     * @param s   encoded string
     * @param enc source encoding
     * @return decoded string or original if no decoding required
-    * @throws UnsupportedEncodingException
+    * @throws UnsupportedEncodingException if the named charset is not supported
     */
    public static String decode(String s, String enc) throws UnsupportedEncodingException
    {
@@ -790,11 +790,10 @@ public class Utils
    /**
     * base 64 encoding, string converted to bytes using specified encoding
     *
-    * @param String <val>_s</val> original string to encode
-    * @param String encoding, can be null, then iso-8859-1 used
+    * @param _s  original string to encode
+    * @param _enc String encoding, can be null, then iso-8859-1 used
     * @return String result of encoding as iso-8859-1 string<br>
     *         return null in case of invalid encoding or original string null
-    * @throws no exceptions
     */
    public final static String base64Encode(String _s, String _enc)
    {
@@ -816,11 +815,9 @@ public class Utils
    /**
     * base 64 encoding, array of bytes converted to bytes using specified encoding
     *
-    * @param String <val>_s</val> original string to encode
-    * @param String encoding, can be null, then iso-8859-1 used
-    * @return String result of encoding as iso-8859-1 string<br>
-    * @throws <code>NullPointerException</code>
-    *          if input parameter is null
+    * @param _bytes original bytes to encode
+    * @return String result of encoding as iso-8859-1 string
+    * @throws NullPointerException if input parameter is null
     */
    public final static String base64Encode(byte[] _bytes)
    {
@@ -917,8 +914,8 @@ public class Utils
    /**
     * base 64 decoding
     *
-    * @param encoded  string
-    * @param encoding used to get string bytes
+    * @param _s string
+    * @param _enc used to get string bytes
     * @return result of encoding, or null if encoding invalid or string null, or string is invalid base 64 encoding
     */
    public final static String base64Decode(String _s, String _enc)
@@ -1248,7 +1245,8 @@ public class Utils
       /**
        * Creates a thread pool not queued with max number of threads defined in properties or DEF_MAX_POOLED_THREAD = 20
        *
-       * @param Properties where property THREADSINPOOL gives max threads Note if THREADSINPOOL not integers, or negative then DEF_MAX_POOLED_THREAD used
+       * @param properties where property THREADSINPOOL gives max threads Note if THREADSINPOOL not integers, or negative then DEF_MAX_POOLED_THREAD used
+       * @param threadfactory thread factory
        */
       public ThreadPool(Properties properties, ThreadFactory threadfactory)
       {
@@ -1270,7 +1268,7 @@ public class Utils
       /**
        * Assigns a new value for max threads
        *
-       * @param int new value of max threads, can't be less than 2, but can be 0 If current number threads exceed the value, then extra thread will be
+       * @param newSize new value of max threads, can't be less than 2, but can be 0 If current number threads exceed the value, then extra thread will be
        *            discarded gracefully
        */
       public void setMaxThreads(int newSize)
@@ -1292,7 +1290,7 @@ public class Utils
       /**
        * Takes a new task for execution by a threads in pool will wait until free threads if number of threads reached max
        *
-       * @param Runnable task for execution
+       * @param runnable task for execution
        */
       public void executeThread(Runnable runnable)
       {
