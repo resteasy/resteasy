@@ -43,10 +43,17 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 
@@ -731,15 +738,20 @@ public class ResourceBuilder
       }
    }
 
-   private final List<ResourceClassProcessor> processors = new ArrayList<>();
+   private final Map<Integer, List<ResourceClassProcessor>> processors = new TreeMap<>(Comparator.reverseOrder());
 
    /**
     * Register a new {@link ResourceClassProcessor} which will be used to post-process all
     * {@link ResourceClass} instances created from the builder.
     */
-   public void registerResourceClassProcessor(ResourceClassProcessor processor)
+   public void registerResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {
-      this.processors.add(processor);
+      List<ResourceClassProcessor> l = processors.get(priority);
+      if (l == null) {
+         l = new LinkedList<ResourceClassProcessor>();
+         processors.put(priority, l);
+      }
+      l.add(processor);
    }
 
    @Deprecated
@@ -1109,10 +1121,12 @@ public class ResourceBuilder
    private ResourceClass applyProcessors(ResourceClass original)
    {
       ResourceClass current = original;
-      for (ResourceClassProcessor processor : processors)
-      {
-         current = processor.process(current);
-         Objects.requireNonNull(current, "ResourceClassProcessor must not return null");
+      for (List<ResourceClassProcessor> l : processors.values()) {
+         for (ResourceClassProcessor processor : l)
+         {
+            current = processor.process(current);
+            Objects.requireNonNull(current, "ResourceClassProcessor must not return null");
+         }
       }
       return current;
    }
