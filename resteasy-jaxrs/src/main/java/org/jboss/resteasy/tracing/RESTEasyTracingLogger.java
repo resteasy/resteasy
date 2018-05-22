@@ -12,7 +12,7 @@ public abstract class RESTEasyTracingLogger {
     /**
      * HTTP header prefix.
      */
-    protected static final String HEADER_TRACING_PREFIX = "X-RESTEasy-Tracing-";
+    public static final String HEADER_TRACING_PREFIX = "X-RESTEasy-Tracing-";
     /**
      * Request header name to change application default tracing level.
      */
