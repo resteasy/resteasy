@@ -17,7 +17,7 @@ import java.util.List;
  * A utility class to provide supporting functionality to various
  * entity providers.
  *
- * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public final class ProviderHelper
@@ -29,9 +29,9 @@ public final class ProviderHelper
    }
 
    /**
-    * @param in
-    * @return
-    * @throws IOException
+    * @param in input stream
+    * @return string data
+    * @throws IOException if I/O error occurred
     */
    public static String readString(InputStream in) throws IOException
    {
@@ -53,9 +53,10 @@ public final class ProviderHelper
    }
 
    /**
-    * @param in
-    * @return
-    * @throws IOException
+    * @param in input stream
+    * @param mediaType media type
+    * @return string data
+    * @throws IOException if I/O error occurred
     */
    public static String readString(InputStream in, MediaType mediaType) throws IOException
    {
@@ -79,8 +80,8 @@ public final class ProviderHelper
    }
 
    /**
-    * @param mediaTypes
-    * @return
+    * @param mediaTypes string array of media types
+    * @return list of media types
     */
    public static List<MediaType> getAvailableMediaTypes(String[] mediaTypes)
    {
@@ -93,8 +94,8 @@ public final class ProviderHelper
    }
 
    /**
-    * @param mediaTypes
-    * @return
+    * @param mediaTypes string array of media types
+    * @return list of {@link Variant}
     */
    public static List<Variant> getAvailableVariants(String[] mediaTypes)
    {
@@ -102,8 +103,8 @@ public final class ProviderHelper
    }
 
    /**
-    * @param mediaTypes
-    * @return
+    * @param mediaTypes list of media types
+    * @return list of {@link Variant}
     */
    public static List<Variant> getAvailableVariants(List<MediaType> mediaTypes)
    {
@@ -114,9 +115,9 @@ public final class ProviderHelper
    }
 
    /**
-    * @param in
-    * @param out
-    * @throws IOException
+    * @param in input stream
+    * @param out output stream
+    * @throws IOException if I/O error occurred
     */
    public static void writeTo(final InputStream in, final OutputStream out) throws IOException
    {

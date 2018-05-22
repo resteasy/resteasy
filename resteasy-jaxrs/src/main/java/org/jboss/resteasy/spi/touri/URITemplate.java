@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
  * transformation between URI template and bean properties. For example, take
  * the following bean:
  * </p>
- * <p/>
  * <pre>
  * &#064;URITemplate(&quot;/foo/{id}&quot;)
  * public class Foo
@@ -20,7 +19,6 @@ import java.lang.annotation.Target;
  *    // getters and setters
  * }
  * </pre>
- * <p/>
  * <p>
  * for a Foo f with id = 123, ObjectToURI.getInstance(f) = "/foo/123"
  * </p>

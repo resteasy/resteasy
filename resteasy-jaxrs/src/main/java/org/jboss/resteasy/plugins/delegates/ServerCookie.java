@@ -75,7 +75,9 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
+    * @deprecated Not used: Deprecated in the original org.apache.tomcat.util.http.ServerCookie class.
+    * @param name name
+    * @return boolean flag
     */
    public static boolean checkName(String name)
    {
@@ -101,6 +103,8 @@ public class ServerCookie implements Serializable
 
    /**
     * Return the header name to set the cookie, based on cookie version.
+    * @param version cookie version
+    * @return cookie header name
     */
    public static String getCookieHeaderName(int version)
    {
@@ -245,7 +249,10 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
+    * @deprecated Not used: Deprecated in the original org.apache.tomcat.util.http.ServerCookie class.
+    * @param version version
+    * @param buf buffer
+    * @param value value
     */
    @Deprecated
    public static void maybeQuote(int version, StringBuffer buf, String value)
@@ -272,9 +279,9 @@ public class ServerCookie implements Serializable
    /**
     * Quotes values using rules that vary depending on Cookie version.
     *
-    * @param version
-    * @param buf
-    * @param value
+    * @param version cookie version
+    * @param buf buffer
+    * @param value value
     */
    public static void maybeQuote2(int version, StringBuffer buf, String value)
    {

@@ -67,8 +67,8 @@ public class AcceptParser
    /**
     * Return list sorted with first most preferred
     *
-    * @param header
-    * @return
+    * @param header accept header
+    * @return a sorted list of accept header values
     */
    public static List<String> parseAcceptHeader(String header)
    {

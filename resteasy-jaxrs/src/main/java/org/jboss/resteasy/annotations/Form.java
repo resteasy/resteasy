@@ -11,10 +11,10 @@ import java.lang.annotation.Target;
  * You can re-use @*Param annotations on fields/methods of the parameter to
  * unmarshall from the request or marshall to the response depending if you're
  * using server-side JAX-RS or the Resteasy client framework
- * <p/>
+ * <p>
  * When using this on the server side, you must put your @*Param annotations
  * on either fields or setter methods.
- * <p/>
+ * <p>
  * When using this with the Resteasy client framework, you must put your @*Param
  * annotations on either fields or getter methods.
  *
@@ -30,7 +30,7 @@ public @interface Form
     * This is a form parameter prefix you want applied to any @FormParam variables in the object
     * See documentation for more details.
     *
-    * @return
+    * @return prefix
     */
    String prefix() default "";
 }

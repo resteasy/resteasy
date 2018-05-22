@@ -65,7 +65,7 @@ import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
 /**
- * Allow applications to push/pop provider factories onto the stack
+ * Allow applications to push/pop provider factories onto the stack.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -597,7 +597,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    /**
     * This method retailed for backward compatibility for jaxrs-legacy code.
     * Method, getClientRequestFilterRegistry, replaces it.
-    * @return
+    * @return interceptor registry
     */
    @Deprecated
    @Override

@@ -8,7 +8,6 @@ import java.util.Map;
  * Parameter values are exptected to be enclosed in quotes if they
  * contain unsafe characters, such as '=' characters or separators.
  * Parameter values are optional and can be omitted.
- * <p/>
  * <p>
  * <code>param1 = value; param2 = "anything goes; really"; param3</code>
  * </p>
@@ -315,7 +314,9 @@ public class ParameterParser
     * @param offset    - the initial offset.
     * @param length    - the length.
     * @param separator the name/value pairs separator
-    * @return
+    * @param name attribute name
+    * @param value new value
+    * @return updated parameters string
     */
    public String setAttribute(
            final char[] chars,

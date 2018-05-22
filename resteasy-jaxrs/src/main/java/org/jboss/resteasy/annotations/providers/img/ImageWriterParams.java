@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation that a resource class can use to pass parameters
- * to the {@link IIOImageProvider}.
+ * to the {@link org.jboss.resteasy.plugins.providers.IIOImageProvider}.
  *
- * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: $
  */
 @Documented
@@ -26,7 +26,7 @@ public @interface ImageWriterParams
     * default, the highest compression level is used. A float value
     * between 0.0f and 1.0f are acceptable. The default value is 1.0f;
     *
-    * @return
+    * @return compression quality
     */
    float compressionQuality() default 1.0f;
 
@@ -34,7 +34,7 @@ public @interface ImageWriterParams
     * Specifies the compression mode for the output image. By default,
     * it uses {@link javax.imageio.ImageWriteParam#MODE_COPY_FROM_METADATA}.
     *
-    * @return
+    * @return compression mode
     */
    int compressionMode() default ImageWriteParam.MODE_COPY_FROM_METADATA;
 

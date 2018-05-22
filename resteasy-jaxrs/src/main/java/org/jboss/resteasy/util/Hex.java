@@ -20,10 +20,10 @@ public class Hex
     * given byte. An exception is thrown if the passed char array has an odd
     * number of elements.
     *
-    * @param data An array of characters containing hexidecimal digits
+    * @param str An array of characters containing hexidecimal digits
     * @return A byte array containing binary data decoded from
     *         the supplied char array.
-    * @throws DecoderException Thrown if an odd number or illegal of characters
+    * @throws RuntimeException Thrown if an odd number or illegal of characters
     *                          is supplied
     */
    public static byte[] decodeHex(String str)

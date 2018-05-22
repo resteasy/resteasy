@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * A utility class that can convert a String value as a typed object.
  *
- * @author <a href="ryan@damnhandy.com>Ryan J. McDonough</a>
+ * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: $
  */
 public final class TypeConverter
@@ -50,7 +50,7 @@ public final class TypeConverter
     *
     * @param <T>        the type to return
     * @param source     the string value to convert
-    * @param targetType
+    * @param targetType target type
     * @return the object instance
     */
    @SuppressWarnings(value = "unchecked")
@@ -182,7 +182,7 @@ public final class TypeConverter
 
    /**
     * <p>
-    * Returns a Boolean value from a String. Unlike {@link Boolean.#valueOf(String)}, this
+    * Returns a Boolean value from a String. Unlike {@link Boolean#valueOf(String)}, this
     * method takes more String options. The following String values will return true:
     * </p>
     * <ul>
@@ -201,8 +201,8 @@ public final class TypeConverter
     * <li>0</li>
     * </ul>
     *
-    * @param source
-    * @return
+    * @param source source string
+    * @return boolean value from string
     */
    public static Boolean getBooleanValue(final String source)
    {
@@ -220,11 +220,11 @@ public final class TypeConverter
    }
 
    /**
-    * @param <T>
-    * @param source
-    * @param targetType
-    * @return
-    * @throws NoSuchMethodException
+    * @param <T> type
+    * @param source source string
+    * @param targetType target type
+    * @return object instance of type T
+    * @throws NoSuchMethodException if method was not found
     */
    @SuppressWarnings("unchecked")
    public static <T> T getTypeViaValueOfMethod(final String source, final Class<T> targetType)
@@ -270,14 +270,14 @@ public final class TypeConverter
    }
 
    /**
-    * @param <T>
-    * @param source
-    * @param targetType
-    * @return
-    * @throws IllegalArgumentException
-    * @throws InstantiationException
-    * @throws IllegalAccessException
-    * @throws InvocationTargetException
+    * @param <T> type
+    * @param source source string
+    * @param targetType target type
+    * @return object instance of type T
+    * @throws IllegalArgumentException if not suitable constructor was found
+    * @throws InstantiationException if the underlying constructor represents an abstract class
+    * @throws IllegalAccessException if the underlying constructor is not accessible 
+    * @throws InvocationTargetException if the underlying constructor throws exception
     */
    private static <T> T getTypeViaStringConstructor(String source, Class<T> targetType)
    {

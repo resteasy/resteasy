@@ -17,8 +17,6 @@ import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
  * internal GET/POST/DELETE/PUT using IntenalDispatch using Java Object. For
  * example:
  * </p>
- * <p/>
- * <p/>
  * <pre>
  * &#064;GET
  * &#064;Produces(&quot;text/plain&quot;)
@@ -28,7 +26,6 @@ import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
  *    return (SomeObject) dispatcher.getEntity(&quot;/some-object&quot;);
  * }
  * </pre>
- * <p/>
  * <p>
  * That previous snippet performs an internal request to /some-object and
  * returns the Object representation of the Resource that lives at

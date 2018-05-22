@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Abstract implementation of {@link NestedFormInjector} that can inject collections.
+ * Abstract implementation of {@link ValueInjector} that can inject collections.
  *
  * @param <T> The type of collection that will be created.
  */
@@ -27,7 +27,9 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
     *
     * @param collectionType The type of collection to return.
     * @param genericType    The type of elements in the collection.
+    * @param prefix prefix
     * @param pattern        The pattern that a field name should follow to be a part of this collection. The first group in the pattern must be the index.
+    * @param factory provider factory
     */
    protected AbstractCollectionFormInjector(Class collectionType, Class genericType, String prefix, Pattern pattern, ResteasyProviderFactory factory)
    {
@@ -55,6 +57,8 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
 
    /**
     * Finds all field names that follow the pattern.
+    * @param parameters parameters map
+    * @return set of parameter names
     */
    private Set<String> findMatchingPrefixesWithNoneEmptyValues(MultivaluedMap<String, String> parameters)
    {
@@ -72,11 +76,16 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
 
    /**
     * Creates an instance of the collection type.
+    * @param collectionType collection type
+    * @return object instance of type T 
     */
    protected abstract T createInstance(Class collectionType);
 
    /**
     * Adds the item to the collection.
+    * @param collection collection
+    * @param key key
+    * @param value value
     */
    protected abstract void addTo(T collection, String key, Object value);
 }

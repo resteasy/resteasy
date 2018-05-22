@@ -19,11 +19,11 @@ public class PickConstructor
 
    /**
     * Pick best constructor for a provider or resource class
-    * <p/>
+    * <p>
     * Picks constructor with most parameters.  Will ignore constructors that have parameters with no @Context annotation
     *
-    * @param clazz
-    * @return
+    * @param clazz class
+    * @return constructor
     */
    public static Constructor pickSingletonConstructor(Class clazz)
    {
@@ -73,11 +73,11 @@ public class PickConstructor
 
    /**
     * Pick best constructor for a provider or resource class
-    * <p/>
+    * <p>
     * Picks constructor with most parameters.  Will ignore constructors that have parameters with no @Context annotation
     *
-    * @param clazz
-    * @return
+    * @param clazz class
+    * @return constructor
     */
    public static Constructor pickPerRequestConstructor(Class clazz)
    {

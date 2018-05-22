@@ -11,23 +11,23 @@ import org.jboss.resteasy.core.ValueInjector;
 public interface MethodInjector
 {
    /**
-    * Invoke on a method in the context of an HTTP request.  Does all JAX-RS parameter injection.
+    * Invoke on a method in the context of an HTTP request. Does all JAX-RS parameter injection.
     *
-    * @param request
-    * @param response
-    * @param target
-    * @return
-    * @throws Failure
+    * @param request http request
+    * @param response http response
+    * @param target target object
+    * @return returned object
+    * @throws Failure if application failure occurred
     */
    Object invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException;
 
    /**
     * Create the arguments that would be used to invoke the method in the context of an HTTP request.
     *
-    * @param request
-    * @param response
-    * @return
-    * @throws Failure
+    * @param request http request
+    * @param response http response
+    * @return array of arguments
+    * @throws Failure if application failure occurred
     */
    Object[] injectArguments(HttpRequest request, HttpResponse response) throws Failure;
 

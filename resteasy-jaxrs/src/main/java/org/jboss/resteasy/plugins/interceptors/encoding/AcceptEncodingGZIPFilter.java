@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Must be used in conjunction with GZIPDecodingInterceptor
- * <p/>
+ * <p>
  * Sets
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -24,12 +24,13 @@ public interface HttpRequest
     * If you are using a servlet container, this will *NOT* override the HttpServletRequest.getInputStream().
     * It will only override it for the resteasy HttpRequest
     *
-    * @param stream
+    * @param stream input stream
     */
    void setInputStream(InputStream stream);
 
    /**
     * This method *MUST* always return the same instance.
+    * @return uri info
     */
    ResteasyUriInfo getUri();
 
@@ -38,15 +39,18 @@ public interface HttpRequest
 
    /**
     * Updates the object returned by {@link #getUri()}.
+    * @param requestUri request uri
     */
    void setRequestUri(URI requestUri) throws IllegalStateException;
    /**
     * Updates the object returned by {@link #getUri()}.
+    * @param baseUri base uri
+    * @param requestUri request uri 
     */
    void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
    /**
     * application/x-www-form-urlencoded parameters
-    * <p/>
+    * <p>
     * This is here because @FormParam needs it and for when there are servlet filters that eat up the input stream
     *
     * @return null if no parameters, this is encoded map
@@ -57,8 +61,8 @@ public interface HttpRequest
 
    /**
     * Map of contextual data.  Similar to HttpServletRequest attributes
-    *
-    * @return
+    * @param attribute attribute name
+    * @return attribute
     */
    Object getAttribute(String attribute);
 

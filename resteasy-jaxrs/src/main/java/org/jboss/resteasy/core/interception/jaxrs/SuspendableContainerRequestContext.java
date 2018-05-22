@@ -4,10 +4,9 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 /**
  * Suspendable request context, which allows the users to suspend execution of the filter
- * chain until it is resumed normally, or abnormally with a @{link Response} or
- * @{link Throwable}. 
+ * chain until it is resumed normally, or abnormally with a {@link Throwable}. 
  *
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public interface SuspendableContainerRequestContext extends ContainerRequestContext
 {

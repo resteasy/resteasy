@@ -7,7 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 
 /**
- * A individual variant quality bean for the <span title="Remote Variant Selection Algorithm">RVSA</span>.
+ * A individual variant quality bean for the RVSA (Remote Variant Selection Algorithm).
  *
  * @author Pascal S. de Kloe
  * @see "RFC 2296"

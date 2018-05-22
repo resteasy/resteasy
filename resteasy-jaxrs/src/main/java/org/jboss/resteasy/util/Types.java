@@ -23,6 +23,9 @@ public class Types
 {
    /**
     * Is the genericType of a certain class?
+    * @param clazz class
+    * @param pType type
+    * @return boolean result
     */
    @SuppressWarnings(value = "unchecked")
    public static boolean isA(Class clazz, ParameterizedType pType)
@@ -32,6 +35,9 @@ public class Types
 
    /**
     * Gets the index-th type argument.
+    * @param pType type
+    * @param index index
+    * @return the type of argument at index position
     */
    public static Class getArgumentType(ParameterizedType pType, int index)
    {
@@ -98,11 +104,11 @@ public class Types
 
 
    /**
-    * See if the two methods are compatible, that is they have the same relative signature
+    * See if the two methods are compatible, that is they have the same relative signature.
     *
-    * @param method
-    * @param intfMethod
-    * @return
+    * @param method first method
+    * @param intfMethod second method
+    * @return boolean result
     */
    @SuppressWarnings(value = "unchecked")
    public static boolean isCompatible(Method method, Method intfMethod)
@@ -124,9 +130,9 @@ public class Types
    /**
     * Given a method and a root class, find the actual method declared in the root that implements the method.
     *
-    * @param clazz
-    * @param intfMethod
-    * @return
+    * @param clazz class
+    * @param intfMethod method
+    * @return method in the root class
     */
    @SuppressWarnings(value = "unchecked")
    public static Method getImplementingMethod(Class clazz, Method intfMethod)
@@ -332,9 +338,9 @@ public class Types
    }
 
    /**
-    * Returns the type argument from a parameterized type
+    * Returns the type argument from a parameterized type.
     *
-    * @param genericType
+    * @param genericType type
     * @return null if there is no type parameter
     */
    public static Class<?> getTypeArgument(Type genericType)
@@ -451,8 +457,8 @@ public class Types
     * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable
     * and returns the value if present.
     *
-    * @param root
-    * @param typeVariable
+    * @param root root class
+    * @param typeVariable type variable
     * @return actual type of the type variable
     */
    public static Type resolveTypeVariable(Class<?> root, TypeVariable<?> typeVariable)
@@ -478,8 +484,8 @@ public class Types
    /**
     * Given a class and an interfaces, go through the class hierarchy to find the interface and return its type arguments.
     *
-    * @param classToSearch
-    * @param interfaceToFind
+    * @param classToSearch class
+    * @param interfaceToFind interface to find
     * @return type arguments of the interface
     */
    public static Type[] getActualTypeArgumentsOfAnInterface(Class<?> classToSearch, Class<?> interfaceToFind)
@@ -495,9 +501,9 @@ public class Types
     * Search for the given interface or class within the root's class/interface hierarchy.
     * If the searched for class/interface is a generic return an array of real types that fill it out.
     *
-    * @param root
-    * @param searchedFor
-    * @return
+    * @param root root class
+    * @param searchedFor searched class
+    * @return for generic class/interface returns array of real types
     */
    public static Type[] findParameterizedTypes(Class<?> root, Class<?> searchedFor)
    {

@@ -13,6 +13,10 @@ public class ListFormInjector extends AbstractCollectionFormInjector<List> {
 
     /**
      * Constructor.
+     * @param collectionType collection type
+     * @param genericType generic type
+     * @param prefix prefix
+     * @param factory provider factory
      */
     public ListFormInjector(Class collectionType, Class genericType, String prefix, ResteasyProviderFactory factory) {
         super(collectionType, genericType, prefix, Pattern.compile("^" + prefix + "\\[(\\d+)\\]"), factory);
