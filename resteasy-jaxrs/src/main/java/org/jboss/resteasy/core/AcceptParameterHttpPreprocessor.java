@@ -17,12 +17,12 @@ import java.util.List;
 /**
  * <p>Enables content negotiation through a query parameter, instead of the Accept Header.</p>
  * <p>To enable this feature, use the context-param in web.xml:</p>
- * <p/>
+ * <p>
  * <code>
- * &lt;context-param&gt;<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param-name&gt;<strong>resteasy.media.type.param.mapping</strong>&lt;/param-name&gt;<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param-value&gt;<i>someName</i>&lt;/param-value&gt;<br />
- * &lt;/context-param&gt;<br />
+ * &lt;context-param&gt;<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param-name&gt;<strong>resteasy.media.type.param.mapping</strong>&lt;/param-name&gt;<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param-value&gt;<i>someName</i>&lt;/param-value&gt;<br>
+ * &lt;/context-param&gt;<br>
  * </code>
  * <p>So, in a request like
  * <code>http://service.foo.com/resouce?someName=application/xml</code>

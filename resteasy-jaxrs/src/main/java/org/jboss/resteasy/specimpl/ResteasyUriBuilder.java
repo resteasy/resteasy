@@ -129,10 +129,10 @@ public class ResteasyUriBuilder extends UriBuilder
    }
 
    /**
-    * You may put path parameters anywhere within the uriTemplate except port
+    * You may put path parameters anywhere within the uriTemplate except port.
     *
-    * @param uriTemplate
-    * @return
+    * @param uriTemplate uri template
+    * @return uri builder
     */
    public static UriBuilder fromTemplate(String uriTemplate)
    {
@@ -142,10 +142,10 @@ public class ResteasyUriBuilder extends UriBuilder
    }
 
    /**
-    * You may put path parameters anywhere within the uriTemplate except port
+    * You may put path parameters anywhere within the uriTemplate except port.
     *
-    * @param uriTemplate
-    * @return
+    * @param uriTemplate uri template
+    * @return uri builder
     */
    public UriBuilder uriTemplate(CharSequence uriTemplate)
    {
@@ -524,10 +524,10 @@ public class ResteasyUriBuilder extends UriBuilder
    /**
     * Only replace path params in path of URI.  This changes state of URIBuilder.
     *
-    * @param name
-    * @param value
-    * @param isEncoded
-    * @return
+    * @param name parameter name
+    * @param value parameter value
+    * @param isEncoded encoded flag
+    * @return uri builder
     */
    public UriBuilder substitutePathParam(String name, Object value, boolean isEncoded)
    {
@@ -760,9 +760,9 @@ public class ResteasyUriBuilder extends UriBuilder
    }
 
    /**
-    * Return a unique order list of path params
+    * Return a unique order list of path params.
     *
-    * @return
+    * @return list of path parameters
     */
    public List<String> getPathParamNamesInDeclarationOrder()
    {
@@ -933,7 +933,6 @@ public class ResteasyUriBuilder extends UriBuilder
     * <li> queryParam() supports URI template processing and this method must
     * always encode braces (for parameter substitution is not possible for
     * {@code @QueryParam} parameters).
-    * <p/>
     * <li> queryParam() supports "contextual URI encoding" (i.e., it does not
     * encode {@code %} characters that are followed by two hex characters).
     * The JavaDoc for {@code @QueryParam.value()} explicitly states that

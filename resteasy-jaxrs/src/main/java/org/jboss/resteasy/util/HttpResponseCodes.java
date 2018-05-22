@@ -92,7 +92,7 @@ public interface HttpResponseCodes
     * Status code (302) indicating that the resource has temporarily
     * moved to another location, but that future references should
     * still use the original URI to access the resource.
-    * <p/>
+    * <p>
     * This definition is being retained for backwards compatibility.
     * SC_FOUND is now the preferred definition.
     */

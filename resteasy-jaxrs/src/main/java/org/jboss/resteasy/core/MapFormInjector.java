@@ -20,6 +20,11 @@ public class MapFormInjector extends AbstractCollectionFormInjector<Map>
 
    /**
     * Constructor.
+    * @param collectionType collection type
+    * @param keyType key type
+    * @param valueType value type
+    * @param prefix prefix
+    * @param factory provider factory
     */
    public MapFormInjector(Class collectionType, Class keyType, Class valueType, String prefix, ResteasyProviderFactory factory)
    {

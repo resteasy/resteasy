@@ -249,9 +249,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    /**
-    * Key is httpMethod called
+    * Key is httpMethod called.
     *
-    * @return
+    * @return statistics map
     */
    public Map<String, AtomicLong> getStats()
    {

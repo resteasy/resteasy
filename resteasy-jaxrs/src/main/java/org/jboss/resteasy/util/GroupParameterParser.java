@@ -10,7 +10,6 @@ import java.util.Map;
  * Parameter values are exptected to be enclosed in quotes if they
  * contain unsafe characters, such as '=' characters or separators.
  * Parameter values are optional and can be omitted.
- * <p/>
  * <p>
  * <code>param1 = value; param2 = "anything goes; really"; param3</code>
  * </p>
@@ -224,6 +223,7 @@ public class GroupParameterParser
     *
     * @param str       the string that contains a sequence of name/value pairs
     * @param separator the name/value pairs separator
+    * @param groupSeparator group separator
     * @return a map of name/value pairs
     */
    public List<Map<String, String>> parse(final String str, char separator, char groupSeparator)
@@ -242,6 +242,7 @@ public class GroupParameterParser
     * @param chars     the array of characters that contains a sequence of
     *                  name/value pairs
     * @param separator the name/value pairs separator
+    * @param groupSeparator group separator
     * @return a map of name/value pairs
     */
    public List<Map<String, String>> parse(final char[] chars, char separator, char groupSeparator)
@@ -262,6 +263,7 @@ public class GroupParameterParser
     * @param offset    - the initial offset.
     * @param length    - the length.
     * @param separator the name/value pairs separator
+    * @param groupSeparator group separator
     * @return a map of name/value pairs
     */
    public List<Map<String, String>> parse(

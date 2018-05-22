@@ -35,9 +35,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
    protected Set<String> allowedOrigins = new HashSet<String>();
 
    /**
-    * Put "*" if you want to accept all origins
+    * Put "*" if you want to accept all origins.
     *
-    * @return
+    * @return allowed origins
     */
    public Set<String> getAllowedOrigins()
    {
@@ -45,9 +45,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
    }
 
    /**
-    * Defaults to true
+    * Defaults to true.
     *
-    * @return
+    * @return allow credentials
     */
    public boolean isAllowCredentials()
    {
@@ -60,9 +60,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
    }
 
    /**
-    * Will allow all by default
+    * Will allow all by default.
     *
-    * @return
+    * @return allowed methods
     */
    public String getAllowedMethods()
    {
@@ -71,9 +71,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
    /**
     * Will allow all by default
-    * comma delimited string for Access-Control-Allow-Methods
+    * comma delimited string for Access-Control-Allow-Methods.
     *
-    * @param allowedMethods
+    * @param allowedMethods allowed methods
     */
    public void setAllowedMethods(String allowedMethods)
    {
@@ -87,9 +87,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
    /**
     * Will allow all by default
-    * comma delimited string for Access-Control-Allow-Headers
+    * comma delimited string for Access-Control-Allow-Headers.
     *
-    * @param allowedHeaders
+    * @param allowedHeaders allowed headers
     */
    public void setAllowedHeaders(String allowedHeaders)
    {
@@ -112,9 +112,9 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
    }
 
    /**
-    * comma delimited list
+    * Comma delimited list.
     *
-    * @param exposedHeaders
+    * @param exposedHeaders exposed headers
     */
    public void setExposedHeaders(String exposedHeaders)
    {

@@ -8,12 +8,11 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 /**
  * This class is a trick used to extract GenericType information at runtime.  Java does not allow you get generic
  * type information easily, so this class does the trick.  For example:
- * <p/>
  * <pre>
- * Type genericType = (new GenericType<List<String>>() {}).getGenericType();
+ * Type genericType = (new GenericType&#x3C;List&#x3C;String&#x3E;&#x3E;() {}).getGenericType();
  * </pre>
- * <p/>
- * The above code will get you the genericType for List<String>
+ * <p>
+ * The above code will get you the genericType for List&#x3C;String&#x3E;
  * 
  * N.B. This class is replaced by javax.ws.rs.core.GenericType.
  *
@@ -34,9 +33,6 @@ public class GenericType<T>
     * Constructs a new generic entity. Derives represented class from type
     * parameter. Note that this constructor is protected, users should create
     * a (usually anonymous) subclass as shown above.
-    *
-    * @param entity the entity instance, must not be null
-    * @throws IllegalArgumentException if entity is null
     */
    protected GenericType()
    {

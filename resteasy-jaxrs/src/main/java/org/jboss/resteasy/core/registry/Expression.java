@@ -79,10 +79,10 @@ public abstract class Expression implements Comparable<Expression>
 
    /**
     * Find the number of groups in the regular expression
-    * don't count escaped '('
+    * don't count escaped '('.
     *
-    * @param regex
-    * @return
+    * @param regex regular expression
+    * @return number of groups
     */
    protected static int groupCount(String regex)
    {

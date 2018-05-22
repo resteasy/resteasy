@@ -9,40 +9,42 @@ import javax.ws.rs.WebApplicationException;
 public interface ConstructorInjector
 {
    /**
-    * construct outside the scope of an HTTP request.  Useful for singleton factories
+    * Construct outside the scope of an HTTP request.  Useful for singleton factories.
     *
-    * @return
+    * @return constructed object
     */
    Object construct();
 
    /**
-    * construct inside the scope of an HTTP request.
+    * Construct inside the scope of an HTTP request.
     *
-    * @param request
-    * @param response
-    * @return
-    * @throws Failure
+    * @param request http request
+    * @param response http response
+    * @return constructed object
+    * @throws Failure if failure occurred
+    * @throws WebApplicationException if application exception occurred
+    * @throws ApplicationException if application exception occurred
     */
    Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException;
 
    /**
     * Create an arguments list from injectable tings outside the scope of an HTTP request.  Useful for singleton factories
     * in cases where the resource factory wants to allocate the object itself, but wants resteasy to populate
-    * the arguments
+    * the arguments.
     *
-    * @return
+    * @return array of arguments
     */
    Object[] injectableArguments();
 
    /**
     * Create an argument list inside the scope of an HTTP request.
     * Useful in cases where the resource factory wants to allocate the object itself, but wants resteasy to populate
-    * the arguments
+    * the arguments.
     *
-    * @param request
-    * @param response
-    * @return
-    * @throws Failure
+    * @param request http request
+    * @param response http response
+    * @return array of arguments
+    * @throws Failure if failure occurred
     */
    Object[] injectableArguments(HttpRequest request, HttpResponse response) throws Failure;
 }
