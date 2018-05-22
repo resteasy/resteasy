@@ -208,9 +208,9 @@ public abstract class ClientResponse extends BuiltResponse
    protected abstract void setInputStream(InputStream is);
 
    /**
-    * release underlying connection but do not close
+    * Release underlying connection but do not close.
     *
-    * @throws IOException
+    * @throws IOException if I/O error occurred
     */
    public abstract void releaseConnection() throws IOException;
 

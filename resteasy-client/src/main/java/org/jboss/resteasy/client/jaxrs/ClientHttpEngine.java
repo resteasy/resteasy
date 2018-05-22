@@ -14,14 +14,14 @@ public interface ClientHttpEngine
 {
    /**
     * Needed for Client.getSslContext();
-    * @return
+    * @return {@link SSLContext}
     */
    SSLContext getSslContext();
 
    /**
     * Needed for Client.getHostnameVerifier()
     *
-    * @return
+    * @return {@link HostnameVerifier}
     */
    HostnameVerifier getHostnameVerifier();
    ClientResponse invoke(ClientInvocation request);

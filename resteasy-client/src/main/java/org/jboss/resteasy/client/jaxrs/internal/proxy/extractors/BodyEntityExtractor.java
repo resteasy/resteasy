@@ -16,12 +16,12 @@ import java.lang.reflect.TypeVariable;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
- * the appropriate MessageBodyReader through a series of calls
+ * the appropriate MessageBodyReader through a series of calls.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * @see org.jboss.resteasy.client.core.extractors.EntityExtractorFactory
+ * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractorFactory
  * @see javax.ws.rs.ext.MessageBodyReader
  */
 @SuppressWarnings("unchecked")

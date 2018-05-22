@@ -19,8 +19,8 @@ public class BasicAuthentication implements ClientRequestFilter
 
    /**
     *
-    * @param username
-    * @param password
+    * @param username user name
+    * @param password password
     */
    public BasicAuthentication(String username, String password)
    {

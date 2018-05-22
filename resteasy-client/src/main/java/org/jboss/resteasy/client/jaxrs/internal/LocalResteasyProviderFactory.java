@@ -15,7 +15,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * after it is created. Used for client framework Configurables.
  * 
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
- * @date April 27, 2016
+ * <p>
+ * Date April 27, 2016
  */
 public class LocalResteasyProviderFactory extends ResteasyProviderFactory
 {

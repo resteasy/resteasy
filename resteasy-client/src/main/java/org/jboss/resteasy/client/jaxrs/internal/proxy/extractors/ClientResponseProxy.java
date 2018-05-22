@@ -12,7 +12,6 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * @see ProxyFactory
  * @see EntityExtractor
  * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractorFactory
  * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ResponseObjectEntityExtractorFactory

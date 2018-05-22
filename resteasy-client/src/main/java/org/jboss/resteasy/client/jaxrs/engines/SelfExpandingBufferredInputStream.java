@@ -86,6 +86,7 @@ public class SelfExpandingBufferredInputStream extends BufferedInputStream
    /**
     * Return the current maximum size of the internal buffer. This is
     * independent of how much data is actually contained within the buffer.
+    * @return internal buffer size
     */
    public int getBufSize()
    {
