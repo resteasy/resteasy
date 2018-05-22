@@ -55,9 +55,6 @@ public abstract class BaseResourceTest
       return deployment.getProviderFactory();
    }
 
-   /**
-    * @param resource
-    */
    public static void addPerRequestResource(Class<?> resource)
    {
       deployment.getRegistry().addPerRequestResource(resource);
