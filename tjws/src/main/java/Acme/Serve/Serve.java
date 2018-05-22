@@ -522,9 +522,9 @@ public class Serve implements ServletContext, Serializable
    /**
     * Register a Servlet
     *
-    * @param urlPat
-    * @param servlet
-    * @param initParams
+    * @param urlPat path
+    * @param servlet servlet
+    * @param initParams init parameters
     */
    public synchronized void addServlet(String urlPat, Servlet servlet, Hashtable initParams)
    {
@@ -588,9 +588,9 @@ public class Serve implements ServletContext, Serializable
    /**
     * Register a standard set of Servlets, with optional throttles. These will return files or directory listings, and run CGI programs, much like a standard
     * HTTP server.
-    * <p/>
+    * <p>
     * Because of the pattern checking order, this should be called <B>after</B> you've added any custom Servlets.
-    * <p/>
+    * <p>
     * The current set of default servlet mappings:
     * <UL>
     * <LI> If enabled, *.cgi goes to CgiServlet, and gets run as a CGI program.
@@ -599,7 +599,7 @@ public class Serve implements ServletContext, Serializable
     *
     * @param cgi       whether to run CGI programs
     * @param throttles filename to read FileServlet throttle settings from, can be null
-    * @throws IOException
+    * @throws IOException if I/O error occurred
     */
    public void addDefaultServlets(String cgi, String throttles) throws IOException
    {
@@ -876,9 +876,9 @@ public class Serve implements ServletContext, Serializable
    }
 
    /**
-    * Tells the server to stop
+    * Tells the server to stop.
     *
-    * @throws IOException
+    * @throws IOException if I/O error occurred
     */
    public void notifyStop() throws IOException
    {
@@ -1185,7 +1185,7 @@ public class Serve implements ServletContext, Serializable
    }
 
    /**
-    * @return
+    * @return context path
     */
    public String getContextPath()
    {
@@ -1263,7 +1263,7 @@ public class Serve implements ServletContext, Serializable
     * Returns a directory-like listing of all the paths to resources within the web application whose longest sub-path matches the supplied path argument.
     * Paths indicating subdirectory paths end with a '/'. The returned paths are all relative to the root of the web application and have a leading '/'. For
     * example, for a web application containing
-    * <p/>
+    * <p>
     * /welcome.html <br>
     * /catalog/index.html <br>
     * /catalog/products.html <br>
@@ -1272,12 +1272,12 @@ public class Serve implements ServletContext, Serializable
     * /customer/login.jsp <br>
     * /WEB-INF/web.xml <br>
     * /WEB-INF/classes/com.acme.OrderServlet.class,
-    * <p/>
+    * <p>
     * getResourcePaths("/") returns {"/welcome.html", "/catalog/", "/customer/", "/WEB-INF/"} <br>
     * getResourcePaths("/catalog/") returns {"/catalog/index.html", "/catalog/products.html", "/catalog/offers/"}.
-    * <p/>
+    * <p>
     *
-    * @param the -
+    * @param path the
     *            partial path used to match the resources, which must start with a /
     * @return a Set containing the directory listing, or null if there are no resources in the web application whose path begins with the supplied path.
     * @since Servlet 2.3
@@ -1315,25 +1315,19 @@ public class Serve implements ServletContext, Serializable
    /**
     * Returns a URL to the resource that is mapped to a specified path. The path must begin with a "/" and is interpreted as relative to the current context
     * root.
-    * <p/>
-    * <p/>
+    * <p>
     * This method allows the servlet container to make a resource available to servlets from any source. Resources can be located on a local or remote file
     * system, in a database, or in a <code>.war</code> file.
-    * <p/>
-    * <p/>
+    * <p>
     * The servlet container must implement the URL handlers and <code>URLConnection</code> objects that are necessary to access the resource.
-    * <p/>
-    * <p/>
+    * <p>
     * This method returns <code>null</code> if no resource is mapped to the pathname.
-    * <p/>
-    * <p/>
+    * <p>
     * Some containers may allow writing to the URL returned by this method using the methods of the URL class.
-    * <p/>
-    * <p/>
+    * <p>
     * The resource content is returned directly, so be aware that requesting a <code>.jsp</code> page returns the JSP source code. Use a
     * <code>RequestDispatcher</code> instead to include results of an execution.
-    * <p/>
-    * <p/>
+    * <p>
     * This method has a different purpose than <code>java.lang.Class.getResource</code>, which looks up resources based on a class loader. This method does
     * not use class loaders.
     *
@@ -1353,18 +1347,14 @@ public class Serve implements ServletContext, Serializable
 
    /**
     * Returns the resource located at the named path as an <code>InputStream</code> object.
-    * <p/>
-    * <p/>
+    * <p>
     * The data in the <code>InputStream</code> can be of any type or length. The path must be specified according to the rules given in
     * <code>getResource</code>. This method returns <code>null</code> if no resource exists at the specified path.
-    * <p/>
-    * <p/>
+    * <p>
     * Meta-information such as content length and content type that is available via <code>getResource</code> method is lost when using this method.
-    * <p/>
-    * <p/>
+    * <p>
     * The servlet container must implement the URL handlers and <code>URLConnection</code> objects necessary to access the resource.
-    * <p/>
-    * <p/>
+    * <p>
     * This method is different from <code>java.lang.Class.getResourceAsStream</code>, which uses a class loader. This method allows servlet containers to
     * make a resource available to a servlet from any location, without using a class loader.
     *
@@ -1944,7 +1934,7 @@ public class Serve implements ServletContext, Serializable
       /**
        * it closes stream awaring of keep -alive
        *
-       * @throws IOException
+       * @throws IOException if I/O error occurred
        */
       public void closeStreams() throws IOException
       {
@@ -3078,7 +3068,7 @@ public class Serve implements ServletContext, Serializable
        * Reconstructs the URL the client used to make the request. The returned URL contains a protocol, server name, port number, and server path, but it
        * does not include query string parameters. <br>
        * Because this method returns a StringBuffer, not a string, you can modify the URL easily, for example, to append query parameters.
-       * <p/>
+       * <p>
        * This method is useful for creating redirect messages and for reporting errors.
        *
        * @return a StringBuffer object containing the reconstructed URL
@@ -3269,13 +3259,13 @@ public class Serve implements ServletContext, Serializable
        * Names beginning with java.*, javax.*, and com.sun.*, are reserved for
        * use by Sun Microsystems. If the object passed in is null, the effect is
        * the same as calling removeAttribute(java.lang.String).
-       * <p/>
+       * <p>
        * It is warned that when the request is dispatched from the servlet resides
        * in a different web application by RequestDispatcher, the object set by
        * this method may not be correctly retrieved in the caller servlet.
        *
-       * @param name - a String specifying the name of the attribute
-       * @param o    - the Object to be stored
+       * @param key a String specifying the name of the attribute
+       * @param o   the Object to be stored
        */
       public void setAttribute(String key, Object o)
       {
@@ -3462,10 +3452,13 @@ public class Serve implements ServletContext, Serializable
       }
 
       /**
-       * Returns a boolean indicating if the response has been committed. A commited response has already had its status code and headers written.
+       * Returns a boolean indicating if the response has been committed. A committed response has already had its status code and headers written.
        *
        * @return a boolean indicating if the response has been committed
-       * @see setBufferSize(int), getBufferSize(), flushBuffer(), reset()
+       * @see ServeOutputStream#setBufferSize(int)
+       * @see ServeOutputStream#getBufferSize()
+       * @see ServeConnection#flushBuffer()
+       * @see ServeConnection#reset()
        */
       // a caller should think about syncronization
       public boolean isCommitted()
@@ -3477,10 +3470,11 @@ public class Serve implements ServletContext, Serializable
        * Clears any data that exists in the buffer as well as the status code and headers. If the response has been committed, this method throws an
        * IllegalStateException.
        *
-       * @throws java.lang.IllegalStateException
-       *          -
-       *          if the response has already been committed
-       * @see setBufferSize(int), getBufferSize(), flushBuffer(), isCommitted()
+       * @throws java.lang.IllegalStateException if the response has already been committed
+       * @see ServeOutputStream#setBufferSize(int)
+       * @see ServeOutputStream#getBufferSize()
+       * @see ServeConnection#flushBuffer()
+       * @see ServeConnection#isCommitted()
        */
       public void reset() throws IllegalStateException
       {
@@ -3503,9 +3497,8 @@ public class Serve implements ServletContext, Serializable
        * Sets the locale of the response, setting the headers (including the Content-Type's charset) as appropriate. This method should be called before a
        * call to getWriter(). By default, the response locale is the default locale for the server.
        *
-       * @param loc -
-       *            the locale of the response
-       * @see getLocale()
+       * @param locale the locale of the response
+       * @see ServeConnection#getLocale()
        */
       public void setLocale(java.util.Locale locale)
       {
@@ -3515,9 +3508,10 @@ public class Serve implements ServletContext, Serializable
       /**
        * For request: Returns the preferred Locale that the client will accept content in, based on the Accept-Language header. If the client request doesn't
        * provide an Accept-Language header, this method returns the default locale for the server.
-       * <p/>
+       * <p>
        * For response: Returns the locale specified for this response using the setLocale(java.util.Locale) method. Calls made to setLocale after the response
        * is committed have no effect. If no locale has been specified, the container's default locale is returned.
+       * @return locale
        */
       public java.util.Locale getLocale()
       {
@@ -3591,11 +3585,7 @@ public class Serve implements ServletContext, Serializable
        * Overrides the name of the character encoding used in the body of this request. This method must be called prior to reading request parameters or
        * reading input using getReader().
        *
-       * @param a -
-       *          String containing the name of the chararacter encoding.
-       * @throws java.io.UnsupportedEncodingException
-       *          -
-       *          if this is not a valid encoding
+       * @param _enc String containing the name of the chararacter encoding.
        * @since JSDK 2.3
        */
       public void setCharacterEncoding(String _enc)
@@ -4389,7 +4379,9 @@ public class Serve implements ServletContext, Serializable
 
       /* ------------------------------------------------------------ */
       /**
-       * Constructor
+       * Constructor.
+       * @param in input stream
+       * @param conn connection
        */
       public ServeInputStream(InputStream in, ServeConnection conn)
       {
@@ -4410,7 +4402,7 @@ public class Serve implements ServletContext, Serializable
 
       /* ------------------------------------------------------------ */
       /**
-       * @param chunking
+       * @param chunking chunking flag
        */
       public void chunking(boolean chunking)
       {
@@ -4469,7 +4461,10 @@ public class Serve implements ServletContext, Serializable
       /* ------------------------------------------------------------ */
       /**
        * Read a line ended by CRLF, used internally only for reading headers.
-       * No char encoding, ASCII only
+       * No char encoding, ASCII only.
+       * @param maxLen maximum length
+       * @return line read
+       * @throws IOException if I/O error occurred
        */
       protected String readLine(int maxLen) throws IOException
       {
@@ -4600,7 +4595,8 @@ public class Serve implements ServletContext, Serializable
 
       /* ------------------------------------------------------------ */
       /**
-       * Available bytes to read without blocking. If you are unlucky may return 0 when there are more
+       * Available bytes to read without blocking. If you are unlucky may return 0 when there are more.
+       * @throws IOException if I/O error occurred
        */
       public int available() throws IOException
       {
@@ -4682,7 +4678,7 @@ public class Serve implements ServletContext, Serializable
       /**
        * Not Implemented
        *
-       * @param readlimit
+       * @param readlimit read limit
        */
       public void mark(int readlimit)
       {
@@ -5038,7 +5034,9 @@ public class Serve implements ServletContext, Serializable
 
       /**
        * This function looks up in the directory to find the perfect match and remove matching part from path, so if you need to keep original path, save it
-       * somewhere
+       * somewhere.
+       * @param path path
+       * @return object array
        */
       public Object[] get(String path)
       {
@@ -5137,7 +5135,7 @@ public class Serve implements ServletContext, Serializable
 
    /**
     * Http session support
-    * <p/>
+    * <p>
     * TODO: provide lazy session restoring, it should allow to load classes from wars 1st step it read serialization data and store under session attribute 2nd
     * when the session requested, it tries to deserialize all session attributes considered that all classes available
     */
@@ -5217,7 +5215,7 @@ public class Serve implements ServletContext, Serializable
        * Returns the ServletContext to which this session belongs.
        *
        * @return The ServletContext object for the web application
-       * @ince 2.3
+       * @since 2.3
        */
       public ServletContext getServletContext()
       {
@@ -5343,7 +5341,7 @@ public class Serve implements ServletContext, Serializable
       /**
        * something hack, to update servlet context since session created out of scope
        *
-       * @param sc
+       * @param sc servlet context
        */
       public synchronized void setServletContext(ServletContext sc)
       {

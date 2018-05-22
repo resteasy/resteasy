@@ -25,7 +25,7 @@ public class EmbeddedContainer
    /**
     * Exists for tests that require a servlet container behind the scenes.
     *
-    * @return
+    * @return true
     */
    public static boolean isServlet()
    {
