@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
+import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
@@ -23,6 +24,8 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
@@ -359,14 +362,23 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return rtn;
    }
 
-   protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
-   {
-      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+   protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
+      final RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+      final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.METHOD_INVOKE);
+      try {
+         ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters, 
-            () -> invokeOnTargetAfterFilter(request, response, target));
-      // let it handle the continuation
-      return requestContext.filter();
+         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
+                 () -> invokeOnTargetAfterFilter(request, response, target));
+         // let it handle the continuation
+         return requestContext.filter();
+      } finally {
+         if (resource instanceof SingletonResource) {
+            tracingLogger.logDuration(RESTEasyServerTracingEvent.METHOD_INVOKE, timestamp, ((SingletonResource) resource).traceInfo(), method.getMethod());
+         } else {
+            tracingLogger.logDuration(RESTEasyServerTracingEvent.METHOD_INVOKE, timestamp, resource, method.getMethod());
+         }
+      }
    }   
 
    protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
