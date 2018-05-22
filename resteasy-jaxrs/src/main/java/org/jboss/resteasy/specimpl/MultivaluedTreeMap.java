@@ -24,9 +24,9 @@ public class MultivaluedTreeMap<K, V> implements MultivaluedMap<K, V>, Serializa
    }
 
    /**
-    * Used to create a CaseInsensitiveMap
+    * Used to create a CaseInsensitiveMap.
     *
-    * @param keyComparator
+    * @param keyComparator key comparator
     */
 
    public MultivaluedTreeMap(Comparator<K> keyComparator)

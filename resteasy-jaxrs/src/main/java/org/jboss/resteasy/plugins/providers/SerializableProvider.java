@@ -22,8 +22,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 
 /**
- * MessageBodyReader+Writer for serialized java objects.<p/>
- *
+ * MessageBodyReader+Writer for serialized java objects.
+ * <p>
  * This Provider has been disabled by default because deserializing java objects from untrusted sources is unsafe.
  * (See http://foxglovesecurity.com/2015/11/06/what-do-weblogic-websphere-jboss-jenkins-opennms-and-your-application-have-in-common-this-vulnerability/
  * or https://access.redhat.com/security/cve/cve-2015-7501). In case your application uses serialized objects and you trust

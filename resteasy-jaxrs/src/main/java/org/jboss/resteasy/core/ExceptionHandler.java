@@ -45,8 +45,8 @@ public class ExceptionHandler
     * If there exists an Exception mapper for exception, execute it, otherwise, do NOT recurse up class hierarchy
     * of exception.
     *
-    * @param exception
-    * @return
+    * @param exception exception
+    * @return response
     */
    @SuppressWarnings(value = "unchecked")
    public Response executeExactExceptionMapper(Throwable exception)
@@ -81,9 +81,9 @@ public class ExceptionHandler
    }
 
    /**
-    * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
+    * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found.
     *
-    * @param exception
+    * @param exception exception
     * @return true if an ExceptionMapper was found and executed
     */
    @SuppressWarnings(value = "unchecked")

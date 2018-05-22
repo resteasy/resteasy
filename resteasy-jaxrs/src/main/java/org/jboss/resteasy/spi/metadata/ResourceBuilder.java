@@ -198,10 +198,10 @@ public class ResourceBuilder
       }
 
       /**
-       * Resteasy @Form specific injection parameter
+       * Resteasy @Form specific injection parameter.
        *
-       * @param prefix
-       * @return
+       * @param prefix prefix
+       * @return parameter builder
        */
       public T form(String prefix)
       {
@@ -211,9 +211,9 @@ public class ResourceBuilder
       }
 
       /**
-       * Resteasy @Form specific injection parameter
+       * Resteasy @Form specific injection parameter.
        *
-       * @return
+       * @return parameter builder
        */
       public T form()
       {
@@ -743,6 +743,7 @@ public class ResourceBuilder
    /**
     * Register a new {@link ResourceClassProcessor} which will be used to post-process all
     * {@link ResourceClass} instances created from the builder.
+    * @param processor resource class processor
     */
    public void registerResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {
@@ -794,10 +795,10 @@ public class ResourceBuilder
    }
 
    /**
-    * Picks a constructor from an annotated resource class based on spec rules
+    * Picks a constructor from an annotated resource class based on spec rules.
     *
-    * @param annotatedResourceClass
-    * @return
+    * @param annotatedResourceClass annotated resource class
+    * @return {@link ResourceConstructor}
     */
    public ResourceConstructor getConstructor(Class<?> annotatedResourceClass)
    {
@@ -822,9 +823,10 @@ public class ResourceBuilder
    }
 
    /**
-    * Build metadata from annotations on classes and methods
+    * Build metadata from annotations on classes and methods.
     *
-    * @return
+    * @param clazz class
+    * @return resource class
     */
    public ResourceClass getRootResourceFromAnnotations(Class<?> clazz)
    {

@@ -22,7 +22,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
- * UriInfo implementation with some added extra methods to help process requests
+ * UriInfo implementation with some added extra methods to help process requests.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -164,9 +164,9 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    /**
-    * matching path without matrix parameters
+    * Matching path without matrix parameters.
     *
-    * @param encodedPathSegments
+    * @param encodedPathSegments list of path segments
     */
    protected void extractMatchingPath(List<PathSegment> encodedPathSegments)
    {
@@ -179,9 +179,9 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    /**
-    * Encoded path without matrix parameters
+    * Encoded path without matrix parameters.
     *
-    * @return
+    * @return matching path
     */
    public String getMatchingPath()
    {
@@ -189,10 +189,9 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    /**
-    * Create a UriInfo from the baseURI
+    * Create a UriInfo from the baseURI.
     *
-    * @param relative
-    * @return
+    * @param relative relative uri
     */
    public void setRequestUri(URI relative)
    {

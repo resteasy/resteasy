@@ -113,9 +113,11 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    /**
-    * Call pre-process ContainerRequestFilters
+    * Call pre-process ContainerRequestFilters.
     *
-    * @return true if request should continue
+    * @param request http request
+    * @param response http response
+    * @param continuation runnable
     */
    protected void preprocess(HttpRequest request, HttpResponse response, Runnable continuation)
    {
@@ -240,10 +242,10 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    /**
-    * Propagate NotFoundException.  This is used for Filters
+    * Propagate NotFoundException.  This is used for Filters.
     *
-    * @param request
-    * @param response
+    * @param request http request
+    * @param response http response
     */
    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
    {
@@ -388,12 +390,12 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    /**
-    * Return a response wither from an invoke or exception handling
+    * Return a response wither from an invoke or exception handling.
     *
-    * @param request
-    * @param response
-    * @param invoker
-    * @return
+    * @param request http request
+    * @param response http response
+    * @param invoker resource invoker
+    * @return response
     */
    public Response execute(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
@@ -423,11 +425,11 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    /**
-    * Invoke and write response
+    * Invoke and write response.
     *
-    * @param request
-    * @param response
-    * @param invoker
+    * @param request http request
+    * @param response http response
+    * @param invoker resource invoker
     */
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {

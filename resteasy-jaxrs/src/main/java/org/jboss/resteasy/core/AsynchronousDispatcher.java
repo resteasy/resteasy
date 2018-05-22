@@ -138,9 +138,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    /**
-    * Max response cache size default is 100
+    * Max response cache size default is 100.
     *
-    * @param maxCacheSize
+    * @param maxCacheSize max cache size
     */
    public void setMaxCacheSize(int maxCacheSize)
    {
@@ -149,9 +149,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    /**
-    * Maximum wait time.  This overrides any wait query parameter
+    * Maximum wait time.  This overrides any wait query parameter.
     *
-    * @param maxWaitMilliSeconds
+    * @param maxWaitMilliSeconds max wait time in millis
     */
    public void setMaxWaitMilliSeconds(long maxWaitMilliSeconds)
    {
@@ -159,9 +159,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    /**
-    * Set the base path to find jobs
+    * Set the base path to find jobs.
     *
-    * @param basePath
+    * @param basePath base path
     */
    public void setBasePath(String basePath)
    {
@@ -169,9 +169,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    /**
-    * Fixed thread pool size of asynchronous delivery
+    * Fixed thread pool size of asynchronous delivery.
     *
-    * @param threadPoolSize
+    * @param threadPoolSize thread pool size
     */
    public void setThreadPoolSize(int threadPoolSize)
    {
@@ -179,9 +179,9 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    }
 
    /**
-    * Plug in your own executor to process requests
+    * Plug in your own executor to process requests.
     *
-    * @param executor
+    * @param executor executor service
     */
    public void setExecutor(ExecutorService executor)
    {

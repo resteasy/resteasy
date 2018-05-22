@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * efficient MediaType index of T
+ * Efficient MediaType index of T.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -321,8 +321,8 @@ public class MediaTypeMap<T>
    /**
     * Add an object to the media type map.  This is synchronized to serialize adds.
     *
-    * @param type
-    * @param obj
+    * @param type media type
+    * @param obj object
     */
    public synchronized void add(MediaType type, T obj)
    {
@@ -372,7 +372,7 @@ public class MediaTypeMap<T>
     * is the best match
     *
     * @param accept mime to match
-    * @return
+    * @return list of objects
     */
    public List<T> getPossible(MediaType accept)
    {

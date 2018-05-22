@@ -20,31 +20,29 @@ public interface GeneralValidator
    /**
     * Validates all constraints on {@code object}.
     *
+    * @param request http request
     * @param object object to validate
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default})
-    * @return constraint violations or an empty set if none
+    *        {@link javax.validation.groups.Default})
     * @throws IllegalArgumentException if object is {@code null}
     *         or if {@code null} is passed to the varargs groups
-    * @throws ValidationException if a non recoverable error happens
+    * @throws javax.validation.ValidationException if a non recoverable error happens
     *         during the validation process
     */
    public abstract void validate(HttpRequest request, Object object, Class<?>... groups);
    /**
     * Validates all constraints placed on the parameters of the given method.
     *
-    * @param <T> the type hosting the method to validate
+    * @param request http request
     * @param object the object on which the method to validate is invoked
     * @param method the method for which the parameter constraints is validated
     * @param parameterValues the values provided by the caller for the given method's
     *        parameters
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default})
-    * @return a set with the constraint violations caused by this validation;
-    *         will be empty if no error occurs, but never {@code null}
+    *        {@link javax.validation.groups.Default})
     * @throws IllegalArgumentException if {@code null} is passed for any of the parameters
     *         or if parameters don't match with each other
-    * @throws ValidationException if a non recoverable error happens during the
+    * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
    public abstract void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
@@ -52,17 +50,15 @@ public interface GeneralValidator
    /**
     * Validates all return value constraints of the given method.
     *
-    * @param <T> the type hosting the method to validate
+    * @param request http request
     * @param object the object on which the method to validate is invoked
     * @param method the method for which the return value constraints is validated
     * @param returnValue the value returned by the given method
     * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default})
-    * @return a set with the constraint violations caused by this validation;
-    *         will be empty if no error occurs, but never {@code null}
+    *        {@link javax.validation.groups.Default})
     * @throws IllegalArgumentException if {@code null} is passed for any of the object,
     *         method or groups parameters or if parameters don't match with each other
-    * @throws ValidationException if a non recoverable error happens during the
+    * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
    public abstract void validateReturnValue(
@@ -87,7 +83,7 @@ public interface GeneralValidator
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
     * 
-    * @param request
+    * @param request http request
     */
    public void checkViolations(HttpRequest request);
 }

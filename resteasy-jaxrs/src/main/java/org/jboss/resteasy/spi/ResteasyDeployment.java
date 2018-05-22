@@ -535,7 +535,7 @@ public class ResteasyDeployment
    }
 
    /**
-    * @param config
+    * @param config application
     * @return whether application class registered anything. i.e. whether scanning metadata should be used or not
     */
    protected boolean processApplication(Application config)

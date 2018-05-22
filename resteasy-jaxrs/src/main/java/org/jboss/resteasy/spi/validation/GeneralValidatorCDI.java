@@ -41,7 +41,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
     * The method should be called only from the resteasy-cdi module.
-    * @param request
+    * @param request http request
     */
    public void checkViolationsfromCDI(HttpRequest request);
    
@@ -49,8 +49,8 @@ public interface GeneralValidatorCDI extends GeneralValidator
     * Throws a ResteasyViolationException if either a ConstraintViolationException or a
     * ResteasyConstraintViolationException is embedded in the cause hierarchy of e.
     * 
-    * @param request
-    * @param e
+    * @param request http request
+    * @param e exception
     */
    public void checkForConstraintViolations(HttpRequest request, Exception e);
 }

@@ -57,7 +57,7 @@ public class PathSegmentImpl implements PathSegment
 
    /**
     * NOTE: Used for optimization in ResteasyUriInfo
-    * @return
+    * @return true if path segment contains matrix parameters
     */
    public boolean hasMatrixParams()
    {
@@ -121,7 +121,7 @@ public class PathSegmentImpl implements PathSegment
     *
     * @param path encoded full path
     * @param decode whether or not to decode each segment
-    * @return
+    * @return {@link SegmentParse}
     */
    public static SegmentParse parseSegmentsOptimization(String path, boolean decode)
    {

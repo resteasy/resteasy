@@ -18,6 +18,9 @@ public class PrefixedFormInjector extends FormInjector
 
    /**
     * Constructor setting the prefix.
+    * @param type type class
+    * @param prefix prefix
+    * @param factory provider factory
     */
    public PrefixedFormInjector(Class type, String prefix, ResteasyProviderFactory factory)
    {
@@ -40,6 +43,10 @@ public class PrefixedFormInjector extends FormInjector
 
    /**
     * Calls the super {@link #inject(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse)} method.
+    * @param prefix prefix
+    * @param request http request
+    * @param response http response
+    * @return injector instance
     */
    protected Object doInject(String prefix, HttpRequest request, HttpResponse response)
    {
@@ -48,6 +55,8 @@ public class PrefixedFormInjector extends FormInjector
 
    /**
     * Checks to see if the decodedParameters contains any form fields starting with the prefix. Also checks if the value is not empty.
+    * @param decodedFormParameters decoded parameters map
+    * @return boolean result
     */
    private boolean containsPrefixedFormFieldsWithValue(MultivaluedMap<String, String> decodedFormParameters)
    {
@@ -66,6 +75,8 @@ public class PrefixedFormInjector extends FormInjector
 
    /**
     * Checks that the list has an non empty value.
+    * @param list list of values
+    * @return true if the list contains values
     */
    protected boolean hasValue(List<String> list)
    {

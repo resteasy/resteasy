@@ -2,7 +2,7 @@ package org.jboss.resteasy.spi;
 
 /**
  * This exception should only be used by Resteasy integrators.  Applications code should use WebApplicationException
- * <p/>
+ * <p>
  * Thrown by dispatcher when it can't handle a particular exception
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

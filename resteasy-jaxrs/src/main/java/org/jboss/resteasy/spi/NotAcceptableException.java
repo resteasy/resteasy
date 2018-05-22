@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
  * 
  * @deprecated Replaced by javax.ws.rs.NotAcceptableException in jaxrs-api module.
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.NotAcceptableException
  */
 @Deprecated
