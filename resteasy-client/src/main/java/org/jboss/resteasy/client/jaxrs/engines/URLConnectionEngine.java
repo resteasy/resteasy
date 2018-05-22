@@ -132,9 +132,9 @@ public class URLConnectionEngine implements ClientHttpEngine
     }
 
     /**
-     * Create HttpUrlConnection from ClientInvorcation and set request method
+     * Create HttpUrlConnection from ClientInvorcation and set request method.
      * @param request ClientInvocation
-     * @return HttpURLConnection with method & url already set
+     * @return HttpURLConnection with method {@literal &} url already set
      * @throws IOException if url or io exceptions
      */
     protected HttpURLConnection createConnection(final ClientInvocation request) throws IOException

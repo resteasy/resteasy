@@ -57,7 +57,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
- * AsyncClientHttpEngine using apache http components HttpAsyncClient 4.<p/>
+ * AsyncClientHttpEngine using apache http components HttpAsyncClient 4.<p>
  *
  * Some words of caution: <ul>
  * <li>Asynchronous IO means non-blocking IO utilizing few threads, typically at most as much threads as number of cores.
@@ -79,7 +79,7 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  * <li>InvocationCallbacks will see the same result as the future-object and vice versa. Thus, if the invocationcallback
  * throws an exception, the future-object will not see it. Another reason to handle responses only in the InvocationCallback.
  * </li>
- *
+ * </ul>
  * @author Markus Kull
  */
 public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Closeable

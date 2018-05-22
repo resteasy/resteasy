@@ -34,6 +34,7 @@ public interface AsyncClientHttpEngine extends ClientHttpEngine
    /**
     * Submits an asynchronous request.
     *
+    * @param <T> type
     * @param request Request
     * @param buffered buffer the response?
     * @param callback Optional callback receiving the result, which is run inside the io-thread. may be null.
