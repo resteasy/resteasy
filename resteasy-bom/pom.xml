@@ -148,9 +148,9 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                 <artifactId>resteasy-servlet-initializer</artifactId>
-                 <version>${project.version}</version>
-                </dependency>
+                <artifactId>resteasy-servlet-initializer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
