@@ -17,6 +17,7 @@ public class FieldParameter extends Parameter
    {
       super(declaredClass, field.getType(), field.getGenericType());
       this.field = field;
+      this.paramName = field.getName();
    }
 
    @Override

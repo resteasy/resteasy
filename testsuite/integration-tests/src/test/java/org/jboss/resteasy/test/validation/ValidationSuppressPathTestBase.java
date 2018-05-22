@@ -14,6 +14,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import java.util.Arrays;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
@@ -33,7 +35,7 @@ public class ValidationSuppressPathTestBase {
         client.close();
     }
 
-    public void doTestInputViolations(String fieldPath, String propertyPath, String classPath, String parameterPath) throws Exception {
+    public void doTestInputViolations(String fieldPath, String propertyPath, String classPath, String... parameterPaths) throws Exception {
         ValidationCoreFoo foo = new ValidationCoreFoo("p");
         Response response = client.target(PortProviderUtil.generateURL("/all/a/z", "Validation-test")).request()
                 .post(Entity.entity(foo, "application/foo"));
@@ -51,7 +53,7 @@ public class ValidationSuppressPathTestBase {
         violation = e.getClassViolations().iterator().next();
         Assert.assertEquals(WRONG_ERROR_MSG, classPath, violation.getPath());
         violation = e.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, parameterPath, violation.getPath());
+        Assert.assertTrue(WRONG_ERROR_MSG + parameterPaths, Arrays.asList(parameterPaths).contains(violation.getPath()));
         response.close();
     }
 
