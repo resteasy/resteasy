@@ -1,6 +1,12 @@
 <chapter id="_HeaderParam">
 <title>@HeaderParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@HeaderParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 The @HeaderParam annotation allows you to map a request HTTP header to your method invocation.
