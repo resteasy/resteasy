@@ -60,7 +60,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
     * Copies a specific component registry when a new
     * provider is added. Otherwise delegates to the parent.
     *
-    * @param parent
+    * @param parent provider factory
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
@@ -70,8 +70,8 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
    /**
     * If local is true, copies components needed by client configuration,
     * so that parent is not referenced. 
-    * @param parent
-    * @param local
+    * @param parent provider factory
+    * @param local is local
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
    {
@@ -140,7 +140,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
    /**
     * Append interceptor predence
     *
-    * @param precedence
+    * @param precedence precedence
     */
    public void appendInterceptorPrecedence(String precedence)
    {
@@ -158,7 +158,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
 
    /**
     * @param after         put newPrecedence after this
-    * @param newPrecedence
+    * @param newPrecedence new precedence
     */
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
    {
@@ -177,7 +177,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
 
   /**
     * @param before        put newPrecedence before this
-    * @param newPrecedence
+    * @param newPrecedence new precedence
     */
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
    {
@@ -294,6 +294,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
    /**
     * Add a {@link ClientErrorInterceptor} to this provider factory instance.
     * Duplicate handlers are ignored. (For Client Proxy API only)
+    * @param handler client error interceptor
     */
    public void addClientErrorInterceptor(ClientErrorInterceptor handler)
    {
@@ -310,6 +311,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
 
   /**
     * Return the list of currently registered {@link ClientErrorInterceptor} instances.
+    * @return list of client error interceptors
     */
    public List<ClientErrorInterceptor> getClientErrorInterceptors()
    {

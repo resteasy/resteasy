@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry<T> instead.
+ * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry{@literal <}T{@literal >} instead.
  */
 @SuppressWarnings("unchecked")
 @Deprecated

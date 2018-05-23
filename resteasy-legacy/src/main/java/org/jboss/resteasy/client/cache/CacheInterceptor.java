@@ -33,7 +33,7 @@ import java.util.List;
  * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
  * caching in the JAX-RS 2.0 compliant resteasy-client module.
  * 
- * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  * @see org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor
  */
 @Deprecated

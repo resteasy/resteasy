@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 /**
  * Part of a generic decorator framework.
- * <p/>
+ * <p>
  * Decorate a target.  For example, decorate a JAXB Marshaller with property values.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

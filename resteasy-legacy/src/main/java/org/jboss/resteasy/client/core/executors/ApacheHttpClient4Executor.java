@@ -137,9 +137,9 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    /**
     * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
-    * Value of -1 will use a SelfExpandingBufferedInputStream
+    * Value of -1 will use a SelfExpandingBufferedInputStream.
     *
-    *  @return
+    *  @return response buffer size
     */
    public int getResponseBufferSize()
    {
@@ -148,9 +148,9 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    /**
     * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
-    * Value of -1 will use a SelfExpandingBufferedInputStream
+    * Value of -1 will use a SelfExpandingBufferedInputStream.
     *
-    * @param responseBufferSize
+    * @param responseBufferSize response buffer size
     */
    public void setResponseBufferSize(int responseBufferSize)
    {

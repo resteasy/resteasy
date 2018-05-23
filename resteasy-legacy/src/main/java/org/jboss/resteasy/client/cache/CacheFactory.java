@@ -12,7 +12,7 @@ import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
  * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
  * caching in the JAX-RS 2.0 compliant resteasy-client module.
  * 
- * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  */
 @Deprecated
 public class CacheFactory
@@ -21,8 +21,8 @@ public class CacheFactory
     * Makes the client proxy cacheable. Returns the cache that will hold
     * returned values from the server.
     *
-    * @param clientProxy
-    * @return
+    * @param clientProxy client proxy
+    * @return browser cache
     */
    public static LightweightBrowserCache makeCacheable(Object clientProxy)
    {
@@ -35,8 +35,8 @@ public class CacheFactory
     * Makes the client proxy cacheable. This method allows you to pass in a
     * shared cache that the proxy should use
     *
-    * @param clientProxy
-    * @param cache
+    * @param clientProxy client proxy
+    * @param cache browser cache
     */
    public static void makeCacheable(Object clientProxy, BrowserCache cache)
    {
@@ -57,8 +57,8 @@ public class CacheFactory
    /**
     * Make a raw ClientRequest cache results in the provided cache.
     *
-    * @param request
-    * @param cache
+    * @param interceptorRepository interceptor repository
+    * @param cache browser cache
     */
    public static void makeCacheable(
            ClientInterceptorRepository interceptorRepository, BrowserCache cache)

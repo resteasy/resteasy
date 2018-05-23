@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * default is 2Megabytes. If the cache exceeds this amount, it is wiped clean.
  * This rather draconian approach to cache reaping is to avoid synchronization
  * that you would normally have to do in a sophisticated cache.
- * <p/>
+ * <p>
  * With high concurrent access, because this is not a sophisticated cache,
  * sometimes a cache entry may be lost. It is consistent though.
  *
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
  * caching in the JAX-RS 2.0 compliant resteasy-client module.
  * 
- * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  * @see org.jboss.resteasy.client.jaxrs.cache.LightweightBrowserCache
  */
 @Deprecated

@@ -7,10 +7,10 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.client.ResponseProcessingException
- * @see javax.ws.rs.client.ProcessingException
- * @see javax.ws.rs.client.WebApplicationException
+ * @see javax.ws.rs.ProcessingException
+ * @see javax.ws.rs.WebApplicationException
  */
 @Deprecated
 public class ClientResponseFailure extends RuntimeException

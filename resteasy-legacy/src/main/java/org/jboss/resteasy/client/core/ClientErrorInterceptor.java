@@ -24,6 +24,7 @@ public interface ClientErrorInterceptor
     * {@link ClientResponse}. If this method throws an exception, no further
     * interceptors will be processed.
     *
+    * @param response client response
     * @throws RuntimeException RestEasy will abort request processing if any exception is
     *                          thrown from this method.
     */
