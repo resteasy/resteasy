@@ -11,13 +11,12 @@ import java.lang.annotation.Target;
 
 /**
  * Specifies an XML stylesheet header
- * <p/>
+ * <p>
  * e.g.
- * <p/>
  * <pre>
- * <?xml-stylesheet type='text/xsl' href='foobar.xsl' ?>
+ * {@literal <}?xml-stylesheet type='text/xsl' href='foobar.xsl' ?{@literal >}
  * </pre>
- * <p/>
+ * <p>
  * You can use replacement expressions in value string.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

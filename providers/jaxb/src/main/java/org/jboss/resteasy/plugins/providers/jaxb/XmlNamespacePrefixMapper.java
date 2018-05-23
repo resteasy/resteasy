@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A XmlNamespecePrefixMapper.
+ * A XmlNamespacePrefixMapper.
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
@@ -20,7 +20,7 @@ public class XmlNamespacePrefixMapper extends NamespacePrefixMapper
    /**
     * Create a new XmlNamespecePrefixMapper.
     *
-    * @param namespeces
+    * @param namespaces xml namespaces
     */
    public XmlNamespacePrefixMapper(final XmlNs... namespaces)
    {
