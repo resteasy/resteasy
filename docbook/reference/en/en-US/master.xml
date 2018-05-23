@@ -14,6 +14,7 @@
                 <!ENTITY _CookieParam SYSTEM "modules/_CookieParam.xml">
                 <!ENTITY _FormParam SYSTEM "modules/_FormParam.xml">
                 <!ENTITY _Form SYSTEM "modules/_Form.xml">
+                <!ENTITY _NewParam SYSTEM "modules/_NewParam.xml">
                 <!ENTITY Cache_NoCache_CacheControl SYSTEM "modules/Cache_NoCache_CacheControl.xml">
                 <!ENTITY _DefaultValue SYSTEM "modules/_DefaultValue.xml">
                 <!ENTITY _Encoded_and_encoding SYSTEM "modules/_Encoded_and_encoding.xml">
@@ -111,6 +112,7 @@ This one is short
    &_CookieParam;
    &_FormParam;
    &_Form;
+   &_NewParam;
    &_DefaultValue;
    &_Encoded_and_encoding;
    &_Context;

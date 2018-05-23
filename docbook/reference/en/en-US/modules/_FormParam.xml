@@ -1,6 +1,12 @@
 <chapter id="_FormParam">
 <title>@FormParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@FormParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 When the input request body is of the type &quot;application/x-www-form-urlencoded&quot;, a.k.a. an HTML Form, you can inject individual form parameters from the request body into method parameter values.
