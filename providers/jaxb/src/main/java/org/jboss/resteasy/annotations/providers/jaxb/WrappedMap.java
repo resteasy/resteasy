@@ -7,18 +7,14 @@ import java.lang.annotation.Target;
 
 /**
  * Put this on a method or parameter when you want to marshal or unmarshal a map of JAXB objects
- * <p/>
+ * <p>
  * i.e.
- * <p/>
  * <pre>
- *
+ * {@literal @}PUT
+ * {@literal @}Consumes("application/xml") public void put({@literal @}WrappedMap Map{@literal <}String, User{@literal >} users);
+ * </pre>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @PUT
- * @Consumes("application/xml") public void put(@WrappedMap Map<String, User> users);
- * <p/>
- * </pre>
- * <p/>
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -30,12 +26,14 @@ public @interface WrappedMap
    String map() default "map";
 
    /**
-    * entry element name *
+    * entry element name 
+    * @return entry
     */
    String entry() default "entry";
 
    /**
     * entry's key attribute name
+    * @return key
     */
    String key() default "key";
 

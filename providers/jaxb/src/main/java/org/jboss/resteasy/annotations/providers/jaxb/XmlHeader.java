@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 /**
  * Sets an XML header for the returned document.
- * <p/>
+ * <p>
  * You can use replacement expressions in value string.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

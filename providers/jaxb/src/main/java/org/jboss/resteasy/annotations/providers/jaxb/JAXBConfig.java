@@ -15,39 +15,14 @@ import java.lang.annotation.Target;
 public @interface JAXBConfig
 {
 
-   /**
-    * FIXME Comment this
-    *
-    * @return
-    */
    boolean useNameSpacePrefix() default false;
 
-   /**
-    * FIXME Comment this
-    *
-    * @return
-    */
    XmlNs[] namespaces() default {};
 
-   /**
-    * FIXME Comment this
-    *
-    * @return
-    */
    boolean validate() default false;
 
-   /**
-    * FIXME Comment this
-    *
-    * @return
-    */
    String schema() default "";
 
-   /**
-    * FIXME Comment this
-    *
-    * @return
-    */
    String schemaType() default XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 }
