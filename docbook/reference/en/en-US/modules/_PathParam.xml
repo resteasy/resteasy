@@ -1,6 +1,12 @@
 <chapter id="_PathParam">
 <title>@PathParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@PathParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 @PathParam is a parameter annotation which allows you to map variable URI path fragments into your method call.

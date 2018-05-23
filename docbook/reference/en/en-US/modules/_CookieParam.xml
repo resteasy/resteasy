@@ -1,6 +1,12 @@
 <chapter id="_CookieParam">
 <title>@CookieParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@CookieParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 The @CookieParam annotation allows you to inject the value of a cookie or an object representation of an HTTP request cookie into your method invocation

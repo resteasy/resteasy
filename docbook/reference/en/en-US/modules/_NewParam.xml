@@ -1,0 +1,59 @@
+<chapter id="_NewParam">
+<title>Improved <code>@…Param</code> annotations</title>
+
+<para>
+With the addition of parameter names in the bytecode since Java 8, it is no longer necessary to require users to specify parameter names
+in the following annotations: <link linkend="_PathParam"><code>@PathParam</code></link>, 
+<link linkend="_QueryParam"><code>@QueryParam</code></link>, <link linkend="_FormParam"><code>@FormParam</code></link>,
+<link linkend="_CookieParam"><code>@CookieParam</code></link>, <link linkend="_HeaderParam"><code>@HeaderParam</code></link>
+and <link linkend="_MatrixParam"><code>@MatrixParam</code></link>. In order to benefit from this feature, you have to switch to new annotations
+with the same name, in a different package, which have an optional value parameter. To use this, follow these steps:
+</para>
+<itemizedlist>
+  <listitem>Import the <code>org.jboss.resteasy.annotations.jaxrs</code> package to replace annotations from the JAX-RS spec.</listitem>
+  <listitem>Tell your build system to record method parameter names in the bytecode.</listitem>
+  <listitem>Remove the annotation value if the name matches the name of the annotated variable.</listitem>
+</itemizedlist>
+<para>
+Note that you can omit the annotation name for annotated method parameters as well as annotated fields or JavaBean properties.
+</para>
+<para>
+For Maven users, recording method parameter names in the bytecode can be enabled by setting the <code>maven.compiler.parameters</code> 
+to <code>true</code>:
+</para>
+<programlisting><![CDATA[
+    <properties>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+    </properties>
+]]></programlisting>
+<para>Usage:</para>
+<programlisting>
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam String isbn) {
+      // search my database and get a string representation and return it
+   }
+}
+</programlisting>
+
+<para>If your annotated variable does not have the same name as the path parameter, you can still
+specify the name:</para>
+<programlisting>
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam("isbn") String id) {
+      // search my database and get a string representation and return it
+   }
+}
+</programlisting>
+</chapter>
