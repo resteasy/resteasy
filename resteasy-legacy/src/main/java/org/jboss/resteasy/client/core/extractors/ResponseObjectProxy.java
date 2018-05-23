@@ -11,7 +11,8 @@ import java.util.HashMap;
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * @see EntityExtractor, ResponseObjectEntityExtractorFactory
+ * @see EntityExtractor
+ * @see ResponseObjectEntityExtractorFactory
  */
 
 @SuppressWarnings("unchecked")

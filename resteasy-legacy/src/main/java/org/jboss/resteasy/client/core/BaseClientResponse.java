@@ -93,8 +93,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
     * if a ClientResponseFailure is thrown.  Copy status and headers, but ignore
     * all type information stored in the ClientResponse.
     *
-    * @param copy
-    * @return
+    * @param copy client response
+    * @return client response
     */
    public static ClientResponse copyFromError(ClientResponse copy)
    {

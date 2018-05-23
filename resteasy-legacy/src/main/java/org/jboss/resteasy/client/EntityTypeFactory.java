@@ -8,7 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * @version $Revision: 1 $
  * 
  * <p>
- * <b>Note.</b> org.jboss.resteasy.client.ClientResponse<T> is a generic type in the Resteasy client framework,
+ * <b>Note.</b> org.jboss.resteasy.client.ClientResponse{@literal <}T{@literal >} is a generic type in the Resteasy client framework,
  * but org.jboss.resteasy.client.jaxrs.internal.ClientResponse in the resteasy-client module is not, so
  * EntityTypeFactory is no longer useful.
  * 

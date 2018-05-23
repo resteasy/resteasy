@@ -9,7 +9,7 @@ import javax.ws.rs.WebApplicationException;
 
 /**
  * Executed before resource method (not resource locator methods though!)
- * <p/>
+ * <p>
  * The interceptor can decide to return its own response.  This will result in not invoking the resource method.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -18,7 +18,7 @@ import javax.ws.rs.WebApplicationException;
  * @deprecated The Resteasy interceptor facility introduced in release 2.x
  * is replaced by the JAX-RS 2.0 compliant interceptor facility in release 3.0.x.
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  */
 @Deprecated
 public interface PreProcessInterceptor
@@ -26,8 +26,11 @@ public interface PreProcessInterceptor
    /**
     * Preprocess resource method invocation
     *
-    * @param request
+    * @param request http request
+    * @param method resource method
     * @return null unless the interceptor is returning its own response
+    * @throws Failure if failure occurred
+    * @throws WebApplicationException if application error occurred
     */
    ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException;
 }

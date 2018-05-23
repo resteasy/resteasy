@@ -8,13 +8,13 @@ import java.lang.annotation.Target;
 /**
  * Used to annotate a predefined URL (as opposed to a @PAthParam /@QueryParam)
  * in a Proxied client.<br>
- * <p/>
+ * <p>
  * For Example:
- * <p/>
+ * <p>
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon</a>
  * @version $Revision: 1 $
- * @GET MyDTO getDTO(@ClientURI String uri);
+ * {@literal @}GET MyDTO getDTO({@literal @}ClientURI String uri);
  * @deprecated Use org.jboss.resteasy.annotations.ClientURI instead.
  */
 @Target({ElementType.PARAMETER})

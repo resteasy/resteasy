@@ -47,7 +47,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.client.Invocation
  */
 @Deprecated
@@ -79,7 +79,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    /**
     * Set the default executor class name.
     *
-    * @param classname
+    * @param classname class name
     */
    public static void setDefaultExecutorClass(String classname)
    {
@@ -481,10 +481,10 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    /**
     * Tries to automatically unmarshal to target type.
     *
-    * @param returnType
-    * @param <T>
-    * @return
-    * @throws Exception
+    * @param returnType return type
+    * @param <T> type
+    * @return response entity
+    * @throws Exception if error occurred
     */
    public <T> T getTarget(Class<T> returnType) throws Exception
    {
@@ -502,10 +502,10 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    /**
     * Templates the returned ClientResponse for easy access to returned entity
     *
-    * @param returnType
-    * @param <T>
-    * @return
-    * @throws Exception
+    * @param returnType return type
+    * @param <T> type
+    * @return response
+    * @throws Exception if error occurred
     */
    public <T> ClientResponse<T> get(Class<T> returnType) throws Exception
    {
@@ -612,7 +612,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
     * if status is something other than 201
     *
     * @return Link to created resource
-    * @throws Exception, ClientResponseFailure
+    * @throws Exception if error occurred
+    * @throws ClientResponseFailure if response status is not 201
     */
    public Link create() throws Exception, ClientResponseFailure
    {
@@ -721,8 +722,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
     * This method populates all path, matrix, and query parameters and saves it
     * internally. Once its called once it returns the cached value.
     *
-    * @return
-    * @throws Exception
+    * @return uri
+    * @throws Exception if error occurred
     */
    public String getUri() throws Exception
 

@@ -41,9 +41,9 @@ public class LinkHeader
    }
 
    /**
-    * Index of links by relationship "rel" or "rev"
+    * Index of links by relationship "rel" or "rev".
     *
-    * @return
+    * @return map of links
     */
    public Map<String, Link> getLinksByRelationship()
    {
@@ -51,9 +51,9 @@ public class LinkHeader
    }
 
    /**
-    * Index of links by title
+    * Index of links by title.
     *
-    * @return
+    * @return map of links
     */
    public Map<String, Link> getLinksByTitle()
    {
@@ -61,9 +61,9 @@ public class LinkHeader
    }
 
    /**
-    * All the links defined
+    * All the links defined.
     *
-    * @return
+    * @return list of links
     */
    public List<Link> getLinks()
    {

@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
  * @deprecated The Resteasy interceptor facility introduced in release 2.x
  * is replaced by the JAX-RS 2.0 compliant interceptor facility in release 3.0.x.
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  */
 @Deprecated
 public interface MessageBodyWriterContext
@@ -51,7 +51,8 @@ public interface MessageBodyWriterContext
     * On the server side, this is the HttpRequest attributes, on the client side, this is the ClientRequest/ClientResponse
     * attributes.
     *
-    * @return
+    * @param attribute attribute name
+    * @return attribute value
     */
    Object getAttribute(String attribute);
 
