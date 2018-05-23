@@ -10,8 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Format XML output with indentations and newlines
- * <p/>
+ * Format XML output with indentations and newlines.
+ * <p>
  * This is a JAXB Decorator
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

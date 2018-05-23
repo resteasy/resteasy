@@ -31,10 +31,10 @@ import java.nio.charset.StandardCharsets;
  * selected when the resource is declared as:
  * </p>
  * <code>
- * &#064;POST<br/>
- * &#064;Consumes("applictaion/xml")<br/>
- * &#064;Produces("applictaion/xml")<br/>
- * public JAXBElement&lt;Contact&gt; getContact(JAXBElement&lt;Contact&gt; value);<br/>
+ * &#064;POST<br>
+ * &#064;Consumes("applictaion/xml")<br>
+ * &#064;Produces("applictaion/xml")<br>
+ * public JAXBElement&lt;Contact&gt; getContact(JAXBElement&lt;Contact&gt; value);<br>
  * </code>
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>

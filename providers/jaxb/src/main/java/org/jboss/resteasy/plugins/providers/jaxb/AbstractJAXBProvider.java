@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
- * @param <T>
+ * @param <T> type
  */
 public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 {
@@ -93,10 +93,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       DecoratorMatcher processor = new DecoratorMatcher();
       return processor.decorate(Unmarshaller.class, marshaller, type, annotations, mediaType);
    }
-
-   /**
-    *
-    */
+   
    @SuppressWarnings("unchecked")
    public T readFrom(Class<T> type,
                      Type genericType,
@@ -137,9 +134,6 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
    }
 
-   /**
-    *
-    */
    public void writeTo(T t,
                        Class<?> type,
                        Type genericType,
@@ -162,12 +156,12 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
 
    /**
-    * FIXME Comment this
+    * Retrieve JAXB marshaller.
     *
-    * @param type
-    * @param mediaType
-    * @param httpHeaders
-    * @return
+    * @param type type
+    * @param annotations annotations
+    * @param mediaType media type
+    * @return jaxb marshaller
     */
    protected Marshaller getMarshaller(Class<?> type,
                                       Annotation[] annotations,
@@ -208,21 +202,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
    }
 
-   /**
-    * FIXME Comment this
-    *
-    * @param type
-    * @param genericType
-    * @param annotations
-    * @return
-    */
    protected abstract boolean isReadWritable(Class<?> type,
                                              Type genericType,
                                              Annotation[] annotations, MediaType mediaType);
 
-   /**
-    *
-    */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isReadWritable(type, genericType, annotations, mediaType);
@@ -237,10 +220,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
 
    /**
-    * FIXME Comment this
+    * Gets the character set from media type.
     *
-    * @param mediaType
-    * @return
+    * @param mediaType media type
+    * @return charset
     */
    public static String getCharset(final MediaType mediaType)
    {

@@ -99,10 +99,10 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * Create a new JAXBContextWrapper.
     *
-    * @param classes
-    * @param properties
-    * @param config
-    * @throws JAXBException
+    * @param classes classes
+    * @param properties properties map
+    * @param config jaxb configuration
+    * @throws JAXBException jaxb exception
     */
    public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, JAXBConfig config) throws JAXBException
    {
@@ -134,9 +134,9 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * Create a new JAXBContextWrapper.
     *
-    * @param contextPath
-    * @param config
-    * @throws JAXBException
+    * @param contextPath context path
+    * @param config jaxb config
+    * @throws JAXBException jaxb exception
     */
    public JAXBContextWrapper(final String contextPath, JAXBConfig config) throws JAXBException
    {
@@ -168,9 +168,9 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * Create a new JAXBContextWrapper.
     *
-    * @param classes
-    * @param config
-    * @throws JAXBException
+    * @param classes classes
+    * @param config jaxb config
+    * @throws JAXBException jaxb exception
     */
    public JAXBContextWrapper(JAXBConfig config, Class<?>... classes) throws JAXBException
    {
@@ -180,7 +180,7 @@ public class JAXBContextWrapper extends JAXBContext
    /**
     * FIXME Comment this
     *
-    * @param config
+    * @param config jaxb config
     */
    private void processConfig(JAXBConfig config) throws JAXBException
    {
@@ -240,7 +240,7 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @return
+    * @return {@link Binder}
     * @see javax.xml.bind.JAXBContext#createBinder()
     */
    public Binder<Node> createBinder()
@@ -249,9 +249,9 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @param <T>
-    * @param domType
-    * @return
+    * @param <T> type
+    * @param domType dom class
+    * @return {@link Binder}
     * @see javax.xml.bind.JAXBContext#createBinder(java.lang.Class)
     */
    public <T> Binder<T> createBinder(Class<T> domType)
@@ -260,7 +260,7 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @return
+    * @return {@link JAXBIntrospector}
     * @see javax.xml.bind.JAXBContext#createJAXBIntrospector()
     */
    public JAXBIntrospector createJAXBIntrospector()
@@ -269,8 +269,8 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @return
-    * @throws JAXBException
+    * @return jaxb marshaller
+    * @throws JAXBException jaxb exception
     * @see javax.xml.bind.JAXBContext#createMarshaller()
     */
    public Marshaller createMarshaller() throws JAXBException
@@ -291,8 +291,8 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @return
-    * @throws JAXBException
+    * @return jaxb unmarshaller
+    * @throws JAXBException jaxb exception
     * @see javax.xml.bind.JAXBContext#createUnmarshaller()
     */
    public Unmarshaller createUnmarshaller() throws JAXBException
@@ -307,8 +307,8 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @return
-    * @throws JAXBException
+    * @return xml validator
+    * @throws JAXBException jaxb exception
     * @see javax.xml.bind.JAXBContext#createValidator()
     * @deprecated See javax.xml.bind.JAXBContext#createValidator().
     */
@@ -318,8 +318,8 @@ public class JAXBContextWrapper extends JAXBContext
    }
 
    /**
-    * @param outputResolver
-    * @throws IOException
+    * @param outputResolver xml schema resolver
+    * @throws IOException if I/O error occurred
     * @see javax.xml.bind.JAXBContext#generateSchema(javax.xml.bind.SchemaOutputResolver)
     */
    public void generateSchema(SchemaOutputResolver outputResolver) throws IOException

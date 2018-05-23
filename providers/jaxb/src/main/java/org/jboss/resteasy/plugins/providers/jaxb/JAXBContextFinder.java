@@ -13,13 +13,13 @@ public interface JAXBContextFinder
 {
    /**
     * This method with find a JAXBContext for one type.  The user can override the cache by defining
-    * a ContextResolver<JAXBContext> for the given media type.
+    * a ContextResolver{@literal <}JAXBContext{@literal >} for the given media type.
     *
-    * @param type
-    * @param mediaType
-    * @param parameterAnnotations
-    * @return
-    * @throws JAXBException
+    * @param type type
+    * @param mediaType media type
+    * @param parameterAnnotations annotations
+    * @return {@link JAXBContext}
+    * @throws JAXBException jaxb exception
     */
    JAXBContext findCachedContext(Class type, MediaType mediaType, Annotation[] parameterAnnotations) throws JAXBException;
 
@@ -27,22 +27,22 @@ public interface JAXBContextFinder
     * This method creates a JAXBContext from a collection of classes.  Unlike the other findCachedContext() method,
     * the user cannot override the JAXBContext created.
     *
-    * @param mediaType
-    * @param paraAnnotations
-    * @param classes
-    * @return
-    * @throws JAXBException
+    * @param mediaType media type
+    * @param paraAnnotations annotations
+    * @param classes classes
+    * @return {@link JAXBContext}
+    * @throws JAXBException jaxb exception
     */
    JAXBContext findCacheContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException;
 
    /**
-    * This method will find a JAXBContext from a set of XmlTypes that use an ObjectFactory for creation (i.e. from xjc)
+    * This method will find a JAXBContext from a set of XmlTypes that use an ObjectFactory for creation (i.e. from xjc).
     *
-    * @param mediaType
-    * @param paraAnnotations
-    * @param packages
-    * @return
-    * @throws JAXBException
+    * @param mediaType media type
+    * @param paraAnnotations annotations
+    * @param classes classes
+    * @return {@link JAXBContext}
+    * @throws JAXBException jaxb exception
     */
    JAXBContext findCacheXmlTypeContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException;
 

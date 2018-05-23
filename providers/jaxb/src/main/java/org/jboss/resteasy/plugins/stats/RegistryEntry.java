@@ -9,15 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <resource uriTemplate="/foo/bar{fff:.*}/x/a">
- *     <get method="org.blah.MyResource.method()" invocations="5555">
- *         <produces>application/xml</produces>
- *         <produces>application/json</produces>
- *     </get>
- *     <post method="org.blah.MyResource.post()">
- *         <produces>application/xml</produces>
- *     </post>
- *
+ * <pre>
+ * {@literal <}resource uriTemplate="/foo/bar{fff:.*}/x/a"{@literal >}
+ *     {@literal <}get method="org.blah.MyResource.method()" invocations="5555"{@literal >}
+ *         {@literal <}produces{@literal >}application/xml{@literal <}/produces{@literal >}
+ *         {@literal <}produces{@literal >}application/json{@literal <}/produces{@literal >}
+ *     {@literal <}/get{@literal >}
+ *     {@literal <}post method="org.blah.MyResource.post()"{@literal >}
+ *         {@literal <}produces{@literal >}application/xml{@literal <}/produces{@literal >}
+ *     {@literal <}/post{@literal >}
+ * {@literal <}/resource{@literal >}
+ * </pre>
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 2 $
  */
