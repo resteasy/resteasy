@@ -53,7 +53,7 @@ import java.security.PrivilegedExceptionAction;
  * will have a method:
  * </p>
  * <code>
- * public JAXBElement<Contact> createContact(Contact value);
+ * public JAXBElement{@literal <}Contact{@literal >} createContact(Contact value);
  * </code>
  *
  * @author <a href="ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -217,8 +217,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * in the same package as the type we're trying to marshall. This method simply locates this class and
     * instantiates it if found.
     *
-    * @param type
-    * @return
+    * @param type type class
+    * @return object factory instance
     */
    public static Object findObjectFactory(Class<?> type)
    {
@@ -245,9 +245,9 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * If this object is managed by an XmlRegistry, this method will invoke the registry and wrap the object in
     * a JAXBElement so that it can be marshalled.
     *
-    * @param t
-    * @param type
-    * @return
+    * @param t object to wrap
+    * @param type type class
+    * @return jaxb element
     */
    public static JAXBElement<?> wrapInJAXBElement(Object t, Class<?> type)
    {
