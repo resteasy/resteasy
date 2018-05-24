@@ -11,7 +11,6 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 public class AbstractInjectionTestBase {
 
-    @BeforeClass
     public static void initQueue() throws Exception {
         OnlineManagementClient client = TestUtil.clientInit();
 

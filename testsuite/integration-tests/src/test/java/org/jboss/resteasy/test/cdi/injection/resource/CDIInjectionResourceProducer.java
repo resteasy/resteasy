@@ -14,12 +14,12 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 @ApplicationScoped
-@Resource(name = "queue/test")
+@Resource(name = "java:/jms/queue/test")
 public class CDIInjectionResourceProducer {
     private static Connection connection;
     private static Session session;
     private static boolean disposed;
-    @Resource(mappedName = "jms/queue/test")
+    @Resource(mappedName = "java:/jms/queue/test")
     Queue bookQueue;
     @Resource(mappedName = "java:jboss/exported/jms/RemoteConnectionFactory")
     ConnectionFactory connectionFactory;

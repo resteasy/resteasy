@@ -130,7 +130,8 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
     };
 
     @Deployment
-    public static Archive<?> createTestArchive() {
+    public static Archive<?> createTestArchive() throws Exception {
+        initQueue();
         WebArchive war = TestUtil.prepareArchive("resteasy-reverse-injection-test")
                 .addClasses(AbstractInjectionTestBase.class, ReverseInjectionTest.class, PortProviderUtil.class)
                 .addClasses(Constants.class, PersistenceUnitProducer.class, UtilityProducer.class, Utilities.class)
