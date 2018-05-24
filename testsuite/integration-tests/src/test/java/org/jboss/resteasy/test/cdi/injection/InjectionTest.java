@@ -109,7 +109,8 @@ public class InjectionTest extends AbstractInjectionTestBase {
 
     @SuppressWarnings(value = "unchecked")
     @Deployment
-    public static Archive<?> createTestArchive() {
+    public static Archive<?> createTestArchive() throws Exception {
+        initQueue();
         WebArchive war = TestUtil.prepareArchive(InjectionTest.class.getSimpleName());
         war.addClass(AbstractInjectionTestBase.class)
                 .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class, Constants.class, UtilityProducer.class, BookCollectionType.getClass())
