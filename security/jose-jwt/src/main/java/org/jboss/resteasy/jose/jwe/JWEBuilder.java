@@ -174,10 +174,10 @@ public class JWEBuilder
       }
 
       /**
-       * Hashes the string into the required secret key size defined by the EncryptionMethod
+       * Hashes the string into the required secret key size defined by the EncryptionMethod.
        *
-       * @param secret
-       * @return
+       * @param secret secret key
+       * @return encrypted data
        */
       public String dir(String secret)
       {
@@ -187,10 +187,10 @@ public class JWEBuilder
       }
 
       /**
-       * Secret must meet the size requirements of the EncryptionMethod
+       * Secret must meet the size requirements of the EncryptionMethod.
        *
-       * @param secret
-       * @return
+       * @param secret secret key
+       * @return encrypted data
        */
       public String dir(byte[] secret)
       {
