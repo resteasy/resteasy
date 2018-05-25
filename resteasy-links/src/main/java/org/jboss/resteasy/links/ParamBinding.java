@@ -3,7 +3,7 @@ package org.jboss.resteasy.links;
 /**
  * Defines a single URI template parameter binding. 
  * 
- * @author Alexander Rashed <alexander.rashed@gmail.com>
+ * @author <a href="mailto:alexander.rashed@gmail.com">Alexander Rashed</a>
  */
 public @interface ParamBinding {
 

@@ -5,7 +5,7 @@ import javax.el.ELContext;
 /**
  * Implement this interface to wrap, modify or extend RESTEasy's ELContext with
  * your own variable or method resolvers.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public interface ELProvider {
 	/**
