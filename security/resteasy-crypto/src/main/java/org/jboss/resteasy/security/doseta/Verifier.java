@@ -43,12 +43,12 @@ public class Verifier
    }
 
    /**
-    * Try to verify a set of signatures and store the results
+    * Try to verify a set of signatures and store the results.
     *
-    * @param signatures
-    * @param headers
-    * @param body
-    * @return
+    * @param signatures list of signatures
+    * @param headers headers map
+    * @param body body
+    * @return {@link VerificationResults}
     */
    public VerificationResults verify(List<DKIMSignature> signatures, Map headers, byte[] body)
    {
@@ -103,13 +103,13 @@ public class Verifier
    }
 
    /**
-    * Verify one signature and store the results
+    * Verify one signature and store the results.
     *
-    * @param headers
-    * @param body
-    * @param verification
-    * @param signature
-    * @return
+    * @param headers headers map
+    * @param body body
+    * @param verification verification
+    * @param signature signature
+    * @return {@link VerificationResult}
     */
    public VerificationResult verify(Map headers, byte[] body, Verification verification, DKIMSignature signature)
    {
