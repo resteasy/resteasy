@@ -27,7 +27,7 @@ import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
 
 /**
  * 
- * @author Jeff Schnitzer <jeff@infohazard.org>
+ * @author <a href="mailto:jeff@infohazard.org">Jeff Schnitzer</a>
  * @author Thomas Broyer
  */
 @Provider
