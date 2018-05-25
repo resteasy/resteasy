@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Use on your JAX-RS method, resource class or resource class' package to indicate that 
  * you have a custom ELProvider for any links added to this response's entity.
  * 
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.RUNTIME)
