@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Provider for YAML &lt;-> Object marshalling. Uses the following mime
+ * Provider for YAML {@literal <->} Object marshalling. Uses the following mime
  * types:<pre><code>
  *   text/yaml
  *   text/x-yaml
