@@ -8,7 +8,7 @@ import java.util.Map;
  * children (Order.comments) where the parent entity (Order) is not returned as part of the collection,
  * but should still receive any links for the entity of type T (Comment) for whom we do not have any
  * instance (links for "add" and "list" for example).
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  *
  * @param <T> the type of entity that this facade should receive links for
  */
@@ -28,7 +28,7 @@ public interface ResourceFacade<T> {
 	 * <p>
 	 * For example, when scanning a facade for a list of order comments for an order with ID "foo", 
 	 * you should return a map for 
-	 * {orderId => "foo"}, which will get you links for "/order/{orderId}/comments" ("list" and "add")
+	 * {orderId {@literal =>} "foo"}, which will get you links for "/order/{orderId}/comments" ("list" and "add")
 	 * but not for "/order/{orderId}/comment/{commentId}" since those need actual Comment instances ("self" and 
 	 * "delete").
 	 * </p>
