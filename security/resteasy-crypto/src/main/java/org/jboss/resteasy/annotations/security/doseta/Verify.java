@@ -18,35 +18,35 @@ public @interface Verify
    /**
     * If there are multiple signature headers, use this attribute name to pick which signature to verify
     *
-    * @return
+    * @return identifier name
     */
    String identifierName() default "";
 
    /**
     * What should be the value of identifierName()
     *
-    * @return
+    * @return identifier value
     */
    String identifierValue() default "";
 
    /**
     * Expiration check based on expiration attribute will be done unless this flag is set to false.
     *
-    * @return
+    * @return ignore expiration
     */
    boolean ignoreExpiration() default false;
 
    /**
     * If message body exists, are we required to check the hash of it?
     *
-    * @return
+    * @return body has required
     */
    boolean bodyHashRequired() default true;
 
    /**
     * Do a stale check if a timestamp attribute is preset.
     *
-    * @return
+    * @return {@link After}
     */
    After stale() default @After;
 
