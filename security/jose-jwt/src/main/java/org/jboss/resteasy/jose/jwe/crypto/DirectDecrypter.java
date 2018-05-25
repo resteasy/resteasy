@@ -16,15 +16,13 @@ import java.nio.charset.StandardCharsets;
 /**
  * Direct decrypter with a
  * shared symmetric key. This class is thread-safe.
- * <p/>
  * <p>Supports the following JWE algorithms:
- * <p/>
+ * </p>
  * <ul>
  * <li>DIR
  * </ul>
- * <p/>
  * <p>Supports the following encryption methods:
- * <p/>
+ * </p>
  * <ul>
  * <li>A128CBC_HS256
  * <li>A256CBC_HS512

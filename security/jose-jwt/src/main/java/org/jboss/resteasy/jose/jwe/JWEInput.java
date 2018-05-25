@@ -132,11 +132,11 @@ public class JWEInput
          return rawContent;
       }
       /**
-       * Defaults to '*' if there is no cty header
-       *
-       * @param type
-       * @param <T>
-       * @return
+       * Defaults to '*' if there is no cty header.
+       * 
+       * @param <T> type
+       * @param type type class
+       * @return read entity of type T
        */
       public <T> T readContent(Class<T> type)
       {
