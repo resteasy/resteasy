@@ -72,7 +72,7 @@ public class CatalinaSecurityContextHelper
     * Get the Principal given the authenticated Subject. Currently the first principal that is not of type {@code Group} is
     * considered or the single principal inside the CallerPrincipal group.
     *
-    * @param subject
+    * @param subject subject
     * @return the authenticated principal
     */
    protected Principal getPrincipal(Subject subject) {

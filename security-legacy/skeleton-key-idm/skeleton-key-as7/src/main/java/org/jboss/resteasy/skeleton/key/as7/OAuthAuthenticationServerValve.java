@@ -72,12 +72,12 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Turns a web deployment into an authentication server that follwos the OAuth 2 protocol and Skeleton Key bearer tokens.
  * Authentication store is backed by a JBoss security domain.
- * <p/>
+ * <p>
  * Servlet FORM authentication that uses the local security domain to authenticate and for role mappings.
- * <p/>
+ * <p>
  * Supports bearer token creation and authentication.  The client asking for access must be set up as a valid user
  * within the security domain.
- * <p/>
+ * <p>
  * If no an OAuth access request, this works like normal FORM authentication and authorization.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
