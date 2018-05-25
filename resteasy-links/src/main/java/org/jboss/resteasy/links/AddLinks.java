@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * to every entity in the response. This will only inject RESTServiceDiscovery instances
  * on entities that have a field of this type, but it will be done recursively on the response's
  * entity.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 @Target( { ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER,
 		ElementType.FIELD })

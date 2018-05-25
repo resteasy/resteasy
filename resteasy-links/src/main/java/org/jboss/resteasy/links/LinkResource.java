@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * Use this to mark JAX-RS methods that should be included in the REST service discovery.
  * All parameters are optional and may be guessed from the method, whenever possible.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

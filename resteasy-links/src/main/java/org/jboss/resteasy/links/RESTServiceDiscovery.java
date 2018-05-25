@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * For this to work you need to add {@link LinkResource @LinkResource} annotations on
  * all the JAX-RS methods you want to be discovered.
  * </p>
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -26,7 +26,7 @@ public class RESTServiceDiscovery extends ArrayList<RESTServiceDiscovery.AtomLin
 
 	/**
 	 * An Atom link
-	 * @author Stéphane Épardaud <stef@epardaud.fr>
+	 * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
 	 */
 	@XmlRootElement(name = "link", namespace = "http://www.w3.org/2005/Atom")
 	@XmlAccessorType(XmlAccessType.NONE)
