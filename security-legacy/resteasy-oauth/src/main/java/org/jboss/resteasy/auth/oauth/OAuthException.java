@@ -2,7 +2,7 @@ package org.jboss.resteasy.auth.oauth;
 
 /**
  * Use this exception to throw exceptions from your OAuthProvider to specify the HTTP status code
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthException extends Exception {
 
@@ -23,6 +23,7 @@ public class OAuthException extends Exception {
 
 	/**
 	 * Returns the HTTP status code to return to the OAuth Client
+	 * @return HTTP status code to return to the OAuth Client
 	 */
 	public int getHttpCode() {
 		return httpCode;

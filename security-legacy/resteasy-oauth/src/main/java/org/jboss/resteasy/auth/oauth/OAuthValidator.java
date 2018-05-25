@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 
 /**
  * OAuth Validator implementation to check OAuth Messages
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthValidator extends SimpleOAuthValidator {
 
@@ -38,6 +38,12 @@ public class OAuthValidator extends SimpleOAuthValidator {
 	/**
 	 * Overridden to validate the timestamp and nonces last since they have side-effects of storing
 	 * data about the message, so we have to make sure the message is valid before we do that. 
+	 * @param message message
+	 * @param accessor accessor
+	 * @param requestToken OAuth token
+	 * @throws IOException if I/O error occurred
+	 * @throws OAuthException if error occurred
+	 * @throws URISyntaxException uri parsing problem
 	 */
 	public void validateMessage(OAuthMessage message, OAuthAccessor accessor, OAuthToken requestToken)
     throws OAuthException, IOException, URISyntaxException {
@@ -50,6 +56,10 @@ public class OAuthValidator extends SimpleOAuthValidator {
     /**
      * Throw an exception if the timestamp is out of range or the nonce has been
      * validated previously.
+     * @param message message
+     * @param token OAuth token
+     * @throws IOException if I/O error occurred
+     * @throws OAuthProblemException if error occurred
      */
     protected void validateTimestampAndNonce(OAuthMessage message, OAuthToken token)
     throws IOException, OAuthProblemException {
@@ -61,7 +71,12 @@ public class OAuthValidator extends SimpleOAuthValidator {
     }
 
 	/**
-	 * Overridden to delegate timestamp validation to the provider
+	 * Overridden to delegate timestamp validation to the provider.
+	 * @param message message
+	 * @param timestamp timestamp
+	 * @param token OAuth token
+	 * @throws IOException if I/O error occurred
+     * @throws OAuthProblemException if error occurred
 	 */
     protected void validateTimestamp(OAuthMessage message, long timestamp, OAuthToken token) throws IOException,
     OAuthProblemException {

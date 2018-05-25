@@ -6,11 +6,12 @@ import java.util.Set;
  * Implement this interface to provide the RESTEasy servlets and filters with the knowledge to
  * load and store OAuth Consumer, Request and Access Tokens.
  * 
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public interface OAuthProvider extends OAuthConsumerRegistration {
 	/**
-	 * Returns the Realm of this provider
+	 * Returns the Realm of this provider.
+	 * @return Realm of this provider
 	 */
 	public String getRealm();
 
@@ -34,7 +35,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	/**
 	 * Returns the OAuth Access Token for the given Consumer key and Access Token. If no such Consumer or Access Token exist, throw an OAuthException.
 	 * @param consumerKey the Consumer key whose Access Token we want to load
-	 * @param accesToken the Access Token to load
+	 * @param accessToken the Access Token to load
 	 * @return the OAuth Access Token for the given Consumer key and Access Token
 	 * @throws OAuthException thrown if the given Consumer or Access Token do not exist.
 	 */
@@ -45,7 +46,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @param consumerKey the Consumer key for whom to create a new Request Token
 	 * @param callback the Client-specified callback for this Request Token
 	 * @param scopes resource URIs the consumer would like to access
-	 * @param scopes permissions the consumer is requesting
+	 * @param permissions permissions the consumer is requesting
 	 * @return a new OAuth Request Token for the given Consumer
 	 * @throws OAuthException thrown if the given Consumer does not exist
 	 */
@@ -93,8 +94,8 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * Converts custom permissions which may have been associated with consumers
 	 * or access tokens into domain specific roles, example, 
 	 * given a "printResources" permission this method may return a role name "printerService"
-	 * @param permissions 
-	 * @return roles
+	 * @param permissions array of permissions 
+	 * @return roles set of roles
 	 */
 	public Set<String> convertPermissionsToRoles(String[] permissions);
 

@@ -7,7 +7,7 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
 /**
  * Used to make sure the OAuthProvider implementer does not return null values.
  * If any null is returned, throws a RuntimeException
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthProviderChecker implements OAuthProvider {
 	

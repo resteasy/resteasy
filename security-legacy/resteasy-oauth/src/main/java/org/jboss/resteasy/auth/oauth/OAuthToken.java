@@ -2,7 +2,7 @@ package org.jboss.resteasy.auth.oauth;
 
 /**
  * Represents either an OAuth Access or Request Token.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthToken {
     
@@ -29,48 +29,55 @@ public class OAuthToken {
     
 	/**
 	 * Returns this Token's Consumer.
+	 * @return consumer
 	 */
 	public OAuthConsumer getConsumer() {
 	    return consumer;
 	}
 
 	/**
-	 * Returns this Token's Token
+	 * Returns this Token's Token.
+	 * @return token
 	 */
 	public String getToken() {
 	    return token;
 	}
 	
 	/**
-	 * Returns this Token's Secret
+	 * Returns this Token's Secret.
+	 * @return secret
 	 */
 	public String getSecret() {
 	    return secret;
 	}
 	
 	/**
-     * Returns this Token's Scopes
+     * Returns this Token's Scopes.
+     * @return scopes
      */
     public String[] getScopes() {
         return scopes;
     }
 	
     /**
-     * Returns this Token's permissions
+     * Returns this Token's permissions.
+     * @return permissions
      */
     public String[] getPermissions() {
         return permissions;    
     }
     
 	/**
-     * Returns this Token's timestamp
+     * Returns this Token's timestamp.
+     * @return timestamp
      */
     public long getTimestamp() {
         return timestamp;
     }
     
     /**
-     * Returns this Token's timeToLive
+     * Returns this Token's timeToLive.
+     * @return time to live
      */
     public long getTimeToLive() {
         return timeToLive;

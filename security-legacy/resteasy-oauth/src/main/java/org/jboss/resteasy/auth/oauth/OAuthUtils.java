@@ -58,7 +58,9 @@ public class OAuthUtils {
 	private static final String ATTR_OAUTH_PROVIDER = OAuthProvider.class.getName();
 
 	/**
-	 * Encodes the given value for use in an OAuth parameter
+	 * Encodes the given value for use in an OAuth parameter.
+	 * @param value string to encode
+	 * @return encoded string
 	 */
 	public static String encodeForOAuth(String value){
 		try {
@@ -71,7 +73,9 @@ public class OAuthUtils {
 	
 	/**
 	 * Sends a list of OAuth parameters in the body of the given Http Servlet Response
-	 * @param params a list of <name, value> parameters
+	 * @param resp http response
+	 * @param params a list of {@literal <name, value>} parameters
+	 * @throws IOException if I/O error occurred
 	 */
 	public static void sendValues(HttpServletResponse resp, String... params) throws IOException {
 		PrintWriter writer = resp.getWriter();
@@ -88,6 +92,8 @@ public class OAuthUtils {
 
 	/**
 	 * Reads an OAuthMessage from an HTTP Servlet Request. Uses the Authorization header, GET and POST parameters.
+	 * @param req http request
+	 * @return {@link OAuthMessage}
 	 */
 	public static OAuthMessage readMessage(HttpServletRequest req) {
 		String authorizationHeader = req.getHeader(AUTHORIZATION_HEADER);
@@ -115,7 +121,12 @@ public class OAuthUtils {
 	}
 
 	/**
-	 * Sends an error to the OAuth Consumer
+	 * Sends an error to the OAuth Consumer.
+	 * @param resp http response
+	 * @param message response message
+	 * @param httpCode response status code
+	 * @param provider {@link OAuthProvider}
+	 * @throws IOException if I/O error occurred
 	 */
 	public static void makeErrorResponse(HttpServletResponse resp, String message, int httpCode, OAuthProvider provider) throws IOException{
 	   LogMessages.LOGGER.debug(Messages.MESSAGES.errorHttpCode(httpCode, message));
@@ -129,7 +140,10 @@ public class OAuthUtils {
 	}
 
 	/**
-	 * Parse an OAuth timestamp
+	 * Parse an OAuth timestamp.
+	 * @param timestampString timestamp
+	 * @return OAuth timestamp
+	 * @throws OAuthException if error occurred
 	 */
 	public static long parseTimestamp(String timestampString) throws OAuthException {
 		try{
@@ -143,7 +157,9 @@ public class OAuthUtils {
 	}
 
 	/**
-	 * Finds the HTTP status code from the given exception
+	 * Finds the HTTP status code from the given exception.
+	 * @param x exception
+	 * @return http status code
 	 */
 	public static int getHttpCode(OAuthProblemException x){
 		Integer httpCode = Problems.TO_HTTP_CODE.get(x.getProblem());
@@ -155,6 +171,9 @@ public class OAuthUtils {
 	
 	/**
 	 * Loads the OAuthProvider as specified in the Servlet Context parameters, and caches it in the Servlet Context attributes for reuse.
+	 * @param context servlet context
+	 * @return {@link OAuthProvider}
+	 * @throws ServletException servlet exception
 	 */
 	public static OAuthProvider getOAuthProvider(ServletContext context) throws ServletException {
 		OAuthProvider provider = (OAuthProvider) context.getAttribute(ATTR_OAUTH_PROVIDER);
@@ -181,6 +200,9 @@ public class OAuthUtils {
 
 	/**
 	 * Creates an OAuthValidator, and caches it in the Servlet Context attributes for reuse.
+	 * @param context servlet context
+	 * @param provider {@link OAuthProvider}
+	 * @return validator
 	 */
 	public static OAuthValidator getValidator(ServletContext context,
 			OAuthProvider provider) {
@@ -213,7 +235,12 @@ public class OAuthUtils {
 	}
 	
 	/**
-	 * Validates if a given request is a valid 2-leg oAuth request
+	 * Validates if a given request is a valid 2-leg oAuth request.
+	 * @param request http request
+	 * @param message message
+	 * @param validator validator
+	 * @param consumer consumer
+	 * @throws Exception if error occurred
 	 */
 	public static void validateRequestWithoutAccessToken(
 	        HttpServletRequest request,
@@ -235,7 +262,10 @@ public class OAuthUtils {
 	
 	/**
 	 * Validates if a current request URI matches URI provided by the consumer at the
-	 * registration time or during the request token validation request 
+	 * registration time or during the request token validation request.
+	 * @param requestURI request uri
+	 * @param scopes array of scopes
+	 * @return true if scope is not defined or uri starts with scope, false otherwise
 	 */
 	public static boolean validateUriScopes(String requestURI, String[] scopes) {
         if (scopes == null) {
