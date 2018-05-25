@@ -34,6 +34,7 @@ public class ContentIDUtils {
 	 * 
 	 * Used rfc-s: RFC2045, RFC822
 	 * 
+	 * @param addrSpec addrSpec
 	 * @return the generated Content-ID
 	 */
 	public static String generateContentIDFromAddrSpec(String addrSpec) {
@@ -57,6 +58,7 @@ public class ContentIDUtils {
 	 * 
 	 * Used rfc-s: RFC2392, RFC822
 	 * 
+	 * @param addrSpec addrSpec
 	 * @return the generated Content-ID
 	 */
 	public static String generateCidFromAddrSpec(String addrSpec) {
