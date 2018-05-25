@@ -80,7 +80,7 @@ public class JsonWebToken implements Serializable
    /**
     * Tests that the token is not expired and is not-before.
     *
-    * @return
+    * @return true if the token is not expired and is not-before
     */
    @JsonIgnore
    public boolean isActive()
@@ -94,7 +94,9 @@ public class JsonWebToken implements Serializable
    }
 
    /**
-    * Set issuedAt to the current time
+    * Set issuedAt to the current time.
+    *
+    * @return {@link JsonWebToken}
     */
    @JsonIgnore
    public JsonWebToken issuedNow()
