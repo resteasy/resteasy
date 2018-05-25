@@ -36,7 +36,7 @@ import java.util.Map;
  * JAX-RS property injection is performed twice on CDI Beans. Firstly by the JaxrsInjectionTarget
  * wrapper and then again by RESTEasy (which operates on Weld proxies instead of the underlying instances).
  * To eliminate this, we enabled the injector only for non-CDI beans (JAX-RS components outside of BDA) or 
- * CDI components that are not JAX-RS components (i.e. {@link @Form} objects).
+ * CDI components that are not JAX-RS components.
  *
  * @author <a href="mailto:jharting@redhat.com">Jozef Hartinger</a>
  */
