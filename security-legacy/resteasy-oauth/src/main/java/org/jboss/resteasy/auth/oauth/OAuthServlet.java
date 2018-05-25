@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * OAuth Http Servlet that handles Request Token creation and exchange for Access Tokens.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 3083924242786185155L;

@@ -23,7 +23,7 @@ import java.net.HttpURLConnection;
 /**
  * OAuth Servlet Filter that interprets OAuth Authentication messages to set the Principal and roles
  * for protected resources. 
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthFilter implements Filter {
 
