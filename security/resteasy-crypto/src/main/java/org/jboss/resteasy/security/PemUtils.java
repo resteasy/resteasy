@@ -12,7 +12,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 /**
- * Utility classes to extract PublicKey, PrivateKey, and X509Certificate from openssl generated PEM files
+ * Utility classes to extract PublicKey, PrivateKey, and X509Certificate from openssl generated PEM files.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -39,11 +39,11 @@ public class PemUtils
 
 
    /**
-    * Extract a public key from a PEM string
+    * Extract a public key from a PEM string.
     *
-    * @param pem
-    * @return
-    * @throws Exception
+    * @param pem PEM encoded string
+    * @return {@link PublicKey}
+    * @throws Exception if error occurred
     */
    public static PublicKey decodePublicKey(String pem) throws Exception
    {
@@ -52,11 +52,11 @@ public class PemUtils
    }
 
    /**
-    * Extract a private key that is a PKCS8 pem string (base64 encoded PKCS8)
+    * Extract a private key that is a PKCS8 pem string (base64 encoded PKCS8).
     *
-    * @param pem
-    * @return
-    * @throws Exception
+    * @param pem PEM encoded string
+    * @return {@link PrivateKey}
+    * @throws Exception if error occurred
     */
    public static PrivateKey decodePrivateKey(String pem) throws Exception
    {
@@ -71,11 +71,11 @@ public class PemUtils
    }
 
    /**
-    * Decode a PEM file to DER format
+    * Decode a PEM file to DER format.
     *
-    * @param is
-    * @return
-    * @throws IOException
+    * @param is input stream
+    * @return decoded bytes
+    * @throws IOException if I/O error occurred
     */
    public static byte[] pemToDer(InputStream is) throws IOException
    {
@@ -85,11 +85,11 @@ public class PemUtils
    }
 
    /**
-    * Decode a PEM string to DER format
+    * Decode a PEM string to DER format.
     *
-    * @param pem
-    * @return
-    * @throws java.io.IOException
+    * @param pem PEM encoded string
+    * @return decoded bytes
+    * @throws java.io.IOException if I/O error occurred
     */
    public static byte[] pemToDer(String pem) throws java.io.IOException
    {

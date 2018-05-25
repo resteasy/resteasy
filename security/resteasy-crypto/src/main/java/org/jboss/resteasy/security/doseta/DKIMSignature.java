@@ -110,7 +110,7 @@ public class DKIMSignature
    /**
     * Generates the Content-Signature value.
     *
-    * @return
+    * @return header value
     */
    public String toString()
    {
@@ -118,9 +118,9 @@ public class DKIMSignature
    }
 
    /**
-    * Whether or not to add a body hash to signature
+    * Whether or not to add a body hash to signature.
     *
-    * @return
+    * @return body hash required
     */
    public boolean isBodyHashRequired()
    {
@@ -133,9 +133,9 @@ public class DKIMSignature
    }
 
    /**
-    * Add a reference to a header within the signature calculation
+    * Add a reference to a header within the signature calculation.
     *
-    * @param headerName
+    * @param headerName header name
     */
    public void addHeader(String headerName)
    {
@@ -143,10 +143,8 @@ public class DKIMSignature
    }
 
    /**
-    * @param name
-    * @param value            if null, remove attribute
-    * @param includeSignature true if you want attribute to be included within the signature calculation
-    * @param display          true if you want attribute shown in the Content-Signature
+    * @param name attribute name
+    * @param value if null, remove attribute
     */
    public void setAttribute(String name, String value)
    {
@@ -160,9 +158,7 @@ public class DKIMSignature
    /**
     * Default value is SHA256withRSA, see Javadoc on java.security.Signature for other supported values.
     *
-    * @param value
-    * @param includeSignature true if you want attribute to be included within the signature calculation
-    * @param display          true if you want attribute shown in the Content-Signature
+    * @param value if null, remove attribute
     */
    public void setAlgorithm(String value)
    {
@@ -210,7 +206,7 @@ public class DKIMSignature
    }
 
    /**
-    * @param value
+    * @param id id
     */
    public void setId(String id)
    {
@@ -226,12 +222,12 @@ public class DKIMSignature
     * Calculates an expiration date based on the current time plus the additional time units specified in the
     * method parameters.
     *
-    * @param seconds
-    * @param minutes
-    * @param hours
-    * @param days
-    * @param months
-    * @param years
+    * @param seconds number of seconds
+    * @param minutes number of minutes
+    * @param hours number of hours
+    * @param days number of days
+    * @param months number of months
+    * @param years number of years
     */
    public void setExpiration(int seconds, int minutes, int hours, int days, int months, int years)
    {
@@ -249,7 +245,7 @@ public class DKIMSignature
    /**
     * Return false if true current time.  If expiration isn't set, then just return false. Returns false otherwise.
     *
-    * @return
+    * @return true if expired, false otherwise or when expiration attribute is not set
     */
    public boolean isExpired()
    {
@@ -262,7 +258,17 @@ public class DKIMSignature
 
    /**
     * Returns false if timestamp does not exist or if the current time is
-    * greater than timestamp + variables
+    * greater than timestamp + variables.
+    *
+    * @param seconds number of seconds
+    * @param minutes number of minutes
+    * @param hours number of hours
+    * @param days number of days
+    * @param months number of months
+    * @param years number of years
+    * 
+    * @return true if stale or timestamp attribute is not set
+    * 
     */
    public boolean isStale(int seconds, int minutes, int hours, int days, int months, int years)
    {
@@ -320,9 +326,9 @@ public class DKIMSignature
 
    /**
     * Private key to use to sign the message.  Can be null.  If so, system will try to figure out the signer
-    * based on a default value, or the current user principal
+    * based on a default value, or the current user principal.
     *
-    * @return
+    * @return {@link PrivateKey}
     */
    public PrivateKey getPrivateKey()
    {
@@ -335,14 +341,14 @@ public class DKIMSignature
    }
 
    /**
-    * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
+    * Headers can be a {@literal Map<String, Object> or a Map<String, List<Object>>}.  This gives some compatibility with
     * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
-    * <p/>
+    * <p>
     *
-    * @param headers
+    * @param headers headers map
     * @param body if null, bh field will not be set or provided
     * @param defaultKey will be used if privateKey is null
-    * @throws java.security.GeneralSecurityException
+    * @throws SignatureException if security exception occurred
     *
     */
    public void sign(Map headers, byte[] body, PrivateKey defaultKey) throws SignatureException
@@ -494,14 +500,15 @@ public class DKIMSignature
    }
 
    /**
-    * Headers can be a Map<String, Object> or a Map<String, List<Object>>.  This gives some compatibility with
+    * Headers can be a {@literal Map<String, Object> or a Map<String, List<Object>>}.  This gives some compatibility with
     * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
     *
-    * @param headers
-    * @param body
-    * @param key
+    * @param bodyHashRequired body hash required
+    * @param headers headers map
+    * @param body body
+    * @param key public key
     * @return map of verified headers and their values
-    * @throws SignatureException
+    * @throws SignatureException signature exception
     */
    public MultivaluedMap<String, String> verify(boolean bodyHashRequired, Map headers, byte[] body, PublicKey key) throws SignatureException
    {

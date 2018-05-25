@@ -44,9 +44,9 @@ public class PKCS7SignatureInput<T>
    }
 
    /**
-    * Base64 encoded pks bytes
+    * Base64 encoded pks bytes.
     *
-    * @param base64
+    * @param base64 Base64 encoded string
     */
    public PKCS7SignatureInput(String base64)
    {
@@ -65,7 +65,7 @@ public class PKCS7SignatureInput<T>
    /**
     * PKS Encoded bytes
     *
-    * @param bytes
+    * @param bytes data
     */
    public PKCS7SignatureInput(byte[] bytes)
    {

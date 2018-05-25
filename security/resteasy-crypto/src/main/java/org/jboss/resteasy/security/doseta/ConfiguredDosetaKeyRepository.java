@@ -8,9 +8,9 @@ import java.security.PublicKey;
 
 /**
  * For use when you want repository created via a context object, i.e., when defined within a WAR file.
- * <p/>
+ * <p>
  * For WAR files, it will look in context parameters and servlet/filter init params for doseta variables.
- * <p/>
+ * <p>
  * Private keys are stored in a java keystore.  Public keys may be stored in either a java keystore or discovered via
  * DNS.
  *
@@ -21,44 +21,44 @@ public class ConfiguredDosetaKeyRepository implements KeyRepository
 {
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * Hardcoded file path to your keystore
     */
    public static String RESTEASY_KEY_STORE_FILE_NAME = "resteasy.doseta.keystore.filename";
 
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * Find the java keystore by searching the classpath.  This points to a file on the classpath
     */
    public static String RESTEASY_KEY_STORE_CLASSPATH = "resteasy.doseta.keystore.classpath";
 
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * Password of the java keystore.
     */
    public static String RESTEASY_KEY_STORE_PASSWORD = "resteasy.doseta.keystore.password";
 
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * true|false.  Whether or not to use DNS to discover public keys.  By default looks in keystore
     */
    public static String RESTEASY_DOSETA_USE_DNS = "resteasy.doseta.use.dns";
 
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * If you need to retrieve from a specific DNS server specify the url
-    * <p/>
+    * <p>
     * dns://hostname:port
     */
    public static String RESTEASY_DOSETA_DNS_URI = "resteasy.doseta.dns.uri";
 
    /**
     * Context parameter.
-    * <p/>
+    * <p>
     * When signing, if no domain is specified, use this domain.
     */
    public static String RESTEASY_DOSETA_DEFAULT_PRIVATE_DOMAIN = "resteasy.doseta.default.private.domain";
