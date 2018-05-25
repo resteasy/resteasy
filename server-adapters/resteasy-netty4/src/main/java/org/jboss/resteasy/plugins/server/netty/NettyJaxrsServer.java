@@ -89,7 +89,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    /**
     * Specify the worker count to use. For more information about this please see the javadocs of {@link EventLoopGroup}
     *
-    * @param ioWorkerCount
+    * @param ioWorkerCount worker count
     */
    public void setIoWorkerCount(int ioWorkerCount)
    {
@@ -98,10 +98,10 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
    /**
     * Set the number of threads to use for the EventExecutor. For more information please see the javadocs of {@link EventExecutor}.
-    * If you want to disable the use of the {@link EventExecutor} specify a value <= 0.  This should only be done if you are 100% sure that you don't have any blocking
+    * If you want to disable the use of the {@link EventExecutor} specify a value {@literal <=} 0.  This should only be done if you are 100% sure that you don't have any blocking
     * code in there.
     *
-    * @param executorThreadCount
+    * @param executorThreadCount thread count
     */
    public void setExecutorThreadCount(int executorThreadCount)
    {

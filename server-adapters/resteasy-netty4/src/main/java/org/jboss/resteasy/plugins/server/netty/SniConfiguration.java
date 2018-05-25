@@ -14,7 +14,7 @@ import java.util.Arrays;
  * TLS/SSL Server Name Indication configuration.
  *
  * @author Sebastian Łaskawiec
- * @see https://tools.ietf.org/html/rfc6066#page-6
+ * @see <a href="https://tools.ietf.org/html/rfc6066#page-6">TLS extensions</a>
  */
 public class SniConfiguration
 {
