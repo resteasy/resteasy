@@ -38,7 +38,7 @@ import java.util.Set;
 
 /**
  * Web deployment whose security is managed by a remote OAuth Skeleton Key authentication server
- * <p/>
+ * <p>
  * Redirects browser to remote authentication server if not logged in.  Also allows OAuth Bearer Token requests
  * that contain a Skeleton Key bearer tokens.
  *
