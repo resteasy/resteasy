@@ -52,7 +52,7 @@ public class MultipartRelatedOutput extends MultipartOutput {
 	 *            field of the part. It's optional, if you don't want to set
 	 *            this pass null. Example values are: "7bit",
 	 *            "quoted-printable", "base64", "8bit", "binary"
-	 * @return
+	 * @return {@link OutputPart}
 	 */
 	public OutputPart addPart(Object entity, MediaType mediaType,
 			String contentId, String contentTransferEncoding) {
@@ -111,7 +111,7 @@ public class MultipartRelatedOutput extends MultipartOutput {
 	 * from a token or quoted-string by examining the first non-white-space
 	 * character, "&gt;" indicates a reference.
 	 * 
-	 * * @param startInfo the value to be set
+	 * @param startInfo the value to be set
 	 */
 	public void setStartInfo(String startInfo) {
 		this.startInfo = startInfo;

@@ -10,11 +10,10 @@ import java.lang.annotation.Target;
  * of the multipart/form-data mime type.  Parts are marshalled to and from
  * properties of the value object annotated with the JAX-RS @FormParam
  * anntotation.
- * <p/>
- * <p/>
+ * <p>
  * When using the form class as input, you must put @FormParam annotations
  * on either fields or setter methods.
- * <p/>
+ * <p>
  * When using this form class as output, you must put @FormParam
  * annotations on either fields or getter methods.
  *
