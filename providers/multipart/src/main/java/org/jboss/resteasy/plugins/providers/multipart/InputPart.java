@@ -21,7 +21,7 @@ public interface InputPart {
 	 * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
 	 * with this ("resteasy.provider.multipart.inputpart.defaultContentType")
 	 * String as key. It should be done in a
-	 * {@link org.jboss.resteasy.spi.interception.PreProcessInterceptor}.
+	 * {@link javax.ws.rs.container.ContainerRequestFilter}.
 	 * </p>
 	 */
 	static final String DEFAULT_CONTENT_TYPE_PROPERTY = "resteasy.provider.multipart.inputpart.defaultContentType";
@@ -34,7 +34,7 @@ public interface InputPart {
     * {@link org.jboss.resteasy.spi.HttpRequest#setAttribute(String, Object)}
     * with this ("resteasy.provider.multipart.inputpart.defaultCharset")
     * String as key. It should be done in a
-    * {@link org.jboss.resteasy.spi.interception.PreProcessInterceptor}.
+    * {@link javax.ws.rs.container.ContainerRequestFilter}.
     * </p>
 	 */
 	static final String DEFAULT_CHARSET_PROPERTY = "resteasy.provider.multipart.inputpart.defaultCharset";
@@ -64,7 +64,7 @@ public interface InputPart {
    /**
     * Change the media type of the body part before you extract it.  Useful for specifying a charset.
     *
-    * @param mediaType
+    * @param mediaType media type
     */
    void setMediaType(MediaType mediaType);
 }

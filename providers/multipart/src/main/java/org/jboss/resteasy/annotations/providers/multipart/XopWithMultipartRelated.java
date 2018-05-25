@@ -1,6 +1,5 @@
 package org.jboss.resteasy.annotations.providers.multipart;
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlMimeType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -44,16 +43,14 @@ import java.lang.annotation.Target;
  * 
  * A REST Service method parameters/return value annotated with
  * {@link XopWithMultipartRelated} and consuming/producing
- * {@link MediaType#MULTIPART_RELATED}:
+ * {@link org.jboss.resteasy.plugins.providers.multipart.MultipartConstants#MULTIPART_RELATED}:
  * 
  * <pre>
  * &#064;PUT
  * &#064;Path(&quot;xop&quot;)
- * &#064;Consumes(MediaType.MULTIPART_RELATED)
+ * &#064;Consumes(org.jboss.resteasy.plugins.providers.multipart.MultipartConstants.MULTIPART_RELATED)
  * public void putXopWithMultipartRelated(&#064;XopWithMultipartRelated Xop xop) {}
  * </pre>
- * 
- * </p>
  * 
  * <p>
  * More about XOP can be read here: <a
