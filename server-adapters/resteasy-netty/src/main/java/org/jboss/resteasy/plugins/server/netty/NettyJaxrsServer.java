@@ -61,7 +61,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    /**
     * Specify the worker count to use. For more informations about this please see the javadocs of {@link NioServerSocketChannelFactory}
     * 
-    * @param ioWorkerCount
+    * @param ioWorkerCount worker count
     */
    public void setIoWorkerCount(int ioWorkerCount) 
    {
@@ -70,11 +70,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    
    /**
     * Set the number of threads to use for the Executor. For more informations please see the javadocs of {@link OrderedMemoryAwareThreadPoolExecutor}. 
-    * If you want to disable the use of the {@link ExecutionHandler} specify a value <= 0.  This should only be done if you are 100% sure that you don't have any blocking
+    * If you want to disable the use of the {@link ExecutionHandler} specify a value {@literal <=} 0.  This should only be done if you are 100% sure that you don't have any blocking
     * code in there.
     * 
     * 
-    * @param executorThreadCount
+    * @param executorThreadCount thread count
     */
    public void setExecutorThreadCount(int executorThreadCount)
    {
