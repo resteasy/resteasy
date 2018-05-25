@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * Represents an OAuth Consumer.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthConsumer {
     
@@ -35,7 +35,8 @@ public class OAuthConsumer {
     }
     
 	/**
-	 * Returns the OAuth Consumer's key
+	 * Returns the OAuth Consumer's key.
+	 * @return OAuth Consumer's key
 	 */
 	public String getKey() {
 	    return key;
@@ -43,6 +44,7 @@ public class OAuthConsumer {
 	
 	/**
 	 * Returns the OAuth Consumer's private secret.
+	 * @return OAuth Consumer's private secret
 	 */
 	public String getSecret() {
 	    return secret;
@@ -50,6 +52,7 @@ public class OAuthConsumer {
 	
 	/**
      * Returns the OAuth Consumer's display name.
+     * @return OAuth Consumer's display name 
      */
     public String getDisplayName() {
         return displayName;
@@ -58,7 +61,9 @@ public class OAuthConsumer {
     /**
      * Returns the OAuth Consumer's connect URI.
      * If provided then it will be used to validate callback URLs which consumer
-     * will provide during request token acquisition requests 
+     * will provide during request token acquisition requests.
+     * 
+     * @return OAuth Consumer's connect URI
      */
     public String getConnectURI() {
         return connectURI;
@@ -66,7 +71,9 @@ public class OAuthConsumer {
     
     /**
      * Returns the OAuth Consumer's scopes. These are the scopes the consumer
-     * will be able to access directly 
+     * will be able to access directly.
+     * 
+     * @return OAuth Consumer's scopes
      */
     public String[] getScopes() {
         

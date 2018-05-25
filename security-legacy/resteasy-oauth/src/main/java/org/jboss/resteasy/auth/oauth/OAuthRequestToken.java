@@ -6,7 +6,7 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 /**
  * Represents either an OAuth Access or Request Token.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthRequestToken extends OAuthToken {
     
@@ -20,14 +20,16 @@ public class OAuthRequestToken extends OAuthToken {
         this.callback = callback;
     }
     /**
-     * Returns this Token's callback
+     * Returns this Token's callback.
+     * @return callback
      */
     public String getCallback() {
         return callback;
     }
     
     /**
-     * Returns this Token's verifier
+     * Returns this Token's verifier.
+     * @return verifier
      */
     public String getVerifier() {
         synchronized (this) {

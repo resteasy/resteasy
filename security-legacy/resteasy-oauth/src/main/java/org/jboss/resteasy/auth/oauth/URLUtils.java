@@ -7,8 +7,8 @@ import java.util.BitSet;
 /**
  * URL-encoding utility for each URL part according to the RFC specs
  * 
- * @see http://www.ietf.org/rfc/rfc3986.txt
- * @author stephane@epardaud.fr
+ * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">URI Generic Syntax</a>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class URLUtils {
 
@@ -27,7 +27,7 @@ public class URLUtils {
 	}
 
 	/**
-	 * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+	 * sub-delims = "!" / "$" / "{@literal &}" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 	 */
 	public final static BitSet SUB_DELIMS = new BitSet();
 	static {
@@ -184,7 +184,7 @@ public class URLUtils {
 	}
 
 	/**
-	 * path_segment = pchar <without> ";"
+	 * path_segment = pchar {@literal <without>} ";"
 	 */
 	public final static BitSet PATH_SEGMENT = new BitSet();
 	static {
@@ -194,7 +194,7 @@ public class URLUtils {
 	}
 
 	/**
-	 * path_param_name = pchar <without> ";" | "="
+	 * path_param_name = pchar {@literal <without>} ";" | "="
 	 */
 	public final static BitSet PATH_PARAM_NAME = new BitSet();
 	static {
@@ -205,7 +205,7 @@ public class URLUtils {
 	}
 
 	/**
-	 * path_param_value = pchar <without> ";"
+	 * path_param_value = pchar {@literal <without>} ";"
 	 */
 	public final static BitSet PATH_PARAM_VALUE = new BitSet();
 	static {
@@ -242,6 +242,8 @@ public class URLUtils {
 	/**
 	 * Encodes a string to be a valid path parameter name, which means it can contain PCHAR* without "=" or ";". Uses
 	 * UTF-8.
+	 * @param pathParamName path parameter name
+	 * @return encoded path parameter name
 	 */
 	public static String encodePathParamName(final String pathParamName) {
 		try {
@@ -255,6 +257,8 @@ public class URLUtils {
 
 	/**
 	 * Encodes a string to be a valid path parameter value, which means it can contain PCHAR* without ";". Uses UTF-8.
+	 * @param pathParamValue path parameter value
+	 * @return encoded path parameter value
 	 */
 	public static String encodePathParamValue(final String pathParamValue) {
 		try {
@@ -267,8 +271,10 @@ public class URLUtils {
 	}
 
 	/**
-	 * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "&" | "+". Uses
+	 * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "{@literal &}" | "+". Uses
 	 * UTF-8.
+	 * @param queryNameOrValue query name/value
+	 * @return encoded query name/value
 	 */
 	public static String encodeQueryNameOrValue(final String queryNameOrValue) {
 		try {
@@ -282,7 +288,9 @@ public class URLUtils {
 
 	/**
 	 * Encodes a string to be a valid query with no parenthesis, which means it can contain PCHAR* | "?" | "/" without
-	 * "=" | "&" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
+	 * "=" | "{@literal &}" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
+	 * @param queryNameOrValueNoParen query name/value
+	 * @return encoded query name/value
 	 */
 	public static String encodeQueryNameOrValueNoParen(final String queryNameOrValueNoParen) {
 		try {
@@ -299,6 +307,8 @@ public class URLUtils {
 	/**
 	 * Encodes a string to be a valid path segment, which means it can contain PCHAR* only (do not put path parameters or
 	 * they will be escaped. Uses UTF-8.
+	 * @param pathSegment path segment
+	 * @return encoded path segment
 	 */
 	public static String encodePathSegment(final String pathSegment) {
 		try {
@@ -312,8 +322,11 @@ public class URLUtils {
 
 	/**
 	 * Encodes a string to be a valid URI part, with the given characters allowed. The rest will be encoded.
-	 * 
-	 * @throws UnsupportedEncodingException
+	 * @param part part
+	 * @param charset charset
+	 * @param allowed allowed characters
+	 * @return encoded part
+	 * @throws UnsupportedEncodingException if encoding is not supported
 	 */
 	public static String encodePart(final String part, final String charset, final BitSet allowed) throws UnsupportedEncodingException {
 		if (part == null) {
