@@ -24,7 +24,6 @@ import java.util.List;
  * <p>
  * Per RFC 5023:
  * </p>
- * <p/>
  * 
  * <pre>
  * The root of a Service Document is the "app:service" element.
@@ -40,9 +39,9 @@ import java.util.List;
  *    element app:service {
  *        appCommonAttributes,
  *       ( appWorkspace+
- *         & extensionElement* )
+ *         {@literal &} extensionElement* )
  *    }
- * <p/>
+ *    
  * For authoring to commence, a client needs to discover the
  * capabilities and locations of the available Collections.  Service
  * Documents are designed to support this discovery process.

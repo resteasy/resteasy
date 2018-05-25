@@ -93,8 +93,8 @@ public class AppCategories extends AppCommonAttributes {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link AppCategoryType }
-     * 
+     * {@link Category }
+     * @return list of categories
      * 
      */
     public List<Category> getCategory() {
