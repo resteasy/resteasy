@@ -22,13 +22,11 @@ import org.w3c.dom.Element;
 
 /**
  * <p>Represents an atomTextConstruct element.</p>
- * <p/>
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *  A Text construct contains human-readable text, usually in small
  *  quantities. The content of Text constructs is Language-Sensitive.
- * <p/>
+ *
  *  atomPlainTextConstruct =
  *     atomCommonAttributes,
  *     attribute type { "text" | "html" }?,
@@ -38,9 +36,9 @@ import org.w3c.dom.Element;
  *    atomCommonAttributes,
  *    attribute type { "xhtml" },
  *    xhtmlDiv 
- * <p/>
+ *
  *  atomTextConstruct = atomPlainTextConstruct | atomXHTMLTextConstruct
- * <p/>
+ *
  * </pre>
  *
  * @author <a href="mailto:mail@johannes-beck.name">Johannes Beck</a>
@@ -97,9 +95,9 @@ public class Text extends CommonAttributes
   }
     
   /**
-   * Mime type 
+   * Mime type.
    *
-   * @return
+   * @return media type
    */
   @XmlTransient
   public MediaType getType()
@@ -137,7 +135,7 @@ public class Text extends CommonAttributes
   /**
    * If content is text, return it as a String.  Otherwise, if content is not text this will return null.
    *
-   * @return
+   * @return text
    */
   @XmlTransient
   public String getText()
@@ -155,9 +153,9 @@ public class Text extends CommonAttributes
   }
   
   /**
-   * Set content as text
+   * Set content as text.
    *
-   * @param text
+   * @param text text
    */
   public void setText(String text)
   {
@@ -170,7 +168,7 @@ public class Text extends CommonAttributes
   /**
    * Get content as an XML Element if the content is XML.  Otherwise, this will just return null.
    *
-   * @return
+   * @return {@link Element}
    */
   @XmlTransient
   public Element getElement()
@@ -189,9 +187,9 @@ public class Text extends CommonAttributes
   }
 
   /**
-   * Set the content to an XML Element
+   * Set the content to an XML Element.
    *
-   * @param element
+   * @param element {@link Element}
    */
   public void setElement(Element element)
   {
@@ -204,7 +202,7 @@ public class Text extends CommonAttributes
     
   /**
    * Extract the content as the provided JAXB annotated type.
-   * <p/>
+   * <p>
    * This method will use a cached JAXBContext used by the Resteasy JAXB providers
    * or, if those are not existent, it will create a new JAXBContext from scratch
    * using the class.
@@ -212,7 +210,7 @@ public class Text extends CommonAttributes
    * @param clazz                class type you are expecting
    * @param otherPossibleClasses Other classe you want to create the JAXBContext with
    * @return null if there is no XML content
-   * @throws JAXBException
+   * @throws JAXBException jaxb exception
    */
   @SuppressWarnings(value = "unchecked")
   public <T> T getJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException
@@ -248,10 +246,10 @@ public class Text extends CommonAttributes
   }
 
   /**
-   * Returns previous extracted jaxbobject from a call to getJAXBObject(Class<T> clazz)
+   * Returns previous extracted jaxbobject from a call to getJAXBObject(Class{@literal <}T{@literal >} clazz)
    * or value passed in through a previous setJAXBObject().
    *
-   * @return
+   * @return jaxb object
    */
   @XmlTransient
   public Object getJAXBObject()

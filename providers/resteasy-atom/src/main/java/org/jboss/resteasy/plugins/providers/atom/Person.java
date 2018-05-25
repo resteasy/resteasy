@@ -7,18 +7,17 @@ import java.net.URI;
 
 /**
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *   A Person construct is an element that describes a person,
  *   corporation, or similar entity (hereafter, 'person').
- * <p/>
+ *
  *   atomPersonConstruct =
  *     atomCommonAttributes,
  *     (element atom:name { text }
  *      &amp; element atom:uri { atomUri }?
  *      &amp; element atom:email { atomEmailAddress }?
  *      &amp; extensionElement*)
- * <p/>
+ *
  * </pre>
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

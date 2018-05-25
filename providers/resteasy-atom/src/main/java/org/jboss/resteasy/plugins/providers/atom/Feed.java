@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>Per RFC4287:</p>
- * <p/>
+ * <p>Per RFC4287:</p> 
  * <pre>
  * The "atom:feed" element is the document (i.e., top-level) element of
  * an Atom Feed Document, acting as a container for metadata and data
  * associated with the feed.  Its element children consist of metadata
  * elements followed by zero or more atom:entry child elements.
- * <p/>
+ *
  * atomFeed =
  *   element atom:feed {
  *       atomCommonAttributes,
@@ -34,13 +33,13 @@ import java.util.List;
  *        &amp; extensionElement*),
  *       atomEntry*
  *   }
- * <p/>
+ *
  * This specification assigns no significance to the order of atom:entry
  * elements within the feed.
- * <p/>
+ *
  * The following child elements are defined by this specification (note
  * that the presence of some of these elements is required):
- * <p/>
+ *
  * o  atom:feed elements MUST contain one or more atom:author elements,
  *    unless all of the atom:feed element's child atom:entry elements
  *    contain at least one atom:author element.
@@ -69,7 +68,7 @@ import java.util.List;
  *    element.
  * o  atom:feed elements MUST contain exactly one atom:title element.
  * o  atom:feed elements MUST contain exactly one atom:updated element.
- * <p/>
+ *
  * If multiple atom:entry elements with the same atom:id value appear in
  * an Atom Feed Document, they represent the same entry.  Their
  * atom:updated timestamps SHOULD be different.  If an Atom Feed

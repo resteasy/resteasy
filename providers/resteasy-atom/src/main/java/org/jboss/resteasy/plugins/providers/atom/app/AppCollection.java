@@ -30,7 +30,6 @@ import java.util.List;
  * <p>
  * Per RFC5023:
  * </p>
- * <p/>
  * 
  * <pre>
  * The "app:collection" element describes a Collection.  The app:
@@ -48,11 +47,10 @@ import java.util.List;
  *          appCommonAttributes,
  *          attribute href { atomURI  },
  *          ( atomTitle
- *            & appAccept*
- *            & appCategories*
- *            & extensionSansTitleElement* )
+ *            {@literal &} appAccept*
+ *            {@literal &} appCategories*
+ *            {@literal &} extensionSansTitleElement* )
  *       }
- * <p/>
  * </pre>
  * 
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
@@ -124,7 +122,7 @@ public class AppCollection extends AppCommonAttributes {
      * <p>
      * Objects of the following type(s) are allowed in the list {@link String }
      * 
-     * 
+     *  @return list of {@link AppAccept}
      */
     public List<AppAccept> getAccept() {
         if (accept == null) {
@@ -152,8 +150,9 @@ public class AppCollection extends AppCommonAttributes {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link AppCategoriesType }
+     * {@link AppCategories }
      * 
+     * @return list of {@link AppCategories}
      * 
      */
     public List<AppCategories> getCategories() {
@@ -184,6 +183,7 @@ public class AppCollection extends AppCommonAttributes {
      * Objects of the following type(s) are allowed in the list {@link Element }
      * {@link Object }
      * 
+     * @return list of objects
      * 
      */
     public List<Object> getAny() {
