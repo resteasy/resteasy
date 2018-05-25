@@ -9,7 +9,6 @@ import java.net.URI;
 
 /**
  * <p>Per RFC4287</p>
- * <p/>
  * <pre>
  *  atomGenerator = element atom:generator {
  *     atomCommonAttributes,

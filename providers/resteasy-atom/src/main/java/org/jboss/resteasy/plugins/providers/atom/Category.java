@@ -8,12 +8,11 @@ import java.net.URI;
 
 /**
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *  The "atom:category" element conveys information about a category
  *  associated with an entry or feed.  This specification assigns no
  *  meaning to the content (if any) of this element.
- * <p/>
+ *
  *  atomCategory =
  *     element atom:category {
  *        atomCommonAttributes,

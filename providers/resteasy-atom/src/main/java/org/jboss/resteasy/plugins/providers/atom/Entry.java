@@ -30,7 +30,7 @@ import java.util.List;
  * element can appear as a child of the atom:feed element, or it can
  * appear as the document (i.e., top-level) element of a stand-alone
  * Atom Entry Document.
- * <p/>
+ *
  * atomEntry =
  *    element atom:entry {
  *       atomCommonAttributes,
@@ -48,13 +48,13 @@ import java.util.List;
  *        &amp; atomUpdated
  *        &amp; extensionElement*)
  *    }
- * <p/>
+ *
  * This specification assigns no significance to the order of appearance
  * of the child elements of atom:entry.
- * <p/>
+ *
  * The following child elements are defined by this specification (note
  * that it requires the presence of some of these elements):
- * <p/>
+ *
  * o  atom:entry elements MUST contain one or more atom:author elements,
  *    unless the atom:entry contains an atom:source element that
  *    contains an atom:author element or, in an Atom Feed Document, the
@@ -315,7 +315,7 @@ public class Entry extends CommonAttributes
    /**
     * Get content as an XML Element if the content is XML.  Otherwise, this will just return null.
     *
-    * @return
+    * @return {@link Element}
     */
    @XmlTransient
    public Element getAnyOtherElement()
@@ -343,15 +343,16 @@ public class Entry extends CommonAttributes
    }
    /**
     * Extract the content as the provided JAXB annotated type.
-    * <p/>
+    * <p>
     * This method will use a cached JAXBContext used by the Resteasy JAXB providers
     * or, if those are not existent, it will create a new JAXBContext from scratch
     * using the class.
     *
+    * @param <T> type
     * @param clazz                class type you are expecting
     * @param otherPossibleClasses Other classe you want to create the JAXBContext with
     * @return null if there is no XML content
-    * @throws JAXBException
+    * @throws JAXBException jaxb exception
     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException {
@@ -398,10 +399,10 @@ public class Entry extends CommonAttributes
 
    
    /**
-    * Returns previous extracted jaxbobject from a call to getJAXBObject(Class<T> clazz)
+    * Returns previous extracted jaxbobject from a call to getJAXBObject(Class{@literal <}T{@literal >} clazz)
     * or value passed in through a previous setJAXBObject().
     *
-    * @return
+    * @return object
     */
    @XmlTransient
    public Object getAnyOtherJAXBObject()
