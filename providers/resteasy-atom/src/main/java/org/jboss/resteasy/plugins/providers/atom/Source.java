@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *  If an atom:entry is copied from one feed into another feed, then the
  *  source atom:feed's metadata (all child elements of atom:feed other
@@ -24,7 +23,7 @@ import java.util.List;
  *  the child elements atom:author, atom:contributor, atom:rights, or
  *  atom:category and those child elements are not present in the source
  *  atom:entry.
- * <p/>
+ *
  *  atomSource =
  *     element atom:source {
  *        atomCommonAttributes,
@@ -42,7 +41,7 @@ import java.util.List;
  *         &amp; atomUpdated?
  *         &amp; extensionElement*)
  *     }
- * <p/>
+ *
  *  The atom:source element is designed to allow the aggregation of
  *  entries from different feeds while retaining information about an
  *  entry's source feed.  For this reason, Atom Processors that are

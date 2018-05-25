@@ -9,12 +9,11 @@ import java.net.URI;
 
 /**
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *  The "atom:link" element defines a reference from an entry or feed to
  *  a Web resource.  This specification assigns no meaning to the content
  *  (if any) of this element.
- * <p/>
+ *
  *  atomLink =
  *     element atom:link {
  *        atomCommonAttributes,

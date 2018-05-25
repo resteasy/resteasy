@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>
  * Per RFC5023:
  * </p>
- * <p/>
  * 
  * <pre>
  * The content of an "app:accept" element value is a media range as

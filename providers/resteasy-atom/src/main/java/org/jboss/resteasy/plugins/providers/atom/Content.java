@@ -25,20 +25,18 @@ import java.util.List;
 
 /**
  * <p>Represents an atom:content element.</p>
- * <p/>
  * <p>Per RFC4287:</p>
- * <p/>
  * <pre>
  *  The "atom:content" element either contains or links to the content of
  *  the entry.  The content of atom:content is Language-Sensitive.
- * <p/>
+ *
  *  atomInlineTextContent =
  *     element atom:content {
  *        atomCommonAttributes,
  *        attribute type { "text" | "html" }?,
  *        (text)*
  *     }
- * <p/>
+ *
  *  atomInlineXHTMLContent =
  *     element atom:content {
  *        atomCommonAttributes,
@@ -51,7 +49,7 @@ import java.util.List;
  *        attribute type { atomMediaType }?,
  *        (text|anyElement)*
  *     }
- * <p/>
+ *
  *  atomOutOfLineContent =
  *     element atom:content {
  *        atomCommonAttributes,
@@ -59,12 +57,12 @@ import java.util.List;
  *        attribute src { atomUri },
  *        empty
  *     }
- * <p/>
+ *
  *  atomContent = atomInlineTextContent
  *   | atomInlineXHTMLContent
  *   | atomInlineOtherContent
  *   | atomOutOfLineContent
- * <p/>
+ *
  * </pre>
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -120,9 +118,9 @@ public class Content extends CommonAttributes
    }
 
    /**
-    * Mime type of the content
+    * Mime type of the content.
     *
-    * @return
+    * @return media type
     */
    @XmlTransient
    public MediaType getType()
@@ -162,7 +160,7 @@ public class Content extends CommonAttributes
    /**
     * If content is text, return it as a String.  Otherwise, if content is not text this will return null.
     *
-    * @return
+    * @return text
     */
    @XmlTransient
    public String getText()
@@ -180,9 +178,9 @@ public class Content extends CommonAttributes
    }
 
    /**
-    * Set content as text
+    * Set content as text.
     *
-    * @param text
+    * @param text text
     */
    public void setText(String text)
    {
@@ -195,7 +193,7 @@ public class Content extends CommonAttributes
    /**
     * Get content as an XML Element if the content is XML.  Otherwise, this will just return null.
     *
-    * @return
+    * @return {@link Element}
     */
    @XmlTransient
    public Element getElement()
@@ -214,9 +212,9 @@ public class Content extends CommonAttributes
    }
 
    /**
-    * Set the content to an XML Element
+    * Set the content to an XML Element.
     *
-    * @param element
+    * @param element {@link Element}
     */
    public void setElement(Element element)
    {
@@ -229,15 +227,16 @@ public class Content extends CommonAttributes
 
    /**
     * Extract the content as the provided JAXB annotated type.
-    * <p/>
+    * <p>
     * This method will use a cached JAXBContext used by the Resteasy JAXB providers
     * or, if those are not existent, it will create a new JAXBContext from scratch
     * using the class.
     *
+    * @param <T> type
     * @param clazz                class type you are expecting
     * @param otherPossibleClasses Other classe you want to create the JAXBContext with
     * @return null if there is no XML content
-    * @throws JAXBException
+    * @throws JAXBException jaxb exception
     */
    @SuppressWarnings(value = "unchecked")
    public <T> T getJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException
@@ -293,10 +292,10 @@ public class Content extends CommonAttributes
    }
 
    /**
-    * Returns previous extracted jaxbobject from a call to getJAXBObject(Class<T> clazz)
+    * Returns previous extracted jaxbobject from a call to getJAXBObject(Class{@literal <}T{@literal >} clazz)
     * or value passed in through a previous setJAXBObject().
     *
-    * @return
+    * @return jaxb object
     */
    @XmlTransient
    public Object getJAXBObject()

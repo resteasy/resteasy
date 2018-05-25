@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * <p>Per RFC5023:</p>
- * <p/>
  * <pre>
  * A Service Document groups Collections into Workspaces.  Operations on
  * Workspaces, such as creation or deletion, are not defined by this
@@ -42,12 +41,12 @@ import java.util.List;
  *    element app:workspace {
  *       appCommonAttributes,
  *       ( atomTitle
- *         & appCollection*
- *         & extensionSansTitleElement* )
+ *         {@literal &} appCollection*
+ *         {@literal &} extensionSansTitleElement* )
  *    }
  * 
  * atomTitle = element atom:title { atomTextConstruct }
- * <p/>
+ *
  * </pre>
  *
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
@@ -106,8 +105,9 @@ public class AppWorkspace extends AppCommonAttributes
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link AppCollectionType }
+     * {@link AppCollection }
      * 
+     * @return list of {@link AppCollection}
      * 
      */
     public List<AppCollection> getCollection() {
@@ -135,9 +135,10 @@ public class AppWorkspace extends AppCommonAttributes
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Element }
+     * {@link org.w3c.dom.Element }
      * {@link Object }
      * 
+     * @return list of objects
      * 
      */
     public List<Object> getAny() {
