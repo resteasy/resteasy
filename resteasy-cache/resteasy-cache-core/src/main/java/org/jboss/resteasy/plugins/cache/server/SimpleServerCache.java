@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  * 
  * @deprecated See org.jboss.resteasy.plugins.cache.server.InfinispanCache.
- * @See org.jboss.resteasy.plugins.cache.server.InfinispanCache
+ * @see org.jboss.resteasy.plugins.cache.server.InfinispanCache
  */
 @Deprecated
 public class SimpleServerCache implements ServerCache
