@@ -9,7 +9,9 @@ public interface OAuthConsumerRegistration {
 	/**
      * Creates a new OAuth Consumer
      * @param consumerKey the Consumer key.
-     * @return consumer secret.
+     * @param displayName display name
+     * @param connectURI uri
+     * @return {@link OAuthConsumer}
      * @throws OAuthException thrown if Consumer can not be registered.
      */
     public OAuthConsumer registerConsumer(String consumerKey, 
@@ -19,7 +21,7 @@ public interface OAuthConsumerRegistration {
     /**
      * Registers Consumer Scopes
      * @param consumerKey the Consumer key.
-     * @return scopes the consumer scopes
+     * @param scopes the consumer scopes
      * @throws OAuthException thrown if scopes can not be registered.
      */
     public void registerConsumerScopes(String consumerKey, 
@@ -28,7 +30,7 @@ public interface OAuthConsumerRegistration {
     /**
      * Registers Consumer Permissions
      * @param consumerKey the Consumer key.
-     * @return scopes the consumer permissions
+     * @param permissions the consumer permissions
      * @throws OAuthException thrown if permissions can not be registered.
      */
     public void registerConsumerPermissions(String consumerKey, 

@@ -9,7 +9,7 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 /**
  * OAuthProvider that keeps all data in memory. Mainly used as an example and for tests.
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthMemoryProvider implements OAuthProvider {
 	
