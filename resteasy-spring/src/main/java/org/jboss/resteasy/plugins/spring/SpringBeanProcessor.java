@@ -37,7 +37,6 @@ import java.util.*;
  * It also sets up Registry and ResteasyProviderFactory to be autowirable via @Autowire
  * in Controllers/service layers.
  * </p>
- * <p/>
  * <p>
  * There's quite a bit of spring integration functionality under the covers:
  * </p>
@@ -45,10 +44,7 @@ import java.util.*;
  * <li>@Providers, such as RESTEasy interceptors and String converters have to
  * be registered in RESTEasy before resources and registers. That gets a bit
  * tricky, so depends-on functionality is used as well</li>
- * <p/>
- * <li>
  * </ol>
- * <p/>
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -86,25 +82,21 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
 
       /**
        * This method is invoked after postProcessBeanFactory.
-       * <p/>
+       * <p>
        * this method is invoked when ever a new bean is created. This will
        * perform the following:
-       * <p/>
        * <ol>
-       * <p/>
        * <li>RESTEasy injection of singleton @Providers, as well as @Provider
        * registration</li>
-       * <p/>
        * <li>either singleton or request/prototype RESTeasy injection... but not
        * registration. The RESTEasy registration happens in the
        * onApplicationEvent() below, which happens at the end of the Spring
        * life-cycle</li>
-       * <p/>
        * <li>merges the {@link ResteasyDeployment} bean with the user deployment</li>
-       * <p/>
        * </ol>
-       *
-       * @see SpringBeanProcessor.postProcessBeanFactory
+       * @param bean bean
+       * @param beanName bean name
+       * @see SpringBeanProcessor#postProcessBeanFactory(ConfigurableListableBeanFactory)
        */
       public Object postProcessAfterInitialization(Object bean, String beanName)
               throws BeansException
@@ -244,12 +236,13 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
     * registers the RESTEasy Registry, ProviderFactry, and Dispatcher for @Autowire
     * injection.
     * </p>
-    * <p/>
     * <p>
     * Beyond tracking, this will ensure that non-MessageBody(Reader|Writer) @Providers
     * are created by Spring before any resources by having the resources
     * "depends-on" the @Providers.
     * </p>
+    * 
+    * @param beanFactory bean factory
     */
    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
            throws BeansException
@@ -348,9 +341,9 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    /**
     * merge two arrays.
     *
-    * @param dependsOn
-    * @param dependsOnProviders
-    * @return
+    * @param dependsOn first array
+    * @param dependsOnProviders second array
+    * @return merged array
     */
    private static String[] concat(String[] dependsOn, String[] dependsOnProviders)
    {
@@ -368,11 +361,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    }
 
    /**
-    * Get the bean class, and take @Configuration @Beans into consideration
+    * Get the bean class, and take @Configuration @Beans into consideration.
     *
-    * @param beanDef
-    * @param beanFactory
-    * @return
+    * @param beanDef {@link BeanDefinition}
+    * @param beanFactory bean factory
+    * @return bean class
     */
    private static Class<?> getBeanClass(String name, BeanDefinition beanDef,
                                         ConfigurableListableBeanFactory beanFactory)
@@ -495,7 +488,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
 
    /**
     * Register all of the resources into RESTEasy only when Spring finishes it's
-    * life-cycle and the spring singleton bean creation is completed
+    * life-cycle and the spring singleton bean creation is completed.
+    * @param event application event
     */
    @Override
    public void onApplicationEvent(ApplicationEvent event)
