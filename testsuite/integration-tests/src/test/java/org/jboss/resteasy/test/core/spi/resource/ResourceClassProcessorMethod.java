@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ResourceClassProcessorMethod implements ResourceMethod {
@@ -19,7 +20,9 @@ public class ResourceClassProcessorMethod implements ResourceMethod {
 
     @Override
     public Set<String> getHttpMethods() {
-        return delegate.getHttpMethods();
+        Set<String> methods = new HashSet<>();
+        methods.add("GET");
+        return methods;
     }
 
     @Override
