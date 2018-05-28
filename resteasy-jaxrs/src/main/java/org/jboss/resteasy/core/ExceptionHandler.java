@@ -53,7 +53,7 @@ public class ExceptionHandler
     * @return
     */
    @SuppressWarnings(value = "unchecked")
-   public Response executeExactExceptionMapper(Throwable exception, RESTEasyTracingLogger logger) {
+   protected Response executeExactExceptionMapper(Throwable exception, RESTEasyTracingLogger logger) {
       ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
       if (mapper == null) return null;
       mapperExecuted = true;
@@ -64,7 +64,7 @@ public class ExceptionHandler
    }
 
    @SuppressWarnings(value = "unchecked")
-   public Response executeExceptionMapperForClass(Throwable exception, Class clazz, RESTEasyTracingLogger logger)
+   protected Response executeExceptionMapperForClass(Throwable exception, Class clazz, RESTEasyTracingLogger logger)
    {
       ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
       if (mapper == null) return null;
@@ -96,7 +96,7 @@ public class ExceptionHandler
     * @return true if an ExceptionMapper was found and executed
     */
    @SuppressWarnings(value = "unchecked")
-   public Response executeExceptionMapper(Throwable exception, RESTEasyTracingLogger logger)
+   protected Response executeExceptionMapper(Throwable exception, RESTEasyTracingLogger logger)
    {
       ExceptionMapper mapper = null;
 
