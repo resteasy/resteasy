@@ -9,7 +9,6 @@ import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
 /**
  * Class to help application that are built to write to an
  * OutputStream to chunk the content
- * <p>
  * <pre>
  * {@code
  * DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
