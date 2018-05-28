@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class JSAPIWriter
 {

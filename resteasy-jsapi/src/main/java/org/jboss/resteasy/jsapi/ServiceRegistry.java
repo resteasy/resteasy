@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * @author Stéphane Épardaud <stef@epardaud.fr>
+ * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class ServiceRegistry
 {
