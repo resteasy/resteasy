@@ -63,6 +63,16 @@ public class ExceptionHandler
       return resp;
    }
 
+   @Deprecated
+   @SuppressWarnings(value = "unchecked")
+   public Response executeExactExceptionMapper(Throwable exception) {
+      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
+      if (mapper == null) return null;
+      mapperExecuted = true;
+      Response resp = mapper.toResponse(exception);
+      return resp;
+   }
+
    @SuppressWarnings(value = "unchecked")
    protected Response executeExceptionMapperForClass(Throwable exception, Class clazz, RESTEasyTracingLogger logger)
    {
@@ -72,6 +82,17 @@ public class ExceptionHandler
       long timestamp = logger.timestamp(RESTEasyServerTracingEvent.EXCEPTION_MAPPING);
       Response resp = mapper.toResponse(exception);
       logger.logDuration(RESTEasyServerTracingEvent.EXCEPTION_MAPPING, timestamp, mapper, exception, exception.getLocalizedMessage(), resp);
+      return resp;
+   }
+
+   @Deprecated
+   @SuppressWarnings(value = "unchecked")
+   public Response executeExceptionMapperForClass(Throwable exception, Class clazz)
+   {
+      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
+      if (mapper == null) return null;
+      mapperExecuted = true;
+      Response resp = mapper.toResponse(exception);
       return resp;
    }
 
@@ -114,6 +135,30 @@ public class ExceptionHandler
          Response jaxrsResponse = mapper.toResponse(exception);
          logger.logDuration(RESTEasyServerTracingEvent.EXCEPTION_MAPPING, timestamp, mapper, exception, exception.getLocalizedMessage(), jaxrsResponse);
 
+         if (jaxrsResponse == null) {
+            jaxrsResponse = Response.status(204).build();
+         }
+         return jaxrsResponse;
+      }
+      return null;
+   }
+
+   @Deprecated
+   @SuppressWarnings(value = "unchecked")
+   public Response executeExceptionMapper(Throwable exception)
+   {
+      ExceptionMapper mapper = null;
+
+      Class causeClass = exception.getClass();
+      while (mapper == null) {
+         if (causeClass == null) break;
+         mapper = providerFactory.getExceptionMappers().get(causeClass);
+         if (mapper == null) causeClass = causeClass.getSuperclass();
+      }
+
+      if (mapper != null) {
+         mapperExecuted = true;
+         Response jaxrsResponse = mapper.toResponse(exception);
          if (jaxrsResponse == null) {
             jaxrsResponse = Response.status(204).build();
          }
