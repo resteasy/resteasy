@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
@@ -32,12 +33,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * @tpSubChapter ResourceClassProcessor SPI
@@ -172,7 +175,7 @@ public class ResourceClassProcessorBasicTest {
     }
 
     public void customClassCustomMethodTestHelper(String warName) {
-        Response response = client.target(PortProviderUtil.generateURL("/patched/custom", WAR_NORMAL)).request().get();
+        Response response = client.target(PortProviderUtil.generateURL("/patched/custom", warName)).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertThat(response.getMediaType().toString(), containsString("application/xml"));
     }
@@ -209,7 +212,7 @@ public class ResourceClassProcessorBasicTest {
     }
 
     public void defaultClassDefaultMethodTestHelper(String warName) {
-        Response response = client.target(PortProviderUtil.generateURL("/pure/pure", WAR_NORMAL)).request().get();
+        Response response = client.target(PortProviderUtil.generateURL("/pure/pure", warName)).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertThat(response.getMediaType().toString(), containsString("text/plain"));
     }
@@ -231,12 +234,17 @@ public class ResourceClassProcessorBasicTest {
      * @tpSince RESTEasy 3.6
      */
     @Test
+    @Category(ExpectedFailing.class)
     public void proxyTest() {
         ResteasyClient proxyClient= new ResteasyClientBuilder()
                 .register(ResourceClassProcessorImplementation.class)
                 .build();
 
-        // TODO
+        ResourceClassProcessorProxy proxy = proxyClient.target(PortProviderUtil.generateURL("/", WAR_NORMAL))
+                                                .proxy(ResourceClassProcessorProxy.class);
+        String response = proxy.custom();
+        logger.info(String.format("Proxy response: %s", response));
+        Assert.assertThat("Proxy returns wrong response", response, is("<a></a>"));
 
         proxyClient.close();
     }
