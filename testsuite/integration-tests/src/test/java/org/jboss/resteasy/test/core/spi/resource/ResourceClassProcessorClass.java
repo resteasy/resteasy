@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.core.spi.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.metadata.FieldParameter;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
@@ -11,10 +12,13 @@ import java.util.ArrayList;
 
 public class ResourceClassProcessorClass implements ResourceClass {
 
+    protected static final Logger logger = Logger.getLogger(ResourceClassProcessorClass.class.getName());
+
     private final ResourceClass delegate;
     private final ResourceMethod[] resourceMethods;
 
     public ResourceClassProcessorClass(ResourceClass delegate) {
+        logger.info(String.format("ResourceClassProcessorClass constructor called for %s class", delegate.getClazz().getSimpleName()));
         this.delegate = delegate;
 
         ArrayList<ResourceMethod> methods = new ArrayList<>();
