@@ -27,8 +27,6 @@
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
-        <!-- maven-javadoc-plugin -->
-        <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
