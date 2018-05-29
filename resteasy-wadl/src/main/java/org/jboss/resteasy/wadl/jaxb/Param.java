@@ -33,29 +33,29 @@ import org.w3c.dom.Element;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://wadl.dev.java.net/2009/02}doc" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://wadl.dev.java.net/2009/02}option" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://wadl.dev.java.net/2009/02}link" minOccurs="0"/>
- *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="href" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
- *       &lt;attribute name="style" type="{http://wadl.dev.java.net/2009/02}ParamStyle" />
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" default="xs:string" />
- *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="repeating" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://wadl.dev.java.net/2009/02}doc" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://wadl.dev.java.net/2009/02}option" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://wadl.dev.java.net/2009/02}link" minOccurs="0"/&gt;
+ *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="href" type="{http://www.w3.org/2001/XMLSchema}anyURI" /&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" /&gt;
+ *       &lt;attribute name="style" type="{http://wadl.dev.java.net/2009/02}ParamStyle" /&gt;
+ *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" default="xs:string" /&gt;
+ *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="repeating" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="fixed" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="path" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;anyAttribute processContents='lax' namespace='##other'/&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
