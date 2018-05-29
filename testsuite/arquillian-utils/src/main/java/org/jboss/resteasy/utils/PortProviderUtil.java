@@ -86,7 +86,7 @@ public class PortProviderUtil {
      *
      * @param clazz the client interface class
      * @return the proxy object
-     * @path the base request path
+     * @param path the base request path
      */
     public static <T> T createProxy(Class<T> clazz, String path, String testName) {
        ResteasyWebTarget target = (ResteasyWebTarget) ResteasyClientBuilder.newClient().target(generateURL(path, testName));
@@ -126,7 +126,7 @@ public class PortProviderUtil {
      * Generate a URL incorporating the configured port.
      *
      * @param path the path
-     * @parm testName the test name 
+     * @param testName the test name 
      * @return a full URL
      */
     public static String generateURL(String path, String testName) {
