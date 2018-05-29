@@ -19,15 +19,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="ParamStyle">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="plain"/>
- *     &lt;enumeration value="query"/>
- *     &lt;enumeration value="matrix"/>
- *     &lt;enumeration value="header"/>
- *     &lt;enumeration value="template"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="ParamStyle"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="plain"/&gt;
+ *     &lt;enumeration value="query"/&gt;
+ *     &lt;enumeration value="matrix"/&gt;
+ *     &lt;enumeration value="header"/&gt;
+ *     &lt;enumeration value="template"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */
