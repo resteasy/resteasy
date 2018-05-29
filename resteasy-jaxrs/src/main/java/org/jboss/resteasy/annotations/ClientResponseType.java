@@ -11,8 +11,7 @@ import java.lang.annotation.Target;
 /**
  * This is an annotation that you can add to a RESTEasy client interface that
  * has a return type of Response.
- * <p/>
- * <p/>
+ * <p>
  * You have two options:
  * <ol>
  * <li>use the entityType property to set a Class that will always be returned
@@ -20,7 +19,7 @@ import java.lang.annotation.Target;
  * factory that determines which class to use based on logic that uses the
  * headers and status of the result.
  * </ol>
- * <p/>
+ * <p>
  * Note: if you want to use generic types, you can't use this annotation. You'll
  * have to either use ClientResponse as part of your interface, or cast the
  * resulting Response object as a ClientResponse.

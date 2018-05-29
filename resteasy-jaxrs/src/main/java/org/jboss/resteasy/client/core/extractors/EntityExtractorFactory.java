@@ -9,8 +9,9 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
- * @see EntityExtractor, DefaultObjectEntityExtractor,
- *      ResponseObjectEntityExtractor
+ * @see EntityExtractor
+ * @see DefaultEntityExtractorFactory
+ * @see ResponseObjectEntityExtractorFactory
  */
 public interface EntityExtractorFactory
 {

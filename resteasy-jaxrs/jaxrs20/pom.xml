@@ -141,6 +141,25 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.javadoc.plugin}</version>
+                    <configuration>
+                        <additionalDependencies>
+                            <!-- additional libs for javadoc -->
+                            <additionalDependency>
+                                <groupId>org.jboss.resteasy</groupId>
+                                <artifactId>resteasy-client</artifactId>
+                                <version>${project.version}</version>
+                            </additionalDependency>
+                        </additionalDependencies>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>

@@ -16,7 +16,7 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     * 
     * No reply is going to be sent to the client until this response is resumed either
     * with {@link #resume()} or aborted with {@link #resume(Throwable)} or 
-    * {@link ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
+    * {@link org.jboss.resteasy.core.interception.ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
     */
    public void suspend();
    

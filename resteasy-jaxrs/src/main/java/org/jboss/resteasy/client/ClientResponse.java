@@ -35,9 +35,9 @@ public abstract class ClientResponse<T> extends Response
    public abstract Response.Status getResponseStatus();
 
    /**
-    * Unmarshal the target entity from the response OutputStream.  You must have type information set via <T>
+    * Unmarshal the target entity from the response OutputStream.  You must have type information set via {@literal <}T{@literal >}
     * otherwise, this will not work.
-    * <p/>
+    * <p>
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
     * cache the result and return the cached result.
     *
@@ -47,12 +47,11 @@ public abstract class ClientResponse<T> extends Response
 
    /**
     * Extract the response body with the provided type information
-    * <p/>
+    * <p>
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
     * cache the result and return the cached result.
     *
     * @param type
-    * @param genericType
     * @param <T2>
     * @return
     */
@@ -60,7 +59,7 @@ public abstract class ClientResponse<T> extends Response
 
    /**
     * Extract the response body with the provided type information
-    * <p/>
+    * <p>
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
     * cache the result and return the cached result.
     *
@@ -83,11 +82,11 @@ public abstract class ClientResponse<T> extends Response
    /**
     * Extract the response body with the provided type information.  GenericType is a trick used to
     * pass in generic type information to the resteasy runtime.
-    * <p/>
+    * <p>
     * For example:
     * <pre>
-    * List<String> list = response.getEntity(new GenericType<List<String>() {});
-    *
+    * List {@literal <}String{@literal >} list = response.getEntity(new GenericType{@literal <}List{@literal <}String{@literal >>}() {});
+    * </pre>
     *
     * This method actually does the reading on the OutputStream.  It will only do the read once.  Afterwards, it will
     * cache the result and return the cached result.
@@ -126,7 +125,7 @@ public abstract class ClientResponse<T> extends Response
     * Header is assumed to be a URL, a Link object is created from it if it exists.  Also, the type field of the
     * link with be initialized if there is another header appended with -Type.  i.e. if the header was "custom"
     * it will also look for a header of custom-type and expect that this is a media type.
-    * <p/>
+    * <p>
     * All Link objects returned will automatically have the same ClientExecutor as the request.
     *
     * @param headerName

@@ -12,7 +12,7 @@ import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
  * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
  * caching in the JAX-RS 2.0 compliant resteasy-client module.
  * 
- * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  */
 @Deprecated
 public class CacheFactory
@@ -57,7 +57,6 @@ public class CacheFactory
    /**
     * Make a raw ClientRequest cache results in the provided cache.
     *
-    * @param request
     * @param cache
     */
    public static void makeCacheable(
