@@ -83,6 +83,9 @@
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.weld>2.4.3.Final</version.weld>
         <version.json.patch>1.3</version.json.patch>
+        <version.io.reactivex.rxjava>1.3.2</version.io.reactivex.rxjava>
+        <version.io.reactivex.rxjava-reactive-streams>1.2.1</version.io.reactivex.rxjava-reactive-streams>
+        <version.io.reactivex.rxjava2-rxjava>2.1.5</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
     </properties>
 
@@ -757,6 +760,21 @@
                 <groupId>org.reactivestreams</groupId>
                 <artifactId>reactive-streams</artifactId>
                 <version>${version.org.reactivestreams}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>${version.io.reactivex.rxjava}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex</groupId>
+                <artifactId>rxjava-reactive-streams</artifactId>
+                <version>${version.io.reactivex.rxjava-reactive-streams}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex.rxjava2</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>${version.io.reactivex.rxjava2-rxjava}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

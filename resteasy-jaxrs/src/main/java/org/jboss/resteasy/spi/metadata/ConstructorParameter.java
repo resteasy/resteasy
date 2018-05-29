@@ -13,11 +13,12 @@ public class ConstructorParameter extends Parameter
    protected Annotation[] annotations = {};
    protected ResourceConstructor constructor;
 
-   protected ConstructorParameter(ResourceConstructor constructor, Class<?> type, Type genericType, Annotation[] annotations)
+   protected ConstructorParameter(ResourceConstructor constructor, String name, Class<?> type, Type genericType, Annotation[] annotations)
    {
       super(constructor.getResourceClass(), type, genericType);
       this.annotations = annotations;
       this.constructor = constructor;
+      this.paramName = name;
    }
 
    @Override

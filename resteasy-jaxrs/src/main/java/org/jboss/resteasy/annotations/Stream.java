@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Stream
 {
+   public enum MODE {RAW, GENERAL};
+   public MODE value() default MODE.GENERAL;
 }

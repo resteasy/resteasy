@@ -1,6 +1,12 @@
 <chapter id="_QueryParam">
 <title>@QueryParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@QueryParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 The @QueryParam annotation allows you to map a URI query string parameter or url form encoded parameter to your method invocation.

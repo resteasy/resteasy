@@ -17,13 +17,20 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
+import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,7 +49,9 @@ public class ClientInvoker implements MethodInvoker
    protected EntityExtractor extractor;
    protected DefaultEntityExtractorFactory entityExtractorFactory;
    protected ClientConfiguration invokerConfig;
-
+   protected RxInvokerProvider<?> rxInvokerProvider;
+   protected SyncInvoker syncInvoker;
+   
 
    public ClientInvoker(ResteasyWebTarget parent, Class<?> declaring, Method method, ProxyConfig config)
    {
@@ -82,6 +91,7 @@ public class ClientInvoker implements MethodInvoker
       accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
       entityExtractorFactory = new DefaultEntityExtractorFactory();
       this.extractor = entityExtractorFactory.createExtractor(method);
+      rxInvokerProvider = invokerConfig.getRxInvokerProviderFromReactiveClass(method.getReturnType());
    }
 
    public MediaType[] getAccepts()
@@ -100,6 +110,41 @@ public class ClientInvoker implements MethodInvoker
    }
 
    public Object invoke(Object[] args)
+   {
+      return rxInvokerProvider != null ? invokeAsync(args) : invokeSync(args);
+   }
+   
+   protected Object invokeAsync(final Object[] args)
+   {
+      ClientInvocationBuilder builder = (ClientInvocationBuilder) webTarget.request();
+      ClientInvocation request = createRequest(args);
+      builder.setClientInvocation(request);
+      ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
+      if (executor == null)
+      {
+         executor = webTarget.getResteasyClient().asyncInvocationExecutor();         
+      }
+      RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
+      Type type = method.getGenericReturnType();
+      if (type instanceof ParameterizedType)
+      {
+         type = ((ParameterizedType) type).getActualTypeArguments()[0];
+      }
+      GenericType<?> gt = new GenericType(type);
+      Object e = request.getEntity();
+      Object o = null;
+      if (e != null)
+      {
+         o = rxInvoker.method(getHttpMethod(), Entity.entity(e, request.getHeaders().getMediaType()), gt);
+      }
+      else
+      {
+         o = rxInvoker.method(getHttpMethod(), gt);
+      }
+      return o;
+   }
+   
+   protected Object invokeSync(Object[] args)
    {
       ClientInvocation request = createRequest(args);
       ClientResponse response = (ClientResponse)request.invoke();
@@ -123,6 +168,7 @@ public class ClientInvoker implements MethodInvoker
       ClientConfiguration parentConfiguration=(ClientConfiguration) target.getConfiguration();
       ClientInvocation clientInvocation = new ClientInvocation(this.webTarget.getResteasyClient(), target.getUri(),
     		  new ClientRequestHeaders(parentConfiguration), parentConfiguration);
+      clientInvocation.setClientInvoker(this);
       if (accepts != null)
       {
          clientInvocation.getHeaders().accept(accepts);
@@ -163,5 +209,13 @@ public class ClientInvoker implements MethodInvoker
    public void followRedirects()
    {
       setFollowRedirects(true);
+   }
+
+   public SyncInvoker getSyncInvoker() {
+      return syncInvoker;
+   }
+
+   public void setSyncInvoker(SyncInvoker syncInvoker) {
+      this.syncInvoker = syncInvoker;
    }
 }

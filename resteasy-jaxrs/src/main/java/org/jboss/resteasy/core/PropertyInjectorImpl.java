@@ -11,6 +11,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MethodHashing;
 
+import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
+
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -24,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.PathParam;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -65,7 +70,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Class<?> type = field.getType();
          Type genericType = field.getGenericType();
 
-         ValueInjector extractor = getParameterExtractor(clazz, factory, field, annotations, type, genericType);
+         ValueInjector extractor = getParameterExtractor(clazz, factory, field, field.getName(), annotations, type, genericType);
          if (extractor != null)
          {
             if (!Modifier.isPublic(field.getModifiers()))
@@ -86,7 +91,9 @@ public class PropertyInjectorImpl implements PropertyInjector
          Class<?> type = method.getParameterTypes()[0];
          Type genericType = method.getGenericParameterTypes()[0];
 
-         ValueInjector extractor = getParameterExtractor(clazz, factory, method, annotations, type, genericType);
+         String propertyName = Introspector.decapitalize(method.getName().substring(3));
+         
+         ValueInjector extractor = getParameterExtractor(clazz, factory, method, propertyName, annotations, type, genericType);
          if (extractor != null)
          {
             long hash = 0;
@@ -120,10 +127,10 @@ public class PropertyInjectorImpl implements PropertyInjector
    }
 
    private ValueInjector getParameterExtractor(Class<?> clazz, ResteasyProviderFactory factory, AccessibleObject accessibleObject,
-                                               Annotation[] annotations, Class<?> type, Type genericType)
+                                               String defaultName, Annotation[] annotations, Class<?> type, Type genericType)
    {
       boolean extractBody = (FindAnnotation.findAnnotation(annotations, Body.class) != null);
-      ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, type, genericType,
+      ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, defaultName, type, genericType,
               annotations, extractBody, factory);
       return injector;
    }

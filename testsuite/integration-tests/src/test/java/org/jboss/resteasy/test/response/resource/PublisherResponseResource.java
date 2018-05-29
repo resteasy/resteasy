@@ -23,14 +23,16 @@ public class PublisherResponseResource {
    @GET
    @Path("text")
    @Produces("application/json")
+   @Stream
    public Publisher<String> text(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
-	   return Flowable.fromArray("one", "two");
+      return Flowable.fromArray("one", "two");
    }
 
    @GET
    @Path("text-infinite")
    @Produces("application/json")
+   @Stream
    public Publisher<String> textInfinite() {
       terminated = false;
       System.err.println("Starting ");
@@ -51,6 +53,7 @@ public class PublisherResponseResource {
    @GET
    @Path("text-error-immediate")
    @Produces("application/json")
+   @Stream
    public Publisher<String> textErrorImmediate(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       throw new AsyncResponseException();
@@ -59,6 +62,7 @@ public class PublisherResponseResource {
    @GET
    @Path("text-error-deferred")
    @Produces("application/json")
+   @Stream
    public Publisher<String> textErrorDeferred(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       return Flowable.error(new AsyncResponseException());
@@ -76,7 +80,7 @@ public class PublisherResponseResource {
    @Path("chunked")
    @Produces("application/json")
    public Publisher<String> chunked() {
-	   return Flowable.fromArray("one", "two");
+      return Flowable.fromArray("one", "two");
    }
 
    @Stream
@@ -100,7 +104,7 @@ public class PublisherResponseResource {
    @Path("sse")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public Publisher<String> sse() {
-	   return Flowable.fromArray("one", "two");
+      return Flowable.fromArray("one", "two");
    }
 
    @GET

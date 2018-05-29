@@ -22,11 +22,15 @@ public class OutboundSseEventImpl implements OutboundSseEvent
    
    private final Type genericType;
 
-   private final MediaType mediaType;
+   private MediaType mediaType;
+   
+   private boolean mediaTypeSet;
 
    private final Object data;
 
    private final long reconnectDelay;
+   
+   private boolean escape = false;
 
    public static class BuilderImpl implements Builder
    {
@@ -197,6 +201,17 @@ public class OutboundSseEventImpl implements OutboundSseEvent
    {
       return mediaType;
    }
+   
+   public boolean isMediaTypeSet()
+   {
+      return mediaTypeSet;
+   }
+   
+   public void setMediaType(MediaType mediaType)
+   {
+      this.mediaType = mediaType;
+      mediaTypeSet = true;
+   }
 
    public String getComment()
    {
@@ -208,4 +223,13 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       return data;
    }
 
+   public boolean isEscape()
+   {
+      return escape;
+   }
+   
+   public void setEscape(Boolean escape)
+   {
+      this.escape = escape;
+   }
 }

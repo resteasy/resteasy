@@ -1,6 +1,12 @@
 <chapter id="_MatrixParam">
 <title>@MatrixParam</title>
 
+<note>
+   <para>
+      RESTEasy <link linkend="_NewParam">supports <code>@MatrixParam</code> annotations with no parameter name.</link>.
+   </para>
+</note>
+
 <para>
 
 The idea of matrix parameters is that they are an arbitrary set of name-value pairs embedded in a uri path segment.  

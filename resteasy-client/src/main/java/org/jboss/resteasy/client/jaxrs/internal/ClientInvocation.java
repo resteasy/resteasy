@@ -38,6 +38,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -50,6 +52,7 @@ import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
@@ -83,6 +86,8 @@ public class ClientInvocation implements Invocation
    protected URI uri;
 
    protected boolean chunked;
+   
+   protected ClientInvoker clientInvoker;
 
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing this request.
    // That is problematic for wrapping the output stream in e.g. a RequestFilter for transparent compressing.
@@ -561,7 +566,14 @@ public class ClientInvocation implements Invocation
       configuration.property(name, value);
       return this;
    }
+   
+   public ClientInvoker getClientInvoker() {
+      return clientInvoker;
+   }
 
+   public void setClientInvoker(ClientInvoker clientInvoker) {
+      this.clientInvoker = clientInvoker;
+   }
    // internals
 
    private Providers pushProvidersContext()

@@ -43,10 +43,17 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 
@@ -256,12 +263,18 @@ public class ResourceBuilder
          if (defaultValue != null) parameter.defaultValue = defaultValue.value();
 
          QueryParam queryParam;
+         org.jboss.resteasy.annotations.jaxrs.QueryParam queryParam2;
          Query query;
          HeaderParam header;
+         org.jboss.resteasy.annotations.jaxrs.HeaderParam header2;
          MatrixParam matrix;
+         org.jboss.resteasy.annotations.jaxrs.MatrixParam matrix2;
          PathParam uriParam;
+         org.jboss.resteasy.annotations.jaxrs.PathParam uriParam2;
          CookieParam cookie;
+         org.jboss.resteasy.annotations.jaxrs.CookieParam cookie2;
          FormParam formParam;
+         org.jboss.resteasy.annotations.jaxrs.FormParam formParam2;
          Form form;
          Suspend suspend;
          Suspended suspended;
@@ -271,6 +284,13 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
             parameter.paramName = queryParam.value();
+         }
+         else if ((queryParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.QUERY_PARAM;
+            if (queryParam2.value() != null && queryParam2.value().length() > 0) {
+               parameter.paramName = queryParam2.value();
+            }
          }
          else if(( query = findAnnotation(annotations, Query.class))!= null)
          {
@@ -282,20 +302,48 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.HEADER_PARAM;
             parameter.paramName = header.value();
          }
+         else if ((header2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.HEADER_PARAM;
+            if (header2.value() != null && header2.value().length() > 0) {
+               parameter.paramName = header2.value();
+            }
+         }
          else if ((formParam = findAnnotation(annotations, FormParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.FORM_PARAM;
             parameter.paramName = formParam.value();
+         }
+         else if ((formParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.FORM_PARAM;
+            if (formParam2.value() != null && formParam2.value().length() > 0) {
+               parameter.paramName = formParam2.value();
+            }
          }
          else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
             parameter.paramName = cookie.value();
          }
+         else if ((cookie2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
+            if (cookie2.value() != null && cookie2.value().length() > 0) {
+               parameter.paramName = cookie2.value();
+            }
+         }
          else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.PATH_PARAM;
             parameter.paramName = uriParam.value();
+         }
+         else if ((uriParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.PATH_PARAM;
+            if (uriParam2.value() != null && uriParam2.value().length() > 0) {
+               parameter.paramName = uriParam2.value();
+            }
          }
          else if ((form = findAnnotation(annotations, Form.class)) != null)
          {
@@ -310,6 +358,13 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
             parameter.paramName = matrix.value();
+         }
+         else if ((matrix2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
+            if (matrix2.value() != null && matrix2.value().length() > 0) {
+               parameter.paramName = matrix2.value();
+            }
          }
          else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
          {
@@ -683,16 +738,21 @@ public class ResourceBuilder
       }
    }
 
-   private final List<ResourceClassProcessor> processors = new ArrayList<>();
+   private final Map<Integer, List<ResourceClassProcessor>> processors = new TreeMap<>(Comparator.reverseOrder());
 
    /**
     * Register a new {@link ResourceClassProcessor} which will be used to post-process all
     * {@link ResourceClass} instances created from the builder.
     * @param processor resource class processor
     */
-   public void registerResourceClassProcessor(ResourceClassProcessor processor)
+   public void registerResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {
-      this.processors.add(processor);
+      List<ResourceClassProcessor> l = processors.get(priority);
+      if (l == null) {
+         l = new LinkedList<ResourceClassProcessor>();
+         processors.put(priority, l);
+      }
+      l.add(processor);
    }
 
    @Deprecated
@@ -1063,10 +1123,12 @@ public class ResourceBuilder
    private ResourceClass applyProcessors(ResourceClass original)
    {
       ResourceClass current = original;
-      for (ResourceClassProcessor processor : processors)
-      {
-         current = processor.process(current);
-         Objects.requireNonNull(current, "ResourceClassProcessor must not return null");
+      for (List<ResourceClassProcessor> l : processors.values()) {
+         for (ResourceClassProcessor processor : l)
+         {
+            current = processor.process(current);
+            Objects.requireNonNull(current, "ResourceClassProcessor must not return null");
+         }
       }
       return current;
    }
