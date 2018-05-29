@@ -158,7 +158,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
     * used by proxy generation. If this property is set the {@link #httpClient}
     * property is ignored.
     *
-    * @param clientEngine the instance to be used by proxy generation
+    * @param clientExecutor the instance to be used by proxy generation
     */
    public void setClientExecutor(ClientExecutor clientExecutor)
    {
