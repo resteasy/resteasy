@@ -47,7 +47,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
- * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.client.Invocation
  */
 @Deprecated
@@ -612,7 +612,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
     * if status is something other than 201
     *
     * @return Link to created resource
-    * @throws Exception, ClientResponseFailure
+    * @throws Exception
+    * @throws ClientResponseFailure
     */
    public Link create() throws Exception, ClientResponseFailure
    {

@@ -48,8 +48,8 @@ public class TestPortProvider
     * Create a Resteasy client proxy.
     *
     * @param clazz the client interface class
+    * @param path the base request path
     * @return the proxy object
-    * @path the base request path
     */
    public static <T> T createProxy(Class<T> clazz, String path)
    {
