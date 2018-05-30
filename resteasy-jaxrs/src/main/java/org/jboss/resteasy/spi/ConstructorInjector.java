@@ -1,5 +1,7 @@
 package org.jboss.resteasy.spi;
 
+import java.util.concurrent.CompletionStage;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -13,7 +15,7 @@ public interface ConstructorInjector
     *
     * @return constructed object
     */
-   Object construct();
+   CompletionStage<Object> construct(boolean unwrapAsync);
 
    /**
     * Construct inside the scope of an HTTP request.
@@ -25,7 +27,7 @@ public interface ConstructorInjector
     * @throws WebApplicationException if application exception occurred
     * @throws ApplicationException if application exception occurred
     */
-   Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException;
+   CompletionStage<Object> construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
 
    /**
     * Create an arguments list from injectable tings outside the scope of an HTTP request.  Useful for singleton factories
@@ -34,7 +36,7 @@ public interface ConstructorInjector
     *
     * @return array of arguments
     */
-   Object[] injectableArguments();
+   CompletionStage<Object[]> injectableArguments(boolean unwrapAsync);
 
    /**
     * Create an argument list inside the scope of an HTTP request.
@@ -46,5 +48,5 @@ public interface ConstructorInjector
     * @return array of arguments
     * @throws Failure if failure occurred
     */
-   Object[] injectableArguments(HttpRequest request, HttpResponse response) throws Failure;
+   CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure;
 }

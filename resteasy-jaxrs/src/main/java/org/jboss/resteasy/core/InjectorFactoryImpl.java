@@ -118,7 +118,7 @@ public class InjectorFactoryImpl implements InjectorFactory
          case SUSPEND:
             return new SuspendInjector(parameter.getSuspendTimeout(), parameter.getType());
          case CONTEXT:
-            return new ContextParameterInjector(null, parameter.getType(), providerFactory);
+            return new ContextParameterInjector(null, parameter.getType(), parameter.getGenericType(), parameter.getAnnotations(), providerFactory);
          case SUSPENDED:
             return new AsynchronousResponseInjector();
          case MESSAGE_BODY:
@@ -239,7 +239,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if (findAnnotation(annotations, Context.class) != null)
       {
-         return new ContextParameterInjector(null, type, providerFactory);
+         return new ContextParameterInjector(null, type, genericType, annotations, providerFactory);
       }
       else if ((suspended = findAnnotation(annotations, Suspended.class)) != null)
       {

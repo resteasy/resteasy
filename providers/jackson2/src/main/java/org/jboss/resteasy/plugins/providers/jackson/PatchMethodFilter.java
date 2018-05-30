@@ -60,7 +60,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
          Object object;
          try
          {
-            object = methodInvoker.invokeDryRun(request, response);
+            object = methodInvoker.invokeDryRun(request, response).toCompletableFuture().getNow(null);
             ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
             MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
                   object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),

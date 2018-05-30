@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
@@ -36,6 +37,7 @@ import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.ContextInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -601,6 +603,24 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
    {
       return getDelegate().createHeaderDelegate(tClass);
+   }
+
+   @Override
+   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync)
+   {
+      return getDelegate().getContextData(rawType, genericType, annotations, unwrapAsync);
+   }
+   
+   @Override
+   public Map<Type, ContextInjector> getContextInjectors()
+   {
+      return getDelegate().getContextInjectors();
+   }
+
+   @Override
+   public Map<Type, ContextInjector> getAsyncContextInjectors()
+   {
+      return getDelegate().getAsyncContextInjectors();
    }
 
    @Override

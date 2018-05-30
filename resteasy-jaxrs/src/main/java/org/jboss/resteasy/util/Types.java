@@ -12,6 +12,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Type conversions and generic type manipulations
@@ -412,25 +413,7 @@ public class Types
             Type newType = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
             actuals[i] = newType == null ? param.getActualTypeArguments()[i] : newType;
          }
-         return new ParameterizedType() {
-            @Override
-            public Type[] getActualTypeArguments()
-            {
-               return actuals;
-            }
-
-            @Override
-            public Type getRawType()
-            {
-               return param.getRawType();
-            }
-
-            @Override
-            public Type getOwnerType()
-            {
-               return param.getOwnerType();
-            }
-         };
+         return new ResteasyParameterizedType(actuals, param.getRawType(), param.getOwnerType());
       }
       else if (type instanceof GenericArrayType)
       {
@@ -689,5 +672,106 @@ public class Types
       {
          return EMPTY_TYPE_ARRAY;
       }
+   }
+   
+   public static class ResteasyParameterizedType implements ParameterizedType {
+
+      private Type[] actuals;
+      private Type rawType;
+      private Type ownerType;
+
+      public ResteasyParameterizedType(Type[] actuals, Type rawType, Type ownerType)
+      {
+         this.actuals = actuals;
+         this.rawType = rawType;
+         this.ownerType = ownerType;
+      }
+
+      @Override
+      public Type[] getActualTypeArguments()
+      {
+         return actuals;
+      }
+
+      @Override
+      public Type getRawType()
+      {
+         return rawType;
+      }
+
+      @Override
+      public Type getOwnerType()
+      {
+         return ownerType;
+      }
+      
+      @Override
+      public boolean equals(Object other)
+      {
+         if(other == null)
+            return false;
+         if(other instanceof ParameterizedType == false)
+            return false;
+         ParameterizedType b = (ParameterizedType) other;
+         // WARNING: contract defined by ParameterizedType
+         return Arrays.equals(actuals, b.getActualTypeArguments())
+               && Objects.equals(rawType, b.getRawType())
+               && Objects.equals(ownerType, b.getOwnerType());
+      }
+      
+      @Override
+      public int hashCode()
+      {
+         // WARNING: stay true to http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
+         return Arrays.hashCode(actuals)
+            ^ Objects.hashCode(ownerType)
+            ^ Objects.hashCode(rawType);
+      }
+      
+      @Override
+      public String toString()
+      {
+         StringBuilder sb = new StringBuilder();
+         if(getOwnerType() != null)
+            sb.append(getOwnerType()).append(".");
+         sb.append(getRawType());
+         if(actuals != null && actuals.length > 0) 
+         {
+            sb.append("<");
+            boolean first = true;
+            for (Type actual : actuals)
+            {
+               if(first)
+                  first = false;
+               else
+                  sb.append(", ");
+               sb.append(actual);
+            }
+            sb.append(">");
+         }
+         return sb.toString();
+      }
+
+   }
+
+   public static Type boxPrimitives(Type genericType)
+   {
+      if(genericType == Boolean.TYPE)
+         return Boolean.class;
+      if(genericType == Character.TYPE)
+         return Character.class;
+      if(genericType == Byte.TYPE)
+         return Byte.class;
+      if(genericType == Short.TYPE)
+         return Short.class;
+      if(genericType == Integer.TYPE)
+         return Integer.class;
+      if(genericType == Long.TYPE)
+         return Long.class;
+      if(genericType == Float.TYPE)
+         return Float.class;
+      if(genericType == Double.TYPE)
+         return Double.class;
+      return genericType;
    }
 }

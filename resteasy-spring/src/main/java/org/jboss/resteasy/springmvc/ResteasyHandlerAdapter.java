@@ -15,6 +15,7 @@ import org.springframework.web.servlet.View;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.CompletionException;
 
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
@@ -93,7 +94,11 @@ public class ResteasyHandlerAdapter extends
          BuiltResponse jaxrsResponse = null;
          try
          {
-            jaxrsResponse = (BuiltResponse) requestWrapper.getInvoker().invoke(request, response);
+            jaxrsResponse = (BuiltResponse) requestWrapper.getInvoker().invoke(request, response).toCompletableFuture().getNow(null);
+         }
+         catch (CompletionException e)
+         {
+            dispatcher.writeException(request, response, e.getCause(), t -> {});
          }
          catch (Exception e)
          {

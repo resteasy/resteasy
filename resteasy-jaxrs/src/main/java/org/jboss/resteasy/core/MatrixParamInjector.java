@@ -14,6 +14,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,7 +31,8 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
       this.encode = encode;
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       ArrayList<String> values = new ArrayList<String>();
       if (encode)
@@ -48,8 +51,8 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
             if (list != null) values.addAll(list);
          }
       }
-      if (values.size() == 0) return extractValues(null);
-      else return extractValues(values);
+      if (values.size() == 0) return CompletableFuture.completedFuture(extractValues(null));
+      else return CompletableFuture.completedFuture(extractValues(values));
    }
 
    @Override
@@ -59,7 +62,8 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
 
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectMatrixParam());
    }

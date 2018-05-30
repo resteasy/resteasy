@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.*;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Created by Simon Ström on 7/17/14.
@@ -32,14 +33,14 @@ public class QueryInjector implements ValueInjector {
    }
 
    @Override
-   public Object inject() {
+   public CompletionStage<Object> inject(boolean unwrapAsync) {
       throw new IllegalStateException("You cannot inject outside the scope of an HTTP request");
    }
 
    @Override
-   public Object inject(HttpRequest request, HttpResponse response) {
-      Object target = constructorInjector.construct();
-      propertyInjector.inject(request, response, target);
-      return target;
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+      return constructorInjector.construct(unwrapAsync)
+            .thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
+                                 .thenApply(v -> target));
    }
 }

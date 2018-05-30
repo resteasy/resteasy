@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import javax.ws.rs.NotFoundException;
@@ -402,7 +404,7 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
-         jaxrsResponse = invoker.invoke(request, response);
+         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -414,6 +416,12 @@ public class SynchronousDispatcher implements Dispatcher
             request.getAsyncContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
+      }
+      catch (CompletionException e)
+      {
+         //logger.error("invoke() failed mapping exception", e);
+         jaxrsResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e.getCause());
+         if (jaxrsResponse == null) throw new UnhandledException(e.getCause());
       }
       catch (Exception e)
       {
@@ -436,7 +444,7 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
-         jaxrsResponse = invoker.invoke(request, response);
+         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -448,6 +456,12 @@ public class SynchronousDispatcher implements Dispatcher
             request.getAsyncContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
+      }
+      catch (CompletionException e)
+      {
+         //logger.error("invoke() failed mapping exception", e);
+         writeException(request, response, e.getCause(), t->{});
+         return;
       }
       catch (Exception e)
       {

@@ -11,6 +11,8 @@ import org.jboss.resteasy.util.FindAnnotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl {
     @Override
@@ -21,13 +23,15 @@ public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl 
             return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, factory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return hello.value();
-                }
+               @Override
+               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+                  return CompletableFuture.completedFuture(hello.value());
+               }
 
-                public Object inject() {
-                    return hello.value();
-                }
+               @Override
+               public CompletionStage<Object> inject(boolean unwrapAsync) {
+                  return CompletableFuture.completedFuture(hello.value());
+               }
             };
         }
     }
@@ -39,13 +43,15 @@ public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl 
             return super.createParameterExtractor(parameter, providerFactory);
         } else {
             return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return hello.value();
-                }
+               @Override
+               public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+                  return CompletableFuture.completedFuture(hello.value());
+               }
 
-                public Object inject() {
-                    return hello.value();
-                }
+               @Override
+               public CompletionStage<Object> inject(boolean unwrapAsync) {
+                  return CompletableFuture.completedFuture(hello.value());
+               }
             };
         }
     }

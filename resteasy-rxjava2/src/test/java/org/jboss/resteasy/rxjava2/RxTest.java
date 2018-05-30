@@ -17,7 +17,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
-import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,37 +34,36 @@ public class RxTest
 {
     private static NettyJaxrsServer server;
 
-    private static Dispatcher dispatcher;
     private static CountDownLatch latch;
     private static AtomicReference<Object> value = new AtomicReference<Object>();
 
-    @BeforeClass
-    public static void beforeClass() throws Exception
-    {
-        server = new NettyJaxrsServer();
-        server.setPort(TestPortProvider.getPort());
-        server.setRootResourcePath("/");
-        server.start();
-        dispatcher = server.getDeployment().getDispatcher();
-        @SuppressWarnings("deprecation")
-        POJOResourceFactory noDefaults = new POJOResourceFactory(RxResource.class);
-        dispatcher.getRegistry().addResourceFactory(noDefaults);
-    }
+   @BeforeClass
+   public static void beforeClass() throws Exception
+   {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      List<Class> classes = server.getDeployment().getActualResourceClasses();
+      classes.add(RxResource.class);
+      List<Class> providers = server.getDeployment().getActualProviderClasses();
+      providers.add(RxInjector.class);
+      server.getDeployment().registration();
+   }
 
-    @AfterClass
-    public static void afterClass() throws Exception
-    {
-        server.stop();
-        server = null;
-        dispatcher = null;
-    }
+   @AfterClass
+   public static void afterClass() throws Exception
+   {
+      server.stop();
+      server = null;
+   }
 
-    private ResteasyClient client;
+   private ResteasyClient client;
 
-    @Before
-    public void before()
-    {
-        client = new ResteasyClientBuilder()
+   @Before
+   public void before()
+   {
+      client = new ResteasyClientBuilder()
             .readTimeout(5, TimeUnit.SECONDS)
             .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
             .connectTimeout(5, TimeUnit.SECONDS)
@@ -161,4 +159,14 @@ public class RxTest
         Assert.assertEquals(200, response.getStatus());
         Assert.assertEquals("onetwo", entity);
     }
+
+   @Test
+   public void testInjection()
+   {
+      Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
+      assertEquals((Integer)42, data);
+
+      data = client.target(generateURL("/injection-async")).request().get(Integer.class);
+      assertEquals((Integer)42, data);
+   }
 }

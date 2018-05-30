@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.PathParam;
 
@@ -135,64 +137,82 @@ public class PropertyInjectorImpl implements PropertyInjector
       return injector;
    }
 
-   public void inject(HttpRequest request, HttpResponse response, Object target) throws Failure
+   @Override
+   public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
+      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         try
-         {
-            entry.getKey().set(target, entry.getValue().inject(request, response));
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
+         ret = ret.thenCompose(v -> entry.getValue().inject(request, response, unwrapAsync)
+               .thenAccept(value -> {
+               try
+               {
+                  entry.getKey().set(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+            }));
       }
       for (SetterMethod setter : setters)
       {
-         try
-         {
-            setter.method.invoke(target, setter.extractor.inject(request, response));
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new InternalServerErrorException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new ApplicationException(e.getCause());
-         }
+         ret = ret.thenCompose(v -> setter.extractor.inject(request, response, unwrapAsync)
+               .thenAccept(value -> {
+               try
+               {
+                  setter.method.invoke(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
+            }));
       }
+      return ret;
    }
 
-   public void inject(Object target)
+   @Override
+   public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
+      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         try
-         {
-            entry.getKey().set(target, entry.getValue().inject());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ret = ret.thenCompose(v -> entry.getValue().inject(unwrapAsync)
+               .thenAccept(value -> {
+               try
+               {
+                  entry.getKey().set(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+            }));
       }
       for (SetterMethod setter : setters)
       {
-         try
-         {
-            setter.method.invoke(target, setter.extractor.inject());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e);
-         }
+         ret = ret.thenCompose(v -> setter.extractor.inject(unwrapAsync)
+               .thenAccept(value -> {
+               try
+               {
+                  setter.method.invoke(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
+            }));
       }
+      return ret;
    }
 
    private Field[] getDeclaredFields(final Class<?> clazz)

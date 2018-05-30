@@ -5,6 +5,9 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -34,11 +37,11 @@ public class JndiResourceFactory implements ResourceFactory
    {
    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       try
       {
-         return ctx.lookup(jndiName);
+         return CompletableFuture.completedFuture(ctx.lookup(jndiName));
       }
       catch (NamingException e)
       {

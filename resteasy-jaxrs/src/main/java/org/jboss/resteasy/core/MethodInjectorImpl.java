@@ -19,6 +19,8 @@ import javax.ws.rs.WebApplicationException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -78,21 +80,26 @@ public class MethodInjectorImpl implements MethodInjector
       return params;
    }
 
-   public Object[] injectArguments(HttpRequest input, HttpResponse response)
+   @Override
+   public CompletionStage<Object[]> injectArguments(HttpRequest input, HttpResponse response)
    {
       try
       {
-         Object[] args = null;
          if (params != null && params.length > 0)
          {
-            args = new Object[params.length];
+            Object[] args = new Object[params.length];
             int i = 0;
+            CompletionStage<Object> ret = CompletableFuture.completedFuture(null);
             for (ValueInjector extractor : params)
             {
-               args[i++] = extractor.inject(input, response);
+               int j = i++;
+               ret = ret.thenCompose(v -> extractor.inject(input, response, true)
+                                       .thenApply(value -> args[j] = value));
             }
+            return ret.thenApply(v -> args);
          }
-         return args;
+         else
+            return CompletableFuture.completedFuture(null);
       }
       catch (WebApplicationException we)
       {
@@ -110,9 +117,14 @@ public class MethodInjectorImpl implements MethodInjector
       }
    }
 
-   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
+   public CompletionStage<Object> invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
-      Object[] args = injectArguments(request, httpResponse);
+      return injectArguments(request, httpResponse)
+            .thenApply(args -> invoke(request, httpResponse, resource, args));
+   }
+
+   private Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource, Object[] args)
+   {
       GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
       if (validator != null)
       {

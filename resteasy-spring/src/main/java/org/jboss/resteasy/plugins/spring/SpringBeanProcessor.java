@@ -104,7 +104,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          if (providerNames.contains(beanName))
          {
             PropertyInjector injector = getInjector(AopUtils.getTargetClass(bean));
-            injector.inject(bean);
+            injector.inject(bean, false);
             providerFactory.registerProviderInstance(bean);
          }
 
@@ -151,12 +151,12 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
          if (request == null || isSingleton(beanName))
          {
-            propertyInjector.inject(bean);
+            propertyInjector.inject(bean, false);
          }
          else
          {
             HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
-            propertyInjector.inject(request, response, bean);
+            propertyInjector.inject(request, response, bean, false);
          }
       }
 

@@ -69,6 +69,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -80,6 +81,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -215,6 +219,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, AsyncClientResponseProvider> asyncClientResponseProviders;
    protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
+   protected Map<Type, ContextInjector> contextInjectors;
+   protected Map<Type, ContextInjector> asyncContextInjectors;
    protected Map<Class<?>, StringConverter> stringConverters;
    protected Set<ExtSortedKey<ParamConverterProvider>> sortedParamConverterProviders;
    protected List<ParamConverterProvider> paramConverterProviders;
@@ -328,6 +334,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
       asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+      asyncContextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
       sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<ExtSortedKey<ParamConverterProvider>>());
       stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
@@ -445,6 +453,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (asyncStreamProviders == null && parent != null) return parent.getAsyncStreamProviders();
       return asyncStreamProviders;
+   }
+
+   public Map<Type, ContextInjector> getContextInjectors()
+   {
+      if (contextInjectors == null && parent != null) return parent.getContextInjectors();
+      return contextInjectors;
+   }
+
+   public Map<Type, ContextInjector> getAsyncContextInjectors()
+   {
+      if (asyncContextInjectors == null && parent != null) return parent.getAsyncContextInjectors();
+      return asyncContextInjectors;
    }
 
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
@@ -586,6 +606,38 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public static <T> T getContextData(Class<T> type)
    {
       return (T) getContextDataMap().get(type);
+   }
+
+   public boolean hasAsyncContextData(Type genericType) {
+      return getAsyncContextInjectors().containsKey(Types.boxPrimitives(genericType));
+   }
+   
+   public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync)
+   {
+      T ret = (T) getContextDataMap().get(rawType);
+      if(ret != null)
+         return ret;
+      ContextInjector contextInjector = getContextInjectors().get(genericType);
+      boolean async = false;
+      if(contextInjector == null && unwrapAsync)
+      {
+         contextInjector = getAsyncContextInjectors().get(Types.boxPrimitives(genericType));
+         async = true;
+      }
+      
+      if(contextInjector != null)
+      {
+         ret = (T) contextInjector.resolve(rawType, genericType, annotations);
+         if(async && ret != null)
+         {
+            Type wrappedType = Types.getActualTypeArgumentsOfAnInterface(contextInjector.getClass(), ContextInjector.class)[0];
+            Class<?> rawWrappedType = Types.getRawType(wrappedType);
+            AsyncResponseProvider converter = getAsyncResponseProvider(rawWrappedType);
+            // OK this is plain lying
+            ret = (T) converter.toCompletionStage(ret);
+         }
+      }
+      return ret;
    }
 
    public static <T> T popContextData(Class<T> type)
@@ -1299,6 +1351,45 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncStreamProviders.put(asyncClass, provider);
    }
 
+   protected void addContextInjector(Class<? extends ContextInjector> providerClass)
+   {
+      ContextInjector provider = createProviderInstance(providerClass);
+       addContextInjector(provider, providerClass);
+   }
+
+   protected void addContextInjector(ContextInjector provider)
+   {
+       addContextInjector(provider, provider.getClass());
+   }
+
+   protected void addContextInjector(ContextInjector provider, Class providerClass)
+   {
+      Type[] typeArgs = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextInjector.class);
+      addContextInjector(provider, typeArgs[0], typeArgs[1]);
+   }
+
+   protected void addContextInjector(ContextInjector provider, Type injectedWrappedType, Type injectedUnwrappedType)
+   {
+      injectProperties(provider.getClass(), provider);
+
+      if (contextInjectors == null)
+      {
+         contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+         contextInjectors.putAll(parent.getContextInjectors());
+      }
+      contextInjectors.put(injectedWrappedType, provider);
+      
+      if(!Objects.equals(injectedWrappedType, injectedUnwrappedType))
+      {
+         if (asyncContextInjectors == null)
+         {
+            asyncContextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
+            asyncContextInjectors.putAll(parent.getAsyncContextInjectors());
+         }
+         asyncContextInjectors.put(injectedUnwrappedType, provider);
+      }
+   }
+
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       ContextResolver writer = createProviderInstance(resolver);
@@ -1842,6 +1933,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
+      if (isA(provider, ContextInjector.class, contracts))
+      {
+         try
+         {
+            addContextInjector(provider);
+            int priority = getPriority(priorityOverride, contracts, ContextInjector.class, provider);
+            newContracts.put(ContextInjector.class, priority);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextInjector(), e);
+         }
+      }
       if (isA(provider, StringConverter.class, contracts))
       {
          addStringConverter(provider);
@@ -2086,6 +2190,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          catch (Exception e)
          {
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
+         }
+      }
+      if (isA(provider, ContextInjector.class, contracts))
+      {
+         try
+         {
+            addContextInjector((ContextInjector)provider);
+            int priority = getPriority(priorityOverride, contracts, ContextInjector.class, provider.getClass());
+            newContracts.put(ContextInjector.class, priority);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextInjector(), e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
@@ -2487,7 +2604,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       ConstructorInjector constructorInjector = createConstructorInjector(clazz);
 
-      T provider = (T) constructorInjector.construct();
+      T provider = (T) constructorInjector.construct(false).toCompletableFuture().getNow(null);
       return provider;
    }
 
@@ -2511,14 +2628,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-      Object obj = null;
       ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-      obj = constructorInjector.construct();
-
-      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
-
-      propertyInjector.inject(obj);
-      return (T) obj;
+      return (T)constructorInjector.construct(false)
+      .thenCompose(obj -> {
+         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
+         return propertyInjector.inject(obj, false).thenApply(val -> obj);
+      }).toCompletableFuture().getNow(null);
    }
 
    /**
@@ -2589,28 +2704,28 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       else
       {
          ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         obj = constructorInjector.construct(request, response);
+         obj = constructorInjector.construct(request, response, false).toCompletableFuture().getNow(null);
 
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      propertyInjector.inject(request, response, obj);
-      return (T) obj;
+      propertyInjector.inject(request, response, obj, false).toCompletableFuture().getNow(null);
+      return (T)obj;
    }
 
    public void injectProperties(Class declaring, Object obj)
    {
-      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj);
+      getInjectorFactory().createPropertyInjector(declaring, this).inject(obj, false).toCompletableFuture().getNow(null);
    }
 
    public void injectProperties(Object obj)
    {
-      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(obj, false).toCompletableFuture().getNow(null);
    }
 
    public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
-      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj);
+      getInjectorFactory().createPropertyInjector(obj.getClass(), this).inject(request, response, obj, false).toCompletableFuture().getNow(null);
    }
 
 

@@ -19,7 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -58,135 +59,141 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
    }
 
-   public Object[] injectableArguments(HttpRequest input, HttpResponse response)
+   @Override
+   public CompletionStage<Object[]> injectableArguments(HttpRequest input, HttpResponse response, boolean unwrapAsync)
    {
-      Object[] args = null;
       if (params != null && params.length > 0)
       {
-         args = new Object[params.length];
+         Object[] args = new Object[params.length];
          int i = 0;
+         CompletionStage<Void> stage = CompletableFuture.completedFuture(null);
          for (ValueInjector extractor : params)
          {
-            args[i++] = extractor.inject(input, response);
+            int ifinal = i++;
+            stage = stage.thenCompose(v -> extractor.inject(input, response, unwrapAsync).thenAccept(value -> args[ifinal] = value));
          }
+         return stage.thenApply(v -> args);
       }
-      return args;
+      else
+         return CompletableFuture.completedFuture(null);
    }
 
-   public Object[] injectableArguments()
+   @Override
+   public CompletionStage<Object[]> injectableArguments(boolean unwrapAsync)
    {
-      Object[] args = null;
       if (params != null && params.length > 0)
       {
-         args = new Object[params.length];
+         Object[] args = new Object[params.length];
          int i = 0;
+         CompletionStage<Void> stage = CompletableFuture.completedFuture(null);
          for (ValueInjector extractor : params)
          {
-            args[i++] = extractor.inject();
+            int ifinal = i++;
+            stage = stage.thenCompose(v -> extractor.inject(unwrapAsync).thenAccept(value -> args[ifinal] = value));
          }
+         return stage.thenApply(v -> args);
       }
-      return args;
+      else
+         return CompletableFuture.completedFuture(null);
    }
 
-   public Object construct(HttpRequest request, HttpResponse httpResponse) throws Failure, ApplicationException, WebApplicationException
+   public CompletionStage<Object> construct(HttpRequest request, HttpResponse httpResponse, boolean unwrapAsync) throws Failure, ApplicationException, WebApplicationException
    {
-      Object[] args = null;
-      try
-      {
-         args = injectableArguments(request, httpResponse);
-      }
-      catch (Exception e)
-      {
+      return injectableArguments(request, httpResponse, unwrapAsync)
+      .exceptionally(e -> {
          throw new InternalServerErrorException(Messages.MESSAGES.failedProcessingArguments(constructor.toString()), e);
-      }
-      try
-      {
-         return constructor.newInstance(args);
-      }
-      catch (InstantiationException e)
-      {
-         throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
-      }
-      catch (InvocationTargetException e)
-      {
-         Throwable cause = e.getCause();
-         if (cause instanceof WebApplicationException)
+      }).thenApply(args -> {
+         try
          {
-            throw (WebApplicationException) cause;
+            return constructor.newInstance(args);
          }
-         throw new ApplicationException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
-      }
-      catch (IllegalArgumentException e)
-      {
-         String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
-         boolean first = false;
-         for (Object arg : args)
+         catch (InstantiationException e)
          {
-            if (!first)
-            {
-               first = true;
-            }
-            else
-            {
-               msg += ",";
-            }
-            if (arg == null)
-            {
-               msg += " null";
-               continue;
-            }
-            msg += " " + arg;
+            throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
          }
-         throw new InternalServerErrorException(msg, e);
-      }
+         catch (IllegalAccessException e)
+         {
+            throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
+         }
+         catch (InvocationTargetException e)
+         {
+            Throwable cause = e.getCause();
+            if (cause instanceof WebApplicationException)
+            {
+               throw (WebApplicationException) cause;
+            }
+            throw new ApplicationException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
+         }
+         catch (IllegalArgumentException e)
+         {
+            String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
+            boolean first = false;
+            for (Object arg : args)
+            {
+               if (!first)
+               {
+                  first = true;
+               }
+               else
+               {
+                  msg += ",";
+               }
+               if (arg == null)
+               {
+                  msg += " null";
+                  continue;
+               }
+               msg += " " + arg;
+            }
+            throw new InternalServerErrorException(msg, e);
+         }
+      });
    }
 
-   public Object construct()
+   @Override
+   public CompletionStage<Object> construct(boolean unwrapAsync)
    {
-      Object[] args = null;
-      args = injectableArguments();
-      try
-      {
-         return constructor.newInstance(args);
-      }
-      catch (InstantiationException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
-      }
-      catch (InvocationTargetException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
-      }
-      catch (IllegalArgumentException e)
-      {
-         String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
-         boolean first = false;
-         for (Object arg : args)
-         {
-            if (!first)
-            {
-               first = true;
-            }
-            else
-            {
-               msg += ",";
-            }
-            if (arg == null)
-            {
-               msg += " null";
-               continue;
-            }
-            msg += " " + arg;
-         }
-         throw new RuntimeException(msg, e);
-      }
+      return injectableArguments(unwrapAsync)
+            .thenApply(args -> {
+               try
+               {
+                  return constructor.newInstance(args);
+               }
+               catch (InstantiationException e)
+               {
+                  throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
+               }
+               catch (IllegalArgumentException e)
+               {
+                  String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
+                  boolean first = false;
+                  for (Object arg : args)
+                  {
+                     if (!first)
+                     {
+                        first = true;
+                     }
+                     else
+                     {
+                        msg += ",";
+                     }
+                     if (arg == null)
+                     {
+                        msg += " null";
+                        continue;
+                     }
+                     msg += " " + arg;
+                  }
+                  throw new RuntimeException(msg, e);
+               }
+            });
    }
 }

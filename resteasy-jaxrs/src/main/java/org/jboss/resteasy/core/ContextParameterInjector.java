@@ -13,10 +13,15 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,31 +30,62 @@ import java.lang.reflect.Proxy;
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector
 {
-   private Class type;
+   private Class rawType;
    private Class proxy;
    private ResteasyProviderFactory factory;
+   private Type genericType;
+   private Annotation[] annotations;
 
-   public ContextParameterInjector(Class proxy, Class type, ResteasyProviderFactory factory)
+   public ContextParameterInjector(Class proxy, Class rawType, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
    {
-      this.type = type;
+      this.rawType = rawType;
+      this.genericType = genericType;
       this.proxy = proxy;
       this.factory = factory;
+      this.annotations = annotations;
    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
+   @Override
+   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
-      if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface() || type.equals(SseEventSink.class))
+      if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
+      if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
-         return ResteasyProviderFactory.getContextData(type);
+         return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
       }
-      else if (type.equals(Sse.class))
+      else if (rawType.equals(Sse.class))
       {
-         return new SseImpl();
+         return CompletableFuture.completedFuture(new SseImpl());
       }
-      return createProxy();
+      return CompletableFuture.completedFuture(createProxy());
+   }
+
+   private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData, boolean unwrapAsync)
+   {
+      if(unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
+         // FIXME: do not unwrap if we have no request?
+         if(request != null )
+         {
+            boolean resolved = ((CompletionStage<Object>) contextData).toCompletableFuture().isDone();
+            if(!resolved)
+            {
+               // make request async
+               if(!request.getAsyncContext().isSuspended())
+                  request.getAsyncContext().suspend();
+               
+               Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+               // Don't forget to restore the context
+               return ((CompletionStage<Object>) contextData).thenApply(value -> {
+                  ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+                  return value;
+               });
+            }
+         }
+         return (CompletionStage<Object>) contextData;
+      }
+      return CompletableFuture.completedFuture(contextData);
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
@@ -59,7 +95,7 @@ public class ContextParameterInjector implements ValueInjector
          try
          {
            
-            Object delegate = ResteasyProviderFactory.getContextData(type);
+            Object delegate = factory.getContextData(rawType, genericType, annotations, false);
             if (delegate == null)
             {
                String name = method.getName();
@@ -72,7 +108,7 @@ public class ContextParameterInjector implements ValueInjector
                {
                   return method.invoke(factory, objects);
                }
-               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(type.getName()));
+               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
             }
             return method.invoke(delegate, objects);
          }
@@ -91,25 +127,26 @@ public class ContextParameterInjector implements ValueInjector
       }
    }
 
-   public Object inject()
+   @Override
+   public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       //if (type.equals(Providers.class)) return factory;
-      if (type.equals(Application.class) || type.equals(SseEventSink.class))
+      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
       {
-         return ResteasyProviderFactory.getContextData(type);
+         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations, unwrapAsync));
       }
-      else if (type.equals(Sse.class))
+      else if (rawType.equals(Sse.class))
       {
-         return new SseImpl();
+         return CompletableFuture.completedFuture(new SseImpl());
       }
-      else if (!type.isInterface())
+      else if (!rawType.isInterface())
       {
-         Object delegate = ResteasyProviderFactory.getContextData(type);
-         if (delegate != null) return delegate;
+         Object delegate = factory.getContextData(rawType, genericType, annotations, unwrapAsync);
+         if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
-      return createProxy();
+      return CompletableFuture.completedFuture(createProxy());
    }
 
     protected Object createProxy()
@@ -127,8 +164,8 @@ public class ContextParameterInjector implements ValueInjector
         }
         else
         {
-            Class[] intfs = {type};
-            return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+            Class[] intfs = {rawType};
+            return Proxy.newProxyInstance(rawType.getClassLoader(), intfs, new GenericDelegatingProxy());
         }
     }
 }

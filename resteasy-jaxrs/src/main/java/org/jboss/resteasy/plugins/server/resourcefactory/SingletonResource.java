@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.server.resourcefactory;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResourceFactory;
@@ -33,12 +36,12 @@ public class SingletonResource implements ResourceFactory
 
    public void registered(ResteasyProviderFactory factory)
    {
-      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj);
+      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj, false);
    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      return obj;
+      return CompletableFuture.completedFuture(obj);
    }
 
    public void unregistered()

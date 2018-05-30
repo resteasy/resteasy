@@ -43,7 +43,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -298,19 +302,19 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return method.getMethod();
    }
 
-   public Object invokeDryRun(HttpRequest request, HttpResponse response) {
-      Object target = resource.createResource(request, response, resourceMethodProviderFactory);
-      return invokeDryRun(request, response, target);
+   public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response) {
+      return resource.createResource(request, response, resourceMethodProviderFactory)
+            .thenCompose(target -> invokeDryRun(request, response, target));
    }
 
 
-   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
+   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
    {
-      Object target = resource.createResource(request, response, resourceMethodProviderFactory);
-      return invoke(request, response, target);
+      return resource.createResource(request, response, resourceMethodProviderFactory)
+            .thenCompose(target -> invoke(request, response, target));
    }
 
-   public Object invokeDryRun(HttpRequest request, HttpResponse response, Object target)
+   public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
@@ -320,11 +324,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
       }
       uriInfo.pushCurrentResource(target);
-      Object rtn = invokeOnTargetDryRun(request, response, target);
-      return rtn;
+      return invokeOnTargetDryRun(request, response, target);
    }
    
-   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
+   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
@@ -335,14 +338,15 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       uriInfo.pushCurrentResource(target);
       BuiltResponse rtn = invokeOnTarget(request, response, target);
-      return rtn;
+      // FIXME: async
+      return CompletableFuture.completedFuture(rtn);
    }
    
-   protected Object invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
+   protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-      Object rtn = null;
+      CompletionStage<Object> rtn = null;
       try
       {
          rtn = internalInvokeOnTarget(request, response, target);
@@ -383,7 +387,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
       
-      AsyncResponseConsumer asyncResponseConsumer = null;
+      final AsyncResponseConsumer asyncResponseConsumer;
       if (asyncResponseProvider != null)
       {
          asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
@@ -392,50 +396,33 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
     	 asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
       }
+      else
+      {
+          asyncResponseConsumer = null;
+      }
 
-      Object rtn = null;
       try
       {
-         rtn = internalInvokeOnTarget(request, response, target);
+         CompletionStage<BuiltResponse> stage = internalInvokeOnTarget(request, response, target) 
+               .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
+         return stage.toCompletableFuture().getNow(null);
+      }
+      catch (CompletionException ex)
+      {
+         if(ex.getCause() instanceof RuntimeException)
+            return handleInvocationException(asyncResponseConsumer, request, (RuntimeException) ex.getCause());
+         SynchronousDispatcher.rethrow(ex.getCause());
+         // never reached
+         return null;
       }
       catch (RuntimeException ex)
       {
-         if (asyncResponseConsumer != null)
-         {
-            // WARNING: this can throw if the exception is not mapped by the user, in
-            // which case we haven't completed the connection and called the callbacks
-            try 
-            {
-               AsyncResponseConsumer consumer = asyncResponseConsumer;
-               asyncResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
-            }
-            catch(UnhandledException x) 
-            {
-               // make sure we call the callbacks before throwing to the container
-               request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
-               throw x;
-            }
-            return null;
-         }
-         else if (request.getAsyncContext().isSuspended())
-         {
-            try
-            {
-               request.getAsyncContext().getAsyncResponse().resume(ex);
-            }
-            catch (Exception e)
-            {
-               LogMessages.LOGGER.errorResumingFailedAsynchOperation(e);
-            }
-            return null;
-         }
-         else
-         {
-            throw ex;
-         }
-
-      }
-
+         return handleInvocationException(asyncResponseConsumer, request, ex);
+      } 
+   }
+   
+	private BuiltResponse afterInvoke(HttpRequest request, AsyncResponseConsumer asyncResponseConsumer, Object rtn)
+   {
       if(asyncResponseConsumer != null)
       {
          asyncResponseConsumer.subscribe(rtn);
@@ -500,21 +487,65 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       jaxrsResponse.addMethodAnnotations(getMethodAnnotations());
       return jaxrsResponse;
    }
-   
-	private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
+
+   private BuiltResponse handleInvocationException(AsyncResponseConsumer asyncStreamResponseConsumer, HttpRequest request, RuntimeException ex)
+   {
+      if (asyncStreamResponseConsumer != null)
+      {
+         // WARNING: this can throw if the exception is not mapped by the user, in
+         // which case we haven't completed the connection and called the callbacks
+         try 
+         {
+            AsyncResponseConsumer consumer = asyncStreamResponseConsumer;
+            asyncStreamResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
+         }
+         catch(UnhandledException x) 
+         {
+            // make sure we call the callbacks before throwing to the container
+            request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
+            throw x;
+         }
+         return null;
+      }
+      else if (request.getAsyncContext().isSuspended())
+      {
+         try
+         {
+            request.getAsyncContext().getAsyncResponse().resume(ex);
+         }
+         catch (Exception e)
+         {
+            LogMessages.LOGGER.errorResumingFailedAsynchOperation(e);
+         }
+         return null;
+      }
+      else
+      {
+         throw ex;
+      }
+   }
+
+   private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
 		PostResourceMethodInvokers postResourceMethodInvokers = ResteasyProviderFactory
 				.getContextData(PostResourceMethodInvokers.class);
-		try {
-			Object toReturn = this.methodInjector.invoke(request, response, target);
-			if (postResourceMethodInvokers != null) {
-				postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-			}
-			return toReturn;
-		} finally {
-			if (postResourceMethodInvokers != null) {
-				postResourceMethodInvokers.clear();
-			}
-		}
+		return this.methodInjector.invoke(request, response, target)
+		      .handle((ret, exception) -> {
+         // on success
+         if (exception == null && postResourceMethodInvokers != null) {
+            postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+         }
+         // finally
+         if (postResourceMethodInvokers != null) {
+            postResourceMethodInvokers.clear();
+         }
+         if(exception != null)
+         {
+            SynchronousDispatcher.rethrow(exception);
+            // never reached
+            return null;
+         }
+         return ret;
+		});
 	}
    
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)

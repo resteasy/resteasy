@@ -78,4 +78,18 @@ public class RxResource
          return str;
       });
    }
+
+   @Path("injection")
+   @GET
+   public Single<Integer> injection(@Context Integer value)
+   {
+      return Single.just(value);
+   }
+
+   @Path("injection-async")
+   @GET
+   public Single<Integer> injectionAsync(@Async @Context Integer value)
+   {
+      return Single.just(value);
+   }
 }

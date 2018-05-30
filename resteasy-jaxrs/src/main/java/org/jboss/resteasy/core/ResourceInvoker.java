@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -12,8 +13,8 @@ import java.lang.reflect.Method;
  */
 public interface ResourceInvoker
 {
-   BuiltResponse invoke(HttpRequest request, HttpResponse response);
-   BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target);
+   CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response);
+   CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object target);
 
    Method getMethod();
 }
