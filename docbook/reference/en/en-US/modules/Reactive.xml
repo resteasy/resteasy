@@ -625,7 +625,9 @@ public void testPostThingList() throws Exception {
 public @interface Stream
 {
    public enum MODE {RAW, GENERAL};
+   public String INCLUDE_STREAMING_PARAMETER = "streaming";
    public MODE value() default MODE.GENERAL;
+   public boolean includeStreaming() default false;
 }
 </programlisting>
 
@@ -699,39 +701,47 @@ public @interface Stream
                 general mode, it isn't possible to reconstruct something like <classname>List&lt;List&lt;String&gt;&gt;</classname>.
 
                 <para>
-                   <emphasis role="bold">Note. </emphasis> The Content-Type header in raw streaming mode is set to
+                   <emphasis role="bold">Note. </emphasis> The Content-Type header in raw streaming mode is derived from
+                   the <code>@Produces</code> annotation. The <code>@Stream</code> annotation offers the possibility of an
+                   optional <classname>MediaType</classname> parameter called "streaming". The point is to be able to suggest
+                   that the stream of data emanating from the server is unbounded, i.e., that the client shouldn't try to
+                   read it all as a single byte array, for example. The parameter is set by explicitly setting the
+                   <code>@Stream</code> parameter <code>includeStreaming()</code> to <code>true</code>. For example,
                 </para>
+                
+<programlisting>
+   @GET
+   @Path("byte/default")
+   @Produces("application/octet-stream;x=y")
+   @Stream(Stream.MODE.RAW)
+   public Flowable&lt;Byte&gt; aByteDefault() {
+      return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
+   }
+</programlisting>
 
-                <programlisting>
-          applicaton/x-stream-raw;"element-type=&lt;element-type&gt;"
-                </programlisting>
-                <para>
-                   where &lt;element-type&gt;
-                   is the media type of the data elements in the stream. The element media type is derived
-                   from the @Produces annotation. For example, 
-                </para>
-      
-                <programlisting>
-      @GET
-      @Path("bytes")
-      @Produces(MediaType.APPLICATION_OCTET_STREAM)
-      @Stream(Stream.MODE.RAW)
-      public Flowable&lt;byte[]&gt; bytes() { ... }
-                </programlisting>
-                
-                <para>
-                   induces the media type
-                </para>
-                
-                <programlisting>
-          application/x-stream-raw;"element-type=application/octet-stream"
-                </programlisting>
-                
-                <para>
-                   which describes a raw stream of binary data.
-                </para>
-                
-            </listitem>
+    <para>
+       induces the <classname>MediaType</classname> "application/octet-stream;x=y", and
+    </para>
+    
+<programlisting>
+   @GET
+   @Path("byte/true")
+   @Produces("application/octet-stream;x=y")
+   @Stream(value=Stream.MODE.RAW, includeStreaming=true)
+   public Flowable&lt;Byte&gt; aByteTrue() {
+      return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
+   }
+</programlisting>
+
+    <para>
+       induces the <classname>MediaType</classname> "application/octet-stream;x=y;streaming=true".
+    </para>
+    
+    <para>
+       Note that browsers such as Firefox and Chrome seem to be comfortable with reading unlimited streams
+       without any additional hints.
+    </para>
+           </listitem>
         </varlistentry>
     </variablelist>
 </sect1>
