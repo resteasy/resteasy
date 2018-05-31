@@ -433,6 +433,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          if(method.isAsynchronous())
             return null;
          // resume a sync request that got turned async by filters
+         initializeAsync(request.getAsyncContext().getAsyncResponse());
          request.getAsyncContext().getAsyncResponse().resume(rtn);
          return null;
       }

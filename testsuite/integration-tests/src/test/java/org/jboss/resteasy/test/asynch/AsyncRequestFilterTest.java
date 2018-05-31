@@ -457,4 +457,24 @@ public class AsyncRequestFilterTest {
 
         client.close();
     }
+
+    /**
+     * @tpTestDetails Interceptors work with non-Response resource methods
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testRequestFiltersGuessReturnType() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        // Create book.
+        WebTarget base = client.target(generateURL("/non-response"));
+
+        Response response = base.request()
+           .header("Filter1", "async-pass")
+           .header("Filter2", "sync-pass")
+           .header("Filter3", "sync-pass")
+           .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+    }
 }
