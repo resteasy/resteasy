@@ -23,6 +23,7 @@ import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -327,18 +328,34 @@ public abstract class AsyncResponseConsumer
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete) throws IOException
       {
          ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
-         String elementType = builtResponse.getHeaderString("Content-Type");
-         if (elementType == null)
+         boolean resetMediaType = false;
+         String mediaTypeString = builtResponse.getHeaderString("Content-Type");
+         if (mediaTypeString == null)
          {
-            elementType = MediaType.APPLICATION_OCTET_STREAM;
+            mediaTypeString = MediaType.APPLICATION_OCTET_STREAM;
+            resetMediaType = true;
          }
-         Map<String, String> map = new HashMap<String, String>();
-         map.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType);
-         MediaType contentType = new MediaType("application", "x-stream-raw", map);
-         MultivaluedMap<String, Object> headerMap = builtResponse.getHeaders();
-         headerMap.remove("Content-Type");
-         headerMap.add("Content-Type", contentType);
-         builtResponse.setMetadata(headerMap);
+         MediaType mediaType = MediaType.valueOf(mediaTypeString);
+         Stream[] streams = method.getMethod().getAnnotationsByType(Stream.class);
+         if (streams.length > 0)
+         {
+            Stream stream = streams[0];
+            if (stream.includeStreaming())
+            {
+               Map<String, String> map = new HashMap<String, String>(mediaType.getParameters());
+               map.put(Stream.INCLUDE_STREAMING_PARAMETER, "true");
+               mediaType = new MediaType(mediaType.getType(), mediaType.getSubtype(), map);
+               resetMediaType = true;
+            }
+         }
+         if (resetMediaType)
+         {
+            MultivaluedMap<String, Object> headerMap = new MultivaluedTreeMap<String, Object>();
+            headerMap.putAll(builtResponse.getHeaders());
+            headerMap.remove("Content-Type");
+            headerMap.add("Content-Type", mediaType);
+            builtResponse.setMetadata(headerMap);
+         }
          super.sendBuiltResponse(builtResponse, httpRequest, httpResponse, onComplete);
          sentEntity = true;
       }
