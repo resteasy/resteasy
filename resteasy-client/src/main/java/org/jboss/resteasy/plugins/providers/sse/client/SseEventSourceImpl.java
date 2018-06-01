@@ -143,7 +143,7 @@ public class SseEventSourceImpl implements SseEventSource
             scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
          }
          this.executor = scheduledExecutor != null ? scheduledExecutor : Executors
-               .newSingleThreadScheduledExecutor(new DaemonThreadFactory());
+               .newSingleThreadScheduledExecutor(new DaemonThreadFactory(name));
       }
       else
       {
@@ -157,20 +157,19 @@ public class SseEventSourceImpl implements SseEventSource
    }
 
    private static class DaemonThreadFactory implements ThreadFactory
-   {
-      private static final AtomicInteger poolNumber = new AtomicInteger(1);
+  {
 
       private final ThreadGroup group;
 
       private final AtomicInteger threadNumber = new AtomicInteger(1);
 
       private final String namePrefix;
-
-      DaemonThreadFactory()
+      
+      DaemonThreadFactory(String name)
       {
          SecurityManager s = System.getSecurityManager();
          group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-         namePrefix = "resteasy-sse-eventsource" + poolNumber.getAndIncrement() + "-thread-";
+         namePrefix = name + "-thread-";
       }
 
       public Thread newThread(Runnable r)
