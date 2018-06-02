@@ -53,46 +53,60 @@ public class URLConnectionEngine implements ClientHttpEngine
         }
 
         //Creating response with stream content
-        ClientResponse response = new ClientResponse(request.getClientConfiguration())
-        {
-            private InputStream stream;
+      ClientResponse response = new ClientResponse(request.getClientConfiguration())
+      {
+         private InputStream stream;
 
-            @Override
-            protected InputStream getInputStream()
+         @Override
+         protected InputStream getInputStream()
+         {
+            if (stream == null)
             {
-                if (stream == null)
-                {
-                    try
-                    {
-                        stream = (status < 300) ? connection.getInputStream() : connection.getErrorStream();
-                    }
-                    catch (IOException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                return stream;
+               try
+               {
+                  stream = (status < 300) ? connection.getInputStream() : connection.getErrorStream();
+               }
+               catch (IOException e)
+               {
+                  throw new RuntimeException(e);
+               }
             }
 
-            @Override
-            protected void setInputStream(InputStream is)
-            {
-                stream = is;
-                resetEntity();
-            }
+            return stream;
+         }
 
-            @Override
-            public void releaseConnection() throws IOException
+         @Override
+         protected void setInputStream(InputStream is)
+         {
+            stream = is;
+            resetEntity();
+         }
+
+         @Override
+         public void releaseConnection() throws IOException
+         {
+            releaseConnection(false);
+         }
+
+         @Override
+         public void releaseConnection(boolean consumeInputStream) throws IOException
+         {
+            InputStream is = getInputStream();
+            if (is != null)
             {
-                InputStream is = getInputStream();
-                if (is != null)
-                {
-                   is.close();
-                }
-                connection.disconnect();
+               // https://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+               if (consumeInputStream)
+               {
+                  while (is.read() > 0)
+                  {
+                  }
+               }
+               is.close();
             }
-        };
+            connection.disconnect();
+         }
+
+      };
 
         //Setting attributes
         response.setStatus(status);

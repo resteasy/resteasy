@@ -214,6 +214,16 @@ public abstract class ClientResponse extends BuiltResponse
     */
    public abstract void releaseConnection() throws IOException;
 
+   /**
+    * Release underlying connection but do not close.
+    * 
+    * @param consumeInputStream boolean to indicate either the underlying input stream must be fully read before releasing the connection or not.
+    * <p>
+    * For most HTTP connection implementations, consuming the underlying input stream before releasing the connection will help to ensure connection reusability with respect of Keep-Alive policy.
+    * </p>
+    * @throws IOException if I/O error occured
+    */
+   public abstract void releaseConnection(boolean consumeInputStream) throws IOException;
 
    // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
    @SuppressWarnings("unchecked")
@@ -410,9 +420,4 @@ public abstract class ClientResponse extends BuiltResponse
        if (bufferedEntity == null) super.abortIfClosed();
    }
    
-   public void closeHttpResponse()
-   {
-        
-   }
-
 }

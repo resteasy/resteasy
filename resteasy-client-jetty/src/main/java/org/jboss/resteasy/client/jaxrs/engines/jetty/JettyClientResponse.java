@@ -29,6 +29,19 @@ class JettyClientResponse extends ClientResponse {
 
     @Override
     public void releaseConnection() throws IOException {
-        cancel.run();
+        releaseConnection(false);
     }
+
+	@Override
+	public void releaseConnection(boolean consumeInputStream) throws IOException {
+        InputStream is = getInputStream();
+        if (is != null && consumeInputStream)
+        {
+           while (is.read() > 0)
+           {
+           }
+        }
+        this.cancel.run();
+	}
+	
 }

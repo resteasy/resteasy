@@ -256,7 +256,16 @@ public class SseEventSourceImpl implements SseEventSource
       {
          if (response != null)
          {
-            response.closeHttpResponse();
+            try
+            {
+               response.releaseConnection(false);
+            }
+            catch (IOException e)
+            {
+               onErrorConsumers.forEach(consumer -> {
+                  consumer.accept(e);
+               });
+            }
          }
          executor.shutdownNow();
          onCompleteConsumers.forEach(Runnable::run);
