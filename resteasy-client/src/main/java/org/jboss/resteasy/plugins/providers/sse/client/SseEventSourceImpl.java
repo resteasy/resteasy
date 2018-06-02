@@ -426,7 +426,7 @@ public class SseEventSourceImpl implements SseEventSource
       {
          try
          {
-            connectedLatch.await(30, TimeUnit.SECONDS);
+            connectedLatch.await();
          }
          catch (InterruptedException ex)
          {
