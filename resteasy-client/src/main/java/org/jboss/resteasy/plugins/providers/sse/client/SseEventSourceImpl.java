@@ -21,7 +21,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
-import org.apache.http.HttpHeaders;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
@@ -33,12 +32,8 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final WebTarget target;
 
-   private static final long CLOSE_WAIT = 30;
-
    private final long reconnectDelay;
 
-   private final boolean disableKeepAlive;
-   
    private final ScheduledExecutorService executor;
 
    private enum State {
@@ -63,8 +58,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       private String name = null;
 
-      private boolean disableKeepAlive = false;
-      
       private ScheduledExecutorService executor;
 
       public SourceBuilder()
@@ -80,7 +73,7 @@ public class SseEventSourceImpl implements SseEventSource
 
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(target, name, reconnect, disableKeepAlive, false, executor);
+         return new SseEventSourceImpl(target, name, reconnect, false, executor);
       }
 
       @Override
@@ -115,11 +108,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(target, null, RECONNECT_DEFAULT, false, open, null);
+      this(target, null, RECONNECT_DEFAULT, open, null);
    }
 
-   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean disableKeepAlive,
-         final boolean open, ScheduledExecutorService executor)
+   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean open, ScheduledExecutorService executor)
    {
       if (target == null)
       {
@@ -127,7 +119,6 @@ public class SseEventSourceImpl implements SseEventSource
       }
       this.target = target;
       this.reconnectDelay = reconnectDelay;
-      this.disableKeepAlive = disableKeepAlive;
       //tck requries this
       this.alwaysReconnect = true;
 
@@ -206,12 +197,6 @@ public class SseEventSourceImpl implements SseEventSource
    public boolean isOpen()
    {
       return state.get() == State.OPEN;
-   }
-
-   @Override
-   public void close()
-   {
-      this.close(CLOSE_WAIT, TimeUnit.SECONDS);
    }
 
    @Override
@@ -454,10 +439,6 @@ public class SseEventSourceImpl implements SseEventSource
          if (lastEventId != null && !lastEventId.isEmpty())
          {
             request.header(SseConstants.LAST_EVENT_ID_HEADER, lastEventId);
-         }
-         if (disableKeepAlive)
-         {
-            request.header(HttpHeaders.CONNECTION, "close");
          }
          return request;
       }
