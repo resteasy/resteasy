@@ -47,7 +47,6 @@
                 <!ENTITY Json-p SYSTEM "modules/Json-p.xml">
                 <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
-                <!ENTITY Seam SYSTEM "modules/Seam.xml">
                 <!ENTITY Guice SYSTEM "modules/Guice.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
@@ -147,7 +146,6 @@ This one is short
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;
-   &Seam;
     &Guice;
    &RESTEasy_Client_Framework;
    &AJAX_Client;

@@ -1,11 +1,3 @@
-<chapter id="doc">
-    <title>Documentation Support</title>
-    <para>There's a great javadoc engine that allows you to generate javadocs for JAX-RS and JAXB called <ulink
-            url="http://www.lunatech-labs.com/open-source/jax-doclets">JAX-Doclet</ulink>. Follow the link for more
-        details.
-    </para>
-</chapter>
-
 <chapter id="Migration_to_3_5">
 <title>Migration to RESTEasy 3.5 series</title>
   <para>
