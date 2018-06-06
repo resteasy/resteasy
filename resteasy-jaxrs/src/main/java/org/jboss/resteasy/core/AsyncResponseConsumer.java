@@ -117,10 +117,10 @@ public abstract class AsyncResponseConsumer
             onComplete.accept(e);
          });
       }
-      catch (IOException e)
+      catch (Throwable e)
       {
-         onComplete.accept(e);
          exceptionWhileResuming(e);
+         onComplete.accept(e);
       }
    }
 
