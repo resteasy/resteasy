@@ -152,7 +152,13 @@ public abstract class AsyncResponseConsumer
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
+      try {
+         dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
+      }catch(Throwable t2) {
+         // ignore t2 and report the original exception without going through filters
+         dispatcher.unhandledAsynchronousException(httpResponse, t);
+         onComplete.accept(t);
+      }
    }
 
    protected BuiltResponse createResponse(Object entity, HttpRequest httpRequest)
