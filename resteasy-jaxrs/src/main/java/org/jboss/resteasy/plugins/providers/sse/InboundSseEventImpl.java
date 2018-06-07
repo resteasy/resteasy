@@ -244,4 +244,8 @@ public class InboundSseEventImpl implements InboundSseEvent
             + ", data=" + s + '}';
    }
 
+   public MediaType getMediaType()
+   {
+      return mediaType;
+   }
 }

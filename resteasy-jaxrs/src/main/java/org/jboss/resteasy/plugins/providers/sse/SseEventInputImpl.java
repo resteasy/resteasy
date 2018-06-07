@@ -16,12 +16,15 @@ import javax.ws.rs.sse.InboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 public class SseEventInputImpl implements EventInput, Closeable
 {
    private Annotation[] annotations;
 
    private MediaType mediaType;
+   
+   private boolean textLike;
 
    private MultivaluedMap<String, String> httpHeaders;
 
@@ -30,16 +33,20 @@ public class SseEventInputImpl implements EventInput, Closeable
    private volatile boolean isClosed = false;
 
    private boolean lastFieldWasData;
+   
+   private boolean escape = false;
 
    private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
 
-   public SseEventInputImpl(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
-         InputStream inputStream)
+   public SseEventInputImpl(Annotation[] annotations, MediaType streamType, MediaType elementType,
+      MultivaluedMap<String, String> httpHeaders, InputStream inputStream)
    {
       this.annotations = annotations;
-      this.mediaType = mediaType;
+      this.mediaType = elementType;
       this.httpHeaders = httpHeaders;
       this.inputStream = inputStream;
+      this.textLike = MediaTypeHelper.isTextLike(streamType);
+      this.escape = streamType != null && streamType.toString().startsWith("application/x-stream-general");
    }
 
    @Override
@@ -169,13 +176,23 @@ public class SseEventInputImpl implements EventInput, Closeable
       int b;
       while ((b = in.read()) != -1)
       {
+         if (!textLike && escape && b == '\\')
+         {
+             b = in.read();
+             if (b != '\\' && b != '\n' && b != '\r')
+             {
+                 throw new RuntimeException(Messages.MESSAGES.expectedExcapedCharacter(b));
+             }
+             out.write(b);
+             continue;
+         }
          if (b == delimiter || b == '\n' || b == '\r')
          {
-            break;
+             break;
          }
          else if (out != null)
          {
-            out.write(b);
+             out.write(b);
          }
       }
       return b;
@@ -235,24 +252,32 @@ public class SseEventInputImpl implements EventInput, Closeable
       while ((data = in.read()) != -1)
       {
          byte b = (byte) data;
-         if (b == '\r' || b == '\n')
+         if (!textLike && b == '\\')
          {
-            eolBuffer[pos] = b;
-            //if it meets \r\r , \n\n , \r\n\r\n or \n\r\n\r\n
-            if ((pos > 0 && eolBuffer[pos] == eolBuffer[pos - 1])
-                  || (pos >= 3 && new String(eolBuffer, 0, pos, StandardCharsets.UTF_8).contains(DELIMITER)))
-            {
-               boundary = true;
-            }
-            //take it a boundary if there are 5 unexpected eols  
-            if (pos++ > 4)
-            {
-               boundary = true;
-            }
+            buffer.write(b);
+            b = (byte) in.read();
          }
          else
          {
-            pos = 0;
+            if (b == '\r' || b == '\n')
+            {
+                eolBuffer[pos] = b;
+                //if it meets \r\r , \n\n , \r\n\r\n or \n\r\n\r\n
+                if ((pos > 0 && eolBuffer[pos] == eolBuffer[pos - 1])
+                    || (pos >= 3 && new String(eolBuffer, 0, pos, StandardCharsets.UTF_8).contains(DELIMITER)))
+                {
+                    boundary = true;
+                }
+                //take it a boundary if there are 5 unexpected eols  
+                if (pos++ > 4)
+                {
+                    boundary = true;
+                }
+            }
+            else
+            {
+                pos = 0;
+            }
          }
          buffer.write(b);
          if (boundary && buffer.size() > pos)

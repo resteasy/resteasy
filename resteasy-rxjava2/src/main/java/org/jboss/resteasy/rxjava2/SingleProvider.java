@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 
 import io.reactivex.Single;
@@ -12,7 +13,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 @Provider
-public class SingleProvider implements AsyncResponseProvider<Single<?>>
+public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
    static
    {
@@ -23,9 +24,9 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
    {
       private Disposable subscription;
 
-      public SingleAdaptor(Single<T> observable)
+      public SingleAdaptor(Single<T> single)
       {
-         this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
+         this.subscription = single.subscribe(this::complete, this::completeExceptionally);
       }
 
       @Override
@@ -42,4 +43,9 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
       return new SingleAdaptor<>(asyncResponse);
    }
 
+   @Override
+   public Single<?> fromCompletionStage(CompletionStage<?> completionStage)
+   {
+      return Single.fromFuture(completionStage.toCompletableFuture());
+   }
 }

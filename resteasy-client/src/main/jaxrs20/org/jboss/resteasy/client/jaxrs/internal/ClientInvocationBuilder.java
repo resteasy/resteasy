@@ -7,6 +7,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
@@ -25,6 +26,7 @@ import java.util.Locale;
 public class ClientInvocationBuilder implements ClientInvocationBuilderInterface
 {
    protected ClientInvocation invocation;
+   private WebTarget target;
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
@@ -34,6 +36,11 @@ public class ClientInvocationBuilder implements ClientInvocationBuilderInterface
    public ClientInvocation getInvocation()
    {
       return invocation;
+   }
+   
+   public void setInvocation(ClientInvocation invocation)
+   {
+      this.invocation = invocation;
    }
 
    public ClientRequestHeaders getHeaders()
@@ -341,5 +348,14 @@ public class ClientInvocationBuilder implements ClientInvocationBuilderInterface
    {
       return build("PATCH", entity).invoke(responseType);
    }
-
+   
+   public WebTarget getTarget()
+   {
+      return target;
+   }
+  
+   public void setTarget(WebTarget target)
+   {
+      this.target = target;
+   }
 }

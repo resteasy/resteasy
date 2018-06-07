@@ -5,22 +5,26 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
+import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -32,6 +36,9 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /**
+ * The basic idea implemented by AsyncResponseConsumer is that a resource method returns a CompletionStage,
+ * an Observable, etc., and some version of AsyncResponseConsumer subscribes to it. Each subclass of
+ * AsyncResponseConsumer knows how to handle new data items as they are provided.
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
@@ -60,15 +67,20 @@ public abstract class AsyncResponseConsumer
    }
 
    public static AsyncResponseConsumer makeAsyncResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider) {
-	  if(method.isSse())
-	  {
-		  return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);
-	  }
-      for (Annotation annotation : method.getMethodAnnotations())
+      if(method.isSse())
       {
-         if(annotation.annotationType() == Stream.class)
+         return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);
+      }
+      Stream stream = method.getMethod().getAnnotation(Stream.class);
+      if (stream != null) 
+      {
+         if (Stream.MODE.RAW.equals(stream.value()))
          {
-            return new AsyncStreamingResponseConsumer(method, asyncStreamProvider);
+            return new AsyncRawStreamingResponseConsumer(method, asyncStreamProvider); 
+         }
+         else
+         {
+            return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);  
          }
       }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);
@@ -147,6 +159,7 @@ public abstract class AsyncResponseConsumer
    protected BuiltResponse createResponse(Object entity, HttpRequest httpRequest)
    {
       BuiltResponse builtResponse = null;
+      MediaType mediaType = null;
       if (entity == null)
       {
          builtResponse = (BuiltResponse) Response.noContent().build();
@@ -188,6 +201,10 @@ public abstract class AsyncResponseConsumer
       return unwrappedType;
    }
 
+   /*
+    * As the name indicates, CompletionStageResponseConsumer subscribes to a CompletionStage supplied by
+    * a resource method.
+    */
    private static class CompletionStageResponseConsumer extends AsyncResponseConsumer implements BiConsumer<Object, Throwable> 
    {
       private AsyncResponseProvider<?> asyncResponseProvider;
@@ -288,23 +305,59 @@ public abstract class AsyncResponseConsumer
       public void subscribe(Object rtn)
       {
          @SuppressWarnings({ "unchecked", "rawtypes" })
-         Publisher<?> stage = ((AsyncStreamProvider)asyncStreamProvider).toAsyncStream(rtn);
-         stage.subscribe(this);
+         Publisher<?> publisher = ((AsyncStreamProvider)asyncStreamProvider).toAsyncStream(rtn);
+         publisher.subscribe(this);
       }
    }
 
-   private static class AsyncStreamingResponseConsumer extends AsyncStreamResponseConsumer 
+   /*
+    * AsyncRawStreamingResponseConsumer supports raw streaming, which is invoked when a resource method
+    * is annotated with @Stream(Stream.MODE.RAW). In raw streaming, an undelimited sequence of data elements
+    * such as bytes or chars is written. The client application is responsible for parsing it.
+    */
+   private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer 
    {
       private boolean sentEntity;
+      private ResourceMethodInvoker method;
 
-      public AsyncStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      public AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
+         this.method = method;
       }
 
       @Override
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete) throws IOException
       {
+         ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
+         boolean resetMediaType = false;
+         String mediaTypeString = builtResponse.getHeaderString("Content-Type");
+         if (mediaTypeString == null)
+         {
+            mediaTypeString = MediaType.APPLICATION_OCTET_STREAM;
+            resetMediaType = true;
+         }
+         MediaType mediaType = MediaType.valueOf(mediaTypeString);
+         Stream[] streams = method.getMethod().getAnnotationsByType(Stream.class);
+         if (streams.length > 0)
+         {
+            Stream stream = streams[0];
+            if (stream.includeStreaming())
+            {
+               Map<String, String> map = new HashMap<String, String>(mediaType.getParameters());
+               map.put(Stream.INCLUDE_STREAMING_PARAMETER, "true");
+               mediaType = new MediaType(mediaType.getType(), mediaType.getSubtype(), map);
+               resetMediaType = true;
+            }
+         }
+         if (resetMediaType)
+         {
+            MultivaluedMap<String, Object> headerMap = new MultivaluedTreeMap<String, Object>();
+            headerMap.putAll(builtResponse.getHeaders());
+            headerMap.remove("Content-Type");
+            headerMap.add("Content-Type", mediaType);
+            builtResponse.setMetadata(headerMap);
+         }
          super.sendBuiltResponse(builtResponse, httpRequest, httpResponse, onComplete);
          sentEntity = true;
       }
@@ -330,6 +383,10 @@ public abstract class AsyncResponseConsumer
       }
    }
    
+   /*
+    * Rather than writing a stream of data items, AsyncStreamCollectorResponseConsumer collects a sequence
+    * of data items into a list and writes the entire list when all data items have been collected. 
+    */
    private static class AsyncStreamCollectorResponseConsumer extends AsyncStreamResponseConsumer 
    {
       private List<Object> collector = new ArrayList<Object>();
@@ -384,14 +441,23 @@ public abstract class AsyncResponseConsumer
       }
    }
 
-   private static class AsyncStreamSseResponseConsumer extends AsyncStreamResponseConsumer 
+   /**
+    * AsyncGeneralStreamingSseResponseConsumer handles two cases:
+    * 
+    * 1. SSE streaming, and
+    * 2. General streaming, which is requested when a resource method is annotated @Stream or @Stream(Stream.MODE.GENERAL).
+    *    
+    * General streaming is an extension of streaming as defined for SSE. The extension include
+    * support for encoding non-text data. 
+    */
+   private static class AsyncGeneralStreamingSseResponseConsumer extends AsyncStreamResponseConsumer 
    {
       private SseImpl sse;
       private SseEventSink sseEventSink;
       private volatile boolean onCompleteReceived = false;
       private volatile boolean sendingEvent = false;
       
-      private AsyncStreamSseResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      private AsyncGeneralStreamingSseResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
          sse = new SseImpl();
@@ -402,7 +468,9 @@ public abstract class AsyncResponseConsumer
       protected void doComplete()
       {
          // don't call super.doComplete which completes the asyncContext because Sse does that
-         subscription.cancel();
+         // we can be done by exception before we've even subscribed
+         if(subscription != null)
+            subscription.cancel();
          sseEventSink.close();
       }
 
@@ -424,10 +492,48 @@ public abstract class AsyncResponseConsumer
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete)
       {
          ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
+         MediaType elementType = null;
+         if (builtResponse.getEntity() instanceof OutboundSseEvent)
+         {
+            OutboundSseEvent entity = (OutboundSseEvent)builtResponse.getEntity();
+            elementType = entity.getMediaType();
+         }
+         MediaType contentType = null;
+         Object o = httpResponse.getOutputHeaders().getFirst("Content-Type");
+         if (o != null)
+         {
+            if (o instanceof String)
+            {
+               contentType = MediaType.valueOf((String) o);
+            }
+            else if (o instanceof MediaType)
+            {
+               contentType = (MediaType) o;
+            }
+            else
+            {
+               throw new RuntimeException(Messages.MESSAGES.expectedStringOrMediaType(o));
+            }
+            if (elementType == null)
+            {
+               String et = contentType.getParameters().get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+               elementType = et != null ? MediaType.valueOf(et) : MediaType.TEXT_PLAIN_TYPE;     
+            }
+         }
+         else
+         {
+            throw new RuntimeException(Messages.MESSAGES.expectedStringOrMediaType(o));
+         }
          OutboundSseEvent event = sse.newEventBuilder()
-            .mediaType(builtResponse.getMediaType())
+            .mediaType(elementType)
             .data(builtResponse.getEntityClass(), builtResponse.getEntity())
             .build();
+         if ("application".equals(contentType.getType())
+                  && "x-stream-general".equals(contentType.getSubtype())
+                  && event instanceof OutboundSseEventImpl)
+         {
+            ((OutboundSseEventImpl) event).setEscape(true);
+         }
          sendingEvent = true;
          // we can only get onComplete after we return from this method
          try {

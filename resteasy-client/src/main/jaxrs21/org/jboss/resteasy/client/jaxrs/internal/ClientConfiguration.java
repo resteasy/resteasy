@@ -295,4 +295,14 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
       }
       return null;
    }
+   
+   public RxInvokerProvider<?> getRxInvokerProviderFromReactiveClass(Class<?> clazz)
+   {
+      return providerFactory.getRxInvokerProviderFromReactiveClass(clazz);
+   }
+   
+   public boolean isReactive(Class<?> clazz)
+   {
+      return providerFactory.isReactive(clazz);
+   }
 }
