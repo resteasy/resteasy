@@ -11,7 +11,7 @@ public class AsyncResponseExceptionMapper implements ExceptionMapper<AsyncRespon
    @Override
    public Response toResponse(AsyncResponseException exception)
    {
-      return Response.ok("Got it").build();
+      return Response.ok("Got it").status(444).build();
    }
 
 }

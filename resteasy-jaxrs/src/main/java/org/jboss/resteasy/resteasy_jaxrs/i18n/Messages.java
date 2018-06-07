@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.logging.Logger.LoggerType;
 import org.jboss.resteasy.util.WeightedLanguage;
@@ -273,6 +274,18 @@ public interface Messages
    
    @Message(id = BASE + 320, value = "Failed processing arguments of %s")
    String failedProcessingArguments(String constructor);
+   
+   @Message(id = BASE + 316, value = "Expected '\', '\n', or '\r', got %s")
+   String expectedExcapedCharacter(int n);
+      
+   @Message(id = BASE + 317, value = "Expected Stream.MODE.GENERAL or Stream.MODE.RAW, got %s")
+   String expectedStreamModeGeneralOrRaw(Stream.MODE mode);
+   
+   @Message(id = BASE + 318, value = "Expected @Stream or @Produces(\"text/event-stream\")")
+   String expectedStreamOrSseMediaType();
+   
+   @Message(id = BASE + 319, value = "Expected String or MediaType, got %s")
+   String expectedStringOrMediaType(Object o);   
    
    @Message(id = BASE + 325, value = "Failed to construct %s")
    String failedToConstruct(String constructor);
@@ -760,4 +773,9 @@ public interface Messages
    
    @Message(id = BASE + 1093, value = "SseBroadcaster is closed")
    String sseBroadcasterIsClosed();
+   
+   @Message(id = BASE + 1095, value = "Unable to instantiate AsyncClientResponseProvider")
+   String unableToInstantiateAsyncClientResponseProvider();
+   @Message(id = BASE + 1096, value = "Unable to instantiate AsyncClientStreamProvider")
+   String unableToInstantiateAsyncClientStreamProvider();
 }

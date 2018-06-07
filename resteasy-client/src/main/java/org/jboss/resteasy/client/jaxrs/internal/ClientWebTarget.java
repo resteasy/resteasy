@@ -357,6 +357,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.setChunked(chunked);
+      builder.setTarget(this);
       return builder;
    }
 
@@ -367,6 +368,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
+      builder.setTarget(this);
       return builder;
    }
 
@@ -377,6 +379,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       ClientInvocationBuilderInterface builder = newInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
+      builder.setTarget(this);
       return builder;
    }
 

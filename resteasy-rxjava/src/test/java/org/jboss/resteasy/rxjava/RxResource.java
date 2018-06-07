@@ -10,6 +10,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.annotations.Stream;
+
 import rx.Emitter.BackpressureMode;
 import rx.Observable;
 import rx.Single;
@@ -27,6 +29,7 @@ public class RxResource
 
    @Produces(MediaType.APPLICATION_JSON)
    @Path("observable")
+   @Stream
    @GET
    public Observable<String> observable()
    {
@@ -55,6 +58,7 @@ public class RxResource
 
    @Produces(MediaType.APPLICATION_JSON)
    @Path("context/observable")
+   @Stream
    @GET
    public Observable<String> contextObservable(@Context UriInfo uriInfo)
    {
@@ -73,5 +77,19 @@ public class RxResource
          uriInfo.getAbsolutePath();
          return str;
       });
+   }
+
+   @Path("injection")
+   @GET
+   public Single<Integer> injection(@Context Integer value)
+   {
+      return Single.just(value);
+   }
+
+   @Path("injection-async")
+   @GET
+   public Single<Integer> injectionAsync(@Async @Context Integer value)
+   {
+      return Single.just(value);
    }
 }
