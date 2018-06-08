@@ -16,6 +16,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.ExceptionThrowingFilter;
+import org.jboss.resteasy.test.rx.resource.FilterException;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TestException;
@@ -64,9 +66,10 @@ public class RxCompletionStageServerAsyncTest {
       war.addClass(Thing.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
+      war.addClass(FilterException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
-      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class);
+      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class, ExceptionThrowingFilter.class);
    }
 
    private static String generateURL(String path) {
@@ -291,6 +294,28 @@ public class RxCompletionStageServerAsyncTest {
          Assert.fail("expecting Exception");
       } catch (Exception e) {
          Assert.assertTrue(e.getMessage().contains("444"));
+      }
+   }
+
+   @Test
+   public void testExceptionInFilter() throws Exception {
+      Builder request = client.target(generateURL("/exception/filter")).request();
+      try {
+         String ret = request.get(String.class);
+         Assert.assertEquals("exception", ret);
+      } catch (Exception e) {
+         Assert.assertTrue(e.getMessage().contains("500"));
+      }
+   }
+
+   @Test
+   public void testExceptionInFilterSync() throws Exception {
+      Builder request = client.target(generateURL("/exception/filter-sync")).request();
+      try {
+         request.get(String.class);
+         Assert.fail("expecting Exception");
+      } catch (Exception e) {
+         Assert.assertTrue(e.getMessage().contains("500"));
       }
    }
 
