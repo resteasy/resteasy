@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -51,8 +53,13 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
                for (Entry<ArchivePath, Node> entry : archive.getContent().entrySet())
                {
                   Asset asset = entry.getValue().getAsset();
-                  if(asset instanceof ClassAsset)
-                     classes.add(((ClassAsset)asset).getSource());
+                  if(asset instanceof ClassAsset) {
+                     Class<?> classAsset = ((ClassAsset)asset).getSource();
+                     if((classAsset.isAnnotationPresent(Path.class)
+                           || classAsset.isAnnotationPresent(Provider.class))
+                           && !classAsset.isInterface())
+                        classes.add(classAsset);
+                  }
                }
                return;
             } 
