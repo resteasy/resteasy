@@ -132,10 +132,10 @@ public class ResponseStreamPrematurelyClosedTest {
         
         public String toShortString() {
             int s = size();
-            if (s <= 100) {
+            if (s <= 2000) {
                 return toString();
             } else {
-                return getSubstring(0, 50) + "..." + getSubstring(s - 50, 50);
+                return getSubstring(0, 200) + "..." + getSubstring(s - 1800, 1800);
             }
         }
     }
