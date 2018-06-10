@@ -105,7 +105,7 @@ public class ResponseStreamPrematurelyClosedTest {
                     coutDown.await(10, TimeUnit.SECONDS);
 
                     IOUtils.copy(ins, baos);
-                    Assert.assertEquals("Received string: " + baos.toShortString(), 100000000, baos.size());
+                    Assert.assertEquals("Received string: " + baos.toShortString(), 10000000, baos.size());
                 } finally {
                     //remove the listener
                     for (GarbageCollectorMXBean gcbean : gcbeans) {
