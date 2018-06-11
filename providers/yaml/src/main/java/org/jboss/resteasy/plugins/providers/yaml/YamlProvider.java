@@ -1,7 +1,8 @@
-package org.jboss.resteasy.plugins.providers;
+package org.jboss.resteasy.plugins.providers.yaml;
 
 
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.plugins.providers.yaml.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.yaml.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
