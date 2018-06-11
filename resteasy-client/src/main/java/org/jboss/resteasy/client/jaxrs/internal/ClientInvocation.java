@@ -672,8 +672,16 @@ public class ClientInvocation implements Invocation
             }
          }
 
-         if(prioritised.isPresent()) // strange rule from the spec
-            throw (WebApplicationException) prioritised.get();
+         // strange rule from the spec
+         if(prioritised.isPresent()) {
+            Throwable t = prioritised.get();
+            if (t instanceof RuntimeException) {
+               throw (RuntimeException) t;
+            } else {
+               // for checked exceptions
+               throw new ResponseProcessingException(response, t);
+            }
+         }
       }
 
       return response;
