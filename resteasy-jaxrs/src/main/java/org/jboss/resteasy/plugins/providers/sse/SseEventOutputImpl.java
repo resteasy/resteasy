@@ -114,7 +114,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
                Produces produces = method.getMethod().getAnnotation(Produces.class);
-               if (produces != null & contains(produces.value(), MediaType.SERVER_SENT_EVENTS))
+               if (produces != null && contains(produces.value(), MediaType.SERVER_SENT_EVENTS))
                {
                   // @Produces("text/event-stream")
                   SseElementType sseElementType = method.getMethod().getAnnotation(SseElementType.class);
@@ -235,19 +235,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            mediaType = MediaType.valueOf(s);
                         }
                      }
-                  }
-                  else if (o instanceof String)
-                  {
-                     MediaType mt = MediaType.valueOf((String) o);
-                     String s = mt.getParameters().get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
-                     if (s != null)
+                     else if (o instanceof String)
                      {
-                        mediaType = MediaType.valueOf(s);
+                        MediaType mt = MediaType.valueOf((String) o);
+                        String s = mt.getParameters().get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+                        if (s != null)
+                        {
+                           mediaType = MediaType.valueOf(s);
+                        }
                      }
-                  }
-                  else
-                  {
-                     throw new RuntimeException(Messages.MESSAGES.expectedStringOrMediaType(o));
+                     else
+                     {
+                        throw new RuntimeException(Messages.MESSAGES.expectedStringOrMediaType(o));
+                     }
                   }
                }
                if (mediaType == null)

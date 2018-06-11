@@ -167,4 +167,20 @@ public class RxCompletionStageResourceImpl {
    public CompletionStage<Thing> exceptionHandled() throws Exception {
       throw new TestException("handled");
    }
+
+   @FilterException
+   @GET
+   @Path("exception/filter")
+   @Produces(MediaType.TEXT_PLAIN)
+   public CompletionStage<String> exceptionInFilter() {
+      return (CompletionStage<String>) singleProvider.toCompletionStage(Single.just("x"));
+   }
+
+   @FilterException
+   @GET
+   @Path("exception/filter-sync")
+   @Produces(MediaType.TEXT_PLAIN)
+   public String exceptionInFilterSync() {
+      return "x";
+   }
 }

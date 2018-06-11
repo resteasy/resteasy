@@ -47,6 +47,7 @@ public class StreamRawByteArrayMessageBodyReaderWriter implements MessageBodyRea
       int b = entityStream.read();
       while (b != -1) {
          list.add(new Byte((byte)b));
+         b = entityStream.read();
       }
       return list.toArray(new Byte[list.size()]);
    }
