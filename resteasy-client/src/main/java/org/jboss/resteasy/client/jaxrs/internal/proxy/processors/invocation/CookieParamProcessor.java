@@ -1,6 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
 import javax.ws.rs.core.Cookie;
@@ -24,7 +24,7 @@ public class CookieParamProcessor implements InvocationProcessor
    }
 
    @Override
-   public void process(ClientInvocationBuilderInterface request, Object object)
+   public void process(ClientInvocationBuilder request, Object object)
    {
       if (object == null) return;  // don't set a null value
       if (object instanceof Cookie)

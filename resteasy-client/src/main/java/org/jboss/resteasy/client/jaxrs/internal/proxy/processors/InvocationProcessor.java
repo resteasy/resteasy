@@ -1,6 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -8,5 +8,5 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilderInterface
  */
 public interface InvocationProcessor
 {
-   void process(ClientInvocationBuilderInterface invocation, Object param);
+   void process(ClientInvocationBuilder invocation, Object param);
 }

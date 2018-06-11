@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.Jaxrs21;
 import org.jboss.resteasy.test.providers.jsonp.resource.JsonpResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -14,7 +13,6 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.json.Json;
@@ -150,7 +148,6 @@ public class JsonpTest {
     }
 
     @Test
-    @Category(Jaxrs21.class)
     public void testJsonString() throws Exception {
        WebTarget target = client.target(generateURL("/test/json/string"));
        JsonString jsonString = Json.createValue("Resteasy");
@@ -159,7 +156,6 @@ public class JsonpTest {
     }
 
     @Test
-    @Category(Jaxrs21.class)
     public void testJsonNumber() throws Exception {
        WebTarget target = client.target(generateURL("/test/json/number"));
        JsonNumber jsonNumber = Json.createValue(100);

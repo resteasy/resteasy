@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.Jaxrs21;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomRepeaterProvider;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingResource;
@@ -16,7 +15,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 
@@ -46,7 +44,6 @@ import static org.hamcrest.CoreMatchers.not;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category(Jaxrs21.class)
 public class JsonBindingTest {
 
    protected static final Logger logger = Logger.getLogger(JsonBindingTest.class.getName());

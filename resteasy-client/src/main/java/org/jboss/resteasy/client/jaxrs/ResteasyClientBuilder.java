@@ -133,6 +133,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
+   @Override
    public ResteasyClientBuilder readTimeout(long timeout, TimeUnit unit)
    {
       this.socketTimeout = timeout;
@@ -153,6 +154,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       return readTimeout(timeout, unit);
    }
 
+   @Override
    public ResteasyClientBuilder connectTimeout(long timeout, TimeUnit unit)
    {
       this.establishConnectionTimeout = timeout;
@@ -515,11 +517,13 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
+   @Override
    public ClientBuilder executorService(ExecutorService executorService)
    {
       return asyncExecutor(executorService, false);
    }
 
+   @Override
    public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
    {
       this.scheduledExecutorService = scheduledExecutorService;

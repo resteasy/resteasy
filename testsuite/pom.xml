@@ -76,19 +76,6 @@
                 <module>microprofile-tck</module>
             </modules>
         </profile>
-        <!-- Enable Jaxrs 2.0 mode for the integration tests. -->
-        <profile>
-            <id>jaxrs20</id>
-            <activation>
-                <property>
-                    <name>jaxrs20</name>
-                </property>
-            </activation>
-            <properties>
-                <ee8.preview.mode>false</ee8.preview.mode>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.Jaxrs21</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
         <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
         <profile>
             <id>forward.compatibility</id>
