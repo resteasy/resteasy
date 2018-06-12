@@ -4,7 +4,6 @@ import java.security.AllPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.NotForWildFly9;
 import org.jboss.resteasy.test.spring.inmodule.resource.ContextRefreshResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.ContextRefreshTrigger;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -14,7 +13,6 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -32,7 +30,6 @@ import java.util.logging.LoggingPermission;
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
-@Category(NotForWildFly9.class) //requires WildFly 10+
 public class ContextRefreshTest {
 
 
@@ -44,7 +41,6 @@ public class ContextRefreshTest {
                 .addClass(ContextRefreshResource.class)
                 .addClass(ContextRefreshTrigger.class)
                 .addClass(ContextRefreshTest.class)
-                .addClass(NotForWildFly9.class) //required as this test is not @RunAsClient annotated
                 .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "web.xml", "web.xml")
                 .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "contextRefresh/applicationContext.xml", "applicationContext.xml");
         archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
