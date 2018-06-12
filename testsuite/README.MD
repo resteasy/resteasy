@@ -205,7 +205,6 @@ Following is the list of chapters and corresponding subchapters for javadoc test
     - Validator provider
     - Writers
     - XXE
-    - Yaml provider
 
 
 

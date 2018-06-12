@@ -223,10 +223,6 @@
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>
         </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-yaml-provider">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-yaml-provider"/>
-        </module-def>
-
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->
         <!--
         <zip destfile="${output.dir}/zz-resteasy-jboss-modules-${project.version}.zip">

@@ -81,10 +81,6 @@
             <entry align="left">providers/resteasy-validator-provider-11</entry>
          </row>
          <row>
-            <entry align="left">9000-9499</entry>
-            <entry align="left">providers/yaml</entry>
-         </row>
-         <row>
             <entry align="left">9500-9999</entry>
             <entry align="left">async-http-servlet-3.0</entry>
          </row>
