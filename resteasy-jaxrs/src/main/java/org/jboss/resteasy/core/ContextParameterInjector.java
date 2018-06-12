@@ -41,11 +41,11 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface() || (ResteasyProviderFactory.EE8_PREVIEW_MODE && type.equals(SseEventSink.class)))
+      if (!type.isInterface() || type.equals(SseEventSink.class))
       {
          return ResteasyProviderFactory.getContextData(type);
       }
-      else if (ResteasyProviderFactory.EE8_PREVIEW_MODE && type.equals(Sse.class))
+      else if (type.equals(Sse.class))
       {
          return new SseImpl();
       }
@@ -94,11 +94,11 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (type.equals(Application.class) || (ResteasyProviderFactory.EE8_PREVIEW_MODE && type.equals(SseEventSink.class)))
+      if (type.equals(Application.class) || type.equals(SseEventSink.class))
       {
          return ResteasyProviderFactory.getContextData(type);
       }
-      else if (ResteasyProviderFactory.EE8_PREVIEW_MODE && type.equals(Sse.class))
+      else if (type.equals(Sse.class))
       {
          return new SseImpl();
       }

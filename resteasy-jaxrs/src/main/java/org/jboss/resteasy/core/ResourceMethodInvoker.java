@@ -158,8 +158,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 		// First exclusive condition to be a SSE resource method is to only
 		// produce text/event-stream
 		MediaType[] producedMediaTypes = resourceMethod.getProduces();
-      boolean onlyProduceServerSentEventsMediaType = ResteasyProviderFactory.EE8_PREVIEW_MODE
-            && producedMediaTypes != null && producedMediaTypes.length == 1
+      boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
             && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(producedMediaTypes[0]);
 		if (!onlyProduceServerSentEventsMediaType)
 		{
@@ -174,7 +173,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 			for (MethodParameter resourceMethodParameter : resourceMethodParameters)
 			{
 				if (Parameter.ParamType.CONTEXT.equals(resourceMethodParameter.getParamType())
-				        && ResteasyProviderFactory.EE8_PREVIEW_MODE
 						&& SseEventSink.class.equals(resourceMethodParameter.getType()))
 				{
 					return true;
