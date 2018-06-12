@@ -24,6 +24,7 @@ class JettyClientResponse extends ClientResponse {
     @Override
     protected void setInputStream(InputStream is) {
         stream = is;
+        resetEntity();
     }
 
     @Override

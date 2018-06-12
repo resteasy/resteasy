@@ -79,6 +79,7 @@ public class URLConnectionEngine implements ClientHttpEngine
             protected void setInputStream(InputStream is)
             {
                 stream = is;
+                resetEntity();
             }
 
             @Override
