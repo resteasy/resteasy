@@ -10,8 +10,10 @@ import javax.ws.rs.InternalServerErrorException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -53,6 +55,7 @@ public class Rx2FlowableProxyServerAsyncTest {
 
    private static ResteasyClient client;
    private static Rx2ListNoStreamResource proxy;
+   private static ModelNode origDisallowedMethodsValue;
 
    private final static List<String> xStringList = new ArrayList<String>();
    private final static List<String> aStringList = new ArrayList<String>();   
@@ -90,6 +93,7 @@ public class Rx2FlowableProxyServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(Rx2ListNoStreamResource.class);
    }
@@ -101,6 +105,7 @@ public class Rx2FlowableProxyServerAsyncTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -248,28 +253,24 @@ public class Rx2FlowableProxyServerAsyncTest {
    }
    
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
       List<String> list = proxy.trace();
       Assert.assertEquals(xStringList, list);
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThing() throws Exception {
       List<Thing> list = proxy.traceThing();
       Assert.assertEquals(xThingList, list);
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThingList() throws Exception {
       List<List<Thing>> list = proxy.traceThingList();
       Assert.assertEquals(xThingListList, list);
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceBytes() throws Exception {
       List<byte[]> list = proxy.traceBytes();
       Assert.assertEquals(3, list.size());

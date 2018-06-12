@@ -15,9 +15,11 @@ import javax.ws.rs.InternalServerErrorException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava2.ObservableRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -58,6 +60,7 @@ public class Rx2ObservableProxyTest {
 
    private static ResteasyClient client;
    private static Rx2ObservableResource proxy;
+   private static ModelNode origDisallowedMethodsValue;
    private static CountDownLatch latch;
    private static AtomicInteger errors;
 
@@ -102,6 +105,7 @@ public class Rx2ObservableProxyTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(Rx2ObservableResource.class);
    }
@@ -109,6 +113,7 @@ public class Rx2ObservableProxyTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    @Before
@@ -407,7 +412,6 @@ public class Rx2ObservableProxyTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTrace() throws Exception {
       Observable<String> observable = proxy.trace();
       observable.subscribe(
@@ -421,7 +425,6 @@ public class Rx2ObservableProxyTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThing() throws Exception {
       Observable<Thing> observable = proxy.traceThing();
       observable.subscribe(
@@ -435,7 +438,6 @@ public class Rx2ObservableProxyTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThingList() throws Exception {
       Observable<List<Thing>> observable = proxy.traceThingList();
       observable.subscribe(
@@ -449,7 +451,6 @@ public class Rx2ObservableProxyTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceBytes() throws Exception {
       Observable<byte[]> observable = proxy.traceBytes();
       observable.subscribe(

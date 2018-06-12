@@ -7,11 +7,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.SimpleResource;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -42,6 +45,7 @@ public class Rx2SingleProxyServerAsyncTest {
 
    private static ResteasyClient client;
    private static SimpleResource proxy;
+   private static ModelNode origDisallowedMethodsValue;
 
    private static List<Thing>  xThingList =  new ArrayList<Thing>();
    private static List<Thing>  aThingList =  new ArrayList<Thing>();
@@ -55,6 +59,7 @@ public class Rx2SingleProxyServerAsyncTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(Rx2SingleProxyServerAsyncTest.class.getSimpleName());
       war.addClass(Thing.class);
+      war.addClass(TRACE.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
@@ -69,6 +74,7 @@ public class Rx2SingleProxyServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(SimpleResource.class);
    }
@@ -76,6 +82,7 @@ public class Rx2SingleProxyServerAsyncTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -176,6 +183,24 @@ public class Rx2SingleProxyServerAsyncTest {
    @Test
    public void testOptionsThingList() throws Exception {
       List<Thing> list = proxy.optionsThingList();
+      Assert.assertEquals(xThingList, list);
+   }
+   
+   @Test
+   public void testTrace() throws Exception {
+      String s = proxy.trace();
+      Assert.assertEquals("x", s);
+   }
+
+   @Test
+   public void testTraceThing() throws Exception {
+      Thing t = proxy.traceThing();
+      Assert.assertEquals(new Thing("x"), t);
+   }
+
+   @Test
+   public void testTraceThingList() throws Exception {
+      List<Thing> list = proxy.traceThingList();
       Assert.assertEquals(xThingList, list);
    }
    

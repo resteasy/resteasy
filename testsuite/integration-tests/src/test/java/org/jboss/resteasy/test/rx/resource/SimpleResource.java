@@ -102,6 +102,21 @@ public interface SimpleResource {
    @Produces(MediaType.APPLICATION_JSON)
    List<Thing> optionsThingList();
 
+   @TRACE
+   @Path("trace/string")
+   @Produces(MediaType.TEXT_PLAIN)
+   String trace();
+
+   @TRACE
+   @Path("trace/thing")
+   @Produces(MediaType.APPLICATION_JSON)
+   Thing traceThing();
+
+   @TRACE
+   @Path("trace/thing/list")
+   @Produces(MediaType.APPLICATION_JSON)
+   List<Thing> traceThingList();
+   
    @GET
    @Path("exception/unhandled")
    Thing exceptionUnhandled() throws Exception;

@@ -15,8 +15,10 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -56,6 +58,7 @@ import org.junit.runners.MethodSorters;
 public class Rx2FlowableServerAsyncTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
 
    private final static List<String> xStringList = new ArrayList<String>();
    private final static List<String> aStringList = new ArrayList<String>();   
@@ -104,6 +107,7 @@ public class Rx2FlowableServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
    }
 
@@ -118,6 +122,7 @@ public class Rx2FlowableServerAsyncTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -286,7 +291,6 @@ public class Rx2FlowableServerAsyncTest {
    }
    
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
       Builder request = client.target(generateURL("/trace/string")).request();
       Response response = request.trace();
@@ -294,7 +298,6 @@ public class Rx2FlowableServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThing() throws Exception {
       Builder request = client.target(generateURL("/trace/thing")).request();
       List<Thing> list = request.trace(LIST_OF_THING);
@@ -302,7 +305,6 @@ public class Rx2FlowableServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThingList() throws Exception {
       Builder request = client.target(generateURL("/trace/thing/list")).request();
       List<List<Thing>> list = request.trace(LIST_OF_LIST_OF_THING);
@@ -310,7 +312,6 @@ public class Rx2FlowableServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceBytes() throws Exception {
       Builder request = client.target(generateURL("/trace/bytes")).request();
       List<byte[]> list = request.trace(LIST_OF_BYTE_ARRAYS);

@@ -18,11 +18,13 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
 import org.jboss.resteasy.rxjava2.FlowableRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -63,6 +65,7 @@ import io.reactivex.Flowable;
 public class Rx2FlowableTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
    private static CountDownLatch latch;
    private static AtomicInteger errors;
 
@@ -110,6 +113,7 @@ public class Rx2FlowableTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
    }
 
@@ -126,6 +130,7 @@ public class Rx2FlowableTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -464,7 +469,6 @@ public class Rx2FlowableTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(FlowableRxInvoker.class);
       Flowable<String> flowable = (Flowable<String>) invoker.trace();
@@ -480,7 +484,6 @@ public class Rx2FlowableTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThing() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(FlowableRxInvoker.class);
       Flowable<Thing> flowable = (Flowable<Thing>) invoker.trace(Thing.class);
@@ -496,7 +499,6 @@ public class Rx2FlowableTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThingList() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(FlowableRxInvoker.class);
       Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.trace(LIST_OF_THING);
@@ -512,10 +514,9 @@ public class Rx2FlowableTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceBytes() throws Exception {
       FlowableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(FlowableRxInvoker.class);
-      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.get(byte[].class);
+      Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.trace(byte[].class);
       flowable.subscribe(
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
