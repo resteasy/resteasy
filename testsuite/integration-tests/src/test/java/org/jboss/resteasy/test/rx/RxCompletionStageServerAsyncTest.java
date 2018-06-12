@@ -13,13 +13,14 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
-import org.jboss.resteasy.test.rx.resource.ExceptionThrowingFilter;
-import org.jboss.resteasy.test.rx.resource.FilterException;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -49,6 +50,7 @@ import org.junit.runner.RunWith;
 public class RxCompletionStageServerAsyncTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
 
    private static List<Thing>  xThingList =  new ArrayList<Thing>();
    private static List<Thing>  aThingList =  new ArrayList<Thing>();
@@ -64,12 +66,12 @@ public class RxCompletionStageServerAsyncTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(RxCompletionStageServerAsyncTest.class.getSimpleName());
       war.addClass(Thing.class);
+      war.addClass(TRACE.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      war.addClass(FilterException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
-      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class, ExceptionThrowingFilter.class);
+      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class);
    }
 
    private static String generateURL(String path) {
@@ -79,12 +81,14 @@ public class RxCompletionStageServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
    }
 
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -210,7 +214,6 @@ public class RxCompletionStageServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTrace() throws Exception {
       Builder request = client.target(generateURL("/trace/string")).request();
       Response response = request.trace();
@@ -218,7 +221,6 @@ public class RxCompletionStageServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThing() throws Exception {
       Builder request = client.target(generateURL("/trace/thing")).request();
       Thing t = request.trace(Thing.class);
@@ -226,7 +228,6 @@ public class RxCompletionStageServerAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThingList() throws Exception {
       Builder request = client.target(generateURL("/trace/thing/list")).request();
       List<Thing> list = request.trace(LIST_OF_THING);

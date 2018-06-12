@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.ws.rs.client.Invocation.Builder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
+import org.jboss.resteasy.test.rx.resource.ExceptionThrowingFilter;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.SimpleResource;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -41,6 +47,7 @@ import org.junit.runner.RunWith;
 public class RxCompletionStageProxyServerAsyncTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
    private static SimpleResource proxy;
 
    private static List<Thing>  xThingList =  new ArrayList<Thing>();
@@ -55,11 +62,12 @@ public class RxCompletionStageProxyServerAsyncTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(RxCompletionStageProxyServerAsyncTest.class.getSimpleName());
       war.addClass(Thing.class);
+      war.addClass(TRACE.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava services\n"));  
-      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class);
+      return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class, ExceptionThrowingFilter.class);
    }
 
    private static String generateURL(String path) {
@@ -69,6 +77,7 @@ public class RxCompletionStageProxyServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(SimpleResource.class);
    }
@@ -76,6 +85,7 @@ public class RxCompletionStageProxyServerAsyncTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -179,23 +189,45 @@ public class RxCompletionStageProxyServerAsyncTest {
       Assert.assertEquals(xThingList, list);
    }
    
-//   @Test
+   @Test
    public void testUnhandledException() throws Exception {
       try {
-         proxy.getThing();
+         proxy.exceptionUnhandled();
          Assert.fail("expecting Exception");
       } catch (Exception e) {
          Assert.assertTrue(e.getMessage().contains("500"));
       }
    }
 
-//   @Test
+   @Test
    public void testHandledException() throws Exception {
       try {
-         proxy.getThing();
+         proxy.exceptionHandled();
          Assert.fail("expecting Exception");
       } catch (Exception e) {
          Assert.assertTrue(e.getMessage().contains("444"));
+      }
+   }
+   
+   @Test
+   public void testExceptionInFilter() throws Exception {
+      Builder request = client.target(generateURL("/exception/filter")).request();
+      try {
+         String ret = request.get(String.class);
+         Assert.assertEquals("exception", ret);
+      } catch (Exception e) {
+         Assert.assertTrue(e.getMessage().contains("500"));
+      }
+   }
+
+   @Test
+   public void testExceptionInFilterSync() throws Exception {
+      Builder request = client.target(generateURL("/exception/filter-sync")).request();
+      try {
+         request.get(String.class);
+         Assert.fail("expecting Exception");
+      } catch (Exception e) {
+         Assert.assertTrue(e.getMessage().contains("500"));
       }
    }
    

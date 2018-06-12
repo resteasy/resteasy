@@ -13,15 +13,17 @@ import javax.ws.rs.InternalServerErrorException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava.SingleRxInvokerProvider;
-import org.jboss.resteasy.test.client.resource.TestResource.TRACE;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -55,6 +57,7 @@ public class RxSingleProxyClientAsyncTest {
 
    private static ResteasyClient client;
    private static RxSingleResource proxy;
+   private static ModelNode origDisallowedMethodsValue;
    private static CountDownLatch latch;
    private static AtomicReference<Object> value = new AtomicReference<Object>();
 
@@ -85,6 +88,7 @@ public class RxSingleProxyClientAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(RxSingleResource.class);
    }
@@ -98,6 +102,7 @@ public class RxSingleProxyClientAsyncTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -245,7 +250,6 @@ public class RxSingleProxyClientAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTrace() throws Exception {
       Single<String> single = proxy.trace();
       single.subscribe((String s) -> {value.set(s); latch.countDown();});
@@ -255,7 +259,6 @@ public class RxSingleProxyClientAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThing() throws Exception {
       Single<Thing> single = proxy.traceThing();
       single.subscribe((Thing t) -> {value.set(t); latch.countDown();});
@@ -265,7 +268,6 @@ public class RxSingleProxyClientAsyncTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThingList() throws Exception {
       Single<List<Thing>> single = proxy.traceThingList();
       single.subscribe((List<Thing> l) -> {value.set(l); latch.countDown();});

@@ -11,12 +11,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResource;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -46,6 +49,7 @@ import org.junit.runner.RunWith;
 public class RxCompletionStageProxyTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
    private static RxCompletionStageResource proxy;
 
    private static List<Thing>  xThingList =  new ArrayList<Thing>();
@@ -60,6 +64,7 @@ public class RxCompletionStageProxyTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(RxCompletionStageProxyTest.class.getSimpleName());
       war.addClass(Thing.class);
+      war.addClass(TRACE.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
@@ -74,6 +79,7 @@ public class RxCompletionStageProxyTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
       proxy = client.target(generateURL("/")).proxy(RxCompletionStageResource.class);
    }
@@ -81,6 +87,7 @@ public class RxCompletionStageProxyTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -186,21 +193,18 @@ public class RxCompletionStageProxyTest {
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTrace() throws Exception {
       CompletionStage<String> completionStage = proxy.trace();
       Assert.assertEquals("x", completionStage.toCompletableFuture().get());
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThing() throws Exception {
       CompletionStage<Thing> completionStage = proxy.traceThing();
       Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
    }
 
    @Test
-   @Ignore // TRACE is disabled by default in Wildfly
    public void testTraceThingList() throws Exception {
       CompletionStage<List<Thing>> completionStage = proxy.traceThingList();
       Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());

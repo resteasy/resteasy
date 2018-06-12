@@ -134,6 +134,7 @@ public class PublisherResponseTest {
     */
    @Test
    @Ignore// Doesn't currently work. The original version, now in PublisherResponseNoStreamTest, still works.
+          // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
    public void testTextErrorDeferred() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();

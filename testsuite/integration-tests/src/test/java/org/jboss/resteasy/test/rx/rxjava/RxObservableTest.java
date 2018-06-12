@@ -18,11 +18,13 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.rxjava.ObservableRxInvoker;
 import org.jboss.resteasy.rxjava.ObservableRxInvokerProvider;
+import org.jboss.resteasy.test.rx.resource.AllowTrace;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -65,6 +67,7 @@ import rx.Observable;
 public class RxObservableTest {
 
    private static ResteasyClient client;
+   private static ModelNode origDisallowedMethodsValue;
    private static CountDownLatch latch;
    private static AtomicInteger errors;
 
@@ -112,6 +115,7 @@ public class RxObservableTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
+      origDisallowedMethodsValue = AllowTrace.turnOn();
       client = new ResteasyClientBuilder().build();
    }
 
@@ -128,6 +132,7 @@ public class RxObservableTest {
    @AfterClass
    public static void after() throws Exception {
       client.close();
+      AllowTrace.turnOff(origDisallowedMethodsValue);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -470,7 +475,6 @@ public class RxObservableTest {
 
    @SuppressWarnings({ "unchecked" })
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
       ObservableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.trace();
@@ -486,7 +490,6 @@ public class RxObservableTest {
 
    @SuppressWarnings({ "unchecked" })
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThing() throws Exception {
       ObservableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(ObservableRxInvoker.class);
       Observable<Thing> observable = (Observable<Thing>) invoker.trace(Thing.class);
@@ -502,7 +505,6 @@ public class RxObservableTest {
 
    @SuppressWarnings({ "unchecked" })
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceThingList() throws Exception {
       ObservableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(ObservableRxInvoker.class);
       Observable<List<Thing>> observable = (Observable<List<Thing>>) invoker.trace(LIST_OF_THING);
@@ -518,7 +520,6 @@ public class RxObservableTest {
 
    @SuppressWarnings({ "unchecked" })
    @Test
-   @Ignore // TRACE turned off by default in Wildfly
    public void testTraceBytes() throws Exception {
       ObservableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(ObservableRxInvoker.class);
       Observable<byte[]> observable = (Observable<byte[]>) invoker.trace(byte[].class);
