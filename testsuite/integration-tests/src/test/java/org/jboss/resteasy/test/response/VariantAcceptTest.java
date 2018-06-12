@@ -62,7 +62,9 @@ public class VariantAcceptTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(VariantAcceptTest.class.getSimpleName());
         war.addClass(VariantAcceptTest.class);
-        return TestUtil.finishContainerPrepare(war, null, VariantAcceptResource.class);
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, VariantAcceptResource.class);
     }
 
     private String generateURL(String path) {

@@ -7,7 +7,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.SocketPermission;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ws.rs.client.Client;
@@ -127,8 +129,9 @@ public class InjectionTest extends AbstractInjectionTestBase {
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new SocketPermission(PortProviderUtil.getHost(), "resolve")),
             "permissions.xml");
-
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, (Class<?>[]) null);
     }
 
     private String generateURL(String path) {

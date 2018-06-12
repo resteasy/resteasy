@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.providers.jackson;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -72,8 +75,10 @@ public class JacksonTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JacksonTest.class.getSimpleName());
         war.addClass(JacksonTest.class);
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
         war.addAsManifestResource("jboss-deployment-structure-jackson-v1.xml", "jboss-deployment-structure.xml");
-        return TestUtil.finishContainerPrepare(war, null, JacksonResource.class, JacksonProduct.class,
+        return TestUtil.finishContainerPrepare(war, contextParam, JacksonResource.class, JacksonProduct.class,
                 JacksonXmlResource.class, JacksonXmlProduct.class, JacksonJAXBResource.class,
                 JacksonXmlResourceWithJacksonAnnotation.class, JacksonXmlResourceWithJAXB.class);
     }

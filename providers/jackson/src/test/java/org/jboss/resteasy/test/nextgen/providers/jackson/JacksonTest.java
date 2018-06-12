@@ -5,8 +5,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
 import javax.xml.bind.annotation.*;
 
 import org.jboss.resteasy.annotations.providers.NoJackson;
@@ -18,6 +21,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -36,8 +41,10 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+
 public class JacksonTest extends BaseResourceTest
 {
+   @JsonPropertyOrder({ "name", "id" })
    public static class Product
    {
       protected String name;

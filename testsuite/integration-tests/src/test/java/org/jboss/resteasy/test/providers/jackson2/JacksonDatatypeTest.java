@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -8,10 +11,18 @@ import org.jboss.resteasy.category.NotForWildFly101;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonJAXBResource;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonProduct;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonResource;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlProduct;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResource;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResourceWithJAXB;
+import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResourceWithJacksonAnnotation;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -61,16 +72,19 @@ public class JacksonDatatypeTest {
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEFAULT_DEPLOYMENT + ".war");
-        war.addClasses(ApplicationTestScannedApplication.class, JacksonDatatypeEndPoint.class);
-        return war;
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, ApplicationTestScannedApplication.class,
+              JacksonDatatypeEndPoint.class);
     }
 
     @Deployment(name = "withDatatype")
     public static Archive<?> deployJettison() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_WITH_DATATYPE + ".war");
-        war.addClasses(JacksonDatatypeEndPoint.class,
-                JacksonDatatypeJacksonProducer.class, ApplicationTestScannedApplication.class);
-        return war;
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, JacksonDatatypeEndPoint.class,
+             JacksonDatatypeJacksonProducer.class, ApplicationTestScannedApplication.class);
     }
 
     private String requestHelper(String endPath, String deployment) {

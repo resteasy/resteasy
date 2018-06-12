@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.validation.cdi;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -43,7 +46,9 @@ public class ApplicationScopeValidationTest {
                .addClasses(ApplicationScopeIRestServiceAppScoped.class, ApplicationScopeIRestServiceReqScoped.class)
                .addClasses(ApplicationScopeMyDto.class)
                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-       return TestUtil.finishContainerPrepare(war, null, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
+       Map<String, String> contextParam = new HashMap<>();
+       contextParam.put("resteasy.jsonb.disable", "true");
+       return TestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
    }
 
    private String generateURL(String path) {

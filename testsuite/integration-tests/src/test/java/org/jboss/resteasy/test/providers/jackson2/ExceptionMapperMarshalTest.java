@@ -28,8 +28,11 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -48,7 +51,9 @@ public class ExceptionMapperMarshalTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
         war.addClass(Jackson2Test.class);
-        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
                 MyEntity.class, ExceptionMapperIOExceptionMapper.class,
                 ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapperMarshalName.class, ExceptionMapperMarshalResource.class);
     }
@@ -88,7 +93,6 @@ public class ExceptionMapperMarshalTest {
     public void testMyCustomUsed() {
         Response response = client.target(generateURL("/resource/customME")).request().get();
         String text = response.readEntity(String.class);
-
         Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
         Assert.assertTrue("Response does not contain UN_KNOWN_ERR", text.contains("UN_KNOWN_ERR"));
     }
