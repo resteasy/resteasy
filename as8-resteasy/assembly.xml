@@ -17,7 +17,6 @@
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jettison-provider/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jsapi/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-multipart-provider/**</exclude>
-                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-yaml-provider/**</exclude>
                 <exclude>**/modules/system/layers/base/javax/ws/rs/**</exclude>
                 <exclude>**/modules/system/layers/base/org/bouncycastle/**</exclude>
                 <exclude>**/modules/system/layers/base/org/codehaus/jackson/**</exclude>

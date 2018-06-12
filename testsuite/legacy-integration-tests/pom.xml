@@ -216,12 +216,6 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-yaml-provider</artifactId>
-            <version>${version.resteasy.testsuite}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-atom-provider</artifactId>
             <version>${version.resteasy.testsuite}</version>
         </dependency>
