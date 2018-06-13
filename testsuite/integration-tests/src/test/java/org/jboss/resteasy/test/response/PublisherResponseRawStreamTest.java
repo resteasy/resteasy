@@ -40,7 +40,7 @@ public class PublisherResponseRawStreamTest {
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(PublisherResponseTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(PublisherResponseRawStreamTest.class.getSimpleName());
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.reactivestreams\n"));
@@ -49,7 +49,7 @@ public class PublisherResponseRawStreamTest {
    }
 
    private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, PublisherResponseTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, PublisherResponseRawStreamTest.class.getSimpleName());
    }
 
    @Before
