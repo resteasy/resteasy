@@ -177,11 +177,11 @@ public class XmlJavaTypeAdapterTest {
         Assert.assertTrue("The received response was not the expected one", response.contains(alien1));
         Assert.assertTrue("The received response was not the expected one", response.contains(alien2));
         Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter);
+                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
         Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter);
-        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter = 0;
-        XmlJavaTypeAdapterAlienAdapter.marshalCounter = 0;
+                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
+        XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
 
     /**
@@ -211,11 +211,11 @@ public class XmlJavaTypeAdapterTest {
         Assert.assertTrue("The received response was not the expected one",
                 (alien1.equals(response[0]) && alien2.equals(response[1])) || (alien1.equals(response[1]) && alien2.equals(response[0])));
         Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter);
+                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
         Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter);
-        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter = 0;
-        XmlJavaTypeAdapterAlienAdapter.marshalCounter = 0;
+                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
+        XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
 
     /**
@@ -245,11 +245,11 @@ public class XmlJavaTypeAdapterTest {
         Assert.assertTrue("The received response was not the expected one", alien1.equals(response.get("abc")));
         Assert.assertTrue("The received response was not the expected one", alien2.equals(response.get("xyz")));
         Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter);
+                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
         Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter);
-        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter = 0;
-        XmlJavaTypeAdapterAlienAdapter.marshalCounter = 0;
+                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
+        XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
 
     /**
@@ -279,10 +279,10 @@ public class XmlJavaTypeAdapterTest {
         Assert.assertTrue("The received response was not the expected one", response.contains(tralfamadorean1));
         Assert.assertTrue("The received response was not the expected one", response.contains(tralfamadorean2));
         Assert.assertEquals("The marshalling of the Alien didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter);
+                4, XmlJavaTypeAdapterAlienAdapter.marshalCounter.get());
         Assert.assertEquals("The unmarshalling of the Human didn't happen the correct way",
-                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter);
-        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter = 0;
-        XmlJavaTypeAdapterAlienAdapter.marshalCounter = 0;
+                4, XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.get());
+        XmlJavaTypeAdapterAlienAdapter.unmarshalCounter.set(0);
+        XmlJavaTypeAdapterAlienAdapter.marshalCounter.set(0);
     }
 }

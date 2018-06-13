@@ -9,7 +9,7 @@ import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 @Provider
 @ServerInterceptor
 public class AsyncPostProcessingInterceptor implements PostProcessInterceptor {
-    public static boolean called;
+    public static volatile boolean called;
 
     @Override
     public void postProcess(ServerResponse response) {

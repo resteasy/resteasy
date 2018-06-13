@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 
 @Provider
 public class DefaultNumberWriterCustom extends DefaultNumberWriter {
-    public static boolean used;
+    public static volatile boolean used;
     private static Logger logger = Logger.getLogger(DefaultNumberWriterCustom.class);
 
     @Override

@@ -12,7 +12,7 @@ import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 @Provider
 @ServerInterceptor
 public class AsyncPostProcessingMsgBodyWriterInterceptor implements MessageBodyWriterInterceptor {
-    public static boolean called;
+    public static volatile boolean called;
 
     public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException {
         called = true;

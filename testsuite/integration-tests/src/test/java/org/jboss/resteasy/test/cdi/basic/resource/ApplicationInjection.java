@@ -10,7 +10,7 @@ import java.util.List;
 @Provider
 @ApplicationPath("/")
 public class ApplicationInjection extends Application {
-    public static List<ApplicationInjection> instances = new ArrayList<>();
+    public static volatile List<ApplicationInjection> instances = new ArrayList<>();
 
     @Context
     public Application app;
