@@ -179,20 +179,20 @@ public class RxCompletionStageProxyServerAsyncTest {
       Assert.assertEquals(xThingList, list);
    }
    
-//   @Test
+   @Test
    public void testUnhandledException() throws Exception {
       try {
-         proxy.getThing();
+         proxy.exceptionUnhandled();
          Assert.fail("expecting Exception");
       } catch (Exception e) {
          Assert.assertTrue(e.getMessage().contains("500"));
       }
    }
 
-//   @Test
+   @Test
    public void testHandledException() throws Exception {
       try {
-         proxy.getThing();
+         proxy.exceptionHandled();
          Assert.fail("expecting Exception");
       } catch (Exception e) {
          Assert.assertTrue(e.getMessage().contains("444"));

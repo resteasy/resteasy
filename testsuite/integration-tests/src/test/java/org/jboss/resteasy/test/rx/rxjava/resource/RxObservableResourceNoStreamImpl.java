@@ -218,7 +218,7 @@ public class RxObservableResourceNoStreamImpl {
    
    @GET
    @Path("exception/handled")
-   public Observable<Thing> exceptionHandled() throws Exception {
+   public Observable<Thing> exceptionHandled() throws TestException {
       throw new TestException("handled");
    }
    
