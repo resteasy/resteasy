@@ -3,10 +3,8 @@ package org.jboss.resteasy.spi;
 import java.util.concurrent.CompletionStage;
 
 /**
- * ??????????????????????????????/
- * @author rsigal
- *
- * @param <T>
+ * Used to turn a CompletionStage into another reactive class.
+ * Can be used for implementing RxInvokers for other suitable classes.
  */
 public interface AsyncClientResponseProvider<T> {
 

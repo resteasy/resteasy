@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.test.rx.resource.TRACE;
+import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.Thing;
 
 
@@ -158,5 +159,5 @@ public interface RxObservableNoStreamResource {
 
    @GET
    @Path("exception/handled")
-   public List<Thing> exceptionHandled() throws Exception;
+   public List<Thing> exceptionHandled() throws TestException;
 }
