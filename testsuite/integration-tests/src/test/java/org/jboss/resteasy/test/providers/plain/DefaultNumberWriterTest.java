@@ -11,6 +11,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,11 @@ public class DefaultNumberWriterTest {
         return PortProviderUtil.generateURL(path, DefaultNumberWriterTest.class.getSimpleName());
     }
 
+    @After
+    public void resetProviderFlag() {
+       DefaultNumberWriterCustom.used = false;
+    }
+    
     /**
      * @tpTestDetails Tests Byte object
      * @tpSince RESTEasy 3.0.16

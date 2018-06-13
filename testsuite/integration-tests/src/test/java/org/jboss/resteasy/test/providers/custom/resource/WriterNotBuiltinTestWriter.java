@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 public class WriterNotBuiltinTestWriter implements MessageBodyWriter, MessageBodyReader {
     private static Logger logger = Logger.getLogger(WriterNotBuiltinTestWriter.class);
 
-    public static boolean used;
+    public static volatile boolean used;
 
     public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return true;

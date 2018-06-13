@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Path("/jaxrs")
 public class JaxrsAsyncServletJaxrsResource {
     private Logger logger = Logger.getLogger(JaxrsAsyncServletJaxrsResource.class);
-    protected boolean cancelled;
+    protected volatile boolean cancelled;
 
     @GET
     @Path("resume/object")
