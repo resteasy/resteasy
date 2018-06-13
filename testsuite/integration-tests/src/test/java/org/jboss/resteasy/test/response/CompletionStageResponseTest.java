@@ -44,9 +44,8 @@ public class CompletionStageResponseTest {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
       war.addClass(CompletionStageProxy.class);
-      war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.reactivestreams\n"));
+              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
