@@ -181,12 +181,11 @@ public class RxCompletionStageClientAsyncTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       CompletionStageRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(CompletionStageRxInvoker.class);
       CompletionStage<Response> completionStage = invoker.head();
-      Assert.assertEquals(null, completionStage.toCompletableFuture().get().readEntity(String.class));
-      //??
+      Response response = completionStage.toCompletableFuture().get();
+      Assert.assertEquals(200, response.getStatus());
    }
 
    @Test
