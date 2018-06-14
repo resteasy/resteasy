@@ -22,6 +22,7 @@
         <sources.path></sources.path>
         <jacoco.agent></jacoco.agent>
         <additionalJvmArgs></additionalJvmArgs>
+        <ipv6ArquillianSettings></ipv6ArquillianSettings>
         <ee8.preview.mode>true</ee8.preview.mode>
     </properties>
 
