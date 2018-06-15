@@ -43,10 +43,14 @@ import org.jboss.resteasy.util.Types;
 @Priority(Priorities.USER-100)
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
-
+   private static final boolean JSONB_DISABLED = Boolean.getBoolean("resteasy.jsonb.disable");
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
+      if (JSONB_DISABLED)
+      {
+         return false;
+      }
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
       {
@@ -108,6 +112,10 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
+      if (JSONB_DISABLED)
+      {
+         return false;
+      }
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
       {
