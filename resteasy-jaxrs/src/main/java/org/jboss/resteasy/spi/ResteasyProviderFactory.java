@@ -1,6 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
@@ -2031,25 +2030,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             reactiveClasses.put(clazz, provider);
          }
       }
-      if (isA(provider, ResponseExceptionMapper.class, contracts))
-      {
-         try {
-            Object mapper = provider.newInstance();
-            registerProviderInstance(mapper, contracts, null, false);
-
-            if(contracts!=null) {
-               Integer prio = contracts.get(ResponseExceptionMapper.class) != null ? contracts.get(ResponseExceptionMapper.class) :
-                       ((ResponseExceptionMapper) mapper).getPriority();
-
-               newContracts.put(ResponseExceptionMapper.class, prio);
-            } else {
-               newContracts.put(ResponseExceptionMapper.class, ((ResponseExceptionMapper) mapper).getPriority());
-            }
-         } catch (Throwable e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to register provider", e);
-         }
-      }
       if (isA(provider, ResourceClassProcessor.class, contracts))
       {
          int priority = getPriority(priorityOverride, contracts, ResourceClassProcessor.class, provider);
@@ -2383,16 +2363,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          int priority = getPriority(priorityOverride, contracts, Feature.class, provider.getClass());
          newContracts.put(Feature.class, priority);
 
-      }
-      if (isA(provider, ResponseExceptionMapper.class, contracts))
-      {
-         if(contracts!=null) {
-            Integer prio = contracts.get(ResponseExceptionMapper.class) != null ? contracts.get(ResponseExceptionMapper.class) :
-                    ((ResponseExceptionMapper) provider).getPriority();
-            newContracts.put(ResponseExceptionMapper.class, prio);
-         } else {
-            newContracts.put(ResponseExceptionMapper.class, ((ResponseExceptionMapper) provider).getPriority());
-         }
       }
       if (isA(provider, ResourceClassProcessor.class, contracts))
       {

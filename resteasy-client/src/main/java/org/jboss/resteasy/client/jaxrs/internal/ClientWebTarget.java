@@ -76,7 +76,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone();
-      return new ClientWebTarget(client, copy, configuration);
+      return newInstance(client, copy, configuration);
    }
 
    @Override
@@ -90,7 +90,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public <T> T proxy(Class<T> proxyInterface)
    {
       client.abortIfClosed();
-      return ProxyBuilder.builder(proxyInterface, this).build();
+      return createProxyBuilder(proxyInterface, this).build();
    }
 
    @Override
@@ -98,7 +98,12 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (proxyInterface == null) throw new NullPointerException(Messages.MESSAGES.proxyInterfaceWasNull());
-      return ProxyBuilder.builder(proxyInterface, this);
+      return createProxyBuilder(proxyInterface, this);
+   }
+   
+   protected <T> ProxyBuilder<T> createProxyBuilder(Class<T> proxyInterface, ClientWebTarget cwt)
+   {
+      return ProxyBuilder.builder(proxyInterface, cwt);
    }
 
    @Override
@@ -128,7 +133,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (path == null) throw new NullPointerException(Messages.MESSAGES.pathWasNull());
       UriBuilder copy = uriBuilder.clone().path(path);
-      return  new ClientWebTarget(client, copy, configuration);
+      return  newInstance(client, copy, configuration);
    }
 
    @Override
@@ -137,7 +142,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (resource == null) throw new NullPointerException(Messages.MESSAGES.resourceWasNull());
       UriBuilder copy = uriBuilder.clone().path(resource);
-      return  new ClientWebTarget(client, copy, configuration);
+      return  newInstance(client, copy, configuration);
    }
 
    @Override
@@ -146,7 +151,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (method == null) throw new NullPointerException(Messages.MESSAGES.methodWasNull());
       UriBuilder copy = uriBuilder.clone().path(method);
-      return  new ClientWebTarget(client, copy, configuration);
+      return  newInstance(client, copy, configuration);
    }
 
    @Override
@@ -157,7 +162,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (value == null) throw new NullPointerException(Messages.MESSAGES.valueWasNull());
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.clone().resolveTemplate(name, val);
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -175,7 +180,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          vals.put(entry.getKey(), val);
       }
       UriBuilder copy = uriBuilder.clone().resolveTemplates(vals);
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -187,7 +192,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (value == null) throw new NullPointerException(Messages.MESSAGES.valueWasNull());
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.clone().resolveTemplate(name, val, encodeSlashInPath);
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -199,7 +204,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (value == null) throw new NullPointerException(Messages.MESSAGES.valueWasNull());
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.clone().resolveTemplateFromEncoded(name, val);
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -217,7 +222,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          vals.put(entry.getKey(), val);
       }
       UriBuilder copy = uriBuilder.clone().resolveTemplatesFromEncoded(vals) ;
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -235,7 +240,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          vals.put(entry.getKey(), val);
       }
       UriBuilder copy = uriBuilder.clone().resolveTemplates(vals, encodeSlashInPath) ;
-      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      ClientWebTarget target = newInstance(client, copy, configuration);
       return target;
    }
 
@@ -254,7 +259,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          String[] stringValues = toStringValues(values);
          copy.matrixParam(name, stringValues);
       }
-      return new ClientWebTarget(client, copy, configuration);
+      return newInstance(client, copy, configuration);
    }
 
    private String[] toStringValues(Object[] values)
@@ -282,7 +287,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          String[] stringValues = toStringValues(values);
          copy.queryParam(name, stringValues);
       }
-      return new ClientWebTarget(client, copy, configuration);
+      return newInstance(client, copy, configuration);
    }
 
    @Override
@@ -296,7 +301,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          String[] stringValues = toStringValues(entry.getValue().toArray());
          copy.queryParam(entry.getKey(), stringValues);
       }
-      return  new ClientWebTarget(client, copy, configuration);
+      return  newInstance(client, copy, configuration);
    }
 
    @Override
@@ -315,7 +320,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       {
          copy.clientQueryParam(name, obj);
       }
-      return  new ClientWebTarget(client, copy, configuration);
+      return  newInstance(client, copy, configuration);
    }
 
    @Override
@@ -337,14 +342,18 @@ public class ClientWebTarget implements ResteasyWebTarget
             copy.clientQueryParam(entry.getKey(), val);
          }
       }
-      return  new ClientWebTarget(client, copy, configuration);
+      return newInstance(client, copy, configuration);
+   }
+   
+   protected ClientWebTarget newInstance(ResteasyClient client, UriBuilder uriBuilder, ClientConfiguration configuration) {
+      return new ClientWebTarget(client, uriBuilder, configuration);
    }
 
    @Override
    public Invocation.Builder request()
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilder builder = createClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.setChunked(chunked);
       builder.setTarget(this);
       return builder;
@@ -354,7 +363,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilder builder = createClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
       builder.setTarget(this);
@@ -365,11 +374,16 @@ public class ClientWebTarget implements ResteasyWebTarget
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
       client.abortIfClosed();
-      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilder builder = createClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       builder.setChunked(chunked);
       builder.setTarget(this);
       return builder;
+   }
+   
+   protected ClientInvocationBuilder createClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
+   {
+      return new ClientInvocationBuilder(client, uri, configuration);
    }
 
    @Override
