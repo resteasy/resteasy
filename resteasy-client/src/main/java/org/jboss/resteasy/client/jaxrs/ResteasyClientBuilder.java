@@ -382,7 +382,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder4().resteasyClientBuilder(this).build();
-      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
 
@@ -407,8 +407,12 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
-      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
+      return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
+   }
+   
+   protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
+      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
    }
 
    protected void prepareSocketForSni(SSLSocket socket)

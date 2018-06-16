@@ -1,9 +1,12 @@
 package org.jboss.resteasy.client.jaxrs;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -98,5 +101,4 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts);
    
    ResteasyWebTarget setChunked(boolean chunked);
-
 }

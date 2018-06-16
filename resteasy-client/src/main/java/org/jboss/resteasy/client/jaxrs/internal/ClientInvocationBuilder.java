@@ -28,16 +28,21 @@ import java.util.Locale;
  */
 public class ClientInvocationBuilder implements Invocation.Builder
 {
-   private  ClientInvocation invocation;
+   protected ClientInvocation invocation;
    private final URI uri;
    private WebTarget target;
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
-      invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
+      invocation = createClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
       this.uri = uri;
    }
-
+   
+   protected ClientInvocation createClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
+   {
+      return new ClientInvocation(client, uri, headers, parent);
+   }
+   
    public ClientInvocation getInvocation()
    {
       return invocation;
@@ -169,7 +174,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public AsyncInvoker async()
    {
-      return new AsynchronousInvoke(invocation);
+      return new AsynchronousInvoke(this.invocation);
    }
 
    @Override

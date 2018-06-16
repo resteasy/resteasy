@@ -1,6 +1,5 @@
 package org.jboss.resteasy.cdi.microprofile;
 
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
