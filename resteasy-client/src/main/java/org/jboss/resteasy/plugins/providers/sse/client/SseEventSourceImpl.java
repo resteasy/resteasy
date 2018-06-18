@@ -18,10 +18,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -316,57 +319,67 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
+         if (state.get() != State.OPEN)
+         {
+            onCompleteConsumers.forEach(Runnable::run);
+            return;
+         }
+         
          SseEventInputImpl eventInput = null;
          long delay = reconnectDelay;
          try
          {
-            final Invocation.Builder request = buildRequest(mediaTypes);
-            if (state.get() == State.OPEN)
+            final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
+            Invocation request = null;
+            if (entity == null)
             {
-               if (entity == null)
+               request = requestBuilder.build(verb);
+            }
+            else
+            {
+               request = requestBuilder.build(verb, entity);
+            }
+            Response response = request.invoke();
+            if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
+            {
+               onConnection();
+               eventInput = response.readEntity(SseEventInputImpl.class);
+               //if 200<= response code <300 and response contentType is null, fail the connection. 
+               if (eventInput == null && !alwaysReconnect)
                {
-                  eventInput = request.method(verb, SseEventInputImpl.class);
-               }
-               else
-               {
-                  eventInput = request.method(verb, entity, SseEventInputImpl.class);
+                  state.set(State.CLOSED);
                }
             }
-            //if 200< response code <300 and response contentType is null, fail the connection. 
-            if (eventInput == null && !alwaysReconnect)
+            else
             {
-               state.set(State.CLOSED);
+               //Let's buffer the entity in case the response contains an entity the user would like to retrieve from the exception.
+               //This will also ensure that the connection is correctly closed.
+               response.bufferEntity();
+               //Throw an instance of WebApplicationException depending on the response.
+               ClientInvocation.handleErrorStatus(response);
             }
          }
          catch (ServiceUnavailableException ex)
          {
             if (ex.hasRetryAfter())
             {
+               onConnection();
                Date requestTime = new Date();
                delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               onErrorConsumers.forEach(consumer -> {
+                  consumer.accept(ex);
+               });
             }
             else
             {
-               state.set(State.CLOSED);
+               onUnrecoverableError(ex);
             }
-            onErrorConsumers.forEach(consumer -> {
-               consumer.accept(ex);
-            });
          }
          catch (Throwable e)
          {
-            onErrorConsumers.forEach(consumer -> {
-               consumer.accept(e);
-            });
-            state.set(State.CLOSED);
+            onUnrecoverableError(e);
          }
-         finally
-         {
-            if (connectedLatch != null)
-            {
-               connectedLatch.countDown();
-            }
-         }
+        
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
@@ -418,6 +431,20 @@ public class SseEventSourceImpl implements SseEventSource
             Thread.currentThread().interrupt();
          }
 
+      }
+      
+      private void onConnection()
+      {
+         connectedLatch.countDown();
+      }
+
+      private void onUnrecoverableError(Throwable throwable)
+      {
+         state.set(State.CLOSED);
+         connectedLatch.countDown();
+         onErrorConsumers.forEach(consumer -> {
+            consumer.accept(throwable);
+         });
       }
 
       private void onEvent(final InboundSseEvent event)
