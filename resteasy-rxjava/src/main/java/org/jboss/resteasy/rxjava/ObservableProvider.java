@@ -5,9 +5,9 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.reactivestreams.Publisher;
 
+import io.reactiverse.reactivecontexts.core.Context;
 import rx.Observable;
 import rx.RxReactiveStreams;
-import rx.plugins.RxJavaHooks;
 
 /**
  * @deprecated:
@@ -22,10 +22,9 @@ import rx.plugins.RxJavaHooks;
 @Deprecated
 public class ObservableProvider implements AsyncStreamProvider<Observable<?>>
 {
-
    static
    {
-      RxJavaHooks.setOnObservableCreate(new ResteasyContextPropagatingOnObservableCreateAction());
+      Context.load();
    }
 
    @Override

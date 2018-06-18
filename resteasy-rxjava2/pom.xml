@@ -63,6 +63,15 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-processor</artifactId>
     </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-reactive-context</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>reactive-contexts-propagators-rxjava2</artifactId>
+    </dependency>
   </dependencies>
   
    <profiles>

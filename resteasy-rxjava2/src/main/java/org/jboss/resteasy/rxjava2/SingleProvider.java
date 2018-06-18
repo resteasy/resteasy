@@ -8,16 +8,16 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 
+import io.reactiverse.reactivecontexts.core.Context;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.plugins.RxJavaPlugins;
 
 @Provider
 public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
    static
    {
-      RxJavaPlugins.setOnSingleSubscribe(new ResteasyContextPropagatingOnSingleCreateAction());
+      Context.load();
    }
 
    private static class SingleAdaptor<T> extends CompletableFuture<T>
