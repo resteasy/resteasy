@@ -1,7 +1,14 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringContains.containsString;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -11,13 +18,6 @@ import org.jboss.resteasy.category.NotForWildFly101;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonJAXBResource;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonProduct;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonResource;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlProduct;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResource;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResourceWithJAXB;
-import org.jboss.resteasy.test.providers.jackson.resource.JacksonXmlResourceWithJacksonAnnotation;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -32,13 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringContains.containsString;
 
 /**
  * @tpSubChapter Jackson2 provider
