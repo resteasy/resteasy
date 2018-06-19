@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs;
 
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvokerFactory;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientProxy;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.MethodInvoker;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy;
@@ -64,6 +65,10 @@ public class ProxyBuilder<T>
          else if (httpMethods == null) {
             // ignore methods without http method annotations
             continue;
+         }
+         else if (base instanceof ClientInvokerFactory)
+         {
+            invoker = ((ClientInvokerFactory)base).createClientInvoker(iface, method, config);
          }
          else
          {

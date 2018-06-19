@@ -23,7 +23,9 @@ import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * Created by hbraun on 15.01.18.
@@ -31,7 +33,9 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 class MicroprofileClientBuilder implements RestClientBuilder {
 
     public MicroprofileClientBuilder() {
-        this.builderDelegate = new ResteasyClientBuilder();
+       ResteasyProviderFactory rpf = new MPResteasyProviderFactory();
+       RegisterBuiltin.register(rpf);
+       this.builderDelegate = new MPResteasyClientBuilder().providerFactory(rpf);
     }
 
     private final static String DEFAULT_MAPPER_PROP = "microprofile.rest.client.disable.default.mapper";
