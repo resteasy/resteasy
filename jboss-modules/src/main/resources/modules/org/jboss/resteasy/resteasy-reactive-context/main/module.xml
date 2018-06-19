@@ -22,7 +22,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="org.jboss.resteasy.resteasy-rxjava2">
+<module xmlns="urn:jboss:module:1.3" name="org.jboss.resteasy.resteasy-reactive-context">
     <resources>
         <!-- Insert resources here -->
     </resources>
@@ -30,7 +30,5 @@
     <dependencies>
         <module name="javax.ws.rs.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
-        <module name="org.jboss.resteasy.resteasy-reactive-context"/>
-        <module name="org.reactivestreams"/>
     </dependencies>
 </module>

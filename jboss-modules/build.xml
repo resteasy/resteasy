@@ -146,10 +146,25 @@
         <module-def name="org.jboss.resteasy.resteasy-jackson2-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson2-provider"/>
         </module-def>
+    	
+        <module-def name="org.jboss.resteasy.resteasy-reactive-context">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-reactive-context"/>
+            <maven-resource group="io.reactiverse" artifact="reactive-contexts-core"/>
+        </module-def>
 
+    	<!--
+    	<module-def name="org.jboss.resteasy.resteasy-rxjava">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-rxjava"/>
+        	<maven-resource group="io.reactivex" artifact="rxjava"/>
+        	<maven-resource group="io.reactivex" artifact="rxjava-reactive-streams"/>
+            <maven-resource group="io.reactiverse" artifact="reactive-contexts-propagators-rxjava1"/>
+        </module-def>
+        -->
+    	
         <module-def name="org.jboss.resteasy.resteasy-rxjava2">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-rxjava2"/>
-            <maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
+         	<maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
+            <maven-resource group="io.reactiverse" artifact="reactive-contexts-propagators-rxjava2"/>
         </module-def>
 
         <module-def name="com.github.fge.jackson-coreutils">
