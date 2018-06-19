@@ -331,6 +331,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          protected void setInputStream(InputStream is)
          {
             stream = is;
+            resetEntity();
          }
 
          public InputStream getInputStream()
