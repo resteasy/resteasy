@@ -7,10 +7,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +43,6 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -600,7 +596,7 @@ public class ClientInvocation implements Invocation
       return aborted;
    }
 
-   private ClientResponse filterResponse(ClientRequestContextImpl requestContext, ClientResponse response)
+   protected ClientResponse filterResponse(ClientRequestContextImpl requestContext, ClientResponse response)
    {
       response.setProperties(configuration.getMutableProperties());
 
@@ -621,47 +617,6 @@ public class ClientInvocation implements Invocation
             catch (Throwable e)
             {
                throw new ResponseProcessingException(response, e);
-            }
-         }
-      }
-      Map<ResponseExceptionMapper, Integer> mappers = new HashMap<>();
-      Set<Object> instances = configuration.getInstances();
-      for (Object instance : instances) {
-         if(instance instanceof ResponseExceptionMapper) {
-            ResponseExceptionMapper candiate = (ResponseExceptionMapper) instance;
-            if (candiate.handles(response.getStatus(), response.getHeaders())) {
-               mappers.put(candiate, candiate.getPriority());
-            }
-         }
-      }
-
-      if(mappers.size()>0) {
-         Map<Optional<Throwable>, Integer> errors = new HashMap<>();
-
-         mappers.forEach( (m, i) -> {
-            Optional<Throwable> t = Optional.ofNullable(m.toThrowable(response));
-            errors.put(t, i);
-         });
-
-         Optional<Throwable> prioritised = Optional.empty();
-         for (Optional<Throwable> throwable : errors.keySet()) {
-            if(throwable.isPresent()) {
-               if(!prioritised.isPresent())
-                  prioritised = throwable;
-               else if(errors.get(throwable)<errors.get(prioritised))
-                  prioritised = throwable;
-
-            }
-         }
-
-         // strange rule from the spec
-         if(prioritised.isPresent()) {
-            Throwable t = prioritised.get();
-            if (t instanceof RuntimeException) {
-               throw (RuntimeException) t;
-            } else {
-               // for checked exceptions
-               throw new ResponseProcessingException(response, t);
             }
          }
       }
