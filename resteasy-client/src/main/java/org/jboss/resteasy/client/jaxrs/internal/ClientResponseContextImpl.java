@@ -146,7 +146,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
    @Override
    public InputStream getEntityStream()
    {
-      return response.getInputStream();
+      return response.getEntityStream();
    }
 
    @Override

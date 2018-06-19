@@ -397,6 +397,13 @@ public abstract class ClientResponse extends BuiltResponse
       return true;
    }
 
+   protected void resetEntity()
+   {
+       entity = null;
+       bufferedEntity = null;
+       streamFullyRead = false;
+   }
+
    @Override
    public void abortIfClosed()
    {
