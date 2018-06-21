@@ -1,12 +1,16 @@
 package org.jboss.resteasy.test.client.proxy;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.client.proxy.GenericProxyTest;
 import org.jboss.resteasy.test.client.proxy.resource.*;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -45,7 +49,10 @@ public class NullEntityProxyTest {
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
         war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
-        return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
+        //FIXME - This is only a workaround for RESTEASY-1930
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, NullEntityProxyResource.class);
     }
 
     private static String generateBaseUrl() {
