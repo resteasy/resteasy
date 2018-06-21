@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.asynch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Client;
@@ -12,6 +14,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataProduct;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -42,7 +45,9 @@ public class AsynchContextualDataTest {
       war.addClass(AsynchContextualDataProduct.class);
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(AsynchContextualDataResource.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons);
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+      return TestUtil.finishContainerPrepare(war, contextParam, singletons);
    }
    
    private String generateURL(String path) {
