@@ -47,12 +47,12 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
-      if (JSONB_DISABLED)
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
       {
          return false;
       }
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
-      if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
+      if (JSONB_DISABLED)
       {
          return false;
       }
@@ -112,12 +112,12 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-      if (JSONB_DISABLED)
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
       {
          return false;
       }
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
-      if (context != null && Boolean.parseBoolean(context.getParameter("resteasy.jsonb.disable")))
+      if (JSONB_DISABLED)
       {
          return false;
       }
