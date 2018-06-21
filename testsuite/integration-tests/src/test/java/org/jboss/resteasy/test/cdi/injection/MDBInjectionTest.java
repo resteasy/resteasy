@@ -2,6 +2,9 @@ package org.jboss.resteasy.test.cdi.injection;
 
 import java.net.SocketPermission;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -87,7 +90,9 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
         }
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new SocketPermission(host, "resolve")),
                 "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, (Class<?>[]) null);
     }
 
     @ArquillianResource

@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.asynch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Client;
@@ -42,7 +44,9 @@ public class AsynchContextualDataTest {
       war.addClass(AsynchContextualDataProduct.class);
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(AsynchContextualDataResource.class);
-      return TestUtil.finishContainerPrepare(war, null, singletons);
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put("resteasy.jsonb.disable", "true");
+      return TestUtil.finishContainerPrepare(war, contextParam, singletons);
    }
    
    private String generateURL(String path) {

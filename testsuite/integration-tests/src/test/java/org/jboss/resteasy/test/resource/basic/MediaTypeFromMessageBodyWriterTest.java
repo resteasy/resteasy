@@ -2,6 +2,8 @@ package org.jboss.resteasy.test.resource.basic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -74,8 +76,10 @@ public class MediaTypeFromMessageBodyWriterTest {
 
     @Deployment(name = "multiple")
     public static Archive<?> deploy() {
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
         WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null,
+        return TestUtil.finishContainerPrepare(war, contextParam,
               MediaTypeFromMessageBodyWriterListAsText.class,
               MediaTypeFromMessageBodyWriterListAsXML.class,
               MediaTypeFromMessageBodyWriterResource.class);
@@ -83,8 +87,10 @@ public class MediaTypeFromMessageBodyWriterTest {
 
     @Deployment(name = "single")
     public static Archive<?> deploy2() {
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
         WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName() + "_single");
-        return TestUtil.finishContainerPrepare(war, null,
+        return TestUtil.finishContainerPrepare(war, contextParam,
                 CustomProviderPreferenceUser.class,
                 MediaTypeFromMessageBodyWriterTextJson.class,
                 MediaTypeFromMessageBodyWriterResource2.class);

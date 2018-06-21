@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.providers.jackson2.resource;
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
+@JsonPropertyOrder({"name","id"})
 public class JacksonJaxbCoexistenceProduct {
     protected String name;
 

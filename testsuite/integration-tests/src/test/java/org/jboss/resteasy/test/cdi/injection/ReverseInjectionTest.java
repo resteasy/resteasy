@@ -64,6 +64,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
@@ -71,8 +72,10 @@ import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 import java.net.SocketPermission;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
@@ -159,7 +162,9 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
                 new RuntimePermission("getenv.RESTEASY_PORT"),
                 new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
         ), "permissions.xml");
-        return war;
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, (Class<?>[]) null);
     }
 
     private String generateURL(String path) {

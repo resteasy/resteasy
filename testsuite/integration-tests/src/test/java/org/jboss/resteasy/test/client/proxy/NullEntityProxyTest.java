@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.client.proxy;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -45,7 +48,9 @@ public class NullEntityProxyTest {
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
         war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
-        return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonb.disable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, NullEntityProxyResource.class);
     }
 
     private static String generateBaseUrl() {
