@@ -2010,15 +2010,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, Feature.class, contracts))
       {
+         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
          int priority = getPriority(priorityOverride, contracts, Feature.class, provider);
          Feature feature = injectedInstance((Class<? extends Feature>) provider);
-         if (feature.configure(new FeatureContextDelegate(this)))
-         {
-            enabledFeatures.add(feature);
+         if (constrainedTo == null || constrainedTo.value() == getRuntimeType()) {
+            if (feature.configure(new FeatureContextDelegate(this)))
+            {
+               enabledFeatures.add(feature);
+            }
          }
          featureClasses.add(provider);
          newContracts.put(Feature.class, priority);
-
       }
       if (isA(provider, RxInvokerProvider.class, contracts))
       {
@@ -2375,12 +2377,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          Feature feature = (Feature) provider;
          injectProperties(provider.getClass(), provider);
-         if (feature.configure(new FeatureContextDelegate(this)))
-         {
-            enabledFeatures.add(feature);
+         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+         if (constrainedTo == null || constrainedTo.value() == getRuntimeType()) {
+            if (feature.configure(new FeatureContextDelegate(this)))
+            {
+               enabledFeatures.add(feature);
+            }
          }
-         featureInstances.add(provider);
          int priority = getPriority(priorityOverride, contracts, Feature.class, provider.getClass());
+         featureInstances.add(provider);
          newContracts.put(Feature.class, priority);
 
       }
