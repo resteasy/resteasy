@@ -1,0 +1,2 @@
+org.jboss.resteasy.test.providers.custom.resource.CustomServerConstrainedFeature
+org.jboss.resteasy.test.providers.custom.resource.CustomClientConstrainedFeature
