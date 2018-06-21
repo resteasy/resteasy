@@ -14,6 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.response.resource.VariantAcceptResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -62,7 +63,10 @@ public class VariantAcceptTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(VariantAcceptTest.class.getSimpleName());
         war.addClass(VariantAcceptTest.class);
-        return TestUtil.finishContainerPrepare(war, null, VariantAcceptResource.class);
+        //FIXME - This is only a workaround for RESTEASY-1930
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, VariantAcceptResource.class);
     }
 
     private String generateURL(String path) {
