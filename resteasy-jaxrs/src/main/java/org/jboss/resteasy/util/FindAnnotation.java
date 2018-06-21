@@ -118,10 +118,12 @@ public final class FindAnnotation
    
    public static boolean hasJsonBindingAnnotations(Annotation[] searchList)
    {
-      for (Annotation ann : searchList) {
-         if (ann.annotationType().isAnnotationPresent(JsonbAnnotation.class))
-         {
-            return true;
+      if (searchList != null) {
+         for (Annotation ann : searchList) {
+            if (ann.annotationType().isAnnotationPresent(JsonbAnnotation.class))
+            {
+               return true;
+            }
          }
       }
       return false;

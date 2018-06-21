@@ -25,6 +25,9 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 
@@ -38,9 +41,22 @@ import org.jboss.resteasy.util.Types;
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
+   private final boolean disabled;
+   
+   public JsonBindingProvider() {
+      super();
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
+                || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+   }
+   
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
+      if (disabled)
+      {
+         return false;
+      }
       if (isGenericJaxb(type, genericType))
       {
          return false;
@@ -68,6 +84,10 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
+      if (disabled)
+      {
+         return false;
+      }
       if (isGenericJaxb(type, genericType))
       {
          return false;
