@@ -213,13 +213,7 @@
             <artifactId>resteasy-multipart-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-rxjava</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-rxjava2</artifactId>

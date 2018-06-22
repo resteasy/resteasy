@@ -17,8 +17,8 @@ import org.jboss.resteasy.test.stream.resource.StreamRawCharMessageBodyReaderWri
 import org.jboss.resteasy.test.stream.resource.StreamRawMediaTypes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.TestUtilRxJava;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,8 +43,7 @@ public class StreamRawObservableRxJava1Test {
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(StreamRawObservableRxJava1Test.class.getSimpleName());
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava services"));
+      TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null,
          StreamRawObservableRxJava1Resource.class,
          StreamRawByteMessageBodyReaderWriter.class,
