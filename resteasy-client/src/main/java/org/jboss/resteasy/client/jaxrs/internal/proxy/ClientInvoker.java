@@ -16,6 +16,7 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
@@ -99,7 +100,19 @@ public class ClientInvoker implements MethodInvoker
    public Object invoke(Object[] args)
    {
       ClientInvocation request = createRequest(args);
-      ClientResponse response = (ClientResponse)request.invoke();
+      ClientResponse response = null;
+      try
+      {
+         response = (ClientResponse)request.invoke();
+      }
+      catch (ResponseProcessingException e)
+      {
+         if (e.getResponse() != null)
+         {
+            e.getResponse().close();
+         }
+         throw e;
+      }
       ClientContext context = new ClientContext(request, response, entityExtractorFactory);
       return extractor.extractEntity(context);
    }
