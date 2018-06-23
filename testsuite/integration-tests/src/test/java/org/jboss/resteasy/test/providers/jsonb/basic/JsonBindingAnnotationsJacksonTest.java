@@ -61,6 +61,8 @@ public class JsonBindingAnnotationsJacksonTest {
       war.addClass(JsonBindingTest.class);
       if (useJsonB) {
          war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
+      } else {
+         war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
       }
       return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
    }
