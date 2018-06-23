@@ -198,5 +198,18 @@
             entity providers for JSON-B take precedence over those for JSON-P for all types
             except JsonValue and its sub-types.
         </para>
+        <para>
+            The support for JSON-B is provided by the <code>JsonBindingProvider</code> from <code>resteasy-json-binding-provider</code> module.
+            To satisfy JAX-RS 2.1 requirements, JsonBindingProvider takes precedence over the other providers for dealing with JSON payloads,
+            in particular the Jackson one. The JSON outputs (for the same input) from Jackson and JSON-B reference implementation can be slightly
+            different.  As a consequence, in order to allow retaining backward compatibility, RESTEasy offers a
+            <code>resteasy.preferJacksonOverJsonB</code> context property that can be set to <code>true</code> to disable JsonBindingProvider
+            for the current deloyment.
+        </para>
+        <para>
+            WildFly 14 supports specifying the default value for the <code>resteasy.preferJacksonOverJsonB</code> context property by setting
+            a system property with the same name. Moreover, if no value is set for the context and system properties, it scans JAX-RS deployments
+            for Jackson annotations and sets the property to <code>true</code> if any of those annotations is found.
+        </para>
     </sect1>
 </chapter>
