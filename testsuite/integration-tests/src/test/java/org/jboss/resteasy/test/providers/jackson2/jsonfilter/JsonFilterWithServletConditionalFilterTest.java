@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -34,7 +35,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class})
+@Category({NotForForwardCompatibility.class, ExpectedFailing.class})
 public class JsonFilterWithServletConditionalFilterTest {
 
     static ResteasyClient client;
