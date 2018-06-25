@@ -8,8 +8,8 @@ jdk:
   - oraclejdk8
   - oraclejdk9
 env:
-  - SERVER_VERSION=11.0.0.Final
-  - SERVER_VERSION=12.0.0.Final
+#  - SERVER_VERSION=11.0.0.Final
+#  - SERVER_VERSION=12.0.0.Final
   - SERVER_VERSION=13.0.0.Final
 cache:
  directories:
