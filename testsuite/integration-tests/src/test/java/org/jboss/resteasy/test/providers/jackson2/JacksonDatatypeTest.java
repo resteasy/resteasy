@@ -42,6 +42,7 @@ import java.util.Map;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({ExpectedFailingOnWildFly13.class})
 public class JacksonDatatypeTest {
     private static final String DEFAULT_DEPLOYMENT = String.format("%sDefault",
             JacksonDatatypeTest.class.getSimpleName());
@@ -125,7 +126,6 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
-    @Category({ExpectedFailingOnWildFly13.class})
     public void testDatatypeNotSupportedOptionalNull() throws Exception {
         String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
         Assert.assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
