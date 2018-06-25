@@ -34,7 +34,7 @@ public class NoStreamRx2Test
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
+         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);
    }
 

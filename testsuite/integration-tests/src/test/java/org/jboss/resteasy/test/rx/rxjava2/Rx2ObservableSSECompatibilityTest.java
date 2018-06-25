@@ -63,7 +63,7 @@ public class Rx2ObservableSSECompatibilityTest {
       war.addClass(Thing.class);
       war.addClass(Rx2ObservableSSECompatibilityResource.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
+         + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, Rx2ObservableSSECompatibilityResourceImpl.class);
    }
 
