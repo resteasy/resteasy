@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({ExpectedFailingOnWildFly13.class})
 public class Jackson2Test {
 
     protected static final Logger logger = Logger.getLogger(Jackson2Test.class.getName());
@@ -146,7 +147,6 @@ public class Jackson2Test {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailingOnWildFly13.class})
     public void testJacksonString() throws Exception {
         WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
