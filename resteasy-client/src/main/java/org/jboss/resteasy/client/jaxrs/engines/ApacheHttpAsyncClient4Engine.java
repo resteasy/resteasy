@@ -641,6 +641,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       protected synchronized void setInputStream(InputStream is)
       {
          stream = is;
+         resetEntity();
       }
 
       @Override

@@ -11,6 +11,7 @@ import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.GetRestful;
@@ -92,9 +93,39 @@ public class ResteasyDeployment
    protected void startInternal()
    {
       // it is very important that each deployment create their own provider factory
-      // this allows each WAR to have their own set of providers 
+      // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = ResteasyProviderFactory.newInstance();
       providerFactory.setRegisterBuiltins(registerBuiltin);
+
+      Object tracingText;
+      Object thresholdText;
+
+      tracingText = System.getProperty(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+      thresholdText = System.getProperty(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+      Object context = getDefaultContextObjects().get(ResteasyConfiguration.class);
+
+      if (tracingText != null) {
+         providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
+      } else {
+         if (context != null) {
+            tracingText = ((ResteasyConfiguration) context).getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
+            if (tracingText != null) {
+               providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
+            }
+         }
+      }
+
+      if (thresholdText != null) {
+         providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, thresholdText);
+      } else {
+
+         if (context != null) {
+            thresholdText = ((ResteasyConfiguration) context).getInitParameter(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
+            if (thresholdText != null) {
+               providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, thresholdText);
+            }
+         }
+      }
 
       if (deploymentSensitiveFactoryEnabled)
       {
@@ -171,7 +202,7 @@ public class ResteasyDeployment
       // push context data so we can inject it
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
       contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-      
+
       try
       {
          if (injectorFactoryClass != null)
@@ -219,7 +250,7 @@ public class ResteasyDeployment
          }
 
          // Interceptor preferences should come before provider registration or builtin.
-         
+
          if (interceptorPrecedences != null)
          {
             for (String precedence : interceptorPrecedences)
@@ -990,7 +1021,7 @@ public class ResteasyDeployment
    {
       this.widerRequestMatching = widerRequestMatching;
    }
-   
+
    public boolean isAddCharset()
    {
       return addCharset;

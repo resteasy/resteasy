@@ -14,5 +14,7 @@ import java.lang.annotation.Target;
 public @interface Stream
 {
    public enum MODE {RAW, GENERAL};
+   public String INCLUDE_STREAMING_PARAMETER = "streaming";
    public MODE value() default MODE.GENERAL;
+   public boolean includeStreaming() default false;
 }

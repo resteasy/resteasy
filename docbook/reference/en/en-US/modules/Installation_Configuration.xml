@@ -251,17 +251,6 @@
                         RESTEasy's interface to Hibernate Bean Validation 1.1
                     </entry>
                 </row>
-                <row>
-                    <entry>
-                        org.jboss.resteasy.resteasy-yaml-provider
-                    </entry>
-                    <entry>
-                        yes
-                    </entry>
-                    <entry>
-                        YAML marshalling
-                    </entry>
-                </row>
             </tbody>
             </tgroup>
             </table>

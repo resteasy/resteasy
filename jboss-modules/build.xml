@@ -146,16 +146,10 @@
         <module-def name="org.jboss.resteasy.resteasy-jackson2-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson2-provider"/>
         </module-def>
-    	
-        <module-def name="org.jboss.resteasy.resteasy-rxjava">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-rxjava"/>
-        	<maven-resource group="io.reactivex" artifact="rxjava"/>
-        	<maven-resource group="io.reactivex" artifact="rxjava-reactive-streams"/>
-        </module-def>
-    	
+
         <module-def name="org.jboss.resteasy.resteasy-rxjava2">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-rxjava2"/>
-         	<maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
+            <maven-resource group="io.reactivex.rxjava2" artifact="rxjava"/>
         </module-def>
 
         <module-def name="com.github.fge.jackson-coreutils">
@@ -177,6 +171,7 @@
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs-api">
@@ -221,10 +216,6 @@
         <module-def name="org.jboss.resteasy.skeleton-key">
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-as7"/>
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>
-        </module-def>
-
-        <module-def name="org.jboss.resteasy.resteasy-yaml-provider">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-yaml-provider"/>
         </module-def>
 
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->

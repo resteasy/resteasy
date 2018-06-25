@@ -21,6 +21,10 @@ import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -275,6 +279,10 @@ public class ResourceMethodRegistry implements Registry
 
    protected void register(ResourceFactory rf, String base, ResourceClass resourceClass)
    {
+      RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(null);
+
+      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE, resourceClass.getClazz());
+
       for (ResourceMethod method : resourceClass.getResourceMethods())
       {
          processMethod(rf, base, method);

@@ -96,7 +96,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
           deployment.setRegisterBuiltin(useBuiltin);
       }
 
-
       String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       if (sProviders != null)
       {
@@ -257,7 +256,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       return deployment;
    }
 
-    private boolean parseBooleanParam(String key, String value) {
+    protected boolean parseBooleanParam(String key, String value) {
         value = value.trim().toLowerCase();
         if (value.equals("true") || value.equals("1")) {
             return true;

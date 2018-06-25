@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.stream;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -69,11 +70,16 @@ public class StreamRawFlowableRxJava2Test {
 
    //////////////////////////////////////////////////////////////////////////////
    @Test
-   public void testByte() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/byte")).request();
+   public void testByte() throws Exception {
+      doByteTest("default");
+      doByteTest("false");
+      doByteTest("true");
+   }
+   
+   void doByteTest(String include) {
+      Invocation.Builder request = client.target(generateURL("/byte/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamApplicationOctetXY, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       byte[] entity = response.readEntity(byte[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(3, entity.length);
@@ -81,13 +87,18 @@ public class StreamRawFlowableRxJava2Test {
          Assert.assertEquals((byte) i, entity[i]);
       }
    }
-
+   
    @Test
-   public void testByteArray() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/bytes")).request();
+   public void testByteArray() throws Exception {
+      doByteArrayTest("default");
+      doByteArrayTest("false");
+      doByteArrayTest("true");
+   }
+   
+   void doByteArrayTest(String include) {
+      Invocation.Builder request = client.target(generateURL("/bytes/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamApplicationOctetXY, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       byte[] entity = response.readEntity(byte[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(9, entity.length);
@@ -98,22 +109,32 @@ public class StreamRawFlowableRxJava2Test {
    }
    
    @Test
-   public void testChar() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/char")).request();
+   public void testChar() throws Exception {
+      doCharTest("default");
+      doCharTest("false");
+      doCharTest("true");
+   }
+   
+   void doCharTest(String include) {
+      Invocation.Builder request = client.target(generateURL("/char/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamTextPlainUTF8, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("abc", entity);
    }
    
    @Test
-   public void testCharArray() throws Exception
-   {
-      Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars")).request();
+   public void testCharArray() throws Exception {
+      doCharArrayTest("default");
+      doCharArrayTest("false");
+      doCharArrayTest("true");
+   }
+   
+   void doCharArrayTest(String include) {
+      Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamTextPlainUTF8, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       Character[] entity = response.readEntity(Character[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(9, entity.length);

@@ -125,4 +125,9 @@ public interface RxCompletionStageResource {
    @GET
    @Path("exception/handled")
    public CompletionStage<Thing> exceptionHandled() throws Exception;
+
+   @GET
+   @Path("exception/filter")
+   @Produces(MediaType.TEXT_PLAIN)
+   public CompletionStage<String> exceptionInFilter();
 }

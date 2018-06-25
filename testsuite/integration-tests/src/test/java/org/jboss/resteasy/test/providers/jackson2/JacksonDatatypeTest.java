@@ -4,14 +4,15 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.NotForWildFly101;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -19,7 +20,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
@@ -29,6 +29,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
@@ -37,8 +40,6 @@ import static org.hamcrest.core.StringContains.containsString;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-// This test passes with WildFly master branch, but don't pass with WildFly 10.1
-@Category({NotForWildFly101.class})
 public class JacksonDatatypeTest {
     private static final String DEFAULT_DEPLOYMENT = String.format("%sDefault",
             JacksonDatatypeTest.class.getSimpleName());
@@ -61,16 +62,19 @@ public class JacksonDatatypeTest {
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEFAULT_DEPLOYMENT + ".war");
-        war.addClasses(ApplicationTestScannedApplication.class, JacksonDatatypeEndPoint.class);
-        return war;
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, ApplicationTestScannedApplication.class,
+              JacksonDatatypeEndPoint.class);
     }
 
     @Deployment(name = "withDatatype")
     public static Archive<?> deployJettison() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_WITH_DATATYPE + ".war");
-        war.addClasses(JacksonDatatypeEndPoint.class,
-                JacksonDatatypeJacksonProducer.class, ApplicationTestScannedApplication.class);
-        return war;
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, JacksonDatatypeEndPoint.class,
+             JacksonDatatypeJacksonProducer.class, ApplicationTestScannedApplication.class);
     }
 
     private String requestHelper(String endPath, String deployment) {

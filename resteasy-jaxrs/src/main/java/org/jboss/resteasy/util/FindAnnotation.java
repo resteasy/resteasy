@@ -141,22 +141,30 @@ public final class FindAnnotation
       return result.toArray(findJaxRSAnnotations_TYPE);
 
    }
+   
+   public static boolean hasJsonBindingAnnotations(Annotation[] searchList)
+   {
+      if (searchList != null) {
+         for (Annotation ann : searchList) {
+            if (ann.annotationType().isAnnotationPresent(JsonbAnnotation.class))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
 
+   @Deprecated
    public static Class<? extends Annotation>[] findJsonBindingAnnotations(Annotation[] searchList)
    {
-
       LinkedList<Class<? extends Annotation>> result = new LinkedList<Class<? extends Annotation>>();
-
       for (Class<? extends Annotation> clazz : JSON_BINDING_ANNOTATIONS)
       {
-
          if (findAnnotation(searchList, clazz) != null)
             result.add(clazz);
-
       }
-
       return result.toArray(findJaxRSAnnotations_TYPE);
-
    }
 
    /**

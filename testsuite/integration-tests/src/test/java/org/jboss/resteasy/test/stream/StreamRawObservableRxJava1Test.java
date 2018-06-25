@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.stream;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -16,8 +17,8 @@ import org.jboss.resteasy.test.stream.resource.StreamRawCharMessageBodyReaderWri
 import org.jboss.resteasy.test.stream.resource.StreamRawMediaTypes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.utils.TestUtilRxJava;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -42,8 +43,7 @@ public class StreamRawObservableRxJava1Test {
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(StreamRawObservableRxJava1Test.class.getSimpleName());
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.jboss.resteasy.resteasy-rxjava services"));
+      TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null,
          StreamRawObservableRxJava1Resource.class,
          StreamRawByteMessageBodyReaderWriter.class,
@@ -69,11 +69,16 @@ public class StreamRawObservableRxJava1Test {
 
    //////////////////////////////////////////////////////////////////////////////
    @Test
-   public void testByte() throws Exception
-   {
-      Invocation.Builder request = client.register(StreamRawByteMessageBodyReaderWriter.class).target(generateURL("/byte")).request();
+   public void testByte() throws Exception {
+      doTestByte("default");
+      doTestByte("false");
+      doTestByte("true");
+   }
+   
+   void doTestByte(String include) {
+      Invocation.Builder request = client.register(StreamRawByteMessageBodyReaderWriter.class).target(generateURL("/byte/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamApplicationOctetXY, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       byte[] entity = response.readEntity(byte[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(3, entity.length);
@@ -83,11 +88,16 @@ public class StreamRawObservableRxJava1Test {
    }
 
    @Test
-   public void testByteArray() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/bytes")).request();
+   public void testByteArray() throws Exception {
+      doTestByteArray("default");
+      doTestByteArray("false");
+      doTestByteArray("true");
+   }
+   
+   void doTestByteArray(String include) {
+      Invocation.Builder request = client.target(generateURL("/bytes/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamApplicationOctetXY, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       byte[] entity = response.readEntity(byte[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(9, entity.length);
@@ -98,22 +108,32 @@ public class StreamRawObservableRxJava1Test {
    }
    
    @Test
-   public void testChar() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/char")).request();
+   public void testChar() throws Exception {
+      doTestChar("default");
+      doTestChar("false");
+      doTestChar("true");
+   }
+   
+   void doTestChar(String include) {
+      Invocation.Builder request = client.target(generateURL("/char/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamTextPlainUTF8, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("abc", entity);
    }
    
    @Test
-   public void testCharArray() throws Exception
-   {
-      Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars")).request();
+   public void testCharArray() throws Exception {
+      doTestCharArray("default");
+      doTestCharArray("false");
+      doTestCharArray("true");
+   }
+   
+   void doTestCharArray(String include) {
+      Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars/" + include)).request();
       Response response = request.get();
-      Assert.assertEquals(StreamRawMediaTypes.rawStreamTextPlainUTF8, response.getHeaderString("Content-Type"));
+      StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
       Character[] entity = response.readEntity(Character[].class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(9, entity.length);
