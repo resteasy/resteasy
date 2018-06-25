@@ -327,6 +327,9 @@ public class SynchronousDispatcher implements Dispatcher
       {
          throw new NotFoundException(Messages.MESSAGES.unableToFindJaxRsResource(request.getUri().getPath()));
       }
+      RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE, invoker);
+      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE_METHOD, invoker.getMethod());
       return invoker;
    }
 
@@ -489,6 +492,8 @@ public class SynchronousDispatcher implements Dispatcher
       catch (CompletionException e)
       {
          //logger.error("invoke() failed mapping exception", e);
+         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.flush(response.getOutputHeaders());
          writeException(request, response, e.getCause(), t->{});
          return;
       }

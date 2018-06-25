@@ -7,12 +7,10 @@ public enum RESTEasyServerTracingEvent implements RESTEasyTracingEvent {
      /**
      * Request processing started.
      */
-    // TODO: implement this event
     START(RESTEasyTracingLevel.SUMMARY, "START", null),
     /**
      * All HTTP request headers.
      */
-    // TODO: implement this event
     START_HEADERS(RESTEasyTracingLevel.VERBOSE, "START", null),
     /**
      * {@link HttpRequestPreprocessor} invoked.
@@ -25,37 +23,30 @@ public enum RESTEasyServerTracingEvent implements RESTEasyTracingEvent {
     /**
      * Matching path pattern.
      */
-    // TODO: implement this event
     MATCH_PATH_FIND(RESTEasyTracingLevel.TRACE, "MATCH", "Matching path [%s]"),
     /**
      * Path pattern not matched.
      */
-    // TODO: implement this event
     MATCH_PATH_NOT_MATCHED(RESTEasyTracingLevel.VERBOSE, "MATCH", "Pattern [%s] is NOT matched"),
     /**
      * Path pattern matched/selected.
      */
-    // TODO: implement this event
     MATCH_PATH_SELECTED(RESTEasyTracingLevel.TRACE, "MATCH", "Pattern [%s] IS selected"),
     /**
      * Path pattern skipped as higher-priority pattern has been selected already.
      */
-    // TODO: implement this event
     MATCH_PATH_SKIPPED(RESTEasyTracingLevel.VERBOSE, "MATCH", "Pattern [%s] is skipped"),
     /**
      * Matched sub-resource locator method.
      */
-    // TODO: implement this event
     MATCH_LOCATOR(RESTEasyTracingLevel.TRACE, "MATCH", "Matched locator : %s"),
     /**
      * Matched resource method.
      */
-    // TODO: implement this event
     MATCH_RESOURCE_METHOD(RESTEasyTracingLevel.TRACE, "MATCH", "Matched method  : %s"),
     /**
      * Matched runtime resource.
      */
-    // TODO: implement this event
     MATCH_RUNTIME_RESOURCE(RESTEasyTracingLevel.TRACE, "MATCH",
             "Matched resource: template=[%s] regexp=[%s] matches=[%s] from=[%s]"),
     /**
@@ -65,7 +56,6 @@ public enum RESTEasyServerTracingEvent implements RESTEasyTracingEvent {
     /**
      * Matching summary.
      */
-    // TODO: implement this event
     MATCH_SUMMARY(RESTEasyTracingLevel.SUMMARY, "MATCH", "RequestMatching summary"),
     /**
      * {@link ContainerRequestFilter} invoked.
@@ -94,12 +84,10 @@ public enum RESTEasyServerTracingEvent implements RESTEasyTracingEvent {
     /**
      * Request processing finished.
      */
-    // TODO: implement this event
     FINISHED(RESTEasyTracingLevel.SUMMARY, "FINISHED", "Response status: %s"),
     /**
      * {@link ExceptionMapper} invoked.
      */
-    // TODO: implement this event
     EXCEPTION_MAPPING(RESTEasyTracingLevel.SUMMARY, "EXCEPTION", "Exception mapper %s maps %s ('%s') to <%s>");
 
     private final RESTEasyTracingLevel level;

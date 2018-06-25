@@ -19,6 +19,7 @@ public class TracingApp extends Application {
     public Set<Object> getSingletons() {
         Set set = new HashSet<Class<?>>();
         set.add(new TracingConfigResource());
+        set.add(new FooLocator());
         return set;
     }
 }

@@ -279,10 +279,6 @@ public class ResourceMethodRegistry implements Registry
 
    protected void register(ResourceFactory rf, String base, ResourceClass resourceClass)
    {
-      RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(null);
-
-      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE, resourceClass.getClazz());
-
       for (ResourceMethod method : resourceClass.getResourceMethods())
       {
          processMethod(rf, base, method);
@@ -448,14 +444,19 @@ public class ResourceMethodRegistry implements Registry
     */
    public ResourceInvoker getResourceInvoker(HttpRequest request)
    {
-      try
-      {
-         if (widerMatching) return rootNode.match(request, 0);
-         else return root.match(request, 0);
-      }
-      catch (RuntimeException e)
-      {
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+      final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.MATCH_SUMMARY);
+      try {
+         if (widerMatching) {
+            return rootNode.match(request, 0);
+         } else {
+            return root.match(request, 0);
+         }
+      } catch (RuntimeException e) {
          throw e;
+      }
+      finally {
+         tracingLogger.logDuration(RESTEasyServerTracingEvent.MATCH_SUMMARY, timestamp);
       }
    }
 }

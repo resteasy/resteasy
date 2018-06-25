@@ -7,6 +7,10 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
@@ -68,6 +72,14 @@ public class ClassNode
             {
                String substring = path.substring(0, length);
                uriInfo.pushMatchedURI(substring);
+            }
+            RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+            if (logger.isLogEnabled(RESTEasyServerTracingEvent.MATCH_RUNTIME_RESOURCE)) {
+               logger.log(RESTEasyServerTracingEvent.MATCH_RUNTIME_RESOURCE,
+                       expression,
+                       expression.getRegex(),
+                       expression.getRoot().root,
+                       expression.getPathExpression());
             }
             return expression.getRoot();
          }
