@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -20,6 +21,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
@@ -123,6 +125,7 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
+    @Category({ExpectedFailingOnWildFly13.class})
     public void testDatatypeNotSupportedOptionalNull() throws Exception {
         String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
         Assert.assertThat("Wrong conversion of Optional (null)", strResponse, not(containsString("null")));
