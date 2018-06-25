@@ -7,10 +7,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,10 +43,10 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
@@ -82,7 +79,8 @@ public class ClientInvocation implements Invocation
    protected URI uri;
 
    protected boolean chunked;
-
+   
+   protected ClientInvoker clientInvoker;
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing this request.
    // That is problematic for wrapping the output stream in e.g. a RequestFilter for transparent compressing.
    protected DelegatingOutputStream delegatingOutputStream = new DelegatingOutputStream();
@@ -544,6 +542,14 @@ public class ClientInvocation implements Invocation
       return this;
    }
 
+   public ClientInvoker getClientInvoker() {
+      return clientInvoker;
+   }
+
+   public void setClientInvoker(ClientInvoker clientInvoker) {
+      this.clientInvoker = clientInvoker;
+   }
+   
    // internals
 
    private Providers pushProvidersContext()
@@ -590,7 +596,7 @@ public class ClientInvocation implements Invocation
       return aborted;
    }
 
-   private ClientResponse filterResponse(ClientRequestContextImpl requestContext, ClientResponse response)
+   protected ClientResponse filterResponse(ClientRequestContextImpl requestContext, ClientResponse response)
    {
       response.setProperties(configuration.getMutableProperties());
 
@@ -613,39 +619,6 @@ public class ClientInvocation implements Invocation
                throw new ResponseProcessingException(response, e);
             }
          }
-      }
-      Map<ResponseExceptionMapper, Integer> mappers = new HashMap<>();
-      Set<Object> instances = configuration.getInstances();
-      for (Object instance : instances) {
-         if(instance instanceof ResponseExceptionMapper) {
-            ResponseExceptionMapper candiate = (ResponseExceptionMapper) instance;
-            if (candiate.handles(response.getStatus(), response.getHeaders())) {
-               mappers.put(candiate, candiate.getPriority());
-            }
-         }
-      }
-
-      if(mappers.size()>0) {
-         Map<Optional<Throwable>, Integer> errors = new HashMap<>();
-
-         mappers.forEach( (m, i) -> {
-            Optional<Throwable> t = Optional.ofNullable(m.toThrowable(response));
-            errors.put(t, i);
-         });
-
-         Optional<Throwable> prioritised = Optional.empty();
-         for (Optional<Throwable> throwable : errors.keySet()) {
-            if(throwable.isPresent()) {
-               if(!prioritised.isPresent())
-                  prioritised = throwable;
-               else if(errors.get(throwable)<errors.get(prioritised))
-                  prioritised = throwable;
-
-            }
-         }
-
-         if(prioritised.isPresent()) // strange rule from the spec
-            throw (WebApplicationException) prioritised.get();
       }
 
       return response;

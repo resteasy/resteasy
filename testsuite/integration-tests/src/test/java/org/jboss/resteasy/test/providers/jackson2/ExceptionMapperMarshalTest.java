@@ -6,6 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperIOExceptionMapper;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalErrorMessage;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalMyCustomException;
@@ -29,7 +30,9 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -48,7 +51,9 @@ public class ExceptionMapperMarshalTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
         war.addClass(Jackson2Test.class);
-        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
                 MyEntity.class, ExceptionMapperIOExceptionMapper.class,
                 ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapperMarshalName.class, ExceptionMapperMarshalResource.class);
     }

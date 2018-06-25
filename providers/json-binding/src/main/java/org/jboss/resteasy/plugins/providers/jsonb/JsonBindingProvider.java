@@ -25,6 +25,9 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 
@@ -38,15 +41,28 @@ import org.jboss.resteasy.util.Types;
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
+   private final boolean disabled;
+   
+   public JsonBindingProvider() {
+      super();
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
+                || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+   }
+   
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
+      if (disabled)
+      {
+         return false;
+      }
       if (isGenericJaxb(type, genericType))
       {
          return false;
       }
       return (isSupportedMediaType(mediaType))
-            && ((!isJaxbClass(type)) || (FindAnnotation.findJsonBindingAnnotations(annotations).length != 0));
+    		  && ((FindAnnotation.hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
    }
 
    @Override
@@ -68,12 +84,16 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
+      if (disabled)
+      {
+         return false;
+      }
       if (isGenericJaxb(type, genericType))
       {
          return false;
       }
       return (isSupportedMediaType(mediaType))
-            && ((!isJaxbClass(type)) || (FindAnnotation.findJsonBindingAnnotations(annotations).length != 0));
+            && ((FindAnnotation.hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
    }
 
    @Override
@@ -123,11 +143,16 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
 
    private boolean isJaxbClass(Class<?> classType)
    {
-      if (classType.isAnnotationPresent(XmlRootElement.class) || classType.isAnnotationPresent(XmlType.class)
-            || classType.isAnnotationPresent(XmlJavaTypeAdapter.class)
-            || classType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(classType))
+      if (JAXBElement.class.equals(classType))
       {
          return true;
+      }
+      for (Annotation a : classType.getAnnotations()) {
+         Class<? extends Annotation> c = a.annotationType();
+         if (c.equals(XmlRootElement.class) || c.equals(XmlType.class) ||c.equals(XmlJavaTypeAdapter.class) ||c.equals(XmlSeeAlso.class))
+         {
+            return true;
+         }
       }
       return false;
 

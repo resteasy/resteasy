@@ -22,6 +22,7 @@
         <sources.path></sources.path>
         <jacoco.agent></jacoco.agent>
         <additionalJvmArgs></additionalJvmArgs>
+        <ipv6ArquillianSettings></ipv6ArquillianSettings>
         <ee8.preview.mode>true</ee8.preview.mode>
     </properties>
 
@@ -39,6 +40,7 @@
                         <node>127.0.0.1</node>
                         <jboss.home>${jboss.home}</jboss.home>
                         <project.version>${project.version}</project.version>
+                        <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
@@ -75,19 +77,6 @@
                 <module>integration-tests-spring</module>
                 <module>microprofile-tck</module>
             </modules>
-        </profile>
-        <!-- Enable Jaxrs 2.0 mode for the integration tests. -->
-        <profile>
-            <id>jaxrs20</id>
-            <activation>
-                <property>
-                    <name>jaxrs20</name>
-                </property>
-            </activation>
-            <properties>
-                <ee8.preview.mode>false</ee8.preview.mode>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.Jaxrs21</additional.surefire.excluded.groups>
-            </properties>
         </profile>
         <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
         <profile>
@@ -130,39 +119,15 @@
             </properties>
         </profile>
         <profile>
-            <id>server-version-9x-exclusions</id>
+            <id>server-version-13x-exclusions</id>
             <activation>
               <property>
                 <name>server.version</name>
-                <value>9.0.2.Final</value>
+                <value>13.0.0.Final</value>
               </property>
             </activation>
             <properties>
-              <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForWildFly9</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-1000-exclusions</id>
-            <activation>
-              <property>
-                <name>server.version</name>
-                <value>10.0.0.Final</value>
-              </property>
-            </activation>
-            <properties>
-              <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForWildFly10</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-1010-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>10.1.0.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForWildFly101</additional.surefire.excluded.groups>
+              <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly13</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->
@@ -197,6 +162,7 @@
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
                                 <node>::1</node>
                                 <project.version>${project.version}</project.version>
+                                <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                             </systemPropertyVariables>
                             <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>

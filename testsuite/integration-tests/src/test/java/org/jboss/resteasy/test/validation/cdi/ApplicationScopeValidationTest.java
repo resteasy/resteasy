@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.validation.cdi;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -12,6 +15,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceAppScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceReqScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeMyDto;
@@ -43,7 +47,9 @@ public class ApplicationScopeValidationTest {
                .addClasses(ApplicationScopeIRestServiceAppScoped.class, ApplicationScopeIRestServiceReqScoped.class)
                .addClasses(ApplicationScopeMyDto.class)
                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-       return TestUtil.finishContainerPrepare(war, null, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
+       Map<String, String> contextParam = new HashMap<>();
+       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+       return TestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
    }
 
    private String generateURL(String path) {

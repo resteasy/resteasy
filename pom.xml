@@ -98,10 +98,9 @@
                 <module>resteasy-dependencies-bom</module>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs/jaxrs20</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client/jaxrs20</module>
+                <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
@@ -153,11 +152,10 @@
             <modules>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs/jaxrs20</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client/jaxrs20</module>
                 <module>resteasy-client-jetty</module>
+                <module>resteasy-client-microprofile</module>  
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -176,6 +180,36 @@ public class JettyClientEngineTest {
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(valuableData, response.readEntity(byte[].class));
+    }
+
+    @Test
+    public void testFilterBufferReplay() throws Exception {
+        final String greeting = "Success";
+        final byte[] expected = (greeting + '\n').getBytes(StandardCharsets.UTF_8);
+        server.setHandler(new AbstractHandler() {
+            @Override
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+                baseRequest.setHandled(true);
+                response.setStatus(200);
+                response.setContentType(MediaType.TEXT_PLAIN);
+                response.getWriter().println(greeting);
+            }
+        });
+
+        final byte[] content = new byte[expected.length];
+        final ClientResponseFilter capturer = new ClientResponseFilter() {
+            @Override
+            public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+                responseContext.getEntityStream().read(content);
+            }
+        };
+
+        try (final InputStream response = client().register(capturer).target(baseUri()).request()
+            .get(InputStream.class)) {
+            // ignored, we are checking filter
+        }
+
+        assertArrayEquals(expected, content);
     }
 
     public URI baseUri() {

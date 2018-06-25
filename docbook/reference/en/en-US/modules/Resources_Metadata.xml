@@ -1,0 +1,115 @@
+<chapter id="Resources_Metadata">
+<title>Resources metadata configuration</title>
+
+<para>
+When processing JAX-RS deployments, RESTEasy relies on <emphasis>ResourceBuilder</emphasis> to create metadata for each JAX-RS resource. Such metadata is defined using the metadata SPI in package <emphasis>org.jboss.resteasy.spi.metadata</emphasis>, in particular the <emphasis>ResourceClass</emphasis> interface:
+<programlisting>
+package org.jboss.resteasy.spi.metadata;
+
+public interface ResourceClass
+{
+  String getPath();
+
+  Class&lt;?&gt; getClazz();
+
+  ResourceConstructor getConstructor();
+
+  FieldParameter[] getFields();
+
+  SetterParameter[] getSetters();
+
+  ResourceMethod[] getResourceMethods();
+
+  ResourceLocator[] getResourceLocators();
+}
+</programlisting>
+
+Among the other classes and interfaces defining metadata SPI, the following interfaces are worth a mention here:
+
+<programlisting>
+public interface ResourceConstructor
+{
+  ResourceClass getResourceClass();
+
+  Constructor getConstructor();
+
+  ConstructorParameter[] getParams();
+}
+
+public interface ResourceMethod extends ResourceLocator
+{
+  Set&lt;String&gt; getHttpMethods();
+
+  MediaType[] getProduces();
+
+  MediaType[] getConsumes();
+
+  boolean isAsynchronous();
+
+  void markAsynchronous();
+}
+
+public interface ResourceLocator
+{
+  ResourceClass getResourceClass();
+
+  Class&lt;?&gt; getReturnType();
+
+  Type getGenericReturnType();
+
+  Method getMethod();
+
+  Method getAnnotatedMethod();
+
+  MethodParameter[] getParams();
+
+  String getFullpath();
+
+  String getPath();
+
+}
+</programlisting>
+</para>
+
+<para>
+Now, the interesting point is that RESTEasy allows tuning the metadata generation by providing implementations of the <emphasis>ResourceClassProcessor</emphasis> interface:
+<programlisting>
+package org.jboss.resteasy.spi.metadata;
+
+public interface ResourceClassProcessor
+{
+
+  /**
+   * Allows the implementation of this method to modify the resource metadata represented by
+   * the supplied {@link ResourceClass} instance. Implementation will typically create
+   * wrappers which modify only certain aspects of the metadata.
+   *
+   * @param clazz The original metadata
+   * @return the (potentially modified) metadata (never null)
+   */
+  ResourceClass process(ResourceClass clazz);
+
+}
+</programlisting>
+
+The processors are meant to be, and are resolved as, regular JAX-RS annotated providers. They allow for wrapping resource metadata classes with custom versions that can be used for various advanced scenarios like
+<itemizedlist>
+<listitem>
+adding additional resource method/locators to the resource
+</listitem>
+<listitem>
+altering the http methods
+</listitem>
+<listitem>
+altering the @Produces / @Consumes media types
+</listitem>
+<listitem>
+...
+</listitem>
+</itemizedlist>
+
+
+
+
+</para>
+</chapter>

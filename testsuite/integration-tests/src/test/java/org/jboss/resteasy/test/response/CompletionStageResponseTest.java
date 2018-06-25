@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.response;
 
 import java.net.InetAddress;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
@@ -8,7 +9,6 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
@@ -25,10 +25,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import java.util.concurrent.Future;
 
 /**
  * @tpSubChapter CompletionStage response type
@@ -47,9 +44,8 @@ public class CompletionStageResponseTest {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
       war.addClass(CompletionStageProxy.class);
-      war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.reactivestreams\n"));
+              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2, org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
@@ -199,9 +195,8 @@ public class CompletionStageResponseTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      if (serverIsLocal) {
-    	  Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
-      }
+      response.close();
+
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
@@ -221,9 +216,6 @@ public class CompletionStageResponseTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
-      if (serverIsLocal) {
-         Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
-      }
       response.close();
       
       // make sure the completion callback was called with with an error
@@ -271,7 +263,6 @@ public class CompletionStageResponseTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
-   @Category({ExpectedFailing.class})
    public void proxyTest() throws Exception
    {
       CompletionStageProxy proxy = client.target(generateURL("/")).proxy(CompletionStageProxy.class);

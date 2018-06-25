@@ -34,7 +34,7 @@ public class ResteasyClient implements Client
    protected boolean cleanupExecutor;
 
 
-   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor,
+   protected ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor,
          ScheduledExecutorService scheduledExecutorService, ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
@@ -44,7 +44,7 @@ public class ResteasyClient implements Client
       this.scheduledExecutorService = scheduledExecutorService;
    }
 
-   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
+   protected ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
       this.httpEngine = httpEngine;

@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.sse;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.Jaxrs21;
 import org.jboss.resteasy.test.providers.sse.resource.SseReconnectResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -12,7 +11,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.ServiceUnavailableException;
@@ -30,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category(Jaxrs21.class)
 public class SseReconnectTest {
 
     @Deployment

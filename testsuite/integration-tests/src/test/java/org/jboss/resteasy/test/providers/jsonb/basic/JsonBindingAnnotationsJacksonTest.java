@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.Jaxrs21;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
@@ -19,7 +18,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -38,7 +36,6 @@ import static org.hamcrest.CoreMatchers.is;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category(Jaxrs21.class)
 public class JsonBindingAnnotationsJacksonTest {
 
 
@@ -64,6 +61,8 @@ public class JsonBindingAnnotationsJacksonTest {
       war.addClass(JsonBindingTest.class);
       if (useJsonB) {
          war.addAsManifestResource("jboss-deployment-structure-json-b.xml", "jboss-deployment-structure.xml");
+      } else {
+         war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
       }
       return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, Cat.class);
    }

@@ -21,6 +21,9 @@ public class AbstractJsonpProvider
    @Context
    javax.ws.rs.ext.Providers providers;
 
+   private static final JsonReaderFactory readerFactory = Json.createReaderFactory(null);
+   private static final JsonWriterFactory writerFactory = Json.createWriterFactory(null);
+
    public static Charset getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -41,7 +44,7 @@ public class AbstractJsonpProvider
       }
       if (factory == null)
       {
-         factory = Json.createReaderFactory(null);
+         factory = readerFactory;
       }
       Charset charset = getCharset(mediaType);
       return charset == null ? factory.createReader(is) : factory.createReader(is, charset);
@@ -57,7 +60,7 @@ public class AbstractJsonpProvider
       }
       if (factory == null)
       {
-         factory = Json.createWriterFactory(null);
+         factory = writerFactory;
       }
       Charset charset = getCharset(mediaType);
       return charset == null ? factory.createWriter(os) : factory.createWriter(os, charset);
