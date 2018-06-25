@@ -20,3 +20,5 @@ addons:
       - oracle-java8-installer
 before_install:
   - "if [ -d \"$JAVA_HOME/jre\" ]; then SEC_LIB=$JAVA_HOME/jre; else SEC_LIB=$JAVA_HOME; fi; sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $SEC_LIB/lib/security;"
+after_script:
+  - cat /home/travis/build/resteasy/Resteasy/testsuite/integration-tests/target/surefire-reports/org.jboss.resteasy.test.providers.jackson2.ExceptionMapperMarshalTest-output.txt
