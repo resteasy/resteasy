@@ -8,6 +8,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
@@ -74,6 +76,9 @@ public class SegmentNode
    public ResourceInvoker match(HttpRequest request, int start)
    {
       String path = request.getUri().getMatchingPath();
+      RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+      logger.log(RESTEasyServerTracingEvent.MATCH_PATH_FIND, request.getUri().getMatchingPath());
+
       if (start < path.length() && path.charAt(start) == '/') start++;
       List<MethodExpression> potentials = new ArrayList<MethodExpression>();
       potentials(path, start, potentials);
@@ -84,7 +89,10 @@ public class SegmentNode
       for (MethodExpression expression : potentials)
       {
          // We ignore locators if the first match was a resource method as per the spec Section 3, Step 2(h)
-         if (expressionMatched && expression.isLocator()) continue;
+         if (expressionMatched && expression.isLocator()) {
+            logger.log(RESTEasyServerTracingEvent.MATCH_PATH_SKIPPED, expression.getRegex());
+            continue;
+         }
 
          Pattern pattern = expression.getPattern();
          Matcher matcher = pattern.matcher(path);
@@ -126,12 +134,16 @@ public class SegmentNode
                   uriInfo.pushMatchedURI(substring);
                }
                expression.populatePathParams(request, matcher, path);
+               logger.log(RESTEasyServerTracingEvent.MATCH_LOCATOR, invoker.getMethod());
                return invoker;
             }
             else
             {
+
                matches.add(new Match(expression, matcher));
             }
+         } else {
+            logger.log(RESTEasyServerTracingEvent.MATCH_PATH_NOT_MATCHED, expression.getRegex());
          }
       }
       if (matches.size() == 0)
@@ -140,6 +152,7 @@ public class SegmentNode
       }
       Match match = match(matches, request.getHttpMethod(), request);
       match.expression.populatePathParams(request, match.matcher, path);
+      logger.log(RESTEasyServerTracingEvent.MATCH_PATH_SELECTED, match.expression.getRegex());
       return match.expression.getInvoker();
 
    }
@@ -507,7 +520,9 @@ public class SegmentNode
          }
       }
       Collections.sort(sortList);
+
       SortEntry sortEntry = sortList.get(0);
+
       String[] mm = matchingMethods(sortList);
       if (mm != null)
       {

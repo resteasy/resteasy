@@ -61,7 +61,7 @@ public class RESTEasyTracingUtils {
         if (request == null) {
             return;
         }
-        RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(null);
+        RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
         if (tracingLogger.isLogEnabled(RESTEasyServerTracingEvent.START)) {
             StringBuilder text = new StringBuilder();
             SecurityContext securityContext = ResteasyProviderFactory.getContextData(SecurityContext.class);

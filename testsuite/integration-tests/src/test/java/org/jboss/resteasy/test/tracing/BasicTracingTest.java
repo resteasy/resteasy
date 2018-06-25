@@ -60,7 +60,48 @@ public class BasicTracingTest {
         params.put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE);
 
         return TestUtil.finishContainerPrepare(war, params, TracingApp.class,
-                TracingConfigResource.class, HttpMethodOverride.class);
+                TracingConfigResource.class, HttpMethodOverride.class, FooLocator.class, Foo.class);
+    }
+
+    @Test
+    public void testPresencesOfServerTracingEvents() {
+        String url = generateURL("/locator/foo");
+
+        WebTarget base = client.target(url);
+
+        try {
+            Response response = base.request().get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+
+            Map<String, Boolean> results = new HashMap<String, Boolean>();
+
+            results.put("PRE-MATCH", false);
+            results.put("REQ-FILTER", false);
+            results.put("MATCH", false);
+            results.put("INVOKE", false);
+            results.put("FINISHED", false);
+
+            for (Map.Entry entry : response.getStringHeaders().entrySet()) {
+                System.out.println("<K, V> ->" + entry);
+                String item = entry
+                        .getValue()
+                        .toString()
+                        .split("\\[")[1].split(" ")[0];
+
+                if (results.keySet()
+                        .contains(item)) {
+                    results.put(item.replaceAll(" ", ""), true);
+                }
+            }
+
+            for (String k : results.keySet()) {
+                assertTrue(k + ": " + results.get(k), results.get(k));
+            }
+
+            response.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
