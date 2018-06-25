@@ -69,9 +69,8 @@ public class RxCompletionStageTest {
       war.addClass(Thing.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      TestUtilRxJava.addRxJavaLibraries(war);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.reactivestreams services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));
+              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class);
    }
 
