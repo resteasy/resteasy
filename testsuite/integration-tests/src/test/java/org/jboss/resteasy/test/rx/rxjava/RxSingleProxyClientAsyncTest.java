@@ -25,9 +25,7 @@ import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.TestUtilRxJava;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -74,9 +72,6 @@ public class RxSingleProxyClientAsyncTest {
       war.addClass(TRACE.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      TestUtilRxJava.addRxJavaLibraries(war);
-      war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-         + "Dependencies: org.reactivestreams services, org.jboss.resteasy.resteasy-json-binding-provider services\n"));  
       return TestUtil.finishContainerPrepare(war, null, SimpleResourceImpl.class, TestExceptionMapper.class);
    }
 

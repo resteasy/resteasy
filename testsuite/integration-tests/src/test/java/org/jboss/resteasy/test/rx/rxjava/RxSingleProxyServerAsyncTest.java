@@ -20,7 +20,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -58,7 +57,7 @@ public class RxSingleProxyServerAsyncTest {
       war.addClass(Thing.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
-      TestUtilRxJava.setupRxJava(war);
+      TestUtilRxJava.addRxJavaLibraries(war);
       return TestUtil.finishContainerPrepare(war, null, RxSingleResourceImpl.class, TestExceptionMapper.class);
    }
 
