@@ -14,10 +14,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.resteasy.rxjava.SingleProvider;
-import org.jboss.resteasy.test.rx.resource.Thing;
-
-import rx.Single;
+import io.reactivex.Single;
+import org.jboss.resteasy.rxjava2.SingleProvider;
 
 @Path("")
 public class RxCompletionStageResourceImpl {
