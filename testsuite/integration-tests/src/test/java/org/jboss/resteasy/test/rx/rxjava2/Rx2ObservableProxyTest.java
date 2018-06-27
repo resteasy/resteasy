@@ -61,6 +61,7 @@ public class Rx2ObservableProxyTest {
    private static CountDownLatch latch;
    private static AtomicInteger errors;
 
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
    private static List<String> stringList = new ArrayList<String>();
    private static List<Thing>  thingList = new ArrayList<Thing>();
    private static List<List<Thing>> thingListList = new ArrayList<List<Thing>>();
@@ -119,6 +120,7 @@ public class Rx2ObservableProxyTest {
       bytesList.clear();
       latch = new CountDownLatch(1);
       errors = new AtomicInteger(0);
+      value.set(null);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -343,12 +345,13 @@ public class Rx2ObservableProxyTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       Observable<String> observable = proxy.head();
       observable.subscribe(
-         (String s) -> System.out.println(s), // HEAD - no body
+         (String s) -> value.set(s), // HEAD - no body
          (Throwable t) -> throwableContains(t, "Input stream was empty"));
+
+      Assert.assertNull(value.get());
    }
 
    @Test

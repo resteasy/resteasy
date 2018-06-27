@@ -176,12 +176,10 @@ public class RxSingleServerAsyncTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       Builder request = client.target(generateURL("/head/string")).request();
       Response response = request.head();
-      Assert.assertEquals(null, response.readEntity(String.class));
-      //??
+      Assert.assertEquals(200, response.getStatus());
    }
 
    @Test

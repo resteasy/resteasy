@@ -247,11 +247,10 @@ public class Rx2ObservableServerAsyncTest {
    }
    
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       Builder request = client.target(generateURL("/head/string")).request();
       Response response = request.head();
-      Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+      Assert.assertEquals(200, response.getStatus());
    }
 
    @Test

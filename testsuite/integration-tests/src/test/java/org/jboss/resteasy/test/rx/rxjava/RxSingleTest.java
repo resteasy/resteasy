@@ -232,12 +232,13 @@ public class RxSingleTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       SingleRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single = invoker.head();
-      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-      //??
+      single.subscribe(
+              (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
+              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+      Assert.assertNull(value.get());
    }
 
    @Test
@@ -496,5 +497,15 @@ public class RxSingleTest {
          t = t.getCause();
       }
       return null;
+   }
+
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
+         if (t.getMessage().contains(s)) {
+            return true;
+         }
+         t = t.getCause();
+      }
+      return false;
    }
 }
