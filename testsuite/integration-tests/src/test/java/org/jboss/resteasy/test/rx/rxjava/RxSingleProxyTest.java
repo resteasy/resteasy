@@ -207,10 +207,11 @@ public class RxSingleProxyTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       Single<String> single = proxy.head();
-      single.subscribe((String s) -> {value.set(s); latch.countDown();});
+      single.subscribe(
+              (String s) -> {value.set(s); latch.countDown();},
+              (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -398,5 +399,15 @@ public class RxSingleProxyTest {
          t = t.getCause();
       }
       return null;
+   }
+
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
+         if (t.getMessage().contains(s)) {
+            return true;
+         }
+         t = t.getCause();
+      }
+      return false;
    }
 }

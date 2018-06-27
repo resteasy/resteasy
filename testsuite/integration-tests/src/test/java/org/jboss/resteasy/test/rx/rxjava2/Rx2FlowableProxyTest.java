@@ -66,6 +66,7 @@ public class Rx2FlowableProxyTest {
    private static List<List<Thing>> thingListList = new ArrayList<List<Thing>>();
    private static ArrayList<byte[]> bytesList = new ArrayList<byte[]>();
 
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
    private final static List<String> xStringList = new ArrayList<String>();
    private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
@@ -119,6 +120,7 @@ public class Rx2FlowableProxyTest {
       bytesList.clear();
       latch = new CountDownLatch(1);
       errors = new AtomicInteger(0);
+      value.set(null);
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -343,12 +345,14 @@ public class Rx2FlowableProxyTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
       Flowable<String> flowable = proxy.head();
+
       flowable.subscribe(
-         (String s) -> System.out.println(s), // HEAD - no body
+         (String s) -> value.set(s), // HEAD - no body
          (Throwable t) -> throwableContains(t, "Input stream was empty"));
+
+      Assert.assertNull(value.get());
    }
 
    @Test
