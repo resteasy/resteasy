@@ -32,9 +32,7 @@ public class SseEventSourceImpl implements SseEventSource
    public static final long RECONNECT_DEFAULT = 500;
 
    private final WebTarget target;
-
-   private static final long CLOSE_WAIT = 30;
-
+   
    private final long reconnectDelay;
 
    private final boolean disableKeepAlive;
@@ -199,19 +197,12 @@ public class SseEventSourceImpl implements SseEventSource
       }
       EventHandler handler = new EventHandler(reconnectDelay, lastEventId, verb, entity, mediaTypes);
       executor.submit(handler);
-      handler.awaitConnected();
    }
 
    @Override
    public boolean isOpen()
    {
       return state.get() == State.OPEN;
-   }
-
-   @Override
-   public void close()
-   {
-      this.close(CLOSE_WAIT, TimeUnit.SECONDS);
    }
 
    @Override
@@ -298,8 +289,6 @@ public class SseEventSourceImpl implements SseEventSource
    private class EventHandler implements Runnable
    {
 
-      private final CountDownLatch connectedLatch;
-
       private String lastEventId;
 
       private long reconnectDelay;
@@ -310,7 +299,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       public EventHandler(final long reconnectDelay, final String lastEventId, String verb, Entity<?> entity, MediaType... mediaTypes)
       {
-         this.connectedLatch = new CountDownLatch(1);
          this.reconnectDelay = reconnectDelay;
          this.lastEventId = lastEventId;
          this.verb = verb;
@@ -320,7 +308,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       private EventHandler(final EventHandler anotherHandler)
       {
-         this.connectedLatch = anotherHandler.connectedLatch;
          this.reconnectDelay = anotherHandler.reconnectDelay;
          this.lastEventId = anotherHandler.lastEventId;
          this.verb = anotherHandler.verb;
@@ -375,13 +362,6 @@ public class SseEventSourceImpl implements SseEventSource
             });
             state.set(State.CLOSED);
          }
-         finally
-         {
-            if (connectedLatch != null)
-            {
-               connectedLatch.countDown();
-            }
-         }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
@@ -420,19 +400,6 @@ public class SseEventSourceImpl implements SseEventSource
             }
          }
          onCompleteConsumers.forEach(Runnable::run);
-      }
-
-      public void awaitConnected()
-      {
-         try
-         {
-            connectedLatch.await(30, TimeUnit.SECONDS);
-         }
-         catch (InterruptedException ex)
-         {
-            Thread.currentThread().interrupt();
-         }
-
       }
 
       private void onEvent(final InboundSseEvent event)
