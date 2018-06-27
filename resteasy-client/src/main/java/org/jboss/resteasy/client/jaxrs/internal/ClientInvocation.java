@@ -439,6 +439,14 @@ public class ClientInvocation implements Invocation
          ClientResponse response = (aborted != null) ? aborted : client.httpEngine().invoke(this);
          return filterResponse(requestContext, response);
       }
+      catch (ResponseProcessingException e)
+      {
+         if (e.getResponse() != null)
+         {
+            e.getResponse().close();
+         }
+         throw e;
+      }
       finally
       {
          popProvidersContext(current);
