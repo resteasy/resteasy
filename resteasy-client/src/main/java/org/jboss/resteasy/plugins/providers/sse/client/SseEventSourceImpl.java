@@ -18,11 +18,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
-import org.apache.http.HttpHeaders;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -33,12 +35,8 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final WebTarget target;
 
-   private static final long CLOSE_WAIT = 30;
-
    private final long reconnectDelay;
 
-   private final boolean disableKeepAlive;
-   
    private final ScheduledExecutorService executor;
 
    private enum State {
@@ -63,8 +61,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       private String name = null;
 
-      private boolean disableKeepAlive = false;
-      
       private ScheduledExecutorService executor;
 
       public SourceBuilder()
@@ -80,7 +76,7 @@ public class SseEventSourceImpl implements SseEventSource
 
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(target, name, reconnect, disableKeepAlive, false, executor);
+         return new SseEventSourceImpl(target, name, reconnect, false, executor);
       }
 
       @Override
@@ -115,11 +111,10 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(target, null, RECONNECT_DEFAULT, false, open, null);
+      this(target, null, RECONNECT_DEFAULT, open, null);
    }
 
-   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean disableKeepAlive,
-         final boolean open, ScheduledExecutorService executor)
+   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean open, ScheduledExecutorService executor)
    {
       if (target == null)
       {
@@ -127,7 +122,6 @@ public class SseEventSourceImpl implements SseEventSource
       }
       this.target = target;
       this.reconnectDelay = reconnectDelay;
-      this.disableKeepAlive = disableKeepAlive;
       //tck requries this
       this.alwaysReconnect = true;
 
@@ -206,12 +200,6 @@ public class SseEventSourceImpl implements SseEventSource
    public boolean isOpen()
    {
       return state.get() == State.OPEN;
-   }
-
-   @Override
-   public void close()
-   {
-      this.close(CLOSE_WAIT, TimeUnit.SECONDS);
    }
 
    @Override
@@ -331,57 +319,67 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
+         if (state.get() != State.OPEN)
+         {
+            onCompleteConsumers.forEach(Runnable::run);
+            return;
+         }
+         
          SseEventInputImpl eventInput = null;
          long delay = reconnectDelay;
          try
          {
-            final Invocation.Builder request = buildRequest(mediaTypes);
-            if (state.get() == State.OPEN)
+            final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
+            Invocation request = null;
+            if (entity == null)
             {
-               if (entity == null)
+               request = requestBuilder.build(verb);
+            }
+            else
+            {
+               request = requestBuilder.build(verb, entity);
+            }
+            Response response = request.invoke();
+            if (Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
+            {
+               onConnection();
+               eventInput = response.readEntity(SseEventInputImpl.class);
+               //if 200<= response code <300 and response contentType is null, fail the connection. 
+               if (eventInput == null && !alwaysReconnect)
                {
-                  eventInput = request.method(verb, SseEventInputImpl.class);
-               }
-               else
-               {
-                  eventInput = request.method(verb, entity, SseEventInputImpl.class);
+                  state.set(State.CLOSED);
                }
             }
-            //if 200< response code <300 and response contentType is null, fail the connection. 
-            if (eventInput == null && !alwaysReconnect)
+            else
             {
-               state.set(State.CLOSED);
+               //Let's buffer the entity in case the response contains an entity the user would like to retrieve from the exception.
+               //This will also ensure that the connection is correctly closed.
+               response.bufferEntity();
+               //Throw an instance of WebApplicationException depending on the response.
+               ClientInvocation.handleErrorStatus(response);
             }
          }
          catch (ServiceUnavailableException ex)
          {
             if (ex.hasRetryAfter())
             {
+               onConnection();
                Date requestTime = new Date();
                delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               onErrorConsumers.forEach(consumer -> {
+                  consumer.accept(ex);
+               });
             }
             else
             {
-               state.set(State.CLOSED);
+               onUnrecoverableError(ex);
             }
-            onErrorConsumers.forEach(consumer -> {
-               consumer.accept(ex);
-            });
          }
          catch (Throwable e)
          {
-            onErrorConsumers.forEach(consumer -> {
-               consumer.accept(e);
-            });
-            state.set(State.CLOSED);
+            onUnrecoverableError(e);
          }
-         finally
-         {
-            if (connectedLatch != null)
-            {
-               connectedLatch.countDown();
-            }
-         }
+        
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
@@ -426,13 +424,27 @@ public class SseEventSourceImpl implements SseEventSource
       {
          try
          {
-            connectedLatch.await(30, TimeUnit.SECONDS);
+            connectedLatch.await();
          }
          catch (InterruptedException ex)
          {
             Thread.currentThread().interrupt();
          }
 
+      }
+      
+      private void onConnection()
+      {
+         connectedLatch.countDown();
+      }
+
+      private void onUnrecoverableError(Throwable throwable)
+      {
+         state.set(State.CLOSED);
+         connectedLatch.countDown();
+         onErrorConsumers.forEach(consumer -> {
+            consumer.accept(throwable);
+         });
       }
 
       private void onEvent(final InboundSseEvent event)
@@ -454,10 +466,6 @@ public class SseEventSourceImpl implements SseEventSource
          if (lastEventId != null && !lastEventId.isEmpty())
          {
             request.header(SseConstants.LAST_EVENT_ID_HEADER, lastEventId);
-         }
-         if (disableKeepAlive)
-         {
-            request.header(HttpHeaders.CONNECTION, "close");
          }
          return request;
       }
