@@ -14,6 +14,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -30,6 +31,7 @@ import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableResourceImpl;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -75,6 +77,7 @@ public class Rx2FlowableTest {
    private final static Entity<String> aEntity = Entity.entity("a", MediaType.TEXT_PLAIN_TYPE);
    private final static Entity<String> threeEntity = Entity.entity("3", MediaType.TEXT_PLAIN_TYPE);
 
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
    private static ArrayList<String> stringList = new ArrayList<String>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
    private static ArrayList<List<?>> thingListList = new ArrayList<List<?>>();
@@ -121,6 +124,7 @@ public class Rx2FlowableTest {
       bytesList.clear();
       latch = new CountDownLatch(1);
       errors = new AtomicInteger(0);
+      value.set(null);
    }
 
    @AfterClass
@@ -384,19 +388,13 @@ public class Rx2FlowableTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
-      LogMessages.LOGGER.error("testHead()");
       FlowableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(FlowableRxInvoker.class);
       Flowable<String> flowable = (Flowable<String>) invoker.head();
       flowable.subscribe(
-         (String o) -> stringList.add(o),
-         (Throwable t) -> errors.incrementAndGet(),
-         () -> latch.countDown());
-      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-      Assert.assertEquals(0, errors.get());
-      Assert.assertEquals(0, stringList.size());
+              (String s) -> value.set(s), // HEAD - no body
+              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+      Assert.assertNull(value.get());
    }
 
    @SuppressWarnings("unchecked")
@@ -840,5 +838,16 @@ public class Rx2FlowableTest {
       for (byte[] b : bytesList) {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
+   }
+
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
+         if (t.getMessage().contains(s))
+         {
+            return true;
+         }
+         t = t.getCause();
+      }
+      return false;
    }
 }

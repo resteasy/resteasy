@@ -77,6 +77,7 @@ public class RxObservableTest {
    private final static Entity<String> aEntity = Entity.entity("a", MediaType.TEXT_PLAIN_TYPE);
    private final static Entity<String> threeEntity = Entity.entity("3", MediaType.TEXT_PLAIN_TYPE);
 
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
    private static ArrayList<String> stringList = new ArrayList<String>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
    private static ArrayList<List<?>> thingListList = new ArrayList<List<?>>();
@@ -122,6 +123,7 @@ public class RxObservableTest {
       bytesList.clear();
       latch = new CountDownLatch(1);
       errors = new AtomicInteger(0);
+      value.set(null);
    }
 
    @AfterClass
@@ -388,19 +390,13 @@ public class RxObservableTest {
 
    @SuppressWarnings({ "unchecked" })
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
-      LogMessages.LOGGER.error("testHead()");
       ObservableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.head();
       observable.subscribe(
-         (String o) -> stringList.add(o),
-         (Throwable t) -> errors.incrementAndGet(),
-         () -> latch.countDown());
-      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-      Assert.assertEquals(0, errors.get());
-      Assert.assertEquals(0, stringList.size());
+              (String s) -> value.set(s), // HEAD - no body
+              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+      Assert.assertNull(value.get());
    }
 
    @SuppressWarnings({ "unchecked" })
@@ -831,5 +827,16 @@ public class RxObservableTest {
       for (int i = 0; i < 6; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+   }
+
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
+         if (t.getMessage().contains(s))
+         {
+            return true;
+         }
+         t = t.getCause();
+      }
+      return false;
    }
 }

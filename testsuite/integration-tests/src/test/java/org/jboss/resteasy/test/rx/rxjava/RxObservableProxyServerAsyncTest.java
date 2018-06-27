@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ResponseProcessingException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -216,10 +217,12 @@ public class RxObservableProxyServerAsyncTest {
    }
 
    @Test
-   @Ignore // @TODO Fix: see RESTEASY-1885.
    public void testHead() throws Exception {
-      List<String> list = proxy.head();
-      Assert.assertNull(list);
+      try {
+         List<String> list = proxy.head();
+      } catch (ResponseProcessingException ex) {
+         Assert.assertTrue(ex.getMessage().contains("Input stream was empty"));
+      }
    }
 
    @Test
