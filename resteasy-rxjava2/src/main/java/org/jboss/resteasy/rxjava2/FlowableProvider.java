@@ -11,11 +11,6 @@ import io.reactivex.Flowable;
 @Provider
 public class FlowableProvider implements AsyncStreamProvider<Flowable<?>>
 {
-   static
-   {
-      Context.load();
-   }
-
    @Override
    public Publisher<?> toAsyncStream(Flowable<?> asyncResponse)
    {

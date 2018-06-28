@@ -15,11 +15,6 @@ import io.reactivex.disposables.Disposable;
 @Provider
 public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
-   static
-   {
-      Context.load();
-   }
-
    private static class SingleAdaptor<T> extends CompletableFuture<T>
    {
       private Disposable subscription;

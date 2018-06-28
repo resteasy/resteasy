@@ -24,11 +24,6 @@ import rx.Subscription;
 @Provider
 public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
-   static
-   {
-      Context.load();
-   }
-
    private static class SingleAdaptor<T> extends CompletableFuture<T>
    {
       private Subscription subscription;

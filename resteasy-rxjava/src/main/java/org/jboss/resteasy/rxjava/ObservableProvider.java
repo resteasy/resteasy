@@ -22,11 +22,6 @@ import rx.RxReactiveStreams;
 @Deprecated
 public class ObservableProvider implements AsyncStreamProvider<Observable<?>>
 {
-   static
-   {
-      Context.load();
-   }
-
    @Override
    public Publisher<?> toAsyncStream(Observable<?> asyncResponse)
    {
