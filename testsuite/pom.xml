@@ -262,7 +262,7 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.children="append">
+                        <configuration>
                             <systemPropertyVariables>
                                 <securityManagerArg>${securityManagerArg}</securityManagerArg>
                                 <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
