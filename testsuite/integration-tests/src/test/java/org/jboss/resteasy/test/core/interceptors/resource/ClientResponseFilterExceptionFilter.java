@@ -10,6 +10,6 @@ public class ClientResponseFilterExceptionFilter implements ClientResponseFilter
 
    @Override
    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
-      throw new RuntimeException();
+      throw new RuntimeException("ClientResponseFilterExceptionFilter");
    }
 }

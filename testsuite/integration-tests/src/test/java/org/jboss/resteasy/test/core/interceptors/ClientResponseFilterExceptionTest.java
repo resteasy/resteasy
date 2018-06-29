@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.core.interceptors;
 
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.http.client.config.RequestConfig;
@@ -26,6 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+
 /**
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
@@ -35,18 +41,18 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ClientResponseFilterExceptionTest {
-   
+
    private static ResteasyClient client;
    private static ClientResponseFilterExceptionResource service;
+   private static int counter = 0;
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(ClientResponseFilterExceptionTest.class.getSimpleName());
       war.addClass(ClientResponseFilterExceptionResource.class);
-      war.addClass(ClientResponseFilterExceptionFilter.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
-      return TestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionResourceImpl.class);
+      return TestUtil.finishContainerPrepare(war, null, ClientResponseFilterExceptionFilter.class, ClientResponseFilterExceptionResourceImpl.class);
    }
 
    private static String generateURL(String path) {
@@ -73,54 +79,98 @@ public class ClientResponseFilterExceptionTest {
          ;
 
       client = clientBuilder.build();
-      ResteasyWebTarget target = client.target(generateURL(""));
+      ResteasyWebTarget target = client.target(generateURL("/"));
       service = target.proxy(ClientResponseFilterExceptionResource.class);
+      counter = 0;
    }
-   
+
    @After
    public void after() {
       client.close();
    }
 
    /**
-    * @tpTestDetails 
-    * @tpPassCrit
+    * @tpTestDetails test synchronous call
     * @tpSince RESTEasy 4.0
     */
    @Test
    public void testSync() throws Exception {
-      doTest(() -> service.sync());
-   }
-   
-   @Test
-   public void testCompletionStage() throws Exception{
-      doTest(() -> service.cs());
-   }
-   
-   @Test
-   public void testSingle() throws Exception {
-      doTest(() -> service.single());
-   }
-   
-   @Test
-   public void testObservable() throws Exception {
-      doTest(() -> service.observable());
-   }
-   
-   @Test
-   public void testFlowable() throws Exception {
-      doTest(() -> service.flowable());
-   }
-   
-   void doTest(Supplier<?> supplier) throws Exception {
       int i = 0;
       for (i = 0; i < 10; i++) {
          try {
-            supplier.get();
+            service.sync();
          } catch (Exception e) {
-            //do nothing
-         } 
+            incr(e);
+         }
       }
-      Assert.assertEquals(10, i);
+      Assert.assertEquals(10, counter);
+   }
+
+   /**
+    * @tpTestDetails test asynchronous call: CompletionStage
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testCompletionStage() throws Exception {
+      Assert.assertTrue(
+         doTest(
+            () ->  service.cs(),
+            (CompletionStage<String> cs) -> {try {cs.toCompletableFuture().get();} catch (Exception e) {incr(e);}}
+            ));
+   }
+
+   /**
+    * @tpTestDetails test asynchronous call: Single
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testSingle() throws Exception {
+      Assert.assertTrue(
+         doTest(
+            () ->  service.single(),
+            (Single<String> single) -> single.subscribe(o -> {}, t -> incr(t))
+            ));
+   }
+      
+   /**
+    * @tpTestDetails test asynchronous call: Observable
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testObservable() throws Exception {
+      Assert.assertTrue(
+         doTest(
+            () ->  service.observable(),
+            (Observable<String> observable) -> observable.subscribe(o -> {}, t -> incr(t))
+            ));
+   }
+
+   /**
+    * @tpTestDetails test asynchronous call: Flowable
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testFlowable() throws Exception {
+      Assert.assertTrue(
+         doTest(
+            () ->  service.flowable(),
+            (Flowable<String> flowable) -> flowable.subscribe(o -> {}, t -> incr(t))
+            ));
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   static void incr(Throwable t) {
+      if (t.getMessage().contains("ClientResponseFilterExceptionFilter")) {
+         counter++;
+      }
+   }
+
+   static <T> boolean doTest(Supplier<T> supplier, Consumer<T> consumer) {
+      int i = 0;
+      for (i = 0; i < 10; i++) {
+         T o = supplier.get();
+         consumer.accept(o);
+      }
+      return counter == 10;
    }
 }
