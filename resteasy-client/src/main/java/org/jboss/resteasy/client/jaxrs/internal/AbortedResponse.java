@@ -116,15 +116,13 @@ public class AbortedResponse extends ClientResponse
       {
          if (is != null)
          {
+            if (consumeInputStream)
             {
-               if (consumeInputStream)
+               while (is.read() > 0)
                {
-                  while (is.read() > 0)
-                  {
-                  }
                }
-               is.close();
             }
+            is.close();
          }
       }
       catch (IOException e)

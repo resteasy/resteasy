@@ -41,7 +41,7 @@ class JettyClientResponse extends ClientResponse {
            {
            }
         }
-        this.cancel.run();
+        cancel.run();
 	}
 	
 }
