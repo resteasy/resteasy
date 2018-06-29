@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class TestUtilRxJava {
 
+    private static String defaultReactiveContextsVersion = "0.0.4";
     private static String defaultRxJavaVersion = "1.3.2";
     private static String defaultRxJavaReactiveStreamsVersion = "1.2.1";
 
@@ -20,6 +21,10 @@ public class TestUtilRxJava {
     private static String readSystemProperty(String name, String defaultValue) {
         String value = System.getProperty(name);
         return (value == null) ? defaultValue : value;
+    }
+
+    private static String getReactiveContextsVersion() {
+        return readSystemProperty("version.reactive-contexts", defaultReactiveContextsVersion);
     }
 
     private static String getRxJavaVersion() {
@@ -36,7 +41,10 @@ public class TestUtilRxJava {
         List<File> runtimeDependencies = new ArrayList<>();
         
         try {
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-reactive-context:" + System.getProperty("version.resteasy.testsuite")));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("version.resteasy.testsuite")));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactiverse:reactive-contexts-core:" + getReactiveContextsVersion()));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactiverse:reactive-contexts-propagators-rxjava1:" + getReactiveContextsVersion()));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava:" + getRxJavaVersion()));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava-reactive-streams:" + getRxJavaReactiveStreamsVersion()));
         } catch (Exception e) {
