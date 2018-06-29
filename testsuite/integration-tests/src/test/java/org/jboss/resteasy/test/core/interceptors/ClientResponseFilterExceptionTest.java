@@ -1,6 +1,8 @@
 package org.jboss.resteasy.test.core.interceptors;
 
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -44,7 +46,7 @@ public class ClientResponseFilterExceptionTest {
 
    private static ResteasyClient client;
    private static ClientResponseFilterExceptionResource service;
-   private static int counter = 0;
+   private static CountDownLatch latch;;
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
@@ -81,7 +83,7 @@ public class ClientResponseFilterExceptionTest {
       client = clientBuilder.build();
       ResteasyWebTarget target = client.target(generateURL("/"));
       service = target.proxy(ClientResponseFilterExceptionResource.class);
-      counter = 0;
+      latch = new CountDownLatch(10);
    }
 
    @After
@@ -103,7 +105,7 @@ public class ClientResponseFilterExceptionTest {
             incr(e);
          }
       }
-      Assert.assertEquals(10, counter);
+      Assert.assertEquals(0, latch.getCount());
    }
 
    /**
@@ -161,16 +163,17 @@ public class ClientResponseFilterExceptionTest {
    ///////////////////////////////////////////////////////////////////////////////////
    static void incr(Throwable t) {
       if (t.getMessage().contains("ClientResponseFilterExceptionFilter")) {
-         counter++;
+         latch.countDown();
       }
    }
 
-   static <T> boolean doTest(Supplier<T> supplier, Consumer<T> consumer) {
+   static <T> boolean doTest(Supplier<T> supplier, Consumer<T> consumer) throws InterruptedException {
       int i = 0;
       for (i = 0; i < 10; i++) {
          T o = supplier.get();
          consumer.accept(o);
       }
-      return counter == 10;
+      latch.await(10, TimeUnit.SECONDS);
+      return latch.getCount() == 0;
    }
 }
