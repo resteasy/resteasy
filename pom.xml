@@ -115,6 +115,7 @@
                 <module>resteasy-jsapi</module>
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
+                <module>resteasy-reactive-context</module>
                 <module>resteasy-rxjava</module>
                 <module>resteasy-rxjava2</module>
                 <module>server-adapters</module>
@@ -169,6 +170,7 @@
                 <module>resteasy-jsapi</module>
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
+                <module>resteasy-reactive-context</module>
                 <module>resteasy-rxjava</module>
                 <module>resteasy-rxjava2</module>
                 <module>server-adapters</module>

@@ -8,9 +8,9 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 
+import io.reactiverse.reactivecontexts.core.Context;
 import rx.Single;
 import rx.Subscription;
-import rx.plugins.RxJavaHooks;
 
 /**
  * @deprecated:
@@ -24,12 +24,6 @@ import rx.plugins.RxJavaHooks;
 @Provider
 public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncClientResponseProvider<Single<?>>
 {
-
-   static
-   {
-      RxJavaHooks.setOnSingleCreate(new ResteasyContextPropagatingOnSingleCreateAction());
-   }
-
    private static class SingleAdaptor<T> extends CompletableFuture<T>
    {
       private Subscription subscription;

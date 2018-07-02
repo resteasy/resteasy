@@ -48,6 +48,15 @@
         <version>${project.version}</version>
     </dependency>
     <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-reactive-context</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>reactive-contexts-propagators-rxjava2</artifactId>
+    </dependency>
+    <dependency>
         <groupId>io.reactivex.rxjava2</groupId>
         <artifactId>rxjava</artifactId>
     </dependency>
