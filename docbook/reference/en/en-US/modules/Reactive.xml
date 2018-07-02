@@ -371,6 +371,38 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
    return cs;
 }
 </programlisting>
+
+       <para>
+          Alternatively, you can use RESTEasy's support of 
+          <ulink url="https://reactiverse.io/reactive-contexts/">Reactive Contexts</ulink> by using <code>Context.wrap</code>
+          around your <code>Runnable</code>, which will take care of capturing and restoring all 
+          registered contexts (you will need to import the <code>resteasy-reactive-context</code> module):
+       </para>
+       
+<programlisting>
+@GET
+@Path("test")
+@Produces("text/plain")
+public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
+   System.out.println("request (inline): " + request);
+   System.out.println("application (inline): " + ResteasyProviderFactory.getContextData(Application.class));
+   CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
+   ExecutorService executor = Executors.newSingleThreadExecutor();
+   executor.submit(
+         Context.wrap(new Runnable() {
+            public void run() {
+               try {
+                  System.out.println("request (async): " + request); 
+                  System.out.println("application (async): " + ResteasyProviderFactory.getContextData(Application.class));
+                  cs.complete("hello");
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         }));
+   return cs;
+}
+</programlisting>
    </note>
 </sect1>
 
@@ -469,6 +501,15 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
        So, if you import <code>resteasy-rxjava2</code>, you can just start returning these reactive types from your
        resource methods on the server side and receiving them on the client side.
     </para>
+    
+    <note>
+       <para>
+          When you use RESTEasy's modules for RxJava, the reactive contexts are automatically propagated
+          to all supported RxJava types, which means you don't need to worry about <code>@Context</code>
+          injection not working within RxJava lambdas, contrary to <code>CompletionStage</code> (as previously
+          noted).
+       </para>
+    </note>
     
 <sect1>
 <title>Server side</title>
