@@ -7,6 +7,7 @@ import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.TypeMappingResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
@@ -20,6 +21,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.logging.LoggingPermission;
 
 import static org.junit.Assert.assertEquals;
 
@@ -41,6 +46,15 @@ public class TypeMappingDependenciesInDeploymentTest {
                 .addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
         archive.addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "typeMapping/spring-typemapping-test-server.xml", "applicationContext.xml");
         archive.addClass(TypeMappingResource.class);
+
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new RuntimePermission("getClassLoader"),
+                new FilePermission("<<ALL FILES>>", "read"),
+                new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }

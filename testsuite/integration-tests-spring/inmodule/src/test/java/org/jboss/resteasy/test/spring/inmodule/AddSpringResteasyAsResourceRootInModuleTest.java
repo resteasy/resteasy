@@ -3,8 +3,11 @@ package org.jboss.resteasy.test.spring.inmodule;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
+import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.LoggingPermission;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,6 +23,7 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.plugins.spring.SpringContextLoaderListener;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -105,6 +109,15 @@ public class AddSpringResteasyAsResourceRootInModuleTest {
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootInModuleTest.class.getPackage(), "web.xml", "web.xml")
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootInModuleTest.class.getPackage(), "applicationContext.xml", "applicationContext.xml");
         addSpringLibraries(archive);
+
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new RuntimePermission("getClassLoader"),
+                new FilePermission("<<ALL FILES>>", "read"),
+                new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithSpringContextLoaderListenerSpringInModule + ".war"), true);
         return archive;
     }
