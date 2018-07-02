@@ -22,7 +22,7 @@ public class ContextFeature implements Feature
          return false;
       Dispatcher dispatcher = ResteasyProviderFactory.getContextData(Dispatcher.class);
       if(dispatcher == null) {
-         System.err.println("Creating new context for "+context.getConfiguration().getRuntimeType()+" deployment because it looks like we're in a special thread");
+         // this can happen, but it means we're not able to find a deployment
          return false;
       }
       dispatcher.getDefaultContextObjects().put(Context.class, new Context());
