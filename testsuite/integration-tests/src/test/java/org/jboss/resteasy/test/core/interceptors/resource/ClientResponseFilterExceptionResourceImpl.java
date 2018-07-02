@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -15,31 +16,36 @@ public class ClientResponseFilterExceptionResourceImpl {
 
    @Path("sync")
    @GET
-   public String dummy() {
+   @Produces("text/plain")
+   public String sync() {
       return "sync";
    }
    
    @Path("cs")
    @GET
-   CompletionStage<String> cs() {
+   @Produces("text/plain")
+   public CompletionStage<String> cs() {
       return CompletableFuture.completedFuture("cs");
    }
    
    @Path("single")
    @GET
-   Single<String> single() {
+   @Produces("text/plain")
+   public Single<String> single() {
       return Single.just("single");
    }
    
    @Path("observable")
    @GET
-   Observable<String> observable() {
+   @Produces("text/plain")
+   public Observable<String> observable() {
       return Observable.just("observable");
    }
    
    @Path("flowable")
    @GET
-   Flowable<String> flowable() {
+   @Produces("text/plain")
+   public Flowable<String> flowable() {
       return Flowable.just("flowable");
    }
 }
