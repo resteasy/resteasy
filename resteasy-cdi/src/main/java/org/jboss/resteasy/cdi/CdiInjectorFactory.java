@@ -45,6 +45,13 @@ public class CdiInjectorFactory implements InjectorFactory
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
    }
+   
+   public CdiInjectorFactory(BeanManager manager)
+   {
+      this.manager = manager;
+      this.extension = lookupResteasyCdiExtension();
+      sessionBeanInterface = extension.getSessionBeanInterface();
+   }
 
    @Override
    public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
