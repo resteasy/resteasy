@@ -49,6 +49,7 @@ public class ResteasyDeployment
    protected String asyncJobServiceBasePath = "/asynch/jobs";
    protected String applicationClass;
    protected String injectorFactoryClass;
+   protected InjectorFactory injectorFactory;
    protected Application application;
    protected boolean registerBuiltin = true;
    protected List<String> scannedResourceClasses = new ArrayList<String>();
@@ -177,9 +178,8 @@ public class ResteasyDeployment
       
       try
       {
-         if (injectorFactoryClass != null)
+         if (injectorFactory == null && injectorFactoryClass != null)
          {
-            InjectorFactory injectorFactory;
             try
             {
                Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
@@ -193,10 +193,11 @@ public class ResteasyDeployment
             {
                throw new RuntimeException(Messages.MESSAGES.unableToInstantiateInjectorFactory(), e);
             }
-
+         }
+         if (injectorFactory != null)
+         {
             providerFactory.setInjectorFactory(injectorFactory);
          }
-
          // feed context data map with constructed objects
          // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
          if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
@@ -1002,5 +1003,15 @@ public class ResteasyDeployment
    public void setAddCharset(boolean addCharset)
    {
       this.addCharset = addCharset;
+   }
+
+   public InjectorFactory getInjectorFactory()
+   {
+      return injectorFactory;
+   }
+
+   public void setInjectorFactory(InjectorFactory injectorFactory)
+   {
+      this.injectorFactory = injectorFactory;
    }
 }
