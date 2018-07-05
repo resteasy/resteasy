@@ -23,7 +23,8 @@ import java.util.Map;
  */
 @Vetoed
 public class CdiRequestDispatcher extends RequestDispatcher {
-    private Instance<Object> instance;
+    private final Instance<Object> instance;
+
     public CdiRequestDispatcher(SynchronousDispatcher dispatcher, ResteasyProviderFactory providerFactory,
           SecurityDomain domain){
         this(dispatcher, providerFactory, domain, CDI.current());
