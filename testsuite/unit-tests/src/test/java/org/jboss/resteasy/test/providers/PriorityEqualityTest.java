@@ -10,6 +10,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -105,11 +106,16 @@ public class PriorityEqualityTest {
    @Test
    public void testParamConverterProvidersFromClass() throws Exception {
       ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register(factory);
+      ResteasyProviderFactory.setInstance(factory);
+
       factory.register(ParamConverterProvider1.class);
       factory.register(ParamConverterProvider2.class);
       Assert.assertEquals(2, factory.getParamConverterProviders().size());
+
+      ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }
-   
+
    /**
     * @tpTestDetails ResteasyProviderFactory should store multiple ParamConvertProviders
     *                with the same @Priority.
@@ -118,11 +124,16 @@ public class PriorityEqualityTest {
    @Test
    public void testParamConverterProvidersObjects() throws Exception {
       ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register(factory);
+      ResteasyProviderFactory.setInstance(factory);
+
       factory.registerProviderInstance(new ParamConverterProvider1());
       factory.registerProviderInstance(new ParamConverterProvider2());
       Assert.assertEquals(2, factory.getParamConverterProviders().size());
+      
+      ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }
-   
+
    /**
     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
     *                a given Exception and @Priority.

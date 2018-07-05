@@ -23,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -54,6 +56,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
@@ -145,6 +148,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
         client.close();
     }
 
+    private ResteasyProviderFactory factory;
     @Before
     public void preparePersistenceTest() throws Exception {
         log.info("Dumping old records.");
@@ -153,6 +157,17 @@ public class InjectionTest extends AbstractInjectionTestBase {
         Response response = base.request().post(Entity.text(new String()));
         invocationCounter++;
         response.close();
+
+        // Create an instance and set it as the singleton to use
+        factory = ResteasyProviderFactory.newInstance();
+        ResteasyProviderFactory.setInstance(factory);
+        RegisterBuiltin.register(factory);
+    }
+
+    @After
+    public void cleanup() {
+        // Clear the singleton
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
     }
 
     /**
