@@ -8,6 +8,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingMsgBodyWriterI
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingInterceptor;
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -22,6 +23,11 @@ import org.junit.runner.RunWith;
 import org.jboss.logging.Logger;
 
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
+import java.security.SecurityPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -40,6 +46,17 @@ public class AsyncPostProcessingTest {
         WebArchive war =  TestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve" )
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
                 AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
     }

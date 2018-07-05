@@ -19,6 +19,7 @@ import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.test.crypto.resource.SigningResource;
 import org.jboss.resteasy.test.crypto.resource.SigningProxy;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -39,6 +40,7 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -87,6 +89,9 @@ public class SigningTest {
         WebArchive war = TestUtil.prepareArchive(SigningTest.class.getSimpleName());
         war.addClass(SigningProxy.class);
         war.addAsResource(SigningTest.class.getPackage(), "SigningTest.jks", "test.jks");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.doseta.keystore.classpath", "test.jks");
         contextParams.put("resteasy.doseta.keystore.password", "password");

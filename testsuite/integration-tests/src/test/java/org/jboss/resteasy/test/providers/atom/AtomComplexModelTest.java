@@ -84,7 +84,6 @@ public class AtomComplexModelTest {
                 AtomComplexModelVersionNumber.class);
 
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new RuntimePermission("getClassLoader"),
             new FilePermission("<<ALL FILES>>", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers")),

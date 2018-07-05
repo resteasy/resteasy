@@ -5,6 +5,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.interceptor.resource.InterceptorStreamResource;
 import org.jboss.resteasy.test.interceptor.resource.TestInterceptor;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -19,6 +20,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Interceptors
@@ -33,6 +37,16 @@ public class StreamCloseTest
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(StreamCloseTest.class.getSimpleName());
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+              new PropertyPermission("arquillian.*", "read"),
+              new RuntimePermission("accessDeclaredMembers"),
+              new ReflectPermission("suppressAccessChecks"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("ipv6", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, TestInterceptor.class, PortProviderUtil.class);
    }
 

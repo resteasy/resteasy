@@ -9,6 +9,7 @@ import org.jboss.resteasy.test.exception.resource.AbstractMapperMyCustom;
 import org.jboss.resteasy.test.exception.resource.AbstractMapperResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -23,6 +24,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 
 /**
@@ -41,6 +43,9 @@ public class AbstractExceptionMapperTest {
         WebArchive war = TestUtil.prepareArchive(AbstractExceptionMapperTest.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
         war.addClasses(AbstractMapper.class, AbstractMapperException.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AbstractMapperDefault.class,
                 AbstractMapperMyCustom.class, AbstractMapperResource.class);
     }

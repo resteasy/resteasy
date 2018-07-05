@@ -1,9 +1,11 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyPermission;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericEntity;
@@ -22,6 +24,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterAlien;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterAlienAdapter;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterHuman;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterFoo;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,6 +50,11 @@ public class XmlJavaTypeAdapterTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(XmlJavaTypeAdapterTest.class.getSimpleName());
         war.addClass(XmlJavaTypeAdapterTest.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, XmlJavaTypeAdapterAlien.class, XmlJavaTypeAdapterAlienAdapter.class,
                 XmlJavaTypeAdapterFoo.class, XmlJavaTypeAdapterHuman.class, XmlJavaTypeAdapterResource.class, PortProviderUtil.class);
     }

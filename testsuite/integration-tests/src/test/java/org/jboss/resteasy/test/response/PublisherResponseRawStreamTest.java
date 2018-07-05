@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.response;
 
+import java.util.PropertyPermission;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,6 +17,7 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseRawStreamResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,6 +45,11 @@ public class PublisherResponseRawStreamTest {
       WebArchive war = TestUtil.prepareArchive(PublisherResponseRawStreamTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
               + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read"),
+              new PropertyPermission("*", "write"),
+              new RuntimePermission("modifyThread")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseRawStreamResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
    }

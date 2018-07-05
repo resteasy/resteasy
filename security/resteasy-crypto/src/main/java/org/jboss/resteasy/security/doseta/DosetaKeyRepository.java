@@ -13,8 +13,11 @@ import javax.ws.rs.core.SecurityContext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Hashtable;
@@ -75,7 +78,22 @@ public class DosetaKeyRepository implements KeyRepository
          {
             if (keyStorePath != null)
             {
-               InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStorePath.trim());
+               ClassLoader loader = null;
+               if (System.getSecurityManager() == null) {
+                  loader = Thread.currentThread().getContextClassLoader();
+               } else {
+                  try {
+                  loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                     @Override
+                     public ClassLoader run() throws Exception {
+                        return Thread.currentThread().getContextClassLoader();
+                     }
+                  });
+                  } catch (PrivilegedActionException pae) {
+                     throw new RuntimeException(pae);
+                  }
+               }
+               InputStream is = loader.getResourceAsStream(keyStorePath.trim());
                if (is == null) throw new RuntimeException(Messages.MESSAGES.unableToFindKeyStore(keyStorePath));
                keyStore = new KeyStoreKeyRepository(is, keyStorePassword);
                try

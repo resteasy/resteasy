@@ -44,7 +44,8 @@ public class DuplicateProviderRegistrationTest {
                 TestUtil.class, DuplicateProviderRegistrationInterceptor.class);
         war.addClass(NotForForwardCompatibility.class);
         // Arquillian in the deployment, test reads the server.log
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
                 new FilePermission(TestUtil.getJbossHome() + File.separator + "standalone" + File.separator + "log" +
                         File.separator + "server.log", "read"),
                 new LoggingPermission("control", ""),

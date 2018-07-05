@@ -56,9 +56,22 @@ public class SecureUnmarshaller implements Unmarshaller {
          //NOOP
       }
       
-      public static SAXParserProvider getInstance()
+      public static SAXParserProvider getInstance() throws PrivilegedActionException
       {
-         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+         final SecurityManager sm = System.getSecurityManager();
+         ClassLoader tccl = null;
+         if (sm == null)
+         {
+            tccl = Thread.currentThread().getContextClassLoader();
+         } else
+         {
+            tccl = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+               public ClassLoader run() throws Exception {
+                  return Thread.currentThread().getContextClassLoader();
+               }
+            });
+         }
+
          SAXParserProvider spp;
          spp = saxParserProviders.get(tccl);
          if (spp == null)
@@ -254,6 +267,10 @@ public class SecureUnmarshaller implements Unmarshaller {
          {
             throw new JAXBException(e);
          }
+         catch (PrivilegedActionException pae)
+         {
+            throw new JAXBException(pae);
+         }
       }
 
       throw new UnsupportedOperationException(Messages.MESSAGES.unexpectedUse("Source, Class<T>"));
@@ -300,6 +317,10 @@ public class SecureUnmarshaller implements Unmarshaller {
          catch (ParserConfigurationException e)
          {
             throw new JAXBException(e);
+         }
+         catch (PrivilegedActionException pae)
+         {
+            throw new JAXBException(pae);
          }
       }
 

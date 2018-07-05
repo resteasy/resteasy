@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.rx.rxjava;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,7 @@ import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxObservableResource;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxObservableResourceImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
@@ -91,6 +93,10 @@ public class RxObservableProxyTest {
       war.addClass(Bytes.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read"),
+              new PropertyPermission("*", "write")
+      ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxObservableResourceImpl.class, TestExceptionMapper.class);
    }

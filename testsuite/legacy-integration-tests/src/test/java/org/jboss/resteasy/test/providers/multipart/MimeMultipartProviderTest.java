@@ -12,6 +12,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProvide
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderCustomer;
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,6 +38,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,6 +73,9 @@ public class MimeMultipartProviderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class, MimeMultipartProviderCustomer.class);
     }
 

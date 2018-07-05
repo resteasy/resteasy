@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherForwardingResource;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
 
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +46,10 @@ public class InternalDispatcherTest {
         WebArchive war = TestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
         war.addClasses(InternalDispatcherClient.class, InternalDispatcherForwardingResource.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
 

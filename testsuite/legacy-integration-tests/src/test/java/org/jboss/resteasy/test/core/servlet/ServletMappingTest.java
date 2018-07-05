@@ -15,6 +15,7 @@ import org.jboss.resteasy.test.core.servlet.resource.ServletMappingProxy;
 import org.jboss.resteasy.test.core.basic.resource.MyFilter;
 import org.jboss.resteasy.test.core.servlet.resource.ServletMappingResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Configuration
@@ -47,6 +49,9 @@ public class ServletMappingTest {
         war.addAsWebInfResource(ServletMappingTest.class.getPackage(), "ServletMappingWeb.xml", "web.xml");
         war.addAsWebInfResource(ServletMappingTest.class.getPackage(), "ServletMappingJbossWeb.xml", "jboss-web.xml");
         war.addClass(MyFilter.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ServletMappingResource.class, ServletMappingProxy.class);
     }
 

@@ -8,6 +8,7 @@ import org.jboss.resteasy.test.providers.custom.resource.WriterNotBuiltinTestWri
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCustomer;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,10 @@ public class WriterNotBuiltinTest {
         WebArchive war = TestUtil.prepareArchive(WriterNotBuiltinTest.class.getSimpleName());
         war.addClass(ReaderWriterCustomer.class);
         war.addClass(PortProviderUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.use.builtin.providers", "false");
         return TestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class, ReaderWriterResource.class);

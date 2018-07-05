@@ -85,6 +85,9 @@ public class EntityBufferingInFileTest extends ClientTestBase{
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
         war.addClass(EntityBufferingInFileTest.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new FilePermission("/tmp/*", "read")
+                ), "permissions.xml");
         // DataSource provider creates tmp file in the filesystem
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
