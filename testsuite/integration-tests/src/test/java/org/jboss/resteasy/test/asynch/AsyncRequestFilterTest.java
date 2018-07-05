@@ -6,12 +6,15 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.test.asynch.resource.AsyncFilterException;
+import org.jboss.resteasy.test.asynch.resource.AsyncFilterExceptionMapper;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
 import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter3;
@@ -49,7 +52,8 @@ public class AsyncRequestFilterTest {
         war.addClasses(AsyncRequestFilterResource.class, AsyncRequestFilter.class, AsyncResponseFilter.class,
               AsyncRequestFilter1.class, AsyncRequestFilter2.class, AsyncRequestFilter3.class,
               AsyncPreMatchRequestFilter1.class, AsyncPreMatchRequestFilter2.class, AsyncPreMatchRequestFilter3.class,
-              AsyncResponseFilter1.class, AsyncResponseFilter2.class, AsyncResponseFilter3.class);
+              AsyncResponseFilter1.class, AsyncResponseFilter2.class, AsyncResponseFilter3.class,
+              AsyncFilterException.class, AsyncFilterExceptionMapper.class);
         return war;
     }
 
@@ -459,6 +463,73 @@ public class AsyncRequestFilterTest {
     }
 
     /**
+     * @tpTestDetails Async filters work with resume(Throwable) wrt filters/callbacks/complete
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testResponseFiltersThrow() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        testResponseFilterThrow(client, "/callback-async", false);
+        testResponseFilterThrow(client, "/callback", false);
+
+        testResponseFilterThrow(client, "/callback-async", true);
+        testResponseFilterThrow(client, "/callback", true);
+
+        client.close();
+    }
+
+    private void testResponseFilterThrow(Client client, String target, boolean useExceptionMapper)
+    {
+       WebTarget base = client.target(generateURL(target));
+
+       // throw in response filter
+       Response response = base.request()
+             .header("ResponseFilter1", "sync-pass")
+             .header("ResponseFilter2", "sync-pass")
+             .header("UseExceptionMapper", useExceptionMapper)
+             .header("ResponseFilter3", "async-throw-late")
+             .get();
+       // this is 500 even with exception mapper because exceptions in response filters are not mapped
+       assertEquals(500, response.getStatus());
+
+       // check that callbacks were called
+       response = base.request().get();
+       assertEquals(200, response.getStatus());
+       if(useExceptionMapper) 
+          assertEquals("org.jboss.resteasy.test.asynch.resource.AsyncFilterException: ouch", response.getHeaders().getFirst("ResponseFilterCallbackResponseFilter3"));
+       else
+          assertEquals("java.lang.Throwable: ouch", response.getHeaders().getFirst("ResponseFilterCallbackResponseFilter3"));
+          
+
+       // throw in request filter
+       response = base.request()
+             .header("Filter1", "sync-pass")
+             .header("Filter2", "sync-pass")
+             .header("UseExceptionMapper", useExceptionMapper)
+             .header("Filter3", "async-throw-late")
+             .get();
+       if(useExceptionMapper) 
+       {
+          assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatus());
+          assertEquals("exception was mapped", response.readEntity(String.class));
+       }
+       else 
+       {
+          assertEquals(500, response.getStatus());
+       }
+
+       // check that callbacks were called
+       response = base.request().get();
+       assertEquals(200, response.getStatus());
+       if(useExceptionMapper) 
+          assertEquals("org.jboss.resteasy.test.asynch.resource.AsyncFilterException: ouch", response.getHeaders().getFirst("RequestFilterCallbackFilter3"));
+       else
+          assertEquals("java.lang.Throwable: ouch", response.getHeaders().getFirst("RequestFilterCallbackFilter3"));
+      
+   }
+
+   /**
      * @tpTestDetails Interceptors work with non-Response resource methods
      * @tpSince RESTEasy 4.0.0
      */
