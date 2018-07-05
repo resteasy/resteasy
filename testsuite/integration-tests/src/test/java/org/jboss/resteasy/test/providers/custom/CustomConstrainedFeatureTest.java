@@ -59,7 +59,7 @@ public class CustomConstrainedFeatureTest {
        CustomServerConstrainedFeature.reset();
        CustomClientConstrainedFeature.reset();
        // This will register always in SERVER runtime
-       // ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+       // ResteasyProviderFactory providerFactory = ResteasyProviderFactory.newInstance();
        // providerFactory.register(CustomClientConstrainedFeature.class);
        // providerFactory.register(CustomServerConstrainedFeature.class);
        // ResteasyClient client = new ResteasyClientBuilder().build();

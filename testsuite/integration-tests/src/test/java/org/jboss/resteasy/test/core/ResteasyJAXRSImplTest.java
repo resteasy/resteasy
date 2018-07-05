@@ -8,14 +8,20 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -33,6 +39,21 @@ public class ResteasyJAXRSImplTest
       WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
       war.addClass(NotForForwardCompatibility.class);
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
+
+
+   private ResteasyProviderFactory factory;
+   @Before
+   public void setup() {
+      // Create an instance and set it as the singleton to use
+      factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory.setInstance(factory);
+      RegisterBuiltin.register(factory);
+   }
+   @After
+   public void cleanup() {
+      // Clear the singleton
+      ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }
 
    /**
@@ -110,8 +131,11 @@ public class ResteasyJAXRSImplTest
    private void testResteasyProviderFactoryNewInstance() {
       ResteasyProviderFactory.setInstance(null);
       ResteasyProviderFactory rpf = ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register(rpf);
       ResteasyProviderFactory rpf2 = ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register(rpf2);
       ResteasyProviderFactory rpf3 = ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register(rpf3);
       Assert.assertEquals(ResteasyProviderFactory.class, rpf.getClass());
       Assert.assertEquals(ResteasyProviderFactory.class, rpf2.getClass());
       Assert.assertEquals(ResteasyProviderFactory.class, rpf3.getClass());

@@ -7,14 +7,18 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.old.ResteasyProviderFactory;
 import org.jboss.resteasy.test.core.basic.resource.AcceptLanguagesResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.lang.reflect.ReflectPermission;
 
 @RunWith(Arquillian.class)
 public class ResteasyJAXRSImplTest
@@ -101,6 +105,7 @@ public class ResteasyJAXRSImplTest
 
    private static ResteasyProviderFactory resteasyProviderFactoryNewInstance() {
       Object o = org.jboss.resteasy.spi.ResteasyProviderFactory.newInstance();
+      RegisterBuiltin.register((ResteasyProviderFactory)o);
       Assert.assertEquals(ResteasyProviderFactory.class, o.getClass());
       return (ResteasyProviderFactory)o;
    }
