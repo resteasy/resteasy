@@ -115,16 +115,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
                done = true;
-               return internalResume(exc, t -> {
-                  if(t instanceof UnhandledException)
-                  {
-                     internalResume(Response.status(500).build(), t2 -> asyncContext.complete());
-                  }
-                  else
-                  {
-                     asyncContext.complete();
-                  }
-               });
+               return internalResume(exc, t -> asyncContext.complete());
             }
          }
 

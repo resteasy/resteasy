@@ -292,16 +292,7 @@ public class NettyHttpRequest extends BaseHttpRequest
                     if (done) return false;
                     if (cancelled) return false;
                     done = true;
-                    return internalResume(ex, t -> {
-                    		if(t instanceof UnhandledException)
-                    		{
-                    			internalResume(Response.status(500).build(), t2 -> nettyFlush());
-                    		}
-                    		else
-                    		{
-                    		   nettyFlush();
-                    		}
-                    });
+                    return internalResume(ex, t -> nettyFlush());
                 }
             }
 
