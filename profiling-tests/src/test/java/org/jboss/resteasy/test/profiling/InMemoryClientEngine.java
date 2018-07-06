@@ -202,8 +202,16 @@ public class InMemoryClientEngine implements ClientHttpEngine
          return stream;
       }
 
+      @Override
       public void releaseConnection() throws IOException
       {
       }
+      
+      @Override
+      public void releaseConnection(boolean consumeInputStream) throws IOException
+      {
+      }
+      
    }
+   
 }

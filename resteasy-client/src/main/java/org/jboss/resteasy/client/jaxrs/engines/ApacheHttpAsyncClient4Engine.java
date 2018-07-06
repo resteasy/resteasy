@@ -653,10 +653,25 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       @Override
       public synchronized void releaseConnection() throws IOException
       {
+        releaseConnection(false);
+      }
+      
+      @Override
+      public synchronized void releaseConnection(boolean consumeInputStream) throws IOException
+      {
          boolean thrown = true;
          try
          {
-            if (stream != null) stream.close();
+            if (stream != null)
+            {
+               if (consumeInputStream)
+               {
+                  while (stream.read() > 0)
+                  {
+                  }
+               }
+               stream.close();
+            }
             thrown = false;
          }
          finally
@@ -674,6 +689,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
             }
          }
       }
+      
    }
 
    private static class EndOfStream implements ContentDecoder
