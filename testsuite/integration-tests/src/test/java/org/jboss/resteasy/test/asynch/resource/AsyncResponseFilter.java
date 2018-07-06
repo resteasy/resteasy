@@ -87,9 +87,9 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          ctx.suspend();
          HttpRequest req = ResteasyProviderFactory.getContextData(HttpRequest.class);
          ExecutorService executor = Executors.newSingleThreadExecutor();
-//         System.err.println("Submitting executor");
+         System.err.println("Submitting executor");
          executor.submit(() -> {
-//            System.err.println("In thread, sleeping");
+            System.err.println("In thread, sleeping");
             try
             {
                Thread.sleep(2000);
@@ -108,7 +108,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
                   throw new RuntimeException("Callback called twice");
                callbackException = Objects.toString(t);
 //               System.err.println("In callback, done");
-               Thread.dumpStack();
+//               Thread.dumpStack();
             });
 //            System.err.println("In thread, resuming");
             if("true".equals(req.getHttpHeaders().getHeaderString("UseExceptionMapper")))
