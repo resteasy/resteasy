@@ -6,6 +6,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -41,6 +42,8 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
+
+
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -353,54 +356,81 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             return stream;
          }
 
+         @Override
          public void releaseConnection() throws IOException
          {
-            // Apache Client 4 is stupid,  You have to get the InputStream and close it if there is an entity
-            // otherwise the connection is never released.  There is, of course, no close() method on response
-            // to make this easier.
-            try {
-               // Another stupid thing...TCK is testing a specific exception from stream.close()
-               // so, we let it propagate up.
-               if (stream != null)
+            releaseConnection(true);
+         }
+
+         @Override
+         public void releaseConnection(boolean consumeInputStream) throws IOException
+         {
+            if (consumeInputStream)
+            {
+               // Apache Client 4 is stupid,  You have to get the InputStream and close it if there is an entity
+               // otherwise the connection is never released.  There is, of course, no close() method on response
+               // to make this easier.
+               try
                {
-                  stream.close();
-               }
-               else
-               {
-                  InputStream is = getInputStream();
-                  if (is != null)
+                  // Another stupid thing...TCK is testing a specific exception from stream.close()
+                  // so, we let it propagate up.
+                  if (stream != null)
                   {
-                     is.close();
+                     stream.close();
                   }
+                  else
+                  {
+                     InputStream is = getInputStream();
+                     if (is != null)
+                     {
+                        is.close();
+                     }
+                  }
+               }
+               finally
+               {
+                  // just in case the input stream was entirely replaced and not wrapped, we need
+                  // to close the apache client input stream.
+                  if (hc4Stream != null)
+                  {
+                     try
+                     {
+                        hc4Stream.close();
+                     }
+                     catch (IOException ignored)
+                     {
+
+                     }
+                  }
+                  else
+                  {
+                     try
+                     {
+                        HttpEntity entity = res.getEntity();
+                        if (entity != null)
+                           entity.getContent().close();
+                     }
+                     catch (IOException ignored)
+                     {
+                     }
+
+                  }
+
                }
             }
-            finally {
-               // just in case the input stream was entirely replaced and not wrapped, we need
-               // to close the apache client input stream.
-               if (hc4Stream != null)
+            else if (res instanceof CloseableHttpResponse)
+            {
+               try
                {
-                  try {
-                     hc4Stream.close();
-                  }
-                  catch (IOException ignored) {
-
-                  }
+                  ((CloseableHttpResponse) res).close();
                }
-               else
+               catch (IOException e)
                {
-                  try
-                  {
-                     HttpEntity entity = res.getEntity();
-                     if (entity != null) entity.getContent().close();
-                  }
-                  catch (IOException ignored)
-                  {
-                  }
-
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.couldNotCloseHttpResponse(), e);
                }
-
             }
-          }
+         }
+
       };
       response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());

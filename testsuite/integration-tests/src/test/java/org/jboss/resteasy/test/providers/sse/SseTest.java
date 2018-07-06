@@ -479,8 +479,8 @@ public class SseTest
    @InSequence(12)
    public void testNoReconnectAfterEventSinkClose() throws Exception
    {
-      final List<String> results = new ArrayList<String>();
-      Client client = ClientBuilder.newBuilder().build();
+      List<String> results = new ArrayList<String>();
+      Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
       SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
       sourceImpl.setAlwasyReconnect(false);
@@ -492,8 +492,24 @@ public class SseTest
       }
       catch (InterruptedException e)
       {
-         // falls through
-         e.printStackTrace();
+         logger.info("Thread sleep interruped", e);
+      }
+     
+      Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
+      //test for [Resteasy-1863]:SseEventSourceImpl should not close Client instance
+      results.clear();
+      WebTarget target2 = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
+      SseEventSourceImpl sourceImpl2 = (SseEventSourceImpl)SseEventSource.target(target2).build();
+      sourceImpl2.setAlwasyReconnect(false);
+      try (SseEventSource source = sourceImpl2)
+      {
+         source.register(event -> results.add(event.readData()));
+         source.open();
+         Thread.sleep(1000);
+      }
+      catch (InterruptedException e)
+      {
+         logger.info("Thread sleep interruped", e);
       }
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
    }
@@ -520,8 +536,7 @@ public class SseTest
       }
       catch (InterruptedException e)
       {
-         // falls through
-         e.printStackTrace();
+         logger.info("Thread sleep interruped", e);
       }
       Assert.assertTrue("error is not expected", errors.get() == 0);
    }
