@@ -89,7 +89,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          ExecutorService executor = Executors.newSingleThreadExecutor();
          System.err.println("Submitting executor");
          executor.submit(() -> {
-            System.err.println("In thread, sleeping");
+//            System.err.println("In thread, sleeping");
             try
             {
                Thread.sleep(2000);
@@ -110,7 +110,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
                System.err.println("In callback, done");
 //               Thread.dumpStack();
             });
-            System.err.println("In thread, resuming");
+//            System.err.println("In thread, resuming");
             try {
             if("true".equals(req.getHttpHeaders().getHeaderString("UseExceptionMapper")))
                ctx.resume(new AsyncFilterException("ouch"));
