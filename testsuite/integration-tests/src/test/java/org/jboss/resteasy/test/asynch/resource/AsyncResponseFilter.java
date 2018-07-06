@@ -111,10 +111,15 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
 //               Thread.dumpStack();
             });
             System.err.println("In thread, resuming");
+            try {
             if("true".equals(req.getHttpHeaders().getHeaderString("UseExceptionMapper")))
                ctx.resume(new AsyncFilterException("ouch"));
             else
                ctx.resume(new Throwable("ouch"));
+            }catch(Throwable t) {
+               System.err.println("In thread, resuming threw: "+t);
+               t.printStackTrace();
+            }
             System.err.println("In thread, resuming done");
          });
          System.err.println("Done Submitting executor");
