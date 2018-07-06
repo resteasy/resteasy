@@ -106,12 +106,30 @@ public class AbortedResponse extends ClientResponse
    @Override
    public void releaseConnection()
    {
-      try {
-         if (is != null) is.close();
+      releaseConnection(false);
+   }
+   
+   @Override
+   public void releaseConnection(boolean consumeInputStream)
+   {
+      try
+      {
+         if (is != null)
+         {
+            if (consumeInputStream)
+            {
+               while (is.read() > 0)
+               {
+               }
+            }
+            is.close();
+         }
       }
-      catch (IOException e) {
+      catch (IOException e)
+      {
 
       }
+
    }
    
    /**
