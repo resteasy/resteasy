@@ -1,7 +1,7 @@
 install:
  - mvn clean; java -version
 script:
- - mvn -B -fae -Dserver.version=$SERVER_VERSION -DfailIfNoTests=false -Dtest=AsyncRequestFilterTest\#testResponseFiltersThrow install && cat testsuite/integration-tests/target/surefire-reports/org.jboss.resteasy.test.asynch.AsyncRequestFilterTest-output.txt
+ - mvn -B -fae -Dserver.version=$SERVER_VERSION -DfailIfNoTests=false -Dtest=AsyncRequestFilterTest\#testResponseFiltersThrow install || (cat testsuite/integration-tests/target/surefire-reports/org.jboss.resteasy.test.asynch.AsyncRequestFilterTest-output.txt; false)
 
 language: java
 jdk:
