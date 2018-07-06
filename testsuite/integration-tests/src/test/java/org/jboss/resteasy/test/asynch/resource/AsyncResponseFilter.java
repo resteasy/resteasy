@@ -87,7 +87,9 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          ctx.suspend();
          HttpRequest req = ResteasyProviderFactory.getContextData(HttpRequest.class);
          ExecutorService executor = Executors.newSingleThreadExecutor();
+         System.err.println("Submitting executor");
          executor.submit(() -> {
+            System.err.println("In thread, sleeping");
             try
             {
                Thread.sleep(2000);
@@ -96,18 +98,26 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
                // TODO Auto-generated catch block
                e.printStackTrace();
             }
+            System.err.println("In thread, sleeping done");
             ctx.setEntity(name);
             ResteasyAsynchronousResponse resp = req.getAsyncContext().getAsyncResponse();
+            System.err.println("In thread, registering callback");
             resp.register((CompletionCallback) (t) -> {
+               System.err.println("In callback, callbackException: "+callbackException+", t: "+t);
                if(callbackException != null)
                   throw new RuntimeException("Callback called twice");
                callbackException = Objects.toString(t);
+               System.err.println("In callback, done");
+               Thread.dumpStack();
             });
+            System.err.println("In thread, resuming");
             if("true".equals(req.getHttpHeaders().getHeaderString("UseExceptionMapper")))
                ctx.resume(new AsyncFilterException("ouch"));
             else
                ctx.resume(new Throwable("ouch"));
+            System.err.println("In thread, resuming done");
          });
+         System.err.println("Done Submitting executor");
       }
       System.err.println("Filter response for "+name+" with action: "+action+" done");
    }
