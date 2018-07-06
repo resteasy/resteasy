@@ -28,7 +28,9 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
    
    /**
     * Aborts the current request with the given exception. This behaves as if the request
-    * filter threw this exception synchronously.
+    * filter threw this exception synchronously, which means exceptions may be mapped via
+    * exception mappers, response filters will run and async response callbacks will be
+    * called with this exception.
     * 
     * @param t the exception to send back to the client, as mapped by the application.
     */

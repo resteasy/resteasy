@@ -1,18 +1,24 @@
 package org.jboss.resteasy.test.asynch.resource;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerRequestContext;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public abstract class AsyncRequestFilter implements ContainerRequestFilter {
 
    private String name;
+   private String callbackException;
    
    public AsyncRequestFilter(String name)
    {
@@ -22,6 +28,9 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
+      requestContext.getHeaders().add("RequestFilterCallback"+name, String.valueOf(callbackException));
+      callbackException = null;
+
       SuspendableContainerRequestContext ctx = (SuspendableContainerRequestContext) requestContext;
       String action = ctx.getHeaderString(name);
       System.err.println("Filter request for "+name+" with action: "+action);
@@ -43,6 +52,30 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
       }else if("async-fail-instant".equals(action)) {
          ctx.suspend();
          ctx.abortWith(Response.ok(name).build());
+      }else if("async-throw-late".equals(action)) {
+         ctx.suspend();
+         HttpRequest req = ResteasyProviderFactory.getContextData(HttpRequest.class);
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(() -> {
+            try
+            {
+               Thread.sleep(2000);
+            } catch (InterruptedException e)
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            ResteasyAsynchronousResponse resp = req.getAsyncContext().getAsyncResponse();
+            resp.register((CompletionCallback) (t) -> {
+               if(callbackException != null)
+                  throw new RuntimeException("Callback called twice");
+               callbackException = Objects.toString(t);
+            });
+            if("true".equals(req.getHttpHeaders().getHeaderString("UseExceptionMapper")))
+               ctx.resume(new AsyncFilterException("ouch"));
+            else
+               ctx.resume(new Throwable("ouch"));
+         });
       }
       System.err.println("Filter request for "+name+" with action: "+action+" done");
    }

@@ -10,6 +10,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.CompletionCallback;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -74,6 +77,18 @@ public class AsyncRequestFilterResource {
           resp.complete(Response.ok("resource").build());
        });
        return resp;
+    }
+
+    @Path("callback")
+    @GET
+    public String callback() {
+       return "hello";
+    }
+
+    @Path("callback-async")
+    @GET
+    public CompletionStage<String> callbackAsync() {
+       return CompletableFuture.completedFuture("hello");
     }
 
    private boolean isAsync(String filter)
