@@ -493,6 +493,14 @@ public class AsyncRequestFilterTest {
        // this is 500 even with exception mapper because exceptions in response filters are not mapped
        assertEquals(500, response.getStatus());
 
+       try
+       {
+          // give a chance to CI to run the callbacks
+          Thread.sleep(1000);
+       } catch (InterruptedException e)
+       {
+       }
+
        // check that callbacks were called
        response = base.request().get();
        assertEquals(200, response.getStatus());
@@ -517,6 +525,14 @@ public class AsyncRequestFilterTest {
        else 
        {
           assertEquals(500, response.getStatus());
+       }
+
+       try
+       {
+          // give a chance to CI to run the callbacks
+          Thread.sleep(1000);
+       } catch (InterruptedException e)
+       {
        }
 
        // check that callbacks were called
