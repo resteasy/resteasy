@@ -46,15 +46,14 @@ public class AsyncPostProcessingTest {
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new PropertyPermission("node", "read"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SecurityPermission("insertProvider"),
                 new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
         ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,

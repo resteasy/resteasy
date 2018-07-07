@@ -8,6 +8,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.net.URL;
+import java.util.PropertyPermission;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.IsNot.not;
@@ -69,6 +71,9 @@ public abstract class GzipAbstractTest {
         WebArchive war = TestUtil.prepareArchive(name);
         war = war.addClass(GzipInterface.class);
         war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("resteasy.allowGzip", "read")
+        ), "permissions.xml");
         if (addProvidersFileWithGzipInterceptors) {
             war.addAsManifestResource(GzipAbstractTest.class.getPackage(), "GzipAbstractTest-javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
         }

@@ -49,7 +49,8 @@ public class XmlJavaTypeAdapterTest {
         WebArchive war = TestUtil.prepareArchive(XmlJavaTypeAdapterTest.class.getSimpleName());
         war.addClass(XmlJavaTypeAdapterTest.class);
         // Arquillian in the deployment and use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("node", "read"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),

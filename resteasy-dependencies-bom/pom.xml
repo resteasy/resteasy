@@ -88,6 +88,7 @@
         <version.io.reactivex.rxjava-reactive-streams>1.2.1</version.io.reactivex.rxjava-reactive-streams>
         <version.io.reactivex.rxjava2-rxjava>2.1.5</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
+        <version.org.hibernate.validator>6.0.10.Final</version.org.hibernate.validator>
     </properties>
 
     <distributionManagement>
@@ -251,6 +252,11 @@
                 <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${version.org.hibernate.validator}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>

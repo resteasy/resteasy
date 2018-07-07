@@ -10,6 +10,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.EmbeddedMultipartCustomer;
 import org.jboss.resteasy.test.providers.multipart.resource.EmbeddedMultipartResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -22,6 +23,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Multipart provider
@@ -39,6 +41,9 @@ public class EmbeddedMultipartTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EmbeddedMultipartTest.class.getSimpleName());
         war.addClass(EmbeddedMultipartCustomer.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EmbeddedMultipartResource.class);
     }
 

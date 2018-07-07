@@ -61,7 +61,6 @@ public class JavaConfigDependenciesInDeploymentTest {
             new RuntimePermission("getProtectionDomain"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
-            new RuntimePermission("getClassLoader"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
         ), "permissions.xml");
