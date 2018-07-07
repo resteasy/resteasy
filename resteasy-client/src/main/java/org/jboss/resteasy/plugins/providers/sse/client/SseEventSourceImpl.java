@@ -403,36 +403,31 @@ public class SseEventSourceImpl implements SseEventSource
                reconnect(delay);
                break;
             }
-            else
+            try
             {
-               try
+               InboundSseEvent event = eventInput.read();
+               if (event != null)
                {
-                  InboundSseEvent event = eventInput.read();
-                  if (event != null)
+                  onEvent(event);
+                  if (event.isReconnectDelaySet())
                   {
-                     onEvent(event);
-                     if (event.isReconnectDelaySet())
-                     {
-                        delay = event.getReconnectDelay();
-                     }
-                     onEventConsumers.forEach(consumer -> {
-                        consumer.accept(event);
-                     });
+                     delay = event.getReconnectDelay();
                   }
-                  else
-                  {
-                     //event sink closed
-                     if (!alwaysReconnect){
-                        internalClose();
-                        break;
-                     }
-                  }
+                  onEventConsumers.forEach(consumer -> {
+                     consumer.accept(event);
+                  });
                }
-               catch (IOException e)
+               //event sink closed
+               else if (!alwaysReconnect)
                {
-                  reconnect(delay);
+                  internalClose();
                   break;
                }
+            }
+            catch (IOException e)
+            {
+               reconnect(delay);
+               break;
             }
          }
       }
