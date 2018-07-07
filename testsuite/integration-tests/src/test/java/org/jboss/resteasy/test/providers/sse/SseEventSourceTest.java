@@ -115,7 +115,6 @@ public class SseEventSourceTest {
      * @tpSince RESTEasy 3.5.0
      */
     @Test
-    @Category(ExpectedFailing.class) // See RESTEASY-1816
     public void testSseEventSourceOnEventOnErrorOnCompleteCallback() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
