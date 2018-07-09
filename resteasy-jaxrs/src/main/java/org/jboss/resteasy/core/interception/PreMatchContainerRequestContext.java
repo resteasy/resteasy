@@ -287,14 +287,11 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    
    private void writeException(Throwable t)
    {
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
-      try {
-         dispatcher.writeException(httpRequest, httpResponse, t, t2 -> {});
-      }catch(Throwable x) {
-         dispatcher.unhandledAsynchronousException(httpResponse, x);
-      }
+      /*
+       * Here, contrary to ContainerResponseContextImpl.writeException, we can use the async response
+       * to write the exception, because it calls the right response filters, complete() and callbacks
+       */
+      httpRequest.getAsyncContext().getAsyncResponse().resume(t);
    }
 
    public synchronized BuiltResponse filter()
