@@ -38,6 +38,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected TimeoutHandler timeoutHandler;
    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
    protected Map<Class<?>, Object> contextDataMap;
+   private boolean callbacksCalled;
 
    protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
    {
@@ -151,6 +152,10 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    @Override
    public void completionCallbacks(Throwable throwable)
    {
+      // make sure we only call them once
+      if(callbacksCalled)
+         return;
+      callbacksCalled = true;
       for (CompletionCallback callback : completionCallbacks)
       {
          callback.onComplete(throwable);
