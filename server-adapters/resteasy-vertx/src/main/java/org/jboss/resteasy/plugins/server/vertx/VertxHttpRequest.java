@@ -280,15 +280,7 @@ public class VertxHttpRequest extends BaseHttpRequest
                if (done) return false;
                if (cancelled) return false;
                done = true;
-               return internalResume(ex, t -> {
-                  if(t instanceof UnhandledException) {
-                     internalResume(Response.status(500).build(), t2 -> vertxFlush());
-                  }
-                  else 
-                  {
-                     vertxFlush();
-                  }
-               });
+               return internalResume(ex, t -> vertxFlush());
             }
          }
 

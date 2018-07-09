@@ -28,9 +28,11 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
    
    /**
     * Aborts the current response with the given exception. This behaves as if the request
-    * filter threw this exception synchronously.
+    * filter threw this exception synchronously, which means that the exception will not
+    * be mapped by exception mappers, the response filters will stop running, and the
+    * async response callbacks will be called with this exception.
     * 
-    * @param t the exception to send back to the client, as mapped by the application.
+    * @param t the exception to send back to the client, as an internal server error.
     */
    public void resume(Throwable t);
 

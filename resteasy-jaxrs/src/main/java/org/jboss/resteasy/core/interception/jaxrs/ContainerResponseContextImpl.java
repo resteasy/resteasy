@@ -29,6 +29,7 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -329,16 +330,18 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
    private void writeException(Throwable t)
    {
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+      /*
+       * Here we cannot call AsyncResponse.resume(t) because that would invoke the response filters
+       * and we should not invoke them because we're already in them.
+       */
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
-      try {
-         dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
-      }catch(Throwable x) {
-         dispatcher.unhandledAsynchronousException(httpResponse, x);
-         LogMessages.LOGGER.unhandledAsynchronousException(x);
-         onComplete.accept(null);
-      }
+      ResteasyAsynchronousResponse asyncResponse = request.getAsyncContext().getAsyncResponse();
+      
+      dispatcher.unhandledAsynchronousException(httpResponse, t);
+      onComplete.accept(t);
+      asyncResponse.complete();
+      asyncResponse.completionCallbacks(t);
    }
 
    public synchronized void filter() throws IOException
