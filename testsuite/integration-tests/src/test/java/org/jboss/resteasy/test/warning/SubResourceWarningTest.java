@@ -27,12 +27,16 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 @RunAsClient
 public class SubResourceWarningTest {
 
+   // check server.log msg count before app is deployed.  Deploying causes messages to be logged.
+   private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false);
+
    @Deployment
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(SubResourceWarningTest.class.getSimpleName());
       return TestUtil.finishContainerPrepare(war, null, SubResourceWarningResource.class,
               TestResource1.class, TestResource2.class, TestSubResource.class);
    }
+
    @BeforeClass
    public static void initLogging() throws Exception {
       OnlineManagementClient client = TestUtil.clientInit();
@@ -49,11 +53,13 @@ public class SubResourceWarningTest {
 
    /**
     * Confirms that 2 warning messages about this incorrect coding is printed to the server.log
+    * Must check for path because warning text, RESTEASY002195, exist in log for a previous test
+    * in the suite.
     * @throws Exception
     */
    @Test
    public void testWarningMsg () throws Exception {
-      int cnt = TestUtil.getWarningCount("RESTEASY002195", false);
-      Assert.assertEquals( "Improper log WARNING count",cnt, 2);
+      int cnt = TestUtil.getWarningCount("have the same path, [test", false);
+      Assert.assertEquals( "Improper log WARNING count", preTestCnt+2, cnt);
    }
 }
