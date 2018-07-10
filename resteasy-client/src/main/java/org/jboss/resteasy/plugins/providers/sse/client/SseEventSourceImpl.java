@@ -252,24 +252,7 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
-      if (state.getAndSet(State.CLOSED) != State.CLOSED)
-      {
-         if (response != null)
-         {
-            try
-            {
-               response.releaseConnection(false);
-            }
-            catch (IOException e)
-            {
-               onErrorConsumers.forEach(consumer -> {
-                  consumer.accept(e);
-               });
-            }
-         }
-         executor.shutdownNow();
-         onCompleteConsumers.forEach(Runnable::run);
-      }
+      internalClose();
       try
       {
          if (!executor.awaitTermination(timeout, unit))
@@ -287,6 +270,29 @@ public class SseEventSourceImpl implements SseEventSource
       }
 
       return true;
+   }
+   
+   private void internalClose()
+   {
+      if (state.getAndSet(State.CLOSED) == State.CLOSED)
+      {
+         return;
+      }
+      if (response != null)
+      {
+         try
+         {
+            response.releaseConnection(false);
+         }
+         catch (IOException e)
+         {
+            onErrorConsumers.forEach(consumer -> {
+               consumer.accept(e);
+            });
+         }
+      }
+      executor.shutdownNow();
+      onCompleteConsumers.forEach(Runnable::run);
    }
 
    public void setAlwasyReconnect(boolean always)
@@ -332,7 +338,6 @@ public class SseEventSourceImpl implements SseEventSource
       {
          if (state.get() != State.OPEN)
          {
-            onCompleteConsumers.forEach(Runnable::run);
             return;
          }
          
@@ -358,7 +363,7 @@ public class SseEventSourceImpl implements SseEventSource
                //if 200<= response code <300 and response contentType is null, fail the connection. 
                if (eventInput == null && !alwaysReconnect)
                {
-                  state.set(State.CLOSED);
+                  internalClose();
                }
             }
             else
@@ -398,37 +403,33 @@ public class SseEventSourceImpl implements SseEventSource
                reconnect(delay);
                break;
             }
-            else
+            try
             {
-               try
+               InboundSseEvent event = eventInput.read();
+               if (event != null)
                {
-                  InboundSseEvent event = eventInput.read();
-                  if (event != null)
+                  onEvent(event);
+                  if (event.isReconnectDelaySet())
                   {
-                     onEvent(event);
-                     if (event.isReconnectDelaySet())
-                     {
-                        delay = event.getReconnectDelay();
-                     }
-                     onEventConsumers.forEach(consumer -> {
-                        consumer.accept(event);
-                     });
+                     delay = event.getReconnectDelay();
                   }
-                  else
-                  {
-                     //event sink closed
-                     if (!alwaysReconnect)
-                        break;
-                  }
+                  onEventConsumers.forEach(consumer -> {
+                     consumer.accept(event);
+                  });
                }
-               catch (IOException e)
+               //event sink closed
+               else if (!alwaysReconnect)
                {
-                  reconnect(delay);
+                  internalClose();
                   break;
                }
             }
+            catch (IOException e)
+            {
+               reconnect(delay);
+               break;
+            }
          }
-         onCompleteConsumers.forEach(Runnable::run);
       }
 
       public void awaitConnected()
@@ -451,11 +452,11 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void onUnrecoverableError(Throwable throwable)
       {
-         state.set(State.CLOSED);
          connectedLatch.countDown();
          onErrorConsumers.forEach(consumer -> {
             consumer.accept(throwable);
          });
+         internalClose();
       }
 
       private void onEvent(final InboundSseEvent event)
