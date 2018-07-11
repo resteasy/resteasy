@@ -6,7 +6,7 @@ script:
 language: java
 jdk:
   - oraclejdk8
-  - oraclejdk9
+  - oraclejdk10
 env:
   - SERVER_VERSION=11.0.0.Final
   - SERVER_VERSION=12.0.0.Final
