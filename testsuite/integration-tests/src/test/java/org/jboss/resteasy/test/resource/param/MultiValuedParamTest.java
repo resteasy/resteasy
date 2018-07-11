@@ -68,10 +68,10 @@ public class MultiValuedParamTest {
         war.addClass(MultiValuedPathParamConverter.class);
         war.addClass(PathParamWrapperArrayConverter.class);
         war.addClass(MultiValuedParamResourceClient.class);
-        return TestUtil.finishContainerPrepare(war, null, MultiValuedParamConverterProvider.class,
-        		MultiValuedParamResource.class,  MultiValuedParamResource.QueryParamResource.class, MultiValuedParamResource.HeaderParamResource.class,
-        		MultiValuedParamResource.MatrixParamResource.class, MultiValuedParamResource.CookieParamResource.class, MultiValuedParamResource.FormParamResource.class,
-        		MultiValuedParamResource.PathParamResource.class);
+		return TestUtil.finishContainerPrepare(war, null, MultiValuedParamConverterProvider.class,
+				MultiValuedParamResource.class,  MultiValuedParamResource.QueryParamResource.class, MultiValuedParamResource.HeaderParamResource.class,
+				MultiValuedParamResource.PathParamResource.class, MultiValuedParamResource.CookieParamResource.class,
+				MultiValuedParamResource.MatrixParamResource.class, MultiValuedParamResource.FormParamResource.class);
     }
 
     private String generateBaseUrl() {
