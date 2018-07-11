@@ -51,7 +51,7 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
 
       for (Class<?> clazz : classes)
       {
-         if (ignoredPackages.contains(clazz.getPackage().getName())) continue;
+         if (clazz.isInterface() || ignoredPackages.contains(clazz.getPackage().getName())) continue;
          if (clazz.isAnnotationPresent(Path.class))
          {
             resources.add(clazz);
