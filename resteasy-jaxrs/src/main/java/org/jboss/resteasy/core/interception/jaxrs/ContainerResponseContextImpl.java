@@ -337,7 +337,10 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       ResteasyAsynchronousResponse asyncResponse = request.getAsyncContext().getAsyncResponse();
-      
+
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+      tracingLogger.flush(httpResponse.getOutputHeaders());
+
       dispatcher.unhandledAsynchronousException(httpResponse, t);
       onComplete.accept(t);
       asyncResponse.complete();

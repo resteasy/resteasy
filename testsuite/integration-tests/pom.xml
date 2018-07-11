@@ -74,6 +74,13 @@
                                        dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
                                        overwrite="true"/>
                                 <delete dir="target/dependency-maven-plugin-markers"/>
+                                <copy file="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-full.xml"
+                                      tofile="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-tracing.xml"/>
+                                <replace
+                                        file="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-tracing.xml">
+                                    <replacetoken><![CDATA[="INFO"]]></replacetoken>
+                                    <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
+                                </replace>
                             </target>
                         </configuration>
                         <goals>
@@ -411,11 +418,12 @@
                             </goals>
                             <configuration>
                                 <excludes>
-                                     <!-- Tests requires excluding JsonBindingProvider-->
+                                    <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
+
 
                         <!-- execution with excluded JSON-B -->
                         <execution>
@@ -431,6 +439,7 @@
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
                                 </classpathDependencyExcludes>
+
                             </configuration>
                         </execution>
 

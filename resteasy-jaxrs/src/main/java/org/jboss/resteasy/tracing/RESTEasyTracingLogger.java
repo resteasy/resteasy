@@ -106,12 +106,14 @@ public abstract class RESTEasyTracingLogger {
      */
     public static RESTEasyTracingLogger getInstance(HttpRequest request) {
         if (request == null) {
-            //not server side
             return EMPTY;
         }
+
         final RESTEasyTracingLogger tracingLogger = (RESTEasyTracingLogger) request.getAttribute(PROPERTY_NAME);
-        return (tracingLogger != null) ? tracingLogger : EMPTY;
+
+        return tracingLogger == null ? EMPTY : tracingLogger;
     }
+
 
     public static RESTEasyTracingLogger empty() {
         return EMPTY;

@@ -325,7 +325,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          cleanUpAfterExecute(httpMethod);
       }
 
-      ClientResponse response = new ClientResponse(request.getClientConfiguration())
+      ClientResponse response = new ClientResponse(request.getClientConfiguration(), request.getTracingLogger())
       {
          InputStream stream;
          InputStream hc4Stream;

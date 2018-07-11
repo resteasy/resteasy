@@ -11,6 +11,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
@@ -137,7 +138,15 @@ public class ServerResponseWriter
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
                providerFactory, ent, type, generic, annotations, mt,
                jaxrsResponse.getMetadata(), os, request);
-         writerContext.proceed();
+
+         RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+         final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.WI_SUMMARY);
+         try {
+            writerContext.proceed();
+         } finally {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_SUMMARY, timestamp, writerContext.getProcessedInterceptorCount());
+         }
+
          if(sendHeaders) {
             response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
             callback.commit(); // just in case the output stream is never used
@@ -210,7 +219,7 @@ public class ServerResponseWriter
          final long timestamp = logger.timestamp(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY);
          // filter calls the continuation
          responseContext.filter();
-         logger.logDuration(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY, responseFilters.length, timestamp);
+         logger.logDuration(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY, timestamp, responseFilters.length);
       }
       else
       {
