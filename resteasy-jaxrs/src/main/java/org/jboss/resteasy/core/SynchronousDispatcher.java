@@ -55,9 +55,6 @@ public class SynchronousDispatcher implements Dispatcher
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
-
-   private RESTEasyTracingLogger tracingLogger;
-
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
@@ -103,10 +100,11 @@ public class SynchronousDispatcher implements Dispatcher
     * another one.
     */
    public Response preprocess(HttpRequest request) {
-
+      RESTEasyTracingUtils.initTracingSupport(RESTEasyTracingUtils.getTracingConfig(providerFactory),
+              RESTEasyTracingUtils.getTracingThreshold(providerFactory), request);
       Response aborted = null;
 
-      tracingLogger = RESTEasyTracingLogger.getInstance(request);
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
 
       try {
          final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
@@ -140,7 +138,7 @@ public class SynchronousDispatcher implements Dispatcher
       Response aborted = null;
       PreMatchContainerRequestContext requestContext = null;
 
-      tracingLogger = RESTEasyTracingLogger.getInstance(request);
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
 
       try {
          final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
@@ -161,8 +159,6 @@ public class SynchronousDispatcher implements Dispatcher
          //logger.error("Failed in preprocess, mapping exception", e);
          // we only want to catch exceptions happening in the filters, not in the continuation
          if (requestContext == null || !requestContext.startedContinuation()) {
-            tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
-            tracingLogger.flush(response.getOutputHeaders());
             writeException(request, response, e, t -> {
             });
 
@@ -224,6 +220,10 @@ public class SynchronousDispatcher implements Dispatcher
       catch (Exception e1)
       {
          throw new UnhandledException(e1);
+      } finally {
+         RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.flush(response.getOutputHeaders());
       }
    }
 
@@ -470,12 +470,14 @@ public class SynchronousDispatcher implements Dispatcher
     */
    public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
+
+      RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
       Response jaxrsResponse = null;
       try
       {
          jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
-         RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-         logger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
+
+         tracingLogger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
 
          if (request.getAsyncContext().isSuspended())
          {
@@ -492,23 +494,17 @@ public class SynchronousDispatcher implements Dispatcher
       catch (CompletionException e)
       {
          //logger.error("invoke() failed mapping exception", e);
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
-         tracingLogger.flush(response.getOutputHeaders());
          writeException(request, response, e.getCause(), t->{});
          return;
       }
       catch (Exception e)
       {
          //logger.error("invoke() failed mapping exception", e);
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
-         tracingLogger.flush(response.getOutputHeaders());
          writeException(request, response, e, t->{});
          return;
       }
 
       if (jaxrsResponse != null) {
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
-         tracingLogger.flush(response.getOutputHeaders());
          writeResponse(request, response, jaxrsResponse);
       }
    }
@@ -589,6 +585,11 @@ public class SynchronousDispatcher implements Dispatcher
       {
          //logger.error("writeResponse() failed mapping exception", e);
          writeException(request, response, e, t -> {});
+      }
+      finally {
+         RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.flush(response.getOutputHeaders());
       }
    }
 

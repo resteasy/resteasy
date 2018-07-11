@@ -2,7 +2,6 @@ package org.jboss.resteasy.tracing;
 
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Configuration;
@@ -39,6 +38,9 @@ public class RESTEasyTracingUtils {
     public static void initTracingSupport(RESTEasyTracingConfig type,
                                           RESTEasyTracingLevel appThreshold,
                                           HttpRequest request) {
+        if (request.getAttribute(RESTEasyTracingLogger.PROPERTY_NAME) != null)
+            return;
+
         final RESTEasyTracingLogger tracingLogger;
         if (isTracingSupportEnabled(type, request)) {
             tracingLogger = RESTEasyTracingLogger.create(
@@ -49,6 +51,7 @@ public class RESTEasyTracingUtils {
         }
 
         request.setAttribute(RESTEasyTracingLogger.PROPERTY_NAME, tracingLogger);
+
     }
 
     /**
@@ -61,6 +64,7 @@ public class RESTEasyTracingUtils {
         if (request == null) {
             return;
         }
+
         RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
         if (tracingLogger.isLogEnabled(RESTEasyServerTracingEvent.START)) {
             StringBuilder text = new StringBuilder();
@@ -89,6 +93,7 @@ public class RESTEasyTracingUtils {
             }
         }
     }
+
 
     /**
      * Test if application and request settings enabled tracing support.
@@ -161,6 +166,5 @@ public class RESTEasyTracingUtils {
             return String.valueOf(object);
         }
     }
-
 
 }

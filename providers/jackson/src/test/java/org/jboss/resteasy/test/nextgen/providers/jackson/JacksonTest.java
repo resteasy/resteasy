@@ -18,7 +18,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -214,6 +213,7 @@ public class JacksonTest extends BaseResourceTest
    }
 
    @Test
+
    public void testJacksonString() throws Exception
    {
       WebTarget target = client.target(generateURL("/products/333"));
@@ -235,6 +235,7 @@ public class JacksonTest extends BaseResourceTest
    }
 
    @Test
+
    public void testXmlString() throws Exception
    {
       WebTarget target = client.target(generateURL("/xml/products/333"));
@@ -256,6 +257,7 @@ public class JacksonTest extends BaseResourceTest
    }
 
    @Test
+
    public void testJackson() throws Exception
    {
       WebTarget target = client.target(generateURL("/products/333"));
@@ -282,6 +284,7 @@ public class JacksonTest extends BaseResourceTest
    }
 
    @Test
+
    public void testJacksonProxy() throws Exception
    {
       JacksonProxy proxy = client.target(generateBaseUrl()).proxy(JacksonProxy.class);
@@ -364,6 +367,7 @@ public class JacksonTest extends BaseResourceTest
     }
 
     @Test
+
     public void testJacksonJAXB() throws Exception {
         try (CloseableHttpClient client = HttpClientBuilder.create().build())
         {

@@ -3,6 +3,8 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -30,7 +32,8 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
                                          OutputStream outputStream,
                                          HttpRequest request)
    {
-      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
+      // server side must use request instead of provider factory to get tracing logger.
+      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers, RESTEasyTracingLogger.getInstance(request));
       this.request = request;
    }
 
@@ -38,8 +41,8 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      return providerFactory.getMessageBodyWriter(
-              type, genericType, annotations, mediaType);
+      return providerFactory.getServerMessageBodyWriter(
+              type, genericType, annotations, mediaType, tracingLogger);
 
    }
    @Override

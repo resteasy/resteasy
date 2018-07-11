@@ -27,6 +27,9 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
+
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -66,19 +69,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -89,6 +82,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @SuppressWarnings("unchecked")
 public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
+
    /**
     * Allow us to sort message body implementations that are more specific for their types
     * i.e. MessageBodyWriter&#x3C;Object&#x3E; is less specific than MessageBodyWriter&#x3C;String&#x3E;.
@@ -967,6 +961,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   @Deprecated
+   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
+      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+   }
+
+   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, RESTEasyTracingLogger tracingLogger)
+   {
+      MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
+      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders, tracingLogger);
+   }
+
    /**
     * Always returns server MBRs.
     *
@@ -999,6 +1006,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
    }
 
+   @Deprecated
    private <T> MessageBodyReader<T> resolveMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders)
    {
       List<SortedKey<MessageBodyReader>> readers = availableReaders.getPossible(mediaType, type);
@@ -1014,6 +1022,47 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
       }
       return null;
+   }
+
+   protected <T> MessageBodyReader<T> resolveMessageBodyReader(Class<T> type,
+                                                               Type genericType,
+                                                               Annotation[] annotations,
+                                                               MediaType mediaType,
+                                                               MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders,
+                                                               RESTEasyTracingLogger tracingLogger) {
+      List<SortedKey<MessageBodyReader>> readers = availableReaders.getPossible(mediaType, type);
+
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBR_FIND)) {
+         tracingLogger.log(RESTEasyMsgTraceEvent.MBR_FIND,
+                 type.getName(),
+                 (genericType instanceof Class ? ((Class) genericType).getName() : genericType),
+                 mediaType,
+                 java.util.Arrays.toString(annotations));
+      }
+
+      MessageBodyReader<T> result = null;
+
+      Iterator<SortedKey<MessageBodyReader>> iterator = readers.iterator();
+
+      while (iterator.hasNext()) {
+         final SortedKey<MessageBodyReader> reader = iterator.next();
+
+         if (reader.obj.isReadable(type, genericType, annotations, mediaType)) {
+            LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+            result = (MessageBodyReader<T>) reader.obj;
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBR_SELECTED, reader);
+            break;
+         }
+         tracingLogger.log(RESTEasyMsgTraceEvent.MBR_NOT_READABLE, result);
+      }
+
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBR_SKIPPED)) {
+         while (iterator.hasNext()) {
+            final SortedKey<MessageBodyReader> reader = iterator.next();
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBR_SKIPPED, reader.obj);
+         }
+      }
+      return result;
    }
 
    private void addExceptionMapper(ExceptionMapper provider, Class providerClass, boolean isBuiltin)
@@ -2100,6 +2149,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return map;
    }
 
+   // use the tracingLogger enabled version please
+   @Deprecated
+   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
+      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+   }
+
+
+   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, RESTEasyTracingLogger tracingLogger) {
+
+      MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
+      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters, tracingLogger);
+   }
+
    /**
     * Always gets server MBW.
     *
@@ -2131,6 +2195,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
    }
 
+   @Deprecated
    private <T> MessageBodyWriter<T> resolveMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters)
    {
       List<SortedKey<MessageBodyWriter>> writers = availableWriters.getPossible(mediaType, type);
@@ -2153,6 +2218,48 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return null;
    }
+
+   protected <T> MessageBodyWriter<T> resolveMessageBodyWriter(Class<T> type,
+                                                               Type genericType,
+                                                               Annotation[] annotations,
+                                                               MediaType mediaType,
+                                                               MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters,
+                                                               RESTEasyTracingLogger tracingLogger) {
+      List<SortedKey<MessageBodyWriter>> writers = availableWriters.getPossible(mediaType, type);
+
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBW_FIND)) {
+         tracingLogger.log(RESTEasyMsgTraceEvent.MBW_FIND,
+                 type.getName(),
+                 (genericType instanceof Class
+                         ? ((Class) genericType).getName() : genericType),
+                 mediaType,
+                 java.util.Arrays.toString(annotations));
+      }
+
+      MessageBodyWriter<T> result = null;
+
+      Iterator<SortedKey<MessageBodyWriter>> iterator = writers.iterator();
+
+      while (iterator.hasNext()) {
+         final SortedKey<MessageBodyWriter> writer = iterator.next();
+         if (writer.obj.isWriteable(type, genericType, annotations, mediaType)) {
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+            result = (MessageBodyWriter<T>) writer.obj;
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_SELECTED, result);
+            break;
+         }
+         tracingLogger.log(RESTEasyMsgTraceEvent.MBW_NOT_WRITEABLE, result);
+      }
+
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBW_SKIPPED)) {
+         while (iterator.hasNext()) {
+            final SortedKey<MessageBodyWriter> writer = iterator.next();
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_SKIPPED, writer.obj);
+         }
+      }
+      return result;
+   }
+
 
 
    /**
@@ -2326,7 +2433,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    // Configurable
-
    public Map<String, Object> getMutableProperties()
    {
       return properties;
@@ -2615,4 +2721,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResourceBuilder getResourceBuilder() {
       return resourceBuilder;
    }
+
+
 }

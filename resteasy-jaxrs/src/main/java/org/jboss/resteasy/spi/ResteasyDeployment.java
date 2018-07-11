@@ -103,12 +103,12 @@ public class ResteasyDeployment
       Object context = getDefaultContextObjects().get(ResteasyConfiguration.class);
 
       if (tracingText != null) {
-         providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
+         providerFactory.property(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
       } else {
          if (context != null) {
             tracingText = ((ResteasyConfiguration) context).getParameter(ResteasyContextParameters.RESTEASY_TRACING_TYPE);
             if (tracingText != null) {
-               providerFactory.getMutableProperties().put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
+               providerFactory.property(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
             }
          }
       }
