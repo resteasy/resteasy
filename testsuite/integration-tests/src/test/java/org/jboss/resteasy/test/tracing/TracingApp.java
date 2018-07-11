@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.tracing;
 
+import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -12,6 +15,8 @@ public class TracingApp extends Application {
     public Set<Class<?>> getClasses() {
         Set set = new HashSet<Class<?>>();
         set.add(HttpMethodOverride.class);
+        set.add(GZIPEncodingInterceptor.class);
+        set.add(GZIPDecodingInterceptor.class);
         return set;
     }
 

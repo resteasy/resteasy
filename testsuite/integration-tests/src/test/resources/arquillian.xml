@@ -25,6 +25,17 @@
                 <property name="managementPort">10990</property><!-- keep in sync with port-offset -->
             </configuration>
         </container>
+        <container qualifier="jbossas-manual-tracing" mode="manual">
+            <configuration>
+                <property name="jbossHome">${jboss.home}</property>
+                <property name="jbossArguments">${securityManagerArg}</property>
+                <property name="serverConfig">standalone-tracing.xml</property>
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Dee8.preview.mode=${ee8.preview.mode} -Djboss.socket.binding.port-offset=2000</property>
+                <property name="managementAddress">${node}</property>
+                <property name="managementPort">11990</property>
+            </configuration>
+        </container>
+
     </group>
     <extension qualifier="systemproperties">
         <property name="prefix">org.jboss.resteasy.</property>

@@ -1,69 +1,26 @@
 package org.jboss.resteasy.test.tracing;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(Arquillian.class)
-@RunAsClient
-public class OnDemandTracingTest {
-    static WebArchive war;
-    static Client client;
-
-
-    @BeforeClass
-    public static void init() {
-        client = ClientBuilder.newClient();
-    }
-
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, OnDemandTracingTest.class.getSimpleName());
-    }
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        war = TestUtil.prepareArchive(OnDemandTracingTest.class.getSimpleName());
-        war.addAsResource(new File(OnDemandTracingTest.class.getClassLoader()
-                .getResource("org/jboss/resteasy/test/tracing/logging.properties").getFile()), "logging.properties");
-//        war.as(ZipExporter.class).exportTo(new File("/tmp/" + war.getName()), true);
-
-        Map<String, String> params = new HashMap<>();
-        params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ON_DEMAND);
-        return TestUtil.finishContainerPrepare(war, params, TracingApp.class,
-                TracingConfigResource.class, HttpMethodOverride.class, FooLocator.class, Foo.class);
-    }
+public class OnDemandTracingTest extends TracingTestBase {
 
     @Test
+    @OperateOnDeployment(WAR_ON_DEMAND_TRACING_FILE)
     public void testOnDemand() {
-        String url = generateURL("/logger");
+        String url = generateURL("/logger", WAR_ON_DEMAND_TRACING_FILE);
         WebTarget base = client.target(url);
         try {
 
@@ -88,8 +45,9 @@ public class OnDemandTracingTest {
     }
 
     @Test
+    @OperateOnDeployment(WAR_ON_DEMAND_TRACING_FILE)
     public void testPresencesOfServerTracingEvents() {
-        String url = generateURL("/locator/foo");
+        String url = generateURL("/locator/foo", WAR_ON_DEMAND_TRACING_FILE);
 
         WebTarget base = client.target(url);
 
@@ -102,24 +60,9 @@ public class OnDemandTracingTest {
 
             Map<String, Boolean> results = new HashMap<String, Boolean>();
 
-            results.put("PRE-MATCH", false);
-            results.put("REQ-FILTER", false);
-            results.put("MATCH", false);
-            results.put("INVOKE", false);
-            results.put("FINISHED", false);
+            putTestEvents(results);
 
-            for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-                System.out.println("<K, V> ->" + entry);
-                String item = entry
-                        .getValue()
-                        .toString()
-                        .split("\\[")[1].split(" ")[0];
-
-                if (results.keySet()
-                        .contains(item)) {
-                    results.put(item.replaceAll(" ", ""), true);
-                }
-            }
+            verifyResults(response, results);
 
             for (String k : results.keySet()) {
                 assertTrue(k + ": " + results.get(k), results.get(k));
@@ -130,6 +73,7 @@ public class OnDemandTracingTest {
             throw new RuntimeException(e);
         }
     }
+
 
     private void testTracingEnabled(Response response, boolean flag) {
         boolean hasTracing = false;

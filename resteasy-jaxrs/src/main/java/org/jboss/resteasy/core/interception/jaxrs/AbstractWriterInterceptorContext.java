@@ -1,8 +1,10 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.InterceptorTimestampPair;
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -22,6 +24,7 @@ import java.lang.reflect.Type;
  */
 public abstract class AbstractWriterInterceptorContext implements WriterInterceptorContext
 {
+   protected RESTEasyTracingLogger tracingLogger;
    protected WriterInterceptor[] interceptors;
    protected Object entity;
    protected Class type;
@@ -30,9 +33,18 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    protected MediaType mediaType;
    protected MultivaluedMap<String, Object> headers;
    protected OutputStream outputStream;
+
+   public int getProcessedInterceptorCount() {
+      return index;
+   }
+
    protected int index = 0;
    protected ResteasyProviderFactory providerFactory;
+   private InterceptorTimestampPair<WriterInterceptor> lastTracedInterceptor;
 
+   // We need tracing logger to log the proceed event.
+   // So the new constructor with logger should be used.
+   @Deprecated
    public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers)
    {
       this.providerFactory = providerFactory;
@@ -44,6 +56,23 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       this.type = type;
       this.outputStream = outputStream;
       this.headers = headers;
+      this.tracingLogger = RESTEasyTracingLogger.empty();
+   }
+
+   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers, RESTEasyTracingLogger logger) {
+      this.providerFactory = providerFactory;
+      this.interceptors = interceptors;
+      this.annotations = annotations;
+      this.entity = entity;
+      this.genericType = genericType;
+      this.mediaType = mediaType;
+      this.type = type;
+      this.outputStream = outputStream;
+      this.headers = headers;
+      this.tracingLogger = logger;
+      if (logger == null) {
+         this.tracingLogger = RESTEasyTracingLogger.empty();
+      }
    }
 
    public Object getEntity()
@@ -119,15 +148,42 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyWriter writer = getWriter();
-         if (writer!=null)
-             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         if (writer!=null) {
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_WRITE_TO, writer.getClass().getName());
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         }
          writeTo(writer);
       }
       else
       {
          LogMessages.LOGGER.debugf("WriterInterceptor: %s", interceptors[index].getClass().getName());
-         interceptors[index++].aroundWriteTo(this);
+         int x = index;
+         traceBefore(interceptors[x]);
+
+         try {
+            interceptors[index++].aroundWriteTo(this);
+         } finally {
+            traceAfter(interceptors[x]);
+         }
          // we used to pop the index, but the TCK doesn't like this
+      }
+   }
+
+   protected final void traceBefore(final WriterInterceptor interceptor) {
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.WI_BEFORE)) {
+         if ((lastTracedInterceptor != null) && (interceptor != null)) {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_BEFORE, lastTracedInterceptor.getTimestamp(), lastTracedInterceptor.getInterceptor());
+         }
+         lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
+      }
+   }
+
+   protected final void traceAfter(final WriterInterceptor interceptor) {
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.WI_AFTER)) {
+         if ((lastTracedInterceptor != null) && (lastTracedInterceptor.getInterceptor() != null)) {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_AFTER, lastTracedInterceptor.getTimestamp(), interceptor);
+         }
+         lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
       }
    }
 

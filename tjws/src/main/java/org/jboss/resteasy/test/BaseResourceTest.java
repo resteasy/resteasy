@@ -32,8 +32,10 @@ public abstract class BaseResourceTest
    public static void before() throws Exception
    {
       deployment = EmbeddedContainer.start();
+
       dispatcher = deployment.getDispatcher();
    }
+
 
    @AfterClass
    public static void after() throws Exception

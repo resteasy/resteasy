@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.ProcessingException;
@@ -28,12 +29,22 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
 {
    protected Map<String, Object> properties;
 
+   @Deprecated
    public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
                                          Type genericType, Annotation[] annotations, MediaType mediaType,
                                          MultivaluedMap<String, String> headers, InputStream inputStream,
                                          Map<String, Object> properties)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
+      this.properties = properties;
+   }
+
+   public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
+                                         Type genericType, Annotation[] annotations, MediaType mediaType,
+                                         MultivaluedMap<String, String> headers, InputStream inputStream,
+                                         Map<String, Object> properties, RESTEasyTracingLogger tracingLogger)
+   {
+      super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream, tracingLogger);
       this.properties = properties;
    }
 
