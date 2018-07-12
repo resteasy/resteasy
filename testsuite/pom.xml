@@ -71,7 +71,6 @@
             <modules>
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
-                <module>legacy-integration-tests</module>
                 <module>integration-tests</module>
                 <module>integration-tests-spring</module>
                 <module>microprofile-tck</module>
@@ -89,7 +88,6 @@
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <!-- Uncomment module below when EAP/Widlfly with Resteasy 3.1 is released -->
-                <!-- <module>legacy-integration-tests</module>-->
                 <module>integration-tests</module>
                 <module>integration-tests-spring</module>
             </modules>

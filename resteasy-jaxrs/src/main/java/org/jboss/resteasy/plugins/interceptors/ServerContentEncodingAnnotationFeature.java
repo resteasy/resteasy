@@ -43,14 +43,7 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
    
    protected boolean isGZipRegistered(Configuration configuration)
    {
-      //TODO replace with the line below when dropping resteasy-legacy
-      //return configuration.isRegistered(GZIPEncodingInterceptor.class);
-      for (Class<?> c : configuration.getClasses()) {
-         if (GZIPEncodingInterceptor.class.isAssignableFrom(c)) {
-            return true;
-         }
-      }
-      return false;
+      return configuration.isRegistered(GZIPEncodingInterceptor.class);
    }
 
    protected ServerContentEncodingAnnotationFilter createFilter(Set<String> encodings)

@@ -203,10 +203,6 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-binding-provider"/>
         </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-legacy">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-legacy"/>
-        </module-def>
-
         <module-def name="org.jboss.resteasy.resteasy-multipart-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider"/>
         </module-def>
