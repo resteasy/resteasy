@@ -503,13 +503,6 @@ public class StringParameterInjector
           }
        }
        
-       // Else try to find a StringConverter if any
-       converter = factory.getStringConverter(baseType);
-       if (converter != null)
-       {
-    	   return true;
-       }
-       
        // Else try to find a RuntimeDelegate.HeaderDelegate if any
        if (paramType.equals(HeaderParam.class))
        {

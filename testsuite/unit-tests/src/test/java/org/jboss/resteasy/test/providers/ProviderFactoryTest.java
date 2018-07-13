@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -52,7 +51,7 @@ public class ProviderFactoryTest {
      */
     @Test
     public void shouldReturnStringParameterUnmarshallerAddedForType() {
-        factory.addStringParameterUnmarshaller(ProviderFactoryStrParamUnmarshaller.class);
+        factory.registerProvider(ProviderFactoryStrParamUnmarshaller.class);
         assertNotNull("Null StringParameterUnmarshaller object", factory.createStringParameterUnmarshaller(Date.class));
     }
 

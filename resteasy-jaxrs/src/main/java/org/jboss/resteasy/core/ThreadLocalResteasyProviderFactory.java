@@ -6,13 +6,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
 
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.RuntimeType;
-import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configuration;
@@ -31,19 +29,16 @@ import javax.ws.rs.ext.ParamConverter;
 import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
-import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.ContextInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
@@ -53,12 +48,11 @@ import org.jboss.resteasy.util.ThreadLocalStack;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("deprecation")
-public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory implements ProviderFactoryDelegate
+public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory implements ProviderFactoryDelegate
 {
    private static final ThreadLocalStack<ResteasyProviderFactory> delegate = new ThreadLocalStack<ResteasyProviderFactory>();
 
-   private ResteasyProviderFactory defaultFactory;
+   private final ResteasyProviderFactory defaultFactory;
 
 
    public ThreadLocalResteasyProviderFactory(ResteasyProviderFactory defaultFactory)
@@ -144,12 +138,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public Set<Class<?>> getFeatureClasses()
-   {
-      return getDelegate().getFeatureClasses();
-   }
-
-   @Override
    public void setBuiltinsRegistered(boolean builtinsRegistered)
    {
       getDelegate().setBuiltinsRegistered(builtinsRegistered);
@@ -192,21 +180,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
    
    @Override
-   public StringConverter getStringConverter(Class<?> clazz)
-   {
-      return getDelegate().getStringConverter(clazz);
-   }
-
-   @Override
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
    {
       return getDelegate().createStringParameterUnmarshaller(clazz);
-   }
-
-   @Override
-   public Set<Object> getFeatureInstances()
-   {
-      return getDelegate().getFeatureInstances();
    }
 
    @Override
@@ -252,12 +228,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
       getDelegate().registerProvider(provider, priorityOverride, isBuiltin, contracts);
-   }
-
-   @Override
-   public Map<Class<?>, Map<Class<?>, Integer>> getClassContracts()
-   {
-      return getDelegate().getClassContracts();
    }
 
    @Override
@@ -315,12 +285,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public <T> ConstructorInjector createConstructorInjector(Class<? extends T> clazz)
-   {
-      return getDelegate().createConstructorInjector(clazz);
-   }
-
-   @Override
    public <T> T createProviderInstance(Class<? extends T> clazz)
    {
       return getDelegate().createProviderInstance(clazz);
@@ -375,12 +339,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void injectProperties(Class declaring, Object obj)
-   {
-      getDelegate().injectProperties(declaring, obj);
-   }
-
-   @Override
    public UriBuilder createUriBuilder()
    {
       return getDelegate().createUriBuilder();
@@ -396,12 +354,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       return getDelegate().injectedInstance(clazz);
-   }
-
-   @Override
-   public ResteasyProviderFactory getParent()
-   {
-      return getDelegate().getParent();
    }
 
    @Override
@@ -489,12 +441,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
-   {
-      getDelegate().addStringParameterUnmarshaller(provider);
-   }
-
-   @Override
    public Set<Class<?>> getProviderClasses()
    {
       return getDelegate().getProviderClasses();
@@ -510,18 +456,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public ClientRequestFilterRegistry getClientRequestFilterRegistry()
    {
       return getDelegate().getClientRequestFilterRegistry();
-   }
-
-   /**
-    * This method retailed for backward compatibility for jaxrs-legacy code.
-    * Method, getClientRequestFilterRegistry, replaces it.
-    * @return interceptor registry
-    */
-   @Deprecated
-   @Override
-   public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
-   {
-      return getDelegate().getClientRequestFilters();
    }
 
    @Override
@@ -641,21 +575,4 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       return reader;
    }
 
-   @Override
-   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      MessageBodyReader<T> reader = getDelegate().getServerMessageBodyReader(type, genericType, annotations, mediaType);
-      if (reader!=null)
-          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
-      return reader;
-   }
-
-   @Override
-   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      MessageBodyWriter<T> writer = getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
-      if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-      return writer;
-   }
 }

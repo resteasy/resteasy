@@ -37,46 +37,43 @@ import java.util.Map;
  */
 public class ResteasyDeployment
 {
-   protected boolean widerRequestMatching;
-   protected boolean useContainerFormParams = false;
-   protected boolean deploymentSensitiveFactoryEnabled = false;
-   protected boolean asyncJobServiceEnabled = false;
-   protected boolean addCharset = true;
-   protected int asyncJobServiceMaxJobResults = 100;
-   protected long asyncJobServiceMaxWait = 300000;
-   protected int asyncJobServiceThreadPoolSize = 100;
-   protected String asyncJobServiceBasePath = "/asynch/jobs";
-   protected String applicationClass;
-   protected String injectorFactoryClass;
-   protected InjectorFactory injectorFactory;
-   protected Application application;
-   protected boolean registerBuiltin = true;
-   protected List<String> scannedResourceClasses = new ArrayList<String>();
-   protected List<String> scannedProviderClasses = new ArrayList<String>();
-   protected List<String> scannedJndiComponentResources = new ArrayList<String>();
-   protected List<String> jndiComponentResources = new ArrayList<String>();
-   protected List<String> providerClasses = new ArrayList<String>();
-   protected List<Class> actualProviderClasses = new ArrayList<Class>();
-   protected List<Object> providers = new ArrayList<Object>();
-   protected boolean securityEnabled = false;
-   protected List<String> jndiResources = new ArrayList<String>();
-   protected List<String> resourceClasses = new ArrayList<String>();
-   protected List<String> unwrappedExceptions = new ArrayList<String>();
-   protected List<Class> actualResourceClasses = new ArrayList<Class>();
-   protected List<ResourceFactory> resourceFactories = new ArrayList<ResourceFactory>();
-   protected List<Object> resources = new ArrayList<Object>();
-   protected Map<String, String> mediaTypeMappings = new HashMap<String, String>();
-   protected Map<String, String> languageExtensions = new HashMap<String, String>();
-   protected List<String> interceptorPrecedences = new ArrayList<String>();
-   protected Map<String, String> interceptorBeforePrecedences = new HashMap<String, String>();
-   protected Map<String, String> interceptorAfterPrecedences = new HashMap<String, String>();
-   protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
-   protected Map<String, String> constructedDefaultContextObjects = new HashMap<String, String>();
-   protected Registry registry;
-   protected Dispatcher dispatcher;
-   protected ResteasyProviderFactory providerFactory;
-   protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
-   protected String paramMapping;
+   private boolean widerRequestMatching;
+   private boolean useContainerFormParams = false;
+   private boolean deploymentSensitiveFactoryEnabled = false;
+   private boolean asyncJobServiceEnabled = false;
+   private boolean addCharset = true;
+   private int asyncJobServiceMaxJobResults = 100;
+   private long asyncJobServiceMaxWait = 300000;
+   private int asyncJobServiceThreadPoolSize = 100;
+   private String asyncJobServiceBasePath = "/asynch/jobs";
+   private String applicationClass;
+   private String injectorFactoryClass;
+   private InjectorFactory injectorFactory;
+   private Application application;
+   private boolean registerBuiltin = true;
+   private List<String> scannedResourceClasses = new ArrayList<String>();
+   private List<String> scannedProviderClasses = new ArrayList<String>();
+   private List<String> scannedJndiComponentResources = new ArrayList<String>();
+   private List<String> jndiComponentResources = new ArrayList<String>();
+   private List<String> providerClasses = new ArrayList<String>();
+   private List<Class> actualProviderClasses = new ArrayList<Class>();
+   private List<Object> providers = new ArrayList<Object>();
+   private boolean securityEnabled = false;
+   private List<String> jndiResources = new ArrayList<String>();
+   private List<String> resourceClasses = new ArrayList<String>();
+   private List<String> unwrappedExceptions = new ArrayList<String>();
+   private List<Class> actualResourceClasses = new ArrayList<Class>();
+   private List<ResourceFactory> resourceFactories = new ArrayList<ResourceFactory>();
+   private List<Object> resources = new ArrayList<Object>();
+   private Map<String, String> mediaTypeMappings = new HashMap<String, String>();
+   private Map<String, String> languageExtensions = new HashMap<String, String>();
+   private Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
+   private Map<String, String> constructedDefaultContextObjects = new HashMap<String, String>();
+   private Registry registry;
+   private Dispatcher dispatcher;
+   private ResteasyProviderFactory providerFactory;
+   private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
+   private String paramMapping;
 
    public void start()
    {
@@ -91,7 +88,7 @@ public class ResteasyDeployment
    }
 
    @SuppressWarnings(value = {"unchecked", "deprecation"})
-   protected void startInternal()
+   private void startInternal()
    {
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers
@@ -250,32 +247,6 @@ public class ResteasyDeployment
             }
          }
 
-         // Interceptor preferences should come before provider registration or builtin.
-
-         if (interceptorPrecedences != null)
-         {
-            for (String precedence : interceptorPrecedences)
-            {
-               providerFactory.appendInterceptorPrecedence(precedence.trim());
-            }
-         }
-
-         if (interceptorBeforePrecedences != null)
-         {
-            for (Map.Entry<String, String> ext : interceptorBeforePrecedences.entrySet())
-            {
-               providerFactory.insertInterceptorPrecedenceBefore(ext.getKey().trim(), ext.getValue().trim());
-            }
-         }
-         if (interceptorAfterPrecedences != null)
-         {
-            for (Map.Entry<String, String> ext : interceptorAfterPrecedences.entrySet())
-            {
-               providerFactory.insertInterceptorPrecedenceAfter(ext.getKey().trim(), ext.getValue().trim());
-            }
-         }
-
-
          if (securityEnabled)
          {
             providerFactory.register(RoleBasedSecurityFeature.class);
@@ -367,9 +338,6 @@ public class ResteasyDeployment
 
       mediaTypeMappings.putAll(other.getMediaTypeMappings());
       languageExtensions.putAll(other.getLanguageExtensions());
-      interceptorPrecedences.addAll(other.getInterceptorPrecedences());
-      interceptorBeforePrecedences.putAll(other.getInterceptorBeforePrecedences());
-      interceptorAfterPrecedences.putAll(other.getInterceptorAfterPrecedences());
 
       defaultContextObjects.putAll(other.getDefaultContextObjects());
       constructedDefaultContextObjects.putAll(other.getConstructedDefaultContextObjects());
@@ -395,7 +363,7 @@ public class ResteasyDeployment
       return app;
    }
 
-   public static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)
+   private static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)
    {
       Class<?> clazz = null;
       try
@@ -532,7 +500,7 @@ public class ResteasyDeployment
       registry.checkAmbiguousUri();
    }
 
-   protected void registerJndiComponentResource(String resource)
+   private void registerJndiComponentResource(String resource)
    {
       String[] config = resource.trim().split(";");
       if (config.length < 3)
@@ -570,7 +538,7 @@ public class ResteasyDeployment
     * @param config application
     * @return whether application class registered anything. i.e. whether scanning metadata should be used or not
     */
-   protected boolean processApplication(Application config)
+   private boolean processApplication(Application config)
    {
       LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       boolean registered = false;
@@ -644,7 +612,7 @@ public class ResteasyDeployment
       return registered;
    }
 
-   protected void registerProvider(String clazz)
+   private void registerProvider(String clazz)
    {
       Class provider = null;
       try
@@ -876,36 +844,6 @@ public class ResteasyDeployment
    public void setLanguageExtensions(Map<String, String> languageExtensions)
    {
       this.languageExtensions = languageExtensions;
-   }
-
-   public List<String> getInterceptorPrecedences()
-   {
-      return interceptorPrecedences;
-   }
-
-   public void setInterceptorPrecedences(List<String> interceptorPrecedences)
-   {
-      this.interceptorPrecedences = interceptorPrecedences;
-   }
-
-   public Map<String, String> getInterceptorBeforePrecedences()
-   {
-      return interceptorBeforePrecedences;
-   }
-
-   public void setInterceptorBeforePrecedences(Map<String, String> interceptorBeforePrecedences)
-   {
-      this.interceptorBeforePrecedences = interceptorBeforePrecedences;
-   }
-
-   public Map<String, String> getInterceptorAfterPrecedences()
-   {
-      return interceptorAfterPrecedences;
-   }
-
-   public void setInterceptorAfterPrecedences(Map<String, String> interceptorAfterPrecedences)
-   {
-      this.interceptorAfterPrecedences = interceptorAfterPrecedences;
    }
 
    public Registry getRegistry()
