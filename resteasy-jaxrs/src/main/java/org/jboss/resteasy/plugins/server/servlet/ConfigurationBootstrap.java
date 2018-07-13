@@ -202,27 +202,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          Map<String, String> map = parseMap(languageExtensions);
          deployment.setLanguageExtensions(map);
       }
-      String before = getParameter(ResteasyContextParameters.RESTEASY_INTERCEPTOR_BEFORE_PRECEDENCE);
-      if (before != null)
-      {
-         Map<String, String> map = parseMap(before);
-         deployment.setInterceptorBeforePrecedences(map);
-      }
-      String after = getParameter(ResteasyContextParameters.RESTEASY_INTERCEPTOR_AFTER_PRECEDENCE);
-      if (after != null)
-      {
-         Map<String, String> map = parseMap(after);
-         deployment.setInterceptorAfterPrecedences(map);
-      }
-      String append = getParameter(ResteasyContextParameters.RESTEASY_APPEND_INTERCEPTOR_PRECEDENCE);
-      if (append != null)
-      {
-         String[] precedences = append.split(",");
-         for (String precedence : precedences)
-         {
-            deployment.getInterceptorPrecedences().add(precedence.trim());
-         }
-      }
 
       String useContainerFormParams = getParameter(ResteasyContextParameters.RESTEASY_USE_CONTAINER_FORM_PARAMS);
       if (useContainerFormParams != null)

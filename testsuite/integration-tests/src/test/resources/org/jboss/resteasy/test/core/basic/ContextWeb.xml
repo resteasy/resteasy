@@ -4,21 +4,6 @@
 <web-app>
     <display-name>Archetype RestEasy Web Application</display-name>
 
-    <!-- testing configuration -->
-    <context-param>
-        <param-name>resteasy.append.interceptor.precedence</param-name>
-        <param-value>END</param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.interceptor.before.precedence</param-name>
-        <param-value>ENCODER : BEFORE_ENCODER</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>resteasy.interceptor.after.precedence</param-name>
-        <param-value>ENCODER : AFTER_ENCODER</param-value>
-    </context-param>
-
     <context-param>
         <param-name>resteasy.media.type.mappings</param-name>
         <param-value>xml : application/xml,

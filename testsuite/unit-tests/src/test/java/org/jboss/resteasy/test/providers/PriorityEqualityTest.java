@@ -111,8 +111,8 @@ public class PriorityEqualityTest {
 
       factory.register(ParamConverterProvider1.class);
       factory.register(ParamConverterProvider2.class);
-      Assert.assertEquals(2, factory.getParamConverterProviders().size());
-
+      Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider1.class));
+      Assert.assertTrue(factory.getProviderClasses().contains(ParamConverterProvider2.class));
       ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }
 
@@ -127,9 +127,12 @@ public class PriorityEqualityTest {
       RegisterBuiltin.register(factory);
       ResteasyProviderFactory.setInstance(factory);
 
-      factory.registerProviderInstance(new ParamConverterProvider1());
-      factory.registerProviderInstance(new ParamConverterProvider2());
-      Assert.assertEquals(2, factory.getParamConverterProviders().size());
+      ParamConverterProvider p1 = new ParamConverterProvider1();
+      ParamConverterProvider p2 = new ParamConverterProvider2();
+      factory.registerProviderInstance(p1);
+      factory.registerProviderInstance(p2);
+      Assert.assertTrue(factory.getProviderInstances().contains(p1));
+      Assert.assertTrue(factory.getProviderInstances().contains(p2));
       
       ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }

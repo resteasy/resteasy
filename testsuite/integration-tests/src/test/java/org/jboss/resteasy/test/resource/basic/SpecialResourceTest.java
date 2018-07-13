@@ -11,11 +11,9 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceApiResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceDeleteResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceStreamResource;
-import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceSubFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -26,7 +24,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.w3c.dom.Document;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -34,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
@@ -128,21 +124,4 @@ public class SpecialResourceTest {
         }
     }
 
-    /**
-     * @tpTestDetails Regression test for RESTEASY-638
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void test638() throws Exception {
-        SpecialResourceSubFactory factory = new SpecialResourceSubFactory();
-        RegisterBuiltin.register(factory);
-
-        for (int i = 0; i < 10; i++) {
-            MediaType type = MediaType.valueOf("text/xml; boundary=" + i);
-            Assert.assertThat("Wrong count of possible providers", factory.getMBRMap().getPossible(type, Document.class).size(), greaterThan(1));
-        }
-
-        Assert.assertEquals(1, factory.getMBRMap().getClassCache().size());
-
-    }
 }

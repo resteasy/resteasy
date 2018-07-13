@@ -38,7 +38,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      return providerFactory.getServerMessageBodyWriter(
+      return providerFactory.getMessageBodyWriter(
               type, genericType, annotations, mediaType);
 
    }
