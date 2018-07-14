@@ -87,7 +87,7 @@ public class SseReconnectResource {
             break;
          case "1" :
             checkReconnectDelay(TimeUnit.SECONDS.toMillis(3));
-            throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
+            throw new WebApplicationException(599);
          default :
             try (SseEventSink s = sseEventSink)
             {

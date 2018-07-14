@@ -15,6 +15,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -119,6 +120,11 @@ public class SseReconnectTest {
         }
     }
     
+   /**
+    * @tpTestDetails Check that SseEventSource use last received 'retry' field value as the default reconnect delay for all future requests.
+    * @tpInfo RESTEASY-1958
+    * @tpSince RESTEasy 
+    */
    @Test
    public void testReconnectDelayIsUsed() throws Exception
    {
@@ -134,6 +140,13 @@ public class SseReconnectTest {
          sseEventSource.register(event -> {
             results.add(event);
          }, error -> {
+            if (error instanceof WebApplicationException)
+            {
+               if (599 == ((WebApplicationException) error).getResponse().getStatus())
+               {
+                  return;
+               }
+            }
             errorCount.incrementAndGet();
          }, () -> {
             latch.countDown();
@@ -143,7 +156,7 @@ public class SseReconnectTest {
             eventSource.open();
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertEquals(1, errorCount.get());
+            Assert.assertEquals(0, errorCount.get());
             Assert.assertEquals(2, results.size());
             Assert.assertTrue(results.get(0).isReconnectDelaySet());
             Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
