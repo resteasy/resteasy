@@ -19,9 +19,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -116,5 +118,43 @@ public class SseReconnectTest {
             client.close();
         }
     }
+    
+   @Test
+   public void testReconnectDelayIsUsed() throws Exception
+   {
+      CountDownLatch latch = new CountDownLatch(1);
+      List<InboundSseEvent> results = new ArrayList<>();
+      AtomicInteger errorCount = new AtomicInteger();
+      Client client = ClientBuilder.newBuilder().build();
+      try
+      {
+         WebTarget target = client.target(generateURL("/reconnect/testReconnectDelayIsUsed"));
+         SseEventSource sseEventSource = SseEventSource.target(target).reconnectingEvery(500, TimeUnit.MILLISECONDS)
+               .build();
+         sseEventSource.register(event -> {
+            results.add(event);
+         }, error -> {
+            errorCount.incrementAndGet();
+         }, () -> {
+            latch.countDown();
+         });
+         try (SseEventSource eventSource = sseEventSource)
+         {
+            eventSource.open();
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+            Assert.assertEquals(1, errorCount.get());
+            Assert.assertEquals(2, results.size());
+            Assert.assertTrue(results.get(0).isReconnectDelaySet());
+            Assert.assertEquals(TimeUnit.SECONDS.toMillis(3), results.get(0).getReconnectDelay());
+            Assert.assertFalse(results.get(1).isReconnectDelaySet());
+         }
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
 
 }
