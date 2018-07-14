@@ -488,16 +488,9 @@ public class SseEventSourceImpl implements SseEventSource
          {
             return;
          }
-
          EventHandler processor = new EventHandler(this);
-         if (delay > 0)
-         {
-            executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
-         }
-         else
-         {
-            executor.submit(processor);
-         }
+         //Zero and negative delays (but not periods) are also allowed in schedule methods, and are treated as requests for immediate execution. 
+         executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
       }
    }
 
