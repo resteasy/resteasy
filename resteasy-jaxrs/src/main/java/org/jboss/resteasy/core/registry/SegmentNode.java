@@ -7,6 +7,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -53,7 +55,9 @@ public class SegmentNode
    protected String segment;
    protected Map<String, SegmentNode> children = new HashMap<String, SegmentNode>();
    protected List<MethodExpression> targets = new ArrayList<MethodExpression>();
-
+   protected boolean requestMatchingSet = false;
+   protected boolean isJaxrs_2_0_RequestMatching = false;
+   
    public SegmentNode(String segment)
    {
       this.segment = segment;
@@ -79,12 +83,22 @@ public class SegmentNode
       potentials(path, start, potentials);
       Collections.sort(potentials);
 
-      boolean expressionMatched = false;
+      if (!requestMatchingSet)
+      {
+         Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+         ResteasyDeployment deployment = (ResteasyDeployment) contextDataMap.get(ResteasyDeployment.class);
+         if (deployment != null)
+         {
+            isJaxrs_2_0_RequestMatching = deployment.isJaxrs_2_0_RequestMatching();
+            requestMatchingSet = true;
+         }
+      }
+      MethodExpression matchedExpression = null;
       List<Match> matches = new ArrayList<Match>();
       for (MethodExpression expression : potentials)
       {
          // We ignore locators if the first match was a resource method as per the spec Section 3, Step 2(h)
-         if (expressionMatched && expression.isLocator()) continue;
+         if (matchedExpression != null && expression.isLocator()) continue;
 
          Pattern pattern = expression.getPattern();
          Matcher matcher = pattern.matcher(path);
@@ -92,7 +106,6 @@ public class SegmentNode
 
          if (matcher.matches())
          {
-            expressionMatched = true;
             ResourceInvoker invoker = expression.getInvoker();
             if (invoker instanceof ResourceLocatorInvoker)
             {
@@ -130,7 +143,27 @@ public class SegmentNode
             }
             else
             {
-               matches.add(new Match(expression, matcher));
+               if (isJaxrs_2_0_RequestMatching)
+               {
+                  if (matchedExpression == null)
+                  {
+                     matchedExpression = expression;
+                     matches.add(new Match(expression, matcher));   
+                  }
+                  else if (matchedExpression.compareTo(expression) == 0)
+                  {
+                     matches.add(new Match(expression, matcher));  
+                  }
+                  else
+                  {
+                     break;
+                  }
+               }
+               else
+               {
+                  matches.add(new Match(expression, matcher));
+                  matchedExpression = expression;
+               }
             }
          }
       }

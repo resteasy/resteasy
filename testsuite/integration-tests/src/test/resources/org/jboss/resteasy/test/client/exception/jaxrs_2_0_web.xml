@@ -1,0 +1,8 @@
+<web-app>
+
+    <context-param>
+         <param-name>jaxrs.2.0.request.matching</param-name>
+         <param-value>true</param-value>
+    </context-param>
+    
+</web-app>

@@ -238,7 +238,14 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          boolean wider = parseBooleanParam(ResteasyContextParameters.RESTEASY_WIDER_REQUEST_MATCHING, widerMatching);
          deployment.setWiderRequestMatching(wider);
       }
-
+      
+      String jaxrs_2_0_requestMatching = getParameter(ResteasyContextParameters.JAX_RS_2_0_REQUEST_MATCHING);
+      if (jaxrs_2_0_requestMatching != null)
+      {
+         boolean requestMatching = parseBooleanParam(ResteasyContextParameters.JAX_RS_2_0_REQUEST_MATCHING, jaxrs_2_0_requestMatching);
+         deployment.setJaxrs_2_0_RequestMatching(requestMatching);
+      }
+      
       String addCharset = getParameter(ResteasyContextParameters.RESTEASY_ADD_CHARSET);
       if (addCharset != null)
       {

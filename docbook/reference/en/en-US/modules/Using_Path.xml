@@ -159,4 +159,63 @@ GET /resources/a/bunch/of/stuff
 
 </para>
 </sect1>
+
+<sect1 id="JAX-RS_2_0_Matching_Algorithm">
+<title>JAX-RS 2.0 Matching Algorithm</title>
+    <para>
+        The resource method matching algorithm mandated by JAX-RS 2.1 is more inclusive that that of JAX-RS 2.0.
+        There are three stages in each of the matching algorithms:
+    </para>
+    
+    <orderedlist>
+        <listitem>Use the request path to choose possible resource classes.</listitem>
+        <listitem>Use the request path to choose possible resource methods.</listitem>
+        <listitem>Use the HTTP verb and media types, coming and going, to choose a final resource method.</listitem>
+    </orderedlist>
+    
+    <para>
+        In JAX-RS 2.1, step 2 determines the set of matching resource methods and passes it on to step 3. However,
+        in JAX-RS 2.0, that set is sorted, based on properties of @Path values like number
+        of literals, and only the maximal elements are passed on to step 3. It follows that in some cases, the newer
+        algorithm will find some matches that the earlier algoritm misses. For example,
+    </para>
+    
+<programlisting>
+   @Path("/")
+   public static class TestResource
+   {
+      @GET
+      @Path("complex/match")
+      public String get()
+      {
+         return "content";
+      }
+
+      @POST
+      @Path("complex/{param}")
+      public String post(@PathParam("param") String param)
+      {
+         return "&lt;" + param + "/&gt;";
+      }
+   }
+</programlisting>
+
+    <para>
+        Both methods can match a request with path "complex/match", but <methodname>get()</methodname> comes
+        out ahead of <methodname>post()</methodname> in the JAX-RS 2.0 sort because it has more literal characters, and 
+        only <methodname>get()</methodname> is considered in step 3. [For more details about the sort, see
+        the specification for JAX-RS 2.0.] Therefore, a request that expects a POST method will fail.
+    </para>
+    
+    <para>
+        On the other hand, both methods are passed on to step 3 in the JAX-RS 2.1 algorithm, so
+        <methodname>post()</methodname> is available as a potential match.
+    </para>
+    
+    <para>
+        The algorithm from JAX-RS 2.1 would seem to be preferable, but, in case the earlier behavior is expected
+        for backwards compatibility, RESTEasy provides a configuration switch, "jaxrs.2.0.request.matching", which,
+        if set to "true", will cause the JAX-RS 2.0 matching to be used. The default value, of course, is "false".
+    </para>
+</sect1>
 </chapter>
