@@ -25,7 +25,7 @@ To read the documentation you can [read it online](http://resteasy.jboss.org/doc
 A wiki exists with historical documents. You can find it [here](https://developer.jboss.org/wiki/ResteasyWIKI)
 
 ## Issues
-Issues are kept in [JIRA](http://jira.jboss.org/jira/browse/RESTEASY)
+Issues are kept in [JIRA](https://issues.jboss.org/browse/RESTEASY).
 
 ## Build
 After pulling down a clone of the RESTEasy repository run
