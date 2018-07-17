@@ -47,6 +47,7 @@ public interface ResteasyContextParameters
    String RESTEASY_DEPLOYMENTS = "resteasy.deployments";
    String RESTEASY_SERVLET_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
    String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
+   String JAX_RS_2_0_REQUEST_MATCHING = "jaxrs.2.0.request.matching";
    
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
 }

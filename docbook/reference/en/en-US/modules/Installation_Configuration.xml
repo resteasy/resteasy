@@ -739,6 +739,20 @@ public class MyApplication extends Application
                                 independent of the setting of this parameter.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                jaxrs.2.0.request.matching
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                In searching for a matching resource method with which to respond to a request,
+                                consider only resource methods with the best match for the request path. See 
+                                <link linkend='JAX-RS_2_0_Matching_Algorithm'>JAX-RS 2.0 Matching Algorithm</link>
+                                for discussion.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

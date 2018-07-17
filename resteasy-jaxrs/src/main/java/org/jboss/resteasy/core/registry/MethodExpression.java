@@ -29,10 +29,15 @@ public class MethodExpression extends Expression
       if (s != 0) return s;
 
       MethodExpression me = (MethodExpression)expression;
-      if (invoker.getClass().equals(me.invoker.getClass())) return 0;
-
-      if (invoker instanceof ResourceMethodInvoker) return -1;
-      else return 1;
+      if (this.invoker instanceof ResourceMethodInvoker && me.invoker instanceof ResourceLocatorInvoker)
+      {
+        return -1;
+      }
+      if (this.invoker instanceof ResourceLocatorInvoker && me.invoker instanceof ResourceMethodInvoker)
+      {
+        return 1;
+      }
+      return 0;
    }
 
    public MethodExpression(SegmentNode parent, String segment, ResourceInvoker invoker)

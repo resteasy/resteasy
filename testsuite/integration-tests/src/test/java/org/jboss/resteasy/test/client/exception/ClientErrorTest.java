@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpSince RESTEasy 3.0.20
- * @tpTestCaseDetails Test client error caused by bad media type
+ * @tpTestCaseDetails Test client error caused by bad media type. 
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -36,8 +36,26 @@ public class ClientErrorTest
 {
    private static Client client;
 
-   @Deployment
-   public static Archive<?> deploy() {
+   @Deployment(name = "war1", order = 1)
+   public static Archive<?> deployJaxrs20() {
+       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_0");
+       war.addClass(PortProviderUtil.class);
+       war.addClass(TestUtil.class);
+       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_0_web.xml");
+       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+   }
+   
+   @Deployment(name = "war2", order = 2)
+   public static Archive<?> deployJaxrs21() {
+       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_1");
+       war.addClass(PortProviderUtil.class);
+       war.addClass(TestUtil.class);
+       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_1_web.xml");
+       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+   }
+   
+   @Deployment(name = "war3", order = 3)
+   public static Archive<?> deployDefault() {
        WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
        war.addClass(PortProviderUtil.class);
        war.addClass(TestUtil.class);
@@ -61,13 +79,66 @@ public class ClientErrorTest
    }
 
    /**
-    * @tpTestDetails There are two methods that match path, but only one matches Accept.
-    * @tpSince RESTEasy 3.0.20
+    * @tpTestDetails There are two methods that match path, and both match Accept.
+    *                "jaxrs.2.0.request.matching" defaults to false.
+    * @tpSince RESTEasy 3.0.20, modified for RESTEasy 3.6.1
     */
    @Test
-   public void testComplex()
+   public void testDefault()
    {
       Builder builder = client.target(generateURL("/complex/match")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      Response response = null;
+      try
+      {
+         response = builder.get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
+      }
+   }
+   
+   /**
+    * @tpTestDetails There are two methods that match path, but only one matches Accept.
+    *                "jaxrs.2.0.request.matching" is set to true.
+    * @tpSince RESTEasy 3.6.1
+    */
+   @Test
+   public void testJaxrs20()
+   {
+      Builder builder = client.target(generateURL("_jaxrs_2_0/complex/match")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      Response response = null;
+      try
+      {
+         response = builder.get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
+      }
+   }
+   
+   /**
+    * @tpTestDetails There are two methods that match path, and both match Accept.
+    *                "jaxrs.2.0.request.matching" is set to false.
+    * @tpSince RESTEasy 3.6.1
+    */
+   @Test
+   public void testJaxrs21()
+   {
+      Builder builder = client.target(generateURL("_jaxrs_2_1/complex/match")).request();
       builder.header(HttpHeaderNames.ACCEPT, "text/xml");
       Response response = null;
       try

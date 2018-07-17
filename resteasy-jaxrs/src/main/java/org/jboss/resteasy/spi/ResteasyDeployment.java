@@ -39,6 +39,7 @@ import java.util.Map;
 public class ResteasyDeployment
 {
    protected boolean widerRequestMatching;
+   protected boolean jaxrs_2_0_RequestMatching = false;
    protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
@@ -993,6 +994,16 @@ public class ResteasyDeployment
    public void setWiderRequestMatching(boolean widerRequestMatching)
    {
       this.widerRequestMatching = widerRequestMatching;
+   }
+   
+   public boolean isJaxrs_2_0_RequestMatching()
+   {
+      return jaxrs_2_0_RequestMatching;
+    }
+   
+   public void setJaxrs_2_0_RequestMatching(boolean jaxrs_2_0_RequestMatching)
+   {
+      this.jaxrs_2_0_RequestMatching = jaxrs_2_0_RequestMatching;
    }
    
    public boolean isAddCharset()
