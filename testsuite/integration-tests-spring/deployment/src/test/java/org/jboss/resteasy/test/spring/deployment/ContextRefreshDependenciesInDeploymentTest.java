@@ -49,7 +49,6 @@ public class ContextRefreshDependenciesInDeploymentTest {
             new PropertyPermission("arquillian.*", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
-            new RuntimePermission("getClassLoader"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
         ), "permissions.xml");

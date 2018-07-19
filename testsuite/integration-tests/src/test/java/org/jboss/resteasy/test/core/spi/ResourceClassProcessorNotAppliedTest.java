@@ -8,6 +8,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorNotAppliedImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -17,8 +18,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
@@ -47,7 +51,16 @@ public class ResourceClassProcessorNotAppliedTest {
         war.addClass(ResourceClassProcessorNotAppliedTest.class);
         war.addClass(PortProviderUtil.class);
         war.addClass(ResourceClassProcessorNotAppliedImplementation.class);
-
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("arquillian.*", "read"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null,
                 ResourceClassProcessorPureEndPoint.class);
     }

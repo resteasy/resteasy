@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakAsyncService;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakItem;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -70,6 +72,11 @@ public class JaxbMarshallingSoakTest {
     public static Archive<?> createTestArchive() {
         WebArchive war =  TestUtil.prepareArchive(JaxbMarshallingSoakTest.class.getSimpleName());
         war.addClasses(JaxbMarshallingSoakItem.class, TestUtil.class, PortProviderUtil.class, TimeoutUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("getClassLoader"),
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("modifyThread")
+        ), "permissions.xml");
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         return TestUtil.finishContainerPrepare(war, contextParam, JaxbMarshallingSoakAsyncService.class);
