@@ -74,7 +74,7 @@ public class JaxrsInterceptorRegistry<T>
 
       public AbstractInterceptorFactory(Class declaring)
       {
-         this.declaring = declaring;
+         this.declaring = getNonSyntheticClass(declaring);
       }
 
       protected void setPrecedence(Class<?> declaring)
@@ -133,7 +133,7 @@ public class JaxrsInterceptorRegistry<T>
                {
                   if (!targetClass.isAnnotationPresent(annotation) &&
                           !target.isAnnotationPresent(annotation)
-                          && (application == null || !application.getClass().isAnnotationPresent(annotation)))
+                          && (application == null || !getNonSyntheticClass(application.getClass()).isAnnotationPresent(annotation)))
                   {
                      return null;
                   }
@@ -382,5 +382,14 @@ public class JaxrsInterceptorRegistry<T>
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
       factory.setOrder(priority);
       register(factory);
+   }
+   
+   private Class<?> getNonSyntheticClass(Class<?> clazz)
+   {
+      while (clazz.isSynthetic())
+      {
+         clazz = clazz.getSuperclass();
+      }
+      return clazz;
    }
 }
