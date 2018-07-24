@@ -1,13 +1,11 @@
 package org.jboss.resteasy.test.interceptor.gzip;
 
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
+import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -29,67 +27,51 @@ import static org.junit.Assert.assertThat;
 /**
  * Abstract base class for gzip tests
  *
- * This abstract class provides deployments, basic test methods, Arquillian RUL Resource and RESTEasy client
+ * This abstract class provides basic test methods, Arquillian URL Resource and RESTEasy client
  *
  * This abstract class is extended by:
- *      AllowGzipOnServerAllowGzipOnClientTest
- *      AllowGzipOnServerNotAllowGzipOnClientTest
- *      NotAllowGzipOnServerAllowGzipOnClientTest
- *      NotAllowGzipOnServerNotAllowGzipOnClientTest
+ *      AllowGzipOnServerAbstractTestBase
+ *      NotAllowGzipOnServerAbstractTestBase
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public abstract class GzipAbstractTest {
+public abstract class GzipAbstractTestBase {
 
     /**
      * Allow gzip property
      */
     protected static final String PROPERTY_NAME = "resteasy.allowGzip";
 
-    /**
-     * Deployment with javax.ws.rs.ext.Providers file, that contains gzip interceptor definition
-     */
-    @Deployment(name = "war_with_providers_file")
-    public static Archive<?> createWebDeploymentWithGzipProvidersFile() {
-        return createWebArchive("test_war_with_providers", true);
-    }
+    protected static final String WAR_WITH_PROVIDERS_FILE = "war_with_providers_file";
+    protected static final String WAR_WITHOUT_PROVIDERS_FILE = "war_without_providers_file";
 
-    /**
-     * Deployment without any javax.ws.rs.ext.Providers file
-     */
-    @Deployment(name = "war_without_providers_file")
-    public static Archive<?> createWebDeploymentWithoutGzipProvidersFile() {
-        return createWebArchive("test_war_without_providers", false);
-    }
 
     /**
      * Prepare archive for the tests
      */
-    private static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors) {
+    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors) {
         WebArchive war = TestUtil.prepareArchive(name);
         war = war.addClass(GzipInterface.class);
         war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
         if (addProvidersFileWithGzipInterceptors) {
-            war.addAsManifestResource(GzipAbstractTest.class.getPackage(), "GzipAbstractTest-javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+            war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
         }
         return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
     }
-
-    @ArquillianResource
-    URL deploymentUrl;
 
     private ResteasyClient client;
 
     /**
      * Perform gzip test
      *
+     * @param deploymentUrl URL of the deployment to test
      * @param manuallyUseGzipOnClient manually register gzip interceptors on client side
      * @param assertAllowGzipOnServer if true, method asserts that resteasy.allowGzip == true on server side
      * @param assertAllowGzipOnClient if true, method asserts that client send gzip header in request
      * @param assertServerReturnGzip method asserts whether gzip encoding should be in header or should not
      * @throws Exception
      */
-    protected void testNormalClient(boolean manuallyUseGzipOnClient, String assertAllowGzipOnServer, boolean assertAllowGzipOnClient,
+    protected void testNormalClient(URL deploymentUrl, boolean manuallyUseGzipOnClient, String assertAllowGzipOnServer, boolean assertAllowGzipOnClient,
                                     boolean assertServerReturnGzip) throws Exception {
         client = new ResteasyClientBuilder().build();
 
@@ -101,7 +83,8 @@ public abstract class GzipAbstractTest {
 
         try {
             // make http request
-            String url = deploymentUrl.toString() + "gzip/process";
+            String deploymentUrlString = deploymentUrl.toString();
+            String url = deploymentUrlString + (!deploymentUrlString.endsWith("/") ? "/" : "") + "gzip/process";
             WebTarget base = client.target(url);
             String message2echo = "some statement";
             Response response = base.queryParam("name", message2echo).request().get();

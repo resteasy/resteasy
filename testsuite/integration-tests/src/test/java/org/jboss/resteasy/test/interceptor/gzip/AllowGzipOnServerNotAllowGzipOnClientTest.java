@@ -3,13 +3,15 @@ package org.jboss.resteasy.test.interceptor.gzip;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.junit.Test;
 
+import java.net.URL;
+
 /**
  * @tpSubChapter Gzip
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1735
  * @tpSince RESTEasy 3.6
  */
-public class AllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTest {
+public class AllowGzipOnServerNotAllowGzipOnClientTest extends AllowGzipOnServerAbstractTestBase {
 
     /**
      * @tpTestDetails gzip is allowed on server by resteasy.allowGzip system property,
@@ -17,9 +19,9 @@ public class AllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTest 
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_without_providers_file")
+    @OperateOnDeployment(WAR_WITHOUT_PROVIDERS_FILE)
     public void manuallyImportOnClient() throws Exception {
-        testNormalClient(true, "true", true, true);
+        testNormalClient(new URL(gzipServerBaseUrl + "/" + WAR_WITHOUT_PROVIDERS_FILE), true, "true", true, true);
     }
 
     /**
@@ -28,9 +30,9 @@ public class AllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTest 
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_with_providers_file")
+    @OperateOnDeployment(WAR_WITH_PROVIDERS_FILE)
     public void noGzipOnClient() throws Exception {
-        testNormalClient(false, "true", false, false);
+        testNormalClient(new URL(gzipServerBaseUrl + "/" + WAR_WITH_PROVIDERS_FILE), false, "true", false, false);
     }
 
 }
