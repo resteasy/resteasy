@@ -5,13 +5,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.net.URL;
+
 /**
  * @tpSubChapter Gzip
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1735
  * @tpSince RESTEasy 3.6
  */
-public class AllowGzipOnServerAllowGzipOnClientTest extends GzipAbstractTest {
+public class AllowGzipOnServerAllowGzipOnClientTest extends AllowGzipOnServerAbstractTestBase {
 
     @BeforeClass
     public static void init() {
@@ -28,9 +30,9 @@ public class AllowGzipOnServerAllowGzipOnClientTest extends GzipAbstractTest {
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_without_providers_file")
+    @OperateOnDeployment(WAR_WITHOUT_PROVIDERS_FILE)
     public void allowGzipOnServerAllowGzipOnClientTest() throws Exception {
-        testNormalClient(false, "true", true, true);
+        testNormalClient(new URL(gzipServerBaseUrl + "/" + WAR_WITHOUT_PROVIDERS_FILE), false, "true", true, true);
     }
 
 }

@@ -1,7 +1,10 @@
 package org.jboss.resteasy.test.interceptor.gzip;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Test;
+
+import java.net.URL;
 
 /**
  * @tpSubChapter Gzip
@@ -9,17 +12,20 @@ import org.junit.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-1735
  * @tpSince RESTEasy 3.6
  */
-public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTest {
+public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends NotAllowGzipOnServerAbstractTestBase {
 
-    /**
+   @ArquillianResource
+   private URL deploymentBaseUrl;
+
+   /**
      * @tpTestDetails gzip is disabled on server
      *                gzip is disabled on client
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_without_providers_file")
+    @OperateOnDeployment(WAR_WITHOUT_PROVIDERS_FILE)
     public void noProvidersFileNoManualImportOnClient() throws Exception {
-        testNormalClient(false, "null", false, false);
+        testNormalClient(deploymentBaseUrl, false, "null", false, false);
     }
 
     /**
@@ -28,9 +34,9 @@ public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTe
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_with_providers_file")
+    @OperateOnDeployment(WAR_WITH_PROVIDERS_FILE)
     public void providersFileManualImportOnClient() throws Exception {
-        testNormalClient(true, "null", true, true);
+        testNormalClient(deploymentBaseUrl, true, "null", true, true);
     }
 
 
@@ -40,9 +46,9 @@ public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTe
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_with_providers_file")
+    @OperateOnDeployment(WAR_WITH_PROVIDERS_FILE)
     public void providersFileNoManualImportOnClient() throws Exception {
-        testNormalClient(false, "null", false, false);
+        testNormalClient(deploymentBaseUrl, false, "null", false, false);
     }
 
 
@@ -52,9 +58,9 @@ public class NotAllowGzipOnServerNotAllowGzipOnClientTest extends GzipAbstractTe
      * @tpSince RESTEasy 3.6
      */
     @Test
-    @OperateOnDeployment("war_without_providers_file")
+    @OperateOnDeployment(WAR_WITHOUT_PROVIDERS_FILE)
     public void noProvidersFileManualImportOnClient() throws Exception {
-        testNormalClient(true, "null", true, false);
+        testNormalClient(deploymentBaseUrl, true, "null", true, false);
     }
 
 }
