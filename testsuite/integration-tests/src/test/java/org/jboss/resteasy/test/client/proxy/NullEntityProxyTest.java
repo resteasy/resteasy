@@ -47,16 +47,13 @@ public class NullEntityProxyTest {
 
     @Deployment
     public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
+        WebArchive war = TestUtil.prepareArchive(NullEntityProxyTest.class.getSimpleName());
         war.addClasses(NullEntityProxy.class, NullEntityProxyGreeting.class, NullEntityProxyGreeter.class);
-        //FIXME - This is only a workaround for RESTEASY-1930
-        Map<String, String> contextParam = new HashMap<>();
-        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-        return TestUtil.finishContainerPrepare(war, contextParam, NullEntityProxyResource.class);
+        return TestUtil.finishContainerPrepare(war, null, NullEntityProxyResource.class);
     }
 
     private static String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(GenericProxyTest.class.getSimpleName());
+        return PortProviderUtil.generateBaseUrl(NullEntityProxyTest.class.getSimpleName());
     }
 
     /**

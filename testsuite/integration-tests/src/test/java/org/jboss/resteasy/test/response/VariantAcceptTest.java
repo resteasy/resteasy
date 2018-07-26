@@ -63,10 +63,7 @@ public class VariantAcceptTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(VariantAcceptTest.class.getSimpleName());
         war.addClass(VariantAcceptTest.class);
-        //FIXME - This is only a workaround for RESTEASY-1930
-        Map<String, String> contextParam = new HashMap<>();
-        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-        return TestUtil.finishContainerPrepare(war, contextParam, VariantAcceptResource.class);
+        return TestUtil.finishContainerPrepare(war, null, VariantAcceptResource.class);
     }
 
     private String generateURL(String path) {
@@ -107,7 +104,7 @@ public class VariantAcceptTest {
 
     /**
      * @tpTestDetails Verifies that the q/qs factors are stripped from the response Content-type header if they are provided
-     * in the request. See RESTEASY-1765.
+     * in the request/@Produces. See RESTEASY-1765.
      * @tpSince RESTEasy 3.0.25
      */
     @Test
@@ -120,8 +117,7 @@ public class VariantAcceptTest {
         assertEquals("application/json", response.getHeaderString("Content-Type"));
         response.close();
 
-        request = client.target(generateURL("/simple")).request();
-        request.accept("application/json;qs=0.5, application/xml;qs=0.9");
+        request = client.target(generateURL("/simpleqs")).request();
         response = request.get();
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("application/xml;charset=UTF-8", response.getHeaderString("Content-Type"));
