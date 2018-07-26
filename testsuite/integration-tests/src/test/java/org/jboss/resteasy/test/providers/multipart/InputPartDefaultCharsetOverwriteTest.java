@@ -11,6 +11,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultChar
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteService;
 import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -25,6 +26,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -80,6 +82,9 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
     }
 

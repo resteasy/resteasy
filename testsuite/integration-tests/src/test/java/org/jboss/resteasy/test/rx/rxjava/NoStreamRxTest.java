@@ -8,6 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxNoStreamResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
@@ -18,6 +19,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Reactive classes
@@ -33,6 +36,10 @@ public class NoStreamRxTest
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(NoStreamRxTest.class.getSimpleName());
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read"),
+              new PropertyPermission("*", "write")
+      ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxNoStreamResource.class);
    }

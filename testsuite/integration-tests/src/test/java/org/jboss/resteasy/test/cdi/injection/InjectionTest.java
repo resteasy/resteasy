@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,6 +54,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
@@ -128,7 +130,8 @@ public class InjectionTest extends AbstractInjectionTestBase {
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
 
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new SocketPermission(PortProviderUtil.getHost(), "resolve")),
+                new HibernateValidatorPermission("accessPrivateMembers"),
+                new SocketPermission(PortProviderUtil.getHost(), "resolve")),
             "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);

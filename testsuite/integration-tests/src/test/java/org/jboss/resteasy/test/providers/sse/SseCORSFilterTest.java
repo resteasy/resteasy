@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,6 +31,9 @@ public class SseCORSFilterTest
       war.addClass(SseCORSFilterTest.class);
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/filter/web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new RuntimePermission("modifyThread")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class,
             CORSFilter.class, ExecutorServletContextListener.class);
    }

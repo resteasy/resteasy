@@ -13,6 +13,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.test.client.resource.RedirectProxyResource;
 import org.jboss.resteasy.test.client.resource.RedirectResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -20,6 +21,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -36,6 +39,12 @@ public class RedirectTest extends ClientTestBase
    {
       WebArchive war = TestUtil.prepareArchive(RedirectTest.class.getSimpleName());
       war.addClasses(PortProviderUtil.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("ipv6", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, RedirectResource.class);
    }
 

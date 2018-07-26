@@ -41,6 +41,9 @@ public class MultipleEndpointsWarningTest
    public static Archive<?> deploy() {
        WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
        war.addClass(LogHandler.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new LoggingPermission("control", "")
+      ), "permissions.xml");
       // Test registers it's own LogHandler
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")), "permissions.xml");
        return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);

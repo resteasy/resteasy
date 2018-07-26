@@ -66,12 +66,15 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
+
         // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
+                new PropertyPermission("org.jboss.resteasy.port", "read")
+        ), "permissions.xml");
+       return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
     }
 
     /**

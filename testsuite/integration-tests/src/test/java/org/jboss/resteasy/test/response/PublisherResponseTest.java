@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +26,7 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -58,6 +60,12 @@ public class PublisherResponseTest {
       WebArchive war = TestUtil.prepareArchive(PublisherResponseTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read"),
+              new PropertyPermission("*", "write"),
+              new RuntimePermission("modifyThread")
+      ), "permissions.xml");
+
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
    }

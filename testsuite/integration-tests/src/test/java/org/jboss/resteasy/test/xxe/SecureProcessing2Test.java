@@ -20,6 +20,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.experimental.categories.Category;
@@ -230,6 +231,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to default value
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionDefault() throws Exception {
         doTestSkipFailsFailsSkip("ddd");
@@ -241,6 +243,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to false
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionFalse() throws Exception {
         doTestSkipFailsFailsSkip("ddf");
@@ -252,6 +255,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to true
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionTrue() throws Exception {
         doTestSkipFailsFailsSkip("ddt");
@@ -263,6 +267,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to default value
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsFalseExpansionDefault() throws Exception {
         doTestFailsFailsPassesFails("dfd");
@@ -274,6 +279,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to false
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception {
         doTestFailsFailsPassesFails("dff");
@@ -285,6 +291,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to true
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsFalseExpansionTrue() throws Exception {
         doTestFailsFailsPassesPasses("dft");
@@ -296,6 +303,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to default value
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsTrueExpansionDefault() throws Exception {
         doTestSkipFailsFailsSkip("dtd");
@@ -307,6 +315,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to false
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsTrueExpansionFalse() throws Exception {
         doTestSkipFailsFailsSkip("dtf");
@@ -318,6 +327,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to true
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityDefaultDTDsTrueExpansionTrue() throws Exception {
         doTestSkipFailsFailsSkip("dtt");
@@ -329,6 +339,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to default value
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityFalseDTDsDefaultExpansionDefault() throws Exception {
         doTestSkipPassesFailsSkip("fdd");
@@ -340,6 +351,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to false
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityFalseDTDsDefaultExpansionFalse() throws Exception {
         doTestSkipPassesFailsSkip("fdf");
@@ -351,6 +363,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to true
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityFalseDTDsDefaultExpansionTrue() throws Exception {
         doTestSkipPassesFailsSkip("fdt");
@@ -362,6 +375,7 @@ public class SecureProcessing2Test {
      *                "resteasy.document.expand.entity.references" is set to default value
      * @tpSince RESTEasy 3.0.16
      */
+    //@Ignore //rls
     @Test
     public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception {
         doTestPassesPassesPassesFails("ffd");
@@ -374,6 +388,7 @@ public class SecureProcessing2Test {
      * @tpInfo RESTEASY-1485
      * @tpSince RESTEasy 3.0.20.Final
      */
+    //@Ignore //rls
     @Test
     @Category({NotForForwardCompatibility.class})
     public void testSecurityDefaultDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {

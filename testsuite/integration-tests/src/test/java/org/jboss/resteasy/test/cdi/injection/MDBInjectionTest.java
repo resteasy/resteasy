@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -85,7 +86,9 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
         if (PortProviderUtil.isIpv6()) {
             host = String.format("[%s]", host);
         }
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new SocketPermission(host, "resolve")),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers"),
+                new SocketPermission(host, "resolve")),
                 "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
