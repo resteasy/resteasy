@@ -4,6 +4,7 @@ import org.jboss.resteasy.test.response.VariantAcceptTest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -41,6 +42,20 @@ public class VariantAcceptResource {
     @GET
     @Path("simple")
     public String simple() {
+        return "Hello";
+    }
+
+    @GET
+    @Path("simpleqs")
+    @Produces("application/json;qs=0.5")
+    public String simpleqs1() {
+        return "Hello";
+    }
+
+    @GET
+    @Path("simpleqs")
+    @Produces("application/xml;qs=0.9")
+    public String simpleqs2() {
         return "Hello";
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
+import javax.validation.constraints.Null;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
@@ -71,9 +72,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                                  MultivaluedMap<String, String> httpHeaders,
                                  InputStream entityStream) throws java.io.IOException, javax.ws.rs.WebApplicationException {
       Jsonb jsonb = getJsonb(type);
-      try
-      {
+      try {
          return jsonb.fromJson(entityStream, genericType);
+         // If null is returned, considered to be empty stream
+      } catch (NullPointerException ex) {
+         return null;
       } catch (Throwable e)
       {
          // detail text provided in logger message
