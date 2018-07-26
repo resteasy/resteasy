@@ -89,7 +89,6 @@ public class ContactsDependenciesInDeploymentTest {
             new RuntimePermission("getenv.spring.liveBeansView.mbeanDomain"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
-            new RuntimePermission("getClassLoader"),
             new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")

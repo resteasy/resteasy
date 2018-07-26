@@ -36,7 +36,6 @@ import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.Date;
 import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Parameters
@@ -63,18 +62,18 @@ public class HeaderDelegateTest {
         war.addClass(HeaderDelegateSubDelegate.class);
         war.addClass(PortProviderUtil.class);
         war.addClass(HeaderDelegateTest.class);
-        // Arquillian in the deployment
+
+        // required by arquillian PortProviderUtil
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new PropertyPermission("node", "read"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
-        ), "permissions.xml");
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+       ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
     }
 

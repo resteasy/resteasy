@@ -42,6 +42,10 @@ public class WriterNotBuiltinTest {
         WebArchive war = TestUtil.prepareArchive(WriterNotBuiltinTest.class.getSimpleName());
         war.addClass(ReaderWriterCustomer.class);
         war.addClass(PortProviderUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.use.builtin.providers", "false");
         // Arquillian in the deployment
