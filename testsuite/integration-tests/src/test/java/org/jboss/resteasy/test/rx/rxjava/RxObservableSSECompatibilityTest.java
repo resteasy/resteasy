@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.rx.rxjava;
 
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +21,7 @@ import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.rxjava.ObservableRxInvoker;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxObservableSSECompatibilityResourceImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
@@ -61,6 +64,9 @@ public class RxObservableSSECompatibilityTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(RxObservableSSECompatibilityTest.class.getSimpleName());
       war.addClass(Thing.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read,write")
+              ),"permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxObservableSSECompatibilityResourceImpl.class);
    }
