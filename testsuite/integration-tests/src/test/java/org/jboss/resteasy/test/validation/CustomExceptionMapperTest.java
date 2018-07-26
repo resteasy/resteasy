@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -8,6 +9,7 @@ import org.jboss.resteasy.test.validation.resource.CustomExceptionMapperClassCon
 import org.jboss.resteasy.test.validation.resource.CustomExceptionMapperClassValidator;
 import org.jboss.resteasy.test.validation.resource.CustomExceptionMapperResource;
 import org.jboss.resteasy.test.validation.resource.CustomExceptionMapperReport;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -64,7 +66,9 @@ public class CustomExceptionMapperTest {
                         CustomExceptionMapperReport.class)
                 .addAsLibrary(file, "validation-versioning.jar")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+                ), "permissions.xml");
         return war;
     }
 
