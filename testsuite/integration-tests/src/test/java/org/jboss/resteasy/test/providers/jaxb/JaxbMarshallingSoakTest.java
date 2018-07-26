@@ -80,7 +80,10 @@ public class JaxbMarshallingSoakTest {
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         // Arquillian in the deployment use if TimeoutUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("getClassLoader"),
+                new RuntimePermission("modifyThread"),
+                new ReflectPermission("suppressAccessChecks"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
@@ -88,7 +91,6 @@ public class JaxbMarshallingSoakTest {
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new PropertyPermission("ts.timeout.factor", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getClassLoader"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
                 new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
         ), "permissions.xml");

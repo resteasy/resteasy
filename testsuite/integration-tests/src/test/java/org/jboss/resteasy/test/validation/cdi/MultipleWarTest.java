@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
@@ -11,6 +12,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumValidator;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarResource;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -45,6 +47,9 @@ public class MultipleWarTest {
                 .addClasses(MultipleWarResource.class)
                 .addClasses(MultipleWarSumConstraint.class, MultipleWarSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war1.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+        ), "permissions.xml");
         return war1;
     }
 
@@ -54,6 +59,9 @@ public class MultipleWarTest {
                 .addClasses(MultipleWarResource.class)
                 .addClasses(MultipleWarSumConstraint.class, MultipleWarSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war2.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+        ), "permissions.xml");
         return war2;
     }
 

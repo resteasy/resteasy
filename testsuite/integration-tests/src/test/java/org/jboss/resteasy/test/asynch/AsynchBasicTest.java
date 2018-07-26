@@ -52,6 +52,10 @@ public class AsynchBasicTest {
         WebArchive war = TestUtil.prepareArchive(deploymentName);
         war.addClass(PortProviderUtil.class);
         war.addClass(TestUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
+
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         if (maxSize != null) {

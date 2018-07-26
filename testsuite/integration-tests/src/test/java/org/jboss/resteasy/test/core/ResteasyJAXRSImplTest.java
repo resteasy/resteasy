@@ -22,6 +22,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -38,6 +39,11 @@ public class ResteasyJAXRSImplTest
    {
       WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
       war.addClass(NotForForwardCompatibility.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("arquillian.*", "read"),
+              new RuntimePermission("accessDeclaredMembers"),
+              new ReflectPermission("suppressAccessChecks")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 

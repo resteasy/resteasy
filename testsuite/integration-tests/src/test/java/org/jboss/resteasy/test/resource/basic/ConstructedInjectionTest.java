@@ -37,12 +37,15 @@ public class ConstructedInjectionTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ConstructedInjectionTest.class.getSimpleName());
         war.addClass(TestPortProvider.class);
+
         // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
                 new RuntimePermission("getenv.RESTEASY_HOST"),
-                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
+                new PropertyPermission("org.jboss.resteasy.port", "read")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ConstructedInjectionResource.class);
     }
 

@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.rx.rxjava;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -16,6 +17,7 @@ import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResourceImpl;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
@@ -57,6 +59,10 @@ public class RxSingleProxyServerAsyncTest {
       war.addClass(Thing.class);
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read,write")
+      ), "permissions.xml");
+      
       TestUtilRxJava.addRxJavaLibraries(war);
       return TestUtil.finishContainerPrepare(war, null, RxSingleResourceImpl.class, TestExceptionMapper.class);
    }

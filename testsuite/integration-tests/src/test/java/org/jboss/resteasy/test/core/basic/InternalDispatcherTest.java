@@ -49,7 +49,10 @@ public class InternalDispatcherTest {
         WebArchive war = TestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
         war.addClasses(InternalDispatcherClient.class, InternalDispatcherForwardingResource.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("accessDeclaredMembers"),
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
         // Arquillian in the deployment
