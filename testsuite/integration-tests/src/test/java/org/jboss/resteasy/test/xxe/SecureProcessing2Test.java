@@ -547,7 +547,7 @@ public class SecureProcessing2Test {
         String entity = response.readEntity(String.class);
         logger.info("doDTDFails(): result: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        Assert.assertThat("Wrong exception in response", entity, startsWith("javax.xml.bind.UnmarshalException"));
+        Assert.assertThat("Wrong exception in response", entity, containsString("javax.xml.bind.UnmarshalException"));
         Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
         Assert.assertThat("Wrong content of response", entity, containsString("true"));
     }
@@ -560,7 +560,7 @@ public class SecureProcessing2Test {
         String entity = response.readEntity(String.class);
         logger.info("doDTDFails(): result: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        Assert.assertThat("Wrong exception in response", entity, startsWith("javax.xml.bind.UnmarshalException"));
+        Assert.assertThat("Wrong exception in response", entity, containsString("javax.xml.bind.UnmarshalException"));
         Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
         Assert.assertThat("Wrong content of response", entity, containsString("http:&#x2F;&#x2F;apache.org&#x2F;xml&#x2F;features&#x2F;disallow-doctype-decl"));
         Assert.assertThat("Wrong content of response", entity, containsString("true"));
