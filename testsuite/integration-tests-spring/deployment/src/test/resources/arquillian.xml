@@ -13,7 +13,7 @@
                 -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y
             </property>-->
             <property name="javaVmArguments">-server -Xms96m -Xmx1024m -Djboss.bind.address=${node} -Dnode=${node}
-                -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Dee8.preview.mode=${ee8.preview.mode}
+                -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent}
             </property>
         </configuration>
     </container>
