@@ -9,10 +9,16 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,29 +30,56 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.SecurityPermission;
+
+import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.FooResource;
+import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication;
+import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
+
 
 /**
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1082
  * @tpSince RESTEasy 3.0.16
+ *
+ * Jul 27, 2018 Test rewritten to generated the needed archive and write it to disk.
  */
+
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CDIResourceTest {
 
     protected static final Logger logger = LogManager.getLogger(CDIResourceTest.class.getName());
 
-    static final String fromStr;
+    private static final String WAR_NAME = "RESTEASY-1082.war";
     static final String toStr;
+    static final File exportFile;
 
     static {
-        fromStr = TestUtil.getResourcePath(CDIResourceTest.class, "RESTEASY-1082.war");
         toStr = new StringBuilder()
                 .append(TestUtil.getJbossHome()).append(File.separator)
                 .append("standalone").append(File.separator)
                 .append("deployments").append(File.separator)
-                .append("RESTEASY-1082.war").toString();
+                .append(WAR_NAME).toString();
+        exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);
+    }
+
+    @Before
+    public void createArchive() {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, WAR_NAME);
+        war.addClasses(FooResource.class,
+                TestApplication.class,
+                TestServlet.class);
+        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
+                "web-resteasy1082.xml", "web.xml");
+
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new RuntimePermission("accessDeclaredMembers")
+        ), "permissions.xml");
+        //write file to disk
+        war.as(ZipExporter.class).exportTo(exportFile, true);
     }
 
     /**
@@ -55,7 +88,7 @@ public class CDIResourceTest {
      */
     @Test
     public void testCDIResourceFromServlet() throws Exception {
-        Path from = FileSystems.getDefault().getPath(fromStr).toAbsolutePath();
+        Path from = FileSystems.getDefault().getPath(exportFile.getAbsolutePath());
         Path to = FileSystems.getDefault().getPath(toStr).toAbsolutePath();
 
         try {
