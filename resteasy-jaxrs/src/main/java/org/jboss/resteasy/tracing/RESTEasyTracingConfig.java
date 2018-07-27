@@ -15,5 +15,4 @@ public enum RESTEasyTracingConfig {
      * Tracing support is enabled for every request.
      */
     ALL
-
 }

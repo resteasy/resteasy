@@ -23,6 +23,11 @@ public abstract class RESTEasyTracingLogger {
      */
     public static final String HEADER_ACCEPT = HEADER_TRACING_PREFIX + "Accept";
     /**
+     * Request header name to indicate the tracing info format.
+     * Currently we support `TEXT` format and `JSON` format.
+     */
+    public static final String HEADER_ACCEPT_FORMAT = HEADER_TRACING_PREFIX + "Accept-Format";
+    /**
      * Request header name to set JDK logger name suffix to identify a request logs.
      */
     public static final String HEADER_LOGGER = HEADER_TRACING_PREFIX + "Logger";
@@ -42,6 +47,7 @@ public abstract class RESTEasyTracingLogger {
      * Default JDK logger name suffix. This can be overwrite by header {@link #HEADER_LOGGER}.
      */
     protected static final String DEFAULT_LOGGER_NAME_SUFFIX = "general";
+
 
     /**
      * Test if a tracing support is enabled if {@code event} can be logged (according to event.level and threshold level set).
@@ -95,8 +101,13 @@ public abstract class RESTEasyTracingLogger {
      * @return new tracing logger.
      */
     public static RESTEasyTracingLogger create(final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
-        return new RESTEasyTracingLoggerImpl(threshold, loggerNameSuffix);
+        return create(threshold, loggerNameSuffix, null);
     }
+
+    public static RESTEasyTracingLogger create(RESTEasyTracingLevel tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
+        return new RESTEasyTracingLoggerImpl(tracingThreshold, tracingLoggerNameSuffix, tracingInfoFormat);
+    }
+
 
     /**
      * Returns instance of {@code TracingLogger} associated with current request processing

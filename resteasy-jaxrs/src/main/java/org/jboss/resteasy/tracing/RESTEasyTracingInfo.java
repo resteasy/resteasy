@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RESTEasyTracingInfo {
-    private final List<RESTEasyTracingMessage> messageList = new ArrayList<RESTEasyTracingMessage>();
+
+    public enum FORMAT {
+        TEXT,
+        JSON
+    }
+
+    protected final List<RESTEasyTracingMessage> messageList = new ArrayList<RESTEasyTracingMessage>();
 
     public void addMessage(RESTEasyTracingMessage message) {
         messageList.add(message);

@@ -45,7 +45,7 @@ public class RESTEasyTracingUtils {
         if (isTracingSupportEnabled(type, request)) {
             tracingLogger = RESTEasyTracingLogger.create(
                     getTracingThreshold(appThreshold, request),
-                    getTracingLoggerNameSuffix(request));
+                    getTracingLoggerNameSuffix(request), getTracingInfoFormat(request));
         } else {
             tracingLogger = RESTEasyTracingLogger.empty();
         }
@@ -53,6 +53,7 @@ public class RESTEasyTracingUtils {
         request.setAttribute(RESTEasyTracingLogger.PROPERTY_NAME, tracingLogger);
 
     }
+
 
     /**
      * Log tracing messages START events.
@@ -106,6 +107,11 @@ public class RESTEasyTracingUtils {
         return (type == RESTEasyTracingConfig.ALL)
                 || ((type == RESTEasyTracingConfig.ON_DEMAND) && (getHeaderString(request, RESTEasyTracingLogger.HEADER_ACCEPT) != null));
     }
+
+    private static String getTracingInfoFormat(HttpRequest request) {
+        return getHeaderString(request, RESTEasyTracingLogger.HEADER_ACCEPT_FORMAT);
+    }
+
 
     /**
      * Return configuration type of tracing support according to application configuration.
