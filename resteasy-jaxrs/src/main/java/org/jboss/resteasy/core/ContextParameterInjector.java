@@ -19,6 +19,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -165,7 +167,19 @@ public class ContextParameterInjector implements ValueInjector
         else
         {
             Class[] intfs = {rawType};
-            return Proxy.newProxyInstance(rawType.getClassLoader(), intfs, new GenericDelegatingProxy());
+            if (System.getSecurityManager() == null )
+            {
+               return Proxy.newProxyInstance(rawType.getClassLoader(), intfs, new GenericDelegatingProxy());
+            } else {
+               return AccessController.doPrivileged(new PrivilegedAction<Object>()
+               {
+                  @Override
+                  public Object run()
+                  {
+                     return Proxy.newProxyInstance(rawType.getClassLoader(), intfs, new GenericDelegatingProxy());
+                  }
+               });
+            }
         }
     }
 }
