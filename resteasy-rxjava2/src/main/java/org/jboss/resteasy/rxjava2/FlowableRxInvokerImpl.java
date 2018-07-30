@@ -262,7 +262,7 @@ public class FlowableRxInvokerImpl implements FlowableRxInvoker
 			builder.executor(executorService);
 		}
 		SseEventSourceImpl sseEventSource = (SseEventSourceImpl) builder.build();
-		sseEventSource.setAlwasyReconnect(false);
+		sseEventSource.setAlwaysReconnect(false);
 		return sseEventSource;
 	}
 

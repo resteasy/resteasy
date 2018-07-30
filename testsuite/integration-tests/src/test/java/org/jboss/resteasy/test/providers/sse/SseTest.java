@@ -483,7 +483,7 @@ public class SseTest
       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
       SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwasyReconnect(false);
+      sourceImpl.setAlwaysReconnect(false);
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> results.add(event.readData()));
@@ -500,7 +500,7 @@ public class SseTest
       results.clear();
       WebTarget target2 = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
       SseEventSourceImpl sourceImpl2 = (SseEventSourceImpl)SseEventSource.target(target2).build();
-      sourceImpl2.setAlwasyReconnect(false);
+      sourceImpl2.setAlwaysReconnect(false);
       try (SseEventSource source = sourceImpl2)
       {
          source.register(event -> results.add(event.readData()));
@@ -522,7 +522,7 @@ public class SseTest
       final AtomicInteger errors = new AtomicInteger(0);
       WebTarget target = client.target(generateURL("/service/server-sent-events/noContent"));
       SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
-      sourceImpl.setAlwasyReconnect(false);
+      sourceImpl.setAlwaysReconnect(false);
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
