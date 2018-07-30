@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -34,7 +33,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class, ExpectedFailing.class}) //RESTEASY-1933
+@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class})
 public class JsonFilterWithSerlvetFilterTest {
 
     @Deployment(name = "default")
