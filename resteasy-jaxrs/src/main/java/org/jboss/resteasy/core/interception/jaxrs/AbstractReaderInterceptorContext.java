@@ -2,8 +2,10 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.InterceptorTimestampPair;
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
-import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -22,6 +24,8 @@ import java.lang.reflect.Type;
  */
 public abstract class AbstractReaderInterceptorContext implements ReaderInterceptorContext
 {
+   protected RESTEasyTracingLogger tracingLogger;
+   private InterceptorTimestampPair<ReaderInterceptor> lastTracedInterceptor;
    protected ReaderInterceptor[] interceptors;
    protected ResteasyProviderFactory providerFactory;
    protected Class type;
@@ -32,6 +36,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    protected InputStream inputStream;
    protected int index = 0;
 
+   @Deprecated
    public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
    {
       this.mediaType = mediaType;
@@ -42,7 +47,25 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       this.type = type;
       this.inputStream = inputStream;
       this.providerFactory = providerFactory;
+      this.tracingLogger = RESTEasyTracingLogger.empty();
    }
+
+   public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream, RESTEasyTracingLogger logger)
+   {
+      this.mediaType = mediaType;
+      this.annotations = annotations;
+      this.interceptors = interceptors;
+      this.headers = headers;
+      this.genericType = genericType;
+      this.type = type;
+      this.inputStream = inputStream;
+      this.providerFactory = providerFactory;
+      this.tracingLogger = logger;
+      if (logger == null) {
+         this.tracingLogger = RESTEasyTracingLogger.empty();
+      }
+   }
+
 
    @Override
    public Object proceed() throws IOException
@@ -51,12 +74,25 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyReader reader = getReader();
-         if (reader!=null)
-             LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         if (reader!=null) {
+            tracingLogger.log(RESTEasyMsgTraceEvent.MBR_READ_FROM, reader.getClass().getName());
+            LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         }
          return readFrom(reader);
       }
       LogMessages.LOGGER.debugf("ReaderInterceptor: %s", interceptors[index].getClass().getName());
-      return interceptors[index++].aroundReadFrom(this);
+
+      int x = index;
+      traceBefore(interceptors[x]);
+
+      try {
+         return interceptors[index++].aroundReadFrom(this);
+      } finally {
+         traceAfter(interceptors[x]);
+      }
+
+
+
       // index--;  we used to pop the index, but the TCK does not like this
    }
 
@@ -64,6 +100,24 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    protected Object readFrom(MessageBodyReader reader) throws IOException
    {
       return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+   }
+
+   protected final void traceBefore(final ReaderInterceptor interceptor) {
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.RI_BEFORE)) {
+         if ((lastTracedInterceptor != null) && (interceptor != null)) {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.RI_BEFORE, lastTracedInterceptor.getTimestamp(), lastTracedInterceptor.getInterceptor());
+         }
+         lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
+      }
+   }
+
+   protected final void traceAfter(final ReaderInterceptor interceptor) {
+      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.RI_AFTER)) {
+         if ((lastTracedInterceptor != null) && (lastTracedInterceptor.getInterceptor() != null)) {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.RI_AFTER, lastTracedInterceptor.getTimestamp(), interceptor);
+         }
+         lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
+      }
    }
 
    protected MessageBodyReader getReader()
@@ -151,5 +205,9 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    public void setMediaType(MediaType mediaType)
    {
       this.mediaType = mediaType;
+   }
+
+   public Object getProcessedInterceptorCount() {
+         return index;
    }
 }

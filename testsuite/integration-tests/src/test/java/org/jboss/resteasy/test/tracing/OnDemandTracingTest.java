@@ -51,9 +51,6 @@ public class OnDemandTracingTest {
     @Deployment
     public static Archive<?> createDeployment() {
         war = TestUtil.prepareArchive(OnDemandTracingTest.class.getSimpleName());
-        war.addAsResource(new File(OnDemandTracingTest.class.getClassLoader()
-                .getResource("org/jboss/resteasy/test/tracing/logging.properties").getFile()), "logging.properties");
-//        war.as(ZipExporter.class).exportTo(new File("/tmp/" + war.getName()), true);
 
         Map<String, String> params = new HashMap<>();
         params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ON_DEMAND);

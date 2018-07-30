@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
@@ -25,12 +26,24 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    protected Map<String, Object> properties;
 
+   // use the tracingLogger version instead.
+   @Deprecated
    public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
                                          Object entity, Class type, Type genericType, Annotation[] annotations,
                                          MediaType mediaType, MultivaluedMap<String, Object> headers,
                                          OutputStream outputStream, Map<String, Object> properties)
    {
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
+      this.properties = properties;
+   }
+
+   public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
+                                         Object entity, Class type, Type genericType, Annotation[] annotations,
+                                         MediaType mediaType, MultivaluedMap<String, Object> headers,
+                                         OutputStream outputStream, Map<String, Object> properties, RESTEasyTracingLogger tracingLogger)
+   {
+//      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
+      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers, tracingLogger);
       this.properties = properties;
    }
 

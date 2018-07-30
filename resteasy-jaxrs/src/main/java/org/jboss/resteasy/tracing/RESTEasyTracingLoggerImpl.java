@@ -15,12 +15,25 @@ public class RESTEasyTracingLoggerImpl extends RESTEasyTracingLogger {
     private final RESTEasyTracingInfo tracingInfo;
 
     public RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, String loggerNameSuffix) {
-        this.threshold = threshold;
+        this(threshold, loggerNameSuffix, null);
+    }
 
-        this.tracingInfo = new RESTEasyTracingInfo();
+    public RESTEasyTracingLoggerImpl(RESTEasyTracingLevel tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
+        this.threshold = tracingThreshold;
 
-        loggerNameSuffix = loggerNameSuffix != null ? loggerNameSuffix : DEFAULT_LOGGER_NAME_SUFFIX;
-        this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
+        if (tracingInfoFormat == null) {
+            this.tracingInfo = new RESTEasyTracingInfo();
+        } else if (tracingInfoFormat.equals(RESTEasyTracingInfo.FORMAT.TEXT.toString())){
+            this.tracingInfo = new RESTEasyTracingInfo();
+        } else if (tracingInfoFormat.equals(RESTEasyTracingInfo.FORMAT.JSON.toString())) {
+            this.tracingInfo = new JsonFormattedRESTEasyTracingInfo();
+        } else {
+            this.tracingInfo = new RESTEasyTracingInfo();
+        }
+
+        tracingLoggerNameSuffix = tracingLoggerNameSuffix != null ? tracingLoggerNameSuffix : DEFAULT_LOGGER_NAME_SUFFIX;
+        this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + tracingLoggerNameSuffix);
+
     }
 
     private boolean isEnabled(final RESTEasyTracingLevel level) {

@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotSupportedException;
@@ -33,7 +34,7 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
                                          MultivaluedMap<String, String> headers, InputStream inputStream,
                                          HttpRequest request)
    {
-      super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
+      super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream, RESTEasyTracingLogger.getInstance(request));
       this.request = request;
    }
 
@@ -41,8 +42,8 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
       @SuppressWarnings(value = "unchecked")
-      MessageBodyReader reader =  providerFactory.getMessageBodyReader(type,
-              genericType, annotations, mediaType);
+      MessageBodyReader reader =  providerFactory.getServerMessageBodyReader(type,
+              genericType, annotations, mediaType, tracingLogger);
       //logger.info("**** picked reader: " + reader.getClass().getName());
       return reader;
    }

@@ -54,13 +54,13 @@ public class BasicTracingTest {
     @Deployment
     public static Archive<?> createDeployment() {
         war = TestUtil.prepareArchive(BasicTracingTest.class.getSimpleName());
-        war.addAsResource(new File(BasicTracingTest.class.getClassLoader().getResource("org/jboss/resteasy/test/tracing/logging.properties").getFile()), "logging.properties");
         Map<String, String> params = new HashMap<>();
         params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ALL);
         params.put(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE);
 
         return TestUtil.finishContainerPrepare(war, params, TracingApp.class,
                 TracingConfigResource.class, HttpMethodOverride.class, FooLocator.class, Foo.class);
+
     }
 
     @Test
@@ -77,9 +77,17 @@ public class BasicTracingTest {
 
             results.put("PRE-MATCH", false);
             results.put("REQ-FILTER", false);
+            results.put("RESP-FILTER", false);
             results.put("MATCH", false);
             results.put("INVOKE", false);
             results.put("FINISHED", false);
+
+            // verbose events
+            results.put("MBW", false);
+//            results.put("RESPONSE_FILTER", false);
+//            results.put("DISPATCH_RESPONSE", false);
+//            results.put("MATCH_PATH_FIND", false);
+//            results.put("MATCH_PATH_SELECTED", false);
 
             for (Map.Entry entry : response.getStringHeaders().entrySet()) {
                 System.out.println("<K, V> ->" + entry);
@@ -108,8 +116,9 @@ public class BasicTracingTest {
     public void testBasic() throws InterruptedException {
 //        war.as(ZipExporter.class).exportTo(new File("/tmp/" + war.getName()), true);
 //        Thread.currentThread().join();
+
         String url = generateURL("/logger");
-//        System.out.println("::: " + url);
+//        System    .out.println("::: " + url);
 //        Thread.currentThread().join();
         WebTarget base = client.target(url);
         try {

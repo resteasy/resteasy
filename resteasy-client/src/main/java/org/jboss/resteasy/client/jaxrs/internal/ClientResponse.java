@@ -3,12 +3,15 @@ package org.jboss.resteasy.client.jaxrs.internal;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
@@ -42,10 +45,19 @@ public abstract class ClientResponse extends BuiltResponse
    protected ClientConfiguration configuration;
    protected byte[] bufferedEntity;
    protected boolean streamFullyRead;
+   protected RESTEasyTracingLogger tracingLogger;
 
+   @Deprecated
    protected ClientResponse(ClientConfiguration configuration)
    {
       setClientConfiguration(configuration);
+      tracingLogger = RESTEasyTracingLogger.empty();
+   }
+
+   protected ClientResponse(ClientConfiguration configuration, RESTEasyTracingLogger tracingLogger)
+   {
+      setClientConfiguration(configuration);
+      this.tracingLogger = tracingLogger;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -329,10 +341,17 @@ public abstract class ClientResponse extends BuiltResponse
 
          ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
-         final Object finalObj = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
-                 useGeneric, annotations, media, getStringHeaders(), is, properties)
-                 .proceed();
-         obj = finalObj;
+         final Object finalObj;
+
+         final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.RI_SUMMARY);
+         AbstractReaderInterceptorContext context = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
+                 useGeneric, annotations, media, getStringHeaders(), is, properties);
+         try {
+            finalObj = context.proceed();
+            obj = finalObj;
+         } finally {
+            tracingLogger.logDuration(RESTEasyMsgTraceEvent.RI_SUMMARY, timestamp, context.getProcessedInterceptorCount());
+         }
          
          if (isMarshalledEntity)
          {

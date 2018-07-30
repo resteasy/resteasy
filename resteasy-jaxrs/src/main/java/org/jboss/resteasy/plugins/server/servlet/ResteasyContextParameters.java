@@ -86,6 +86,10 @@ public interface ResteasyContextParameters {
     public static final String RESTEASY_TRACING_LEVEL_TRACE = RESTEasyTracingLevel.TRACE.name();
     public static final String RESTEASY_TRACING_LEVEL_VERBOSE = RESTEasyTracingLevel.VERBOSE.name();
 
+
+    // used to store an instance of tracing logger
+    public static final String RESTEASY_TRACING_INSTANCE = "resteasy.server.tracing.instance";
+
     // these scanned variables are provided by a deployer
     String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
     String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";

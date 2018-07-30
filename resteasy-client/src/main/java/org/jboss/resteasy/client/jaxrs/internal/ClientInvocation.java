@@ -35,11 +35,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
@@ -52,6 +48,10 @@ import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
 
@@ -61,6 +61,8 @@ import org.jboss.resteasy.util.Types;
  */
 public class ClientInvocation implements Invocation
 {
+   protected RESTEasyTracingLogger tracingLogger;
+
    protected ResteasyClient client;
 
    protected ClientRequestHeaders headers;
@@ -95,6 +97,23 @@ public class ClientInvocation implements Invocation
       this.client = client;
       this.configuration = new ClientConfiguration(parent);
       this.headers = headers;
+
+      initTracingSupport();
+   }
+
+   private void initTracingSupport() {
+      final RESTEasyTracingLogger tracingLogger;
+
+      if (RESTEasyTracingUtils.getTracingConfig(configuration) == RESTEasyTracingConfig.ALL) {
+         tracingLogger = RESTEasyTracingLogger.create(
+                 RESTEasyTracingUtils.getTracingThreshold(configuration),
+                 this.toString());
+      } else {
+         tracingLogger = RESTEasyTracingLogger.empty();
+      }
+
+      this.tracingLogger = tracingLogger;
+
    }
 
    protected ClientInvocation(ClientInvocation clientInvocation)
@@ -110,6 +129,7 @@ public class ClientInvocation implements Invocation
       this.entityAnnotations = clientInvocation.entityAnnotations;
       this.uri = clientInvocation.uri;
       this.chunked = clientInvocation.chunked;
+      this.tracingLogger = clientInvocation.tracingLogger;
    }
 
    /**
@@ -407,8 +427,15 @@ public class ClientInvocation implements Invocation
       WriterInterceptor[] interceptors = getWriterInterceptors();
       AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors,
             configuration.getProviderFactory(), entity, entityClass, entityGenericType, entityAnnotations,
-            headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
-      ctx.proceed();
+            headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties(), tracingLogger);
+
+      final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.WI_SUMMARY);
+      try {
+         ctx.proceed();
+      } finally {
+         tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_SUMMARY, timestamp,
+                 ctx.getProcessedInterceptorCount());
+      }
    }
 
    public WriterInterceptor[] getWriterInterceptors()
@@ -770,6 +797,10 @@ public class ClientInvocation implements Invocation
             //logger.error("ignoring exception in InvocationCallback", e);
          }
       }
+   }
+
+   public RESTEasyTracingLogger getTracingLogger() {
+      return tracingLogger;
    }
 
    private static class CompletedFuture<T> implements Future<T>
