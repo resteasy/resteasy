@@ -5,6 +5,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuff;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuffProvider;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuffResource;
@@ -14,6 +16,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,6 +42,21 @@ public class MediaTypeCaseSensitivityTest {
         war.addClass(PortProviderUtil.class);
         return TestUtil.finishContainerPrepare(war, null, MediaTypeCaseSensitivityStuffResource.class,
                 MediaTypeCaseSensitivityStuffProvider.class);
+    }
+
+
+    private ResteasyProviderFactory factory;
+    @Before
+    public void setup() {
+        // Create an instance and set it as the singleton to use
+        factory = ResteasyProviderFactory.newInstance();
+        ResteasyProviderFactory.setInstance(factory);
+        RegisterBuiltin.register(factory);
+    }
+    @After
+    public void cleanup() {
+        // Clear the singleton
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.injection;
 
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.injection.resource.ProviderInjectionProviderReader;
 import org.junit.Assert;
@@ -22,7 +23,9 @@ public class ProviderInjectionTest {
     @Test
     public void testCacheControl() {
         ProviderInjectionProviderReader reader = new ProviderInjectionProviderReader();
-        ResteasyProviderFactory.getInstance().registerProviderInstance(reader);
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        factory.registerProviderInstance(reader);
 
         Assert.assertNotNull(ERROR_MSG, reader.headers);
         Assert.assertNotNull(ERROR_MSG, reader.workers);
