@@ -1,14 +1,15 @@
 package org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource;
 
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+import java.io.IOException;
 
 import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
+
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyObjectWriterInjector;
 
 public class ObjectWriterModifierMultipleFilter implements Filter {
     private static ObjectFilterModifierMultiple modifier = new ObjectFilterModifierMultiple();
@@ -20,7 +21,7 @@ public class ObjectWriterModifierMultipleFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-        ObjectWriterInjector.set(modifier);
+        ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
         chain.doFilter(request, response);
     }
 

@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyObjectWriterInjector;
 
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
@@ -25,7 +25,7 @@ public class ObjectWriterModifierFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		ObjectWriterInjector.set(modifier);
+		ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
 		chain.doFilter(request, response);
 	}
 
