@@ -2,9 +2,6 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
-import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;

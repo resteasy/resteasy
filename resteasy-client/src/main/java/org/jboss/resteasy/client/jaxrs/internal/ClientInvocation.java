@@ -48,8 +48,8 @@ import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
-import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
+import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.DelegatingOutputStream;

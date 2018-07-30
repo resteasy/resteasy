@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.tracing.RESTEasyTracingConfig;
-import org.jboss.resteasy.tracing.RESTEasyTracingLevel;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
 
 /**
  * constant names of resteasy configuration variables within a servlet

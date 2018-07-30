@@ -28,7 +28,7 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**

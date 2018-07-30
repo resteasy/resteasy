@@ -3,7 +3,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.InterceptorTimestampPair;
-import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.core.HttpHeaders;

@@ -39,7 +39,9 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.tracing.*;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
+import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

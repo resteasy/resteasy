@@ -1,6 +1,10 @@
 package org.jboss.resteasy.tracing;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingInfo;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingMessage;
 
 import javax.annotation.Priority;
 import javax.ws.rs.WebApplicationException;
