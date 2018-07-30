@@ -294,6 +294,12 @@ public class SseEventSourceImpl implements SseEventSource
       onCompleteConsumers.forEach(Runnable::run);
    }
 
+   @Deprecated
+   public void setAlwasyReconnect(boolean always)
+   {
+      setAlwaysReconnect(always);
+   }
+   
    public void setAlwaysReconnect(boolean always)
    {
       this.alwaysReconnect = always;
