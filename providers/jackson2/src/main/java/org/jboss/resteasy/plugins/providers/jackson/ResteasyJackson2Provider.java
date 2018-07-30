@@ -16,6 +16,7 @@ import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
 
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
@@ -232,6 +233,25 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          }
          value = endpoint.modifyBeforeWrite(value);
          ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
+         if (mod == null) {
+            ClassLoader tccl;
+            if (System.getSecurityManager() == null)
+            {
+                tccl = Thread.currentThread().getContextClassLoader();
+            }
+            else
+            {
+                tccl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+                {
+                    @Override
+                    public ClassLoader run()
+                    {
+                        return Thread.currentThread().getContextClassLoader();
+                    }
+                });
+            }
+            mod = ResteasyObjectWriterInjector.get(tccl);
+         }
          if (mod != null) {
             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
          }

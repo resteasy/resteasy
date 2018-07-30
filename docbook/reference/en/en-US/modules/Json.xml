@@ -251,7 +251,7 @@ public class ObjectFilterModifier extends ObjectWriterModifier {
 }
 ]]>
 </programlisting>
-       Here the method <methodname>modify()</methodname> will take care of filtering all properties except "name" property before write. To make this work, we need let RESTEasy know this mapping info. This can be easily set either in a WriterInterceptor:
+       Here the method <methodname>modify()</methodname> will take care of filtering all properties except "name" property before write. To make this work, we need let RESTEasy know this mapping info. This can be easily set in a WriterInterceptor using Jackson's <methodname>ObjectWriterInjector</methodname>:
 <programlisting>
 <![CDATA[
 @Provider
@@ -269,7 +269,7 @@ public class JsonFilterWriteInterceptor implements WriterInterceptor{
 }
 ]]>
 </programlisting>
-or in a servlet filter:
+Alternatively, Jackson's documentation suggest doing the same in a servlet filter; that however potentially leads to issues on RESTEasy, as the ObjectFilterModifier ends up being stored using a ThreadLocal object and there's no guarantee the same thread serving the servlet filter will be running the resource endpoint execution too. So, for the servlet filter scenario, RESTEasy offers its own injector that relies on the current thread context classloader for carrying over the specified modifier:
 <programlisting>
 <![CDATA[
 public class ObjectWriterModifierFilter implements Filter {
@@ -282,7 +282,7 @@ public class ObjectWriterModifierFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		ObjectWriterInjector.set(modifier);
+		ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
 		chain.doFilter(request, response);
 	}
 
@@ -293,7 +293,6 @@ public class ObjectWriterModifierFilter implements Filter {
 }
 ]]>
 </programlisting>
-RESTEasy get this modfiler from ThreadLocal variable and configure to modify ObjectWriter before write to response.
         </para>
     </sect1>
 </chapter>
