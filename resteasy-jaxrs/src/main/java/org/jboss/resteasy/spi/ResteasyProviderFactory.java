@@ -82,7 +82,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -807,44 +806,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static ResteasyProviderFactory newInstance()
    {
-      ResteasyProviderFactory result;
-      RuntimeDelegate runtimeDelegate = getRuntimeDelegate();
-      if (runtimeDelegate instanceof ResteasyProviderFactory)
-      {
-         result = (ResteasyProviderFactory) runtimeDelegate;
-      }
-      else
-      {
-         result = new ResteasyProviderFactory();
-      }
-      return result;
-   }
-
-   private static RuntimeDelegate getRuntimeDelegate() {
-      try {
-         Object delegate =
-                 FactoryFinder.find(JAXRS_RUNTIME_DELEGATE_PROPERTY,
-                         "org.jboss.resteasy.spi.ResteasyProviderFactory");
-         if (!(delegate instanceof RuntimeDelegate)) {
-            Class<?> pClass = RuntimeDelegate.class;
-            String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
-            ClassLoader loader = pClass.getClassLoader();
-            if (loader == null) {
-               loader = ClassLoader.getSystemClassLoader();
-            }
-            URL targetTypeURL = loader.getResource(classnameAsResource);
-            loader = delegate.getClass().getClassLoader();
-            if (loader == null) {
-               loader = ClassLoader.getSystemClassLoader();
-            }
-            String delegateAsResource = delegate.getClass().getName().replace('.', '/') + ".class";
-            URL delegateURL = loader.getResource(delegateAsResource);
-            throw new LinkageError(Messages.MESSAGES.attemptingToCast(delegateURL, targetTypeURL));
-         }
-         return (RuntimeDelegate) delegate;
-      } catch (Exception ex) {
-         throw new RuntimeException(ex);
-      }
+      return new ResteasyProviderFactory();
    }
 
    

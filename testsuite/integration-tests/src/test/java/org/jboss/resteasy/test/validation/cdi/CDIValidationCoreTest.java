@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -13,6 +14,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumConst
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumValidator;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSubResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -44,6 +46,9 @@ public class CDIValidationCoreTest {
                 .addClass(CDIValidationCoreSubResource.class)
                 .addClasses(CDIValidationCoreSumConstraint.class, CDIValidationCoreSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CDIValidationCoreResource.class);
     }
 

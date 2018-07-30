@@ -98,7 +98,6 @@
                 <module>resteasy-dependencies-bom</module>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
@@ -108,7 +107,6 @@
                 <module>resteasy-guice</module>
                 <module>eagledns</module>
                 <module>security</module>
-                <module>security-legacy</module>
                 <module>resteasy-links</module>
                 <module>resteasy-spring</module>
                 <module>resteasy-jsapi</module>
@@ -152,7 +150,6 @@
             <modules>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-jetty</module>
                 <module>resteasy-client-microprofile</module>  
@@ -163,7 +160,6 @@
                 <module>resteasy-guice</module>
                 <module>eagledns</module>
                 <module>security</module>
-                <module>security-legacy</module>
                 <module>resteasy-links</module>
                 <module>resteasy-spring</module>
                 <module>resteasy-jsapi</module>
