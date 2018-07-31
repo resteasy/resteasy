@@ -147,7 +147,6 @@ public class TestUtil {
         }
         war.addAsResource(new StringAsset(classes.toString()), "classes.txt");
 
-
         // prepare singleton list for getSingletons function of TestApplication class
         StringBuilder singletonBuilder = new StringBuilder();
         start = true;
