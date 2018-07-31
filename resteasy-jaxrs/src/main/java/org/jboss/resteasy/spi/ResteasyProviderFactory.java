@@ -28,7 +28,6 @@ import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 
-import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
@@ -1032,8 +1031,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                                                                RESTEasyTracingLogger tracingLogger) {
       List<SortedKey<MessageBodyReader>> readers = availableReaders.getPossible(mediaType, type);
 
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBR_FIND)) {
-         tracingLogger.log(RESTEasyMsgTraceEvent.MBR_FIND,
+      if (tracingLogger.isLogEnabled("MBR_FIND")) {
+         tracingLogger.log("MBR_FIND",
                  type.getName(),
                  (genericType instanceof Class ? ((Class) genericType).getName() : genericType),
                  mediaType,
@@ -1050,16 +1049,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          if (reader.obj.isReadable(type, genericType, annotations, mediaType)) {
             LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
             result = (MessageBodyReader<T>) reader.obj;
-            tracingLogger.log(RESTEasyMsgTraceEvent.MBR_SELECTED, reader);
+            tracingLogger.log("MBR_SELECTED", reader);
             break;
          }
-         tracingLogger.log(RESTEasyMsgTraceEvent.MBR_NOT_READABLE, result);
+         tracingLogger.log("MBR_NOT_READABLE", result);
       }
 
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBR_SKIPPED)) {
+      if (tracingLogger.isLogEnabled("MBR_SKIPPED")) {
          while (iterator.hasNext()) {
             final SortedKey<MessageBodyReader> reader = iterator.next();
-            tracingLogger.log(RESTEasyMsgTraceEvent.MBR_SKIPPED, reader.obj);
+            tracingLogger.log("MBR_SKIPPED", reader.obj);
          }
       }
       return result;
@@ -2227,8 +2226,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                                                                RESTEasyTracingLogger tracingLogger) {
       List<SortedKey<MessageBodyWriter>> writers = availableWriters.getPossible(mediaType, type);
 
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBW_FIND)) {
-         tracingLogger.log(RESTEasyMsgTraceEvent.MBW_FIND,
+      if (tracingLogger.isLogEnabled("MBW_FIND")) {
+         tracingLogger.log("MBW_FIND",
                  type.getName(),
                  (genericType instanceof Class
                          ? ((Class) genericType).getName() : genericType),
@@ -2245,16 +2244,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          if (writer.obj.isWriteable(type, genericType, annotations, mediaType)) {
             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
             result = (MessageBodyWriter<T>) writer.obj;
-            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_SELECTED, result);
+            tracingLogger.log("MBW_SELECTED", result);
             break;
          }
-         tracingLogger.log(RESTEasyMsgTraceEvent.MBW_NOT_WRITEABLE, result);
+         tracingLogger.log("MBW_NOT_WRITEABLE", result);
       }
 
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.MBW_SKIPPED)) {
+      if (tracingLogger.isLogEnabled("MBW_SKIPPED")) {
          while (iterator.hasNext()) {
             final SortedKey<MessageBodyWriter> writer = iterator.next();
-            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_SKIPPED, writer.obj);
+            tracingLogger.log("MBW_SKIPPED", writer.obj);
          }
       }
       return result;

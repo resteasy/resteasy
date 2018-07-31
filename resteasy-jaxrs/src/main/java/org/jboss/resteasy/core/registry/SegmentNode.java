@@ -8,7 +8,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -77,7 +76,7 @@ public class SegmentNode
    {
       String path = request.getUri().getMatchingPath();
       RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-      logger.log(RESTEasyServerTracingEvent.MATCH_PATH_FIND, request.getUri().getMatchingPath());
+      logger.log("MATCH_PATH_FIND", request.getUri().getMatchingPath());
 
       if (start < path.length() && path.charAt(start) == '/') start++;
       List<MethodExpression> potentials = new ArrayList<MethodExpression>();
@@ -90,7 +89,7 @@ public class SegmentNode
       {
          // We ignore locators if the first match was a resource method as per the spec Section 3, Step 2(h)
          if (expressionMatched && expression.isLocator()) {
-            logger.log(RESTEasyServerTracingEvent.MATCH_PATH_SKIPPED, expression.getRegex());
+            logger.log("MATCH_PATH_SKIPPED", expression.getRegex());
             continue;
          }
 
@@ -134,7 +133,7 @@ public class SegmentNode
                   uriInfo.pushMatchedURI(substring);
                }
                expression.populatePathParams(request, matcher, path);
-               logger.log(RESTEasyServerTracingEvent.MATCH_LOCATOR, invoker.getMethod());
+               logger.log("MATCH_LOCATOR", invoker.getMethod());
                return invoker;
             }
             else
@@ -143,7 +142,7 @@ public class SegmentNode
                matches.add(new Match(expression, matcher));
             }
          } else {
-            logger.log(RESTEasyServerTracingEvent.MATCH_PATH_NOT_MATCHED, expression.getRegex());
+            logger.log("MATCH_PATH_NOT_MATCHED", expression.getRegex());
          }
       }
       if (matches.size() == 0)
@@ -152,7 +151,7 @@ public class SegmentNode
       }
       Match match = match(matches, request.getHttpMethod(), request);
       match.expression.populatePathParams(request, match.matcher, path);
-      logger.log(RESTEasyServerTracingEvent.MATCH_PATH_SELECTED, match.expression.getRegex());
+      logger.log("MATCH_PATH_SELECTED", match.expression.getRegex());
       return match.expression.getInvoker();
 
    }

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.tracing;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,8 +33,8 @@ public class OnDemandTracingTest extends TracingTestBase {
 //            Thread.currentThread().join();
 
             // enable ON_DEMAND mode
-            Response response2 = base.request().header(RESTEasyTracingLogger.HEADER_ACCEPT, "").
-                    header(RESTEasyTracingLogger.HEADER_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE).
+            Response response2 = base.request().header(RESTEasyTracing.HEADER_ACCEPT, "").
+                    header(RESTEasyTracing.HEADER_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE).
                     get();
             testTracingEnabled(response2, true);
             response2.close();
@@ -53,8 +53,8 @@ public class OnDemandTracingTest extends TracingTestBase {
 
         try {
             Response response = base.request()
-                    .header(RESTEasyTracingLogger.HEADER_ACCEPT, "").
-                            header(RESTEasyTracingLogger.HEADER_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE)
+                    .header(RESTEasyTracing.HEADER_ACCEPT, "").
+                            header(RESTEasyTracing.HEADER_THRESHOLD, ResteasyContextParameters.RESTEASY_TRACING_LEVEL_VERBOSE)
                     .get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
@@ -78,8 +78,8 @@ public class OnDemandTracingTest extends TracingTestBase {
     private void testTracingEnabled(Response response, boolean flag) {
         boolean hasTracing = false;
         for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-            System.out.println("<K, V> ->" + entry);
-            if (entry.getKey().toString().startsWith(RESTEasyTracingLogger.HEADER_TRACING_PREFIX)) {
+//            System.out.println("<K, V> ->" + entry);
+            if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                 hasTracing = true;
                 break;
             }

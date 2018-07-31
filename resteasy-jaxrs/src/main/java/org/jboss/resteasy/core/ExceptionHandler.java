@@ -9,10 +9,7 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
-import org.jboss.resteasy.tracing.RESTEasyTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.tracing.RESTEasyTracingLoggerImpl;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
 import javax.ws.rs.NotFoundException;
@@ -56,14 +53,14 @@ public class ExceptionHandler
    @SuppressWarnings(value = "unchecked")
    protected Response executeExactExceptionMapper(Throwable exception, RESTEasyTracingLogger logger) {
        if (logger == null)
-           logger = RESTEasyTracingLoggerImpl.empty();
+           logger = RESTEasyTracingLogger.empty();
 
        ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
       if (mapper == null) return null;
       mapperExecuted = true;
-      long timestamp = logger.timestamp(RESTEasyServerTracingEvent.EXCEPTION_MAPPING);
+      long timestamp = logger.timestamp("EXCEPTION_MAPPING");
       Response resp = mapper.toResponse(exception);
-      logger.logDuration(RESTEasyServerTracingEvent.EXCEPTION_MAPPING, timestamp, mapper, exception, exception.getLocalizedMessage(), resp);
+      logger.logDuration("EXCEPTION_MAPPING", timestamp, mapper, exception, exception.getLocalizedMessage(), resp);
       return resp;
    }
 
@@ -77,13 +74,13 @@ public class ExceptionHandler
    protected Response executeExceptionMapperForClass(Throwable exception, Class clazz, RESTEasyTracingLogger logger)
    {
       if (logger == null)
-          logger = RESTEasyTracingLoggerImpl.empty();
+          logger = RESTEasyTracingLogger.empty();
       ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
       if (mapper == null) return null;
       mapperExecuted = true;
-      long timestamp = logger.timestamp(RESTEasyServerTracingEvent.EXCEPTION_MAPPING);
+      long timestamp = logger.timestamp("EXCEPTION_MAPPING");
       Response resp = mapper.toResponse(exception);
-      logger.logDuration(RESTEasyServerTracingEvent.EXCEPTION_MAPPING, timestamp, mapper, exception, exception.getLocalizedMessage(), resp);
+      logger.logDuration("EXCEPTION_MAPPING", timestamp, mapper, exception, exception.getLocalizedMessage(), resp);
       return resp;
    }
 
@@ -118,7 +115,7 @@ public class ExceptionHandler
    protected Response executeExceptionMapper(Throwable exception, RESTEasyTracingLogger logger)
    {
        if (logger == null)
-           logger = RESTEasyTracingLoggerImpl.empty();
+           logger = RESTEasyTracingLogger.empty();
 
        ExceptionMapper mapper = null;
 
@@ -132,9 +129,9 @@ public class ExceptionHandler
       if (mapper != null) {
          mapperExecuted = true;
 
-         final long timestamp = logger.timestamp(RESTEasyServerTracingEvent.EXCEPTION_MAPPING);
+         final long timestamp = logger.timestamp("EXCEPTION_MAPPING");
          Response jaxrsResponse = mapper.toResponse(exception);
-         logger.logDuration(RESTEasyServerTracingEvent.EXCEPTION_MAPPING, timestamp, mapper, exception, exception.getLocalizedMessage(), jaxrsResponse);
+         logger.logDuration("EXCEPTION_MAPPING", timestamp, mapper, exception, exception.getLocalizedMessage(), jaxrsResponse);
 
          if (jaxrsResponse == null) {
             jaxrsResponse = Response.status(204).build();

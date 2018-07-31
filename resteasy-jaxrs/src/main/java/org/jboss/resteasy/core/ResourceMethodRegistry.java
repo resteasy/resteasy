@@ -21,19 +21,13 @@ import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
-import org.jboss.resteasy.tracing.RESTEasyTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -445,7 +439,7 @@ public class ResourceMethodRegistry implements Registry
    public ResourceInvoker getResourceInvoker(HttpRequest request)
    {
       RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-      final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.MATCH_SUMMARY);
+      final long timestamp = tracingLogger.timestamp("MATCH_SUMMARY");
       try {
          if (widerMatching) {
             return rootNode.match(request, 0);
@@ -456,7 +450,7 @@ public class ResourceMethodRegistry implements Registry
          throw e;
       }
       finally {
-         tracingLogger.logDuration(RESTEasyServerTracingEvent.MATCH_SUMMARY, timestamp);
+         tracingLogger.logDuration("MATCH_SUMMARY", timestamp);
       }
    }
 }

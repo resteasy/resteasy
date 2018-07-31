@@ -27,7 +27,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -203,14 +202,14 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                  .getHttpHeaders().getRequestHeaders(), is, request);
 
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-         final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.RI_SUMMARY);
+         final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
 
          final Object obj;
 
          try {
             obj = messageBodyReaderContext.proceed();
          } finally {
-            tracingLogger.logDuration(RESTEasyMsgTraceEvent.RI_SUMMARY, timestamp, messageBodyReaderContext.getProcessedInterceptorCount());
+            tracingLogger.logDuration("RI_SUMMARY", timestamp, messageBodyReaderContext.getProcessedInterceptorCount());
          }
 
          if (isMarshalledEntity)

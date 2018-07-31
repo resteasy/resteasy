@@ -11,8 +11,6 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyMsgTraceEvent;
-import org.jboss.resteasy.tracing.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -24,7 +22,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
@@ -140,11 +137,11 @@ public class ServerResponseWriter
                jaxrsResponse.getMetadata(), os, request);
 
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-         final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.WI_SUMMARY);
+         final long timestamp = tracingLogger.timestamp("WI_SUMMARY");
          try {
             writerContext.proceed();
          } finally {
-            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_SUMMARY, timestamp, writerContext.getProcessedInterceptorCount());
+            tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext.getProcessedInterceptorCount());
          }
 
          if(sendHeaders) {
@@ -216,10 +213,10 @@ public class ServerResponseWriter
 
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
 
-         final long timestamp = logger.timestamp(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY);
+         final long timestamp = logger.timestamp("RESPONSE_FILTER_SUMMARY");
          // filter calls the continuation
          responseContext.filter();
-         logger.logDuration(RESTEasyServerTracingEvent.RESPONSE_FILTER_SUMMARY, timestamp, responseFilters.length);
+         logger.logDuration("RESPONSE_FILTER_SUMMARY", timestamp, responseFilters.length);
       }
       else
       {
