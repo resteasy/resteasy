@@ -73,5 +73,6 @@ public class BasicTracingTest extends TracingTestBase {
             throw new RuntimeException(e);
         }
     }
+
 }
 

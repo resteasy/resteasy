@@ -42,21 +42,25 @@ public interface RESTEasyTracingLogger
     */
    public abstract void flush(MultivaluedMap<String, Object> headers);
 
-   /**
-    * Create new Tracing logger.
-    *
-    * @param threshold        tracing level threshold.
-    * @param loggerNameSuffix tracing logger name suffix.
-    * @return new tracing logger.
-    */
-   public static RESTEasyTracingLogger create(final String threshold, final String loggerNameSuffix)
-   {
-      if (!TRACING.AVAILABLE)
-      {
-         return EMPTY;
-      }
-      return new RESTEasyTracingLoggerImpl(RESTEasyTracingLevel.valueOf(threshold), loggerNameSuffix);
-   }
+    /**
+     * Create new Tracing logger.
+     *
+     * @param threshold        tracing level threshold.
+     * @param loggerNameSuffix tracing logger name suffix.
+     * @return new tracing logger.
+     */
+    public static RESTEasyTracingLogger create(final String threshold, final String loggerNameSuffix) {
+        return create(threshold, loggerNameSuffix, null);
+    }
+
+
+    public static RESTEasyTracingLogger create(String tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
+        if (!TRACING.AVAILABLE) {
+            return EMPTY;
+        }
+        return new RESTEasyTracingLoggerImpl(RESTEasyTracingLevel.valueOf(tracingThreshold), tracingLoggerNameSuffix, tracingInfoFormat);
+    }
+
 
    /**
     * Create new Tracing logger.
@@ -91,7 +95,7 @@ public interface RESTEasyTracingLogger
 
       return tracingLogger == null ? EMPTY : tracingLogger;
    }
-   
+
    public static RESTEasyTracingLogger empty()
    {
       return EMPTY;
@@ -130,15 +134,14 @@ public interface RESTEasyTracingLogger
          return 0;
       }
    };
-   
-   /**
-    * According to configuration/request header it initialize {@link RESTEasyTracingLogger} and put it to the request properties.
-    *
-    * @param type         application-wide tracing configuration type.
-    * @param appThreshold application-wide tracing level threshold.
-    * @param request      request instance to get runtime properties to store {@link RESTEasyTracingLogger} instance to
-    *                     if tracing support is enabled for the request.
-    */
+
+    /**
+     * According to configuration/request header it initialize {@link RESTEasyTracingLogger} and put it to the request properties.
+     *
+     * @param configuration application-wide tracing configuration type and tracing level threshold.
+     * @param request       request instance to get runtime properties to store {@link RESTEasyTracingLogger} instance to
+     *                      if tracing support is enabled for the request.
+     */
    public static void initTracingSupport(Configuration configuration,
                                          HttpRequest request) {
        if (!TRACING.AVAILABLE || request.getAttribute(RESTEasyTracing.PROPERTY_NAME) != null)
@@ -148,7 +151,8 @@ public interface RESTEasyTracingLogger
        if (RESTEasyTracingUtils.isTracingSupportEnabled(RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration), request)) {
            tracingLogger = RESTEasyTracingLogger.create(
                  RESTEasyTracingUtils.getTracingThreshold(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), request),
-                 RESTEasyTracingUtils.getTracingLoggerNameSuffix(request));
+                 RESTEasyTracingUtils.getTracingLoggerNameSuffix(request),
+                   RESTEasyTracingUtils.getTracingInfoFormat(request));
        } else {
            tracingLogger = RESTEasyTracingLogger.empty();
        }
@@ -201,7 +205,7 @@ public interface RESTEasyTracingLogger
    public static boolean isTracingConfigALL(Configuration configuration) {
       return TRACING.AVAILABLE && RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration) == RESTEasyTracingConfig.ALL;
    }
-   
+
    /**
     * Return configuration type of tracing support according to application configuration.
     * <p>

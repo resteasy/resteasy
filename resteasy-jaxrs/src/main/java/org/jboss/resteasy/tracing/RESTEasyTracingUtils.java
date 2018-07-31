@@ -82,7 +82,7 @@ public class RESTEasyTracingUtils {
     /**
      * Get request header specified JDK logger name suffix.
      *
-     * @param request container request instance to get request header {@link RESTEasyTracingLogger#HEADER_LOGGER} value.
+     * @param request container request instance to get request header {@link RESTEasyTracing#HEADER_LOGGER} value.
      * @return Logger name suffix or {@code null} if not set.
      */
     static String getTracingLoggerNameSuffix(HttpRequest request) {
@@ -97,6 +97,11 @@ public class RESTEasyTracingUtils {
     static RESTEasyTracingLevel getRESTEasyTracingThreshold(Configuration configuration) {
         final Object thresholdText = configuration.getProperty(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD);
         return (thresholdText == null) ? RESTEasyTracing.DEFAULT_LEVEL : RESTEasyTracingLevel.valueOf((String) thresholdText);
+    }
+
+
+    protected static String getTracingInfoFormat(HttpRequest request) {
+        return getHeaderString(request, RESTEasyTracing.HEADER_ACCEPT_FORMAT);
     }
 
 
