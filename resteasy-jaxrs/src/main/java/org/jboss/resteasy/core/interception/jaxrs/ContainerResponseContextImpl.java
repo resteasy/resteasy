@@ -31,7 +31,6 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
@@ -359,9 +358,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
             suspended = false;
             throwable = null;
             inFilter = true;
-            final long timestamp = logger.timestamp(RESTEasyServerTracingEvent.RESPONSE_FILTER);
+            final long timestamp = logger.timestamp("RESPONSE_FILTER");
             filter.filter(requestContext, this);
-            logger.logDuration(RESTEasyServerTracingEvent.RESPONSE_FILTER, timestamp, filter);
+            logger.logDuration("RESPONSE_FILTER", timestamp, filter);
          }
          catch (IOException e)
          {

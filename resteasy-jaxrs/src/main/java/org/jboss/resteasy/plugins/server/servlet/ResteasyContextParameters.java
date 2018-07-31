@@ -1,8 +1,5 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
-import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
-
 /**
  * constant names of resteasy configuration variables within a servlet
  *
@@ -58,9 +55,9 @@ public interface ResteasyContextParameters {
      * </p>
      */
     public static final String RESTEASY_TRACING_TYPE = "resteasy.server.tracing.type";
-    public static final String RESTEASY_TRACING_TYPE_OFF = RESTEasyTracingConfig.OFF.name();
-    public static final String RESTEASY_TRACING_TYPE_ALL = RESTEasyTracingConfig.ALL.name();
-    public static final String RESTEASY_TRACING_TYPE_ON_DEMAND = RESTEasyTracingConfig.ON_DEMAND.name();
+    public static final String RESTEASY_TRACING_TYPE_OFF = "OFF";
+    public static final String RESTEASY_TRACING_TYPE_ALL = "ALL";
+    public static final String RESTEASY_TRACING_TYPE_ON_DEMAND = "ON_DEMAND";
 
     /**
      * Set level o tracing information.
@@ -82,9 +79,9 @@ public interface ResteasyContextParameters {
      * </p>
      */
     public static final String RESTEASY_TRACING_THRESHOLD = "resteasy.server.tracing.threshold";
-    public static final String RESTEASY_TRACING_LEVEL_SUMMARY = RESTEasyTracingLevel.SUMMARY.name();
-    public static final String RESTEASY_TRACING_LEVEL_TRACE = RESTEasyTracingLevel.TRACE.name();
-    public static final String RESTEASY_TRACING_LEVEL_VERBOSE = RESTEasyTracingLevel.VERBOSE.name();
+    public static final String RESTEASY_TRACING_LEVEL_SUMMARY = "SUMMARY";
+    public static final String RESTEASY_TRACING_LEVEL_TRACE = "TRACE";
+    public static final String RESTEASY_TRACING_LEVEL_VERBOSE = "VERBOSE";
 
 
     // used to store an instance of tracing logger

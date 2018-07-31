@@ -10,7 +10,6 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -343,14 +342,14 @@ public abstract class ClientResponse extends BuiltResponse
 
          final Object finalObj;
 
-         final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.RI_SUMMARY);
+         final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
          AbstractReaderInterceptorContext context = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
                  useGeneric, annotations, media, getStringHeaders(), is, properties);
          try {
             finalObj = context.proceed();
             obj = finalObj;
          } finally {
-            tracingLogger.logDuration(RESTEasyMsgTraceEvent.RI_SUMMARY, timestamp, context.getProcessedInterceptorCount());
+            tracingLogger.logDuration("RI_SUMMARY", timestamp, context.getProcessedInterceptorCount());
          }
          
          if (isMarshalledEntity)

@@ -40,8 +40,6 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
-import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -102,20 +100,19 @@ public class SynchronousDispatcher implements Dispatcher
     * another one.
     */
    public Response preprocess(HttpRequest request) {
-      RESTEasyTracingUtils.initTracingSupport(RESTEasyTracingUtils.getTracingConfig(providerFactory),
-              RESTEasyTracingUtils.getTracingThreshold(providerFactory), request);
+      RESTEasyTracingLogger.initTracingSupport(providerFactory, request);
       Response aborted = null;
 
       RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
 
       try {
-         final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
+         final long totalTimestamp = tracingLogger.timestamp("PRE_MATCH_SUMMARY");
          for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors) {
-            final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH);
+            final long timestamp = tracingLogger.timestamp("PRE_MATCH");
             preprocessor.preProcess(request);
-            tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH, timestamp, preprocessor.getClass().toString());
+            tracingLogger.logDuration("PRE_MATCH", timestamp, preprocessor.getClass().toString());
          }
-         tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY, totalTimestamp, this.requestPreprocessors.size());
+         tracingLogger.logDuration("PRE_MATCH_SUMMARY", totalTimestamp, this.requestPreprocessors.size());
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
          // FIXME: support async
          PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, null);
@@ -143,13 +140,13 @@ public class SynchronousDispatcher implements Dispatcher
       RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
 
       try {
-         final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY);
+         final long totalTimestamp = tracingLogger.timestamp("PRE_MATCH_SUMMARY");
          for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors) {
-            final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.PRE_MATCH);
+            final long timestamp = tracingLogger.timestamp("PRE_MATCH");
             preprocessor.preProcess(request);
-            tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH, timestamp, preprocessor.getClass().toString());
+            tracingLogger.logDuration("PRE_MATCH", timestamp, preprocessor.getClass().toString());
          }
-         tracingLogger.logDuration(RESTEasyServerTracingEvent.PRE_MATCH_SUMMARY, totalTimestamp, this.requestPreprocessors.size());
+         tracingLogger.logDuration("PRE_MATCH_SUMMARY", totalTimestamp, this.requestPreprocessors.size());
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
          requestContext = new PreMatchContainerRequestContext(request, requestFilters,
                  () -> {
@@ -170,7 +167,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
       }
       if (aborted != null) {
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.log("FINISHED", response.getStatus());
          tracingLogger.flush(response.getOutputHeaders());
          writeResponse(request, response, aborted);
          return;
@@ -224,7 +221,7 @@ public class SynchronousDispatcher implements Dispatcher
          throw new UnhandledException(e1);
       } finally {
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.log("FINISHED", response.getStatus());
          tracingLogger.flush(response.getOutputHeaders());
       }
    }
@@ -232,9 +229,8 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
-      RESTEasyTracingUtils.initTracingSupport(RESTEasyTracingUtils.getTracingConfig(providerFactory),
-              RESTEasyTracingUtils.getTracingThreshold(providerFactory), request);
-      RESTEasyTracingUtils.logStart(request);
+      RESTEasyTracingLogger.initTracingSupport(providerFactory, request);
+      RESTEasyTracingLogger.logStart(request);
 
       try
       {
@@ -330,8 +326,8 @@ public class SynchronousDispatcher implements Dispatcher
          throw new NotFoundException(Messages.MESSAGES.unableToFindJaxRsResource(request.getUri().getPath()));
       }
       RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE, invoker);
-      logger.log(RESTEasyServerTracingEvent.MATCH_RESOURCE_METHOD, invoker.getMethod());
+      logger.log("MATCH_RESOURCE", invoker);
+      logger.log("MATCH_RESOURCE_METHOD", invoker.getMethod());
       return invoker;
    }
 
@@ -433,7 +429,7 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-         logger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
+         logger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
          jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
          if (request.getAsyncContext().isSuspended())
@@ -479,7 +475,7 @@ public class SynchronousDispatcher implements Dispatcher
       {
          jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
 
-         tracingLogger.log(RESTEasyServerTracingEvent.DISPATCH_RESPONSE, jaxrsResponse);
+         tracingLogger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
          if (request.getAsyncContext().isSuspended())
          {
@@ -590,7 +586,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally {
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-         tracingLogger.log(RESTEasyServerTracingEvent.FINISHED, response.getStatus());
+         tracingLogger.log("FINISHED", response.getStatus());
          tracingLogger.flush(response.getOutputHeaders());
       }
    }

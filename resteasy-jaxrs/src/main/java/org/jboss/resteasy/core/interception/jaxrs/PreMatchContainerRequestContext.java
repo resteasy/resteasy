@@ -28,7 +28,6 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
@@ -298,7 +297,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    {
       RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(httpRequest);
 
-      final long totalTimestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.REQUEST_FILTER_SUMMARY);
+      final long totalTimestamp = tracingLogger.timestamp("REQUEST_FILTER_SUMMARY");
 
       while(currentFilter < requestFilters.length)
       {
@@ -309,9 +308,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             response = null;
             throwable = null;
             inFilter = true;
-            final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.REQUEST_FILTER);
+            final long timestamp = tracingLogger.timestamp("REQUEST_FILTER");
             filter.filter(this);
-            tracingLogger.logDuration(RESTEasyServerTracingEvent.REQUEST_FILTER, timestamp, filter);
+            tracingLogger.logDuration("REQUEST_FILTER", timestamp, filter);
          }
          catch (IOException e)
          {
@@ -353,7 +352,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             }
          }
       }
-      tracingLogger.logDuration(RESTEasyServerTracingEvent.REQUEST_FILTER_SUMMARY, totalTimestamp, requestFilters.length);
+      tracingLogger.logDuration("REQUEST_FILTER_SUMMARY", totalTimestamp, requestFilters.length);
       // here it means we reached the last filter
       // some frameworks don't support async request filters, in which case suspend() is forbidden
       // so if we get here we're still synchronous and don't have a continuation, which must be in

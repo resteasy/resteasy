@@ -24,7 +24,6 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
-import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
@@ -364,7 +363,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
       final RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-      final long timestamp = tracingLogger.timestamp(RESTEasyServerTracingEvent.METHOD_INVOKE);
+      final long timestamp = tracingLogger.timestamp("METHOD_INVOKE");
       try {
          ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
@@ -374,9 +373,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          return requestContext.filter();
       } finally {
          if (resource instanceof SingletonResource) {
-            tracingLogger.logDuration(RESTEasyServerTracingEvent.METHOD_INVOKE, timestamp, ((SingletonResource) resource).traceInfo(), method.getMethod());
+            tracingLogger.logDuration("METHOD_INVOKE", timestamp, ((SingletonResource) resource).traceInfo(), method.getMethod());
          } else {
-            tracingLogger.logDuration(RESTEasyServerTracingEvent.METHOD_INVOKE, timestamp, resource, method.getMethod());
+            tracingLogger.logDuration("METHOD_INVOKE", timestamp, resource, method.getMethod());
          }
       }
    }   

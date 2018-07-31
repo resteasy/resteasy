@@ -41,6 +41,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-tracing-api</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

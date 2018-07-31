@@ -1,6 +1,9 @@
 package org.jboss.resteasy.tracing;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyServerTracingEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingEvent;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingInfo;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
@@ -11,22 +14,64 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-public class RESTEasyTracingLoggerImpl extends RESTEasyTracingLogger {
+class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTracingLogger {
 
-    private final Logger logger;
-    private final RESTEasyTracingLevel threshold;
-    private final RESTEasyTracingInfo tracingInfo;
+   private final Logger logger;
+   private final RESTEasyTracingLevel threshold;
+   private final RESTEasyTracingInfo tracingInfo;
+   private static final Map<String, RESTEasyTracingEvent> string2event = new HashMap<>();
+   
+   static {
+      for (RESTEasyTracingEvent v : RESTEasyServerTracingEvent.values()) {
+         string2event.put(v.name(), v);
+      }
+      for (RESTEasyTracingEvent v : RESTEasyMsgTraceEvent.values()) {
+         string2event.put(v.name(), v);
+      }
+   }
+   
+   public RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, String loggerNameSuffix) {
+      this.threshold = threshold;
 
-    public RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, String loggerNameSuffix) {
-        this.threshold = threshold;
+      this.tracingInfo = new RESTEasyTracingInfo();
 
-        this.tracingInfo = new RESTEasyTracingInfo();
+      loggerNameSuffix = loggerNameSuffix != null ? loggerNameSuffix : DEFAULT_LOGGER_NAME_SUFFIX;
+      this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
+  }
 
-        loggerNameSuffix = loggerNameSuffix != null ? loggerNameSuffix : DEFAULT_LOGGER_NAME_SUFFIX;
-        this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
+   private RESTEasyTracingEvent getEvent(String eventName) {
+      RESTEasyTracingEvent e = string2event.get(eventName);
+      if (e == null) {
+         throw new IllegalArgumentException();
+      }
+      return e;
+   }
+   
+    @Override
+    public boolean isLogEnabled(String eventName) {
+       return isLogEnabled(getEvent(eventName));
     }
 
+    @Override
+    public void log(String eventName, Object... args) {
+       log(getEvent(eventName), args);
+    }
+
+    @Override
+    public void logDuration(String eventName, long fromTimestamp, Object... args)
+    {
+       logDuration(getEvent(eventName), fromTimestamp, args);
+    }
+
+    @Override
+    public long timestamp(String eventName)
+    {
+       return timestamp(getEvent(eventName));
+    }
+   
     private boolean isEnabled(final RESTEasyTracingLevel level) {
         return threshold.ordinal() >= level.ordinal();
     }
@@ -143,7 +188,7 @@ public class RESTEasyTracingLoggerImpl extends RESTEasyTracingLogger {
     public void flush(final MultivaluedMap<String, Object> headers) {
         final String[] messages = tracingInfo.getMessages();
         for (int i = 0; i < messages.length; i++) {
-            headers.putSingle(String.format(RESTEasyTracingLogger.HEADER_RESPONSE_FORMAT, i), messages[i]);
+            headers.putSingle(String.format(RESTEasyTracing.HEADER_RESPONSE_FORMAT, i), messages[i]);
         }
     }
 }

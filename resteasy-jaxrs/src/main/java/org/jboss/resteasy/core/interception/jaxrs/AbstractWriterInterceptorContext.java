@@ -3,7 +3,6 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.InterceptorTimestampPair;
-import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.WebApplicationException;
@@ -149,7 +148,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       {
          MessageBodyWriter writer = getWriter();
          if (writer!=null) {
-            tracingLogger.log(RESTEasyMsgTraceEvent.MBW_WRITE_TO, writer.getClass().getName());
+            tracingLogger.log("MBW_WRITE_TO", writer.getClass().getName());
             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
          }
          writeTo(writer);
@@ -170,18 +169,18 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    }
 
    protected final void traceBefore(final WriterInterceptor interceptor) {
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.WI_BEFORE)) {
+      if (tracingLogger.isLogEnabled("WI_BEFORE")) {
          if ((lastTracedInterceptor != null) && (interceptor != null)) {
-            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_BEFORE, lastTracedInterceptor.getTimestamp(), lastTracedInterceptor.getInterceptor());
+            tracingLogger.logDuration("WI_BEFORE", lastTracedInterceptor.getTimestamp(), lastTracedInterceptor.getInterceptor());
          }
          lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
       }
    }
 
    protected final void traceAfter(final WriterInterceptor interceptor) {
-      if (tracingLogger.isLogEnabled(RESTEasyMsgTraceEvent.WI_AFTER)) {
+      if (tracingLogger.isLogEnabled("WI_AFTER")) {
          if ((lastTracedInterceptor != null) && (lastTracedInterceptor.getInterceptor() != null)) {
-            tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_AFTER, lastTracedInterceptor.getTimestamp(), interceptor);
+            tracingLogger.logDuration("WI_AFTER", lastTracedInterceptor.getTimestamp(), interceptor);
          }
          lastTracedInterceptor = new InterceptorTimestampPair<>(interceptor, System.nanoTime());
       }

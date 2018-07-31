@@ -1,115 +1,222 @@
 package org.jboss.resteasy.tracing;
 
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
+
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
-import org.jboss.resteasy.tracing.api.RESTEasyTracingEvent;
+import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
 
-import javax.ws.rs.core.MultivaluedMap;
+public interface RESTEasyTracingLogger
+{
+   static class TRACING {
+      public static final boolean AVAILABLE;
+      static {
+         boolean b;
+         try {
+            Class.forName("org.jboss.resteasy.tracing.api.RESTEasyTracing");
+            b = true;
+         } catch (Throwable t) {
+            b = false;
+         }
+         AVAILABLE = b;
+      }
+   }
 
-public abstract class RESTEasyTracingLogger extends RESTEasyTracing {
+   public boolean isLogEnabled(String eventName);
+
+   public void log(String eventName, Object... args);
+
+   public void logDuration(String eventName, long fromTimestamp, Object... args);
+
+   public long timestamp(String eventName);
 
    /**
-     * Test if a tracing support is enabled if {@code event} can be logged (according to event.level and threshold level set).
-     *
-     * @param event event type to be tested
-     * @return {@code true} if {@code event} can be logged
-     */
-    public abstract boolean isLogEnabled(RESTEasyTracingEvent event);
+    * Stores collected tracing messages to response HTTP header.
+    *
+    * @param headers message headers.
+    */
+   public abstract void flush(MultivaluedMap<String, Object> headers);
 
-    /**
-     * Try to log event according to event level and request context threshold level setting.
-     *
-     * @param event event type to be logged
-     * @param args  message arguments (in relation to {@link RESTEasyTracingEvent#messageFormat()}
-     */
-    public abstract void log(RESTEasyTracingEvent event, Object... args);
+   /**
+    * Create new Tracing logger.
+    *
+    * @param threshold        tracing level threshold.
+    * @param loggerNameSuffix tracing logger name suffix.
+    * @return new tracing logger.
+    */
+   public static RESTEasyTracingLogger create(final String threshold, final String loggerNameSuffix)
+   {
+      if (!TRACING.AVAILABLE)
+      {
+         return EMPTY;
+      }
+      return new RESTEasyTracingLoggerImpl(RESTEasyTracingLevel.valueOf(threshold), loggerNameSuffix);
+   }
 
-    /**
-     * Try to log event according to event level and request context threshold level setting.
-     * <p>
-     * If logging support is switched on for current request and event setting the method computes duration of event and log
-     * message. If {@code fromTimestamp} is not set (i.e. {@code -1}) then duration of event
-     * is {@code 0}.
-     *
-     * @param event         event type to be logged
-     * @param fromTimestamp logged event is running from the timestamp in nanos. {@code -1} in case event has no duration
-     * @param args          message arguments (in relation to {@link RESTEasyTracingEvent#messageFormat()#messageFormat()}
-     */
-    public abstract void logDuration(RESTEasyTracingEvent event, long fromTimestamp, Object... args);
+   /**
+    * Create new Tracing logger.
+    *
+    * @param Configuration        configuration
+    * @param loggerNameSuffix tracing logger name suffix.
+    * @return new tracing logger.
+    */
+   public static RESTEasyTracingLogger create(final Configuration configuration, final String loggerNameSuffix)
+   {
+      if (!TRACING.AVAILABLE)
+      {
+         return EMPTY;
+      }
+      return new RESTEasyTracingLoggerImpl(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), loggerNameSuffix);
+   }
 
-    /**
-     * If logging support is switched on for current request and event setting the method returns current timestamp in nanos.
-     *
-     * @param event event type to be logged
-     * @return Current timestamp in nanos or {@code -1} if tracing is not enabled
-     */
-    public abstract long timestamp(RESTEasyTracingEvent event);
+   /**
+    * Returns instance of {@code TracingLogger} associated with current request processing
+    * ({@code propertiesDelegate}).
+    *
+    * @return returns instance of {@code TracingLogger} from {@code ResteasyProviderFactory}. Does not return {@code null}.
+    */
+   public static RESTEasyTracingLogger getInstance(HttpRequest request)
+   {
+      if (request == null || !TRACING.AVAILABLE)
+      {
+         return EMPTY;
+      }
 
-    /**
-     * Stores collected tracing messages to response HTTP header.
-     *
-     * @param headers message headers.
-     */
-    public abstract void flush(MultivaluedMap<String, Object> headers);
+      final RESTEasyTracingLogger tracingLogger = (RESTEasyTracingLogger) request.getAttribute(RESTEasyTracing.PROPERTY_NAME);
 
-    /**
-     * Create new Tracing logger.
-     *
-     * @param threshold        tracing level threshold.
-     * @param loggerNameSuffix tracing logger name suffix.
-     * @return new tracing logger.
-     */
-    public static RESTEasyTracingLogger create(final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
-        return new RESTEasyTracingLoggerImpl(threshold, loggerNameSuffix);
-    }
+      return tracingLogger == null ? EMPTY : tracingLogger;
+   }
+   
+   public static RESTEasyTracingLogger empty()
+   {
+      return EMPTY;
+   }
 
-    /**
-     * Returns instance of {@code TracingLogger} associated with current request processing
-     * ({@code propertiesDelegate}).
-     *
-     * @return returns instance of {@code TracingLogger} from {@code ResteasyProviderFactory}. Does not return {@code null}.
-     */
-    public static RESTEasyTracingLogger getInstance(HttpRequest request) {
-        if (request == null) {
-            return EMPTY;
-        }
+   public static final RESTEasyTracingLogger EMPTY = new RESTEasyTracingLogger()
+   {
 
-        final RESTEasyTracingLogger tracingLogger = (RESTEasyTracingLogger) request.getAttribute(PROPERTY_NAME);
+      @Override
+      public void flush(final MultivaluedMap<String, Object> headers)
+      {
+         // no-op
+      }
 
-        return tracingLogger == null ? EMPTY : tracingLogger;
-    }
+      @Override
+      public boolean isLogEnabled(String eventName)
+      {
+         return false;
+      }
+
+      @Override
+      public void log(String eventName, Object... args)
+      {
+         // no-op
+      }
+
+      @Override
+      public void logDuration(String eventName, long fromTimestamp, Object... args)
+      {
+         // no-op
+      }
+
+      @Override
+      public long timestamp(String eventName)
+      {
+         return 0;
+      }
+   };
+   
+   /**
+    * According to configuration/request header it initialize {@link RESTEasyTracingLogger} and put it to the request properties.
+    *
+    * @param type         application-wide tracing configuration type.
+    * @param appThreshold application-wide tracing level threshold.
+    * @param request      request instance to get runtime properties to store {@link RESTEasyTracingLogger} instance to
+    *                     if tracing support is enabled for the request.
+    */
+   public static void initTracingSupport(Configuration configuration,
+                                         HttpRequest request) {
+       if (!TRACING.AVAILABLE || request.getAttribute(RESTEasyTracing.PROPERTY_NAME) != null)
+           return;
+
+       final RESTEasyTracingLogger tracingLogger;
+       if (RESTEasyTracingUtils.isTracingSupportEnabled(RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration), request)) {
+           tracingLogger = RESTEasyTracingLogger.create(
+                 RESTEasyTracingUtils.getTracingThreshold(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), request),
+                 RESTEasyTracingUtils.getTracingLoggerNameSuffix(request));
+       } else {
+           tracingLogger = RESTEasyTracingLogger.empty();
+       }
+
+       request.setAttribute(RESTEasyTracing.PROPERTY_NAME, tracingLogger);
+
+   }
+
+   /**
+    * Log tracing messages START events.
+    *
+    * @param request container request instance to get runtime properties
+    *                to check if tracing support is enabled for the request.
+    */
+   public static void logStart(HttpRequest request) {
+       if (!TRACING.AVAILABLE || request == null) {
+           return;
+       }
+
+       RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+       if (tracingLogger.isLogEnabled("START")) {
+           StringBuilder text = new StringBuilder();
+           SecurityContext securityContext = ResteasyProviderFactory.getContextData(SecurityContext.class);
+           text.append(String.format("baseUri=[%s] requestUri=[%s] method=[%s] authScheme=[%s]",
+                   request.getUri().getBaseUri(), request.getUri().getRequestUri(), request.getHttpMethod(),
+                   RESTEasyTracingUtils.toStringOrNA(securityContext == null ? null : securityContext.getAuthenticationScheme())));
+           for (String header : RESTEasyTracingUtils.SUMMARY_HEADERS) {
+               text.append(String.format(" %s=%s", header, RESTEasyTracingUtils.toStringOrNA(RESTEasyTracingUtils.getHeaderString(request, header))));
+           }
+           tracingLogger.log("START", text.toString());
+       }
+       if (tracingLogger.isLogEnabled("START_HEADERS")) {
+           StringBuilder text = new StringBuilder();
+           HttpHeaders headers = request.getHttpHeaders();
+           if (headers != null) {
+               for (String header : headers.getRequestHeaders().keySet()) {
+                   if (!RESTEasyTracingUtils.SUMMARY_HEADERS.contains(header)) {
+                       text.append(String.format(" %s=%s", header, RESTEasyTracingUtils.toStringOrNA(headers.getRequestHeaders().get(header))));
+                   }
+               }
+               if (text.length() > 0) {
+                   text.insert(0, "Other request headers:");
+               }
+               tracingLogger.log("START_HEADERS", text.toString());
+           }
+       }
+   }
 
 
-    public static RESTEasyTracingLogger empty() {
-        return EMPTY;
-    }
+   public static boolean isTracingConfigALL(Configuration configuration) {
+      return TRACING.AVAILABLE && RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration) == RESTEasyTracingConfig.ALL;
+   }
+   
+   /**
+    * Return configuration type of tracing support according to application configuration.
+    * <p>
+    * By default tracing support is switched OFF.
+    */
+   public static String getTracingConfig(Configuration configuration) {
+      return TRACING.AVAILABLE ? RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration).toString() : null;
+   }
 
-    private static final RESTEasyTracingLogger EMPTY = new RESTEasyTracingLogger() {
-
-        @Override
-        public boolean isLogEnabled(final RESTEasyTracingEvent event) {
-            return false;
-        }
-
-        @Override
-        public void log(final RESTEasyTracingEvent event, final Object... args) {
-            // no-op
-        }
-
-        @Override
-        public void logDuration(final RESTEasyTracingEvent event, final long fromTimestamp, final Object... args) {
-            // no-op
-        }
-
-        @Override
-        public long timestamp(final RESTEasyTracingEvent event) {
-            return -1;
-        }
-
-        @Override
-        public void flush(final MultivaluedMap<String, Object> headers) {
-            // no-op
-        }
-    };
+   /**
+    * Get application-wide tracing level threshold.
+    *
+    * @return tracing level threshold.
+    */
+   public static String getTracingThreshold(Configuration configuration) {
+      return TRACING.AVAILABLE ? RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration).toString() : null;
+   }
 }

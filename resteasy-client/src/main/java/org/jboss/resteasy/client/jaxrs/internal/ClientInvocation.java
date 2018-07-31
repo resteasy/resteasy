@@ -48,10 +48,7 @@ import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.api.RESTEasyMsgTraceEvent;
-import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.tracing.RESTEasyTracingUtils;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
 
@@ -104,9 +101,9 @@ public class ClientInvocation implements Invocation
    private void initTracingSupport() {
       final RESTEasyTracingLogger tracingLogger;
 
-      if (RESTEasyTracingUtils.getTracingConfig(configuration) == RESTEasyTracingConfig.ALL) {
+      if (RESTEasyTracingLogger.isTracingConfigALL(configuration)) {
          tracingLogger = RESTEasyTracingLogger.create(
-                 RESTEasyTracingUtils.getTracingThreshold(configuration),
+                 configuration,
                  this.toString());
       } else {
          tracingLogger = RESTEasyTracingLogger.empty();
@@ -429,11 +426,11 @@ public class ClientInvocation implements Invocation
             configuration.getProviderFactory(), entity, entityClass, entityGenericType, entityAnnotations,
             headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties(), tracingLogger);
 
-      final long timestamp = tracingLogger.timestamp(RESTEasyMsgTraceEvent.WI_SUMMARY);
+      final long timestamp = tracingLogger.timestamp("WI_SUMMARY");
       try {
          ctx.proceed();
       } finally {
-         tracingLogger.logDuration(RESTEasyMsgTraceEvent.WI_SUMMARY, timestamp,
+         tracingLogger.logDuration("WI_SUMMARY", timestamp,
                  ctx.getProcessedInterceptorCount());
       }
    }

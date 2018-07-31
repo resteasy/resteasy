@@ -1,26 +1,18 @@
 package org.jboss.resteasy.test.tracing;
 
-import org.jboss.arquillian.container.test.api.*;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertTrue;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.resteasy.tracing.api.RESTEasyTracing;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
 
 
 public class BasicTracingTest extends TracingTestBase {
@@ -68,8 +60,8 @@ public class BasicTracingTest extends TracingTestBase {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
             for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-                System.out.println("<K, V> ->" + entry);
-                if (entry.getKey().toString().startsWith(RESTEasyTracingLogger.HEADER_TRACING_PREFIX)) {
+//                System.out.println("<K, V> ->" + entry);
+                if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                     hasTracing = true;
                     break;
                 }
