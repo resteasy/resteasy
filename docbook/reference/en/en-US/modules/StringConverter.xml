@@ -527,7 +527,7 @@ public static class MultiValuedParamConverterProvider implements ParamConverterP
 
    @SuppressWarnings("unchecked")
    @Override
-   public &lt;T&gt; ParamConverter&lt;T&gt; getConverter(Class&lt;T&gt; rawType, genericType, Annotation[] annotations) {
+   public &lt;T&gt; ParamConverter&lt;T&gt; getConverter(Class&lt;T&gt; rawType, Type genericType, Annotation[] annotations) {
       if (List.class.isAssignableFrom(rawType)) {
          return (ParamConverter&lt;T&gt;) new MultiValuedParamConverter();
       }
