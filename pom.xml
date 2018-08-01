@@ -252,7 +252,7 @@
                     <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <runOrder>reversealphabetical</runOrder>
+                        <runOrder>alphabetical</runOrder>
                         <argLine>${surefire.system.args}</argLine>
                     </configuration>
                 </plugin>
