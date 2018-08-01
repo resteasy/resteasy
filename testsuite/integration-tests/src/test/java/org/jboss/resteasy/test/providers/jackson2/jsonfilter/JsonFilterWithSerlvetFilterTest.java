@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class, ExpectedFailing.class}) //RESTEASY-1933
+@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class}) //RESTEASY-1933
 public class JsonFilterWithSerlvetFilterTest {
 
     @Deployment(name = "default")

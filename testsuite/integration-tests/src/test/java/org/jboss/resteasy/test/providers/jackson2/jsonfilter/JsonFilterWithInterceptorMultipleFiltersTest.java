@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class, ExpectedFailing.class}) //RESTEASY-1933
+@Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class}) //RESTEASY-1933
 public class JsonFilterWithInterceptorMultipleFiltersTest {
 
     @Deployment

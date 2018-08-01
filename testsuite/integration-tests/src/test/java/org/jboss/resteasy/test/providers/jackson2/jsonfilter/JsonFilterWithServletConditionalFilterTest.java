@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //RESTEASY-1933
+@Category({NotForForwardCompatibility.class}) //RESTEASY-1933
 public class JsonFilterWithServletConditionalFilterTest {
 
     static ResteasyClient client;
