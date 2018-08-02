@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
@@ -75,7 +76,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       try {
          return jsonb.fromJson(entityStream, genericType);
          // If null is returned, considered to be empty stream
-      } catch (NullPointerException ex) {
+      } catch (NullPointerException | NoSuchElementException ex) {
          return null;
       } catch (Throwable e)
       {
