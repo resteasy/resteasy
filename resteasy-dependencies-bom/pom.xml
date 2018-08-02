@@ -72,7 +72,7 @@
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.org.jboss.weld.se.weld-se-core>2.4.5.Final</version.org.jboss.weld.se.weld-se-core>
-        <version.microprofile.restclient>1.0</version.microprofile.restclient>
+        <version.microprofile.restclient>1.0.1</version.microprofile.restclient>
         <version.microprofile.config>1.1</version.microprofile.config>
         <version.org.slf4j>1.7.25</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>3.0.6.Final</version.org.wildfly.core.wildfly-cli>

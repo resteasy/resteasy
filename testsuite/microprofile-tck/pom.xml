@@ -29,7 +29,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <version.microprofile.restclient>1.0</version.microprofile.restclient>
+    <version.microprofile.restclient>1.0.1</version.microprofile.restclient>
     <version.microprofile-config>1.2</version.microprofile-config>
     <version.wildfly-microprofile-config>1.2.1</version.wildfly-microprofile-config>
   </properties>
@@ -163,17 +163,6 @@
                 <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
               </dependenciesToScan>
               <excludes>
-                <!--
-                  the dependency on MP config in the resteasy client is not desireable
-                  this requires further thought
-                -->
-                <exclude>**/DefaultExceptionMapperConfigTest.java</exclude>
-
-                <!-- Challenged, see  https://github.com/eclipse/microprofile-rest-client/pull/69 -->
-                <exclude>**/InvokeWithJsonPProviderTest.java</exclude>
-                <exclude>**/InvokeWithBuiltProvidersTest.java</exclude>
-                <exclude>**/InvokeWithRegisteredProvidersTest.java</exclude>
-                <exclude>**/CDIInvokeWithRegisteredProvidersTest.java</exclude>
               </excludes>
             </configuration>
           </execution>
