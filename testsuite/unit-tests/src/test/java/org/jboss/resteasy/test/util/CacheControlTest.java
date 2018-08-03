@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.core.ExtendedCacheControl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +26,9 @@ public class CacheControlTest {
      */
     @Test
     public void cacheControlSerialization() {
-        RuntimeDelegate.HeaderDelegate<CacheControl> hdcc = ResteasyProviderFactory.getInstance()
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        RuntimeDelegate.HeaderDelegate<CacheControl> hdcc = factory
                 .createHeaderDelegate(CacheControl.class);
         CacheControl control = new CacheControl();
         control.setMaxAge(1000);

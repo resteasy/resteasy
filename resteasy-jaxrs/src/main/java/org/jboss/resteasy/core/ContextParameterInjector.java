@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.HEAD;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
@@ -130,19 +131,21 @@ public class ContextParameterInjector implements ValueInjector
         else
         {
             Class[] intfs = {type};
+            ClassLoader classLoader = null;
             if (System.getSecurityManager() == null )
             {
-               return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+               classLoader = type.getClassLoader();
             } else {
-               return AccessController.doPrivileged(new PrivilegedAction<Object>()
+               classLoader =  AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
                {
                   @Override
-                  public Object run()
+                  public ClassLoader run()
                   {
-                     return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+                     return type.getClassLoader();
                   }
                });
             }
+           return Proxy.newProxyInstance(classLoader, intfs, new GenericDelegatingProxy());
         }
     }
 }

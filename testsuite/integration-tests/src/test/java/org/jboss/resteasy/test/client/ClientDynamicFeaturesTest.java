@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.client;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesClientFeature1;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesClientFeature2;
@@ -60,7 +61,9 @@ public class ClientDynamicFeaturesTest {
      */
     @Test
     public void testDynamicFeatures() throws Exception {
-        ResteasyProviderFactory factory =  ResteasyProviderFactory.getInstance();
+        ResteasyProviderFactory factory =  ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+
         factory.registerProvider(ClientDynamicFeaturesClientFeature1.class, 0, false, null);
         factory.registerProvider(ClientDynamicFeaturesServerFeature1.class, 0, false, null);
         factory.registerProvider(ClientDynamicFeaturesDualFeature1.class, 0, false, null);
