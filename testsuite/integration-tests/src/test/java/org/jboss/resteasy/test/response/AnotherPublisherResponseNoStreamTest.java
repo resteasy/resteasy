@@ -1,7 +1,10 @@
 package org.jboss.resteasy.test.response;
 
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +21,7 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseNoStreamResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,6 +45,17 @@ public class AnotherPublisherResponseNoStreamTest {
       WebArchive war = TestUtil.prepareArchive(AnotherPublisherResponseNoStreamTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new RuntimePermission("modifyThread"),
+              new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+              new PropertyPermission("arquillian.*", "read"),
+              new RuntimePermission("accessDeclaredMembers"),
+              new ReflectPermission("suppressAccessChecks"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("ipv6", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseNoStreamResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class, PortProviderUtil.class);
    }

@@ -20,6 +20,7 @@ import org.jboss.resteasy.test.resource.basic.resource.ParameterSubResSubImpl;
 import org.jboss.resteasy.test.resource.basic.resource.RequestScopedObject;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Resources
@@ -62,6 +64,9 @@ public class ParameterSubResTest {
         war.addClass(ParameterSubResSub.class);
         war.addClass(ParameterSubResSubImpl.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new LoggingPermission("control", "")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ParameterSubResRootImpl.class, ParameterSubResGenericSub.class);
     }
 

@@ -29,7 +29,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;

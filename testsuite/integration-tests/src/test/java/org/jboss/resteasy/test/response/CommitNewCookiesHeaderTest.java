@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.response;
 
+import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.Map;
+import java.util.PropertyPermission;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,6 +21,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -80,6 +84,11 @@ public class CommitNewCookiesHeaderTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(DEP);
       war.addClass(EchoResource.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new ReflectPermission("suppressAccessChecks"),
+              new PropertyPermission("ipv6", "read"),
+              new PropertyPermission("node", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
    }
 

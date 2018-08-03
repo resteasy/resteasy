@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -17,6 +18,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,7 +37,6 @@ import javax.ws.rs.core.Response;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @tpSubChapter Validation
@@ -67,6 +68,9 @@ public class ValidationJaxbTest {
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

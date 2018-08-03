@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old clien
 import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeEncodingOverwriteService;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeEncodingOverwriteSetterPreProcessorInterceptor;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -23,6 +24,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Multipart provider
@@ -41,6 +43,9 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterPreProcessorInterceptor.class,
                 InputPartDefaultContentTypeEncodingOverwriteService.class);
     }

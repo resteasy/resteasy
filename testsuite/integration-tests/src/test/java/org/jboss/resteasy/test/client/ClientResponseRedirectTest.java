@@ -49,10 +49,12 @@ public class ClientResponseRedirectTest extends ClientTestBase{
         WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
         war.addClass(ClientTestBase.class);
         // Use of PortProviderutil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
+                new PropertyPermission("org.jboss.resteasy.port", "read")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
     }
 

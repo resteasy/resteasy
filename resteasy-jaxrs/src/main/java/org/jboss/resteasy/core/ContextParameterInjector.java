@@ -130,22 +130,23 @@ public class ContextParameterInjector implements ValueInjector
         }
         else
         {
-            Class[] intfs = {type};
-            ClassLoader classLoader = null;
-            if (System.getSecurityManager() == null )
-            {
-               classLoader = type.getClassLoader();
-            } else {
-               classLoader =  AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-               {
-                  @Override
-                  public ClassLoader run()
-                  {
-                     return type.getClassLoader();
-                  }
-               });
-            }
-           return Proxy.newProxyInstance(classLoader, intfs, new GenericDelegatingProxy());
+           Class[] intfs = {type};
+           ClassLoader clazzLoader = null;
+           final SecurityManager sm = System.getSecurityManager();
+           if (sm == null)
+           {
+              clazzLoader = type.getClassLoader();
+           } else
+           {
+
+              clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                 @Override
+                 public ClassLoader run() {
+                    return type.getClassLoader();
+                 }
+              });
+           }
+           return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
         }
     }
 }

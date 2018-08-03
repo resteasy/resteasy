@@ -11,6 +11,7 @@ import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.test.crypto.resource.VerifyDecryptResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -25,6 +26,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
+import java.lang.reflect.ReflectPermission;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
@@ -71,6 +73,10 @@ public class VerifyDecryptTest {
         WebArchive war = TestUtil.prepareArchive(VerifyDecryptTest.class.getSimpleName());
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycert.pem", "mycert.pem");
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycertPrivate.pem", "mycert-private.pem");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, VerifyDecryptResource.class);
     }
 

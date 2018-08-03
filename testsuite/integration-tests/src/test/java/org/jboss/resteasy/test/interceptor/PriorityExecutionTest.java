@@ -84,7 +84,8 @@ public class PriorityExecutionTest {
                 PriorityExecutionContainerResponseFilterMin.class,
                 PriorityExecutionClientRequestFilterMin.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new ReflectPermission("suppressAccessChecks"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
