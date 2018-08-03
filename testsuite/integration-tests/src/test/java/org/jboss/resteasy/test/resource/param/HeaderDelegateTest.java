@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateDate;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateDelegate;
@@ -23,7 +24,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -75,6 +78,22 @@ public class HeaderDelegateTest {
         return TestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
     }
 
+
+    private ResteasyProviderFactory factory;
+    @Before
+    public void init() {
+        factory = ResteasyProviderFactory.newInstance();
+        RegisterBuiltin.register(factory);
+        ResteasyProviderFactory.setInstance(factory);
+    }
+
+    @After
+    public void after() throws Exception {
+        // Clear the singleton
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
+    }
+
+
     private String generateURL(String path) {
         return PortProviderUtil.generateURL(path, HeaderDelegateTest.class.getSimpleName());
     }
@@ -102,7 +121,7 @@ public class HeaderDelegateTest {
      */
     @Test
     public void localTest() throws Exception {
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+
         Assert.assertEquals("Wrong delegation", DateDelegate.class, factory.getHeaderDelegate(HeaderDelegateDate.class).getClass());
         Assert.assertEquals("Wrong delegation", DateDelegate.class, factory.createHeaderDelegate(HeaderDelegateDate.class).getClass());
 

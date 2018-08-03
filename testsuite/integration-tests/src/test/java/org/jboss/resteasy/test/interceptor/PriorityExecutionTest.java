@@ -120,7 +120,7 @@ public class PriorityExecutionTest {
     @Test
     public void testPriority() throws Exception {
        //FIXME RESTEASY-1935
-//        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+//        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
 //        factory.register(PriorityExecutionContainerResponseFilter2.class);
 //        factory.register(PriorityExecutionContainerResponseFilter1.class);
 //        factory.register(PriorityExecutionContainerResponseFilter3.class);

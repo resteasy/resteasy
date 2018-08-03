@@ -15,10 +15,12 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.validation.resource.ValidationThroughRestResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -42,7 +44,9 @@ public class ValidationThroughRestTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(ValidationThroughRestTest.class.getSimpleName())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new HibernateValidatorPermission("accessPrivateMembers")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ValidationThroughRestResource.class);
     }
 

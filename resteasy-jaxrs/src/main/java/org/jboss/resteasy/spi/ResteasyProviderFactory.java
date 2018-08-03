@@ -803,6 +803,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return instance;
    }
 
+
+   public static ResteasyProviderFactory newInstance()
+   {
+      return new ResteasyProviderFactory();
+   }
+
+   
    public static void setRegisterBuiltinByDefault(boolean registerBuiltinByDefault)
    {
       ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;

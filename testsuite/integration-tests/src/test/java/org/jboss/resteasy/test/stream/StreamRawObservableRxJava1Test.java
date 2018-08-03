@@ -15,6 +15,7 @@ import org.jboss.resteasy.test.stream.resource.StreamRawByteMessageBodyReaderWri
 import org.jboss.resteasy.test.stream.resource.StreamRawCharArrayMessageBodyReaderWriter;
 import org.jboss.resteasy.test.stream.resource.StreamRawCharMessageBodyReaderWriter;
 import org.jboss.resteasy.test.stream.resource.StreamRawMediaTypes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
@@ -25,6 +26,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.PropertyPermission;
 
 
 /**
@@ -43,6 +46,10 @@ public class StreamRawObservableRxJava1Test {
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(StreamRawObservableRxJava1Test.class.getSimpleName());
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("*", "read"),
+              new PropertyPermission("*", "write")
+      ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null,
          StreamRawObservableRxJava1Resource.class,

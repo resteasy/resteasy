@@ -58,7 +58,24 @@ public class SecureUnmarshaller implements Unmarshaller {
       
       public static SAXParserProvider getInstance()
       {
-         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+         final SecurityManager sm = System.getSecurityManager();
+         ClassLoader tccl = null;
+         if (sm == null)
+         {
+            tccl = Thread.currentThread().getContextClassLoader();
+         } else
+         {
+            try {
+            tccl = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+               public ClassLoader run() throws Exception {
+                  return Thread.currentThread().getContextClassLoader();
+               }
+            });
+            } catch (PrivilegedActionException e) {
+               throw new SecurityException(e);
+            }
+         }
+
          SAXParserProvider spp;
          spp = saxParserProviders.get(tccl);
          if (spp == null)

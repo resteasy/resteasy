@@ -47,7 +47,7 @@ public class XmlJAXBContextFinderTest {
         WebArchive war = TestUtil.prepareArchive(XmlJAXBContextFinderTest.class.getSimpleName());
 
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new RuntimePermission("getClassLoader"),
+            new RuntimePermission("getClassLoader"),     // undertow needs it
             new FilePermission("<<ALL FILES>>", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers")), "permissions.xml");

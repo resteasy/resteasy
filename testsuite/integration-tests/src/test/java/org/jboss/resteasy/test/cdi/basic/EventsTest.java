@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.cdi.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.cdi.basic.resource.EventsBookReaderInterceptor;
 import org.jboss.resteasy.test.cdi.basic.resource.EventsBookWriterInterceptor;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBBook;
@@ -22,6 +24,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -61,6 +65,20 @@ public class EventsTest {
 
     private String generateURL(String path) {
         return PortProviderUtil.generateURL(path, EventsTest.class.getSimpleName());
+    }
+
+    private ResteasyProviderFactory factory;
+    @Before
+    public void setup() {
+        // Create an instance and set it as the singleton to use
+        factory = ResteasyProviderFactory.newInstance();
+        ResteasyProviderFactory.setInstance(factory);
+        RegisterBuiltin.register(factory);
+    }
+    @After
+    public void cleanup() {
+        // Clear the singleton
+        ResteasyProviderFactory.clearInstanceIfEqual(factory);
     }
 
     /**
