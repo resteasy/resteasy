@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jsonb;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -25,6 +26,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -72,17 +74,43 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                                  MultivaluedMap<String, String> httpHeaders,
                                  InputStream entityStream) throws java.io.IOException, javax.ws.rs.WebApplicationException {
       Jsonb jsonb = getJsonb(type);
+      final EmptyCheckInputStream is = new EmptyCheckInputStream(entityStream);
+      
       try {
-         return jsonb.fromJson(entityStream, genericType);
+         return jsonb.fromJson(is, genericType);
          // If null is returned, considered to be empty stream
-      } catch (NullPointerException ex) {
-         return null;
       } catch (Throwable e)
       {
+         if (is.isEmpty()) {
+            return null;
+         }
          // detail text provided in logger message
          throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e));
       }
    }
+   
+   private class EmptyCheckInputStream extends ProxyInputStream
+   {
+      boolean read = false;
+      boolean empty = false;
+      
+      public EmptyCheckInputStream(InputStream proxy)
+      {
+         super(proxy);
+      }
+
+      @Override
+      protected synchronized void afterRead(final int n) throws IOException {
+         if (!read && n <= 0) {
+            empty = true;
+         }
+         read = true;
+      }
+      
+      public boolean isEmpty() {
+         return empty;
+      }
+   };
 
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
