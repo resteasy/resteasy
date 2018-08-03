@@ -1360,24 +1360,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
-      if (getClasses().contains(provider))
+      Map<Class<?>, Map<Class<?>, Integer>> classContracts = getClassContracts();
+      if (classContracts.containsKey(provider))
       {
          LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
          return;
       }
-      for (Object registered : getInstances())
-      {
-         if (registered.getClass() == provider)
-         {
-            LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
-            return;
-         }
-      }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
-
       providerClasses.add(provider);
-      getClassContracts().put(provider, newContracts);
+      classContracts.put(provider, newContracts);
    }
 
    protected void processProviderContracts(Class provider, Integer priorityOverride, boolean isBuiltin,
@@ -1702,23 +1694,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn)
    {
-      for (Object registered : getInstances())
+      Class<?> providerClass=provider.getClass();
+      Map<Class<?>, Map<Class<?>, Integer>> classContracts = getClassContracts();
+      if (classContracts.containsKey(providerClass))
       {
-         if (registered == provider)
-         {
-            LogMessages.LOGGER.providerInstanceAlreadyRegistered(provider.getClass().getName());
-            return;
-         }
-      }
-      if (getClasses().contains(provider.getClass()))
-      {
-         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
+         LogMessages.LOGGER.providerInstanceAlreadyRegistered(providerClass.getName());
          return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
       providerInstances.add(provider);
-      getClassContracts().put(provider.getClass(), newContracts);
+      classContracts.put(providerClass, newContracts);
    }
 
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
