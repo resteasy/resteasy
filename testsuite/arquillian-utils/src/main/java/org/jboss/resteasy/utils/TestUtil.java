@@ -18,6 +18,7 @@ import org.wildfly.extras.creaper.core.online.ModelNodeResult;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
 
+import javax.ws.rs.core.Application;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +67,13 @@ public class TestUtil {
       war.addClass(TestApplication.class);
       return war;
    }
+
+   public static WebArchive prepareArchiveWithApplication(String deploymentName, Class<? extends Application> clazz) {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentName + ".war");
+      war.addClass(clazz);
+      return war;
+   }
+
 
    /**
     * Finish preparing war deployment and deploy it.

@@ -18,6 +18,8 @@ import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
+import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import org.jboss.resteasy.wadl.ResteasyWadlWriter;
 import org.jboss.resteasy.wadl.WadlUndertowConnector;
 import org.junit.After;
 import org.junit.Before;
@@ -109,12 +111,11 @@ public class WADLUndertowContainerTest {
    }
 
    @Test
-   public void test1246() throws Exception {
+   public void test1246() {
       WadlUndertowConnector connector = new WadlUndertowConnector();
       connector.deployToServer(server, MyApp1246.class);
       Client client = ClientBuilder.newClient();
-      WebTarget target = client.target("http://127.0.0.1:${port}/base/application.xml".replaceAll("\\$\\{port\\}",
-              Integer.valueOf(TestPortProvider.getPort()).toString()));
+      WebTarget target = client.target(TestPortProvider.generateURL("/base/application.xml"));
       Response response = target.request().get();
       // get Application
       org.jboss.resteasy.wadl.jaxb.Application application = response.readEntity(org.jboss.resteasy.wadl.jaxb.Application.class);
@@ -184,7 +185,20 @@ public class WADLUndertowContainerTest {
          classes.add(BasicResource.class);
          return classes;
       }
+
+      @Override
+      public Set<Object> getSingletons() {
+         ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+         ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
+         wadlGrammar.enableSchemaGeneration();
+         defaultResource.getWadlWriter().setWadlGrammar(wadlGrammar);
+
+         Set<Object> singletons = new HashSet<>();
+         singletons.add(defaultResource);
+         return singletons;
+      }
    }
+
    @ApplicationPath("/base")
    public static class MyApp1246 extends Application {
       @Override
@@ -193,5 +207,18 @@ public class WADLUndertowContainerTest {
          classes.add(RESTEASY1246.class);
          return classes;
       }
+
+      @Override
+      public Set<Object> getSingletons() {
+         ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+         ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
+         wadlGrammar.enableSchemaGeneration();
+         defaultResource.getWadlWriter().setWadlGrammar(wadlGrammar);
+
+         Set<Object> singletons = new HashSet<>();
+         singletons.add(defaultResource);
+         return singletons;
+      }
+
    }
 }

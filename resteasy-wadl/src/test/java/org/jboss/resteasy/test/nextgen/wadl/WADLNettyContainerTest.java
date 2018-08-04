@@ -36,9 +36,14 @@ public class WADLNettyContainerTest {
       netty.start();
 
       deployment.getRegistry().addPerRequestResource(BasicResource.class);
-      deployment.getRegistry().addPerRequestResource(ResteasyWadlDefaultResource.class);
       deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
-      ResteasyWadlDefaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
+
+      ResteasyWadlDefaultResource defaultResource = new ResteasyWadlDefaultResource();
+
+      deployment.getRegistry().addSingletonResource(defaultResource);
+
+
+      defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
    }
 
    @AfterClass
@@ -54,10 +59,8 @@ public class WADLNettyContainerTest {
 
    @Test
    public void test() throws Exception {
-      WADLBasicTest basicTest = new WADLBasicTest();
+      WadlTests basicTest = new WadlTests();
       basicTest.setClient(client);
-      basicTest.setUrl("http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
-            Integer.valueOf(port).toString()));
       basicTest.testBasicSet();
       basicTest.testResteasy1246();
    }

@@ -30,12 +30,6 @@ public class WadlUndertowConnector {
 
       DeploymentInfo di = server.undertowDeployment(deployment);
 
-      ServletInfo resteasyWadlServlet = servlet("ResteasyWadlServlet", ResteasyWadlServlet.class)
-            .setAsyncSupported(false)
-            .setLoadOnStartup(1)
-            .addMapping("/application.xml");
-      di.addServlet(resteasyWadlServlet);
-
       di.setClassLoader(application.getClassLoader());
       di.setContextPath(contextPath);
       di.setDeploymentName("Resteasy" + contextPath);
