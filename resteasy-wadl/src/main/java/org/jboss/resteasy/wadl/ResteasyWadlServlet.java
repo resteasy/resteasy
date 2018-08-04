@@ -18,12 +18,19 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
+ * This servlet does not support grammars.
+ * Use @org.jboss.resteasy.wadl.ResteasyWadlDefaultServlet instead.
  */
+@Deprecated
 public class ResteasyWadlServlet extends HttpServlet {
 
    private Map<String, ResteasyWadlServiceRegistry> services;
 
-   private ResteasyWadlServletWriter apiWriter = new ResteasyWadlServletWriter();
+   private ResteasyWadlServletWriter wadlWriter = new ResteasyWadlServletWriter();
+
+   public ResteasyWadlServletWriter getWadlWriter() {
+      return wadlWriter;
+   }
 
    @Override
    public void init(ServletConfig config) throws ServletException {
@@ -41,7 +48,7 @@ public class ResteasyWadlServlet extends HttpServlet {
 
    @Override
    protected void service(HttpServletRequest req, HttpServletResponse resp)
-         throws ServletException, IOException {
+         throws IOException {
       String pathInfo = req.getPathInfo();
       String uri = req.getRequestURL().toString();
       uri = uri.substring(0, uri.length() - req.getServletPath().length());
@@ -53,7 +60,7 @@ public class ResteasyWadlServlet extends HttpServlet {
          return;
       }
       resp.setContentType(MediaType.APPLICATION_XML);
-      this.apiWriter.writeWadl(uri, req, resp, services);
+      this.wadlWriter.writeWadl(uri, req, resp, services);
    }
 
    public void scanResources() {
@@ -65,7 +72,7 @@ public class ResteasyWadlServlet extends HttpServlet {
       Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
       if (deployments == null) return;
       synchronized (this) {
-         services = new HashMap<String, ResteasyWadlServiceRegistry>();
+         services = new HashMap<>();
          for (Map.Entry<String, ResteasyDeployment> entry : deployments.entrySet()) {
             services.put(entry.getKey(), ResteasyWadlGenerator.generateServiceRegistry(entry.getValue()));
          }

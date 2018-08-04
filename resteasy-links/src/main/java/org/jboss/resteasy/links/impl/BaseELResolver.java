@@ -53,5 +53,4 @@ public class BaseELResolver extends ELResolver {
    public void setValue(ELContext context, Object base, Object property,
          Object value) {
    }
-
 }

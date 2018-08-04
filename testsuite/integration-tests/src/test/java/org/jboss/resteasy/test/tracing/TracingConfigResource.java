@@ -27,7 +27,7 @@ public class TracingConfigResource extends Application {
 
    @GET
    @Path("/logger")
-   public String logger(@Context HttpRequest request) throws NoSuchMethodException {
+   public String logger(@Context HttpRequest request) {
       RESTEasyTracingLogger logger = (RESTEasyTracingLogger) request.getAttribute(RESTEasyTracing.PROPERTY_NAME);
       if (logger == null) {
          return "";

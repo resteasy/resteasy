@@ -49,7 +49,7 @@ public class BasicTracingTest extends TracingTestBase {
 
    @Test
    @OperateOnDeployment(WAR_BASIC_TRACING_FILE)
-   public void testBasic() throws InterruptedException {
+   public void testBasic() {
 //        war.as(ZipExporter.class).exportTo(new File("/tmp/" + war.getName()), true);
 //        Thread.currentThread().join();
       String url = generateURL("/logger", WAR_BASIC_TRACING_FILE);

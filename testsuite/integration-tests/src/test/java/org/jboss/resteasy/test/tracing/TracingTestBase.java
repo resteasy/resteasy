@@ -60,7 +60,7 @@ public abstract class TracingTestBase {
    }
 
    @AfterClass
-   public static void after() throws Exception {
+   public static void after() {
       client.close();
    }
 
@@ -74,7 +74,7 @@ public abstract class TracingTestBase {
    }
 
    protected String generateURL(String path, String deploymentName) {
-      String fullpath =  PortProviderUtil.generateURL(path, deploymentName,  PortProviderUtil.getHost(), PortProviderUtil.getPort() + TRACING_CONTAINER_PORT_OFFSET);
+      String fullpath = PortProviderUtil.generateURL(path, deploymentName, PortProviderUtil.getHost(), PortProviderUtil.getPort() + TRACING_CONTAINER_PORT_OFFSET);
       LOG.info(":::PATH: " + fullpath);
       return fullpath;
    }
