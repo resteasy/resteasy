@@ -62,9 +62,9 @@ public class ResteasyWadlServiceRegistry {
    }
 
    private void scanRegistry() {
-      resources = new HashMap<String, ResteasyWadlResourceMetaData>();
+      resources = new HashMap<>();
 
-      locators = new ArrayList<ResteasyWadlServiceRegistry>();
+      locators = new ArrayList<>();
 
       for (Map.Entry<String, List<ResourceInvoker>> entry : registry.getBounded().entrySet()) {
          List<ResourceInvoker> invokers = entry.getValue();
