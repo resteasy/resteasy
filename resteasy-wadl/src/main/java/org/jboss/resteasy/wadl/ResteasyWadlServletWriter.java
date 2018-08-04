@@ -9,7 +9,9 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
+ * @deprecated Using @org.jboss.resteasy.wadl.ResteasyWadlDefaultResource instead.
  */
+@Deprecated
 public class ResteasyWadlServletWriter extends ResteasyWadlWriter {
 
    public void writeWadl(String base, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
@@ -27,11 +29,8 @@ public class ResteasyWadlServletWriter extends ResteasyWadlWriter {
       }
    }
 
-
    public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
          throws IOException {
       writeWadl(base, resp, serviceRegistries);
    }
-
-
 }
