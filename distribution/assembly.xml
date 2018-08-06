@@ -56,7 +56,6 @@
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
                 <include>org.jboss.resteasy:jose-jwt</include>
-                <include>org.jboss.resteasy:skeleton-key-core</include>
                 <include>org.jboss.resteasy:resteasy-validator-provider-11</include>
             </includes>
             <excludes>
