@@ -58,7 +58,6 @@
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
                 <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
-                <!ENTITY Deprecated_security_modules SYSTEM "modules/Deprecated_security_modules.xml">
                 ]>
 
 <book>
@@ -66,7 +65,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>4.0.0-SNAPSHOT</releaseinfo>
+      <releaseinfo>4.0.0.Beta5</releaseinfo>
    </bookinfo>
 
    <toc/>
@@ -153,7 +152,6 @@ This one is short
    &Validation;
    &I18N;
    &Maven_and_RESTEasy;
-   &Deprecated_security_modules;
    &Migration_to_3_5;
    &Migration_to_3_1;
    &Migration_from_older_versions;

@@ -220,17 +220,6 @@
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.skeleton-key
-                    </entry>
-                    <entry>
-                        no
-                    </entry>
-                    <entry>
-                        OAuth2 support.
-                    </entry>
-                </row>
-                <row>
-                    <entry>
                         org.jboss.resteasy.resteasy-spring
                     </entry>
                     <entry>
