@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@WebFilter(asyncSupported = true)
+@WebFilter(asyncSupported = true, value="")
 public class Filter30Dispatcher extends FilterDispatcher
 {
    ScheduledExecutorService asyncCancelScheduler = Executors.newScheduledThreadPool(0); // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
