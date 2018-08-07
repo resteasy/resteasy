@@ -35,7 +35,9 @@ import java.util.logging.LoggingPermission;
 @RunWith(Arquillian.class)
 public class DuplicateProviderRegistrationTest {
 
-    private static final String ERR_MSG = "Wrong cound of RESTEASY002155 warning message";
+    private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
+    private static final String RESTEASY_002160_ERR_MSG = "Wrong count of RESTEASY002160 warning message";
+    
     @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -56,9 +58,13 @@ public class DuplicateProviderRegistrationTest {
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
-    private static int getWarningCount() {
+    private static int getRESTEASY002155WarningCount() {
         return TestUtil.getWarningCount("RESTEASY002155", true);
     }
+    
+    private static int getRESTEASY002160WarningCount() {
+       return TestUtil.getWarningCount("RESTEASY002160", true);
+   }
 
     /**
      * @tpTestDetails Basic test
@@ -67,7 +73,7 @@ public class DuplicateProviderRegistrationTest {
     @Test
     @Category({NotForForwardCompatibility.class})
     public void testDuplicateProvider() {
-        int initWarningCount = getWarningCount();
+        int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
         Client client = ClientBuilder.newClient();
         try {
             WebTarget webTarget = client.target("http://www.changeit.com");
@@ -77,7 +83,7 @@ public class DuplicateProviderRegistrationTest {
         } finally {
             client.close();
         }
-        Assert.assertEquals(ERR_MSG, 2, getWarningCount() - initWarningCount);
+        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
     }
 
     /**
@@ -87,7 +93,8 @@ public class DuplicateProviderRegistrationTest {
     @Test
     @Category({NotForForwardCompatibility.class})
     public void testFromJavadoc() {
-        int initWarningCount = getWarningCount();
+        int initRESTEASY002155WarningCount = getRESTEASY002155WarningCount();
+        int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
         Client client = ClientBuilder.newClient();
         try {
             WebTarget webTarget = client.target("http://www.changeit.com");
@@ -97,11 +104,13 @@ public class DuplicateProviderRegistrationTest {
             webTarget.register(DuplicateProviderRegistrationInterceptor.class, 6500); // Rejected by runtime.
 
             webTarget.register(new DuplicateProviderRegistrationFeature());
+            webTarget.register(new DuplicateProviderRegistrationFeature()); // rejected by runtime.
             webTarget.register(DuplicateProviderRegistrationFeature.class);   // rejected by runtime.
             webTarget.register(DuplicateProviderRegistrationFeature.class, Feature.class);  // Rejected by runtime.
         } finally {
             client.close();
         }
-        Assert.assertEquals(ERR_MSG, 5, getWarningCount() - initWarningCount);
+        Assert.assertEquals(RESTEASY_002155_ERR_MSG, 4, getRESTEASY002155WarningCount() - initRESTEASY002155WarningCount);
+        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
     }
 }
