@@ -35,8 +35,8 @@ import java.util.logging.LoggingPermission;
 @RunWith(Arquillian.class)
 public class DuplicateProviderRegistrationTest {
 
-    private static final String RESTEASY_002155_ERR_MSG = "Wrong cound of RESTEASY002155 warning message";
-    private static final String RESTEASY_002160_ERR_MSG = "Wrong cound of RESTEASY002160 warning message";
+    private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
+    private static final String RESTEASY_002160_ERR_MSG = "Wrong count of RESTEASY002160 warning message";
     
     @SuppressWarnings(value = "unchecked")
     @Deployment
