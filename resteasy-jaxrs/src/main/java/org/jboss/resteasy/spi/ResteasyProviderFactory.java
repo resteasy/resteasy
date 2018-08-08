@@ -1720,18 +1720,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
-      if (getClasses().contains(provider))
+      Map<Class<?>, Map<Class<?>, Integer>> classContracts = getClassContracts();
+      if (classContracts.containsKey(provider))
       {
          LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
          return;
-      }
-      for (Object registered : getInstances())
-      {
-         if (registered.getClass() == provider)
-         {
-            LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
-            return;
-         }
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
 
@@ -2150,17 +2143,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn)
    {
-      for (Object registered : getInstances())
+      Class<?> providerClass = provider.getClass();
+      if (getClassContracts().containsKey(providerClass))
       {
-         if (registered == provider)
-         {
-            LogMessages.LOGGER.providerInstanceAlreadyRegistered(provider.getClass().getName());
-            return;
-         }
-      }
-      if (getClasses().contains(provider.getClass()))
-      {
-         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
+         LogMessages.LOGGER.providerInstanceAlreadyRegistered(providerClass.getName());
          return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
