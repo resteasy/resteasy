@@ -284,21 +284,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    
    protected void initialize(ResteasyProviderFactory parent)
    {
-      serverDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.serverDynamicFeatures);
-      clientDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.clientDynamicFeatures);
-      enabledFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.enabledFeatures);
-      properties = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.properties);
-      providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.providerClasses);
-      providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.providerInstances);
-      classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.classContracts);
-      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.serverMessageBodyReaders.clone();
-      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.serverMessageBodyWriters.clone();
-      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.clientMessageBodyReaders.clone();
-      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.clientMessageBodyWriters.clone();
-      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.sortedExceptionMappers);
-      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.asyncResponseProviders);
-      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.asyncClientResponseProviders);
-      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.asyncStreamProviders);
+      serverDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getServerDynamicFeatures());
+      clientDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getClientDynamicFeatures());
+      enabledFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getEnabledFeatures());
+      properties = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getProperties());
+      providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderClasses());
+      providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderInstances());
+      classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClassContracts());
+      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyReaders().clone();
+      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyWriters().clone();
+      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyReaders().clone();
+      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyWriters().clone();
+      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
+      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
+      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
+      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
       contextResolvers = new ConcurrentHashMap<>();
       if (parent != null)
       {
@@ -308,12 +308,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             contextResolvers.put(entry.getKey(), entry.getValue().clone());
          }
       }
-      contextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.contextInjectors);
-      asyncContextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.asyncContextInjectors);
+      contextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getContextInjectors());
+      asyncContextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncContextInjectors());
       sortedParamConverterProviders = Collections.synchronizedSortedSet(parent == null ? new TreeSet<>() : new TreeSet<>(parent.getSortedParamConverterProviders()));
-      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.stringParameterUnmarshallers);
+      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
       reactiveClasses = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.reactiveClasses);
-      headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.headerDelegates);
+      headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getHeaderDelegates());
       addHeaderDelegateIfAbsent(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegateIfAbsent(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegateIfAbsent(Cookie.class, new CookieHeaderDelegate());
