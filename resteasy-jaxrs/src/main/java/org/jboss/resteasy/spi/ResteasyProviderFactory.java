@@ -258,7 +258,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
    {
-      if (local)
+      if (local || parent == null)
       {
          // Parent MUST not be referenced after current object is created
          this.parent = null;
