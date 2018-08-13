@@ -44,16 +44,18 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
- * @tpTestCaseDetails Test for ParamConverter
+ * @tpTestCaseDetails Test for RESTEasy extended support for multivalue @*Param (RESTEASY-1566 + RESTEASY-1746)
+ *                    java.util.Date class is used
+ *                    Client Proxy is used
  * @tpSince RESTEasy 3.5.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class MultiValuedParamTest {
+public class MultiValuedParamDateProxyTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(MultiValuedParamTest.class.getSimpleName());
+        WebArchive war = TestUtil.prepareArchive(MultiValuedParamDateProxyTest.class.getSimpleName());
         war.addClass(MultiValuedParam.class);
         war.addClass(ParamWrapper.class);
         war.addClass(MultiValuedCookieParam.class);
@@ -75,29 +77,28 @@ public class MultiValuedParamTest {
     }
 
     private String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(MultiValuedParamTest.class.getSimpleName());
+        return PortProviderUtil.generateBaseUrl(MultiValuedParamDateProxyTest.class.getSimpleName());
     }
 
+	String date1 = "20161217";
+	String date2 = "20161218";
+	String date3 = "20161219";
+	List<String> dates = Arrays.asList(date1, date2, date3);
+	String expectedResponse = date1 + "," + date2 + "," + date3;
+
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails QueryParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testQueryParam() throws Exception {
+    public void testQueryParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			QueryParamResourceClient queryParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).queryParam();
 			
-			String date1 = "20161217";
-			String date2 = "20161218";
-			String date3 = "20161219";
-			
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, queryParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, queryParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
-			
-			List<String> dates=Arrays.asList(date1, date2, date3);
-			
-			String expectedResponse= date1 + "," + date2 + "," + date3;
+
 			Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_list(dates));
 			Assert.assertEquals(expectedResponse, queryParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 			
@@ -115,25 +116,18 @@ public class MultiValuedParamTest {
     
 
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails HeaderParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testHeaderParam() throws Exception {
+    public void testHeaderParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			HeaderParamResourceClient headerParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).headerParam();
 			
-			String date1 = "20161217";
-			String date2 = "20161218";
-			String date3 = "20161219";
-			
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, headerParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, headerParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 			
-			List<String> dates=Arrays.asList(date1, date2, date3);
-			
-			String expectedResponse= date1 + "," + date2 + "," + date3;
 			Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_list(dates));
 			Assert.assertEquals(expectedResponse, headerParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 			
@@ -150,25 +144,18 @@ public class MultiValuedParamTest {
     }
     
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails MatrixParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testMatrixParam() throws Exception {
+    public void testMatrixParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			MatrixParamResourceClient matrixParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).matrixParam();
 			
-			String date1 = "20161217";
-			String date2 = "20161218";
-			String date3 = "20161219";
-			
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, matrixParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, matrixParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
 			
-			List<String> dates=Arrays.asList(date1, date2, date3);
-			
-			String expectedResponse= date1 + "," + date2 + "," + date3;
 			Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_list(dates));
 			Assert.assertEquals(expectedResponse, matrixParamResourceClient.defaultConversion_arrayList(new ArrayList<>(dates)));
 			
@@ -185,18 +172,14 @@ public class MultiValuedParamTest {
     }
 
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails CoookieParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testCookieParam() throws Exception {
+    public void testCookieParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			CookieParamResourceClient cookieParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).cookieParam();
-			
-			String date1 = "20161217";
-			String date2 = "20161218";
-			String date3 = "20161219";
 			
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, cookieParamResourceClient.customConversion_multiValuedCookieParam(date1 + "-" + date2 + "-" + date3));
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, cookieParamResourceClient.customConversion_multiValuedCookieParam_array(date1 + "-" + date2 + "-" + date3));
@@ -217,23 +200,17 @@ public class MultiValuedParamTest {
     }
     
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails FormParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testFormParam() throws Exception {
+    public void testFormParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			FormParamResourceClient formParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).formParam();
 			
-			String date1 = "20161217";
-			String date2 = "20161218";
-			String date3 = "20161219";
-			
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, formParamResourceClient.customConversion_multiValuedParam(date1 + "," + date2 + "," + date3));
 			Assert.assertEquals(date1 + "," + date2 + "," + date3, formParamResourceClient.customConversion_multiValuedParam_array(date1 + "," + date2 + "," + date3));
-			
-			List<String> dates=Arrays.asList(date1, date2, date3);
 			
 			String expectedResponse= date1 + "," + date2 + "," + date3;
 			Assert.assertEquals(expectedResponse, formParamResourceClient.defaultConversion_list(dates));
@@ -252,32 +229,28 @@ public class MultiValuedParamTest {
     }
     
     /**
-     * @tpTestDetails Set specific values
+     * @tpTestDetails PathParam test
      * @tpSince RESTEasy 3.5
      */
     @Test
-    public void testPathParam() throws Exception {
+    public void testPathParam() {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		try {
 			PathParamResourceClient pathParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).pathParam();
+
+			Assert.assertEquals(date1 + "," + date2 + "," + date3, pathParamResourceClient.customConversion_multiValuedPathParam(date1, date2, date3));
+			Assert.assertEquals(date1 + "," + date2 + "," + date3, pathParamResourceClient.customConversion_multiValuedPathParam_array(date1, date2, date3));
 			
-			String path1 = "20161217";
-			String path2 = "20161218";
-			String path3 = "20161219";
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_list(date1));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_arrayList(date1));
 			
-			Assert.assertEquals(path1 + "," + path2 + "," + path3, pathParamResourceClient.customConversion_multiValuedPathParam(path1, path2, path3));
-			Assert.assertEquals(path1 + "," + path2 + "," + path3, pathParamResourceClient.customConversion_multiValuedPathParam_array(path1, path2, path3));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_set(date1));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_hashSet(date1));
 			
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_list(path1));
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_arrayList(path1));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_sortedSet(date1));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_treeSet(date1));
 			
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_set(path1));
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_hashSet(path1));
-			
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_sortedSet(path1));
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_treeSet(path1));
-			
-			Assert.assertEquals(path1, pathParamResourceClient.defaultConversion_array(path1));
+			Assert.assertEquals(date1, pathParamResourceClient.defaultConversion_array(date1));
 		} finally {
 			client.close();
 		}
