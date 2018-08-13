@@ -2,18 +2,19 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import javax.ws.rs.ext.ParamConverter;
 
-public class PersonParamArrayConverter implements ParamConverter<PersonWithConverter[]> {
+public class MultiValuedParamPersonArrayConverter implements ParamConverter<MultiValuedParamPersonWithConverter[]> {
 
     @Override
-    public PersonWithConverter[] fromString(String param) {
+    public MultiValuedParamPersonWithConverter[] fromString(String param) {
         if (param == null || param.trim().isEmpty()) {
             return null;
         }
-        String[] names = param.split(",");
-        PersonWithConverter[] people = new PersonWithConverter[names.length];
+        // cookies doesn't allow to use ',', see the spec (https://tools.ietf.org/html/rfc6265), so we need to use also '-'
+        String[] names = param.split("[,-]");
+        MultiValuedParamPersonWithConverter[] people = new MultiValuedParamPersonWithConverter[names.length];
         int i = 0;
         for (String name : names) {
-            PersonWithConverter person = new PersonWithConverter();
+            MultiValuedParamPersonWithConverter person = new MultiValuedParamPersonWithConverter();
             person.setName(name);
             people[i++] = person;
         }
@@ -21,7 +22,7 @@ public class PersonParamArrayConverter implements ParamConverter<PersonWithConve
     }
 
     @Override
-    public String toString(PersonWithConverter[] array) {
+    public String toString(MultiValuedParamPersonWithConverter[] array) {
         if (array == null || array.length == 0) {
             return null;
         }

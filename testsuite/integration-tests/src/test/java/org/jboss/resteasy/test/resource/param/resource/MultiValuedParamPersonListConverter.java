@@ -1,17 +1,18 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
 import javax.ws.rs.ext.ParamConverter;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TreeSet;
 
-public class PersonParamSortedSetConverter implements ParamConverter<Collection<?>> {
+public class MultiValuedParamPersonListConverter implements ParamConverter<Collection<?>> {
 
     @Override
     public Collection<?> fromString(String param) {
         if (param == null || param.trim().isEmpty()) {
             return null;
         }
-        return parse(param.split(","));
+        // cookies doesn't allow to use ',', see the spec (https://tools.ietf.org/html/rfc6265), so we need to use also '-'
+        return parse(param.split("[,-]"));
     }
 
     @Override
@@ -22,10 +23,10 @@ public class PersonParamSortedSetConverter implements ParamConverter<Collection<
         return stringify(list);
     }
 
-    private Collection<PersonWithConverter> parse(String[] params) {
-        Collection<PersonWithConverter> list = new TreeSet<PersonWithConverter>();
+    private Collection<MultiValuedParamPersonWithConverter> parse(String[] params) {
+        Collection<MultiValuedParamPersonWithConverter> list = new ArrayList<MultiValuedParamPersonWithConverter>();
         for (String param : params) {
-            PersonWithConverter person = new PersonWithConverter();
+            MultiValuedParamPersonWithConverter person = new MultiValuedParamPersonWithConverter();
             person.setName(param);
             list.add(person);
         }
@@ -39,4 +40,5 @@ public class PersonParamSortedSetConverter implements ParamConverter<Collection<
         }
         return sb.toString();
     }
+
 }
