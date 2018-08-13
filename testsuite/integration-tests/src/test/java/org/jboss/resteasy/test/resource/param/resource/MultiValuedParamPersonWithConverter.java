@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import java.util.Objects;
 
-public class PersonWithFromString implements Comparable<PersonWithFromString> {
+public class MultiValuedParamPersonWithConverter implements Comparable<MultiValuedParamPersonWithConverter> {
 
     private String name;
 
@@ -23,8 +23,8 @@ public class PersonWithFromString implements Comparable<PersonWithFromString> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonWithFromString personWithFromString = (PersonWithFromString) o;
-        return Objects.equals(name, personWithFromString.name);
+        MultiValuedParamPersonWithConverter person = (MultiValuedParamPersonWithConverter) o;
+        return Objects.equals(name, person.name);
     }
 
     @Override
@@ -34,13 +34,7 @@ public class PersonWithFromString implements Comparable<PersonWithFromString> {
     }
 
     @Override
-    public int compareTo(PersonWithFromString o) {
+    public int compareTo(MultiValuedParamPersonWithConverter o) {
         return this.toString().compareTo(o.toString());
-    }
-
-    public static PersonWithFromString fromString(String name) {
-        PersonWithFromString personWithFromString = new PersonWithFromString();
-        personWithFromString.setName(name);
-        return personWithFromString;
     }
 }

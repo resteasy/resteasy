@@ -6,22 +6,22 @@ import java.util.*;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 
-public class MultiValuedPersonParamConverterProvider implements ParamConverterProvider {
+public class MultiValuedParamPersonConverterProvider implements ParamConverterProvider {
 
         @SuppressWarnings("unchecked")
         @Override
         public <T> ParamConverter<T> getConverter(Class<T> aClass, Type type, Annotation[] annotations) {
             if (List.class.isAssignableFrom(aClass)) {
-                return (ParamConverter<T>) new PersonParamListConverter();
+                return (ParamConverter<T>) new MultiValuedParamPersonListConverter();
             }
             if (SortedSet.class.isAssignableFrom(aClass)) {
-                return (ParamConverter<T>) new PersonParamSortedSetConverter();
+                return (ParamConverter<T>) new MultiValuedParamPersonSortedSetConverter();
             }
             if (Set.class.isAssignableFrom(aClass)) {
-                return (ParamConverter<T>) new PersonParamSetConverter();
+                return (ParamConverter<T>) new MultiValuedParamPersonSetConverter();
             }
-            if (PersonWithConverter[].class.isAssignableFrom(aClass)) {
-                return (ParamConverter<T>) new PersonParamArrayConverter();
+            if (MultiValuedParamPersonWithConverter[].class.isAssignableFrom(aClass)) {
+                return (ParamConverter<T>) new MultiValuedParamPersonArrayConverter();
             }
             return null;
         }
