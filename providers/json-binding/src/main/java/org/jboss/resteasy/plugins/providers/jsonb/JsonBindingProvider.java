@@ -10,7 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
-import javax.validation.constraints.Null;
+import javax.json.bind.annotation.JsonbAnnotation;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
@@ -31,7 +31,6 @@ import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.Types;
 
 /**
@@ -65,7 +64,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          return false;
       }
       return (isSupportedMediaType(mediaType))
-    		  && ((FindAnnotation.hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
+    		  && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
    }
 
    @Override
@@ -124,7 +123,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          return false;
       }
       return (isSupportedMediaType(mediaType))
-            && ((FindAnnotation.hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
+            && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
    }
 
    @Override
@@ -187,5 +186,18 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       }
       return false;
 
+   }
+   
+   private static boolean hasJsonBindingAnnotations(Annotation[] searchList)
+   {
+      if (searchList != null) {
+         for (Annotation ann : searchList) {
+            if (ann.annotationType().isAnnotationPresent(JsonbAnnotation.class))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
    }
 }
