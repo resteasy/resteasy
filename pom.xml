@@ -98,7 +98,6 @@
                 <module>resteasy-dependencies-bom</module>
                 <module>tjws</module>
                 <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs-services</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
