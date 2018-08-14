@@ -300,94 +300,106 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
    {
-      this.parent = parent;
-      featureClasses = new CopyOnWriteArraySet<Class<?>>();
-      featureInstances = new CopyOnWriteArraySet<Object>();
-      providerClasses = new CopyOnWriteArraySet<Class<?>>();
-      providerInstances = new CopyOnWriteArraySet<Object>();
-      properties = new ConcurrentHashMap<String, Object>();
-      properties.putAll(parent.getProperties());
-      enabledFeatures = new CopyOnWriteArraySet<Feature>();
-      reactiveClasses = new ConcurrentHashMap<Class<?>, Class<? extends RxInvokerProvider<?>>>();
-
-      if (local)
+      if (local || parent == null)
       {
-         classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
-         if (parent != null)
-         {
-            providerClasses.addAll(parent.providerClasses);
-            providerInstances.addAll(parent.providerInstances);
-            classContracts.putAll(parent.classContracts);
-            properties.putAll(parent.properties);
-            enabledFeatures.addAll(parent.enabledFeatures);
-            reactiveClasses.putAll(parent.reactiveClasses);
-         }
+         // Parent MUST not be referenced after current object is created
+         this.parent = null;
+         initialize(parent);
       }
-      
-      resourceBuilder = new ResourceBuilder();
+      else
+      {
+         this.parent = parent;
+         featureClasses = new CopyOnWriteArraySet<>();
+         featureInstances = new CopyOnWriteArraySet<>();
+         providerClasses = new CopyOnWriteArraySet<>();
+         providerInstances = new CopyOnWriteArraySet<>();
+         properties = new ConcurrentHashMap<>();
+         properties.putAll(parent.getProperties());
+         enabledFeatures = new CopyOnWriteArraySet<>();
+         reactiveClasses = new ConcurrentHashMap<>();
+      }
    }
-
+   
    protected void initialize()
    {
-      serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>();
-      clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>();
-      enabledFeatures = new CopyOnWriteArraySet<Feature>();
-      properties = new ConcurrentHashMap<String, Object>();
-      featureClasses = new CopyOnWriteArraySet<Class<?>>();
-      featureInstances = new CopyOnWriteArraySet<Object>();
-      providerClasses = new CopyOnWriteArraySet<Class<?>>();
-      providerInstances = new CopyOnWriteArraySet<Object>();
-      classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
-      serverMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
-      serverMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
-      clientMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
-      clientMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
-      sortedExceptionMappers = new ConcurrentHashMap<Class<?>, SortedKey<ExceptionMapper>>();
-      exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
-      clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
-      asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
-      asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
-      asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
-      contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-      sortedParamConverterProviders = Collections.synchronizedSortedSet(new TreeSet<ExtSortedKey<ParamConverterProvider>>());
-      stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
-      stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+      initialize(null);
+   }
 
-      reactiveClasses = new ConcurrentHashMap<Class<?>, Class<? extends RxInvokerProvider<?>>>();
-      headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
+   protected void initialize(ResteasyProviderFactory parent)
+   {
+      serverDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getServerDynamicFeatures());
+      clientDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getClientDynamicFeatures());
+      enabledFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getEnabledFeatures());
+      properties = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getProperties());
+      featureClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getFeatureClasses());
+      featureInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getFeatureInstances());
+      providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderClasses());
+      providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderInstances());
+      classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClassContracts());
+      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyReaders().clone();
+      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyWriters().clone();
+      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyReaders().clone();
+      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyWriters().clone();
+      exceptionMappers = new ConcurrentHashMap<>();
+      if (parent != null)
+      {
+         for (Entry<Class<?>, SortedKey<ExceptionMapper>> entry : getSortedExceptionMappers().entrySet())
+         {
+            exceptionMappers.put(entry.getKey(), entry.getValue().getObj());
+         }
+      }
+      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
+      clientExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClientExceptionMappers());
+      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
+      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
+      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
+      contextResolvers = new ConcurrentHashMap<>();
+      if (parent != null)
+      {
+         for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers()
+               .entrySet())
+         {
+            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+         }
+      }
+      sortedParamConverterProviders = Collections.synchronizedSortedSet(parent == null ? new TreeSet<>() : new TreeSet<>(parent.getSortedParamConverterProviders()));
+      stringConverters = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getStringConverters());
+      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
+
+      reactiveClasses = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.reactiveClasses);
+      headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getHeaderDelegates());
 
       precedence = new LegacyPrecedence();
-      serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
-      serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
-      containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
-      containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
+      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.serverReaderInterceptorRegistry.clone(this);
+      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.serverWriterInterceptorRegistry.clone(this);
+      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this, precedence) : parent.containerRequestFilterRegistry.clone(this);
 
-      clientRequestFilterRegistry = new ClientRequestFilterRegistry(this);
-      clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
-      clientResponseFilters = new ClientResponseFilterRegistry(this);
-      clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
-      clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
-      clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.clientRequestFilterRegistry.clone(this);
+      clientRequestFilters = parent == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : parent.clientRequestFilters.clone(this);
+      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.clientResponseFilters.clone(this);
+      clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.clientReaderInterceptorRegistry.clone(this);
+      clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.clientWriterInterceptorRegistry.clone(this);
+      clientExecutionInterceptorRegistry = parent == null ? new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this) : parent.getClientExecutionInterceptorRegistry().cloneTo(this);
 
-      clientErrorInterceptors = new CopyOnWriteArrayList<ClientErrorInterceptor>();
+      clientErrorInterceptors = parent == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(parent.getClientErrorInterceptors());
 
       resourceBuilder = new ResourceBuilder();
 
       builtinsRegistered = false;
       registerBuiltins = true;
 
-      injectorFactory = new InjectorFactoryImpl();
+      injectorFactory = parent == null ? new InjectorFactoryImpl() : parent.getInjectorFactory();
       registerDefaultInterceptorPrecedences();
-      addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
-      addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
-      addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
-      addHeaderDelegate(URI.class, new UriHeaderDelegate());
-      addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
-      addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
-      addHeaderDelegate(Locale.class, new LocaleDelegate());
-      addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
-      addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
-      addHeaderDelegate(Date.class, new DateDelegate());
+      addHeaderDelegateIfAbsent(MediaType.class, new MediaTypeHeaderDelegate());
+      addHeaderDelegateIfAbsent(NewCookie.class, new NewCookieHeaderDelegate());
+      addHeaderDelegateIfAbsent(Cookie.class, new CookieHeaderDelegate());
+      addHeaderDelegateIfAbsent(URI.class, new UriHeaderDelegate());
+      addHeaderDelegateIfAbsent(EntityTag.class, new EntityTagDelegate());
+      addHeaderDelegateIfAbsent(CacheControl.class, new CacheControlDelegate());
+      addHeaderDelegateIfAbsent(Locale.class, new LocaleDelegate());
+      addHeaderDelegateIfAbsent(LinkHeader.class, new LinkHeaderDelegate());
+      addHeaderDelegateIfAbsent(javax.ws.rs.core.Link.class, new LinkDelegate());
+      addHeaderDelegateIfAbsent(Date.class, new DateDelegate());
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()
@@ -976,6 +988,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (headerDelegates == null && parent != null) return parent.getHeaderDelegates();
       return headerDelegates;
+   }
+   
+   private void addHeaderDelegateIfAbsent(Class clazz, HeaderDelegate header)
+   {
+      if (headerDelegates == null || !headerDelegates.containsKey(clazz))
+      {
+         addHeaderDelegate(clazz, header);
+      }
    }
 
    public void addHeaderDelegate(Class clazz, HeaderDelegate header)
