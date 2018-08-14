@@ -1,5 +1,38 @@
 package org.jboss.resteasy.test.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.ws.rs.RuntimeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature1;
@@ -22,12 +55,6 @@ import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestMessa
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestMessageBodyReader6;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
-import java.util.Set;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -135,6 +162,350 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
         Assert.assertEquals("Wrong RuntimeType in WebTarget", RuntimeType.CLIENT, target.getConfiguration().getRuntimeType());
     }
 
+   @Test
+   public void testClientRequestFilterInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentRequestFilterCounter = new AtomicInteger(0);
+         ClientRequestFilter parentClientRequestFilter = (containerRequestContext) -> {
+            parentRequestFilterCounter.incrementAndGet();
+         };
+         parentWebTarget.register(parentClientRequestFilter);
+         childWebTarget.request().get().close();
+         Assert.assertEquals(0, parentRequestFilterCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childRequestFilterCounter = new AtomicInteger(0);
+         ClientRequestFilter childClientRequestFilter = (containerRequestContext) -> {
+            childRequestFilterCounter.incrementAndGet();
+         };
+         childWebTarget.register(childClientRequestFilter);
+         childWebTarget.request().get().close();
+         Assert.assertEquals(1, childRequestFilterCounter.get());
+         Assert.assertEquals(0, parentRequestFilterCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testClientResponseFilterInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentResponseFilterCounter = new AtomicInteger(0);
+         ClientResponseFilter parentClientResponseFilter = (containerRequestContext, containerResponseContext) -> {
+            parentResponseFilterCounter.incrementAndGet();
+         };
+         parentWebTarget.register(parentClientResponseFilter);
+         childWebTarget.request().get().close();
+         Assert.assertEquals(0, parentResponseFilterCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childResponseFilterCounter = new AtomicInteger(0);
+         ClientResponseFilter childClientResponseFilter = (containerRequestContext, containerResponseContext) -> {
+            childResponseFilterCounter.incrementAndGet();
+         };
+         childWebTarget.register(childClientResponseFilter);
+         childWebTarget.request().get().close();
+         Assert.assertEquals(1, childResponseFilterCounter.get());
+         Assert.assertEquals(0, parentResponseFilterCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testReaderInterceptorInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+         childWebTarget.register((ClientResponseFilter) (containerRequestContext, containerResponseContext) -> {
+            containerResponseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+            containerResponseContext.setEntityStream(new ByteArrayInputStream("hello".getBytes()));
+         });
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentReaderInterceptorCounter = new AtomicInteger(0);
+         ReaderInterceptor parentReaderInterceptor = (readerInterceptorContext) -> {
+            parentReaderInterceptorCounter.incrementAndGet();
+            return readerInterceptorContext.proceed();
+         };
+         parentWebTarget.register(parentReaderInterceptor);
+         childWebTarget.request().get().readEntity(String.class);
+         Assert.assertEquals(0, parentReaderInterceptorCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childReaderInterceptorCounter = new AtomicInteger(0);
+         ReaderInterceptor childReaderInterceptor = (readerInterceptorContext) -> {
+            childReaderInterceptorCounter.incrementAndGet();
+            return readerInterceptorContext.proceed();
+         };
+         childWebTarget.register(childReaderInterceptor);
+         childWebTarget.request().get().readEntity(String.class);
+         Assert.assertEquals(1, childReaderInterceptorCounter.get());
+         Assert.assertEquals(0, parentReaderInterceptorCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testWriterInterceptorInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentWriterInterceptorCounter = new AtomicInteger(0);
+         WriterInterceptor parentWriterInterceptor = (writerInterceptorContext) -> {
+            parentWriterInterceptorCounter.incrementAndGet();
+            writerInterceptorContext.proceed();
+         };
+         parentWebTarget.register(parentWriterInterceptor);
+         childWebTarget.request().post(Entity.text("Hello")).close();
+         Assert.assertEquals(0, parentWriterInterceptorCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childWriterInterceptorCounter = new AtomicInteger(0);
+         WriterInterceptor childWriterInterceptor = (writerInterceptorContext) -> {
+            childWriterInterceptorCounter.incrementAndGet();
+            writerInterceptorContext.proceed();
+         };
+         childWebTarget.register(childWriterInterceptor);
+         childWebTarget.request().post(Entity.text("Hello")).close();
+         Assert.assertEquals(1, childWriterInterceptorCounter.get());
+         Assert.assertEquals(0, parentWriterInterceptorCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testMessageBodyReaderInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+         childWebTarget.register((ClientResponseFilter) (containerRequestContext, containerResponseContext) -> {
+            containerResponseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+            containerResponseContext.setEntityStream(new ByteArrayInputStream("hello".getBytes()));
+         });
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentMessageBodyReaderCounter = new AtomicInteger(0);
+         MessageBodyReader<String> parentMessageBodyReader = new MessageBodyReader<String>()
+         {
+            @Override
+            public String readFrom(Class<String> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+                  throws IOException, WebApplicationException
+            {
+               return null;
+            }
+
+            @Override
+            public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+            {
+               parentMessageBodyReaderCounter.incrementAndGet();
+               return false;
+            }
+         };
+         parentWebTarget.register(parentMessageBodyReader);
+         childWebTarget.request().get().readEntity(String.class);
+         Assert.assertEquals(0, parentMessageBodyReaderCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childMessageBodyReaderCounter = new AtomicInteger(0);
+         MessageBodyReader<String> childMessageBodyReader = new MessageBodyReader<String>()
+         {
+            @Override
+            public String readFrom(Class<String> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+                  throws IOException, WebApplicationException
+            {
+               return null;
+            }
+
+            @Override
+            public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+            {
+               childMessageBodyReaderCounter.incrementAndGet();
+               return false;
+            }
+         };
+         childWebTarget.register(childMessageBodyReader);
+         childWebTarget.request().get().readEntity(String.class);
+         Assert.assertEquals(1, childMessageBodyReaderCounter.get());
+         Assert.assertEquals(0, parentMessageBodyReaderCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testMessageBodyWriterInterceptorInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+
+         // Registration on parent MUST not affect the child
+         AtomicInteger parentMessageBodyWriterCounter = new AtomicInteger(0);
+         MessageBodyWriter<String> parentMessageBodyWriter = new MessageBodyWriter<String>()
+         {
+
+            @Override
+            public void writeTo(String t, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                  throws IOException, WebApplicationException
+            {
+
+            }
+
+            @Override
+            public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+            {
+               parentMessageBodyWriterCounter.incrementAndGet();
+               return false;
+            }
+         };
+         parentWebTarget.register(parentMessageBodyWriter);
+         childWebTarget.request().post(Entity.text("Hello")).close();
+         Assert.assertEquals(0, parentMessageBodyWriterCounter.get());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         AtomicInteger childMessageBodyWriterCounter = new AtomicInteger(0);
+         MessageBodyWriter<String> childMessageBodyWriter = new MessageBodyWriter<String>()
+         {
+
+            @Override
+            public void writeTo(String t, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                  throws IOException, WebApplicationException
+            {
+
+            }
+
+            @Override
+            public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+            {
+               childMessageBodyWriterCounter.incrementAndGet();
+               return false;
+            }
+         };
+         childWebTarget.register(childMessageBodyWriter);
+         childWebTarget.request().post(Entity.text("Hello")).close();
+         Assert.assertEquals(1, childMessageBodyWriterCounter.get());
+         Assert.assertEquals(0, parentMessageBodyWriterCounter.get());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+
+   @Test
+   public void testContextResolverInheritence()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         WebTarget parentWebTarget = client.target("http://www.test.com");
+         WebTarget childWebTarget = parentWebTarget.path("path");
+         List<String> result = new ArrayList<>();
+         childWebTarget.register(new ClientRequestFilter()
+         {
+
+            @Context
+            Providers providers;
+
+            @Override
+            public void filter(ClientRequestContext requestContext) throws IOException
+            {
+               ContextResolver<String> contextResolver = providers.getContextResolver(String.class,
+                     MediaType.WILDCARD_TYPE);
+               if (contextResolver != null)
+               {
+                  String context = contextResolver.getContext(getClass());
+                  result.add(context);
+               }
+            }
+         });
+
+         // Registration on parent MUST not affect the child
+         ContextResolver<String> parentContextResolver = new ContextResolver<String>()
+         {
+
+            @Override
+            public String getContext(Class<?> type)
+            {
+               return "ParentContext";
+            }
+         };
+         parentWebTarget.register(parentContextResolver);
+         childWebTarget.request().get().close();
+         Assert.assertTrue(result.isEmpty());
+
+         // Child MUST only use the snapshot configuration of the parent
+         // taken at child creation time.
+         ContextResolver<String> childContextResolver = new ContextResolver<String>()
+         {
+
+            @Override
+            public String getContext(Class<?> type)
+            {
+               return null;
+            }
+         };
+         childWebTarget.register(childContextResolver);
+         childWebTarget.request().get().close();
+         Assert.assertEquals(1, result.size());
+         Assert.assertEquals(null, result.get(0));
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+   
     private void checkFirstConfiguration(Configuration config) {
         Set<Class<?>> classes = config.getClasses();
         Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature1.class));
