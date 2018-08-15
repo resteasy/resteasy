@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import com.sun.xml.bind.api.ClassResolver;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -10,7 +10,7 @@
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -19,13 +19,12 @@ package org.jboss.resteasy.extension.systemproperties;
 
 /**
  * SystemProperties
- * 
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @version $Revision: $
  */
 public class SystemProperties {
-	public static final String EXTENSION_NAME = "systemproperties";
-	public static final String CONFIG_PREFIX = "prefix";
-	public static final String FILE_NAME = "arq_system.properties";
+    public static final String EXTENSION_NAME = "systemproperties";
+    public static final String CONFIG_PREFIX = "prefix";
+    public static final String FILE_NAME = "arq_system.properties";
 }

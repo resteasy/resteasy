@@ -12,5 +12,5 @@ public interface RootResource
 
    @Path("entered")
    @GET
-   public Response entered();
+   Response entered();
 }

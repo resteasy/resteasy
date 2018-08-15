@@ -5,7 +5,6 @@ import org.jboss.resteasy.annotations.GZIP;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -15,5 +14,5 @@ import javax.ws.rs.core.Response;
         @Consumes("application/json")
         @POST
         @GZIP
-        public Response post(@GZIP Pair pair);
+        Response post(@GZIP Pair pair);
     }

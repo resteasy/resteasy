@@ -10,22 +10,25 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 
 @Path("/")
 public class ResourceLocatorBaseResource {
-   
+
+   private static final Logger LOG = Logger.getLogger(ResourceLocatorBaseResource.class);
+
    @Path("base/{param}/resources")
    public Object getSubresource(@PathParam("param") String param, @Context UriInfo uri) {
-      System.out.println("Here in BaseResource");
+      LOG.info("Here in BaseResource");
       Assert.assertEquals("1", param);
       List<String> matchedURIs = uri.getMatchedURIs();
       Assert.assertEquals(2, matchedURIs.size());
       Assert.assertEquals("base/1/resources", matchedURIs.get(0));
       Assert.assertEquals("", matchedURIs.get(1));
-      for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
+      for (String ancestor : matchedURIs) LOG.info("   " + ancestor);
 
-      System.out.println("Uri Ancesstors Object for Subresource.doGet():");
+      LOG.info("Uri Ancesstors Object for Subresource.doGet():");
       Assert.assertEquals(1, uri.getMatchedResources().size());
       Assert.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0).getClass());
       return new ResourceLocatorSubresource();

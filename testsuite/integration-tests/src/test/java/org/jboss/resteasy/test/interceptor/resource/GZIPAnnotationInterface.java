@@ -15,5 +15,5 @@ public interface GZIPAnnotationInterface {
    @Produces("text/plain")
    @GZIP
    @POST
-   public String getFoo(@GZIP String request);
+   String getFoo(@GZIP String request);
 }

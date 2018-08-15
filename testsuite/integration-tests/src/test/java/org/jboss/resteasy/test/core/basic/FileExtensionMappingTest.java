@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.core.basic.resource.FileExtensionMappingApplication;
 import org.jboss.resteasy.test.core.basic.resource.FileExtensionMappingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -30,6 +31,7 @@ import org.junit.runner.RunWith;
 public class FileExtensionMappingTest
 {
    static Client client;
+   private static final Logger LOG = Logger.getLogger(FileExtensionMappingTest.class);
 
    @BeforeClass
    public static void setup() {
@@ -47,7 +49,7 @@ public class FileExtensionMappingTest
        war.addClass(FileExtensionMappingApplication.class);
        war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
        Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
-       System.out.println(archive.toString(true));
+       LOG.info(archive.toString(true));
        return archive;
    }
 
@@ -61,7 +63,7 @@ public class FileExtensionMappingTest
     */
    @Test
    public void testFileExtensionMappingPlain() throws Exception {
-      System.out.println("url: " + client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").getUri());
+      LOG.info("url: " + client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").getUri());
       Response response = client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
@@ -75,7 +77,7 @@ public class FileExtensionMappingTest
    @Test
    public void testFileExtensionMappingHtml() throws Exception
    {
-      System.out.println("url: " + client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").getUri());
+      LOG.info("url: " + client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").getUri());
       Response response = client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());

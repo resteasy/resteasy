@@ -10,17 +10,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.CompletionCallback;
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 
 @Path("/")
 public class AsyncRequestFilterResource {
-   
+
+    private static final Logger LOG = Logger.getLogger(AsyncRequestFilterResource.class);
     @GET
     public Response threeSyncRequestFilters(@Context HttpRequest request,
           @HeaderParam("Filter1") @DefaultValue("") String filter1,
@@ -72,7 +71,7 @@ public class AsyncRequestFilterResource {
          } catch (InterruptedException e)
          {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Error:", e);
          }
           resp.complete(Response.ok("resource").build());
        });

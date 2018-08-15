@@ -17,9 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServerErrorException;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -315,7 +313,7 @@ public class SseResource
    @Path("/closeAfterSent")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void eventStream(@Context SseEventSink eventSink, @Context Sse sse) throws Exception {
-      System.out.println("entering eventStream()");
+      logger.info("entering eventStream()");
       ExecutorService pool = Executors.newCachedThreadPool();
       OutboundSseEvent.Builder builder = sse.newEventBuilder().mediaType(MediaType.APPLICATION_XML_TYPE);
       pool.execute(new Thread()
@@ -324,11 +322,11 @@ public class SseResource
          {
             try (SseEventSink sink = eventSink) 
             {
-               System.out.println("sending 3 events");
+               logger.info("sending 3 events");
                eventSink.send(builder.data("thing1").build());
                eventSink.send(builder.data("thing2").build());
                eventSink.send(builder.data("thing3").build());
-               System.out.println("sent 3 events");
+               logger.info("sent 3 events");
             }
          }
       });

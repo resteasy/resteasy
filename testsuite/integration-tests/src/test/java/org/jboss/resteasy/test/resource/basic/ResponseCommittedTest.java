@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.resource.basic.resource.ResponseCommittedResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -31,6 +32,8 @@ public class ResponseCommittedTest
 {
    public static int TEST_STATUS = 444;
    private static Client client;
+   private static final Logger LOG = Logger.getLogger(ResponseCommittedTest.class);
+
 
    @Deployment
    public static Archive<?> deploy() throws Exception
@@ -59,7 +62,7 @@ public class ResponseCommittedTest
    {
       Invocation.Builder request = client.target(generateBaseUrl()).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(TEST_STATUS, response.getStatus());
       response.close();
       client.close();

@@ -9,6 +9,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,6 +22,9 @@ import org.junit.Test;
  */
 public class ContentEncodingInvocationTest
 {
+
+   private static final Logger LOG = Logger.getLogger(ContentEncodingInvocationTest.class);
+
    @Test
    public void test() throws URISyntaxException
    {
@@ -34,8 +38,8 @@ public class ContentEncodingInvocationTest
          invocation = (ClientInvocation) builder.buildPost(Entity.entity("entity", variant));
       }
       String contentEncoding = invocation.getHeaders().getHeader("Content-Encoding");
-      System.out.println("encoding: " + contentEncoding);
-      System.out.println("count: " + countEncoding(contentEncoding));
+      LOG.info("encoding: " + contentEncoding);
+      LOG.info("count: " + countEncoding(contentEncoding));
       Assert.assertEquals(1, countEncoding(contentEncoding));
       
    }

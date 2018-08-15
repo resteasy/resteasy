@@ -1,18 +1,16 @@
 package org.jboss.resteasy.test.client.proxy;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.client.proxy.GenericProxyTest;
-import org.jboss.resteasy.test.client.proxy.resource.*;
+import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxy;
+import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeter;
+import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeting;
+import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

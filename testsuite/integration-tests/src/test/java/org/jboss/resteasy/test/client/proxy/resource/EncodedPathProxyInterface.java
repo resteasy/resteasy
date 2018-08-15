@@ -13,9 +13,9 @@ public interface EncodedPathProxyInterface
 {
    @GET
    @Path("/encode/{path:.+}")
-   public Response encode(@Encoded @PathParam("path") String path, @Context UriInfo info);
+   Response encode(@Encoded @PathParam("path") String path, @Context UriInfo info);
 
    @GET
    @Path("/noencode/{path:.+}")
-   public Response noencode(@PathParam("path") String path, @Context UriInfo info);
+   Response noencode(@PathParam("path") String path, @Context UriInfo info);
 }

@@ -5,8 +5,6 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
-import java.security.SecurityPermission;
-import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
 import org.apache.http.HttpEntity;

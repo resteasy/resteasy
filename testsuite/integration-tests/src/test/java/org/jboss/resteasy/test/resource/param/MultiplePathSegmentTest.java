@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.resource.param;
 
+import org.jboss.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -30,6 +31,7 @@ import org.junit.runner.RunWith;
 public class MultiplePathSegmentTest {
 
    private static Client client;
+   private static final Logger LOG = Logger.getLogger(MultiplePathSegmentTest.class);
 
    @Deployment
    public static Archive<?> deploy() {
@@ -60,7 +62,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/array/3")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -74,7 +76,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/list/3")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -88,7 +90,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/arraylist/3")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -102,7 +104,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/array")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -116,7 +118,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/list")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -130,7 +132,7 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/arraylist")).request();
       Response response = request.get();
-      System.out.println("status: " + response.getStatus());
+      LOG.info("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }

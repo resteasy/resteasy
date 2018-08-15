@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.HeaderParamsAsPrimitivesTest;
 import org.junit.Assert;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;

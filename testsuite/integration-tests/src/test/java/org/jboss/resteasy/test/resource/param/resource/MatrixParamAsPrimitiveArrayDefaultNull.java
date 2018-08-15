@@ -2,8 +2,6 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import org.jboss.resteasy.test.resource.param.MatrixParamAsPrimitiveTest;
 import org.junit.Assert;
-
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;

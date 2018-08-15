@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -75,6 +77,7 @@ public class RxObservableProxyTest {
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
    private final static List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
+   private static final Logger LOG = LogManager.getLogger(RxObservableProxyTest.class);
 
    static {
       for (int i = 0; i < 3; i++) {xStringList.add("x");}
@@ -353,7 +356,7 @@ public class RxObservableProxyTest {
    public void testHead() throws Exception {
       Observable<String> observable = proxy.head();
       observable.subscribe(
-         (String s) -> System.out.println(s), // HEAD - no body
+         (String s) -> LOG.info(s), // HEAD - no body
          (Throwable t) -> throwableContains(t, "Input stream was empty"));
 
       Assert.assertNull(value.get());

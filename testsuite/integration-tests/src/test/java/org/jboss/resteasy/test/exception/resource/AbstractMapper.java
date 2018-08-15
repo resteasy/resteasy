@@ -14,5 +14,5 @@ public abstract class AbstractMapper<E extends Throwable> implements ExceptionMa
         return builder.build();
     }
 
-    protected abstract void handleError(final Response.ResponseBuilder builder, E e);
+    protected abstract void handleError(Response.ResponseBuilder builder, E e);
 }

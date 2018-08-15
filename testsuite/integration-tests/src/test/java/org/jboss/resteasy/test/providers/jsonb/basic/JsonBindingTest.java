@@ -161,7 +161,7 @@ public class JsonBindingTest {
       try {
          Cat wrongObject = response.readEntity(Cat.class);
          logger.info("JSON-B parse server toString method, although JSON-B should not do that. Received object:");
-         logger.info(wrongObject.toString());;
+         logger.info(wrongObject.toString());
          Assert.fail("Client should throw exception because JSON-B should not be able to parse wrong data");
       }
       catch (Throwable e) {
