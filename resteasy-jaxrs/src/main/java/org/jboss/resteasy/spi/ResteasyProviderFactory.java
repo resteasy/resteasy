@@ -370,15 +370,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getHeaderDelegates());
 
       precedence = new LegacyPrecedence();
-      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.serverReaderInterceptorRegistry.clone(this);
-      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.serverWriterInterceptorRegistry.clone(this);
-      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this, precedence) : parent.containerRequestFilterRegistry.clone(this);
+      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.getServerReaderInterceptorRegistry().clone(this);
+      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.getServerWriterInterceptorRegistry().clone(this);
+      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this, precedence) : parent.getContainerRequestFilterRegistry().clone(this);
 
-      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.clientRequestFilterRegistry.clone(this);
-      clientRequestFilters = parent == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : parent.clientRequestFilters.clone(this);
-      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.clientResponseFilters.clone(this);
-      clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.clientReaderInterceptorRegistry.clone(this);
-      clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.clientWriterInterceptorRegistry.clone(this);
+      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.getClientRequestFilterRegistry().clone(this);
+      clientRequestFilters = parent == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : parent.getClientRequestFilters().clone(this);
+      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.getClientResponseFilters().clone(this);
+      clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.getClientReaderInterceptorRegistry().clone(this);
+      clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.getClientWriterInterceptorRegistry().clone(this);
       clientExecutionInterceptorRegistry = parent == null ? new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this) : parent.getClientExecutionInterceptorRegistry().cloneTo(this);
 
       clientErrorInterceptors = parent == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(parent.getClientErrorInterceptors());
