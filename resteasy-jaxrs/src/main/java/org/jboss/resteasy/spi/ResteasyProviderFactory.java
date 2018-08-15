@@ -341,14 +341,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyReaders().clone();
       clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyWriters().clone();
       sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
-      exceptionMappers = new ConcurrentHashMap<>();
-      if (parent != null)
-      {
-         for (Entry<Class<?>, SortedKey<ExceptionMapper>> entry : getSortedExceptionMappers().entrySet())
-         {
-            exceptionMappers.put(entry.getKey(), entry.getValue().getObj());
-         }
-      }
+      exceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getExceptionMappers());
       clientExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClientExceptionMappers());
       asyncResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
       asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
@@ -373,6 +366,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.getServerReaderInterceptorRegistry().clone(this);
       serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.getServerWriterInterceptorRegistry().clone(this);
       containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this, precedence) : parent.getContainerRequestFilterRegistry().clone(this);
+      containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistry(this, precedence) : parent.getContainerResponseFilterRegistry().clone(this);
 
       clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.getClientRequestFilterRegistry().clone(this);
       clientRequestFilters = parent == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : parent.getClientRequestFilters().clone(this);
