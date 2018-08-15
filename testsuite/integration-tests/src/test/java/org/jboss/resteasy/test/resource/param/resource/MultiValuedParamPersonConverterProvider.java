@@ -2,7 +2,9 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 

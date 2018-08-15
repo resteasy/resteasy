@@ -14,13 +14,13 @@ public interface AnnotationInheritanceGenericsInterface<ENTITY_TYPE, ID_TYPE> {
 
     @GET
     @Path("{id}")
-    ENTITY_TYPE get(@PathParam("id") final ID_TYPE id);
+    ENTITY_TYPE get(@PathParam("id") ID_TYPE id);
 
     @POST
     ENTITY_TYPE post(ENTITY_TYPE entity);
 
     @PUT
     @Path("{id}")
-    ENTITY_TYPE put(@PathParam("id") final ID_TYPE id, final ENTITY_TYPE entity);
+    ENTITY_TYPE put(@PathParam("id") ID_TYPE id, ENTITY_TYPE entity);
 
 }

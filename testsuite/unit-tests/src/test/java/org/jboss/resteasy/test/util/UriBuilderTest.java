@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.test.util.resource.UriBuilderResource;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.core.UriBuilder;

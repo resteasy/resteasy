@@ -7,7 +7,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.multipart.resource.GenericTypeResource;
 import org.jboss.resteasy.test.providers.multipart.resource.GenericTypeStringListReaderWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;

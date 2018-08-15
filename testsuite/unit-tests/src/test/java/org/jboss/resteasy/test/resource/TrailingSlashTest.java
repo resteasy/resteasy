@@ -1,12 +1,8 @@
 package org.jboss.resteasy.test.resource;
 
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 

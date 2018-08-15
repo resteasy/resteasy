@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Stream;
-import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.junit.Assert;
 
 public class StreamRawMediaTypes {

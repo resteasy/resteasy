@@ -47,7 +47,6 @@ public class FileExtensionMappingTest
        war.addClass(FileExtensionMappingApplication.class);
        war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
        Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
-//       System.out.println(archive.toString(true));
        return archive;
    }
 
@@ -61,7 +60,6 @@ public class FileExtensionMappingTest
     */
    @Test
    public void testFileExtensionMappingPlain() throws Exception {
-//      System.out.println("url: " + client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").getUri());
       Response response = client.target(generateURL("/test.txt")).queryParam("query", "whosOnFirst").request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
@@ -75,7 +73,6 @@ public class FileExtensionMappingTest
    @Test
    public void testFileExtensionMappingHtml() throws Exception
    {
-//      System.out.println("url: " + client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").getUri());
       Response response = client.target(generateURL("/test.html")).queryParam("query", "whosOnFirst").request().get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());

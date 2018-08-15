@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.resource.path.resource.EmailResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamCarResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamDigits;

@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.UndertowTestRunner;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionBooleanInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionByteInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionCharInjector;

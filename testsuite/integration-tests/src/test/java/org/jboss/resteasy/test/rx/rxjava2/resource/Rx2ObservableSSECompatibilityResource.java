@@ -20,11 +20,11 @@ public interface Rx2ObservableSSECompatibilityResource {
    @Path("eventStream/thing")
    @Produces("text/event-stream")
    @SseElementType("application/json")
-   public void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
+   void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
 
    @GET
    @Path("observable/thing")
    @Produces("text/event-stream")
    @SseElementType("application/json")
-   public Observable<Thing> observableSSE();
+   Observable<Thing> observableSSE();
 }

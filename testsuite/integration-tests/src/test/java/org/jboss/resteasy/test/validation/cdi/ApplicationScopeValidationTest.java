@@ -84,7 +84,6 @@ public class ApplicationScopeValidationTest {
    @Test
    public void testValidationRequestScope()
    {
-//      System.out.println("");
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/testreq/send"));
       ApplicationScopeMyDto dto = new ApplicationScopeMyDto();

@@ -48,7 +48,7 @@ public class RxObservableSSECompatibilityResourceImpl {
                emitter.onNext(new Thing("e1"));
                emitter.onNext(new Thing("e2"));
                emitter.onNext(new Thing("e3"));
-               emitter.onCompleted();;
+               emitter.onCompleted();
             }
          });
    }

@@ -68,24 +68,24 @@ public class MultipleAcceptHeaderTest
       @GET
       @Path("accept")
       @Produces("application/json")
-      public String getJson();
+      String getJson();
 
       @GET
       @Path("accept")
       @Produces("application/xml")
-      public String getXml();
+      String getXml();
 
       @GET
       @Path("accept")
       @Produces(
       {"application/wrong1", "application/wrong2", "application/xml"})
-      public String getXmlMultiple();
+      String getXmlMultiple();
 
       @GET
       @Path("accept")
       @Produces(
       {"application/wrong1", "text/plain"})
-      public String getXmlPlainMultiple();
+      String getXmlPlainMultiple();
    }
 
    @Before

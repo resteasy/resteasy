@@ -60,7 +60,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/array/3")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -74,7 +73,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/list/3")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -88,7 +86,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/c/arraylist/3")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -102,7 +99,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/array")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -116,7 +112,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/list")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
@@ -130,7 +125,6 @@ public class MultiplePathSegmentTest {
    {
       Invocation.Builder request = client.target(generateURL("/a/b/arraylist")).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }

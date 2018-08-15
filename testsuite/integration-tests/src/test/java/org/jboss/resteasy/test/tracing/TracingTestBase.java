@@ -1,9 +1,14 @@
 package org.jboss.resteasy.test.tracing;
 
-import org.jboss.arquillian.container.test.api.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.arquillian.container.test.api.ContainerController;
+import org.jboss.arquillian.container.test.api.Deployer;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -27,6 +32,7 @@ public abstract class TracingTestBase {
     protected static final String TRACING_CONTAINER = "jbossas-manual-tracing";
     protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
     protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
+    private static final Logger LOG = LogManager.getLogger(TracingTestBase.class);
 
     @ArquillianResource
     protected ContainerController containerController;
@@ -67,7 +73,7 @@ public abstract class TracingTestBase {
 
     protected String generateURL(String path, String deploymentName) {
         String fullpath =  PortProviderUtil.generateURL(path, deploymentName,  PortProviderUtil.getHost(), PortProviderUtil.getPort() + 2000);
-        System.out.println(":::PATH: " + fullpath);
+        LOG.info(":::PATH: " + fullpath);
         return fullpath;
     }
 
@@ -111,7 +117,7 @@ public abstract class TracingTestBase {
 
     protected void verifyResults(Response response, Map<String, Boolean> results) {
         for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-            System.out.println("<K, V> ->" + entry);
+            LOG.info("<K, V> ->" + entry);
             String item = entry
                     .getValue()
                     .toString()

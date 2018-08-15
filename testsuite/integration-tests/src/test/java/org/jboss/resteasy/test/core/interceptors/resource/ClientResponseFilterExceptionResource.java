@@ -16,7 +16,7 @@ public interface ClientResponseFilterExceptionResource {
    @Path("sync")
    @GET
    @Produces("text/plain")
-   public String sync();
+   String sync();
    
    @Path("cs")
    @GET

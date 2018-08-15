@@ -142,18 +142,18 @@ public class FormUrlEncodedTest {
     }
     
     @Path("/")
-    public static interface TestProxy {
+    public interface TestProxy {
        @Path("/form")
        @POST
        @Produces("application/x-www-form-urlencoded")
        @Consumes("application/x-www-form-urlencoded")
-       public String post(MultivaluedMap<String, String> form);
+       String post(MultivaluedMap<String, String> form);
 
        @Path("/form")
        @POST
        @Produces("application/x-www-form-urlencoded")
        @Consumes("application/x-www-form-urlencoded")
-       public MultivaluedMap<String, String> post2(MultivaluedMap<String, String> form);
+       MultivaluedMap<String, String> post2(MultivaluedMap<String, String> form);
     }
 
     /**

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ FIELD, METHOD, PARAMETER })
 public @interface AsyncInjectionPrimitiveInjectorSpecifier
 {
-   public enum Type {
+   enum Type {
       VALUE, NULL, NO_RESULT;
    }
    

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FilePermission;
 import java.io.StringWriter;
-import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.Client;

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.cache;
 
-import java.io.File;
 import java.security.AllPermission;
 import java.util.ArrayList;
 import java.util.List;

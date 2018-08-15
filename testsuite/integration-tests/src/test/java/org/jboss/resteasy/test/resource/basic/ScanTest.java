@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.basic.resource.ScanProxy;
 import org.jboss.resteasy.test.resource.basic.resource.ScanResource;
 import org.jboss.resteasy.test.resource.basic.resource.ScanSubresource;

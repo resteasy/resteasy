@@ -1,13 +1,15 @@
 package org.jboss.resteasy.test.spring.deployment;
 
 import javax.json.JsonArray;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.spring.deployment.resource.*;
+import org.jboss.resteasy.test.spring.deployment.resource.Greeting;
+import org.jboss.resteasy.test.spring.deployment.resource.GreetingController;
+import org.jboss.resteasy.test.spring.deployment.resource.JaxrsApplication;
+import org.jboss.resteasy.test.spring.deployment.resource.NumbersResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
