@@ -20,114 +20,114 @@ public interface RxCompletionStageResource {
    @GET
    @Path("get/string")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> get();
+   CompletionStage<String> get();
 
    @GET
    @Path("get/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> getThing();
+   CompletionStage<Thing> getThing();
 
    @GET
    @Path("get/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> getThingList();
+   CompletionStage<List<Thing>> getThingList();
 
    @PUT
    @Path("put/string")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> put(String s);
+   CompletionStage<String> put(String s);
 
    @PUT
    @Path("put/thing")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> putThing(String s);
+   CompletionStage<Thing> putThing(String s);
 
    @PUT
    @Path("put/thing/list")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> putThingList(String s);
+   CompletionStage<List<Thing>> putThingList(String s);
 
    @POST
    @Path("post/string")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> post(String s);
+   CompletionStage<String> post(String s);
 
    @POST
    @Path("post/thing")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> postThing(String s);
+   CompletionStage<Thing> postThing(String s);
 
    @POST
    @Path("post/thing/list")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> postThingList(String s);
+   CompletionStage<List<Thing>> postThingList(String s);
 
    @DELETE
    @Path("delete/string")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> delete();
+   CompletionStage<String> delete();
 
    @DELETE
    @Path("delete/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> deleteThing();
+   CompletionStage<Thing> deleteThing();
 
    @DELETE
    @Path("delete/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> deleteThingList();
+   CompletionStage<List<Thing>> deleteThingList();
 
    @HEAD
    @Path("head/string")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> head();
+   CompletionStage<String> head();
 
    @OPTIONS
    @Path("options/string")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> options();
+   CompletionStage<String> options();
 
    @OPTIONS
    @Path("options/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> optionsThing();
+   CompletionStage<Thing> optionsThing();
 
    @OPTIONS
    @Path("options/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> optionsThingList();
+   CompletionStage<List<Thing>> optionsThingList();
 
    @TRACE
    @Path("trace/string")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> trace();
+   CompletionStage<String> trace();
 
    @TRACE
    @Path("trace/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<Thing> traceThing();
+   CompletionStage<Thing> traceThing();
 
    @TRACE
    @Path("trace/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public CompletionStage<List<Thing>> traceThingList();
+   CompletionStage<List<Thing>> traceThingList();
 
    @GET
    @Path("exception/unhandled")
-   public CompletionStage<Thing> exceptionUnhandled() throws Exception;
+   CompletionStage<Thing> exceptionUnhandled() throws Exception;
 
    @GET
    @Path("exception/handled")
-   public CompletionStage<Thing> exceptionHandled() throws Exception;
+   CompletionStage<Thing> exceptionHandled() throws Exception;
 
    @GET
    @Path("exception/filter")
    @Produces(MediaType.TEXT_PLAIN)
-   public CompletionStage<String> exceptionInFilter();
+   CompletionStage<String> exceptionInFilter();
 }

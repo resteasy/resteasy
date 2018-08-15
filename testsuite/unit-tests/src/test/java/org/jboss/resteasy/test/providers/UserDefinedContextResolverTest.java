@@ -8,6 +8,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
@@ -20,6 +21,8 @@ import org.junit.Test;
  * @tpSince RESTEasy 3.1.0.Final
  */
 public class UserDefinedContextResolverTest {
+
+    private static final Logger LOG = Logger.getLogger(UserDefinedContextResolverTest.class);
 
    public static class TestException extends RuntimeException {
       private static final long serialVersionUID = 1L;
@@ -62,12 +65,12 @@ public class UserDefinedContextResolverTest {
       ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
       ContextResolver<JAXBContextFinder> finder1 = providerFactory.getContextResolver(JAXBContextFinder.class, MediaType.TEXT_XML_TYPE);
       Assert.assertNotNull(finder1);
-      System.out.println(finder1);
+      LOG.info(finder1);
       providerFactory.register(TestContextResolver.class);
       ContextResolver<JAXBContextFinder> finder2 = providerFactory.getContextResolver(JAXBContextFinder.class, MediaType.TEXT_XML_TYPE);
-      System.out.println(finder2);
+      LOG.info(finder2);
       JAXBContextFinder finder = finder2.getContext(JAXBContextFinder.class);
-      System.out.println(finder);
+      LOG.info(finder);
       Assert.assertTrue(finder instanceof TestContextFinder);
    }
 }

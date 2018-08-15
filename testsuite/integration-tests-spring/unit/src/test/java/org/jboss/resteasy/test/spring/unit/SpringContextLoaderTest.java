@@ -1,11 +1,6 @@
 package org.jboss.resteasy.test.spring.unit;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.mock.MockDispatcherFactory;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockServletContext;

@@ -8,7 +8,6 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResource;
 import org.jboss.resteasy.test.resource.basic.resource.InheritenceParentResourceImpl;
 import org.jboss.resteasy.util.HttpResponseCodes;

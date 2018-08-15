@@ -1,8 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

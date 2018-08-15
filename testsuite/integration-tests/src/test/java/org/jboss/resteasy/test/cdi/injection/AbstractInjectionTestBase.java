@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.cdi.injection;
 
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 

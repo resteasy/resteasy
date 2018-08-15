@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.jboss.logging.Logger;
 
 /**
  * @tpSubChapter CDI
@@ -48,6 +49,9 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ValidationWithCDITest
 {
+
+   private static final Logger LOG = Logger.getLogger(ValidationWithCDITest.class);
+
    @Deployment(testable = false)
    public static Archive<?> createTestArchive()
    {
@@ -62,7 +66,7 @@ public class ValidationWithCDITest
          .addClasses(AsyncValidResource.class)
               .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
-      System.out.println(war.toString(true));
+      LOG.info(war.toString(true));
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
    

@@ -11,6 +11,6 @@ import javax.ws.rs.PathParam;
 public interface ProxyNullInputStreamResource {
    @HEAD
    @Path("/user/{db}")
-   public void getUserHead(@PathParam("db") String db);
+   void getUserHead(@PathParam("db") String db);
 }
 

@@ -13,7 +13,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.custom.resource.CustomClientConstrainedFeature;
 import org.jboss.resteasy.test.providers.custom.resource.CustomConstrainedFeatureResource;
 import org.jboss.resteasy.test.providers.custom.resource.CustomServerConstrainedFeature;

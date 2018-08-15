@@ -5,8 +5,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.ClientTestBase;
-import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsData;
-import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsResource;
 import org.jboss.resteasy.test.interceptor.resource.PreMatchingClientRequestFilterImpl;
 import org.jboss.resteasy.test.interceptor.resource.PreMatchingClientResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -20,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;

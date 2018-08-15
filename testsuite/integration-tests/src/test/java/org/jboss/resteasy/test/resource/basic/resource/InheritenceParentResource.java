@@ -7,6 +7,6 @@ public interface InheritenceParentResource {
    
    @GET
    @Produces("text/plain")
-   public String firstest();
+   String firstest();
 
 }

@@ -12,5 +12,5 @@ public interface NullEntityProxy {
     @Path("entity")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public NullEntityProxyGreeting helloEntity(NullEntityProxyGreeter greeter);
+    NullEntityProxyGreeting helloEntity(NullEntityProxyGreeter greeter);
 }

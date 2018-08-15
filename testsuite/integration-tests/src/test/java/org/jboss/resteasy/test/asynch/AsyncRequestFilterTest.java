@@ -8,8 +8,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -43,7 +42,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class AsyncRequestFilterTest {
-    protected static final Logger log = LogManager.getLogger(AsyncRequestFilterTest.class.getName());
+    protected static final Logger log = Logger.getLogger(AsyncRequestFilterTest.class.getName());
 
     @Deployment
     public static Archive<?> createTestArchive() {

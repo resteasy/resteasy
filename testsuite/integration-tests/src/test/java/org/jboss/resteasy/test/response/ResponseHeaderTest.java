@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapper;
@@ -32,6 +33,7 @@ import java.util.List;
 @RunAsClient
 public class ResponseHeaderTest {
 
+    public static final Logger LOG = Logger.getLogger(ResponseHeaderTest.class);
 
    @Deployment
    public static Archive<?> createTestArchive() {
@@ -60,8 +62,8 @@ public class ResponseHeaderTest {
       if (obj instanceof ArrayList) {
          List<Object> objs = (List<Object>)obj;
          if (objs.size() != 2) {
-        	 System.err.println(objs);
-            Assert.fail("2 array objects expected " + objs.size() + " were returned");
+             LOG.error(objs);
+             Assert.fail("2 array objects expected " + objs.size() + " were returned");
          }
 
          Assert.assertEquals("Wrong headers",

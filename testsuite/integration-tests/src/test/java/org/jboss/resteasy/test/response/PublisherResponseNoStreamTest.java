@@ -183,7 +183,7 @@ public class PublisherResponseNoStreamTest {
         }
       }, 
            t -> {
-              t.printStackTrace();
+              logger.error(t);
               errors.add(t);  
            }, 
            () -> {

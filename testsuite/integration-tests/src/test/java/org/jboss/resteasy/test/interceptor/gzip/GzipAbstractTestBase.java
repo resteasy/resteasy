@@ -1,11 +1,14 @@
 package org.jboss.resteasy.test.interceptor.gzip;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
+import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,6 +41,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 @RunAsClient
 public abstract class GzipAbstractTestBase {
+
+    private static final Logger LOG = LogManager.getLogger(GzipAbstractTestBase.class);
 
     /**
      * Allow gzip property
@@ -95,14 +100,14 @@ public abstract class GzipAbstractTestBase {
             Response response = base.queryParam("name", message2echo).request().get();
 
             // echo URL
-            System.out.println("URL: " + url);
+            LOG.info("URL: " + url);
 
             // check encoding in response
             String responseEncoding = response.getHeaderString("Content-Encoding");
             if (responseEncoding == null) {
                 responseEncoding = "";
             }
-            System.out.println("responseEncoding: " + responseEncoding);
+            LOG.info("responseEncoding: " + responseEncoding);
             if (assertServerReturnGzip) {
                 Assert.assertThat("wrong encoding of response", responseEncoding, containsString("gzip"));
             } else {

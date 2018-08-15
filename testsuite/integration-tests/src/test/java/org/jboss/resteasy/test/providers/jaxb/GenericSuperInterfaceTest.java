@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.jaxb;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceAbstractBackendCollectionResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceAbstractBackendResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceAbstractBackendSubResource;
@@ -27,7 +26,6 @@ import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceUpda
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceStoragePool;
 import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.utils.PermissionUtil;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
