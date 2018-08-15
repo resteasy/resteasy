@@ -2,7 +2,11 @@ package org.jboss.resteasy.test.providers.jaxb;
 
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
 import javax.ws.rs.client.Entity;

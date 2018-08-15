@@ -92,7 +92,7 @@ public class RxSingleServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @Test
    public void testGet() throws Exception {
-      Builder request = client.target(generateURL("/get/string")).request();;
+      Builder request = client.target(generateURL("/get/string")).request();
       Response response = request.get();
       Assert.assertEquals("x", response.readEntity(String.class));
    }

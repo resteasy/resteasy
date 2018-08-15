@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers.sse.resource;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.test.providers.sse.SseResource;
 
 import javax.ejb.Singleton;
 import javax.ws.rs.DELETE;
@@ -11,7 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;

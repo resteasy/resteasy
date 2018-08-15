@@ -20,11 +20,11 @@ public interface Rx2FlowableableSSECompatibilityResource {
    @Path("eventStream/thing")
    @Produces("text/event-stream")
    @SseElementType("application/json")
-   public void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
+   void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
    
    @GET
    @Path("flowable/thing")
    @Produces("text/event-stream")
    @SseElementType("application/json")
-   public Flowable<Thing> flowableSSE();
+   Flowable<Thing> flowableSSE();
 }

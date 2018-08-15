@@ -63,14 +63,14 @@ public class MatrixPathParamTest
    public interface TestInterfaceClient
    {
       @Path("matrix1")
-      public TestSubInterfaceClient getM1(@MatrixParam("m1") String m1);
+      TestSubInterfaceClient getM1(@MatrixParam("m1") String m1);
    }
 
    public interface TestSubInterfaceClient
    {
       @GET
       @Path("matrix2")
-      public String getM2(@MatrixParam("m2") String m2);
+      String getM2(@MatrixParam("m2") String m2);
    }
 
    @Test

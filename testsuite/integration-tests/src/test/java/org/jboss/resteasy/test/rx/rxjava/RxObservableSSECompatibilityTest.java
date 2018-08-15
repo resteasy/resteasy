@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.rx.rxjava;
 
-import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyPermission;

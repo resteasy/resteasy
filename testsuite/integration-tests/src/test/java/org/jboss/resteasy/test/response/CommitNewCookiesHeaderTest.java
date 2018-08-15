@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.response;
 
 import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.Map;
 import java.util.PropertyPermission;
 

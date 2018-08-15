@@ -34,8 +34,6 @@ public class ContentEncodingInvocationTest
          invocation = (ClientInvocation) builder.buildPost(Entity.entity("entity", variant));
       }
       String contentEncoding = invocation.getHeaders().getHeader("Content-Encoding");
-//      System.out.println("encoding: " + contentEncoding);
-//      System.out.println("count: " + countEncoding(contentEncoding));
       Assert.assertEquals(1, countEncoding(contentEncoding));
       
    }

@@ -1,10 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb.resource.homecontrol;
 
-import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.UserType;
-import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.RoleType;
-import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ErrorType;
-import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ErrorMessageType;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;

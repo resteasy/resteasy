@@ -27,8 +27,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import java.util.PropertyPermission;
-
 import static org.junit.Assert.assertEquals;
 
 /**

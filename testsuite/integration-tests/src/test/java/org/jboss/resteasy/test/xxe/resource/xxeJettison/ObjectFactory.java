@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.xxe.resource.xxeJettison;
 
-import org.jboss.resteasy.annotations.providers.NoJackson;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;

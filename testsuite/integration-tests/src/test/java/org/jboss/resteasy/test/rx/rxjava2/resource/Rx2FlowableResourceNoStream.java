@@ -23,141 +23,141 @@ public interface Rx2FlowableResourceNoStream {
    @GET
    @Path("get/string")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> get();
+   Flowable<String> get();
 
    @GET
    @Path("get/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> getThing();
+   Flowable<Thing> getThing();
 
    @GET
    @Path("get/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> getThingList();
+   Flowable<List<Thing>> getThingList();
 
    @GET
    @Path("get/bytes")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> getBytes();
+   Flowable<byte[]> getBytes();
 
    @PUT
    @Path("put/string")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> put(String s);
+   Flowable<String> put(String s);
 
    @PUT
    @Path("put/thing")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> putThing(String s);
+   Flowable<Thing> putThing(String s);
 
    @PUT
    @Path("put/thing/list")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> putThingList(String s);
+   Flowable<List<Thing>> putThingList(String s);
 
    @PUT
    @Path("put/bytes")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> putBytes(String s);
+   Flowable<byte[]> putBytes(String s);
 
    @POST
    @Path("post/string")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> post(String s);
+   Flowable<String> post(String s);
 
    @POST
    @Path("post/thing")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> postThing(String s);
+   Flowable<Thing> postThing(String s);
 
    @POST
    @Path("post/thing/list")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> postThingList(String s);
+   Flowable<List<Thing>> postThingList(String s);
 
    @POST
    @Path("post/bytes")
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> postBytes(String s);
+   Flowable<byte[]> postBytes(String s);
 
    @DELETE
    @Path("delete/string")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> delete();
+   Flowable<String> delete();
 
    @DELETE
    @Path("delete/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> deleteThing();
+   Flowable<Thing> deleteThing();
 
    @DELETE
    @Path("delete/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> deleteThingList();
+   Flowable<List<Thing>> deleteThingList();
 
    @DELETE
    @Path("delete/bytes")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> deleteBytes();
+   Flowable<byte[]> deleteBytes();
 
    @HEAD
    @Path("head/string")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> head();
+   Flowable<String> head();
 
    @OPTIONS
    @Path("options/string")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> options();
+   Flowable<String> options();
 
    @OPTIONS
    @Path("options/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> optionsThing();
+   Flowable<Thing> optionsThing();
 
    @OPTIONS
    @Path("options/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> optionsThingList();
+   Flowable<List<Thing>> optionsThingList();
 
    @OPTIONS
    @Path("options/bytes")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> optionsBytes();
+   Flowable<byte[]> optionsBytes();
 
    @TRACE
    @Path("trace/string")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<String> trace();
+   Flowable<String> trace();
 
    @TRACE
    @Path("trace/thing")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<Thing> traceThing();
+   Flowable<Thing> traceThing();
 
    @TRACE
    @Path("trace/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<List<Thing>> traceThingList();
+   Flowable<List<Thing>> traceThingList();
 
    @TRACE
    @Path("trace/bytes")
    @Produces(MediaType.APPLICATION_JSON)
-   public Flowable<byte[]> traceBytes();
+   Flowable<byte[]> traceBytes();
 
    @GET
    @Path("exception/unhandled")
-   public Flowable<Thing> exceptionUnhandled() throws Exception;
+   Flowable<Thing> exceptionUnhandled() throws Exception;
 
    @GET
    @Path("exception/handled")
-   public Flowable<Thing> exceptionHandled() throws Exception;
+   Flowable<Thing> exceptionHandled() throws Exception;
 }

@@ -28,8 +28,6 @@ import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PropertyPermission;

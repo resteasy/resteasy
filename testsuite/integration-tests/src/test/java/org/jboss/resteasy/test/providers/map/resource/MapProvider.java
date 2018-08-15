@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.*;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 
 @Provider
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)

@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Jaxb provider

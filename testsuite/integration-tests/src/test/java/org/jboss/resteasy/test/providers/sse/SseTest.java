@@ -451,7 +451,7 @@ public class SseTest
             latch.countDown();
          }, ex -> {
             errors.incrementAndGet();
-            ex.printStackTrace();
+            logger.error("Error:", ex);
             throw new RuntimeException(ex);
          });
          eventSource.open();
@@ -530,9 +530,9 @@ public class SseTest
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
-            System.out.println(event);
+           logger.info(event);
          }, ex -> {
-            ex.printStackTrace();
+            logger.error("Error:", ex);
             errors.incrementAndGet();
          });
          source.open();

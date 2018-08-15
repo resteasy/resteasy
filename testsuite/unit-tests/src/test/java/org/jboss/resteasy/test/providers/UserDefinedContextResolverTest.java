@@ -62,12 +62,9 @@ public class UserDefinedContextResolverTest {
       ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
       ContextResolver<JAXBContextFinder> finder1 = providerFactory.getContextResolver(JAXBContextFinder.class, MediaType.TEXT_XML_TYPE);
       Assert.assertNotNull(finder1);
-//      System.out.println(finder1);
       providerFactory.register(TestContextResolver.class);
       ContextResolver<JAXBContextFinder> finder2 = providerFactory.getContextResolver(JAXBContextFinder.class, MediaType.TEXT_XML_TYPE);
-//      System.out.println(finder2);
       JAXBContextFinder finder = finder2.getContext(JAXBContextFinder.class);
-//      System.out.println(finder);
       Assert.assertTrue(finder instanceof TestContextFinder);
    }
 }

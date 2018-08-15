@@ -30,7 +30,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.SecurityPermission;
 
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.FooResource;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication;

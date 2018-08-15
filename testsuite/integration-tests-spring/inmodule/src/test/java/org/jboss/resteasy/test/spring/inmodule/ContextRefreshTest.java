@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.spring.inmodule;
 
-import java.security.AllPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;

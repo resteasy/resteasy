@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.PropertyPermission;
 
 import org.jboss.logging.Logger;
 import org.junit.runner.RunWith;

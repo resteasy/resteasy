@@ -59,7 +59,6 @@ public class ResponseCommittedTest
    {
       Invocation.Builder request = client.target(generateBaseUrl()).request();
       Response response = request.get();
-//      System.out.println("status: " + response.getStatus());
       Assert.assertEquals(TEST_STATUS, response.getStatus());
       response.close();
       client.close();

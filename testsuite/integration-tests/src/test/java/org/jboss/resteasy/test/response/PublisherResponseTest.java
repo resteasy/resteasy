@@ -17,10 +17,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.SseEventSource;
 
+import org.jboss.logging.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
@@ -99,7 +99,7 @@ public class PublisherResponseTest {
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
             (String s) -> list.add(s),
-            (Throwable t) -> t.printStackTrace(),
+            (Throwable t) -> logger.error("Error:", t),
             () -> latch.countDown());
       latch.await();
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
@@ -171,7 +171,7 @@ public class PublisherResponseTest {
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
             (String s) -> list.add(s),
-            (Throwable t) -> t.printStackTrace(),
+            (Throwable t) -> logger.error("Error:", t),
             () -> latch.countDown());
       latch.await();
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
@@ -233,7 +233,7 @@ public class PublisherResponseTest {
         }
       }, 
            t -> {
-              t.printStackTrace();
+              logger.error("Error:", t);
               errors.add(t);  
            }, 
            () -> {
@@ -251,7 +251,7 @@ public class PublisherResponseTest {
       Thread.sleep(5000);
       Invocation.Builder request = ClientBuilder.newClient().target(generateURL("/infinite-done")).request();
       Response response = request.get();
-      System.out.println("part 2");
+      logger.info("part 2");
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("true", entity);
@@ -271,10 +271,9 @@ public class PublisherResponseTest {
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
             (String s) -> {list.add(s);
-                          if(list.size() >= 2) latch.countDown();;
-                ;
+                          if(list.size() >= 2) latch.countDown();
               },
-            (Throwable t) -> t.printStackTrace(),
+            (Throwable t) -> logger.error("Error:", t),
             () -> latch.countDown());
       latch.await();
       client.close();

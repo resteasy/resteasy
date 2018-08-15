@@ -62,7 +62,7 @@ public final class PermissionUtil {
 
     static class NiceSerializer extends Serializer {
 
-        public NiceSerializer(OutputStream out) throws UnsupportedEncodingException {
+        NiceSerializer(OutputStream out) throws UnsupportedEncodingException {
             super(out, "UTF-8");
         }
 

@@ -94,7 +94,7 @@ public class SimpleProxyServer
          catch (IOException e)
          {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error:", e);
          }
       }
       while (!this.terminated)
@@ -191,7 +191,7 @@ public class SimpleProxyServer
        * @param host
        * @param remotePort
        */
-      public ProxyThread(Socket socket, String host, int remotePort, SimpleProxyServer controllableProxy)
+      ProxyThread(Socket socket, String host, int remotePort, SimpleProxyServer controllableProxy)
       {
          super("ProxyThread");
          this.clientSocket = socket;

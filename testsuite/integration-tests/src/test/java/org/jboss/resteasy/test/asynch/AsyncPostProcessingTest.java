@@ -24,9 +24,7 @@ import org.jboss.logging.Logger;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
-import java.security.SecurityPermission;
 import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy

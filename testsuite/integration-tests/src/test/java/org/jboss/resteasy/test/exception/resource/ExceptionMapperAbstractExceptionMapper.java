@@ -12,5 +12,5 @@ public abstract class ExceptionMapperAbstractExceptionMapper<E extends Throwable
         return builder.build();
     }
 
-    protected abstract void handleError(final Response.ResponseBuilder builder, E e);
+    protected abstract void handleError(Response.ResponseBuilder builder, E e);
 }
