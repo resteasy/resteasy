@@ -161,7 +161,7 @@ public class InterceptorRegistry<T>
       InterceptorRegistry<T> clone = new InterceptorRegistry<T>(intf, factory);
       clone.interceptors.addAll(interceptors);
       clone.precedenceOrder.putAll(precedenceOrder);
-      precedenceList.addAll(precedenceList);
+      clone.precedenceList.addAll(precedenceList);
       return clone;
    }
 
