@@ -1,0 +1,145 @@
+<chapter id="Async_Injection">
+    <title>Asynchronous Injection</title>
+    <para>
+        Pluggable Asynchronous Injection, also referred to as Asynch Injection, is a
+        feature that allows users to create custom injectable asynchronous types.
+        For example it is now possible to declare an injector for <classname>Single&lt;Foo&gt;</classname>
+        and inject it into an endpoint as a class variable or as a method parameter using
+        <classname>@Context Foo</classname>.  The response will be made asynchronous automatically and
+        the resource method will only be invoked once the <classname>Single&lt;Foo&gt;</classname> object is
+        resolved to <classname>Foo</classname>.  Resolution is done in a non-blocking manner.
+    </para>
+    <para>
+        <emphasis role="bold">Note.</emphasis>
+        Asynch injection is only attempted at points where asynchronous injection is
+        permitted, such as on resource creation and resource method invocation. It
+        is not enabled at points where the API does not allow for suspending the
+        request, for example on <classname>ResourceContext.getResource(Foo.class)</classname>.
+    </para>
+    <sect1 id="ContextInjector_Interface">
+        <title>org.jboss.resteasy.spi.ContextInjector Interface</title>
+        <para>
+            The <classname>org.jboss.resteasy.spi.ContextInjector</classname> interface must be implemented
+            on any custom asynch injector object.  The implementation class must be
+            tagged with the <classname>@Provider</classname> annotation.
+        </para>
+        <programlisting>
+/**
+ * @param &lt;WrappedType&gt; A class that wraps a data type or data object
+ *                            (e.g. Single&lt;Foo&gt;)
+ * @param &lt;UnwrappedType&gt; The data type or data object declared in the
+ *                              WrappedType (e.g. Foo)
+*/
+public interface ContextInjector&lt;WrappedType, UnwrappedType&gt; {
+/**
+ * This interface allows users to create custom injectable asynchronous types.
+ *
+ * Asynch injection is only attempted at points where asynchronous injection is
+ * permitted, such as on resource creation and resource method invocation. It
+ * is not enabled at points where the API does not allow for suspending the
+ * request
+ *
+ * @param rawType
+ * @param genericType
+ * @param annotations The annotation list is useful to parametrize the injection.
+ * @return
+ */
+ public WrappedType resolve(
+            Class&lt;? extends WrappedType&gt; rawType,
+            Type genericType,
+            Annotation[] annotations);
+  }
+        </programlisting>
+   </sect1>
+    <sect1 id="Single_foo_example">
+    <title>Single&lt;Foo&gt; Example</title>
+        <programlisting>
+package my.test;
+
+public class Foo {
+   private String value = "PRE-SET-VALUE";
+
+   public void setValue(String s) {
+      this.value = s;
+   }
+
+   public String getValue() {
+      return this.value;
+   }
+}
+        </programlisting>
+        <programlisting>
+package my.test.asyc.resources;
+
+import io.reactivex.Single;
+import javax.ws.rs.ext.Provider;
+import org.jboss.resteasy.spi.ContextInjector;
+import my.test.Foo;
+
+@Provider
+public class FooAsychInjectorProvider implements
+            ContextInjector&lt;Single&lt;Foo&gt;,Foo&gt; {
+
+   public Single&lt;Foo> resolve(Class&lt;? extends Single&lt;Foo&gt;&gt; rawType,
+            Type genericType,
+            Annotation[] annotations)
+   {
+      Foo value = new Foo();
+      return Single.just(value.setValue("made it"));
+   }
+}
+        </programlisting>
+    </sect1>
+    <sect1 id="injectory_with_annotations_example">
+    <title>Async Injector With Annotations Example</title>
+        <para>
+            A convenience interface to provide annotation parameter designators
+        </para>
+    <programlisting>
+@Retention(RUNTIME)
+@Target({ FIELD, METHOD, PARAMETER })
+public @interface AsyncInjectionPrimitiveInjectorSpecifier
+{
+   public enum Type {
+      VALUE, NULL, NO_RESULT;
+   }
+
+   Type value() default Type.VALUE;
+}
+    </programlisting>
+        <programlisting>
+
+@Provider
+public class AsyncInjectionFloatInjector implements
+            ContextInjector&lt;CompletionStage&lt;Float&gt;, Float&gt;
+{
+
+   @Override
+   public CompletionStage&lt;Float&gt; resolve(
+      Class&lt;? extends CompletionStage&lt;Float&gt;&gt; rawType,
+            Type genericType,
+            Annotation[] annotations)
+    {
+       for (Annotation annotation : annotations)
+       {
+           if(annotation.annotationType() ==
+              AsyncInjectionPrimitiveInjectorSpecifier.class) {
+             AsyncInjectionPrimitiveInjectorSpecifier.Type value =
+               ((AsyncInjectionPrimitiveInjectorSpecifier)annotation).value();
+             switch(value) {
+               case NO_RESULT:
+                  return null;
+               case NULL:
+                  return CompletableFuture.completedFuture(null);
+               case VALUE:
+                  return CompletableFuture.completedFuture(4.2f);
+            }
+            break;
+          }
+       }
+       return CompletableFuture.completedFuture(4.2f);
+    }
+}
+        </programlisting>
+    </sect1>
+ </chapter>
