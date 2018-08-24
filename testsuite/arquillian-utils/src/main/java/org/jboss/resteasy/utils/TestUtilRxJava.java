@@ -42,7 +42,7 @@ public class TestUtilRxJava {
         
         try {
             runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-reactive-context:" + System.getProperty("version.resteasy.testsuite")));
-            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("version.resteasy.testsuite")));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("project.version")));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactiverse:reactive-contexts-core:" + getReactiveContextsVersion()));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactiverse:reactive-contexts-propagators-rxjava1:" + getReactiveContextsVersion()));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava:" + getRxJavaVersion()));
