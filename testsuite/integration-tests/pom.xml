@@ -371,7 +371,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-rxjava</artifactId>
-            <version>${version.resteasy.testsuite}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 

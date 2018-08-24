@@ -36,7 +36,7 @@ public class TestUtilRxJava {
         List<File> runtimeDependencies = new ArrayList<>();
         
         try {
-            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("version.resteasy.testsuite")));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("project.version")));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava:" + getRxJavaVersion()));
             runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava-reactive-streams:" + getRxJavaReactiveStreamsVersion()));
         } catch (Exception e) {
