@@ -261,8 +261,8 @@ public class TokenTest
    {
       Authentication auth = new SkeletonKeyClientBuilder().username("wburke").password("geheim").authentication("Skeleton Key");
       ResteasyClient client = new ResteasyClientBuilder().build();
-      WebTarget target = client.target(generateBaseUrl());
       Mappers.registerContextResolver(client);
+      WebTarget target = client.target(generateBaseUrl());
       String tiny = target.path("tokens").path("url").request().post(Entity.json(auth), String.class);
       System.out.println(tiny);
       System.out.println("tiny.size: " + tiny.length());
