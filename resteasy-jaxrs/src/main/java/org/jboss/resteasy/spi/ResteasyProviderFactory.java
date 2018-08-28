@@ -337,15 +337,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    private void initializeRegistriesAndFilters(ResteasyProviderFactory parent)
    {
-      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this) : parent.serverReaderInterceptorRegistry.clone(this);
-      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this) : parent.serverWriterInterceptorRegistry.clone(this);
-      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this): parent.containerRequestFilterRegistry.clone(this);
-      containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistry(this) : parent.containerResponseFilterRegistry.clone(this);
+      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this) : parent.getServerReaderInterceptorRegistry().clone(this);
+      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this) : parent.getServerWriterInterceptorRegistry().clone(this);
+      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this): parent.getContainerRequestFilterRegistry().clone(this);
+      containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistry(this) : parent.getContainerResponseFilterRegistry().clone(this);
 
-      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.clientRequestFilterRegistry.clone(this);
-      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.clientResponseFilters.clone(this);
-      clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this) : parent.clientReaderInterceptorRegistry.clone(this);
-      clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this) : parent.clientWriterInterceptorRegistry.clone(this);
+      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.getClientRequestFilterRegistry().clone(this);
+      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.getClientResponseFilters().clone(this);
+      clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this) : parent.getClientReaderInterceptorRegistry().clone(this);
+      clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this) : parent.getClientWriterInterceptorRegistry().clone(this);
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()
