@@ -467,7 +467,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Set<Class<?>> set = new HashSet<Class<?>>();
       if (parent != null) set.addAll(parent.getProviderClasses());
       set.addAll(providerClasses);
-      return set;
+      return Collections.unmodifiableSet(set);
    }
 
    /**
@@ -481,7 +481,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Set<Object> set = new HashSet<Object>();
       if (parent != null) set.addAll(parent.getProviderInstances());
       set.addAll(providerInstances);
-      return set;
+      return Collections.unmodifiableSet(set);
    }
 
    private Map<Class<?>, Map<Class<?>, Integer>> getClassContracts()
@@ -2555,7 +2555,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public Collection<String> getPropertyNames()
    {
-      return getProperties().keySet();
+      return Collections.unmodifiableSet(getProperties().keySet());
    }
 
    @Override
