@@ -204,7 +204,7 @@ public class JettyClientEngineTest {
             }
         };
 
-        try (final InputStream response = client().register(capturer).target(baseUri()).request()
+        try (InputStream response = client().register(capturer).target(baseUri()).request()
             .get(InputStream.class)) {
             // ignored, we are checking filter
         }

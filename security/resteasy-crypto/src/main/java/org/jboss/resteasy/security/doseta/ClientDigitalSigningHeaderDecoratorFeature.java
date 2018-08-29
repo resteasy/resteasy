@@ -4,7 +4,6 @@ import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.annotation.Priority;
-import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.RuntimeType;
@@ -12,7 +11,6 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.FeatureContext;
 import java.io.IOException;
 

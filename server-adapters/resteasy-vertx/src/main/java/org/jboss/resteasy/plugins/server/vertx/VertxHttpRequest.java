@@ -13,7 +13,6 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.AsyncResponse;
@@ -183,7 +182,7 @@ public class VertxHttpRequest extends BaseHttpRequest
       protected volatile boolean wasSuspended;
       protected VertxHttpAsyncResponse asyncResponse;
 
-      public VertxExecutionContext(VertxHttpRequest request, VertxHttpResponse response, SynchronousDispatcher dispatcher)
+      VertxExecutionContext(VertxHttpRequest request, VertxHttpResponse response, SynchronousDispatcher dispatcher)
       {
          super(dispatcher, request, response);
          this.request = request;
@@ -238,7 +237,7 @@ public class VertxHttpRequest extends BaseHttpRequest
          private long timerID = -1;
          private VertxHttpResponse vertxResponse;
 
-         public VertxHttpAsyncResponse(SynchronousDispatcher dispatcher, VertxHttpRequest request, VertxHttpResponse response)
+         VertxHttpAsyncResponse(SynchronousDispatcher dispatcher, VertxHttpRequest request, VertxHttpResponse response)
          {
             super(dispatcher, request, response);
             this.vertxResponse = response;

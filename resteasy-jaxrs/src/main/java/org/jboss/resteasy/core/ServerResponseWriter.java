@@ -5,12 +5,10 @@ import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
@@ -23,7 +21,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
@@ -49,8 +46,8 @@ import java.util.function.Consumer;
 public class ServerResponseWriter
 {
    @FunctionalInterface
-   public static interface RunnableWithIOException {
-	   public void run() throws IOException;
+   public interface RunnableWithIOException {
+	   void run() throws IOException;
    }
 	
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
@@ -485,7 +482,7 @@ public class ServerResponseWriter
       double qs = 1;
       Class<?> writerType = null;
       
-      public SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
+      SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
       {
          super(type, subtype, parameters);
          this.writerType = writerType;

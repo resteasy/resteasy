@@ -30,11 +30,11 @@ public class TestProxyCasting
    private static Dispatcher dispatcher;
    private static ResteasyWebTarget target;
    
-   public static interface Nothing
+   public interface Nothing
    {
    }
    
-   public static interface InterfaceA
+   public interface InterfaceA
    {
       @GET
       @Path("foo")
@@ -42,7 +42,7 @@ public class TestProxyCasting
       String getFoo();
    }
 
-   public static interface InterfaceB
+   public interface InterfaceB
    {
       @GET
       @Path("bar")

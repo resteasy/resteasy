@@ -18,7 +18,6 @@ import javax.ws.rs.core.Application;
 
 import static io.undertow.servlet.Servlets.servlet;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 

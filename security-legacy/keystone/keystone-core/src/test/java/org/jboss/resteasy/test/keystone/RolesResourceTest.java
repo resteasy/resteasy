@@ -10,6 +10,7 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -29,6 +30,7 @@ import org.junit.Test;
  */
 public class RolesResourceTest
 {
+   private static final Logger LOG = Logger.getLogger(RolesResourceTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
 
@@ -81,9 +83,9 @@ public class RolesResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String role = target.request().get(String.class);
-      System.out.println(role);
+      LOG.info(role);
       Role u = target.request().get(Role.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("admin", u.getName());
       Assert.assertEquals(target.request().delete().getStatus(), 204);
       response = target.request().get();
@@ -100,9 +102,9 @@ public class RolesResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String role = target.request().get(String.class);
-      System.out.println(role);
+      LOG.info(role);
       Role u = target.request().get(Role.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("admin", u.getName());
       Assert.assertEquals(target.request().delete().getStatus(), 204);
       response = target.request().get();
@@ -120,15 +122,15 @@ public class RolesResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String role = target.request().get(String.class);
-      System.out.println(role);
+      LOG.info(role);
       Role u = target.request().get(Role.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("admin", u.getName());
       Assert.assertEquals("5", u.getId());
       u.setName("administrator");
       Assert.assertEquals(target.request().put(Entity.json(u)).getStatus(), 204);
       u = target.request().get(Role.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("administrator", u.getName());
       Assert.assertEquals("5", u.getId());
       Assert.assertEquals(target.request().delete().getStatus(), 204);

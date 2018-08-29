@@ -13,8 +13,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Stream
 {
-   public enum MODE {RAW, GENERAL};
-   public String INCLUDE_STREAMING_PARAMETER = "streaming";
-   public MODE value() default MODE.GENERAL;
-   public boolean includeStreaming() default false;
+   enum MODE {RAW, GENERAL};
+   String INCLUDE_STREAMING_PARAMETER = "streaming";
+   MODE value() default MODE.GENERAL;
+   boolean includeStreaming() default false;
 }

@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.i18n;
 
 import java.util.Locale;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 
 import org.jboss.resteasy.wadl.i18n.Messages;
@@ -16,6 +17,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
    
    @Test
@@ -25,7 +27,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/wadl/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
       

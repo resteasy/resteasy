@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.InternalServerErrorException;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.test.BookStoreService;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
@@ -34,6 +33,7 @@ public class TestLinksInvalidEL
 
    private static NettyJaxrsServer server;
    private static Dispatcher dispatcher;
+   private static final Logger LOG = Logger.getLogger(TestLinksInvalidEL.class);
 
    @BeforeClass
    public static void beforeClass() throws Exception
@@ -96,7 +96,7 @@ public class TestLinksInvalidEL
 			client.getBookXML("foo");
 			Assert.fail("This should have caused a 500");
 		}catch(ClientResponseFailure x){
-			System.err.println("Failure is "+x.getResponse().getEntity(String.class));
+			LOG.error("Failure is "+x.getResponse().getEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
 		}
 	}
@@ -108,7 +108,7 @@ public class TestLinksInvalidEL
 			client.getBookJSON("foo");
 			Assert.fail("This should have caused a 500");
 		}catch(ClientResponseFailure x){
-			System.err.println("Failure is "+x.getResponse().getEntity(String.class));
+			LOG.error("Failure is "+x.getResponse().getEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
 		}
 	}

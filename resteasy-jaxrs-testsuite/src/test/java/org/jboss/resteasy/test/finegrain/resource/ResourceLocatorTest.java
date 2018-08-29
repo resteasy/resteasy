@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -37,7 +38,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class ResourceLocatorTest
 {
-
+   private static final Logger LOG = Logger.getLogger(ResourceLocatorTest.class);
    private static Dispatcher dispatcher;
 
 
@@ -61,21 +62,21 @@ public class ResourceLocatorTest
       @Path("stuff/{param}/bar")
       public String doGet(@PathParam("param") String param, @Context UriInfo uri)
       {
-         System.out.println("Uri Ancesstors for Subresource2.doGet():");
+         LOG.info("Uri Ancesstors for Subresource2.doGet():");
          Assert.assertEquals(4, uri.getMatchedURIs().size());
          Assert.assertEquals("base/1/resources/subresource2/stuff/2/bar", uri.getMatchedURIs().get(0));
          Assert.assertEquals("base/1/resources/subresource2", uri.getMatchedURIs().get(1));
          Assert.assertEquals("base/1/resources", uri.getMatchedURIs().get(2));
          Assert.assertEquals("", uri.getMatchedURIs().get(3));
-         for (String ancestor : uri.getMatchedURIs()) System.out.println("   " + ancestor);
+         for (String ancestor : uri.getMatchedURIs()) LOG.info("   " + ancestor);
 
 
-         System.out.println("Uri Ancesstors Object for Subresource2.doGet():");
+         LOG.info("Uri Ancesstors Object for Subresource2.doGet():");
          Assert.assertEquals(3, uri.getMatchedResources().size());
          Assert.assertEquals(Subresource2.class, uri.getMatchedResources().get(0).getClass());
          Assert.assertEquals(Subresource.class, uri.getMatchedResources().get(1).getClass());
          Assert.assertEquals(BaseResource.class, uri.getMatchedResources().get(2).getClass());
-         for (Object ancestor : uri.getMatchedResources()) System.out.println("   " + ancestor.getClass().getName());
+         for (Object ancestor : uri.getMatchedResources()) LOG.info("   " + ancestor.getClass().getName());
          Assert.assertEquals("2", param);
          return this.getClass().getName() + "-" + param;
       }
@@ -87,37 +88,37 @@ public class ResourceLocatorTest
       @GET
       public String doGet(@Context UriInfo uri)
       {
-         System.out.println("Uri Ancesstors for Subresource.doGet():");
+         LOG.info("Uri Ancesstors for Subresource.doGet():");
          List<String> matchedURIs = uri.getMatchedURIs();
          Assert.assertEquals(2, matchedURIs.size());
          Assert.assertEquals("base/1/resources", matchedURIs.get(0));
          Assert.assertEquals("", matchedURIs.get(1));
-         for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
+         for (String ancestor : matchedURIs) LOG.info("   " + ancestor);
 
-         System.out.println("Uri Ancesstors Object for Subresource.doGet():");
+         LOG.info("Uri Ancesstors Object for Subresource.doGet():");
          Assert.assertEquals(2, uri.getMatchedResources().size());
          Assert.assertEquals(Subresource.class, uri.getMatchedResources().get(0).getClass());
          Assert.assertEquals(BaseResource.class, uri.getMatchedResources().get(1).getClass());
-         for (Object ancestor : uri.getMatchedResources()) System.out.println("   " + ancestor.getClass().getName());
+         for (Object ancestor : uri.getMatchedResources()) LOG.info("   " + ancestor.getClass().getName());
          return this.getClass().getName();
       }
 
       @Path("/subresource2")
       public Object getSubresource2(@Context UriInfo uri)
       {
-         System.out.println("Uri Ancesstors for Subresource.getSubresource2():");
+         LOG.info("Uri Ancesstors for Subresource.getSubresource2():");
          List<String> matchedURIs = uri.getMatchedURIs();
          Assert.assertEquals(3, matchedURIs.size());
          Assert.assertEquals("base/1/resources/subresource2", matchedURIs.get(0));
          Assert.assertEquals("base/1/resources", matchedURIs.get(1));
          Assert.assertEquals("", matchedURIs.get(2));
-         for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
+         for (String ancestor : matchedURIs) LOG.info("   " + ancestor);
 
-         System.out.println("Uri Ancesstors Object for Subresource.getSubresource2():");
+         LOG.info("Uri Ancesstors Object for Subresource.getSubresource2():");
          Assert.assertEquals(2, uri.getMatchedResources().size());
          Assert.assertEquals(Subresource.class, uri.getMatchedResources().get(0).getClass());
          Assert.assertEquals(BaseResource.class, uri.getMatchedResources().get(1).getClass());
-         for (Object ancestor : uri.getMatchedResources()) System.out.println("   " + ancestor.getClass().getName());
+         for (Object ancestor : uri.getMatchedResources()) LOG.info("   " + ancestor.getClass().getName());
          return new Subresource2();
       }
    }
@@ -128,15 +129,15 @@ public class ResourceLocatorTest
       @Path("base/{param}/resources")
       public Object getSubresource(@PathParam("param") String param, @Context UriInfo uri)
       {
-         System.out.println("Here in BaseResource");
+         LOG.info("Here in BaseResource");
          Assert.assertEquals("1", param);
          List<String> matchedURIs = uri.getMatchedURIs();
          Assert.assertEquals(2, matchedURIs.size());
          Assert.assertEquals("base/1/resources", matchedURIs.get(0));
          Assert.assertEquals("", matchedURIs.get(1));
-         for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
+         for (String ancestor : matchedURIs) LOG.info("   " + ancestor);
 
-         System.out.println("Uri Ancesstors Object for Subresource.doGet():");
+         LOG.info("Uri Ancesstors Object for Subresource.doGet():");
          Assert.assertEquals(1, uri.getMatchedResources().size());
          Assert.assertEquals(BaseResource.class, uri.getMatchedResources().get(0).getClass());
          return new Subresource();
@@ -160,7 +161,7 @@ public class ResourceLocatorTest
       }
    }
 
-   public static interface Subresource3Interface
+   public interface Subresource3Interface
    {
       @GET
       @Path("3")

@@ -10,14 +10,14 @@ import javax.ws.rs.Path;
 public interface SkeletonKeyAdminClient
 {
    @Path("/projects")
-   public ProjectsResource projects();
+   ProjectsResource projects();
 
    @Path("/roles")
-   public RolesResource roles();
+   RolesResource roles();
 
    @Path("/users")
-   public UsersResource users();
+   UsersResource users();
 
    @Path("/tokens")
-   public TokensResource tokens();
+   TokensResource tokens();
 }

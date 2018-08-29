@@ -19,5 +19,5 @@ import java.lang.annotation.Target;
 @Precedence("SECURITY")
 public @interface SecurityPrecedence
 {
-   public static final String PRECEDENCE_STRING = "SECURITY";
+   String PRECEDENCE_STRING = "SECURITY";
 }

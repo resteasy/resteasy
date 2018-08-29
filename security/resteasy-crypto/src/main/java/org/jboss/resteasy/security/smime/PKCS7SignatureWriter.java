@@ -1,13 +1,15 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cert.jcajce.JcaCertStore;
-import org.bouncycastle.cms.*;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.util.Store;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -30,7 +32,6 @@ import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

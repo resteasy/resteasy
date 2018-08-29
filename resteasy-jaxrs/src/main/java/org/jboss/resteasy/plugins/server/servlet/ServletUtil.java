@@ -2,21 +2,15 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.PathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;

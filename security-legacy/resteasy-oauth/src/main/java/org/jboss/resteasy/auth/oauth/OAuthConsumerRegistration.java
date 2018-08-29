@@ -14,7 +14,7 @@ public interface OAuthConsumerRegistration {
      * @return {@link OAuthConsumer}
      * @throws OAuthException thrown if Consumer can not be registered.
      */
-    public OAuthConsumer registerConsumer(String consumerKey, 
+    OAuthConsumer registerConsumer(String consumerKey,
             String displayName, String connectURI) throws OAuthException;
 
     
@@ -24,7 +24,7 @@ public interface OAuthConsumerRegistration {
      * @param scopes the consumer scopes
      * @throws OAuthException thrown if scopes can not be registered.
      */
-    public void registerConsumerScopes(String consumerKey, 
+    void registerConsumerScopes(String consumerKey,
             String[] scopes) throws OAuthException;
     
     /**
@@ -33,7 +33,7 @@ public interface OAuthConsumerRegistration {
      * @param permissions the consumer permissions
      * @throws OAuthException thrown if permissions can not be registered.
      */
-    public void registerConsumerPermissions(String consumerKey, 
+    void registerConsumerPermissions(String consumerKey,
                 String[] permissions) throws OAuthException;
         
 }

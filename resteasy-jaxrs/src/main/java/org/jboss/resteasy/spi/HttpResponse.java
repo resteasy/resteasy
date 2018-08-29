@@ -15,7 +15,7 @@ public interface HttpResponse
 {
    int getStatus();
 
-   public void setStatus(int status);
+   void setStatus(int status);
 
    MultivaluedMap<String, Object> getOutputHeaders();
 

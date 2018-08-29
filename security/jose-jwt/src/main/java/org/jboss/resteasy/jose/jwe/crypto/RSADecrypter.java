@@ -9,7 +9,6 @@ import org.jboss.resteasy.jose.jwe.JWEHeader;
 
 import javax.crypto.SecretKey;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPrivateKey;
 

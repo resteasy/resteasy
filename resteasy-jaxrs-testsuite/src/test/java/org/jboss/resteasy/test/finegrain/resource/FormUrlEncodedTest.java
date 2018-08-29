@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -34,6 +35,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class FormUrlEncodedTest
 {
    private static Dispatcher dispatcher;
+   private static final Logger LOG = Logger.getLogger(FormUrlEncodedTest.class);
 
    @BeforeClass
    public static void before() throws Exception
@@ -61,7 +63,7 @@ public class FormUrlEncodedTest
          {
             public void write(OutputStream output) throws IOException
             {
-               System.out.println("WITHIN STREAMING OUTPUT!!!!");
+               LOG.info("WITHIN STREAMING OUTPUT!!!!");
                int c;
                while ((c = is.read()) != -1)
                {
@@ -181,19 +183,19 @@ public class FormUrlEncodedTest
    }
 
    @Path("/")
-   public static interface TestProxy
+   public interface TestProxy
    {
       @Path("/form")
       @POST
       @Produces("application/x-www-form-urlencoded")
       @Consumes("application/x-www-form-urlencoded")
-      public String post(MultivaluedMap<String, String> form);
+      String post(MultivaluedMap<String, String> form);
 
       @Path("/form")
       @POST
       @Produces("application/x-www-form-urlencoded")
       @Consumes("application/x-www-form-urlencoded")
-      public MultivaluedMap<String, String> post2(MultivaluedMap<String, String> form);
+      MultivaluedMap<String, String> post2(MultivaluedMap<String, String> form);
    }
 
    //@Test

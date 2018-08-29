@@ -6,8 +6,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.annotate.JsonProperty;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import javax.xml.bind.annotation.*;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -27,6 +27,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -37,6 +42,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class JacksonTest extends BaseResourceTest
 {
+
+    private static final Logger LOG = Logger.getLogger(JacksonTest.class);
+
    public static class Product
    {
       protected String name;
@@ -218,7 +226,7 @@ public class JacksonTest extends BaseResourceTest
       WebTarget target = client.target(generateURL("/products/333"));
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
-      System.out.println(entity);
+      LOG.info(entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity);
       response.close();
@@ -226,7 +234,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-      System.out.println(entity2);
+      LOG.info(entity2);
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity2);
       response2.close();
@@ -239,7 +247,7 @@ public class JacksonTest extends BaseResourceTest
       WebTarget target = client.target(generateURL("/xml/products/333"));
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
-      System.out.println(entity);
+      LOG.info(entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(entity.startsWith("{\"product"));
       response.close();
@@ -248,7 +256,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/xml/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-      System.out.println(entity2);
+      LOG.info(entity2);
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertTrue(entity2.startsWith("[{\"product"));
       response2.close();
@@ -266,7 +274,7 @@ public class JacksonTest extends BaseResourceTest
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
       String entity2 = response2.readEntity(String.class);
-//      System.out.println(entity2);
+//    System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
       response2.close();
 

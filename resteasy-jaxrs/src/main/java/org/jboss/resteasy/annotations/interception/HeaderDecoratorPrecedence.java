@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @Precedence("HEADER_DECORATOR")
 public @interface HeaderDecoratorPrecedence
 {
-   public static final String PRECEDENCE_STRING = "HEADER_DECORATOR";
+   String PRECEDENCE_STRING = "HEADER_DECORATOR";
 }

@@ -130,7 +130,7 @@ public final class TypeConverter
          result = getTypeViaValueOfMethod(source, targetType);
       }
       catch (NoSuchMethodException e)
-      {;
+      {
          LogMessages.LOGGER.noValueOfMethodAvailable(targetType.getSimpleName());
          result = getTypeViaStringConstructor(source, targetType);
       }

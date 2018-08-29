@@ -101,33 +101,33 @@ public class ClientCacheTest extends BaseResourceTest
    }
 
    @Path("/cache")
-   public static interface MyProxy
+   public interface MyProxy
    {
       @GET
       @Produces("text/plain")
       @Cache(maxAge = 2)
-      public String get();
+      String get();
 
       @Path("/etag/always/good")
       @GET
       @Produces("text/plain")
-      public String getAlwaysGoodEtag();
+      String getAlwaysGoodEtag();
 
       @Path("/etag/never/good")
       @GET
       @Produces("text/plain")
-      public String getNeverGoodEtag();
+      String getNeverGoodEtag();
 
       @Path("/etag/always/validate")
       @GET
       @Produces("text/plain")
-      public String getValidateEtagged();
+      String getValidateEtagged();
 
       @Path("/cacheit/{id}")
       @GET
       @Produces("text/plain")
       @Cache(maxAge = 3000)
-      public String getCacheit(@PathParam("id") String id);
+      String getCacheit(@PathParam("id") String id);
    }
 
 

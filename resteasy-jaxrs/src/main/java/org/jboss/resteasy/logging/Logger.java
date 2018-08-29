@@ -13,7 +13,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  */
 public abstract class Logger
 {
-   public static enum LoggerType
+   public enum LoggerType
    {
       JUL,
       LOG4J,

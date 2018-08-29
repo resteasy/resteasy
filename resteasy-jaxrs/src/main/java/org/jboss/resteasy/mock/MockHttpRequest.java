@@ -1,21 +1,17 @@
 package org.jboss.resteasy.mock;
 
-import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.ReadFromStream;
 
-import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;

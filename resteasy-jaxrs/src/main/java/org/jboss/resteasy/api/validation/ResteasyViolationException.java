@@ -440,14 +440,14 @@ public class ResteasyViolationException extends ConstraintViolationException
       private String subtype;
       private Map<String, String> parameters;
       
-      public CloneableMediaType(MediaType mediaType)
+      CloneableMediaType(MediaType mediaType)
       {
          type = mediaType.getType();
          subtype = mediaType.getSubtype();
          parameters = new HashMap<String, String>(mediaType.getParameters());
       }
       
-      public CloneableMediaType(String type, String subtype)
+      CloneableMediaType(String type, String subtype)
       {
          this.type = type;
          this.subtype = subtype;

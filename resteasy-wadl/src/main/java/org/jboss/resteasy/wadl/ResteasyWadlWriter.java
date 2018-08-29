@@ -2,7 +2,16 @@ package org.jboss.resteasy.wadl;
 
 import org.jboss.resteasy.wadl.i18n.LogMessages;
 import org.jboss.resteasy.wadl.i18n.Messages;
-import org.jboss.resteasy.wadl.jaxb.*;
+import org.jboss.resteasy.wadl.jaxb.Application;
+import org.jboss.resteasy.wadl.jaxb.Method;
+import org.jboss.resteasy.wadl.jaxb.ObjectFactory;
+import org.jboss.resteasy.wadl.jaxb.Param;
+import org.jboss.resteasy.wadl.jaxb.ParamStyle;
+import org.jboss.resteasy.wadl.jaxb.Representation;
+import org.jboss.resteasy.wadl.jaxb.Request;
+import org.jboss.resteasy.wadl.jaxb.Resource;
+import org.jboss.resteasy.wadl.jaxb.Resources;
+import org.jboss.resteasy.wadl.jaxb.Response;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;

@@ -37,7 +37,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -191,7 +190,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    {
       BaseClientResponse response;
 
-      public ResponseStream(InputStream in, BaseClientResponse response)
+      ResponseStream(InputStream in, BaseClientResponse response)
       {
          super(in);
          // Keep a reference to the response object to prevent it being finalized prematurely
@@ -591,7 +590,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
        * @param pFile        -
        * @param pContentType -
        */
-      public FileExposingFileEntity(File pFile, String pContentType)
+      FileExposingFileEntity(File pFile, String pContentType)
       {
          super(pFile, pContentType);
       }
@@ -608,7 +607,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    /**
     * Enumeration to represent memory units.
     */
-   private static enum MemoryUnit
+   private enum MemoryUnit
    {
       /**
        * Bytes

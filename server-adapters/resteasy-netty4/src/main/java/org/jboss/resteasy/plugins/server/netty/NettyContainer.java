@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**

@@ -28,7 +28,7 @@ public interface AsyncClientHttpEngine extends ClientHttpEngine
        * @param response Response
        * @return result
        */
-      public T extractResult(ClientResponse response);
+      T extractResult(ClientResponse response);
    }
 
    /**
@@ -41,6 +41,6 @@ public interface AsyncClientHttpEngine extends ClientHttpEngine
     * @param extractor ResultExtractor for extracting a result out of a ClientResponse. Is run inside the io-thread
     * @return Future with the result or Exception
     */
-   public <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor);
+   <T> Future<T> submit(ClientInvocation request, boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor);
 
 }

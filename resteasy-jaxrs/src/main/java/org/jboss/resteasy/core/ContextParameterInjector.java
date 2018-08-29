@@ -7,7 +7,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.HEAD;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;

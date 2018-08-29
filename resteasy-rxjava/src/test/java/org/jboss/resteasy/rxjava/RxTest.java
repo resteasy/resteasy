@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
@@ -27,6 +28,7 @@ import rx.Single;
 
 public class RxTest
 {
+   private static final Logger LOG = Logger.getLogger(RxTest.class);
    private static NettyJaxrsServer server;
 
    private static CountDownLatch latch;
@@ -101,7 +103,7 @@ public class RxTest
       List<String> data = new ArrayList<String>();
       observable.subscribe(
             (String s) -> data.add(s),
-            (Throwable t) -> t.printStackTrace(),
+            (Throwable t) -> LOG.error(t.getMessage(), t),
             () -> latch.countDown());
       latch.await();
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
@@ -116,7 +118,7 @@ public class RxTest
       List<String> data = new ArrayList<String>();
       observable.subscribe(
             (String s) -> data.add(s),
-            (Throwable t) -> t.printStackTrace(),
+            (Throwable t) -> LOG.error(t.getMessage(), t),
             () -> latch.countDown());
       latch.await();
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());

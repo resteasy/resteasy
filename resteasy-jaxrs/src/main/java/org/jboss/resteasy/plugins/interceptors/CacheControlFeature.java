@@ -2,13 +2,11 @@ package org.jboss.resteasy.plugins.interceptors;
 
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.annotations.cache.NoCache;
-import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.FeatureContext;
 import java.lang.reflect.Method;
 

@@ -20,9 +20,9 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
  */
 public interface BeanStringPopulator<T> extends StringFormatValidator{
 
-	public abstract T getValue(String value);
+	T getValue(String value);
 
-	public abstract Class<? extends T> getType();
+	Class<? extends T> getType();
 
-	public abstract String getPopulatorID();
+	String getPopulatorID();
 }

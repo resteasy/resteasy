@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;

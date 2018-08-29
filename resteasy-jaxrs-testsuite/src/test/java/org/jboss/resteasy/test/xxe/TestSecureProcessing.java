@@ -35,7 +35,7 @@ public class TestSecureProcessing
 {
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
-   protected static enum MapInclusion {DEFAULT, FALSE, TRUE};
+   protected enum MapInclusion {DEFAULT, FALSE, TRUE};
    
    ///////////////////////////////////////////////////////////////////////////////////////////////
    protected static String bigExpansionDoc =

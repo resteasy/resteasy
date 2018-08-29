@@ -37,6 +37,8 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class TestFormResource extends BaseResourceTest
 {
+   private static final org.jboss.logging.Logger LOG = org.jboss.logging.Logger.getLogger(TestFormResource.class);
+
    private static final String SHORT_VALUE_FIELD = "shortValue";
 
    private static final String INTEGER_VALUE_FIELD = "integerValue";
@@ -88,7 +90,7 @@ public class TestFormResource extends BaseResourceTest
    public interface MyFormProxy
    {
       @POST
-      public void post(@Form ClientForm2 form2);
+      void post(@Form ClientForm2 form2);
    }
 
    @Path("/myform")
@@ -187,7 +189,7 @@ public class TestFormResource extends BaseResourceTest
       Assert.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
       Assert.assertEquals(rtn.getFirst(SHORT_VALUE_FIELD), "12345");
       String str = proxy.postString(form);
-      System.out.println("STR: " + str);
+      LOG.info("STR: " + str);
       String[] params = str.split("&");
       Map<String, String> map = new HashMap<String, String>();
       for (int i = 0; i < params.length; i++)
@@ -261,7 +263,7 @@ public class TestFormResource extends BaseResourceTest
       public String key;
       public String value;
       
-      public StringPair(String key, String value)
+      StringPair(String key, String value)
       {
          this.key = key;
          this.value = value;

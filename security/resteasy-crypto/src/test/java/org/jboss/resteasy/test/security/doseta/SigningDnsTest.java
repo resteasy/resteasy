@@ -17,6 +17,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
@@ -40,6 +41,7 @@ import se.unlogic.eagledns.EagleDNS;
  */
 public class SigningDnsTest
 {
+   private static final Logger LOG = Logger.getLogger(SigningDnsTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
    public static DosetaKeyRepository clientRepository;
@@ -149,7 +151,7 @@ public class SigningDnsTest
       {
          Assert.assertNotNull(signature);
          Assert.assertEquals(input, "hello world");
-         System.out.println(signature);
+         LOG.info(signature);
       }
 
    }

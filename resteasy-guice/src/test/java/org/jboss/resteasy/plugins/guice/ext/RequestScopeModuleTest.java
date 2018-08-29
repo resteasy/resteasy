@@ -70,7 +70,7 @@ public class RequestScopeModuleTest
    public interface TestResource
    {
       @GET
-      public String getName();
+      String getName();
    }
 
    public static class RequestScopeTestResource implements TestResource

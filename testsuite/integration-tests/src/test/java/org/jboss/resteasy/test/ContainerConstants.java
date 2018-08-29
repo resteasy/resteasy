@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test;
 
-import java.io.File;
-
 /**
  * Various contants for containers defined in arquillian.xml. Keep this file in sync with the values there.
  */

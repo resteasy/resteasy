@@ -25,10 +25,10 @@ public class ClientFormParamTest
    }
 
    @Path("/form")
-   public static interface FormResource
+   public interface FormResource
    {
       @POST
-      public String put(@FormParam("value") String value);
+      String put(@FormParam("value") String value);
    }
 
    @Test

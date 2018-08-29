@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public class MediaTypeMap<T>
 {
-   public static interface Typed
+   public interface Typed
    {
       Class<?> getType();
    }
@@ -33,7 +33,7 @@ public class MediaTypeMap<T>
       private static final long serialVersionUID = -8815419198743440920L;
       private Class<?> type;
 
-      public TypedEntryComparator(Class<?> type)
+      TypedEntryComparator(Class<?> type)
       {
          this.type = type;
       }

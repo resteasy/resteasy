@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Deprecated
 public interface BrowserCache
 {
-   public static class Header implements Serializable
+   class Header implements Serializable
    {
       private static final long serialVersionUID = 4145981086454860081L;
 
@@ -41,7 +41,7 @@ public interface BrowserCache
       }
    }
 
-   public static interface Entry
+   interface Entry
    {
       MultivaluedMap<String, String> getHeaders();
 

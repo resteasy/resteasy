@@ -3,7 +3,6 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -14,11 +13,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
-
-import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

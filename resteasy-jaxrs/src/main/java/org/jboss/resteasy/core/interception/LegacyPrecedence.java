@@ -3,7 +3,6 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.annotations.interception.Precedence;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
-import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 
 import java.lang.annotation.Annotation;

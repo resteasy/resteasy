@@ -18,13 +18,13 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     * with {@link #resume()} or aborted with {@link #resume(Throwable)} or 
     * {@link org.jboss.resteasy.core.interception.ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
     */
-   public void suspend();
+   void suspend();
    
    /**
     * Resumes the current response, and proceeds to the next response filter, if any,
     * or to send the response.
     */
-   public void resume();
+   void resume();
    
    /**
     * Aborts the current response with the given exception. This behaves as if the request
@@ -34,6 +34,6 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     * 
     * @param t the exception to send back to the client, as an internal server error.
     */
-   public void resume(Throwable t);
+   void resume(Throwable t);
 
 }

@@ -43,7 +43,7 @@ public class EntityBufferingInFileTest
       @Path("hello")
       public String resourceMethod(String body)
       {
-         System.out.println("entered resourceMethod()");
+         log.info("entered resourceMethod()");
          return body;
       }
    }
@@ -125,9 +125,9 @@ public class EntityBufferingInFileTest
       String body = sb.toString();
       ClientRequest request = new ClientRequest(generateURL("/hello"), executor);
       request.body("text/plain", body);
-      System.out.println("Sending request");
+      log.info("Sending request");
       ClientResponse<String> response = request.post(String.class);
-      System.out.println("Received response");
+      log.info("Received response");
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(body, response.getEntity());
       if (inMemory)

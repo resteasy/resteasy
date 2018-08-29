@@ -36,7 +36,7 @@ public class ContextTest extends BaseResourceTest
 
       @GET
       @Produces("text/plain")
-      public String echo(@Context UriInfo info);
+      String echo(@Context UriInfo info);
    }
 
    @Before

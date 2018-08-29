@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.MultivaluedHashMap;

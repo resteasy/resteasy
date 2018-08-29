@@ -86,7 +86,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    /**
     * Enumeration to represent memory units.
     */
-   public static enum MemoryUnit
+   public enum MemoryUnit
    {
       /**
        * Bytes
@@ -730,7 +730,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
        * @param pFile -
        * @param pContentType -
        */
-      public FileExposingFileEntity(File pFile, String pContentType)
+      FileExposingFileEntity(File pFile, String pContentType)
       {
          super(pFile, pContentType);
       }

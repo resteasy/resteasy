@@ -6,13 +6,11 @@ import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.PathSegment;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

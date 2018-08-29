@@ -16,15 +16,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,7 +36,8 @@ import org.junit.Test;
  * Copyright Aug 8, 2012
  */
 public class ParameterEncodingTest
-{  
+{
+   private static final Logger LOG = Logger.getLogger(ParameterEncodingTest.class);
    protected static ResteasyDeployment deployment;
    
    @Path("/")
@@ -48,7 +48,7 @@ public class ParameterEncodingTest
       @Path("encoded/pathparam/{pathParam}")
       public String getEncodedPathParam(@Encoded @PathParam("pathParam") String pathParam)
       {
-         System.out.println("getEncodedPathParam(): encoded: " + pathParam);
+         LOG.info("getEncodedPathParam(): encoded: " + pathParam);
          return pathParam;
       }
       
@@ -57,7 +57,7 @@ public class ParameterEncodingTest
       @Path("decoded/pathparam/{pathParam}")
       public String getDecodedPathParam(@PathParam("pathParam") String pathParam)
       {
-         System.out.println("getDecodedPathParam(): decoded: " + pathParam);
+         LOG.info("getDecodedPathParam(): decoded: " + pathParam);
          return pathParam;
       }
       
@@ -66,7 +66,7 @@ public class ParameterEncodingTest
       @Path("encoded/matrix")
       public String getEncodedMatrixParam(@Encoded @MatrixParam("m") String matrixParam)
       {
-         System.out.println("getEncodedMatrixParam(): encoded: " + matrixParam);
+         LOG.info("getEncodedMatrixParam(): encoded: " + matrixParam);
          return matrixParam;
       }
       
@@ -75,7 +75,7 @@ public class ParameterEncodingTest
       @Path("decoded/matrix")
       public String getDecodedMatrixParam(@MatrixParam("m") String matrixParam)
       {
-         System.out.println("getDecodedMatrixParam(): decoded: " + matrixParam);
+         LOG.info("getDecodedMatrixParam(): decoded: " + matrixParam);
          return matrixParam;
       }
       
@@ -84,7 +84,7 @@ public class ParameterEncodingTest
       @Path("encoded/query")
       public String getEncodedQueryParam(@Encoded @QueryParam("m") String queryParam)
       {
-         System.out.println("getEncodedQueryParam(): encoded: " + queryParam);
+         LOG.info("getEncodedQueryParam(): encoded: " + queryParam);
          return queryParam;
       }
       
@@ -93,7 +93,7 @@ public class ParameterEncodingTest
       @Path("decoded/query")
       public String getDecodedQueryParam(@QueryParam("m") String queryParam)
       {
-         System.out.println("getDecodedQueryParam(): decoded: " + queryParam);
+         LOG.info("getDecodedQueryParam(): decoded: " + queryParam);
          return queryParam;
       }
       
@@ -103,7 +103,7 @@ public class ParameterEncodingTest
       @Path("encoded/form")
       public String getEncodedFormParam(@Encoded @FormParam("f") String formParam)
       {
-         System.out.println("getEncodedFormParamPost(): encoded: " + formParam);
+         LOG.info("getEncodedFormParamPost(): encoded: " + formParam);
          return formParam;
       }
       
@@ -113,7 +113,7 @@ public class ParameterEncodingTest
       @Path("decoded/form")
       public String getDecodedFormParam(@FormParam("f") String formParam)
       {
-         System.out.println("getDecodedFormParamPost(): decoded: " + formParam);
+         LOG.info("getDecodedFormParamPost(): decoded: " + formParam);
          return formParam;
       }
       
@@ -122,7 +122,7 @@ public class ParameterEncodingTest
       @Path("encoded/segment/{pathParam}")
       public String getEncodedSegmentPathParam(@Encoded @PathParam("pathParam") PathSegment segment)
       {
-         System.out.println("getEncodedSegmentPathParam(): encoded segment: " + segment.getPath());
+         LOG.info("getEncodedSegmentPathParam(): encoded segment: " + segment.getPath());
          return segment.getPath();
       }
       
@@ -131,7 +131,7 @@ public class ParameterEncodingTest
       @Path("decoded/segment/{pathParam}")
       public String getDecodedSegmentPathParam(@PathParam("pathParam") PathSegment segment)
       {
-         System.out.println("getDecodedSegmentPathParam(): decoded segment: " + segment.getPath());
+         LOG.info("getDecodedSegmentPathParam(): decoded segment: " + segment.getPath());
          return segment.getPath();
       }
       
@@ -142,12 +142,12 @@ public class ParameterEncodingTest
       {
          MultivaluedMap<String, String> map = segment.getMatrixParameters();
          Iterator<String> it = map.keySet().iterator();
-         System.out.println("getEncodedSegmentMatrixParam(): encoded matrix params: ");
+         LOG.info("getEncodedSegmentMatrixParam(): encoded matrix params: ");
          StringBuilder builder = new StringBuilder();
          while(it.hasNext())
          {
             String key = it.next();
-            System.out.println("  " + key + "->" + map.getFirst(key));
+            LOG.info("  " + key + "->" + map.getFirst(key));
             builder.append(map.getFirst(key));
          }
          return builder.toString();
@@ -160,12 +160,12 @@ public class ParameterEncodingTest
       {
          MultivaluedMap<String, String> map = segment.getMatrixParameters();
          Iterator<String> it = map.keySet().iterator();
-         System.out.println("getDecodedSegmentMatrixParam(): decoded matrix params: ");
+         LOG.info("getDecodedSegmentMatrixParam(): decoded matrix params: ");
          StringBuilder builder = new StringBuilder();
          while(it.hasNext())
          {
             String key = it.next();
-            System.out.println("  " + key + "->" + map.getFirst(key));
+            LOG.info("  " + key + "->" + map.getFirst(key));
             builder.append(map.getFirst(key));
          }
          return builder.toString();
@@ -194,42 +194,42 @@ public class ParameterEncodingTest
             
       request = new ClientRequest("http://localhost:8081/encoded/pathparam/bee bop");
       response = request.get(String.class);
-      System.out.println("Received encoded path param: " + response.getEntity());
+      LOG.info("Received encoded path param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/pathparam/bee bop");
       response = request.get(String.class);
-      System.out.println("Received decoded path param: " + response.getEntity());
+      LOG.info("Received decoded path param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/encoded/matrix;m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received encoded matrix param: " + response.getEntity());
+      LOG.info("Received encoded matrix param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/matrix;m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received decoded matrix param: " + response.getEntity());
+      LOG.info("Received decoded matrix param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/encoded/query?m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received encoded query param: " + response.getEntity());
+      LOG.info("Received encoded query param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/query?m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received decoded query param: " + response.getEntity());
+      LOG.info("Received decoded query param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();
@@ -237,7 +237,7 @@ public class ParameterEncodingTest
       request = new ClientRequest("http://localhost:8081/encoded/form");
       request.formParameter("f", "bee bop");
       response = request.post(String.class);
-      System.out.println("Received encoded form param: " + response.getEntity());
+      LOG.info("Received encoded form param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee+bop", response.getEntity());
       response.releaseConnection();
@@ -245,35 +245,35 @@ public class ParameterEncodingTest
       request = new ClientRequest("http://localhost:8081/decoded/form");
       request.formParameter("f", "bee bop");
       response = request.post(String.class);
-      System.out.println("Received decoded form param: " + response.getEntity());
+      LOG.info("Received decoded form param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/encoded/segment/bee bop");
       response = request.get(String.class);
-      System.out.println("Received encoded path param from segment: " + response.getEntity());
+      LOG.info("Received encoded path param from segment: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/segment/bee bop");
       response = request.get(String.class);
-      System.out.println("Received decoded path param from segment: " + response.getEntity());
+      LOG.info("Received decoded path param from segment: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/encoded/segment/matrix/params;m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received encoded matrix param from segment: " + response.getEntity());
+      LOG.info("Received encoded matrix param from segment: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/segment/matrix/params;m=bee bop");
       response = request.get(String.class);
-      System.out.println("Received decoded matrix param from segment: " + response.getEntity());
+      LOG.info("Received decoded matrix param from segment: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
       response.releaseConnection();

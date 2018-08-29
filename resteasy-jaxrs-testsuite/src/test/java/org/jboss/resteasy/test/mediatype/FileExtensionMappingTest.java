@@ -13,10 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
-import org.junit.Assert;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
@@ -32,6 +29,7 @@ import org.junit.Test;
  */
 public class FileExtensionMappingTest
 {
+   private static final Logger LOG = Logger.getLogger(FileExtensionMappingTest.class);
    protected ResteasyDeployment deployment;
    
    @Path("/test")
@@ -41,7 +39,7 @@ public class FileExtensionMappingTest
       @Produces("text/plain")
       public String testPlain(@Context UriInfo uriInfo, @QueryParam("query") String query)
       {
-         System.out.println(uriInfo.getRequestUri());
+         LOG.info(uriInfo.getRequestUri());
          return "plain: " + query;
       }
       
@@ -49,7 +47,7 @@ public class FileExtensionMappingTest
       @Produces("text/html")
       public String testHtml(@Context UriInfo uriInfo, @QueryParam("query") String query)
       {
-         System.out.println(uriInfo.getRequestUri());
+         LOG.info(uriInfo.getRequestUri());
          return "html: " + query;
       }
    }
@@ -87,8 +85,8 @@ public class FileExtensionMappingTest
    {
 //      ClientRequest request = new ClientRequest("http://localhost:8081/test.txt?query=whosOnFirst");
 //      ClientResponse<String> response = request.get(String.class);
-//      System.out.println("status: " + response.getStatus());
-//      System.out.println("response: " + response.getEntity());
+//      LOG.info("status: " + response.getStatus());
+//      LOG.info("response: " + response.getEntity());
 //      Assert.assertEquals(200, response.getStatus());
 //      Assert.assertEquals("plain: whosOnFirst", response.getEntity());
    }
@@ -99,8 +97,8 @@ public class FileExtensionMappingTest
    {
 //      ClientRequest request = new ClientRequest("http://localhost:8081/test.html?query=whosOnFirst");
 //      ClientResponse<String> response = request.get(String.class);
-//      System.out.println("status: " + response.getStatus());
-//      System.out.println("response: " + response.getEntity());
+//      LOG.info("status: " + response.getStatus());
+//      LOG.info("response: " + response.getEntity());
 //      Assert.assertEquals(200, response.getStatus());
 //      Assert.assertEquals("html: whosOnFirst", response.getEntity());
    }

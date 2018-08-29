@@ -70,15 +70,15 @@ public interface HttpRequest
 
    void removeAttribute(String name);
 
-   public Enumeration<String> getAttributeNames();
+   Enumeration<String> getAttributeNames();
 
 
-   public ResteasyAsynchronousContext getAsyncContext();
+   ResteasyAsynchronousContext getAsyncContext();
 
-   public boolean isInitial();
+   boolean isInitial();
 
-   public void forward(String path);
+   void forward(String path);
 
-   public boolean wasForwarded();
+   boolean wasForwarded();
 
 }

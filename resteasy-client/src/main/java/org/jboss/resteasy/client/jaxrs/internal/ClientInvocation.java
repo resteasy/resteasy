@@ -762,7 +762,7 @@ public class ClientInvocation implements Invocation
 
       private final ExecutionException ex;
 
-      public CompletedFuture(T result, ExecutionException ex)
+      CompletedFuture(T result, ExecutionException ex)
       {
          this.ex = ex;
          this.result = result;

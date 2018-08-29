@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.jboss.logging.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -16,6 +17,7 @@ import org.junit.BeforeClass;
  */
 abstract public class TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesParent.class);
    static protected Locale savedLocale;
    protected Properties properties = new Properties();
 
@@ -29,15 +31,15 @@ abstract public class TestMessagesParent
    static public void afterClass()
    {
       Locale.setDefault(savedLocale);
-      System.out.println("Reset default locale to: " + savedLocale);
+      LOG.info("Reset default locale to: " + savedLocale);
    }
    
    public boolean before(Locale locale, String filename) throws Exception
    {
-         System.out.println("default locale: " + Locale.getDefault());
+         LOG.info("default locale: " + Locale.getDefault());
          Locale.setDefault(locale);
-         System.out.println("Set default locale to: " + locale);
-         System.out.println("Messages file: " + filename);
+         LOG.info("Set default locale to: " + locale);
+         LOG.info("Messages file: " + filename);
          InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
          if (is == null)
          {
@@ -50,7 +52,7 @@ abstract public class TestMessagesParent
    protected String getExpected(String id, String message, Object... args)
    {
       String expected = "RESTEASY" + id + ": " + String.format(replacePositionalSpecifiers(String.class.cast(properties.get(message))), args);
-      System.out.println("expected: " + expected);
+      LOG.info("expected: " + expected);
       return expected;    
    }
    

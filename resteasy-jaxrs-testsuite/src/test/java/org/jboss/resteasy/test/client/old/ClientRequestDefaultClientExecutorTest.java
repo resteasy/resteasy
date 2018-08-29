@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client.old;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
@@ -21,6 +22,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class ClientRequestDefaultClientExecutorTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(ClientRequestDefaultClientExecutorTest.class);
+
    @Path("/test")
    public interface TestService
    {  
@@ -34,7 +38,7 @@ public class ClientRequestDefaultClientExecutorTest extends BaseResourceTest
       @POST
       public void post()
       {
-         System.out.println("In POST");
+         LOG.info("In POST");
       }
    }
 

@@ -13,12 +13,12 @@ public interface TestClient
    @GET
    @Produces("text/plain")
    @Path("/path-param/{pathParam}")
-   public Response getPathParam(@PathParam("pathParam") String pathParam);
+   Response getPathParam(@PathParam("pathParam") String pathParam);
 
 
 
    @GET
    @Produces("text/plain")
    @Path("/query-param")
-   public Response getQueryParam(@QueryParam("queryParam") String queryParam);
+   Response getQueryParam(@QueryParam("queryParam") String queryParam);
 }

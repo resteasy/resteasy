@@ -16,5 +16,5 @@ import java.lang.reflect.Method;
 @Deprecated
 public interface AcceptedByMethod
 {
-   public boolean accept(Class declaring, Method method);
+   boolean accept(Class declaring, Method method);
 }

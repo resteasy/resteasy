@@ -7,6 +7,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -23,6 +24,7 @@ import javax.ws.rs.client.Invocation.Builder;
  */
 public class JaxrsAsyncTest
 {
+   private static final Logger LOG = Logger.getLogger(JaxrsAsyncTest.class);
    static String BASE_URI = generateURL("");
    static Client client;
 
@@ -55,7 +57,7 @@ public class JaxrsAsyncTest
    @Test(timeout=REQUEST_TIMEOUT)
    public void testInjectionFailure()
    {
-      System.out.println("***INJECTION FAILURE***");
+      LOG.info("***INJECTION FAILURE***");
       Response response = client.target(BASE_URI).path("jaxrs/injection-failure/abcd").request().get();
       Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
       response.close();
@@ -64,7 +66,7 @@ public class JaxrsAsyncTest
    @Test(timeout=REQUEST_TIMEOUT)
    public void testMethodFailure() throws Exception
    {
-      System.out.println("***method FAILURE***");
+      LOG.info("***method FAILURE***");
       Response response = client.target(BASE_URI).path("jaxrs/method-failure").request().get();
       Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
       response.close();
@@ -82,8 +84,8 @@ public class JaxrsAsyncTest
    {
       Response response = client.target(BASE_URI).path("jaxrs").request().get();
       Assert.assertEquals(200, response.getStatus());
-      System.out.println(response.getHeaders().size());
-      System.out.println(response.getHeaders().keySet().iterator().next());
+      LOG.info(response.getHeaders().size());
+      LOG.info(response.getHeaders().keySet().iterator().next());
       Assert.assertEquals("hello", response.readEntity(String.class));
       response.close();
    }

@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Precedence("ENCODER")
 public @interface EncoderPrecedence
 {
-   public static final String PRECEDENCE_STRING = "ENCODER";
+   String PRECEDENCE_STRING = "ENCODER";
 }

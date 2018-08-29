@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers.jsonp;
 
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonStructure;
 import javax.json.JsonWriter;
@@ -16,7 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

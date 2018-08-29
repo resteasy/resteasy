@@ -10,6 +10,7 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -29,6 +30,7 @@ import org.junit.Test;
  */
 public class UsersResourceTest
 {
+   private static final Logger LOG = Logger.getLogger(UsersResourceTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
 
@@ -82,9 +84,9 @@ public class UsersResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String user = target.request().get(String.class);
-      System.out.println(user);
+      LOG.info(user);
       User u = target.request().get(User.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("wburke", u.getUsername());
       Assert.assertEquals("Bill Burke", u.getName());
       Assert.assertEquals("bburke@redhat.com", u.getEmail());
@@ -108,9 +110,9 @@ public class UsersResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String user = target.request().get(String.class);
-      System.out.println(user);
+      LOG.info(user);
       User u = target.request().get(User.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("5", u.getId());
       Assert.assertEquals("wburke", u.getUsername());
       Assert.assertEquals("Bill Burke", u.getName());

@@ -8,7 +8,7 @@ package org.jboss.resteasy.plugins.server.servlet;
  */
 public interface ResteasyBootstrapClasses
 {
-   public static String[] BOOTSTRAP_CLASSES = {
+   String[] BOOTSTRAP_CLASSES = {
            HttpServletDispatcher.class.getName(),
            ResteasyBootstrap.class.getName(),
            "org.springframework.web.servlet.DispatcherServlet",

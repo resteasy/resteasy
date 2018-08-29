@@ -80,7 +80,7 @@ public class ResourceTest
    public interface TestResource
    {
       @GET
-      public String getName();
+      String getName();
    }
 
    public static class TestResourceSimple implements TestResource

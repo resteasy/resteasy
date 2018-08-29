@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -34,6 +35,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class UriInfoTest
 {
+   private static final Logger LOG = Logger.getLogger(UriInfoTest.class);
    private static Dispatcher dispatcher;
 
    @BeforeClass
@@ -53,7 +55,7 @@ public class UriInfoTest
       @GET
       public String get(@Context UriInfo info, @QueryParam("abs") String abs)
       {
-         System.out.println("abs query: " + abs);
+         LOG.info("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
@@ -64,8 +66,8 @@ public class UriInfoTest
             base = createURI("/" + abs + "/");
          }
 
-         System.out.println("BASE URI: " + info.getBaseUri());
-         System.out.println("Request URI: " + info.getRequestUri());
+         LOG.info("BASE URI: " + info.getBaseUri());
+         LOG.info("Request URI: " + info.getRequestUri());
          Assert.assertEquals(base.getPath(), info.getBaseUri().getPath());
          Assert.assertEquals("/simple", info.getPath());
          return "CONTENT";
@@ -78,7 +80,7 @@ public class UriInfoTest
       @GET
       public String get(@QueryParam("abs") String abs)
       {
-         System.out.println("abs query: " + abs);
+         LOG.info("abs query: " + abs);
          URI base = null;
          if (abs == null)
          {
@@ -89,8 +91,8 @@ public class UriInfoTest
             base = createURI("/" + abs + "/");
          }
 
-         System.out.println("BASE URI: " + myInfo.getBaseUri());
-         System.out.println("Request URI: " + myInfo.getRequestUri());
+         LOG.info("BASE URI: " + myInfo.getBaseUri());
+         LOG.info("Request URI: " + myInfo.getRequestUri());
          Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
          Assert.assertEquals("/simple/fromField", myInfo.getPath());
          return "CONTENT";

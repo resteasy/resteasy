@@ -25,7 +25,6 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 
@@ -43,8 +42,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.format;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -52,7 +49,7 @@ import static java.lang.String.format;
 @SuppressWarnings("unchecked")
 public class BaseClientResponse<T> extends ClientResponse<T>
 {
-   public static interface BaseClientResponseStreamFactory
+   public interface BaseClientResponseStreamFactory
    {
       InputStream getInputStream() throws IOException;
 

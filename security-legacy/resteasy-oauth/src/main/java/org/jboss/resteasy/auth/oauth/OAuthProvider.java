@@ -13,7 +13,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * Returns the Realm of this provider.
 	 * @return Realm of this provider
 	 */
-	public String getRealm();
+	String getRealm();
 
 	/**
 	 * Returns the OAuth Consumer for the given Consumer key. If no such Consumer exists, throw an OAuthException.
@@ -21,7 +21,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @return the OAuth Consumer for the given Consumer key.
 	 * @throws OAuthException thrown if the given Consumer does not exist.
 	 */
-	public OAuthConsumer getConsumer(String consumerKey)throws OAuthException;
+	OAuthConsumer getConsumer(String consumerKey)throws OAuthException;
 	
 	/**
 	 * Returns the OAuth Request Token for the given Consumer key and Request Token. If no such Consumer or Request Token exist, throw an OAuthException.
@@ -30,7 +30,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @return the OAuth Request Token for the given Consumer key and Request Token
 	 * @throws OAuthException thrown if the given Request Token does not exist.
 	 */
-	public OAuthRequestToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
+	OAuthRequestToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
 
 	/**
 	 * Returns the OAuth Access Token for the given Consumer key and Access Token. If no such Consumer or Access Token exist, throw an OAuthException.
@@ -39,7 +39,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @return the OAuth Access Token for the given Consumer key and Access Token
 	 * @throws OAuthException thrown if the given Consumer or Access Token do not exist.
 	 */
-	public OAuthToken getAccessToken(String consumerKey, String accessToken) throws OAuthException;
+	OAuthToken getAccessToken(String consumerKey, String accessToken) throws OAuthException;
 	
 	/**
 	 * Make a new OAuth Request Token for the given Consumer, using the given callback.
@@ -50,7 +50,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @return a new OAuth Request Token for the given Consumer
 	 * @throws OAuthException thrown if the given Consumer does not exist
 	 */
-	public OAuthToken makeRequestToken(String consumerKey, String callback, 
+	OAuthToken makeRequestToken(String consumerKey, String callback,
 	        String[] scopes, String[] permissions) throws OAuthException;
 
 	/**
@@ -64,7 +64,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @throws OAuthException thrown if the given Consumer or Request Token does not exist, if the Request Token is not authorised 
 	 * or if the Verifier is invalid. 
 	 */
-	public OAuthToken makeAccessToken(String consumerKey, String requestToken, String verifier) throws OAuthException;
+	OAuthToken makeAccessToken(String consumerKey, String requestToken, String verifier) throws OAuthException;
 
 	/**
 	 * Authorises the given Request Token for the given Consumer and return a new Verifier to be returned to the Client.
@@ -74,7 +74,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @return a Verifier associated with the newly-authorised Request Token.
 	 * @throws OAuthException thrown if the given Consumer or Request Token do not exist, or if the Request Token has already been authorised.
 	 */
-	public String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException;
+	String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException;
 
 	/**
 	 * Checks that the given timestamp is valid for the given OAuth Token. The timestamp should always be
@@ -88,7 +88,7 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @throws OAuthException thrown if the given timestamp is not greater or equal to the last timestamp associated 
 	 * with the given OAuth Token
 	 */
-	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException;
+	void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException;
 	
 	/**
 	 * Converts custom permissions which may have been associated with consumers
@@ -97,6 +97,6 @@ public interface OAuthProvider extends OAuthConsumerRegistration {
 	 * @param permissions array of permissions 
 	 * @return roles set of roles
 	 */
-	public Set<String> convertPermissionsToRoles(String[] permissions);
+	Set<String> convertPermissionsToRoles(String[] permissions);
 
 }

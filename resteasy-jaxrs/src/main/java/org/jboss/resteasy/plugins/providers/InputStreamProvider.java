@@ -14,8 +14,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>

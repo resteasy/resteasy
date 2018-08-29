@@ -2,17 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

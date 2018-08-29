@@ -21,10 +21,11 @@ import org.junit.Test;
  */
 public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestLogMessages_Abstract.class);
    static protected Locale savedLocale;
    protected static final String BASE = "002";
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
-   
+
    public void before(Level level, Locale locale, String filename) throws Exception
    {
       super.before(locale, filename);
@@ -36,7 +37,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       consoleAppender.setWriter(writer);
       Logger.getLogger("org.jboss.resteasy").addAppender(consoleAppender);
       Logger.getLogger("org.jboss.resteasy").setLevel(level);
-      System.out.println("org.jboss.resteasy Level: " + Logger.getLogger("org.jboss.resteasy").getEffectiveLevel());
+      LOG.info("org.jboss.resteasy Level: " + Logger.getLogger("org.jboss.resteasy").getEffectiveLevel());
    }
 
    @Test
@@ -45,7 +46,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/LogMessages.i18n_" + getLocale().toString() + ".properties";
       if (!(before(getLocale(), filename)))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
       doTest(getLocale(), filename);
@@ -76,7 +77,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      System.out.println("actual: " + baos.toString());
+      LOG.info("actual: " + baos.toString());
       String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
@@ -211,7 +212,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      System.out.println("expected number of methods: " +LogMessages.class.getDeclaredMethods().length);
+      LOG.info("expected number of methods: " +LogMessages.class.getDeclaredMethods().length);
       return LogMessages.class.getDeclaredMethods().length;  
    }
    

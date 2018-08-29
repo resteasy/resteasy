@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -30,6 +31,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class VariantsTest
 {
+   private static final Logger LOG = Logger.getLogger(VariantsTest.class);
    private static Dispatcher dispatcher;
 
    @BeforeClass
@@ -96,7 +98,7 @@ public class VariantsTest
       request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      System.out.println(response.getEntity());
+      LOG.info(response.getEntity());
       Assert.assertNotNull(response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
@@ -107,7 +109,7 @@ public class VariantsTest
       request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "pt");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      System.out.println(response.getEntity());
+      LOG.info(response.getEntity());
       Assert.assertNotNull(response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
@@ -118,7 +120,7 @@ public class VariantsTest
       request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*,zh;q=0,en;q=0,fr;q=0");
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
-      System.out.println(response.getEntity());
+      LOG.info(response.getEntity());
    }
 
    @Test
@@ -247,10 +249,10 @@ public class VariantsTest
          request.header(HttpHeaderNames.ACCEPT, "application/atom+xml");
          request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en");
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(406, response.getStatus());;
+         Assert.assertEquals(406, response.getStatus());
          String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
-         System.out.println("vary: " + vary);
+         LOG.info("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
          Assert.assertTrue(contains(vary, "Accept-Language"));
          response.releaseConnection();
@@ -261,10 +263,10 @@ public class VariantsTest
          request.header(HttpHeaderNames.ACCEPT, "application/xml");
          request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "fr");
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(406, response.getStatus());;
+         Assert.assertEquals(406, response.getStatus());
          String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
-         System.out.println("vary: " + vary);
+         LOG.info("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
          Assert.assertTrue(contains(vary, "Accept-Language"));
          response.releaseConnection();
@@ -292,7 +294,7 @@ public class VariantsTest
       ClientRequest request = new ClientRequest(generateURL("/encoding"));
       request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("enc1", response.getEntity());
       Assert.assertEquals("enc1", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
@@ -303,7 +305,7 @@ public class VariantsTest
       ClientRequest request = new ClientRequest(generateURL("/encoding"));
       request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc2");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("enc2", response.getEntity());
       Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
@@ -314,7 +316,7 @@ public class VariantsTest
       ClientRequest request = new ClientRequest(generateURL("/encoding"));
       request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc3");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("enc3", response.getEntity());
       Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
@@ -325,7 +327,7 @@ public class VariantsTest
       ClientRequest request = new ClientRequest(generateURL("/encoding"));
       request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0.5, enc2;q=0.9");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("enc2", response.getEntity());
       Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }
@@ -336,7 +338,7 @@ public class VariantsTest
       ClientRequest request = new ClientRequest(generateURL("/encoding"));
       request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0, enc2;q=0.888, enc3;q=0.889");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("enc3", response.getEntity());
       Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
    }

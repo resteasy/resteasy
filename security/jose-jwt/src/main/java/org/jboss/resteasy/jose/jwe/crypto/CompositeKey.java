@@ -55,7 +55,7 @@ final class CompositeKey
 	 *
 	 * @throws RuntimeException If the input key length is not supported.
 	 */
-	public CompositeKey(final SecretKey inputKey)
+	CompositeKey(final SecretKey inputKey)
 		throws RuntimeException {
 
 		this.inputKey = inputKey;

@@ -37,7 +37,7 @@ public class ResteasyContextPropagatingOnSingleCreateAction implements Func1<OnS
 
       final Single.OnSubscribe<T> source;
 
-      public ContextCapturerSingle(Single.OnSubscribe<T> source)
+      ContextCapturerSingle(Single.OnSubscribe<T> source)
       {
          this.source = source;
       }
@@ -55,7 +55,7 @@ public class ResteasyContextPropagatingOnSingleCreateAction implements Func1<OnS
 
          final Map<Class<?>, Object> contextDataMap;
 
-         public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Map<Class<?>, Object> contextDataMap)
+         OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Map<Class<?>, Object> contextDataMap)
          {
             this.actual = actual;
             this.contextDataMap = contextDataMap;

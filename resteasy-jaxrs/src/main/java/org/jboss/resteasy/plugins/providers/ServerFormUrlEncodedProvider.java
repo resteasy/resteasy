@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.FindAnnotation;
 
@@ -11,12 +12,10 @@ import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

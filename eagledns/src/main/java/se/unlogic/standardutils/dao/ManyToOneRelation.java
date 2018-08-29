@@ -14,15 +14,15 @@ import java.sql.SQLException;
 
 public interface ManyToOneRelation<LocalType, RemoteType, RemoteKeyType> extends Column<LocalType,RemoteType>{
 
-	public abstract RemoteKeyType getBeanValue(LocalType bean);
+	RemoteKeyType getBeanValue(LocalType bean);
 
-	public abstract RemoteKeyType getParamValue(Object bean);
+	RemoteKeyType getParamValue(Object bean);
 
-	public abstract void getRemoteValue(LocalType bean, ResultSet resultSet, Connection connection, RelationQuery relations) throws SQLException;
+	void getRemoteValue(LocalType bean, ResultSet resultSet, Connection connection, RelationQuery relations) throws SQLException;
 
-	public abstract void add(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
+	void add(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
 
-	public abstract void update(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
+	void update(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
 
-	public abstract Field getField();
+	Field getField();
 }

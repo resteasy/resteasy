@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.interceptors;
 
-import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.CorsHeaders;
 
@@ -14,7 +13,6 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**

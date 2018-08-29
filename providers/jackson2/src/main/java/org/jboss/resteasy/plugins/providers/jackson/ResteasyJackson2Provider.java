@@ -21,9 +21,9 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

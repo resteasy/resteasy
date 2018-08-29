@@ -1,6 +1,25 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -18,29 +37,6 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.util.HttpHeaderNames;
-
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Providers;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.function.Consumer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

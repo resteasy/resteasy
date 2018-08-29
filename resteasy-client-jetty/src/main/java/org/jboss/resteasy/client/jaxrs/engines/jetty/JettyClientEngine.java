@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.io.ByteBufferPool;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
@@ -100,7 +101,8 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         final boolean buffered;
         if (!bufIn && extractor != null) {
             if (!WARN_BUF.getAndSet(true)) {
-                System.err.println("TODO: ResultExtractor is synchronous and may not be used without buffering - forcing buffer mode.");
+                Logger LOG = Logger.getLogger(JettyClientEngine.class);
+                LOG.error("TODO: ResultExtractor is synchronous and may not be used without buffering - forcing buffer mode.");
             }
             buffered = true;
         } else {

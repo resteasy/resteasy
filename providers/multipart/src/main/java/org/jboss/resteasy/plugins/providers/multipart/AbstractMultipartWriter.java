@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;

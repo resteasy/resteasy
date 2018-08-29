@@ -16,12 +16,12 @@ import static org.junit.Assert.assertEquals;
 
 public class TestProxyCastingSimple extends BaseResourceTest
 {
-	public static interface InterfaceAorB
+	public interface InterfaceAorB
 	{
-		public <T> T as(Class<T> iface);
+		<T> T as(Class<T> iface);
 	}
 
-	public static interface InterfaceA extends InterfaceAorB
+	public interface InterfaceA extends InterfaceAorB
 	{
 		@GET
 		@Path("foo")
@@ -29,7 +29,7 @@ public class TestProxyCastingSimple extends BaseResourceTest
 		String getFoo();
 	}
 
-	public static interface InterfaceB extends InterfaceAorB
+	public interface InterfaceB extends InterfaceAorB
 	{
 		@GET
 		@Path("bar")
@@ -37,7 +37,7 @@ public class TestProxyCastingSimple extends BaseResourceTest
 		String getBar();
 	}
 
-	public static interface FooBar
+	public interface FooBar
 	{
 		@Path("{thing}")
 		InterfaceAorB getThing(@PathParam("thing") String thing);

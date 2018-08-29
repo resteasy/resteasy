@@ -15,5 +15,5 @@ import java.lang.reflect.Method;
 public interface EntityExtractorFactory
 {
    @SuppressWarnings("rawtypes")
-   public EntityExtractor createExtractor(Method method);
+   EntityExtractor createExtractor(Method method);
 }

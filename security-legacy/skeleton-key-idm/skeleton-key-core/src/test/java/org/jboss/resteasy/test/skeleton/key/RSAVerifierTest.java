@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMWriter;
@@ -35,6 +36,7 @@ import java.util.Date;
  */
 public class RSAVerifierTest
 {
+   private static final Logger LOG = Logger.getLogger(RSAVerifierTest.class);
    private static X509Certificate[] idpCertificates;
    private static KeyPair idpPair;
    private static KeyPair badPair;
@@ -104,7 +106,7 @@ public class RSAVerifierTest
       {
          throw new RuntimeException(e);
       }
-      System.out.println(sw.toString());
+      LOG.info(sw.toString());
    }
 
 
@@ -206,7 +208,7 @@ public class RSAVerifierTest
       }
       catch (VerificationException ignored)
       {
-         System.out.println(ignored.getMessage());
+         LOG.info(ignored.getMessage());
       }
    }
 
@@ -249,7 +251,7 @@ public class RSAVerifierTest
       }
       catch (VerificationException ignored)
       {
-         System.out.println(ignored.getMessage());
+         LOG.info(ignored.getMessage());
       }
    }
 
@@ -273,7 +275,7 @@ public class RSAVerifierTest
       }
       catch (VerificationException ignored)
       {
-         System.out.println(ignored.getMessage());
+         LOG.info(ignored.getMessage());
       }
    }
 

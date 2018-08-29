@@ -40,6 +40,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.keystone.client.SkeletonKeyAdminClient;
@@ -60,7 +61,6 @@ import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.Base64;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -72,6 +72,7 @@ import org.junit.Test;
  */
 public class TokenTest
 {
+   private static final Logger LOG = Logger.getLogger(TokenTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
    private static PrivateKey privateKey;
@@ -135,7 +136,7 @@ public class TokenTest
       app.getProjects().addUserRole(project.getId(), admin.getId(), adminRole.getId());
 
       // Test export/import
-      System.out.println(new Loader().export(app.getCache()));
+      LOG.info(new Loader().export(app.getCache()));
 
       try
       {
@@ -147,7 +148,7 @@ public class TokenTest
       }
       catch (Exception e)
       {
-         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+         LOG.error(e.getMessage(), e);  //To change body of catch statement use File | Settings | File Templates.
       }
 
    }
@@ -217,7 +218,7 @@ public class TokenTest
       admin.projects().addUserRole(project.getId(), user.getId(), role.getId());
 
       String signed = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).obtainSignedToken("Skeleton Key");
-      System.out.println(signed);
+      LOG.info(signed);
       PKCS7SignatureInput input = new PKCS7SignatureInput(signed);
       input.setCertificate(certificate);
       Assert.assertTrue(input.verify());
@@ -264,8 +265,8 @@ public class TokenTest
       Mappers.registerContextResolver(client);
       WebTarget target = client.target(generateBaseUrl());
       String tiny = target.path("tokens").path("url").request().post(Entity.json(auth), String.class);
-      System.out.println(tiny);
-      System.out.println("tiny.size: " + tiny.length());
+      LOG.info(tiny);
+      LOG.info("tiny.size: " + tiny.length());
       Security.addProvider(new BouncyCastleProvider());
 
 
@@ -285,7 +286,7 @@ public class TokenTest
 
       SignerInformation signer = data.getSignerInfos().getSigners().iterator().next();
       boolean valid = signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey()));
-      System.out.println("valid: " + valid);
+      LOG.info("valid: " + valid);
       client.close();
 
 

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client.old;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -25,6 +26,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
  */
 public class WhitespaceTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(WhitespaceTest.class);
+
    @Resource
    @Path(value = "/sayhello")
    public static class Hello
@@ -40,10 +44,10 @@ public class WhitespaceTest extends BaseResourceTest
       {
          Assert.assertEquals(SPACES_REQUEST, in);
          List<String> params = info.getPathParameters(true).get("in");
-         System.out.println("DECODE" + params.get(0));
+         LOG.info("DECODE" + params.get(0));
 
          params = info.getPathParameters(false).get("in");
-         System.out.println("ENCODE" + params.get(0));
+         LOG.info("ENCODE" + params.get(0));
 
 
          return in;
@@ -60,7 +64,7 @@ public class WhitespaceTest extends BaseResourceTest
       @GET
       @Path("/en/{in}")
       @Produces("text/plain")
-      public String sayHi(@PathParam(value = "in") String in);
+      String sayHi(@PathParam(value = "in") String in);
 
 
    }

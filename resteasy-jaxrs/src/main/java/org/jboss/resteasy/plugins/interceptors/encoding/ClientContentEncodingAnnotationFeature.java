@@ -6,7 +6,6 @@ import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.FeatureContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

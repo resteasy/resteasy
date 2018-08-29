@@ -19,6 +19,6 @@ import javax.xml.transform.TransformerConfigurationException;
  */
 public interface CachedXSLT {
 
-	public void reloadStyleSheet() throws TransformerConfigurationException;
-	public Transformer getTransformer() throws TransformerConfigurationException;
+	void reloadStyleSheet() throws TransformerConfigurationException;
+	Transformer getTransformer() throws TransformerConfigurationException;
 }
