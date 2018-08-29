@@ -3068,18 +3068,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public boolean isEnabled(Feature feature)
    {
-      Collection<Feature> enabled = getEnabledFeatures();
-      //logger.info("********* isEnabled(Feature): " + feature.getClass().getName() + " # enabled: " + enabled.size());
-      for (Feature f : enabled)
-      {
-         //logger.info("  looking at: " + f.getClass());
-         if (f == feature)
-         {
-            //logger.info("   found: " + f.getClass().getName());
-            return true;
-         }
-      }
-      return false;
+      return getEnabledFeatures().contains(feature);
    }
 
    @Override
@@ -3110,12 +3099,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public boolean isRegistered(Class<?> componentClass)
    {
-      if (getProviderClasses().contains(componentClass)) return true;
-      for (Object obj : getProviderInstances())
-      {
-         if (obj.getClass().equals(componentClass)) return true;
-      }
-      return false;
+      return getClassContracts().containsKey(componentClass);
    }
 
    @Override
@@ -3134,13 +3118,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public Set<Class<?>> getClasses()
    {
-      return getProviderClasses();
+      Set<Class<?>> providerClasses = getProviderClasses();
+      return (providerClasses == null || providerClasses.isEmpty())
+            ? Collections.emptySet()
+            : Collections.unmodifiableSet(providerClasses);
    }
 
    @Override
    public Set<Object> getInstances()
    {
-      return getProviderInstances();
+      Set<Object> providerInstances = getProviderInstances();
+      return (providerInstances == null || providerInstances.isEmpty())
+            ? Collections.emptySet()
+            : Collections.unmodifiableSet(providerInstances);
    }
 
    @Override

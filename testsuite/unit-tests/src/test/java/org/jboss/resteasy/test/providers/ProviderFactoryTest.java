@@ -18,6 +18,7 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.ReaderInterceptor;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -147,6 +149,103 @@ public class ProviderFactoryTest {
          ResteasyProviderFactory.setInstance(orig);
       }
    }
+   
+   @Test
+   public void testProviderFactoryAsJaxRsConfiguration()
+   {
+      ResteasyProviderFactory emptyResteasyProviderFactory = new ResteasyProviderFactory();
+      ResteasyProviderFactory resteasyProviderFactory = new ResteasyProviderFactory();
+      resteasyProviderFactory.register(new MyFeature());
+
+      // test that getClasses() behavior is spec compliant
+      Set<Class<?>> emptyProviderFactoryClasses = emptyResteasyProviderFactory.getClasses();
+      Assert.assertFalse("Configuration.getClasses() MUST never be null.", emptyProviderFactoryClasses == null);
+      Assert.assertTrue("Configuration.getClasses() MUST be empty.", emptyProviderFactoryClasses.isEmpty());
+      try
+      {
+         emptyProviderFactoryClasses.add(Object.class);
+         Assert.fail("Configuration.getClasses() MUST return an immutable set");
+      }
+      catch (UnsupportedOperationException e)
+      {
+      }
+
+      Set<Class<?>> providerFactoryClasses = resteasyProviderFactory.getClasses();
+      Assert.assertTrue(providerFactoryClasses.size() == 1);
+      Assert.assertTrue(providerFactoryClasses.contains(MyInterceptor.class));
+      try
+      {
+         providerFactoryClasses.add(Object.class);
+         Assert.fail("Configuration.getClasses() MUST return an immutable set");
+      }
+      catch (UnsupportedOperationException e)
+      {
+      }
+
+      // test that getInstances() behavior is spec compliant
+      Set<Object> emptyProviderFactoryInstances = emptyResteasyProviderFactory.getInstances();
+      Assert.assertFalse("Configuration.getInstances() MUST never be null.", emptyProviderFactoryInstances == null);
+      Assert.assertTrue("Configuration.getInstances() MUST be empty.", emptyProviderFactoryInstances.isEmpty());
+      try
+      {
+         emptyProviderFactoryInstances.add(new Object());
+         Assert.fail("Configuration.getInstances() MUST return an immutable set");
+      }
+      catch (UnsupportedOperationException e)
+      {
+      }
+
+      Set<Object> providerFactoryInstances = resteasyProviderFactory.getInstances();
+      Assert.assertTrue(providerFactoryInstances.size() == 2);
+      Assert.assertTrue(providerFactoryInstances.contains(new MyFeature()));
+      try
+      {
+         providerFactoryInstances.add(new Object());
+         Assert.fail("Configuration.getInstances() MUST return an immutable set");
+      }
+      catch (UnsupportedOperationException e)
+      {
+      }
+
+      // test that isEnabled(Feature feature) behavior is spec compliant
+      Assert.assertFalse(emptyResteasyProviderFactory.isEnabled(new MyFeature()));
+      Assert.assertTrue(resteasyProviderFactory.isEnabled(new MyFeature()));
+
+      // test that isEnabled(Class<Feature> featureClass) behavior is spec compliant
+      Assert.assertFalse(emptyResteasyProviderFactory.isEnabled(MyFeature.class));
+      Assert.assertTrue(resteasyProviderFactory.isEnabled(MyFeature.class));
+   }
+   
+   @Provider
+   public static class MyFeature implements Feature
+   {
+      @Override
+      public boolean configure(FeatureContext featureContext)
+      {
+         featureContext.register(MyInterceptor.class);
+         featureContext.register(new ContainerRequestFilter()
+         {
+            @Override
+            public void filter(ContainerRequestContext arg0) throws IOException
+            {
+            }
+         });
+         return true;
+      }
+      
+      @Override
+      public int hashCode()
+      {
+         return MyFeature.class.hashCode();
+      }
+      
+      @Override
+      public boolean equals(Object obj)
+      {
+         return obj instanceof MyFeature;
+      }
+      
+   } 
 
    @Provider
    public static class MyInterceptor implements ReaderInterceptor
