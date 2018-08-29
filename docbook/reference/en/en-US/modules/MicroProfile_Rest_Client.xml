@@ -1,0 +1,380 @@
+<chapter id="MicroProfile_Rest_Client">
+<title>MicroProfile Rest Client</title>
+
+<para>
+As the microservices style of system architecture (see, for example,
+<ulink url="https://martinfowler.com/articles/microservices.html">Microservices</ulink> by Martin Fowler)
+gains increasing traction, new API standards are coming along to support it. One set of such standards comes from
+the <ulink url="https://microprofile.io/">Microprofile Project</ulink> supported by the Eclipse Foundation, and among 
+those is one, <ulink url="https://microprofile.io/project/eclipse/microprofile-rest-client">MicroProfile Rest Client</ulink>,
+of particular interest to RESTEasy and JAX-RS. In fact, it is intended to be based on, and consistent with, JAX-RS,
+and it includes ideas already implemented in RESTEasy. For a more detailed description of MicroProfile Rest Client,
+see <ulink url="https://github.com/eclipse/microprofile-rest-client">https://github.com/eclipse/microprofile-rest-client</ulink>.
+In particular, the API code is in 
+<ulink url="https://github.com/eclipse/microprofile-rest-client/tree/master/api">https://github.com/eclipse/microprofile-rest-client/tree/master/api</ulink>.
+and the specification is in
+<ulink url="https://github.com/eclipse/microprofile-rest-client/tree/master/spec">https://github.com/eclipse/microprofile-rest-client/tree/master/spec</ulink>.
+</para>
+
+<sect1>
+<title>Client proxies</title>
+
+<para>
+One of the central ideas in MicroProfile Rest Client is a version of <emphasis>distributed object communication</emphasis>, a concept
+implemented in, among other places, <ulink url="http://www.corba.org/orb_basics.htm">CORBA</ulink>, Java RMI, the JBoss
+Remoting project, and RESTEasy. Consider the resource
+</para>
+
+<programlisting>
+@Path("resource")
+public class TestResource {
+
+   @Path("test")
+   @GET
+   String test() {
+      return "test";
+   }
+}
+</programlisting>
+
+<para>
+The JAX-RS native way of accessing <classname>TestResource</classname> looks like
+</para>
+
+<programlisting>
+Client client = ClientBuilder.newClient();
+String response = client.target("http://localhost:8081/test").request().get(String.class);
+</programlisting>
+
+<para>
+The call to <methodname>TestResource.test()</methodname> is not particularly onerous, but calling 
+<methodname>test()</methodname> directly allows a more natural syntax. That is exactly what Microprofile
+Rest Client supports:
+</para>
+
+<programlisting>
+@Path("resource")
+public interface TestResourceIntf {
+
+   @Path("test")
+   @GET
+   public String test();
+}
+   
+TestResourceIntf service = MicroprofileClientBuilderResolver.instance()
+                              .newBuilder()
+                              .baseUrl(http://localhost:8081/))
+                              .build(TestResourceIntf.class);
+String s = service.test();
+</programlisting>
+
+<para>
+The first four lines of executable code are spent creating a proxy, <code>service</code>, that implements
+<classname>TestResourceIntf</classname>, but once that is done, calls on <classname>TestResource</classname>
+can be made very naturally in terms of <classname>TestResourceIntf</classname>, as illustrated by the call
+<code>service.test()</code>. 
+</para>
+
+<para>
+Beyond the natural syntax, another advantage of proxies is the way the proxy construction process quietly
+gathers useful information from the implemented interface and makes it available for remote invocations.
+Consider a more elaborate version of <classname>TestResourceIntf</classname>:
+</para>
+
+<programlisting>
+@Path("resource")
+public interface TestResourceIntf2 {
+
+   @Path("test/{path}")
+   @Consumes("text/plain")
+   @Produces("text/html")
+   @POST
+   public String test(@PathParam("path") String path, @QueryParam("query") String query, String entity);
+}
+</programlisting>
+
+<para>
+Calling <methodname>service.test("p", "q", "e")</methodname> results in an HTTP message that looks like
+</para>
+
+<programlisting>
+POST /resource/test/p/?query=q HTTP/1.1
+Accept: text/html
+Content-Type: text/plain
+Content-Length: 1
+
+e
+</programlisting>
+
+<para>
+The HTTP verb is derived from the <code>@POST</code> annotation, the request URI is derived from the
+two instances of the <classname>@Path</classname> annotation (one on the class, one on the method) plus the
+first and second parameters of <methodname>test()</methodname>, the Accept header is derived from the
+<classname>@Produces</classname> annotation, and the Content-Type header is derived from the
+<classname>@Consumes</classname> annotation, 
+</para>
+
+<para>
+Using the JAX-RS API, <code>service.test("p", "q", "e")</code> would look like the more verbose
+</para>
+
+<programlisting>
+Client client = ClientBuilder.newClient();
+String response = client.target("http://localhost:8081/resource/test/p")
+                     .queryParam("query", "q")
+                     .request()
+                     .accept("text/html")
+                     .post(Entity.entity("e", "text/plain"), String.class);
+</programlisting>
+
+<para>
+One other basic facility offered by MicroProfile Rest Client is the ability to configure the client environment
+by registering providers:
+</para>
+
+<programlisting id="listing1">
+TestResourceIntf service = MicroprofileClientBuilderResolver.instance()
+                              .newBuilder()
+                              .baseUrl(http://localhost:8081/))
+                              .register(MyClientResponseFilter.class)
+                              .register(MyMessageBodyReader.class)
+                              .build(TestResourceIntf.class);
+</programlisting>
+
+<para>
+Naturally, the registered providers should be relevant to the client environment, rather than, say, a
+<classname>ContainerResponseFilter</classname>.
+</para>
+
+<note>
+<para>
+So far, the MicroProfile Rest Client should look familiar to anyone who has used the RESTEasy client proxy facility
+(<link linkend='proxies'>Section ""RESTEasy Proxy Framework"</link>). The construction in 
+the previous listing would look like
+</para>
+
+<programlisting>
+ResteasyClient client = (ResteasyClient) ResteasyClientBuilder.newClient();
+TestResourceIntf service = client.target("http://localhost:8081/")
+                              .register(MyClientResponseFilter.class)
+                              .register(MyMessageBodyReader.class)
+                              .proxy(TestResourceIntf.class);
+</programlisting>
+
+<para>
+in RESTEasy.
+</para>
+</note>
+</sect1>
+
+<sect1>
+<title>Beyond RESTEasy</title>
+
+<para>
+There are a few concepts in MicroProfile Rest Client that do not appear in RESTEasy.
+</para>
+
+<sect1>
+<title>Declarative registration of providers</title>
+
+<para>
+In addition to programmatic registration of providers as illustrated above, it is also possible to
+register providers declaratively with annotations introduced in MicroProfile Rest Client. In particular,
+providers can be registered by adding the <classname>org.eclipse.microprofile.rest.client.annotation.RegisterProvider</classname>
+annotation to the target interface:
+</para>
+
+<programlisting>
+@Path("resource")
+@RegisterProvider(MyClientResponseFilter.class)
+@RegisterProvider(MyMessageBodyReader.class)
+public interface TestResourceIntf2 {
+
+   @Path("test/{path}")
+   @Consumes("text/plain")
+   @Produces("text/html")
+   @POST
+   public String test(@PathParam("path") String path, @QueryParam("query") String query, String entity);
+}
+</programlisting>
+
+<para>
+Declaring <classname>MyClientResponseFilter</classname> and <classname>MyMessageBodyReader</classname>  with
+annotations eliminates the need to call <methodname>RestClientBuilder.register()</methodname>.
+</para>
+</sect1>
+
+<sect1>
+<title>ResponseExceptionMapper</title>
+
+<para>
+The <classname>org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper</classname> is the
+client side inverse of the <classname>javax.ws.rs.ext.ExceptionMapper</classname> defined in JAX-RS. That is,
+where <methodname>ExceptionMapper.toResponse()</methodname> turns an <classname>Exception</classname> thrown
+during server side processing into a <classname>Response</classname>,
+<methodname>ResponseExceptionMapper.toThrowable()</methodname> turns a 
+<classname>Response</classname> received on the client side with an HTTP error status into
+an <classname>Exception</classname>. <classname>ResponseExceptionMapper</classname>s can be registered
+in the same manner as other providers, that is, either programmatically or declaratively. In the absence
+of a registered <classname>ResponseExceptionMapper</classname>, a default <classname>ResponseExceptionMapper</classname>
+will map any response with status >= 400 to a <classname>WebApplicationException</classname>.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Proxy injection by CDI</title>
+
+<para>
+MicroProfile Rest Client mandates that implementations must support CDI injection of proxies. At first, the
+concept might seem odd in that CDI is more commonly available on the server side. However, the idea is very
+consistent with the microservices philosophy. If an application is composed of a number of small services,
+then it is to be expected that services will often act as clients to other services.
+</para>
+
+<para>
+CDI (Contexts and Dependency Injection) is a fairly rich subject and beyond the scope of this Guide. For more information, see 
+<ulink url="https://www.jcp.org/en/jsr/detail?id=365">JSR 365: Contexts and Dependency Injection for JavaTM 2.0</ulink> 
+(the specification), 
+<ulink url="https://docs.oracle.com/javaee/7/tutorial/cdi-basic.htm">Java EE 7 Tutorial</ulink>, or
+<ulink url="https://docs.jboss.org/weld/reference/latest-master/en-US/html/">WELD - CDI Reference Implementation</ulink>.
+</para>
+
+<para>
+The fundamental thing to know about CDI injection is that annotating a variable with 
+<classname>javax.inject.Inject</classname> will lead the CDI runtime (if it is present and enabled) to
+create an object of the appropriate type and assign it to the variable. For example, in
+</para>
+
+<programlisting>
+   public interface Book {
+      public String getTitle();
+      public void setTitle(String title);
+   }
+
+   public class BookImpl implements Book {
+      
+      private String title;
+
+      @Override
+      public String getTitle() {
+         return title;
+      }
+      
+      @Override
+      public void setTitle(String title) {
+         this.title = title;
+      }
+   }
+   
+   public class Author {
+      
+      @Inject private Book book; 
+      
+      public Book getBook() {
+         return book;
+      }
+   }
+</programlisting>
+
+<para>
+The CDI runtime will create an instance of <classname>BookImpl</classname> and assign it to the private field
+<code>book</code> when an instance of <classname>Author</classname> is created;
+</para>
+
+<para>
+In this example, the injection is done because <classname>BookImpl</classname> is assignable to <code>book</code>, but
+greater discrimination can be imposed by annotating the interface and the field with <emphasis role="bold">qualifier</emphasis>
+annotations. For the injection to be legal, every qualifier on the field must be present on the injected interface.
+For example:</para>
+
+<programlisting>
+   @Qualifier
+   @Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+   @Retention(RetentionPolicy.RUNTIME)
+   public @interface Text {}
+   
+   @Qualifier
+   @Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+   @Retention(RetentionPolicy.RUNTIME)
+   public @interface Graphic {}
+   
+   @Text
+   public class TextBookImpl extends BookImpl { }
+   
+   @Graphic
+   public class GraphicNovelImpl extends BookImpl { }
+   
+   public class Genius {
+      
+      @Inject @Graphic Book book;
+   }
+
+</programlisting>
+
+<para>
+Here, the class <classname>TextBookImpl</classname> is annotated with the <classname>@Text</classname> qualifier and
+<classname>GraphicNovelImpl</classname> is annotated with <classname>@Graphic</classname>. It follows that an instance
+of <classname>GraphicNovelImpl</classname> is eligible for assignment to the field <code>book</code> in the 
+<classname>Genius</classname> class, but an instance of <classname>TextBookImpl</classname> is not.
+</para>
+
+<para>
+Now, in MicroProfile Rest Client, any interface that is to be managed as a CDI bean must be annotated with
+<classname>@RegisterRestClient</classname>:
+</para>
+
+<programlisting>
+   @Path("resource")
+   @RegisterProvider(MyClientResponseFilter.class)
+   public static class TestResourceImpl {
+
+      @Inject TestDataBase db;
+      
+      @Path("test/{path}")
+      @Consumes("text/plain")
+      @Produces("text/html")
+      @POST
+      public String test(@PathParam("path") String path, @QueryParam("query") String query, String entity) {
+         return db.getByName(query);
+      }
+   }
+
+   @Path("database")
+   @RegisterRestClient
+   public interface TestDataBase {
+      
+      @Path("")
+      @POST
+      public String getByName(String name);
+   }
+</programlisting>
+
+<para>
+Here, the MicroProfile Rest Client implementation creates a proxy for a <classname>TestDataBase</classname> service,
+allowing easy access by <classname>TestResourceImpl</classname>. Notice, though, that there's no indication of
+where the <classname>TestDataBase</classname> implementation lives. That information can be supplied externally with
+the system variable
+</para>
+
+<programlisting>
+            &lt;fqn of TestDataBase&gt;/mp-rest/url=&lt;URL&gt;
+</programlisting>
+
+<para>
+ For example,
+</para>
+
+<programlisting>
+com.bluemonkeydiamond.TestDatabase/mp-rest/url=https://localhost:8080/webapp
+</programlisting>
+
+<para>
+indicates that an implementation of <classname>com.bluemonkeydiamond.TestDatabase</classname> can be
+accessed at https://localhost:8080/webapp.
+</para>
+
+</sect1>
+
+</sect1>
+</chapter>

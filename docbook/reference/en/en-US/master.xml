@@ -36,6 +36,7 @@
                 <!ENTITY RESTEasy_EJB_Integration SYSTEM "modules/RESTEasy_EJB_Integration.xml">
                 <!ENTITY RESTEasy_Spring_Integration SYSTEM "modules/RESTEasy_Spring_Integration.xml">
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
+                <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">  
                 <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
                 <!ENTITY WADL SYSTEM "modules/WADL.xml">				
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
@@ -150,6 +151,7 @@ This one is short
    &CDI;
     &Guice;
    &RESTEasy_Client_Framework;
+   &MicroProfile_Rest_Client;
    &AJAX_Client;
    &WADL;
    &Validation;
