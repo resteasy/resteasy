@@ -153,11 +153,11 @@ public class ServerCacheTest
    }
 
    @Path("/cache")
-   public static interface MyProxy
+   public interface MyProxy
    {
       @GET
       @Produces("text/plain")
-      public String get();
+      String get();
 
    }
 

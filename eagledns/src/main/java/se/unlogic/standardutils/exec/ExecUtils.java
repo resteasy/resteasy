@@ -37,8 +37,10 @@ public class ExecUtils {
 		Process proc = rt.exec(command);
 
 		try{
-		
+
+			//CHECKSTYLE.OFF: RegexpSinglelineJava
 			StreamHandler errorOutHandler = new StreamPrinter(System.err);
+			//CHECKSTYLE.ON: RegexpSinglelineJava
 			StreamHandler stdOutHandler = new StreamPrinter();
 
 			errorOutHandler.handleStream(proc.getErrorStream());

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.interceptors;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.interception.Precedence;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -17,6 +18,8 @@ import java.lang.annotation.Target;
  */
 public class PrecedenceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(PrecedenceTest.class);
 
    @Precedence("A")
    public static class A
@@ -92,7 +95,7 @@ public class PrecedenceTest
 
       Object[] array = registry.bind(null, null);
 
-      for (Object obj : array) System.out.println(obj.getClass().getName());
+      for (Object obj : array) LOG.info(obj.getClass().getName());
 
       Assert.assertEquals(array[0].getClass(), BeforeA.class);
       Assert.assertEquals(array[1].getClass(), A.class);

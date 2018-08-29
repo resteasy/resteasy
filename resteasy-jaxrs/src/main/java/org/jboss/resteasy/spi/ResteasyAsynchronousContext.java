@@ -1,6 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.container.AsyncResponse;
 import java.util.concurrent.TimeUnit;
 
 /**

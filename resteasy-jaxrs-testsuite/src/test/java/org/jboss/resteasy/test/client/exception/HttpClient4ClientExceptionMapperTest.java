@@ -21,6 +21,7 @@ import org.apache.http.cookie.CookieRestrictionViolationException;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.auth.NTLMEngineException;
 import org.apache.http.impl.client.TunnelRefusedException;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -87,10 +88,11 @@ import static org.junit.Assert.fail;
  */
 public class HttpClient4ClientExceptionMapperTest
 {
+   private static final Logger LOG = Logger.getLogger(HttpClient4ClientExceptionMapperTest.class);
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
 
-   public static interface Foo
+   public interface Foo
    {
       @GET
       @Path("foo")
@@ -227,7 +229,7 @@ public class HttpClient4ClientExceptionMapperTest
       {
          Foo foo = ProxyBuilder.build(Foo.class, "http://localhost:8081/foo/").serverMediaType(MediaType.TEXT_PLAIN_TYPE).now();
          String answer = foo.error();
-         System.out.println("answer: " + answer);
+         LOG.info("answer: " + answer);
       }
       catch (ClientResponseFailure e)
       {
@@ -507,7 +509,7 @@ public class HttpClient4ClientExceptionMapperTest
       String indent = "";
       while (t instanceof Throwable)
       {
-         System.out.println(indent + t);
+         LOG.info(indent + t);
          t = t.getCause();
          indent += "  ";
       }
@@ -529,7 +531,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       private Exception e;
 
-      public TestClientExecutor(Exception e)
+      TestClientExecutor(Exception e)
       {
          this.e = e;
          if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
@@ -563,7 +565,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       private static final long serialVersionUID = -7825447948319726641L;
       
-      public TestException(Exception e)
+      TestException(Exception e)
       {
          super(e);
       }

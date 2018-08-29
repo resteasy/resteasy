@@ -8,7 +8,6 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;

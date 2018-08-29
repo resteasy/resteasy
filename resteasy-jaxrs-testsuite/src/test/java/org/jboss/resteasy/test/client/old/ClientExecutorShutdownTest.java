@@ -43,7 +43,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
       @POST
       public void post()
       {
-         System.out.println("In POST");
+         log.info("In POST");
       }
    }
 

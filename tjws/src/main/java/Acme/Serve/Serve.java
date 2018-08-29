@@ -77,7 +77,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
@@ -889,13 +888,13 @@ public class Serve implements ServletContext, Serializable
          ssclThread.interrupt();
    }
 
-   public static interface Acceptor
+   public interface Acceptor
    {
-      public void init(Map inProperties, Map outProperties) throws IOException;
+      void init(Map inProperties, Map outProperties) throws IOException;
 
-      public Socket accept() throws IOException;
+      Socket accept() throws IOException;
 
-      public void destroy() throws IOException;
+      void destroy() throws IOException;
    }
 
    protected Acceptor createAcceptor() throws IOException
@@ -3643,7 +3642,7 @@ public class Serve implements ServletContext, Serializable
             String dispatchPath = getContextPath();
             String pathInfo = getPathInfo();
             String servletPath = getServletPath();
-            ;
+
             if (pathInfo != null)
             {
                dispatchPath += servletPath;
@@ -4632,9 +4631,8 @@ public class Serve implements ServletContext, Serializable
             return; //throw new IOException("The stream is already closed");
          // read until end of chunks or content length
          if (chunking)
-            while (read() >= 0) ;
-         else if (contentLength < 0) ;
-         else
+            while (read() >= 0) {}
+         else if (contentLength >= 0)
          {
             long skipCount = contentLength - readCount;
             while (skipCount > 0)

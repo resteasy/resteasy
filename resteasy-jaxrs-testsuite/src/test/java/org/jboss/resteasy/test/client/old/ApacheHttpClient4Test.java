@@ -10,6 +10,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
@@ -35,6 +36,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ApacheHttpClient4Test extends BaseResourceTest
 {
 
+   private static final Logger LOG = Logger.getLogger(ApacheHttpClient4Test.class);
+
    public static class MyResourceImpl implements MyResource
    {
       public String get()
@@ -49,11 +52,11 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    }
 
    @Path("/test")
-   public static interface MyResource
+   public interface MyResource
    {
       @GET
       @Produces("text/plain")
-      public String get();
+      String get();
 
       @GET
       @Path("error")
@@ -150,9 +153,9 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
+                  LOG.info("calling proxy");
                   String str = proxy.get();
-                  System.out.println("returned: " + str);
+                  LOG.info("returned: " + str);
                   Assert.assertEquals("hello world", str);
                   counter.incrementAndGet();
                }
@@ -186,10 +189,10 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
+                  LOG.info("calling proxy");
                   callProxy(proxy);
                   System.gc();
-                  System.out.println("returned");
+                  LOG.info("returned");
                }
             }
          };
@@ -221,7 +224,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
+                  LOG.info("calling proxy");
                   String str = null;
                   try
                   {
@@ -233,7 +236,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                      e.getResponse().releaseConnection();
                      counter.incrementAndGet();
                   }
-                  System.out.println("returned");
+                  LOG.info("returned");
                }
             }
          };
@@ -287,11 +290,11 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       ClientResponse response = null;
       try
       {
-         System.out.println("get");
+         LOG.info("get");
          response = request.get();
          Assert.assertEquals(200, response.getStatus());
          //Assert.assertEquals("hello world", response.getEntity(String.class));
-         System.out.println("ok");
+         LOG.info("ok");
          if (release) response.releaseConnection();
       }
       catch (Exception e)

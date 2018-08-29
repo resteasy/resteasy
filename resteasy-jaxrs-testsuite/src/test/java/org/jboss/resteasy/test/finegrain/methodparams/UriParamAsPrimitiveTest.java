@@ -72,10 +72,10 @@ public class UriParamAsPrimitiveTest
    }
 
    @Path("/boolean/{arg}")
-   public static interface IResourceUriBoolean
+   public interface IResourceUriBoolean
    {
       @GET
-      public String doGet(@PathParam("arg") boolean v);
+      String doGet(@PathParam("arg") boolean v);
    }
 
    @Path("/byte/{arg}")
@@ -90,10 +90,10 @@ public class UriParamAsPrimitiveTest
    }
 
    @Path("/byte/{arg}")
-   public static interface IResourceUriByte
+   public interface IResourceUriByte
    {
       @GET
-      public String doGet(@PathParam("arg") byte v);
+      String doGet(@PathParam("arg") byte v);
    }
 
    @Path("/short/{arg}")

@@ -12,10 +12,8 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
@@ -39,8 +37,6 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -62,9 +58,10 @@ public class BasicAuthTest
 {
    private static Dispatcher dispatcher;
    private static final String ACCESS_FORBIDDEN_MESSAGE = "Access forbidden: role not allowed";
+   private static final Logger LOG = Logger.getLogger(BasicAuthTest.class);
 
    @Path("/secured")
-   public static interface BaseProxy
+   public interface BaseProxy
    {
       @GET
       String get();
@@ -96,10 +93,10 @@ public class BasicAuthTest
       @GET
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+         LOG.info("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+            LOG.info("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";
@@ -127,10 +124,10 @@ public class BasicAuthTest
    {
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+         LOG.info("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+            LOG.info("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";

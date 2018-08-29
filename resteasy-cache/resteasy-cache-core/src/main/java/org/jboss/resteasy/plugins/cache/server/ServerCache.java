@@ -10,7 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public interface ServerCache
 {
-   public static interface Entry
+   interface Entry
    {
       int getExpirationInSeconds();
 

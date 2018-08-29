@@ -1,5 +1,6 @@
 package se.unlogic.eagledns;
 
+import org.apache.log4j.Logger;
 import se.unlogic.standardutils.settings.XMLSettingNode;
 
 import java.rmi.NotBoundException;
@@ -23,10 +24,12 @@ public class EagleManagerClient {
 
 	public static void main(String[] args) {
 
+		Logger LOG = Logger.getLogger(EagleManagerClient.class);
+
 		if(args.length != 3 || (!args[2].equals("reload") && !args[2].equals("shutdown"))){
 
-			System.out.println("Usage EagleManagerClient config host command");
-			System.out.println("Valid commands are: reload, shutdown");
+			LOG.info("Usage EagleManagerClient config host command");
+			LOG.info("Valid commands are: reload, shutdown");
 			return;
 		}
 
@@ -37,7 +40,7 @@ public class EagleManagerClient {
 
 		} catch (Exception e) {
 
-			System.out.println("Unable to open config file " + args[0] + "!");
+			LOG.info("Unable to open config file " + args[0] + "!");
 			return;
 		}
 
@@ -45,7 +48,7 @@ public class EagleManagerClient {
 
 		if(password == null){
 
-			System.out.println("No remote management password found in config!");
+			LOG.info("No remote management password found in config!");
 			return;
 		}
 
@@ -53,7 +56,7 @@ public class EagleManagerClient {
 
 		if(port == null){
 
-			System.out.println("No remote management port found in config!");
+			LOG.info("No remote management port found in config!");
 			return;
 		}
 
@@ -62,29 +65,29 @@ public class EagleManagerClient {
 
 			if(eagleManager == null){
 
-				System.out.println("Invalid password!");
+				LOG.info("Invalid password!");
 
 			}else{
 
 				if(args[2].equals("reload")){
 
 					eagleManager.reloadZones();
-					System.out.println("Zones reloaded");
+					LOG.info("Zones reloaded");
 
 				}else{
 
 					eagleManager.shutdown();
-					System.out.println("Shutdown command sent");
+					LOG.info("Shutdown command sent");
 				}
 			}
 
 		} catch (RemoteException e) {
 
-			System.out.println("Unable to connect " + e);
+			LOG.info("Unable to connect " + e);
 
 		} catch (NotBoundException e) {
 
-			System.out.println("Unable to connect " + e);
+			LOG.info("Unable to connect " + e);
 		}
 	}
 }

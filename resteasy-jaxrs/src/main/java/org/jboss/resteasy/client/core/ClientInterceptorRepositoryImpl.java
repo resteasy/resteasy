@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 public class ClientInterceptorRepositoryImpl implements ClientInterceptorRepository
 {
 
-   private static enum InterceptorType
+   private enum InterceptorType
    {
       MessageBodyReader(ReaderInterceptor.class),
       MessageBodyWriter(

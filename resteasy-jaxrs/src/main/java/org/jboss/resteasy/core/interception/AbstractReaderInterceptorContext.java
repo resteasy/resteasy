@@ -1,9 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

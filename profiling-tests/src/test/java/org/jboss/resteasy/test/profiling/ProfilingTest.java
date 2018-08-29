@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.profiling;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.junit.Test;
@@ -15,6 +16,9 @@ import javax.ws.rs.Produces;
  */
 public class ProfilingTest
 {
+
+   private static final Logger LOG = Logger.getLogger(ProfilingTest.class);
+
    public static class Customer
    {
       private String first;
@@ -82,6 +86,6 @@ public class ProfilingTest
          String response = request.postTarget(String.class);
       }
       long end = System.currentTimeMillis() - start;
-      System.out.println(ITERATIONS + " iterations took " + end + "ms");
+      LOG.info(ITERATIONS + " iterations took " + end + "ms");
    }
 }

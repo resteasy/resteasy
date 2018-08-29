@@ -17,7 +17,7 @@ public interface ZoneProvider {
 	 * This method is called after the ZoneProvider has been instantiated by EagleDNS and all properties
 	 * specified in the config file for this zone provider have been set using their set methods.
 	 */
-	public void init(String name) throws Exception;
+	void init(String name) throws Exception;
 
 
 	/**
@@ -27,7 +27,7 @@ public interface ZoneProvider {
 	 * 
 	 * @return
 	 */
-	public Collection<Zone> getPrimaryZones();
+	Collection<Zone> getPrimaryZones();
 
 	/**
 	 * This method is called each time EagleDNS reloads it's zones.
@@ -38,7 +38,7 @@ public interface ZoneProvider {
 	 * 
 	 * @return
 	 */
-	public Collection<SecondaryZone> getSecondaryZones();
+	Collection<SecondaryZone> getSecondaryZones();
 
 	/**
 	 * This method is called when a change has been detected in a secondary zone previously
@@ -49,7 +49,7 @@ public interface ZoneProvider {
 	 * 
 	 * @param zone
 	 */
-	public void zoneUpdated(SecondaryZone secondaryZone);
+	void zoneUpdated(SecondaryZone secondaryZone);
 
 
 	/**
@@ -57,11 +57,11 @@ public interface ZoneProvider {
 	 * 
 	 * @param secondaryZone
 	 */
-	public void zoneChecked(SecondaryZone secondaryZone);
+	void zoneChecked(SecondaryZone secondaryZone);
 
 	/**
 	 * This method is called when EagleDNS is shutdown or when the configuration has been updated and
 	 * the ZoneProvider is no longer present in the configuration file.
 	 */
-	public void unload();
+	void unload();
 }

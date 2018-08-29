@@ -115,7 +115,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    }
 
    @Path("/")
-   public static interface MyClient
+   public interface MyClient
    {
       @Path("person/{person}")
       @PUT
@@ -123,7 +123,7 @@ public class SuperStringConverterTest extends BaseResourceTest
 
       @Path("company/{company}")
       @PUT
-      public void putCompany(@PathParam("company") Company c);
+      void putCompany(@PathParam("company") Company c);
    }
 
    @Test

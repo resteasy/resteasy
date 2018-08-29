@@ -69,7 +69,7 @@ public class RequestScopeModule extends AbstractModule
 
       private final Class<T> instanceClass;
 
-      public ResteasyContextProvider(Class<T> instanceClass)
+      ResteasyContextProvider(Class<T> instanceClass)
       {
          this.instanceClass = instanceClass;
       }

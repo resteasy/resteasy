@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.AfterClass;
@@ -12,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -30,6 +30,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class StreamingOutputTest
 {
+   private static final Logger LOG = Logger.getLogger(StreamingOutputTest.class);
    static String BASE_URI = generateURL("");
    static Client client;
    static CountDownLatch latch;
@@ -116,7 +117,7 @@ public class StreamingOutputTest
       long start = System.currentTimeMillis();
       testStreamingOutput();
       long end = System.currentTimeMillis() - start;
-      System.out.println(end);
+      LOG.info(end);
       Assert.assertTrue(end < 1000);
       t.join();
       Assert.assertTrue(pass);

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.nextgen.finegrain;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -25,6 +26,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class AcceptLanguagesTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(AcceptLanguagesTest.class);
+
    @Path("/lang")
    public static class Accept
    {
@@ -37,7 +41,7 @@ public class AcceptLanguagesTest extends BaseResourceTest
          List<Locale> accepts = headers.getAcceptableLanguages();
          for (Locale locale : accepts)
          {
-            System.out.println(locale);
+            LOG.info(locale);
          }
          Assert.assertEquals(accepts.get(0).toString(), "de_AT");
          Assert.assertEquals(accepts.get(1).toString(), "de");

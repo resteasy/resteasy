@@ -23,14 +23,14 @@ public @interface Mapped
     *
     * @return
     */
-   public String[] attributesAsElements() default {};
+   String[] attributesAsElements() default {};
 
    /**
     * Map the XML namespace to a JSON namespace
     *
     * @return
     */
-   public XmlNsMap[] namespaceMap() default {};
+   XmlNsMap[] namespaceMap() default {};
 
 
 }

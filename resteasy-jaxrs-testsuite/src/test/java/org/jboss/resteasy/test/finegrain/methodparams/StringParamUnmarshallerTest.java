@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
@@ -29,6 +30,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class StringParamUnmarshallerTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(StringParamUnmarshallerTest.class);
+
    @Retention(RetentionPolicy.RUNTIME)
    @StringParameterUnmarshallerBinder(DateFormatter.class)
    public @interface DateFormat
@@ -59,7 +63,7 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
       }
    }
 
-   public static enum Fruit
+   public enum Fruit
    {
       ORANGE,
       PEAR
@@ -87,7 +91,7 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
       @Path("/datetest/{date}")
       public String get(@PathParam("date") @DateFormat("MM-dd-yyyy") Date date)
       {
-         System.out.println(date);
+         LOG.info(date);
          Calendar c = Calendar.getInstance();
          c.setTime(date);
          Assert.assertEquals(3, c.get(Calendar.MONTH));
@@ -117,13 +121,13 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
    public void testMe() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/datetest/04-23-1977"));
-      System.out.println(request.getTarget(String.class));
+      LOG.info(request.getTarget(String.class));
    }
 
    @Test
    public void testMe2() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/fromstring/ORANGE/football"));
-      System.out.println(request.getTarget(String.class));
+      LOG.info(request.getTarget(String.class));
    }
 }

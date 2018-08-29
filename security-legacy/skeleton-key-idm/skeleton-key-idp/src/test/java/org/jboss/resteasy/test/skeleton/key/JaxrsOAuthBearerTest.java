@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import org.junit.Assert;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
@@ -18,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;

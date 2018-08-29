@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeInfo.As;
 import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -33,6 +34,7 @@ import java.util.List;
  */
 public class ProxyWithGenericReturnTypeJacksonTest
 {
+    private static final Logger LOG = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class);
    protected ResteasyDeployment deployment;
    
    @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
@@ -83,12 +85,12 @@ public class ProxyWithGenericReturnTypeJacksonTest
       @GET
       @Path("list")
       @Produces("application/*+json")
-      public List<AbstractParent> resourceMethod();
+      List<AbstractParent> resourceMethod();
 
       @GET
       @Path("one")
       @Produces("application/*+json")
-      public AbstractParent resourceMethodOne();
+      AbstractParent resourceMethodOne();
    }
    
    public interface TestSubResourceSubIntf extends TestSubResourceIntf
@@ -100,10 +102,10 @@ public class ProxyWithGenericReturnTypeJacksonTest
       @Override
       public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
       {
-         System.out.println("entered proxied subresource");
-         System.out.println("method: " + method.getName());
-         System.out.println("generic return type: " + method.getGenericReturnType());
-         System.out.println("type of return type: " + method.getGenericReturnType().getClass());
+         LOG.info("entered proxied subresource");
+         LOG.info("method: " + method.getName());
+         LOG.info("generic return type: " + method.getGenericReturnType());
+         LOG.info("type of return type: " + method.getGenericReturnType().getClass());
          if ("resourceMethod".equals(method.getName())) {
              List<AbstractParent> l = new ArrayList<AbstractParent>();
              Type1 first = new Type1();
@@ -163,19 +165,19 @@ public class ProxyWithGenericReturnTypeJacksonTest
     {
        ResteasyClient client = new ResteasyClientBuilder().build();
         WebTarget target = client.target("http://localhost:8081/test/one/");
-        System.out.println("Sending request");
+        LOG.info("Sending request");
         Response response = target.request().get();
        String entity = response.readEntity(String.class);
-       System.out.println("Received response: " + entity);
+       LOG.info("Received response: " + entity);
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", entity.contains("type"));
        response.close();
 
        target = client.target("http://localhost:8081/test/list/");
-        System.out.println("Sending request");
+        LOG.info("Sending request");
         response = target.request().get();
         entity = response.readEntity(String.class);
-       System.out.println("Received response: " + entity);
+       LOG.info("Received response: " + entity);
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", entity.contains("type"));
        response.close();

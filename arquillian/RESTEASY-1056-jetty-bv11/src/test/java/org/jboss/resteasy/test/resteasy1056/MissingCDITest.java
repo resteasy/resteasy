@@ -9,6 +9,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -32,6 +33,9 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class MissingCDITest {
+
+    private static final Logger LOG = Logger.getLogger(MissingCDITest.class);
+
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1056.war")
@@ -46,9 +50,9 @@ public class MissingCDITest {
     @Test
     public void testMissingCDIValid() throws Exception {
         Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/17").request().get();
-        System.out.println("Status: " + response.getStatus());
+        LOG.info("Status: " + response.getStatus());
         String entity = response.readEntity(String.class);
-        System.out.println("Result: " + entity);
+        LOG.info("Result: " + entity);
         assertEquals(200, response.getStatus());
         Assert.assertEquals("17", entity);
     }
@@ -56,9 +60,9 @@ public class MissingCDITest {
     @Test
     public void testMissingCDIInvalid() throws Exception {
         Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/0").request().get();
-        System.out.println("Status: " + response.getStatus());
+        LOG.info("Status: " + response.getStatus());
         String entity = response.readEntity(String.class);
-        System.out.println("Result: " + entity);
+        LOG.info("Result: " + entity);
         assertEquals(400, response.getStatus());
         ResteasyViolationException e = new ResteasyViolationException(entity);
         countViolations(e, 1, 0, 0, 0, 1, 0);

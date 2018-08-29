@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -19,7 +20,6 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,6 +30,8 @@ import java.util.Set;
  */
 public class PathParamTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(PathParamTest.class);
 
    @Path(value = "/PathParamTest")
    public static class Resource
@@ -201,7 +203,7 @@ public class PathParamTest extends BaseResourceTest
    @Path("/cars/{make}")
    public static class CarResource
    {
-      public static enum Color
+      public enum Color
       {
          red,
          white,
@@ -305,50 +307,50 @@ public class PathParamTest extends BaseResourceTest
    public void testCarResource() throws Exception
    {
 
-      System.out.println("**** Via @MatrixParam ***");
+      LOG.info("**** Via @MatrixParam ***");
       ClientRequest get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006"));
       ClientResponse<String> response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
       // This must be a typo.  Should be "A midnight blue 2006 Porsche 911 Carrera S".
 
-      System.out.println("**** Via PathSegment ***");
+      LOG.info("**** Via PathSegment ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
 
-      System.out.println("**** Via PathSegments ***");
+      LOG.info("**** Via PathSegments ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegments/e55/amg/year/2006"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A 2006 mercedes e55 amg", response.getEntity());
 
-      System.out.println("**** Via PathSegment ***");
+      LOG.info("**** Via PathSegment ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/uriinfo/e55;color=black/2006"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
       
-      System.out.println("**** Via Concatenated plain***");
+      LOG.info("**** Via Concatenated plain***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat/mlk2006?color=black"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes mlk", response.getEntity());   
       
-      System.out.println("**** Via Concatenated with regex character***");
+      LOG.info("**** Via Concatenated with regex character***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat2/$mlk2006?color=black"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes $mlk", response.getEntity());
       
-      System.out.println("**** Via Concatenated with regex character with $ ***");
+      LOG.info("**** Via Concatenated with regex character with $ ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat3/$glk?color=black"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black mercedes $glk", response.getEntity());      
       
-      System.out.println("**** Via grouping chars in regex ***");
+      LOG.info("**** Via grouping chars in regex ***");
       get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/group/glk()?color=black"));
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());

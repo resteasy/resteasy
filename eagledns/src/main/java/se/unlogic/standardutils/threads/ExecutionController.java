@@ -12,21 +12,21 @@ import java.util.concurrent.RejectedExecutionException;
 
 public interface ExecutionController<Task extends TaskGroup> {
 
-	public void start() throws RejectedExecutionException;
+	void start() throws RejectedExecutionException;
 	
-	public void abort();
+	void abort();
 	
-	public int getRemainingTaskCount();
+	int getRemainingTaskCount();
 	
-	public void awaitExecution() throws InterruptedException;
+	void awaitExecution() throws InterruptedException;
 	
-	public void awaitExecution(long timeout) throws InterruptedException;
+	void awaitExecution(long timeout) throws InterruptedException;
 
-	public boolean isStarted();
+	boolean isStarted();
 
-	public boolean isAborted();
+	boolean isAborted();
 
-	public boolean isFinished();
+	boolean isFinished();
 	
-	public Task getTaskGroup();
+	Task getTaskGroup();
 }

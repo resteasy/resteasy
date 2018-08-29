@@ -44,7 +44,7 @@ public interface MessageBodyWriterContext
 
    OutputStream getOutputStream();
 
-   public void setOutputStream(OutputStream os);
+   void setOutputStream(OutputStream os);
 
    /**
     * Allows you to pass values back and forth between interceptors

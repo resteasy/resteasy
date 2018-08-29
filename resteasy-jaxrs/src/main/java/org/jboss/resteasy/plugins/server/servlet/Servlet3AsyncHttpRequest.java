@@ -10,7 +10,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -61,7 +60,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       protected volatile boolean wasSuspended;
       protected Servle3AsychronousResponse asynchronousResponse;
 
-      public Servlet3ExecutionContext(ServletRequest servletRequest)
+      Servlet3ExecutionContext(ServletRequest servletRequest)
       {
          super(Servlet3AsyncHttpRequest.this.dispatcher, Servlet3AsyncHttpRequest.this, Servlet3AsyncHttpRequest.this.httpResponse);
          this.servletRequest = servletRequest;

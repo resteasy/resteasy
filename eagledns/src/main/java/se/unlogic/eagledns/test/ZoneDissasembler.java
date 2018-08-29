@@ -1,5 +1,6 @@
 package se.unlogic.eagledns.test;
 
+import org.apache.log4j.Logger;
 import org.xbill.DNS.Master;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
@@ -19,12 +20,13 @@ public class ZoneDissasembler {
 
 		Record record = master._nextRecord();
 
+		Logger LOG = Logger.getLogger(ZoneDissasembler.class);
+
 		while(record != null){
 
-			System.out.println("Class: " + record.getClass());
-			System.out.println("Name: " + record.getName());
-			System.out.println("toString: " + record.toString());
-			System.out.println();
+			LOG.info("Class: " + record.getClass());
+			LOG.info("Name: " + record.getName());
+			LOG.info("toString: " + record.toString());
 
 			record = master._nextRecord();
 		}

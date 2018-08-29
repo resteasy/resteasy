@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client.old;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -20,6 +21,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class ClientRequestReuseTest extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(ClientRequestReuseTest.class);
+
    @Path("/test")
    public static class TestService
    {
@@ -29,7 +33,7 @@ public class ClientRequestReuseTest extends BaseResourceTest
       @Consumes("text/plain")
       public String post(@PathParam("name") String id, String message)
       {
-         System.out.println("Server!!!");
+         LOG.info("Server!!!");
          return message + id;
       }
    }
@@ -46,15 +50,15 @@ public class ClientRequestReuseTest extends BaseResourceTest
       ClientRequest request = new ClientRequest(generateURL("/test/{name}"));
       request.body("text/plain", "Hello ").pathParameter("name", "Bill");
       String response = request.postTarget(String.class);
-      System.out.println(response);
+      LOG.info(response);
       Assert.assertEquals(response, "Hello Bill");
       response = request.postTarget(String.class);
-      System.out.println(response);
+      LOG.info(response);
       Assert.assertEquals(response, "Hello Bill");
       request.clear();
       request.body("text/plain", "Goodbye ").pathParameter("name", "Everyone");
       response = request.postTarget(String.class);
-      System.out.println(response);
+      LOG.info(response);
       Assert.assertEquals(response, "Goodbye Everyone");
 
 

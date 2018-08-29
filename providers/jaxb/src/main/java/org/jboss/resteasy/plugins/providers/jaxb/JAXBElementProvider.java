@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.Types;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.xml.sax.InputSource;
 
 import javax.ws.rs.Consumes;
@@ -114,7 +114,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
                JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
                result = e;
             }
-         };
+         }
       }
       catch (JAXBException e)
       {

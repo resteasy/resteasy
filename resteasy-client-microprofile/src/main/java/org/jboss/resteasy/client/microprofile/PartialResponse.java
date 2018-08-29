@@ -25,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.ReadFromStream;
 
@@ -32,6 +33,7 @@ public class PartialResponse extends Response implements Serializable
 {
    private byte[] bufferedEntity;
    private final transient ClientResponseContext responseContext;
+   private static final Logger LOG = Logger.getLogger(PartialResponse.class);
    
    PartialResponse(ClientResponseContext responseContext)
    {
@@ -59,7 +61,7 @@ public class PartialResponse extends Response implements Serializable
    private RuntimeException notSupported()
    {
       RuntimeException ex = new RuntimeException("method call not supported");
-      ex.printStackTrace();
+      LOG.error(ex.getMessage(), ex);
       return ex;
    }
 

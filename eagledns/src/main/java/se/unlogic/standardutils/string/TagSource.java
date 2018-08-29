@@ -12,7 +12,7 @@ import java.util.Set;
 
 public interface TagSource {
 
-	public Set<String> getTags();
+	Set<String> getTags();
 	
-	public String getTagValue(String tag);
+	String getTagValue(String tag);
 }

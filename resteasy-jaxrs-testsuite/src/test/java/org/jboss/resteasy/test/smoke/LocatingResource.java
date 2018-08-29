@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
+import org.jboss.logging.Logger;
+
 import javax.ws.rs.Path;
 
 /**
@@ -9,10 +11,13 @@ import javax.ws.rs.Path;
 @Path("/")
 public class LocatingResource
 {
+
+   private static final Logger LOG = Logger.getLogger(LocatingResource.class);
+
    @Path("locating")
    public SimpleResource getLocating()
    {
-      System.out.println("LOCATING...");
+      LOG.info("LOCATING...");
       return new SimpleResource();
    }
 
@@ -20,7 +25,7 @@ public class LocatingResource
    @Path("subresource")
    public SimpleSubresource getSubresource()
    {
-      System.out.println("Subresource");
+      LOG.info("Subresource");
       return new SimpleSubresource();
    }
 
@@ -28,7 +33,7 @@ public class LocatingResource
    @Path("notlocating")
    public SimpleResource getNotLocating()
    {
-      System.out.println("NOT LOCATING... i.e. returning null");
+      LOG.info("NOT LOCATING... i.e. returning null");
       return null;
    }
 

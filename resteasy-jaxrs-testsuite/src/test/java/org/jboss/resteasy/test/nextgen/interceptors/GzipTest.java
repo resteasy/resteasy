@@ -5,6 +5,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -48,23 +49,25 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 public class GzipTest extends BaseResourceTest
 {
 
+   private static final Logger LOG = Logger.getLogger(GzipTest.class);
+
    @Path("/")
-   public static interface IGZIP
+   public interface IGZIP
    {
       @GET
       @Path("text")
       @Produces("text/plain")
-      public String getText();
+      String getText();
 
       @GET
       @Path("encoded/text")
       @GZIP
-      public String getGzipText();
+      String getGzipText();
 
       @GET
       @Path("encoded/text/error")
       @GZIP
-      public String getGzipErrorText();
+      String getGzipErrorText();
 
    }
 
@@ -78,7 +81,7 @@ public class GzipTest extends BaseResourceTest
       {
          /* Can't test this anymore because TCK expects that no accept encoding is set by default
          String acceptEncoding = headers.getRequestHeaders().getFirst(HttpHeaders.ACCEPT_ENCODING);
-         System.out.println(acceptEncoding);
+         LOG.info(acceptEncoding);
          Assert.assertEquals("gzip, deflate", acceptEncoding);
          */
          return Response.ok("HELLO WORLD").header("Content-Encoding", "gzip").build();
@@ -165,8 +168,8 @@ public class GzipTest extends BaseResourceTest
       os.close();
 
       byte[] bytes1 = baos.toByteArray();
-      System.out.println(bytes1.length);
-      System.out.println(new String(bytes1));
+      LOG.info(bytes1.length);
+      LOG.info(new String(bytes1));
       ByteArrayInputStream bis = new ByteArrayInputStream(bytes1);
       GZIPDecodingInterceptor.FinishableGZIPInputStream is = new GZIPDecodingInterceptor.FinishableGZIPInputStream(bis);
       byte[] bytes = ReadFromStream.readFromStream(1024, is);
@@ -233,9 +236,9 @@ public class GzipTest extends BaseResourceTest
          {
             // make sure the content length is greater than 11 because this will be a gzipped encoding
             int i = response.getLength();
-            System.out.println("***");
-            System.out.println("Content-Length: " + i);
-            System.out.println("***");
+            LOG.info("***");
+            LOG.info("Content-Length: " + i);
+            LOG.info("***");
             Assert.assertTrue(i > 11);
          }
          Assert.assertEquals("HELLO WORLD", response.readEntity(String.class));
@@ -311,7 +314,7 @@ public class GzipTest extends BaseResourceTest
 
          // test that it is actually zipped
          String entity = EntityUtils.toString(response.getEntity());
-         System.out.println(entity);
+         LOG.info(entity);
          Assert.assertNotSame(entity, "HELLO WORLD");
       }
 

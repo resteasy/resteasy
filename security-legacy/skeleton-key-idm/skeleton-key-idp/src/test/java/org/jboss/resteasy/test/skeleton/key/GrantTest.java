@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMWriter;
@@ -27,6 +28,9 @@ import java.security.Security;
  */
 public class GrantTest extends SkeletonTestBase
 {
+
+   private static final Logger LOG = Logger.getLogger(GrantTest.class);
+
    @BeforeClass
    public static void setupTest() throws Exception
    {
@@ -40,7 +44,7 @@ public class GrantTest extends SkeletonTestBase
       Form form = new Form();
       form.param(RequiredCredentialRepresentation.PASSWORD, "userpassword")
           .param("client_id", "wburke");
-      System.out.println(realmInfo.getGrantUrl());
+      LOG.info(realmInfo.getGrantUrl());
       Response response = client.target(realmInfo.getGrantUrl()).request().post(Entity.form(form));
       if (response.getStatus() != 200)
       {
@@ -60,7 +64,7 @@ public class GrantTest extends SkeletonTestBase
    @Test
    public void testPem() throws Exception
    {
-      System.out.println("*******************");
+      LOG.info("*******************");
       if (Security.getProvider("BC") == null) Security.addProvider(new BouncyCastleProvider());
       KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
       StringWriter writer = new StringWriter();
@@ -68,7 +72,7 @@ public class GrantTest extends SkeletonTestBase
       pemWriter.writeObject(keyPair.getPublic());
       pemWriter.flush();
       String s = writer.toString();
-      System.out.println(s);
+      LOG.info(s);
       s = PemUtils.removeBeginEnd(s);
 
       PublicKey pk = PemUtils.decodePublicKey(s);

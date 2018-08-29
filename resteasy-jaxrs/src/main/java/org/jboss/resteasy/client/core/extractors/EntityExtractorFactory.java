@@ -16,5 +16,5 @@ import java.lang.reflect.Method;
 public interface EntityExtractorFactory
 {
    @SuppressWarnings("unchecked")
-   public EntityExtractor createExtractor(Method method);
+   EntityExtractor createExtractor(Method method);
 }

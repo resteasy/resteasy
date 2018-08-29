@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -22,6 +23,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class EncodedPathTest
 {
    private static Dispatcher dispatcher;
+   private static final Logger LOG = Logger.getLogger(EncodedPathTest.class);
 
    @BeforeClass
    public static void before() throws Exception
@@ -40,7 +42,7 @@ public class EncodedPathTest
       @GET
       public String get()
       {
-         System.out.println("Hello");
+         LOG.info("Hello");
          return "HELLO";
       }
 
@@ -48,7 +50,7 @@ public class EncodedPathTest
       @GET
       public String goodbye()
       {
-         System.out.println("Goodbye");
+         LOG.info("Goodbye");
          return "GOODBYE";
       }
    }

@@ -8,5 +8,6 @@ import java.util.concurrent.CompletionStage;
  */
 public interface AsyncClientResponseProvider<T> {
 
-   public T fromCompletionStage(CompletionStage<?> completionStage);
+   T fromCompletionStage(CompletionStage<?> completionStage);
 }
+

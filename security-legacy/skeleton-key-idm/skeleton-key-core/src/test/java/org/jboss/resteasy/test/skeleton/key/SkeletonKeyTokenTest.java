@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
@@ -18,6 +19,9 @@ import java.security.KeyPairGenerator;
  */
 public class SkeletonKeyTokenTest
 {
+
+   private static final Logger LOG = Logger.getLogger(SkeletonKeyTokenTest.class);
+
    @Test
    public void testScope() throws Exception
    {
@@ -40,7 +44,7 @@ public class SkeletonKeyTokenTest
       token.addAccess("bar").addRole("user");
 
       String json = JsonSerialization.toString(token, true);
-      System.out.println(json);
+      LOG.info(json);
 
       token = JsonSerialization.fromString(SkeletonKeyToken.class, json);
       Assert.assertEquals("111", token.getId());
@@ -65,7 +69,7 @@ public class SkeletonKeyTokenTest
               .content(tokenBytes)
               .rsa256(keyPair.getPrivate());
 
-      System.out.println(encoded);
+      LOG.info(encoded);
 
       JWSInput input = new JWSInput(encoded);
       byte[] content = input.getContent();

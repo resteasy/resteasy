@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client.old;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -19,19 +20,22 @@ import javax.ws.rs.WebApplicationException;
  */
 public class Regression435Test extends BaseResourceTest
 {
+
+   private static final Logger LOG = Logger.getLogger(Regression435Test.class);
+
    @Path("/test")
    public interface MyTest
    {
       @POST
       @Consumes("text/plain")
-      public void postIt(String msg);
+      void postIt(String msg);
    }
 
    public static class MyTestResource implements MyTest
    {
       public void postIt(String msg)
       {
-         System.out.println("HERE: " + msg);
+         LOG.info("HERE: " + msg);
          throw new WebApplicationException(401);
       }
    }

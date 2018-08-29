@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.client.WebTarget;
 

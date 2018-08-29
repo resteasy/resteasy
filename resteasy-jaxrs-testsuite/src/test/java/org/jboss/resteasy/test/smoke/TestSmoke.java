@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.smoke;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -20,6 +21,7 @@ import java.net.URLEncoder;
 public class TestSmoke
 {
 
+   private static final Logger LOG = Logger.getLogger(TestSmoke.class);
 
    @Test
    public void testNoDefaultsResource() throws Exception
@@ -215,7 +217,7 @@ public class TestSmoke
 
       {
 
-         System.out.println("Expect to see WARN about not injecting in subresources");
+         LOG.info("Expect to see WARN about not injecting in subresources");
 
          MockHttpRequest request = MockHttpRequest.get("/subresource/testContextParam");
          MockHttpResponse response = new MockHttpResponse();

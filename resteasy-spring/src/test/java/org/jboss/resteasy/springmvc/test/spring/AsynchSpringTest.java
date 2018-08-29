@@ -1,5 +1,6 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 @DirtiesContext
 public class AsynchSpringTest
 {
+   private static final Logger LOG = Logger.getLogger(AsynchSpringTest.class);
    private static CountDownLatch latch;
 
    @Path("/")
@@ -50,10 +52,10 @@ public class AsynchSpringTest
       @PUT
       public void put(String content) throws Exception
       {
-         System.out.println("IN PUT!!!!");
+         LOG.info("IN PUT!!!!");
          Assert.assertEquals("content", content);
          Thread.sleep(500);
-         System.out.println("******* countdown ****");
+         LOG.info("******* countdown ****");
          latch.countDown();
       }
    }
@@ -99,7 +101,7 @@ public class AsynchSpringTest
          long end = System.currentTimeMillis() - start;
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
-         System.out.println("JOB: " + jobUrl);
+         LOG.info("JOB: " + jobUrl);
          response.releaseConnection();
          
          request = new ClientRequest(jobUrl);

@@ -10,6 +10,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 
 import org.jboss.resteasy.cdi.i18n.Messages;
@@ -25,6 +26,7 @@ import org.junit.Test;
 @SuppressWarnings(value = "unchecked")
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final Annotation testAnnotation = new Annotation()
    {
       public Class<? extends Annotation> annotationType() { return null; };
@@ -62,7 +64,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/cdi/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
       

@@ -20,6 +20,8 @@ public class TestWADL_JAXB_Types {
         JAXBContext context = JAXBContext.newInstance(Application.class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        //CHECKSTYLE.OFF: RegexpSinglelineJava
         marshaller.marshal(app, System.out);
+        //CHECKSTYLE.ON: RegexpSinglelineJava
     }
 }

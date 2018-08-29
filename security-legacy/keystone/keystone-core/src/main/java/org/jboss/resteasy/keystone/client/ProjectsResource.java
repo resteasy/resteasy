@@ -38,7 +38,7 @@ public interface ProjectsResource
 
    @GET
    @Produces("application/json")
-   public Projects query(@QueryParam("name") String name);
+   Projects query(@QueryParam("name") String name);
 
    @GET
    @Path("{id}")

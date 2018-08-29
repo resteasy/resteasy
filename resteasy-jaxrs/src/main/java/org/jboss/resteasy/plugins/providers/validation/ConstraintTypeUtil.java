@@ -11,5 +11,5 @@ import org.jboss.resteasy.api.validation.ConstraintType;
  */
 public interface ConstraintTypeUtil
 {
-   public ConstraintType.Type getConstraintType(Object o);
+   ConstraintType.Type getConstraintType(Object o);
 }

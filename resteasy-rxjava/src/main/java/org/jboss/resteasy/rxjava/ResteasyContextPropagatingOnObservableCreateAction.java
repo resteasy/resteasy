@@ -36,7 +36,7 @@ public class ResteasyContextPropagatingOnObservableCreateAction implements Func1
 
       final OnSubscribe<T> source;
 
-      public ContextCapturerObservable(OnSubscribe<T> source)
+      ContextCapturerObservable(OnSubscribe<T> source)
       {
          this.source = source;
       }
@@ -54,7 +54,7 @@ public class ResteasyContextPropagatingOnObservableCreateAction implements Func1
 
          final Map<Class<?>, Object> contextDataMap;
 
-         public OnAssemblyObservableSubscriber(Subscriber<? super T> actual, Map<Class<?>, Object> contextDataMap)
+         OnAssemblyObservableSubscriber(Subscriber<? super T> actual, Map<Class<?>, Object> contextDataMap)
          {
             this.actual = actual;
             this.contextDataMap = contextDataMap;

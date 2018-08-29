@@ -28,6 +28,7 @@ import org.jboss.resteasy.keystone.model.StoredUser;
 import org.jboss.resteasy.keystone.model.User;
 import org.jboss.resteasy.keystone.server.Loader;
 import org.jboss.resteasy.keystone.server.SkeletonKeyApplication;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -41,6 +42,7 @@ import org.junit.Test;
  */
 public class PersistenceTest
 {
+   private static final Logger LOG = Logger.getLogger(PersistenceTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
    private static SkeletonKeyApplication app;
@@ -68,7 +70,7 @@ public class PersistenceTest
       app.getProjects().addUserRole(project.getId(), admin.getId(), adminRole.getId());
 
       // Test export/import
-      System.out.println(new Loader().export(app.getCache()));
+      LOG.info(new Loader().export(app.getCache()));
 
       try
       {

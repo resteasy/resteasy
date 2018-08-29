@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.nextgen.encoding;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
@@ -24,6 +25,7 @@ public class EncodingTest
    private static TJWSEmbeddedJaxrsServer tjws;
    private static ResteasyClient client;
    private static TestClient testClient;
+   private static final Logger LOG = Logger.getLogger(EncodingTest.class);
 
    @BeforeClass
    public static void setupContainer()
@@ -91,7 +93,7 @@ public class EncodingTest
    public void encodingCharacter(Character toTest)
    {
       String paramWithChar = "start" + toTest + "end";
-      System.out.println("*** " + paramWithChar);
+      LOG.info("*** " + paramWithChar);
       Response returned = testClient.getPathParam(paramWithChar);
       Assert.assertNotNull(returned);
       Assert.assertEquals(returned.getStatus(), HttpURLConnection.HTTP_OK);
@@ -134,7 +136,7 @@ public class EncodingTest
    public void decodeChineseInPath() throws Exception
    {
       String path = Encode.decodePath("/%E5%B9%B4%E5%81%87%E6%9C%9F/%E5%B9%B4%E5%81%87%E6%9C%9F");
-      System.out.println(path);
+      LOG.info(path);
       Assert.assertEquals("/\u5E74\u5047\u671F/\u5E74\u5047\u671F", path);
    }
 
@@ -148,7 +150,7 @@ public class EncodingTest
 
    public void viaDirectURI(Character toTest) throws Exception
    {
-      System.out.println("*** testing character '" + toTest + "'");
+      LOG.info("*** testing character '" + toTest + "'");
       String uriBase = "http://localhost:" + TestPortProvider.getPort() + "/test/path-param/";
       String expected = "start" + toTest + "end";
       String encoded = "start%" + Integer.toHexString(toTest).toUpperCase() + "end";
@@ -214,7 +216,7 @@ public class EncodingTest
    public void testPathParamWithDoublePercent()
    {
       String paramWithDoublePercent = "start%%end";
-      System.out.println("*** " + paramWithDoublePercent);
+      LOG.info("*** " + paramWithDoublePercent);
       Response returned = testClient.getPathParam(paramWithDoublePercent);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
@@ -226,7 +228,7 @@ public class EncodingTest
    public void testPathParamWithBraces()
    {
       String paramWithBraces = "start{param}end";
-      System.out.println("*** " + paramWithBraces);
+      LOG.info("*** " + paramWithBraces);
       Response returned = testClient.getPathParam(paramWithBraces);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
@@ -238,7 +240,7 @@ public class EncodingTest
    public void testPathParamWithLifePercentDeath()
    {
       String paramWithLifePercentDeath = "life%death";
-      System.out.println("*** " + paramWithLifePercentDeath);
+      LOG.info("*** " + paramWithLifePercentDeath);
       Response returned = testClient.getPathParam(paramWithLifePercentDeath);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
@@ -250,7 +252,7 @@ public class EncodingTest
    public void testQueryParamWithDoublePercent()
    {
       String paramWithDoublePercent = "start%%end";
-      System.out.println("*** " + paramWithDoublePercent);
+      LOG.info("*** " + paramWithDoublePercent);
       Response returned = testClient.getQueryParam(paramWithDoublePercent);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
@@ -262,7 +264,7 @@ public class EncodingTest
    public void testQueryParamWithBraces()
    {
       String paramWithBraces = "start{param}end";
-      System.out.println("*** " + paramWithBraces);
+      LOG.info("*** " + paramWithBraces);
       Response returned = testClient.getQueryParam(paramWithBraces);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
@@ -274,7 +276,7 @@ public class EncodingTest
    public void testQueryParamWithLifePercentDeath()
    {
       String paramWithLifePercentDeath = "life%death";
-      System.out.println("*** " + paramWithLifePercentDeath);
+      LOG.info("*** " + paramWithLifePercentDeath);
       Response returned = testClient.getQueryParam(paramWithLifePercentDeath);
       Assert.assertNotNull(returned);
       Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());

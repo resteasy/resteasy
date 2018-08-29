@@ -17,7 +17,7 @@ public interface ResteasyAsynchronousResponse extends AsyncResponse
      * Callback by the initial http request thread.  It is used to help simulate suspend/resume asynchronous semantics
      * in containers that do not support asychronous HTTP. This method is a no-op in environments that support async HTTP.
      */
-    public void initialRequestThreadFinished();
+    void initialRequestThreadFinished();
 
     ContainerResponseFilter[] getResponseFilters();
 

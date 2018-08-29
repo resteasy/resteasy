@@ -19,10 +19,10 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * <p>
@@ -135,7 +135,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      */
     private static class DoNotCloseDelegateOutputStream extends BufferedOutputStream {
 
-        public DoNotCloseDelegateOutputStream(OutputStream delegate) {
+        DoNotCloseDelegateOutputStream(OutputStream delegate) {
             super(delegate);
         }
 

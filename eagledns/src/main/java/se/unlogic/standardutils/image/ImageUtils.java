@@ -8,7 +8,10 @@
 package se.unlogic.standardutils.image;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;

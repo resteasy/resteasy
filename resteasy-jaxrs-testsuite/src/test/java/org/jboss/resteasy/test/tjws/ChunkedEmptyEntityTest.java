@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.tjws;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
@@ -28,6 +29,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ChunkedEmptyEntityTest
 {
+   private static final Logger LOG = Logger.getLogger(ChunkedEmptyEntityTest.class);
    private static Dispatcher dispatcher;
 
    @BeforeClass
@@ -85,12 +87,12 @@ public class ChunkedEmptyEntityTest
 	   // 2. consists of status line and headers but no chunks.
 	   InputStream is = s.getInputStream();
 	   String line = readLine(is);
-	   System.out.println("<<" + line);
+	   LOG.info("<<" + line);
 	   assertTrue(line.contains(status));
 	   line = readLine(is);
 	   while (line != null && is.available() > 0)
 	   {
-		   System.out.println("<<" + line);
+		   LOG.info("<<" + line);
 		   int i = line.indexOf(':');
 		   assertTrue(i > 0);
 		   assertFalse("transfer-encoding".equalsIgnoreCase(line.substring(0, i)));
@@ -100,7 +102,7 @@ public class ChunkedEmptyEntityTest
 
    private void writeString(OutputStream os, String s) throws IOException 
    {
-      System.out.println(">>" + s);
+      LOG.info(">>" + s);
       os.write((s + "\r\n").getBytes());
    }
    
@@ -168,7 +170,7 @@ public class ChunkedEmptyEntityTest
       @Consumes("text/plain")
       public void putNoContent(String body)
       {
-         System.out.println(body);
+         LOG.info(body);
       }
       
       @GET

@@ -1,12 +1,11 @@
 package org.jboss.resteasy.test.profiling;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -24,6 +23,9 @@ import java.net.URI;
  */
 public class MockedProfilingTest
 {
+
+   private static final Logger LOG = Logger.getLogger(MockedProfilingTest.class);
+
    @Path("/test")
    public static class CleartextResource
    {
@@ -87,7 +89,7 @@ public class MockedProfilingTest
       }
       long end = System.currentTimeMillis() - start;
 
-      System.out.println("Time took: " + end);
+      LOG.info("Time took: " + end);
 
    }
 }

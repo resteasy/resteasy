@@ -51,11 +51,11 @@ public class ClientErrorInterceptorTest extends BaseResourceTest
    }
 
    @Path("/test")
-   public static interface MyResource
+   public interface MyResource
    {
       @GET
       @Produces("text/plain")
-      public String get();
+      String get();
 
       @GET
       @Path("error")

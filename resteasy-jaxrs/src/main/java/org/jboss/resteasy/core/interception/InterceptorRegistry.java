@@ -30,7 +30,7 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class InterceptorRegistry<T>
 {
-   protected static interface InterceptorFactory
+   protected interface InterceptorFactory
    {
       Object preMatch();
       Object postMatch(Class declaring, AccessibleObject target);

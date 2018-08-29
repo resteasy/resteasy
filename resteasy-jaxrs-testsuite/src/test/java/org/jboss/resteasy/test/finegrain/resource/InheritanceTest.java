@@ -23,12 +23,12 @@ public class InheritanceTest extends BaseResourceTest
 {
 
 
-   public static interface ParentResource
+   public interface ParentResource
    {
 
       @GET
       @Produces("text/plain")
-      public String firstest();
+      String firstest();
 
    }
 
@@ -42,12 +42,12 @@ public class InheritanceTest extends BaseResourceTest
       }
    }
 
-   public static interface ParentResource1
+   public interface ParentResource1
    {
 
       @GET
       @Produces("text/xml")
-      public String secondtest();
+      String secondtest();
    }
 
 

@@ -5,7 +5,6 @@ import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
 import org.jboss.resteasy.links.ParamBinding;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;

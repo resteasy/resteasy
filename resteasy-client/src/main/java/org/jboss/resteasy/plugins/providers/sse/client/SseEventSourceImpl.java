@@ -318,7 +318,7 @@ public class SseEventSourceImpl implements SseEventSource
       private Entity<?> entity;
       private MediaType[] mediaTypes;
 
-      public EventHandler(final long reconnectDelay, final String lastEventId, String verb, Entity<?> entity, MediaType... mediaTypes)
+      EventHandler(final long reconnectDelay, final String lastEventId, String verb, Entity<?> entity, MediaType... mediaTypes)
       {
          this.connectedLatch = new CountDownLatch(1);
          this.reconnectDelay = reconnectDelay;

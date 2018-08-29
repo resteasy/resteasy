@@ -35,7 +35,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncCl
    {
       private Subscription subscription;
 
-      public SingleAdaptor(Single<T> single)
+      SingleAdaptor(Single<T> single)
       {
          this.subscription = single.subscribe(this::complete, this::completeExceptionally);
       }

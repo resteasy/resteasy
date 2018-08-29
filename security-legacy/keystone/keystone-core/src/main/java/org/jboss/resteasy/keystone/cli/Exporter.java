@@ -2,6 +2,7 @@ package org.jboss.resteasy.keystone.cli;
 
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.keystone.server.Loader;
 
 /**
@@ -10,17 +11,22 @@ import org.jboss.resteasy.keystone.server.Loader;
  */
 public class Exporter
 {
+
+   private static final Logger LOG = Logger.getLogger(Exporter.class);
+
    public static void main(String[] args) throws Exception
    {
       if (args.length < 2)
       {
-         System.err.println("java Importer xml cache-name");
+         LOG.error("java Importer xml cache-name");
          return;
       }
       String path = args[0];
       String name = args[1];
       Cache cache = new DefaultCacheManager(path).getCache(name);
-      new Loader().export(cache, System.out);
+      // CHECKSTYLE.OFF: RegexpSinglelineJava
+      new Loader().export(cache, System.out); // ignore
+      // CHECKSTYLE.ON: RegexpSinglelineJava
       cache.stop();
    }
 }

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.smoke;
 
+import org.jboss.logging.Logger;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -12,6 +14,8 @@ import javax.ws.rs.core.UriInfo;
  */
 public class SimpleSubresource
 {
+
+   private static final Logger LOG = Logger.getLogger(SimpleSubresource.class);
 
    @SuppressWarnings("unused")
    private String foo;
@@ -30,7 +34,7 @@ public class SimpleSubresource
    @Path("subresource")
    public SimpleSubresource getSubresource()
    {
-      System.out.println("Subsubresource");
+      LOG.info("Subsubresource");
       return new SimpleSubresource();
    }
 

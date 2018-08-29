@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.i18n;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.metadata.DefaultResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.junit.Assert;
@@ -27,6 +28,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
    protected static ResourceMethodInvoker testMethod;
    
@@ -46,7 +48,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       }
       catch (NoSuchMethodException e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
       }
    }
    
@@ -57,7 +59,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/jsapi/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
       
@@ -78,7 +80,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    {
       String s = super.getExpected(id, message, args);
       String ss = pruneQuotes(s);
-      System.out.println("actual expected: " + ss);
+      LOG.info("actual expected: " + ss);
       return ss;
    }
    

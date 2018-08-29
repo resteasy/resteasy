@@ -1,5 +1,6 @@
 package se.unlogic.eagledns.utils;
 
+import org.apache.log4j.Logger;
 import org.xbill.DNS.Zone;
 import se.unlogic.eagledns.zoneproviders.db.beans.DBRecord;
 import se.unlogic.eagledns.zoneproviders.db.beans.DBZone;
@@ -16,11 +17,13 @@ import java.util.Collection;
 
 public class PrimaryZones2DB {
 
+	private static final Logger LOG = Logger.getLogger(PrimaryZones2DB.class);
+
 	public static void main(String[] args) throws Throwable{
 
 		if(args.length != 5){
 
-			System.out.println("Usage: PrimaryZones2DB zonedir driver url username password");
+			LOG.info("Usage: PrimaryZones2DB zonedir driver url username password");
 
 		}else{
 
@@ -40,7 +43,7 @@ public class PrimaryZones2DB {
 
 		for(Zone zone : zones){
 
-			System.out.println("Converting zone " + zone.getSOA().getName().toString() + "...");
+			LOG.info("Converting zone " + zone.getSOA().getName().toString() + "...");
 
 			dbZones.add(new DBZone(zone,false));
 		}
@@ -57,13 +60,13 @@ public class PrimaryZones2DB {
 
 			for(DBZone zone : dbZones){
 
-				System.out.println("Storing zone " + zone + "...");
+				LOG.info("Storing zone " + zone + "...");
 
 				zoneDAO.add(zone, transactionHandler, null);
 
 				for(DBRecord dbRecord : zone.getRecords()){
 
-					System.out.println("Storing record " + dbRecord + "...");
+					LOG.info("Storing record " + dbRecord + "...");
 
 					dbRecord.setZone(zone);
 

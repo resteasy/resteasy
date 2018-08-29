@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.finegrain.application;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -32,6 +33,9 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class ApplicationConfigWithInterceptorTest
 {
+
+   private static final Logger LOG = Logger.getLogger(ApplicationConfigWithInterceptorTest.class);
+
    @Path("/my")
    public static class MyResource
    {
@@ -64,7 +68,7 @@ public class ApplicationConfigWithInterceptorTest
    {
       public void postProcess(ServerResponse response)
       {
-         System.out.println("HERE!!!!!");
+         LOG.info("HERE!!!!!");
          response.getMetadata().add("custom-header", "hello");
       }
    }

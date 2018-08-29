@@ -18,5 +18,5 @@ import java.lang.annotation.Target;
 @Precedence("REDIRECT")
 public @interface RedirectPrecedence
 {
-   public static final String PRECEDENCE_STRING = "REDIRECT";
+   String PRECEDENCE_STRING = "REDIRECT";
 }

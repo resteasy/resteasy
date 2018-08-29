@@ -95,12 +95,12 @@ public class ClientExceptionInterceptorTest extends BaseResourceTest
       @GET
       @Path("/get")
       @Produces("text/plain")
-      public String get();
+      String get();
 
       @GET
       @Path("/foo")
       @Produces("text/plain")
-      public String getBadUrl();
+      String getBadUrl();
    }
 
    public static class TestThrowExceptionInterceptor implements ClientErrorInterceptor

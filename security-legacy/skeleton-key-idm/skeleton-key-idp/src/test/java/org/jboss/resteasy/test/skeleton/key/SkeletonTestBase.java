@@ -18,6 +18,7 @@ import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.jwt.JsonSerialization;
@@ -42,6 +43,7 @@ import org.junit.BeforeClass;
  */
 public class SkeletonTestBase
 {
+   private static final Logger LOG = Logger.getLogger(SkeletonTestBase.class);
    protected static NettyJaxrsServer server;
    protected static ResteasyDeployment deployment;
    protected static InfinispanIDM idm;
@@ -136,7 +138,7 @@ public class SkeletonTestBase
          os.write(c);
       }
       byte[] bytes = os.toByteArray();
-      System.out.println(new String(bytes));
+      LOG.info(new String(bytes));
 
       return JsonSerialization.fromBytes(RealmRepresentation.class, bytes);
    }

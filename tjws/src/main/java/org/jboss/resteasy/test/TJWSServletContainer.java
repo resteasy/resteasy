@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -17,6 +18,8 @@ import java.util.Map;
 @Deprecated
 public class TJWSServletContainer
 {
+   private static final Logger LOG = Logger.getLogger(TJWSServletContainer.class);
+
    public static TJWSEmbeddedJaxrsServer tjws;
 
    public static ResteasyDeployment start() throws Exception
@@ -41,7 +44,7 @@ public class TJWSServletContainer
    
    public static void start(ResteasyDeployment deployment) throws Exception
    {
-      System.out.println("[Embedded Container Start]");
+      LOG.info("[Embedded Container Start]");
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setDeployment(deployment);
       tjws.setBindAddress(TestPortProvider.getHost());
@@ -104,7 +107,7 @@ public class TJWSServletContainer
 
    public static void stop() throws Exception
    {
-      System.out.println("[Embedded Container Stop]");
+      LOG.info("[Embedded Container Stop]");
       if (tjws != null)
       {
          try

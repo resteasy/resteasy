@@ -26,7 +26,7 @@ public class ResteasyContextPropagatingOnSingleCreateAction implements BiFunctio
 
       final SingleObserver<T> actual;
 
-      public ContextCapturerObserver(SingleObserver<T> actual)
+      ContextCapturerObserver(SingleObserver<T> actual)
       {
          this.actual = actual;
       }

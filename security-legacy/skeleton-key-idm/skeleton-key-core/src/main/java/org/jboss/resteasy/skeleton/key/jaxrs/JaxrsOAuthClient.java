@@ -42,7 +42,7 @@ public class JaxrsOAuthClient extends AbstractOAuthClient
       String error = uriInfo.getQueryParameters().getFirst("error");
       if (error != null) throw new BadRequestException(new Exception(Messages.MESSAGES.oAuthError(error)));
       Cookie stateCookie = headers.getCookies().get(stateCookieName);
-      if (stateCookie == null) throw new BadRequestException(new Exception(Messages.MESSAGES.stateCookieNotSet()));;
+      if (stateCookie == null) throw new BadRequestException(new Exception(Messages.MESSAGES.stateCookieNotSet()));
 
       String state = uriInfo.getQueryParameters().getFirst("state");
       if (state == null) throw new BadRequestException(new Exception(Messages.MESSAGES.stateParameterWasNull()));

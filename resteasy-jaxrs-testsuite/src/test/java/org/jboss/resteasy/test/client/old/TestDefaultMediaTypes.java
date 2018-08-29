@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestDefaultMediaTypes extends BaseResourceTest
 {
-	public static interface Foo
+	public interface Foo
 	{
 		@GET
 		@Path("foo")

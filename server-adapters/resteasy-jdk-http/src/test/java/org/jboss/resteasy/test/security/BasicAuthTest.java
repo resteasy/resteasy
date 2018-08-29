@@ -12,6 +12,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -21,7 +22,6 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -45,10 +45,11 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class BasicAuthTest
 {
+   private static final Logger LOG = Logger.getLogger(BasicAuthTest.class);
    private static Dispatcher dispatcher;
 
    @Path("/secured")
-   public static interface BaseProxy
+   public interface BaseProxy
    {
       @GET
       String get();
@@ -80,10 +81,10 @@ public class BasicAuthTest
       @GET
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+         LOG.info("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+            LOG.info("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";
@@ -111,10 +112,10 @@ public class BasicAuthTest
    {
       public String get(@Context SecurityContext ctx)
       {
-         System.out.println("********* IN SECURE CLIENT");
+         LOG.info("********* IN SECURE CLIENT");
          if (!ctx.isUserInRole("admin"))
          {
-            System.out.println("NOT IN ROLE!!!!");
+            LOG.info("NOT IN ROLE!!!!");
             throw new WebApplicationException(403);
          }
          return "hello";

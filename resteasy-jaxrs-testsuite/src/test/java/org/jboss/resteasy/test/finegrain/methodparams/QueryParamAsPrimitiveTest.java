@@ -1481,7 +1481,7 @@ public class QueryParamAsPrimitiveTest
    }
 
    @Path("/")
-   public static interface IResourceQueryPrimitives
+   public interface IResourceQueryPrimitives
    {
       @GET
       @Produces("application/boolean")
@@ -1513,7 +1513,7 @@ public class QueryParamAsPrimitiveTest
    }
 
    @Path("/wrappers")
-   public static interface IResourceQueryPrimitiveWrappers
+   public interface IResourceQueryPrimitiveWrappers
    {
       @GET
       @Produces("application/boolean")
@@ -1545,7 +1545,7 @@ public class QueryParamAsPrimitiveTest
    }
 
    @Path("/list")
-   public static interface IResourceQueryPrimitiveList
+   public interface IResourceQueryPrimitiveList
    {
       @GET
       @Produces("application/boolean")
@@ -1577,7 +1577,7 @@ public class QueryParamAsPrimitiveTest
    }
 
    @Path("/array")
-   public static interface IResourceQueryPrimitiveArray
+   public interface IResourceQueryPrimitiveArray
    {
       @GET
       @Produces("application/boolean")

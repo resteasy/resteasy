@@ -25,7 +25,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
       private String value;
       private LinkHeader header = new LinkHeader();
 
-      public Parser(String value)
+      Parser(String value)
       {
          this.value = value;
       }

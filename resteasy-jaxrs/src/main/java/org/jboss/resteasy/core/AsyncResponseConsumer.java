@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -215,7 +214,7 @@ public abstract class AsyncResponseConsumer
    {
       private AsyncResponseProvider<?> asyncResponseProvider;
 
-      public CompletionStageResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider)
+      CompletionStageResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider)
       {
          super(method);
          this.asyncResponseProvider = asyncResponseProvider;
@@ -254,7 +253,7 @@ public abstract class AsyncResponseConsumer
       protected Subscription subscription;
       private AsyncStreamProvider<?> asyncStreamProvider;
 
-      public AsyncStreamResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method);
          this.asyncStreamProvider = asyncStreamProvider;
@@ -326,7 +325,7 @@ public abstract class AsyncResponseConsumer
       private boolean sentEntity;
       private ResourceMethodInvoker method;
 
-      public AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
          this.method = method;
@@ -397,7 +396,7 @@ public abstract class AsyncResponseConsumer
    {
       private List<Object> collector = new ArrayList<Object>();
 
-      public AsyncStreamCollectorResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamCollectorResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
       }

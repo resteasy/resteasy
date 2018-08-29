@@ -10,6 +10,7 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -31,6 +32,7 @@ import org.junit.Test;
  */
 public class ProjectsResourceTest
 {
+   private static final Logger LOG = Logger.getLogger(ProjectsResourceTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
 
@@ -83,9 +85,9 @@ public class ProjectsResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String project = target.request().get(String.class);
-      System.out.println(project);
+      LOG.info(project);
       Project u = target.request().get(Project.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("Resteasy", u.getName());
       Assert.assertEquals("The Best of REST", u.getDescription());
       Assert.assertTrue(u.getEnabled());
@@ -113,9 +115,9 @@ public class ProjectsResourceTest
       response.close();
       ResteasyWebTarget target = client.target(response.getLocation());
       String project = target.request().get(String.class);
-      System.out.println(project);
+      LOG.info(project);
       Project u = target.request().get(Project.class);
-      System.out.println(u);
+      LOG.info(u);
       Assert.assertEquals("5", u.getId());
       Assert.assertEquals("Resteasy", u.getName());
       Assert.assertEquals("The Best of REST", u.getDescription());
