@@ -6,5 +6,5 @@ import java.sql.SQLException;
 
 public interface ChainedResultSetPopulator<T> {
 
-	public void populate(T bean, ResultSet resultSet) throws SQLException;
+	void populate(T bean, ResultSet resultSet) throws SQLException;
 }

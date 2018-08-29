@@ -17,14 +17,14 @@ import java.io.InputStream;
  */
 public interface StreamHandler{
 
-	public void handleStream(InputStream inputStream);
+	void handleStream(InputStream inputStream);
 	
-	public boolean isFinished();
+	boolean isFinished();
 	
-	public void awaitFinish();
+	void awaitFinish();
 
-	public boolean isTerminated();
+	boolean isTerminated();
 
-	public void terminate();
+	void terminate();
 
 }

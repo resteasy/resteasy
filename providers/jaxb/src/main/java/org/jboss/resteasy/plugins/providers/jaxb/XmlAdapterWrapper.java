@@ -21,7 +21,7 @@ class XmlAdapterWrapper extends XmlAdapter<Object, Object>
    private XmlAdapter<Object, Object> delegate;
    private Class<?> clazz;
    
-   public XmlAdapterWrapper(XmlAdapter<Object, Object> delegate, Class<?> clazz)
+   XmlAdapterWrapper(XmlAdapter<Object, Object> delegate, Class<?> clazz)
    {
       this.delegate = delegate;
       this.clazz = clazz;

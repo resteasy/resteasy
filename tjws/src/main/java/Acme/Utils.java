@@ -36,6 +36,8 @@
 
 package Acme;
 
+import org.jboss.logging.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,6 +87,7 @@ import java.util.StringTokenizer;
 @Deprecated
 public class Utils
 {
+   private static final Logger LOG = Logger.getLogger(Utils.class);
    // / Returns a date string formatted in Unix ls style - if it's within
    // six months of now, Mmm dd hh:ss, else Mmm dd yyyy.
    static final SimpleDateFormat shortfmt = new SimpleDateFormat("MMM dd HH:mm");
@@ -807,7 +810,7 @@ public class Utils
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
       }
       return null;
    }
@@ -1005,10 +1008,10 @@ public class Utils
          }
          catch (Exception e)
          {
-            System.out.println("" + source[srcOffset] + ": " + (DECODABET[source[srcOffset]]));
-            System.out.println("" + source[srcOffset + 1] + ": " + (DECODABET[source[srcOffset + 1]]));
-            System.out.println("" + source[srcOffset + 2] + ": " + (DECODABET[source[srcOffset + 2]]));
-            System.out.println("" + source[srcOffset + 3] + ": " + (DECODABET[source[srcOffset + 3]]));
+            LOG.info("" + source[srcOffset] + ": " + (DECODABET[source[srcOffset]]));
+            LOG.info("" + source[srcOffset + 1] + ": " + (DECODABET[source[srcOffset + 1]]));
+            LOG.info("" + source[srcOffset + 2] + ": " + (DECODABET[source[srcOffset + 2]]));
+            LOG.info("" + source[srcOffset + 3] + ": " + (DECODABET[source[srcOffset + 3]]));
             return -1;
          } // e nd catch
       }
@@ -1060,7 +1063,7 @@ public class Utils
          } // end if: white space, equals sign or better
          else
          {
-            System.err.println("Bad Base64 input character at " + i + ": " + source[i] + "(decimal)");
+            LOG.error("Bad Base64 input character at " + i + ": " + source[i] + "(decimal)");
             return null;
          } // end else:
       } // each input character
@@ -1219,7 +1222,7 @@ public class Utils
    //
    // }
 
-   public static interface ThreadFactory
+   public interface ThreadFactory
    {
       Thread create(Runnable runnable);
    }
@@ -1409,7 +1412,7 @@ public class Utils
                   {
                      if (t instanceof ThreadDeath)
                         throw (ThreadDeath) t;
-                     t.printStackTrace();
+                     LOG.error(t.getMessage(), t);
                   }
                   finally
                   {
@@ -1561,12 +1564,12 @@ public class Utils
    {
       try
       {
-         System.out.println(args[0]);
-         System.out.println(canonicalizePath(args[0]));
+         LOG.info(args[0]);
+         LOG.info(canonicalizePath(args[0]));
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
       }
    }
 }

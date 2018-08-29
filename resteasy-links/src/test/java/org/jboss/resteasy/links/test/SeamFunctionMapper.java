@@ -1,5 +1,7 @@
 package org.jboss.resteasy.links.test;
 
+import org.jboss.logging.Logger;
+
 import javax.el.FunctionMapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ public class SeamFunctionMapper extends FunctionMapper
    private static Map<String,List<Method>> methodCache = new HashMap<String,List<Method>>();
    
    private FunctionMapper functionMapper;
-   
+   private static final Logger LOG = Logger.getLogger(SeamFunctionMapper.class);
+
    public SeamFunctionMapper(FunctionMapper functionMapper)
    {
       this.functionMapper = functionMapper;
@@ -102,7 +105,7 @@ public class SeamFunctionMapper extends FunctionMapper
       }
       catch (NoSuchMethodException ex)
       {
-         System.err.println(String.format("Method %s.%s could not be cached", cls.getName(), name));
+         LOG.error(String.format("Method %s.%s could not be cached", cls.getName(), name));
       }
    }
    

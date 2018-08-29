@@ -5,7 +5,6 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.reactivestreams.Publisher;
 
-import io.reactiverse.reactivecontexts.core.Context;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.util.NoContent;
-import org.jboss.resteasy.util.NoContentInputStreamDelegate;
 import org.jboss.resteasy.util.TypeConverter;
 
 import javax.ws.rs.Consumes;

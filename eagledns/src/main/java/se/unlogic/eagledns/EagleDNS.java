@@ -140,7 +140,7 @@ public class EagleDNS implements Runnable, EagleManager {
 		} catch (Exception e) {
 
 			log.fatal("Unable to open config file " + configFilePath + ", aborting startup!");
-			System.out.println("Unable to open config file " + configFilePath + ", aborting startup!");
+			log.info("Unable to open config file " + configFilePath + ", aborting startup!");
 			return;
 		}
 
@@ -679,11 +679,11 @@ public class EagleDNS implements Runnable, EagleManager {
 		}
 	}
 
-	private final void addSOA(Message response, Zone zone) {
+	private void addSOA(Message response, Zone zone) {
 		response.addRecord(zone.getSOA(), Section.AUTHORITY);
 	}
 
-	private final void addNS(Message response, Zone zone, int flags) {
+	private void addNS(Message response, Zone zone, int flags) {
 		RRset nsRecords = zone.getNS();
 		addRRset(nsRecords.getName(), response, nsRecords, Section.AUTHORITY, flags);
 	}
@@ -706,7 +706,7 @@ public class EagleDNS implements Runnable, EagleManager {
 		}
 	}
 
-	private final void addAdditional(Message response, int flags) {
+	private void addAdditional(Message response, int flags) {
 		addAdditional2(response, Section.ANSWER, flags);
 		addAdditional2(response, Section.AUTHORITY, flags);
 	}

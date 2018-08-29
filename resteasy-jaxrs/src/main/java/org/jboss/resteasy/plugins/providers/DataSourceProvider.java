@@ -5,7 +5,8 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
@@ -23,7 +24,6 @@ import java.lang.reflect.Type;
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
@@ -281,7 +281,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
       private File tempFile;
 
-      public TempFileCleanable(File tempFile) {
+      TempFileCleanable(File tempFile) {
          this.tempFile = tempFile;
       }
 

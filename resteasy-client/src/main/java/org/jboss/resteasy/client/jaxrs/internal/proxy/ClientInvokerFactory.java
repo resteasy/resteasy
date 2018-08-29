@@ -6,5 +6,5 @@ import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 
 public interface ClientInvokerFactory
 {
-   public ClientInvoker createClientInvoker(Class<?> clazz, Method method, ProxyConfig config);
+   ClientInvoker createClientInvoker(Class<?> clazz, Method method, ProxyConfig config);
 }

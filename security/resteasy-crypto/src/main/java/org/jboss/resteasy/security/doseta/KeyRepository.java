@@ -9,21 +9,21 @@ import java.security.PublicKey;
  */
 public interface KeyRepository
 {
-   public PrivateKey findPrivateKey(DKIMSignature header);
+   PrivateKey findPrivateKey(DKIMSignature header);
 
-   public PublicKey findPublicKey(DKIMSignature header);
+   PublicKey findPublicKey(DKIMSignature header);
 
    /**
     * What should be the default domain to use when creating signature header
     *
     * @return null if none
     */
-   public String getDefaultPrivateDomain();
+   String getDefaultPrivateDomain();
 
    /**
     * What should be the default selector to use when creating signature header
     *
     * @return null if none
     */
-   public String getDefaultPrivateSelector();
+   String getDefaultPrivateSelector();
 }

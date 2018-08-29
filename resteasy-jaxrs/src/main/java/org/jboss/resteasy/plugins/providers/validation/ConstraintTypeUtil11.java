@@ -8,7 +8,6 @@ import javax.validation.ElementKind;
 import javax.validation.Path.Node;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
-import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;

@@ -3,13 +3,11 @@ package org.jboss.resteasy.jose.jwe.crypto;
 
 import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
-import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 
 import javax.crypto.SecretKey;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

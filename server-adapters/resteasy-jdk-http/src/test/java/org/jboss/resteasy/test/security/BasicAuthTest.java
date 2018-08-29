@@ -56,7 +56,7 @@ public class BasicAuthTest
    private static Dispatcher dispatcher;
 
    @Path("/secured")
-   public static interface BaseProxy
+   public interface BaseProxy
    {
       @GET
       String get();

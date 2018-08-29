@@ -83,12 +83,12 @@ public class ProxyWithGenericReturnTypeJacksonTest
       @GET
       @Path("list")
       @Produces("application/*+json")
-      public List<AbstractParent> resourceMethod();
+      List<AbstractParent> resourceMethod();
 
       @GET
       @Path("one")
       @Produces("application/*+json")
-      public AbstractParent resourceMethodOne();
+      AbstractParent resourceMethodOne();
    }
    
    public interface TestSubResourceSubIntf extends TestSubResourceIntf

@@ -2,8 +2,6 @@ package org.jboss.resteasy.plugins.server.vertx;
 
 import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.vertx.VertxJaxrsServer;
-import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -12,5 +12,5 @@ import org.w3c.dom.Element;
 
 public interface Elementable extends XMLable {
 
-	public Element toXML(Document doc);
+	Element toXML(Document doc);
 }

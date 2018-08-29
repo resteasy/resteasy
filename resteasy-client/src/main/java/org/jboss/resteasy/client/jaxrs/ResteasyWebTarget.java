@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $

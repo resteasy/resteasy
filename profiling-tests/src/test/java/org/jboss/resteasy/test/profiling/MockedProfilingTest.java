@@ -1,12 +1,10 @@
 package org.jboss.resteasy.test.profiling;
 
 import org.junit.Assert;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;

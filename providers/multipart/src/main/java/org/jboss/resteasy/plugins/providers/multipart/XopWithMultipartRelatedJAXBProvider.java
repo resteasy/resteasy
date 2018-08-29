@@ -1,7 +1,8 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.*;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;

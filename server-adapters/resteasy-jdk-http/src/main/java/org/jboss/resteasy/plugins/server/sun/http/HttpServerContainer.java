@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
@@ -16,6 +16,9 @@ import java.util.Hashtable;
  */
 public class HttpServerContainer
 {
+
+   private static final Logger LOG = Logger.getLogger(HttpServerContainer.class);
+
    public static SunHttpJaxrsServer sun;
 
    public static ResteasyDeployment start() throws Exception
@@ -40,7 +43,7 @@ public class HttpServerContainer
    
    public static void start(ResteasyDeployment deployment) throws Exception
    {
-      System.out.println(Messages.MESSAGES.embeddedContainerStart());
+      LOG.info(Messages.MESSAGES.embeddedContainerStart());
       sun = new SunHttpJaxrsServer();
       sun.setDeployment(deployment);
       sun.setPort(PortProvider.getPort());
@@ -74,7 +77,7 @@ public class HttpServerContainer
 
    public static void stop() throws Exception
    {
-      System.out.println(Messages.MESSAGES.embeddedContainerStop());
+      LOG.info(Messages.MESSAGES.embeddedContainerStop());
       if (sun != null)
       {
          try

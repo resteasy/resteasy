@@ -3,7 +3,6 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;

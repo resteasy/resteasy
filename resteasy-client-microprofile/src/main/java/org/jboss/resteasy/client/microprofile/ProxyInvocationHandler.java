@@ -8,7 +8,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
@@ -20,7 +19,7 @@ class ProxyInvocationHandler implements InvocationHandler
 
    private Set<Object> providerInstances;
 
-   public ProxyInvocationHandler(Object target, Set<Object> providerInstances)
+   ProxyInvocationHandler(Object target, Set<Object> providerInstances)
    {
       this.target = target;
       this.providerInstances = providerInstances;

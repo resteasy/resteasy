@@ -48,10 +48,12 @@ public class ExceptionAdapter extends RuntimeException
     *
     * @see java.lang.Throwable#printStackTrace()
     */
+   //CHECKSTYLE.OFF: RegexpSinglelineJava
    public void printStackTrace()
    {
       printStackTrace(System.err);
    }
+   //CHECKSTYLE.ON: RegexpSinglelineJava
 
    /**
     * Prints stack trace.

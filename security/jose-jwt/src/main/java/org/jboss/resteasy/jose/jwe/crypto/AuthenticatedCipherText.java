@@ -36,7 +36,7 @@ final class AuthenticatedCipherText
 	 * @param authenticationTag The authentication tag. Must not be 
 	 *                          {@code null}.
 	 */
-	public AuthenticatedCipherText(final byte[] cipherText, final byte[] authenticationTag) {
+	AuthenticatedCipherText(final byte[] cipherText, final byte[] authenticationTag) {
 
 		if (cipherText == null)
 		   throw new IllegalArgumentException(Messages.MESSAGES.cipherTextMustNotBeNull());

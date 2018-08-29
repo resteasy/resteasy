@@ -11,5 +11,5 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface BeanResultSetPopulator<ReturnType> {
-	public ReturnType populate(ResultSet rs) throws SQLException;
+	ReturnType populate(ResultSet rs) throws SQLException;
 }

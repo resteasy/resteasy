@@ -27,7 +27,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
     * @param injectorFactory the InjectorFactory used for clazz
     * @return true if and only if validation is turned on for clazz
     */
-   public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory);
+    boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory);
    
    /**
     * Indicates if validation is turned on for a class.
@@ -36,14 +36,14 @@ public interface GeneralValidatorCDI extends GeneralValidator
     * @param clazz Class to be examined
     * @return true if and only if validation is turned on for clazz
     */
-   public abstract boolean isValidatableFromCDI(Class<?> clazz);
+   boolean isValidatableFromCDI(Class<?> clazz);
   
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
     * The method should be called only from the resteasy-cdi module.
     * @param request http request
     */
-   public void checkViolationsfromCDI(HttpRequest request);
+   void checkViolationsfromCDI(HttpRequest request);
    
    /**
     * Throws a ResteasyViolationException if either a ConstraintViolationException or a
@@ -52,5 +52,5 @@ public interface GeneralValidatorCDI extends GeneralValidator
     * @param request http request
     * @param e exception
     */
-   public void checkForConstraintViolations(HttpRequest request, Exception e);
+   void checkForConstraintViolations(HttpRequest request, Exception e);
 }

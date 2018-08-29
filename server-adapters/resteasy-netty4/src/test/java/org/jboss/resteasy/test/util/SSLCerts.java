@@ -35,7 +35,7 @@ public enum SSLCerts
 
     private final char[] truststorePassword;
 
-    private SSLCerts(String keystorePath, char[] keystorePassword, String truststorePath, char[] truststorePassword)
+    SSLCerts(String keystorePath, char[] keystorePassword, String truststorePath, char[] truststorePassword)
     {
         this.keystorePath = keystorePath;
         this.keystorePassword = keystorePassword;

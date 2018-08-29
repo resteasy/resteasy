@@ -13,23 +13,23 @@ import java.util.concurrent.RejectedExecutionException;
 
 public interface TaskGroupHandler<Task extends TaskGroup,Controller extends ExecutionController<Task>> {
 
-	public Controller execute(Task taskGroup) throws RejectedExecutionException;
+	Controller execute(Task taskGroup) throws RejectedExecutionException;
 	
-	public int getTotalTaskCount();
+	int getTotalTaskCount();
 	
-	public int getTaskGroupCount();
+	int getTaskGroupCount();
 	
-	public void abortAllTaskGroups();
+	void abortAllTaskGroups();
 	
-	public List<Controller> getTaskGroups();
+	List<Controller> getTaskGroups();
 	
-	public Status getStatus();
+	Status getStatus();
 	
-	public void awaitTermination(long timeout) throws InterruptedException;
+	void awaitTermination(long timeout) throws InterruptedException;
 	
-	public void awaitTermination() throws InterruptedException;
+	void awaitTermination() throws InterruptedException;
 	
-	public void shutdown();
+	void shutdown();
 	
-	public void shutdownNow();
+	void shutdownNow();
 }

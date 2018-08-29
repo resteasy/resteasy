@@ -1,6 +1,10 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.*;
+import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.CompletionStage;

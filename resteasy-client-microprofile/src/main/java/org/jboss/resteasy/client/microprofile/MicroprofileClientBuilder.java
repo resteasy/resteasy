@@ -32,6 +32,7 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 
@@ -41,6 +42,7 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 class MicroprofileClientBuilder implements RestClientBuilder {
 
    private static final String DEFAULT_MAPPER_PROP = "microprofile.rest.client.disable.default.mapper";
+   private static final Logger LOG = Logger.getLogger(MicroprofileClientBuilder.class);
 
    MicroprofileClientBuilder() {
        ClientBuilder availableBuilder = ClientBuilder.newBuilder();
@@ -353,7 +355,7 @@ class MicroprofileClientBuilder implements RestClientBuilder {
    public void registerLocalProviderInstance(Object provider, Map<Class<?>, Integer> contracts) {
        for (Object registered : getLocalProviderInstances()) {
            if (registered == provider) {
-               System.out.println("Provider already registered " + provider.getClass().getName());
+               LOG.info("Provider already registered " + provider.getClass().getName());
                return;
            }
        }

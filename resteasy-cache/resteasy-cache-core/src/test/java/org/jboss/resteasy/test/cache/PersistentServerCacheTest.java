@@ -113,11 +113,11 @@ public class PersistentServerCacheTest
    }
 
    @Path("/cache")
-   public static interface MyProxy
+   public interface MyProxy
    {
       @GET
       @Produces("text/plain")
-      public String get();
+      String get();
 
    }
 

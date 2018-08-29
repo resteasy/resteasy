@@ -4,7 +4,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import java.util.logging.Logger;
 
 /**
  * Created by rsearls on 8/4/17.

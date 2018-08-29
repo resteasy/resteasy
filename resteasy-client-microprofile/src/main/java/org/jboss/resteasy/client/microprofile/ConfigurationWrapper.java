@@ -13,7 +13,7 @@ import javax.ws.rs.core.Feature;
 class ConfigurationWrapper implements Configuration
 {
 
-   public ConfigurationWrapper(Configuration delegate)
+   ConfigurationWrapper(Configuration delegate)
    {
       this.delegate = delegate;
    }

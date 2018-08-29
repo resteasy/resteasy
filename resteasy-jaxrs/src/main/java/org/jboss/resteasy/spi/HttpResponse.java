@@ -17,7 +17,7 @@ public interface HttpResponse extends Closeable
 {
    int getStatus();
 
-   public void setStatus(int status);
+   void setStatus(int status);
 
    MultivaluedMap<String, Object> getOutputHeaders();
 

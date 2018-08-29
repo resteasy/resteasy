@@ -24,7 +24,7 @@ public interface InputPart {
 	 * {@link javax.ws.rs.container.ContainerRequestFilter}.
 	 * </p>
 	 */
-	static final String DEFAULT_CONTENT_TYPE_PROPERTY = "resteasy.provider.multipart.inputpart.defaultContentType";
+	String DEFAULT_CONTENT_TYPE_PROPERTY = "resteasy.provider.multipart.inputpart.defaultContentType";
 	
 	/**
 	 * If there is a content-type header without a charset parameter, charset=US-ASCII
@@ -37,7 +37,7 @@ public interface InputPart {
     * {@link javax.ws.rs.container.ContainerRequestFilter}.
     * </p>
 	 */
-	static final String DEFAULT_CHARSET_PROPERTY = "resteasy.provider.multipart.inputpart.defaultCharset";
+	String DEFAULT_CHARSET_PROPERTY = "resteasy.provider.multipart.inputpart.defaultCharset";
 
 	/**
 	 * @return headers of this part

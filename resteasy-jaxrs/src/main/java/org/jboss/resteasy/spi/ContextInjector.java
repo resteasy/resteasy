@@ -23,5 +23,5 @@ public interface ContextInjector<WrappedType, UnwrappedType> {
     * @param annotations The annotation list is useful to parametrize the injection.
     * @return
     */
-   public WrappedType resolve(Class<? extends WrappedType> rawType, Type genericType, Annotation[] annotations);
+   WrappedType resolve(Class<? extends WrappedType> rawType, Type genericType, Annotation[] annotations);
 }

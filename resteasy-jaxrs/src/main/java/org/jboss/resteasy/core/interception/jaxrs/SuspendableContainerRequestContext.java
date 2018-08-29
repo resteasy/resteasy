@@ -18,13 +18,13 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
     * with {@link #resume()} or aborted with {@link #resume(Throwable)} or 
     * {@link #abortWith(javax.ws.rs.core.Response)}.
     */
-   public void suspend();
+   void suspend();
    
    /**
     * Resumes the current request, and proceeds to the next request filter, if any,
     * or to the resource method.
     */
-   public void resume();
+   void resume();
    
    /**
     * Aborts the current request with the given exception. This behaves as if the request
@@ -34,5 +34,5 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
     * 
     * @param t the exception to send back to the client, as mapped by the application.
     */
-   public void resume(Throwable t);
+   void resume(Throwable t);
 }

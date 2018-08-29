@@ -26,12 +26,13 @@ import org.apache.james.mime4j.storage.StorageOutputStream;
 import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -76,6 +77,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
    protected String defaultPartCharset = null;
    protected Providers savedProviders;
+
+   private static final Logger LOG = Logger.getLogger(MultipartInputImpl.class);
 
    // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
    private static class BinaryOnlyMessageBuilder extends MessageBuilder
@@ -436,14 +439,14 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       MultipartInputImpl multipart = new MultipartInputImpl(contentType, null);
       multipart.parse(bais);
 
-      System.out.println(multipart.getPreamble());
-      System.out.println("**********");
+      LOG.info(multipart.getPreamble());
+      LOG.info("**********");
       for (InputPart part : multipart.getParts())
       {
-         System.out.println("--");
-         System.out.println("\"" + part.getBodyAsString() + "\"");
+         LOG.info("--");
+         LOG.info("\"" + part.getBodyAsString() + "\"");
       }
-      System.out.println("done");
+      LOG.info("done");
 
    }
 
@@ -525,12 +528,12 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
       private final File directory;
 
-      public CustomTempFileStorageProvider()
+      CustomTempFileStorageProvider()
       {
          this(DEFAULT_PREFIX, null, null);
       }
 
-      public CustomTempFileStorageProvider(String prefix, String suffix, File directory)
+      CustomTempFileStorageProvider(String prefix, String suffix, File directory)
       {
          if (prefix == null || prefix.length() < 3)
             throw new IllegalArgumentException("invalid prefix");
@@ -556,7 +559,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
          private OutputStream out;
 
-         public TempFileStorageOutputStream(File file) throws IOException
+         TempFileStorageOutputStream(File file) throws IOException
          {
             this.file = file;
             this.out = new FileOutputStream(file);
@@ -590,7 +593,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
          private static final Set<File> filesToDelete = new HashSet<File>();
 
-         public TempFileStorage(File file)
+         TempFileStorage(File file)
          {
             this.file = file;
          }

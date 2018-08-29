@@ -10,7 +10,7 @@ package org.jboss.resteasy.spi.touri;
 
 public interface URIResolver
 {
-   public boolean handles(Class<?> type);
+   boolean handles(Class<?> type);
 
-   public String resolveURI(Object object);
+   String resolveURI(Object object);
 }

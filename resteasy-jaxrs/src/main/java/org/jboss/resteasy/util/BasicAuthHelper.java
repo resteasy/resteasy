@@ -1,6 +1,5 @@
 package org.jboss.resteasy.util;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 
