@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,6 +45,8 @@ public class SseEventSourceImpl implements SseEventSource
    private enum State {
       PENDING, OPEN, CLOSED
    }
+
+   private Future<?> fEventHandler;
 
    private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
 
@@ -194,7 +199,7 @@ public class SseEventSourceImpl implements SseEventSource
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
       EventHandler handler = new EventHandler(reconnectDelay, lastEventId, verb, entity, mediaTypes);
-      executor.submit(handler);
+      fEventHandler = executor.submit(handler);
       handler.awaitConnected();
    }
 
@@ -252,26 +257,13 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
+      // Ignoring timeout because we are canceling tasks on a local list.
+      // This is not a shutdown of an executor which may be running
+      // other unrelated tasks.
       internalClose();
-      try
-      {
-         if (!executor.awaitTermination(timeout, unit))
-         {
-            return false;
-         }
-      }
-      catch (InterruptedException e)
-      {
-         onErrorConsumers.forEach(consumer -> {
-            consumer.accept(e);
-         });
-         Thread.currentThread().interrupt();
-         return false;
-      }
-
       return true;
    }
-   
+
    private void internalClose()
    {
       if (state.getAndSet(State.CLOSED) == State.CLOSED)
@@ -291,7 +283,15 @@ public class SseEventSourceImpl implements SseEventSource
             });
          }
       }
-      executor.shutdownNow();
+
+      if (executor.isShutdown()) {
+         // release shutdown object
+         fEventHandler = null;
+      } else {
+         // replace executor.shutdownNow() with individual task cancel
+         fEventHandler.cancel(true);
+      }
+
       onCompleteConsumers.forEach(Runnable::run);
    }
 
@@ -492,11 +492,11 @@ public class SseEventSourceImpl implements SseEventSource
          EventHandler processor = new EventHandler(this);
          if (delay > 0)
          {
-            executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
+            fEventHandler = executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
          }
          else
          {
-            executor.submit(processor);
+            fEventHandler = executor.submit(processor);
          }
       }
    }
