@@ -39,7 +39,7 @@
                 <executions>
                     <execution>
                         <id>unpack</id>
-                        <phase>process-test-classes</phase>
+                        <phase>generate-test-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -63,8 +63,8 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>unpack resteasy</id>
-                        <phase>process-test-classes</phase>
+                        <id>unpack-resteasy</id>
+                        <phase>generate-test-resources</phase>
                         <configuration>
                             <target>
                                 <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
