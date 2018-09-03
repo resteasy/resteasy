@@ -22,6 +22,8 @@ import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
@@ -38,7 +40,7 @@ public class ClientBuilderTest {
         war.addClass(NotForForwardCompatibility.class);
         // Arquillian in the deployment and use of TestUtil
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getJbossHome() + File.separator + "standalone" + File.separator + "log" +
+                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                         File.separator + "server.log", "read"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
@@ -58,7 +60,7 @@ public class ClientBuilderTest {
     }
 
     private int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002155", true);
+        return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
     }
 
     /**
@@ -86,16 +88,16 @@ public class ClientBuilderTest {
     @Test
     @Category({NotForForwardCompatibility.class})
     public void testDoubleRegistration() {
-        int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true);
-        int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true);
+        int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+        int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
         Client client = ClientBuilder.newClient();
         int count = client.getConfiguration().getInstances().size();
         Object reg = new FeatureReturningFalse();
 
         client.register(reg).register(reg);
         client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
-        Assert.assertEquals("Expect 1 warnining messages of Provider instance is already registered", 1, TestUtil.getWarningCount("RESTEASY002160", true) - countRESTEASY002160);
-        Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, TestUtil.getWarningCount("RESTEASY002155", true) - countRESTEASY002155);
+        Assert.assertEquals("Expect 1 warnining messages of Provider instance is already registered", 1, TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160);
+        Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
         Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 
         client.close();

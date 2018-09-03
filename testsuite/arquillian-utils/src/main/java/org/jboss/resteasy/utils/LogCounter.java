@@ -20,16 +20,27 @@ public class LogCounter {
     private boolean onServer;
 
 
-    public LogCounter(String message, boolean onServer) {
+    /**
+     * Container qualifier when arquillian starts multiple instance, null otherwise.
+     */
+    private String containerQualifier;
+
+
+    public LogCounter(String message, boolean onServer, String containerQualifier) {
         this.message = message;
         this.onServer = onServer;
-        initCount = TestUtil.getWarningCount(message, onServer);
+        this.containerQualifier = containerQualifier;
+        this.initCount = TestUtil.getWarningCount(message, onServer, containerQualifier);
+    }
+
+    public LogCounter(String message, boolean onServer) {
+        this(message, onServer, null);
     }
 
     /**
      * Get count of examined log message, logged after creation of this LogCounter
      */
     public int count() {
-        return TestUtil.getWarningCount(message, onServer) - initCount;
+        return TestUtil.getWarningCount(message, onServer, containerQualifier) - initCount;
     }
 }

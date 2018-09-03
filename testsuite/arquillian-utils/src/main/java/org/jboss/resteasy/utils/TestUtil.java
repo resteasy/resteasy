@@ -245,6 +245,40 @@ public class TestUtil {
         return System.getProperty("jboss.home.dir", "");
     }
 
+    /**
+     * Get the path to the containers base dir for standalone mode (configuration, logs, etc..).
+     * When arquillian.xml contains more containers that could be started simultaneously the parameter containerQualifier
+     * is used to determine which base dir to get.
+     * @param containerQualifier container qualifier or null if the arquillian.xml contains max 1 container available
+     *                           to be running at time
+     * @return absolute path to base dir
+     */
+    public static String getStandaloneDir(String containerQualifier) {
+        return getStandaloneDir(false, containerQualifier);
+    }
+
+    /**
+     * Get the path to the containers base dir for standalone mode (configuration, logs, etc..).
+     * When arquillian.xml contains more containers that could be started simultaneously the parameter containerQualifier
+     * is used to determine which base dir to get.
+     * @param onServer whether the check is made from client side (the path is constructed) or from deployment (the path
+     *                 is read from actual runtime value)
+     * @param containerQualifier container qualifier or null if the arquillian.xml contains max 1 container available
+     *                           to be running at time; this has no effect when onServer is true
+     * @return absolute path to base dir
+     */
+    public static String getStandaloneDir(boolean onServer, String containerQualifier) {
+        if (onServer == false) {
+            if (containerQualifier == null) {
+                return new File(getJbossHome(), "standalone").getAbsolutePath();
+            } else {
+                return new File("target", containerQualifier).getAbsolutePath();
+            }
+        } else {
+            return System.getProperty("jboss.server.base.dir", "");
+        }
+    }
+
     public static boolean isOpenJDK() {
         return System.getProperty("java.runtime.name").toLowerCase().contains("openjdk");
     }
@@ -286,10 +320,14 @@ public class TestUtil {
     }
 
     public static List<String> readServerLogLines(boolean onServer) {
-        String jbossHome = TestUtil.getJbossHome(onServer);
-        String logPath = String.format("%s%sstandalone%slog%sserver.log", jbossHome,
-                (jbossHome.endsWith(File.separator) || jbossHome.endsWith("/")) ? "" : File.separator,
-                File.separator, File.separator);
+        return readServerLogLines(onServer, null);
+    }
+
+    public static List<String> readServerLogLines(boolean onServer, String containerQualifier) {
+        String standaloneDir = TestUtil.getStandaloneDir(onServer, containerQualifier);
+        String logPath = String.format("%s%slog%sserver.log", standaloneDir,
+                (standaloneDir.endsWith(File.separator) || standaloneDir.endsWith("/")) ? "" : File.separator,
+                File.separator);
         logPath = logPath.replace('/', File.separatorChar);
         try {
             return Files.readAllLines(Paths.get(logPath)); // UTF8 is used by default
@@ -310,8 +348,15 @@ public class TestUtil {
      * Get count of lines with specific string in log
      */
     public static int getWarningCount(String findedString, boolean onServer) {
+        return getWarningCount(findedString, onServer, null);
+    }
+
+    /**
+     * Get count of lines with specific string in log
+     */
+    public static int getWarningCount(String findedString, boolean onServer, String containerQualifier) {
         int count = 0;
-        List<String> lines = TestUtil.readServerLogLines(onServer);
+        List<String> lines = TestUtil.readServerLogLines(onServer, containerQualifier);
         for (String line : lines) {
             if (line.contains(findedString)) {
                 count++;

@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.custom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
+import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationInterceptor;
@@ -26,6 +27,8 @@ import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
 /**
  * @tpSubChapter Providers
  * @tpChapter Integration tests
@@ -42,12 +45,12 @@ public class DuplicateProviderRegistrationTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
         war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
-                TestUtil.class, DuplicateProviderRegistrationInterceptor.class);
+                TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
         war.addClass(NotForForwardCompatibility.class);
         // Arquillian in the deployment, test reads the server.log
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getJbossHome() + File.separator + "standalone" + File.separator + "log" +
+                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                         File.separator + "server.log", "read"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
@@ -58,11 +61,11 @@ public class DuplicateProviderRegistrationTest {
     }
 
     private static int getRESTEASY002155WarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002155", true);
+        return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
     }
     
     private static int getRESTEASY002160WarningCount() {
-       return TestUtil.getWarningCount("RESTEASY002160", true);
+       return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
    }
 
     /**

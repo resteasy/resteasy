@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * @tpSubChapter Interceptors
@@ -109,10 +110,10 @@ public class DebugLoggingTest {
     @Test
     public void  testBuildIn() throws Exception {
         // count log messages before request
-        LogCounter bodyReaderStringLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false);
-        LogCounter bodyWriterStringLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false);
-        LogCounter readerInterceptorLog = new LogCounter("ReaderInterceptor: org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor", false);
-        LogCounter writerInterceptorLog = new LogCounter("WriterInterceptor: org.jboss.resteasy.security.doseta.DigitalSigningInterceptor", false);
+        LogCounter bodyReaderStringLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter bodyWriterStringLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter readerInterceptorLog = new LogCounter("ReaderInterceptor: org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter writerInterceptorLog = new LogCounter("WriterInterceptor: org.jboss.resteasy.security.doseta.DigitalSigningInterceptor", false, DEFAULT_CONTAINER_QUALIFIER);
 
         // perform request
         WebTarget base = client.target(PortProviderUtil.generateURL("/build/in", BUILD_IN));
@@ -135,16 +136,16 @@ public class DebugLoggingTest {
     @Test
     public void  testCustom() throws Exception {
         // count log messages before request
-        LogCounter bodyReaderStringLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false);
-        LogCounter bodyWriterStringLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false);
-        LogCounter readerInterceptorLog = new LogCounter("ReaderInterceptor: org.jboss.resteasy.test.core.logging.resource.DebugLoggingReaderInterceptorCustom", false);
-        LogCounter writerInterceptorLog = new LogCounter("WriterInterceptor: org.jboss.resteasy.test.core.logging.resource.DebugLoggingWriterInterceptorCustom", false);
-        LogCounter bodyReaderCustomLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter", false);
-        LogCounter bodyWriterCustomLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter", false);
+        LogCounter bodyReaderStringLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter bodyWriterStringLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter readerInterceptorLog = new LogCounter("ReaderInterceptor: org.jboss.resteasy.test.core.logging.resource.DebugLoggingReaderInterceptorCustom", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter writerInterceptorLog = new LogCounter("WriterInterceptor: org.jboss.resteasy.test.core.logging.resource.DebugLoggingWriterInterceptorCustom", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter bodyReaderCustomLog = new LogCounter("MessageBodyReader: org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter bodyWriterCustomLog = new LogCounter("MessageBodyWriter: org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter", false, DEFAULT_CONTAINER_QUALIFIER);
 
         // perform request
-        TestUtil.getWarningCount("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false);
-        TestUtil.getWarningCount("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false);
+        TestUtil.getWarningCount("MessageBodyReader: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
+        TestUtil.getWarningCount("MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar", false, DEFAULT_CONTAINER_QUALIFIER);
         WebTarget base = client.target(PortProviderUtil.generateURL("/custom", CUSTOM));
         Response response = base.request().post(Entity.entity("data", "aaa/bbb"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
