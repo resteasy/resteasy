@@ -26,10 +26,12 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.jboss.resteasy.test.ContainerConstants.TRACING_CONTAINER_PORT_OFFSET;
+import static org.jboss.resteasy.test.ContainerConstants.TRACING_CONTAINER_QUALIFIER;
+
 @RunWith(Arquillian.class)
 @RunAsClient
 public abstract class TracingTestBase {
-    protected static final String TRACING_CONTAINER = "jbossas-manual-tracing";
     protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
     protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
     private static final Logger LOG = LogManager.getLogger(TracingTestBase.class);
@@ -50,8 +52,8 @@ public abstract class TracingTestBase {
 
     @Before
     public void startContainer() {
-        if (!containerController.isStarted(TRACING_CONTAINER)) {
-            containerController.start(TRACING_CONTAINER);
+        if (!containerController.isStarted(TRACING_CONTAINER_QUALIFIER)) {
+            containerController.start(TRACING_CONTAINER_QUALIFIER);
         }
         deployer.deploy(WAR_BASIC_TRACING_FILE);
         deployer.deploy(WAR_ON_DEMAND_TRACING_FILE);
@@ -64,15 +66,15 @@ public abstract class TracingTestBase {
 
     @After
     public void undeployAndStopContainerWithGzipEnabled() {
-        if (containerController.isStarted(TRACING_CONTAINER)) {
+        if (containerController.isStarted(TRACING_CONTAINER_QUALIFIER)) {
             deployer.undeploy(WAR_BASIC_TRACING_FILE);
             deployer.undeploy(WAR_ON_DEMAND_TRACING_FILE);
-            containerController.stop(TRACING_CONTAINER);
+            containerController.stop(TRACING_CONTAINER_QUALIFIER);
         }
     }
 
     protected String generateURL(String path, String deploymentName) {
-        String fullpath =  PortProviderUtil.generateURL(path, deploymentName,  PortProviderUtil.getHost(), PortProviderUtil.getPort() + 2000);
+        String fullpath =  PortProviderUtil.generateURL(path, deploymentName,  PortProviderUtil.getHost(), PortProviderUtil.getPort() + TRACING_CONTAINER_PORT_OFFSET);
         LOG.info(":::PATH: " + fullpath);
         return fullpath;
     }
@@ -91,7 +93,7 @@ public abstract class TracingTestBase {
     }
 
     @Deployment(name = WAR_BASIC_TRACING_FILE, managed = false, testable = false)
-    @TargetsContainer(TRACING_CONTAINER)
+    @TargetsContainer(TRACING_CONTAINER_QUALIFIER)
     public static Archive<?> createDeployment() {
         war = TestUtil.prepareArchive(WAR_BASIC_TRACING_FILE);
         Map<String, String> params = new HashMap<>();
@@ -105,7 +107,7 @@ public abstract class TracingTestBase {
 
 
     @Deployment(name = WAR_ON_DEMAND_TRACING_FILE, managed = false, testable = false)
-    @TargetsContainer(TRACING_CONTAINER)
+    @TargetsContainer(TRACING_CONTAINER_QUALIFIER)
     public static Archive<?> createDeployment2() {
         war = TestUtil.prepareArchive(WAR_ON_DEMAND_TRACING_FILE);
 
