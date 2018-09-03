@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -57,8 +58,7 @@ public class CDIResourceTest {
 
     static {
         toStr = new StringBuilder()
-                .append(TestUtil.getJbossHome()).append(File.separator)
-                .append("standalone").append(File.separator)
+                .append(TestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
                 .append("deployments").append(File.separator)
                 .append(WAR_NAME).toString();
         exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);

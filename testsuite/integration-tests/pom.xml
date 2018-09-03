@@ -13,6 +13,18 @@
 
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
+        <container.base.dir.managed>${project.build.directory}${file.separator}${container.qualifier.managed}</container.base.dir.managed>
+        <container.base.dir.manual.gzip>${project.build.directory}${file.separator}${container.qualifier.manual.gzip}</container.base.dir.manual.gzip>
+        <container.base.dir.manual.tracing>${project.build.directory}${file.separator}${container.qualifier.manual.tracing}</container.base.dir.manual.tracing>
+        <container.offset.managed>0</container.offset.managed>
+        <container.offset.manual.gzip>1000</container.offset.manual.gzip>
+        <container.offset.manual.tracing>2000</container.offset.manual.tracing>
+        <container.management.port.managed>9990</container.management.port.managed><!-- keep in sync with port offset -->
+        <container.management.port.manual.gzip>10990</container.management.port.manual.gzip><!-- keep in sync with port offset -->
+        <container.management.port.manual.tracing>11990</container.management.port.manual.tracing><!-- keep in sync with port offset -->
+        <container.qualifier.managed>jbossas-managed</container.qualifier.managed>
+        <container.qualifier.manual.gzip>jbossas-manual-gzip</container.qualifier.manual.gzip>
+        <container.qualifier.manual.tracing>jbossas-manual-tracing</container.qualifier.manual.tracing>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -74,13 +86,6 @@
                                        dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
                                        overwrite="true"/>
                                 <delete dir="target/dependency-maven-plugin-markers"/>
-                                <copy file="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-full.xml"
-                                      tofile="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-tracing.xml"/>
-                                <replace
-                                        file="${project.build.directory}/test-server/wildfly-${server.version}/standalone/configuration/standalone-tracing.xml">
-                                    <replacetoken><![CDATA[="INFO"]]></replacetoken>
-                                    <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
-                                </replace>
                             </target>
                         </configuration>
                         <goals>
@@ -410,6 +415,61 @@
             </testResource>
         </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>initialize-basedirs</id>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                            <target>
+                                <!-- Initialize basedir for tested container by copying
+                                     the original into new place.
+                                     This helps to isolate the multiple running instances.
+                                     One copy per each container in arquillian.xml -->
+
+                                <delete quiet="true" dir="${container.base.dir.managed}" />
+                                <copy todir="${container.base.dir.managed}" overwrite="true" failonerror="true">
+                                    <fileset dir="${jboss.home}/standalone"/>
+                                </copy>
+
+                                <delete quiet="true" dir="${container.base.dir.manual.gzip}" />
+                                <copy todir="${container.base.dir.manual.gzip}" overwrite="true" failonerror="true">
+                                    <fileset dir="${jboss.home}/standalone"/>
+                                </copy>
+
+                                <delete quiet="true" dir="${container.base.dir.manual.tracing}" />
+                                <copy todir="${container.base.dir.manual.tracing}" overwrite="true" failonerror="true">
+                                    <fileset dir="${jboss.home}/standalone"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-tracing-configuration</id>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                            <target>
+                                <!-- Prepare configuration with more verbose logging for tracing tests -->
+                                <copy file="${container.base.dir.manual.tracing}/configuration/standalone-full.xml"
+                                      tofile="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml"/>
+                                <replace
+                                        file="${container.base.dir.manual.tracing}/configuration/standalone-tracing.xml">
+                                    <replacetoken><![CDATA[="INFO"]]></replacetoken>
+                                    <replacevalue><![CDATA[="DEBUG"]]></replacevalue>
+                                </replace>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                     <executions>

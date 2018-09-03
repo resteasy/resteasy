@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
 /**
  * @tpSubChapter Miscellaneous
  * @tpChapter Integration tests
@@ -28,7 +30,7 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 public class SubResourceWarningTest {
 
    // check server.log msg count before app is deployed.  Deploying causes messages to be logged.
-   private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false);
+   private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
@@ -59,7 +61,7 @@ public class SubResourceWarningTest {
     */
    @Test
    public void testWarningMsg () throws Exception {
-      int cnt = TestUtil.getWarningCount("have the same path, [test", false);
+      int cnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
       Assert.assertEquals( "Improper log WARNING count", preTestCnt+2, cnt);
    }
 }
