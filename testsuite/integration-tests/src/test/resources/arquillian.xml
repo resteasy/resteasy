@@ -5,24 +5,26 @@
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
     <defaultProtocol type="Servlet 3.0" />
     <group qualifier="integration-tests" default="true">
-        <container qualifier="jbossas-managed" default="true">
+        <container qualifier="${container.qualifier.managed}" default="true">
             <configuration>
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=0</property>
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
+                </property>
                 <property name="managementAddress">${node}</property>
-                <property name="managementPort">9990</property>
+                <property name="managementPort">${container.management.port.managed}</property>
             </configuration>
         </container>
-        <container qualifier="jbossas-manual-gzip" mode="manual">
+        <container qualifier="${container.qualifier.manual.gzip}" mode="manual">
             <configuration>
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=1000 -Dresteasy.allowGzip=true</property>
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.gzip} -Dresteasy.allowGzip=true -Djboss.server.base.dir=${container.base.dir.manual.gzip}
+                </property>
                 <property name="managementAddress">${node}</property>
-                <property name="managementPort">10990</property><!-- keep in sync with port-offset -->
+                <property name="managementPort">${container.management.port.manual.gzip}</property>
             </configuration>
         </container>
     </group>

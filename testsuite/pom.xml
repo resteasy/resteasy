@@ -217,7 +217,7 @@
                         <executions>
                             <execution>
                                 <id>copy</id>
-                                <phase>generate-test-sources</phase>
+                                <phase>process-test-resources</phase>
                                 <configuration>
                                     <target>
                                         <copy file="${server.home}/standalone/configuration/standalone-full.xml"
