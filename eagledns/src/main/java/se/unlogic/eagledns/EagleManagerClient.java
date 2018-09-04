@@ -9,10 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 
-
 public class EagleManagerClient {
-
-	private static final Logger LOG = Logger.getLogger(EagleManagerClient.class);
 
 	public static EagleManager getManager(String host, int port, String password) throws RemoteException, NotBoundException {
 
@@ -26,6 +23,8 @@ public class EagleManagerClient {
 
 
 	public static void main(String[] args) {
+
+		Logger LOG = Logger.getLogger(EagleManagerClient.class);
 
 		if(args.length != 3 || (!args[2].equals("reload") && !args[2].equals("shutdown"))){
 

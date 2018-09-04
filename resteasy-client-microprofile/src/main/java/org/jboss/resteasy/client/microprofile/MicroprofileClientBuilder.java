@@ -355,7 +355,7 @@ class MicroprofileClientBuilder implements RestClientBuilder {
    public void registerLocalProviderInstance(Object provider, Map<Class<?>, Integer> contracts) {
        for (Object registered : getLocalProviderInstances()) {
            if (registered == provider) {
-               LOG.info("Provider already registered " + provider.getClass().getName());
+               LOG.infov("Provider already registered {0}", provider.getClass().getName());
                return;
            }
        }

@@ -13,9 +13,6 @@ import java.lang.annotation.Annotation;
  */
 public class IgnoredMediaTypes
 {
-
-   private static final Logger LOG = Logger.getLogger(IgnoredMediaTypes.class);
-
    private static String getVendorString(String subtype)
    {
       int idx = subtype.indexOf('+');
@@ -67,6 +64,7 @@ public class IgnoredMediaTypes
 
    public static void main(String[] args)
    {
+      Logger LOG = Logger.getLogger(IgnoredMediaTypes.class);
       LOG.info(getVendorString("foo+json"));
       LOG.info(getSubtype("foo+json"));
 

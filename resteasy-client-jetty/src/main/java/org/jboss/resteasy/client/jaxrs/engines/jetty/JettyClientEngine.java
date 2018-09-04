@@ -39,7 +39,6 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
     public static final String REQUEST_TIMEOUT_MS = JettyClientEngine.class + "$RequestTimeout";
     // Yeah, this is the Jersey one, but there's no standard one and it makes more sense to reuse than make our own...
     public static final String FOLLOW_REDIRECTS = "jersey.config.client.followRedirects";
-    private static final Logger LOG = Logger.getLogger(JettyClientEngine.class);
 
     private static final InvocationCallback<ClientResponse> NOP = new InvocationCallback<ClientResponse>() {
         @Override
@@ -102,6 +101,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         final boolean buffered;
         if (!bufIn && extractor != null) {
             if (!WARN_BUF.getAndSet(true)) {
+                Logger LOG = Logger.getLogger(JettyClientEngine.class);
                 LOG.error("TODO: ResultExtractor is synchronous and may not be used without buffering - forcing buffer mode.");
             }
             buffered = true;

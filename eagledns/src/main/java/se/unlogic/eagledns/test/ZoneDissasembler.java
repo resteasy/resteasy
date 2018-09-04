@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public class ZoneDissasembler {
 
-	private static final Logger LOG = Logger.getLogger(ZoneDissasembler.class);
-
 	public static void main(String[] args) throws TextParseException, IOException {
 
 		File zoneFile = new File("zones/unlogic.se");
@@ -21,6 +19,8 @@ public class ZoneDissasembler {
 		Master master = new Master(zoneFile.getPath(),Name.fromString(zoneFile.getName(), Name.root));
 
 		Record record = master._nextRecord();
+
+		Logger LOG = Logger.getLogger(ZoneDissasembler.class);
 
 		while(record != null){
 

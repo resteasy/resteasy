@@ -77,9 +77,6 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
    protected String defaultPartCharset = null;
    protected Providers savedProviders;
-
-   private static final Logger LOG = Logger.getLogger(MultipartInputImpl.class);
-
    // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
    private static class BinaryOnlyMessageBuilder extends MessageBuilder
    {
@@ -439,6 +436,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       MultipartInputImpl multipart = new MultipartInputImpl(contentType, null);
       multipart.parse(bais);
 
+      Logger LOG = Logger.getLogger(MultipartInputImpl.class);
       LOG.info(multipart.getPreamble());
       LOG.info("**********");
       for (InputPart part : multipart.getParts())
