@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * @tpSubChapter Response
@@ -45,7 +46,7 @@ public class DuplicitePathTest {
     static ResteasyClient client;
 
     private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002142", false);
+        return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
     }
 
     @Deployment

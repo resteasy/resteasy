@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
+
 /**
  * @tpSubChapter Response
  * @tpChapter Integration tests
@@ -31,7 +33,7 @@ public class DuplicateDeploymentTest {
     private static int initWarningCount = 0;
 
     private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002172", false);
+        return TestUtil.getWarningCount("RESTEASY002172", false, DEFAULT_CONTAINER_QUALIFIER);
     }
 
     @Deployment
