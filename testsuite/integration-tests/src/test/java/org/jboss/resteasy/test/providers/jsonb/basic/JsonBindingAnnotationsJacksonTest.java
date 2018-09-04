@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * @tpSubChapter Json-binding provider.
@@ -137,7 +138,7 @@ public class JsonBindingAnnotationsJacksonTest {
     */
    @Test
    public void negativeScenarioOnServer() throws Exception {
-      LogCounter errorLogCounter = new LogCounter("ERROR", false);
+      LogCounter errorLogCounter = new LogCounter("ERROR", false, DEFAULT_CONTAINER_QUALIFIER);
       try {
          ResteasyClient client = new ResteasyClientBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
          String charset = "UTF-8";

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 /**
  * @tpSubChapter ResourceClassProcessor SPI
@@ -55,7 +56,7 @@ public class ResourceClassProcessorErrorTest {
     @Test
     public void errorTest() {
         LogCounter errorLogCounter = new LogCounter("java.lang.RuntimeException: Exception from ResourceClassProcessorErrorImplementation",
-                false);
+                false, DEFAULT_CONTAINER_QUALIFIER);
         try {
             deployer.deploy(DEPLOYMENT_NAME);
             Assert.fail("Exception from ResourceClassProcessor was not thrown");
