@@ -12,15 +12,15 @@ public class JacksonJaxbCoexistenceJacksonResource {
     @GET
     @Produces("application/json")
     @Path("{id}")
-    public JacksonJaxbCoexistenceProduct getProduct() {
-        return new JacksonJaxbCoexistenceProduct(333, "Iphone");
+    public JacksonJaxbCoexistenceProduct2 getProduct() {
+        return new JacksonJaxbCoexistenceProduct2(333, "Iphone");
     }
 
     @GET
     @Produces("application/json")
-    public JacksonJaxbCoexistenceProduct[] getProducts() {
+    public JacksonJaxbCoexistenceProduct2[] getProducts() {
 
-        JacksonJaxbCoexistenceProduct[] products = {new JacksonJaxbCoexistenceProduct(333, "Iphone"), new JacksonJaxbCoexistenceProduct(44, "macbook")};
+        JacksonJaxbCoexistenceProduct2[] products = {new JacksonJaxbCoexistenceProduct2(333, "Iphone"), new JacksonJaxbCoexistenceProduct2(44, "macbook")};
         return products;
     }
 
@@ -28,7 +28,7 @@ public class JacksonJaxbCoexistenceJacksonResource {
     @Produces("application/foo+json")
     @Consumes("application/foo+json")
     @Path("{id}")
-    public JacksonJaxbCoexistenceProduct post(JacksonJaxbCoexistenceProduct p) {
+    public JacksonJaxbCoexistenceProduct2 post(JacksonJaxbCoexistenceProduct2 p) {
         return p;
     }
 

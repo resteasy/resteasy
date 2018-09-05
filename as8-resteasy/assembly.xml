@@ -11,7 +11,6 @@
             <excludes>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-atom-provider/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-cdi/**</exclude>
-                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jackson-provider/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxb-provider/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/**</exclude>
                 <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jettison-provider/**</exclude>
