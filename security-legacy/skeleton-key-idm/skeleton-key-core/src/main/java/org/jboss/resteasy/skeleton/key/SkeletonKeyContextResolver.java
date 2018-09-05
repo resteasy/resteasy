@@ -1,11 +1,11 @@
 package org.jboss.resteasy.skeleton.key;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Any class with package org.jboss.resteasy.skeleton.key will use NON_DEFAULT inclusion
@@ -20,15 +20,15 @@ public class SkeletonKeyContextResolver implements ContextResolver<ObjectMapper>
 
    public SkeletonKeyContextResolver()
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(Include.NON_DEFAULT);
    }
 
    public SkeletonKeyContextResolver(final boolean indent)
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(Include.NON_DEFAULT);
       if (indent)
       {
-         mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+         mapper.enable(SerializationFeature.INDENT_OUTPUT);
       }
    }
 

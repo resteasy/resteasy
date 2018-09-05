@@ -1,9 +1,9 @@
 package org.jboss.resteasy.skeleton.key.config;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

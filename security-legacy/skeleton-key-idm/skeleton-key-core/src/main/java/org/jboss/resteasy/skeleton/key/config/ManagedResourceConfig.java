@@ -1,10 +1,10 @@
 package org.jboss.resteasy.skeleton.key.config;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

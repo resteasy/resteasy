@@ -1,6 +1,6 @@
 package org.jboss.resteasy.skeleton.key.representations;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * OAuth 2.0 Access Token Response json

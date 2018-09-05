@@ -12,10 +12,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.bouncycastle.openssl.PEMWriter;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
@@ -38,6 +34,11 @@ import org.jboss.resteasy.skeleton.key.servlet.ServletActionURLs;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.BasicAuthHelper;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
@@ -204,7 +205,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
    protected void init()
    {
       mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(Include.NON_DEFAULT);
       accessTokenResponseWriter = mapper.writerWithType(AccessTokenResponse.class);
       mapWriter = mapper.writerWithType(mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class));
 
@@ -625,8 +626,8 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       String json;
 
       ObjectMapper mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-      mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+      mapper.setSerializationInclusion(Include.NON_DEFAULT);
+      mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
       StringBuffer html = new StringBuffer();
       html.append("<html><body bgcolor=\"#CED8F6\">");

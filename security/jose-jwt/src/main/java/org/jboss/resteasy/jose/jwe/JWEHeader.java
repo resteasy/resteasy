@@ -1,11 +1,12 @@
 package org.jboss.resteasy.jose.jwe;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import javax.ws.rs.core.MediaType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -79,8 +80,7 @@ public class JWEHeader implements Serializable
    private static final ObjectMapper mapper = new ObjectMapper();
    static
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
    }
 
    public String toString()
