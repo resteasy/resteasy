@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import java.util.HashMap;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 

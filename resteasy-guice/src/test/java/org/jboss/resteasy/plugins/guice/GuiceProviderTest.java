@@ -64,7 +64,7 @@ public class GuiceProviderTest
    public interface TestResource
    {
       @GET
-      public String getName();
+      String getName();
    }
 
    public static class TestResourceException implements TestResource

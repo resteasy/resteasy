@@ -54,10 +54,10 @@ public interface ResteasyContextParameters {
      * The name of the configuration property is <tt>{@value}</tt>.
      * </p>
      */
-    public static final String RESTEASY_TRACING_TYPE = "resteasy.server.tracing.type";
-    public static final String RESTEASY_TRACING_TYPE_OFF = "OFF";
-    public static final String RESTEASY_TRACING_TYPE_ALL = "ALL";
-    public static final String RESTEASY_TRACING_TYPE_ON_DEMAND = "ON_DEMAND";
+    String RESTEASY_TRACING_TYPE = "resteasy.server.tracing.type";
+    String RESTEASY_TRACING_TYPE_OFF = "OFF";
+    String RESTEASY_TRACING_TYPE_ALL = "ALL";
+    String RESTEASY_TRACING_TYPE_ON_DEMAND = "ON_DEMAND";
 
     /**
      * Set level o tracing information.
@@ -78,14 +78,14 @@ public interface ResteasyContextParameters {
      * The name of the configuration property is <tt>{@value}</tt>.
      * </p>
      */
-    public static final String RESTEASY_TRACING_THRESHOLD = "resteasy.server.tracing.threshold";
-    public static final String RESTEASY_TRACING_LEVEL_SUMMARY = "SUMMARY";
-    public static final String RESTEASY_TRACING_LEVEL_TRACE = "TRACE";
-    public static final String RESTEASY_TRACING_LEVEL_VERBOSE = "VERBOSE";
+    String RESTEASY_TRACING_THRESHOLD = "resteasy.server.tracing.threshold";
+    String RESTEASY_TRACING_LEVEL_SUMMARY = "SUMMARY";
+    String RESTEASY_TRACING_LEVEL_TRACE = "TRACE";
+    String RESTEASY_TRACING_LEVEL_VERBOSE = "VERBOSE";
 
 
     // used to store an instance of tracing logger
-    public static final String RESTEASY_TRACING_INSTANCE = "resteasy.server.tracing.instance";
+    String RESTEASY_TRACING_INSTANCE = "resteasy.server.tracing.instance";
 
     // these scanned variables are provided by a deployer
     String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";

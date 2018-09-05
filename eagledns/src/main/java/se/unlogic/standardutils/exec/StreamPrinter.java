@@ -69,7 +69,9 @@ public class StreamPrinter extends Thread implements StreamHandler {
 			if (outputStream != null) {
 				pw = new PrintWriter(outputStream);
 			}else{
+				//CHECKSTYLE.OFF: RegexpSinglelineJava
 				pw = new PrintWriter(System.out);
+				//CHECKSTYLE.ON: RegexpSinglelineJava
 			}
 
 			inputStreamReader = new InputStreamReader(inputStream);

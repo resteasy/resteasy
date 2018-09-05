@@ -13,7 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public interface ServerCache
 {
-    public static boolean mayVary(Entry cached, MultivaluedMap<String, String> current) {
+    static boolean mayVary(Entry cached, MultivaluedMap<String, String> current) {
         boolean mayVary = false;
         for (Map.Entry<String, List<String>> entry : cached.getVaryHeaders().entrySet()) {
             String headerName = entry.getKey();
@@ -22,7 +22,7 @@ public interface ServerCache
         return mayVary;
     }
 
-   public static interface Entry
+   interface Entry
    {
       int getExpirationInSeconds();
 

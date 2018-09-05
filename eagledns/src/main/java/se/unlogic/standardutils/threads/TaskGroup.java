@@ -12,5 +12,5 @@ import java.util.concurrent.BlockingQueue;
 
 public interface TaskGroup {
 
-	public BlockingQueue<? extends Runnable> getTasks();
+	BlockingQueue<? extends Runnable> getTasks();
 }

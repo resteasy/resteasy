@@ -1,5 +1,7 @@
 package org.jboss.resteasy.resteasy736;
 
+import org.jboss.logging.Logger;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -21,6 +23,9 @@ import javax.ws.rs.core.Response;
 @Produces("text/plain")
 public class TestResource
 {
+
+   private static final Logger LOG = Logger.getLogger(TestResource.class);
+
    @GET
    @Path("test")
    public void test(final @Suspended AsyncResponse response)
@@ -33,15 +38,15 @@ public class TestResource
          {
             try
             {
-               System.out.println("TestResource: async thread started");
+               LOG.info("TestResource: async thread started");
                Thread.sleep(10000);
                Response jaxrs = Response.ok("test").type(MediaType.TEXT_PLAIN).build();
                response.resume(jaxrs);
-               System.out.println("TestResource: async thread finished");
+               LOG.info("TestResource: async thread finished");
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               LOG.error(e.getMessage(), e);
             }
          }
       };
@@ -59,15 +64,15 @@ public class TestResource
          {
             try
             {
-               System.out.println("TestResource: async thread started");
+               LOG.info("TestResource: async thread started");
                Thread.sleep(35000); // Jetty async timeout defaults to 30000.
                Response jaxrs = Response.ok("test").type(MediaType.TEXT_PLAIN).build();
                response.resume(jaxrs);
-               System.out.println("TestResource: async thread finished");
+               LOG.info("TestResource: async thread finished");
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               LOG.error(e.getMessage(), e);
             }
          }
       };

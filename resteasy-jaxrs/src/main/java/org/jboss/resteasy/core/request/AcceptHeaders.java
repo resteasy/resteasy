@@ -74,7 +74,6 @@ public class AcceptHeaders
             break;
          offset = endIndex + 1;
       }
-      ;
 
       LogMessages.LOGGER.debug(result.toString());
       

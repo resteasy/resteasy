@@ -1,9 +1,9 @@
 package org.jboss.resteasy.security.doseta;
 
+import org.jboss.resteasy.security.doseta.i18n.LogMessages;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.InputStreamToByteArray;
-import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;

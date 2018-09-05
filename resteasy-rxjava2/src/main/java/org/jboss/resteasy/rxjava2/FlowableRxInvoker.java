@@ -7,7 +7,7 @@ import io.reactivex.Flowable;
 
 public interface FlowableRxInvoker extends RxInvoker<Flowable<?>> 
 {
-    public BackpressureStrategy getBackpressureStrategy();
+    BackpressureStrategy getBackpressureStrategy();
     
-    public void setBackpressureStrategy(BackpressureStrategy backpressureStrategy);
+    void setBackpressureStrategy(BackpressureStrategy backpressureStrategy);
 }

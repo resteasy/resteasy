@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 

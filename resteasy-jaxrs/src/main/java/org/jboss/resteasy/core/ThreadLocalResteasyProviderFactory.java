@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.container.DynamicFeature;
@@ -31,6 +30,7 @@ import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistry
 import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ContextInjector;

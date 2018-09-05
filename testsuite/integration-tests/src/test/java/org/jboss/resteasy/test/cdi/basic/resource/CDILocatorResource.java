@@ -32,7 +32,7 @@ public class CDILocatorResource {
 
     @Path("lookup")
     public FooResource lookup() throws Exception {
-        logger.info("classname: " + fooResource.getClass().getName());
+        logger.infov("classname: {0}", fooResource.getClass().getName());
         for (Method m : fooResource.getClass().getMethods()) {
             if (m.getName().equals("get")) {
                 logger.info(m);

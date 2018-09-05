@@ -1,9 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

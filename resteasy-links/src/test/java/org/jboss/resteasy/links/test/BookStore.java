@@ -25,7 +25,6 @@ import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
 import org.jboss.resteasy.links.ParamBinding;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 
 @Path("/")
 public class BookStore {

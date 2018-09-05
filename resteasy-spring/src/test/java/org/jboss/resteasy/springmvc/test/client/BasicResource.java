@@ -15,23 +15,23 @@ public interface BasicResource
    /** test basic setup -- implemented in BasicResourceImpl **/
    @GET
    @Produces("text/plain")
-   public String getBasicString();
+   String getBasicString();
 
    @GET
    @Produces("application/xml")
    @Path("object")
-   public BasicJaxbObject getBasicObject();
+   BasicJaxbObject getBasicObject();
 
    @GET
    @Produces("application/json")
    @Path("object")
-   public Response getWrongContentTypeBasicObject();
+   Response getWrongContentTypeBasicObject();
 
    /** test Spring MVC ModelAndView **/
    @GET
    @Produces("application/custom")
    @Path("/custom-rep")
-   public String getSpringMvcValue();
+   String getSpringMvcValue();
 
    /**
     * test singleton with custom registration -- implemented in CounterResource,
@@ -40,7 +40,7 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("/singleton/count")
-   public Integer getSingletonCount();
+   Integer getSingletonCount();
 
    /**
     * test prototype with custom registration -- implemented in CounterResource,
@@ -49,7 +49,7 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("/prototype/count")
-   public Integer getPrototypeCount();
+   Integer getPrototypeCount();
 
    /**
     * test getting context header via setting of an @Context object in an @Autowired
@@ -58,7 +58,7 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("/header")
-   public String getContentTypeHeader();
+   String getContentTypeHeader();
 
    /**
     * test Spring @Context injection into a separate java object by spring -
@@ -67,7 +67,7 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("/url")
-   public String getURL();
+   String getURL();
 
    /**
     * test Spring @Controllers along with
@@ -75,16 +75,16 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("interceptor-test")
-   public Integer getSpringInterceptorCount(@QueryParam("type") String type);
+   Integer getSpringInterceptorCount(@QueryParam("type") String type);
 
    @GET
    @Produces("text/plain")
    @Path("bogus-rul-test")
-   public Response testBogusUrl();
+   Response testBogusUrl();
    
    @GET
    @Produces("application/xml")
    @Path("spring/object/xml")
-   public BasicJaxbObject testSpringXml();
+   BasicJaxbObject testSpringXml();
 
 }

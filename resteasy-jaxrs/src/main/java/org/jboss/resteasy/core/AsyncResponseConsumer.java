@@ -215,7 +215,7 @@ public abstract class AsyncResponseConsumer
    {
       private AsyncResponseProvider<?> asyncResponseProvider;
 
-      public CompletionStageResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider)
+      CompletionStageResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider)
       {
          super(method);
          this.asyncResponseProvider = asyncResponseProvider;
@@ -254,7 +254,7 @@ public abstract class AsyncResponseConsumer
       protected Subscription subscription;
       private AsyncStreamProvider<?> asyncStreamProvider;
 
-      public AsyncStreamResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method);
          this.asyncStreamProvider = asyncStreamProvider;
@@ -325,7 +325,7 @@ public abstract class AsyncResponseConsumer
    {
       private boolean sentEntity;
 
-      public AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
       }
@@ -395,7 +395,7 @@ public abstract class AsyncResponseConsumer
    {
       private List<Object> collector = new ArrayList<Object>();
 
-      public AsyncStreamCollectorResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamCollectorResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
       }

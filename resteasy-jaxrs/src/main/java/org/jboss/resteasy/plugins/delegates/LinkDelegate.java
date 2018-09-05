@@ -22,7 +22,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
       private String value;
       private Link.Builder builder;
 
-      public Parser(String value)
+      Parser(String value)
       {
          this.value = value;
          builder = new LinkBuilderImpl();

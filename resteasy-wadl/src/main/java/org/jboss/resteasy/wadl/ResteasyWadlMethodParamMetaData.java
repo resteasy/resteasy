@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class ResteasyWadlMethodParamMetaData {
-    public static enum MethodParamType {
+    public enum MethodParamType {
         QUERY_PARAMETER, HEADER_PARAMETER, COOKIE_PARAMETER, PATH_PARAMETER, MATRIX_PARAMETER, FORM_PARAMETER, FORM, ENTITY_PARAMETER
     }
 

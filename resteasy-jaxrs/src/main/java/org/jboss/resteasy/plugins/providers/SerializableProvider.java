@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 
 /**

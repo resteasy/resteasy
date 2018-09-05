@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ResteasyClientBuilder extends ClientBuilder
 {
-   public static enum HostnameVerificationPolicy
+   public enum HostnameVerificationPolicy
    {
       /**
        * Hostname verification is not done on the server's certificate

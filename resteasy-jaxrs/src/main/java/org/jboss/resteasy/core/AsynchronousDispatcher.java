@@ -48,7 +48,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    {
       private int maxSize = 100;
 
-      public Cache(int maxSize)
+      Cache(int maxSize)
       {
          this.maxSize = maxSize;
       }

@@ -8,7 +8,6 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 
-import io.reactiverse.reactivecontexts.core.Context;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 
@@ -19,7 +18,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncCl
    {
       private Disposable subscription;
 
-      public SingleAdaptor(Single<T> single)
+      SingleAdaptor(Single<T> single)
       {
          this.subscription = single.subscribe(this::complete, this::completeExceptionally);
       }

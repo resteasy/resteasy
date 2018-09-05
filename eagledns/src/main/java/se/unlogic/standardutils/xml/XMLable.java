@@ -12,5 +12,5 @@ import org.w3c.dom.Node;
 
 public interface XMLable {
 
-	public Node toXML(Document doc);
+	Node toXML(Document doc);
 }

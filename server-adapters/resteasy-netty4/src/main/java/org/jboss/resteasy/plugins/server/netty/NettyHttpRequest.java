@@ -7,7 +7,6 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
@@ -15,19 +14,15 @@ import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -204,7 +199,7 @@ public class NettyHttpRequest extends BaseHttpRequest
         protected volatile boolean wasSuspended;
         protected NettyHttpAsyncResponse asyncResponse;
 
-        public NettyExecutionContext(NettyHttpRequest request, NettyHttpResponse response, SynchronousDispatcher dispatcher)
+        NettyExecutionContext(NettyHttpRequest request, NettyHttpResponse response, SynchronousDispatcher dispatcher)
         {
             super(dispatcher, request, response);
             this.request = request;
@@ -252,7 +247,7 @@ public class NettyHttpRequest extends BaseHttpRequest
             private final Object responseLock = new Object();
             protected ScheduledFuture timeoutFuture;
             private NettyHttpResponse nettyResponse;
-            public NettyHttpAsyncResponse(SynchronousDispatcher dispatcher, NettyHttpRequest request, NettyHttpResponse response) {
+            NettyHttpAsyncResponse(SynchronousDispatcher dispatcher, NettyHttpRequest request, NettyHttpResponse response) {
                 super(dispatcher, request, response);
                 this.nettyResponse = response;
             }

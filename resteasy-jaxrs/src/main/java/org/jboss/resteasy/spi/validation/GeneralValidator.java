@@ -29,7 +29,7 @@ public interface GeneralValidator
     * @throws javax.validation.ValidationException if a non recoverable error happens
     *         during the validation process
     */
-   public abstract void validate(HttpRequest request, Object object, Class<?>... groups);
+   void validate(HttpRequest request, Object object, Class<?>... groups);
    /**
     * Validates all constraints placed on the parameters of the given method.
     *
@@ -45,7 +45,7 @@ public interface GeneralValidator
     * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
+   void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
 
    /**
     * Validates all return value constraints of the given method.
@@ -61,7 +61,7 @@ public interface GeneralValidator
     * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract void validateReturnValue(
+   void validateReturnValue(
          HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
 
    /**
@@ -70,7 +70,7 @@ public interface GeneralValidator
     * @param clazz Class to be examined
     * @return true if and only if validation is turned on for clazz
     */
-   public abstract boolean isValidatable(Class<?> clazz);
+   boolean isValidatable(Class<?> clazz);
      
    /**
     * Indicates if validation is turned on for a method.
@@ -78,12 +78,12 @@ public interface GeneralValidator
     * @param method method to be examined
     * @return true if and only if validation is turned on for method
     */   
-   public abstract boolean isMethodValidatable(Method method);
+   boolean isMethodValidatable(Method method);
 
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
     * 
     * @param request http request
     */
-   public void checkViolations(HttpRequest request);
+   void checkViolations(HttpRequest request);
 }

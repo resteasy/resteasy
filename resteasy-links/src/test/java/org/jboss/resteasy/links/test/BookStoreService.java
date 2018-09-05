@@ -13,31 +13,31 @@ public interface BookStoreService {
 	@Produces({"application/xml"})
 	@Path("book/{id}")
 	@GET
-	public Book getBookXML(@PathParam("id") String id);
+	Book getBookXML(@PathParam("id") String id);
 
 	@Produces({"application/json"})
 	@Path("book/{id}")
 	@GET
-	public Book getBookJSON(@PathParam("id") String id);
+	Book getBookJSON(@PathParam("id") String id);
 
 	@Produces({"application/xml"})
 	@Path("book/{id}/comments")
 	@GET
-	public List<Comment> getBookCommentsXML(@PathParam("id") String id);
+	List<Comment> getBookCommentsXML(@PathParam("id") String id);
 
 	@Produces({"application/json"})
 	@Path("book/{id}/comments")
 	@GET
-	public List<Comment> getBookCommentsJSON(@PathParam("id") String id);
+	List<Comment> getBookCommentsJSON(@PathParam("id") String id);
 
 	@Produces({"application/xml"})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableCommentsXML(@PathParam("id") String id, @MatrixParam("query") String query);
+	ScrollableCollection getScrollableCommentsXML(@PathParam("id") String id, @MatrixParam("query") String query);
 
 	@Produces({"application/json"})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableCommentsJSON(@PathParam("id") String id, @MatrixParam("query") String query);
+	ScrollableCollection getScrollableCommentsJSON(@PathParam("id") String id, @MatrixParam("query") String query);
 
 }

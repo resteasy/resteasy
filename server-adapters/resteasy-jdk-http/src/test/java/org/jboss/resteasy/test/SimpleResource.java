@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.logging.Logger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -17,12 +19,15 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class SimpleResource
 {
+
+   private static final Logger LOG = Logger.getLogger(SimpleResource.class);
+
    @GET
    @Path("basic")
    @Produces("text/plain")
    public String getBasic()
    {
-      System.out.println("getBasic()");
+      LOG.info("getBasic()");
       return "basic";
    }
 
@@ -31,7 +36,7 @@ public class SimpleResource
    @Consumes("text/plain")
    public void putBasic(String body)
    {
-      System.out.println(body);
+      LOG.info(body);
    }
 
    @GET
@@ -39,7 +44,7 @@ public class SimpleResource
    @Produces("text/plain")
    public String getQueryParam(@QueryParam("param") String param)
    {
-      System.out.println("query param: " + param);
+      LOG.info("query param: " + param);
       return param;
    }
 

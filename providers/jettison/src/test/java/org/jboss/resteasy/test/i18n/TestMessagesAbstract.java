@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.i18n;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import java.util.Locale;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected final String dir = "org/jboss/resteasy/providers/jaxb/json/i18n/Messages.i18n_";
    protected String BASE = String.format("00%4s", Messages.BASE).substring(0, 4);
    
@@ -26,7 +28,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/plugins/providers/jaxb/json/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
 

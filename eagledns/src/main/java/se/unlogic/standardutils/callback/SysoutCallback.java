@@ -1,11 +1,15 @@
 package se.unlogic.standardutils.callback;
 
 
+import org.apache.log4j.Logger;
+
 public class SysoutCallback<T> implements Callback<T> {
 
 	protected String prefix;
 	protected String suffix;
-	
+
+	private static final Logger LOG = Logger.getLogger(SysoutCallback.class);
+
 	public SysoutCallback(String prefix, String suffix) {
 
 		super();
@@ -24,6 +28,6 @@ public class SysoutCallback<T> implements Callback<T> {
 	}
 	public void callback(T type) {
 
-		System.out.println(prefix + type.toString() + suffix);
+		LOG.info(prefix + type.toString() + suffix);
 	}
 }

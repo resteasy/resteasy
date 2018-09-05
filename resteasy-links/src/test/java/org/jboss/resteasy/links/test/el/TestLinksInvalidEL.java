@@ -10,6 +10,7 @@ import javax.ws.rs.InternalServerErrorException;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
@@ -34,6 +35,7 @@ public class TestLinksInvalidEL
 
    private static NettyJaxrsServer server;
    private static Dispatcher dispatcher;
+   private static final Logger LOG = Logger.getLogger(TestLinksInvalidEL.class);
 
    @BeforeClass
    public static void beforeClass() throws Exception
@@ -96,7 +98,7 @@ public class TestLinksInvalidEL
 			client.getBookXML("foo");
 			Assert.fail("This should have caused a 500");
 		}catch(InternalServerErrorException x){
-			System.err.println("Failure is "+x.getResponse().readEntity(String.class));
+			LOG.error("Failure is "+x.getResponse().readEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
 	    }catch(Exception x){
 	         Assert.fail("Expected InternalServerErrorException");
@@ -109,7 +111,7 @@ public class TestLinksInvalidEL
 			client.getBookJSON("foo");
 			Assert.fail("This should have caused a 500");
 		}catch(InternalServerErrorException x){
-			System.err.println("Failure is "+x.getResponse().readEntity(String.class));
+			LOG.error("Failure is "+x.getResponse().readEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
 		}catch(Exception x){
 		   Assert.fail("Expected InternalServerErrorException");

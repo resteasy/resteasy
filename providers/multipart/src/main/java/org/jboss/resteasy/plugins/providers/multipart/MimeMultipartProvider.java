@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -11,7 +11,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;

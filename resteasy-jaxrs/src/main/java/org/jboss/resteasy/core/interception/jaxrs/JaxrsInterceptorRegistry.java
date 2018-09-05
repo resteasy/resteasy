@@ -37,7 +37,7 @@ public class JaxrsInterceptorRegistry<T>
       final public int order;
    }
 
-   public static interface InterceptorFactory
+   public interface InterceptorFactory
    {
       Match preMatch();
 

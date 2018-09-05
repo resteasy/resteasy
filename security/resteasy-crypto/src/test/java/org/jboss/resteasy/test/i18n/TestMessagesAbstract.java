@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.i18n;
 
 import java.util.Locale;
 
+import org.jboss.logging.Logger;
 import org.junit.Assert;
 
 import org.jboss.resteasy.security.doseta.DKIMSignature;
@@ -17,6 +18,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
+   private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 3);
 
    @Test
@@ -26,7 +28,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       String filename = "org/jboss/resteasy/security/doseta/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
-         System.out.println(getClass() + ": " + filename + " not found.");
+         LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
       
@@ -47,7 +49,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    {
       String s = super.getExpected(id, message, args);
       String ss = pruneQuotes(s);
-      System.out.println("actual expected: " + ss);
+      LOG.info("actual expected: " + ss);
       return ss;
    }
    

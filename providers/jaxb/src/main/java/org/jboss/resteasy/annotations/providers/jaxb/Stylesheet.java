@@ -28,8 +28,8 @@ import java.lang.annotation.Target;
 @Decorator(processor = StylesheetProcessor.class, target = Marshaller.class)
 public @interface Stylesheet
 {
-   public static final String XSL = "text/xsl";
-   public static final String CSS = "text/css";
+   String XSL = "text/xsl";
+   String CSS = "text/css";
 
    String href();
 

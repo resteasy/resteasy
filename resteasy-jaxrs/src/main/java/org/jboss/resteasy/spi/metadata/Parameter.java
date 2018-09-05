@@ -5,7 +5,6 @@ import org.jboss.resteasy.util.Types;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -13,7 +12,7 @@ import java.lang.reflect.TypeVariable;
  */
 abstract public class Parameter
 {
-   public static enum ParamType
+   public enum ParamType
    {
       BEAN_PARAM,
       CONTEXT,

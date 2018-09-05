@@ -11,5 +11,5 @@ import javax.ws.rs.ext.Providers;
  */
 public interface ProvidersContextRetainer
 {
-   public void setProviders(Providers providers);
+   void setProviders(Providers providers);
 }

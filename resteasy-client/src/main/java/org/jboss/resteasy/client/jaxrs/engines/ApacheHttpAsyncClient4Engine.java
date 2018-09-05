@@ -216,7 +216,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       private volatile Exception exception;
       private volatile boolean completed;
 
-      public StreamingResponseConsumer(ClientInvocation request, ResultExtractor<T> extractor)
+      StreamingResponseConsumer(ClientInvocation request, ResultExtractor<T> extractor)
       {
          this.configuration = request.getClientConfiguration();
          this.properties = request.getMutableProperties();
@@ -393,7 +393,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       {
          private final Future<T> httpFuture;
 
-         public ResultFuture(final Future<T> httpFuture)
+         ResultFuture(final Future<T> httpFuture)
          {
             super(null);
             this.httpFuture = httpFuture;
@@ -437,7 +437,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          private volatile IOException ex;
          private volatile IOControl ioctrl;
 
-         public SharedInputStream(SharedInputBuffer sharedBuf)
+         SharedInputStream(SharedInputBuffer sharedBuf)
          {
             super(sharedBuf);
             this.sharedBuf = sharedBuf;
@@ -509,7 +509,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       private ConnectionResponse clientResponse;
       private SimpleInputBuffer buf;
 
-      public BufferingResponseConsumer(ClientInvocation request, ResultExtractor<T> responseExtractor)
+      BufferingResponseConsumer(ClientInvocation request, ResultExtractor<T> responseExtractor)
       {
          this.configuration = request.getClientConfiguration();
          this.properties = request.getMutableProperties();
@@ -576,7 +576,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    {
       private final InvocationCallback<T> invocationCallback;
 
-      public CallbackAdapter(InvocationCallback<T> invocationCallback)
+      CallbackAdapter(InvocationCallback<T> invocationCallback)
       {
          this.invocationCallback = invocationCallback;
       }
@@ -625,7 +625,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       private InputStream connection;
       private InputStream stream;
 
-      public ConnectionResponse(ClientConfiguration configuration, Map<String, Object> properties)
+      ConnectionResponse(ClientConfiguration configuration, Map<String, Object> properties)
       {
          super(configuration);
          setProperties(properties);

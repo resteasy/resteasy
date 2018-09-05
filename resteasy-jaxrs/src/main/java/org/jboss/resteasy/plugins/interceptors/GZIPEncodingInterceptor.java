@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 import javax.annotation.Priority;
@@ -12,7 +13,6 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

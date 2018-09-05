@@ -123,7 +123,7 @@ public class GuiceContextTest
    public interface TestResource
    {
       @GET
-      public String getName();
+      String getName();
    }
 
    @Path("test")

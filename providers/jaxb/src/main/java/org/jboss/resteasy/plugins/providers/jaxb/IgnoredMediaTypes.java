@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes;
 import org.jboss.resteasy.util.FindAnnotation;
 
@@ -63,8 +64,9 @@ public class IgnoredMediaTypes
 
    public static void main(String[] args)
    {
-      System.out.println(getVendorString("foo+json"));
-      System.out.println(getSubtype("foo+json"));
+      Logger LOG = Logger.getLogger(IgnoredMediaTypes.class);
+      LOG.info(getVendorString("foo+json"));
+      LOG.info(getSubtype("foo+json"));
 
    }
 

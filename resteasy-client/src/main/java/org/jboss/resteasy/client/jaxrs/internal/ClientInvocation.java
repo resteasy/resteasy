@@ -35,7 +35,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
@@ -807,7 +811,7 @@ public class ClientInvocation implements Invocation
 
       private final ExecutionException ex;
 
-      public CompletedFuture(T result, ExecutionException ex)
+      CompletedFuture(T result, ExecutionException ex)
       {
          this.ex = ex;
          this.result = result;

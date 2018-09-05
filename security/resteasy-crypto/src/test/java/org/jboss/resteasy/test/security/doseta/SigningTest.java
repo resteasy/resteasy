@@ -28,6 +28,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
@@ -59,6 +60,7 @@ import org.junit.Test;
  */
 public class SigningTest
 {
+   private static final Logger LOG = Logger.getLogger(SigningTest.class);
    private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
    public static KeyPair keys;
@@ -132,23 +134,23 @@ public class SigningTest
    }
 
    @Path("/signed")
-   public static interface SigningProxy
+   public interface SigningProxy
    {
       @GET
       @Verify
       @Produces("text/plain")
       @Path("bad-signature")
-      public String bad();
+      String bad();
 
       @GET
       @Verify
       @Produces("text/plain")
-      public String hello();
+      String hello();
 
       @POST
       @Consumes("text/plain")
       @Signed(selector = "test", domain = "samplezone.org")
-      public void postSimple(String input);
+      void postSimple(String input);
    }
 
 
@@ -834,7 +836,7 @@ public class SigningTest
       }
       catch (ResponseProcessingException e)
       {
-         e.printStackTrace();
+         LOG.error(e.getMessage(), e);
          //Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
       }
    }

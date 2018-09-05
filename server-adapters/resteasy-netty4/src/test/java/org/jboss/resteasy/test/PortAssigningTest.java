@@ -4,8 +4,6 @@ import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
 /**
  * Tests if supplying port <code>0</code> works correctly. When using port <code>0</code> the container should take the
  * first available port and return it in {@link NettyJaxrsServer#getPort()}.
