@@ -26,8 +26,7 @@ public class MockHttpResponse implements HttpResponse
    protected int status;
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
    protected OutputStream os = baos;
-   @SuppressWarnings(value = "unchecked")
-   protected CaseInsensitiveMap outputHeaders = new CaseInsensitiveMap();
+   protected CaseInsensitiveMap<Object> outputHeaders = new CaseInsensitiveMap<Object>();
    protected List<NewCookie> newCookies = new ArrayList<NewCookie>();
    protected String errorMessage;
    protected boolean sentError = false;
@@ -46,7 +45,6 @@ public class MockHttpResponse implements HttpResponse
       this.status = status;
    }
 
-   @SuppressWarnings(value = "unchecked")
    public MultivaluedMap<String, Object> getOutputHeaders()
    {
       return outputHeaders;
@@ -142,7 +140,7 @@ public class MockHttpResponse implements HttpResponse
    {
       baos = new ByteArrayOutputStream();
       os = baos;
-      outputHeaders = new CaseInsensitiveMap();
+      outputHeaders = new CaseInsensitiveMap<Object>();
       newCookies = new ArrayList<NewCookie>();
       sentError = false;
       status = 0;

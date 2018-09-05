@@ -74,13 +74,13 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    }
 
    @Override
-   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return super.getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
    }
 
    @Override
-   public HeaderDelegate getHeaderDelegate(Class<?> aClass)
+   public HeaderDelegate<?> getHeaderDelegate(Class<?> aClass)
    {
       return getDelegate().getHeaderDelegate(aClass);
    }

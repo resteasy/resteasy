@@ -34,7 +34,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
 import org.jboss.resteasy.util.Types;
@@ -44,7 +43,7 @@ import org.jboss.resteasy.util.Types;
  * @author Nicolas NESMON
  * @version $Revision: 1 $
  */
-@SuppressWarnings(value = { "unchecked", "deprecation" })
+@SuppressWarnings(value = { "unchecked" })
 public class StringParameterInjector
 {
 	private static final ParamConverter<Character> characterParamConverter = new  ParamConverter<Character>() {
@@ -385,7 +384,6 @@ public class StringParameterInjector
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
    protected ParamConverter<?> paramConverter;
-   protected StringConverter<?> converter;
    protected StringParameterUnmarshaller<?> unmarshaller;
    protected RuntimeDelegate.HeaderDelegate<?> delegate;
 
@@ -692,11 +690,7 @@ public class StringParameterInjector
       {
          return paramConverter.fromString(strVal);
       }
-      if (converter != null)
-      {
-         return converter.fromString(strVal);
-      }
-      else if (unmarshaller != null)
+      if (unmarshaller != null)
       {
          return unmarshaller.fromString(strVal);
       }
