@@ -40,10 +40,11 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**
  * @tpSubChapter Parameters
@@ -624,4 +625,15 @@ public class QueryParamAsPrimitiveTest {
         }
     }
 
+    static public String updateQuery(String uriString, String query)
+    {
+       try
+       {
+          URI uri = new URI(uriString);
+          return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), query, uri.getFragment()).toString();
+       } catch (URISyntaxException e)
+       {
+          throw new RuntimeException(e);
+       }
+    }
 }

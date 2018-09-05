@@ -23,6 +23,7 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
    @Override
    public void configure(ResourceInfo resourceInfo, FeatureContext configurable)
    {
+      @SuppressWarnings("rawtypes")
       final Class declaring = resourceInfo.getResourceClass();
       final Method method = resourceInfo.getResourceMethod();
 

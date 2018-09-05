@@ -6,11 +6,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceApiResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceDeleteResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceStreamResource;
@@ -30,8 +32,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-
-import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
 
 /**
  * @tpSubChapter Resources
@@ -120,7 +120,13 @@ public class SpecialResourceTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            consumeEntity(response);
+           try
+           {
+              EntityUtils.consume(response.getEntity());
+           } catch (IOException e)
+           {
+              LogMessages.LOGGER.unableToCloseEntityStream(e);
+           }
         }
     }
 

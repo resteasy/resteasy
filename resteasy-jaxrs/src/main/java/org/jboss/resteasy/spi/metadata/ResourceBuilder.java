@@ -3,7 +3,6 @@ package org.jboss.resteasy.spi.metadata;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
-import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
@@ -273,7 +272,6 @@ public class ResourceBuilder
          FormParam formParam;
          org.jboss.resteasy.annotations.jaxrs.FormParam formParam2;
          Form form;
-         Suspend suspend;
          Suspended suspended;
 
 
@@ -362,11 +360,6 @@ public class ResourceBuilder
             if (matrix2.value() != null && matrix2.value().length() > 0) {
                parameter.paramName = matrix2.value();
             }
-         }
-         else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
-         {
-            parameter.paramType = Parameter.ParamType.SUSPEND;
-            parameter.suspendTimeout = suspend.value();
          }
          else if (findAnnotation(annotations, Context.class) != null)
          {

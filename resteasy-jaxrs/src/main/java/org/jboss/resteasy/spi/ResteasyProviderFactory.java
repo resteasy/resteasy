@@ -2091,7 +2091,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return mapper;
    }
 
-   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
       for (SortedKey<MessageBodyWriter> writer : writers)

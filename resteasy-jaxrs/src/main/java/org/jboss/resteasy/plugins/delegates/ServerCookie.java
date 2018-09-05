@@ -248,28 +248,6 @@ public class ServerCookie implements Serializable
       headerBuf.append(buf);
    }
 
-   /**
-    * @deprecated Not used: Deprecated in the original org.apache.tomcat.util.http.ServerCookie class.
-    * @param version version
-    * @param buf buffer
-    * @param value value
-    */
-   @Deprecated
-   public static void maybeQuote(int version, StringBuffer buf, String value)
-   {
-      // special case - a \n or \r  shouldn't happen in any case
-      if (isToken(value))
-      {
-         buf.append(value);
-      }
-      else
-      {
-         buf.append('"');
-         buf.append(escapeDoubleQuotes(value, 0, value.length()));
-         buf.append('"');
-      }
-   }
-
    public static boolean alreadyQuoted(String value)
    {
       if (value == null || value.length() == 0) return false;
