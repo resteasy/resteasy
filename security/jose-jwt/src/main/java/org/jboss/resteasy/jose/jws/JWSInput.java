@@ -1,9 +1,10 @@
 package org.jboss.resteasy.jose.jws;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -33,7 +34,7 @@ public class JWSInput
 
    static
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
    }
 
    public JWSInput(String wire)
