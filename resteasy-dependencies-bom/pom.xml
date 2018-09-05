@@ -343,15 +343,6 @@
                 <artifactId>vertx-core</artifactId>
                 <version>${version.io.vertx}</version>
             </dependency>
-            <!--
-            We forked it for now because of startup/shutdown race conditions
-
-                        <dependency>
-                            <groupId>tjws</groupId>
-                            <artifactId>webserver</artifactId>
-                            <version>1.7.0</version>
-                        </dependency>
-            -->
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>

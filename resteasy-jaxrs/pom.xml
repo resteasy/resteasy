@@ -97,15 +97,6 @@
             <artifactId>jcip-annotations</artifactId>
         </dependency>
 
-        <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
-        <!--
-        <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        -->
-
         <!-- Required by Hibernate Validator 5.x for testing -->
         <dependency>
             <groupId>org.jboss.spec.javax.el</groupId>

@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.spring.test;
 import org.apache.commons.httpclient.HttpException;
 import org.jboss.resteasy.springmvc.test.client.BasicResource;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.io.IOException;
 @ContextConfiguration(locations =
 { "classpath:spring-test-client2.xml" })
 @DirtiesContext
+@Ignore
 public class BasicSpringTest
 {
 	   @Autowired
