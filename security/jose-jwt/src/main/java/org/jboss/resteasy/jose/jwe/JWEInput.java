@@ -1,12 +1,13 @@
 package org.jboss.resteasy.jose.jwe;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.crypto.DirectDecrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSADecrypter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -43,7 +44,7 @@ public class JWEInput
 
    static
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
    }
 
    public JWEInput(String wire)

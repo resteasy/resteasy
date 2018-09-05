@@ -1,10 +1,10 @@
 package org.jboss.resteasy.jwt;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import javax.ws.rs.ext.ContextResolver;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Any class that extends JsonWebToken will use NON_DEFAULT inclusion
@@ -18,15 +18,15 @@ public class JWTContextResolver implements ContextResolver<ObjectMapper>
 
    public JWTContextResolver()
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
    }
 
    public JWTContextResolver(boolean indent)
    {
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
       if (indent)
       {
-         mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+         mapper.enable(SerializationFeature.INDENT_OUTPUT);
       }
    }
 
