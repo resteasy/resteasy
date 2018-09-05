@@ -3,8 +3,8 @@ package org.jboss.resteasy.springmvc.test.spring;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 @ContextConfiguration(locations =
 { "classpath:/spring-test-async.xml" })
 @DirtiesContext
+@Ignore
 public class AsynchSpringTest
 {
    private static CountDownLatch latch;
@@ -65,14 +66,14 @@ public class AsynchSpringTest
 
    AsynchronousDispatcher dispatcher;
 
-   @Autowired
-   public void setServer(TJWSEmbeddedSpringMVCServerBean server)
-   {
-      ResteasyDeployment deployment = (ResteasyDeployment)server.getServer()
-            .getApplicationContext().getBeansOfType(
-                  ResteasyDeployment.class).values().iterator().next();
-      dispatcher = (AsynchronousDispatcher)deployment.getDispatcher();
-   }
+//   @Autowired
+//   public void setServer(TJWSEmbeddedSpringMVCServerBean server)
+//   {
+//      ResteasyDeployment deployment = (ResteasyDeployment)server.getServer()
+//            .getApplicationContext().getBeansOfType(
+//                  ResteasyDeployment.class).values().iterator().next();
+//      dispatcher = (AsynchronousDispatcher)deployment.getDispatcher();
+//   }
 
    @Test
    public void testOneway() throws Exception

@@ -149,14 +149,6 @@
            <artifactId>commons-io</artifactId>
         </dependency>
         
-        <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
