@@ -9,7 +9,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonXmlResource;
-import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceProduct;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceProduct2;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlProduct;
@@ -47,7 +46,7 @@ public class JacksonJaxbCoexistenceTest {
         WebArchive war = TestUtil.prepareArchive(JacksonJaxbCoexistenceTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, JacksonJaxbCoexistenceJacksonResource.class,
                 JacksonJaxbCoexistenceJacksonXmlResource.class, JacksonJaxbCoexistenceXmlResource.class,
-                JacksonJaxbCoexistenceProduct.class, JacksonJaxbCoexistenceProduct2.class,
+                JacksonJaxbCoexistenceProduct2.class,
                 JacksonJaxbCoexistenceXmlProduct.class);
     }
 
@@ -60,7 +59,7 @@ public class JacksonJaxbCoexistenceTest {
         war.addAsManifestResource("jboss-deployment-structure-jackson-v2-jettison.xml", "jboss-deployment-structure.xml");
         return TestUtil.finishContainerPrepare(war, null, JacksonJaxbCoexistenceJacksonResource.class,
                 JacksonJaxbCoexistenceJacksonXmlResource.class, JacksonJaxbCoexistenceXmlResource.class,
-                JacksonJaxbCoexistenceProduct.class, JacksonJaxbCoexistenceProduct2.class,
+                JacksonJaxbCoexistenceProduct2.class,
                 JacksonJaxbCoexistenceXmlProduct.class);
     }
 
@@ -164,7 +163,7 @@ public class JacksonJaxbCoexistenceTest {
     public void testJackson() throws Exception {
         WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
-        JacksonJaxbCoexistenceProduct p = response.readEntity(JacksonJaxbCoexistenceProduct.class);
+        JacksonJaxbCoexistenceProduct2 p = response.readEntity(JacksonJaxbCoexistenceProduct2.class);
         Assert.assertEquals("JacksonJaxbCoexistenceProduct id value doesn't match", 333, p.getId());
         Assert.assertEquals("JacksonJaxbCoexistenceProduct name value doesn't match", "Iphone", p.getName());
         response.close();
@@ -178,7 +177,7 @@ public class JacksonJaxbCoexistenceTest {
 
         target = client.target(generateURL("/products/333"));
         response = target.request().post(Entity.entity(p, "application/foo+json"));
-        p = response.readEntity(JacksonJaxbCoexistenceProduct.class);
+        p = response.readEntity(JacksonJaxbCoexistenceProduct2.class);
         Assert.assertEquals("JacksonJaxbCoexistenceProduct id value doesn't match", 333, p.getId());
         Assert.assertEquals("JacksonJaxbCoexistenceProduct name value doesn't match", "Iphone", p.getName());
     }
