@@ -9,11 +9,6 @@ package org.jboss.resteasy.plugins.server.servlet;
 public interface ResteasyContextParameters {
     String RESTEASY_PROVIDERS = "resteasy.providers";
 
-    /**
-     * this is deprecated
-     */
-    String RESTEASY_RESOURCE_METHOD_INTERCEPTORS = "resteasy.resource.method.interceptors";
-
     String RESTEASY_USE_BUILTIN_PROVIDERS = "resteasy.use.builtin.providers";
     String RESTEASY_SCAN_PROVIDERS = "resteasy.scan.providers";
     String RESTEASY_SCAN = "resteasy.scan";

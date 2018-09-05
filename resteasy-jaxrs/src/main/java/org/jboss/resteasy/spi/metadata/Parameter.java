@@ -27,8 +27,7 @@ abstract public class Parameter
       UNKNOWN,
       // resteasy specific
       FORM,
-      QUERY,
-      SUSPEND // deprecated
+      QUERY
    }
 
    protected ResourceClass resourceClass;
@@ -38,7 +37,6 @@ abstract public class Parameter
    protected String paramName;
    protected boolean encoded;
    protected String defaultValue;
-   protected long suspendTimeout; // deprecated
 
    protected Parameter(ResourceClass resourceClass, Class<?> type, Type genericType)
    {
@@ -80,11 +78,6 @@ abstract public class Parameter
    public String getDefaultValue()
    {
       return defaultValue;
-   }
-
-   public long getSuspendTimeout()
-   {
-      return suspendTimeout;
    }
 
    public abstract AccessibleObject getAccessibleObject();

@@ -450,19 +450,11 @@ public class ResourceBuilder
          return this;
       }
 
-      public ResourceMethodParameterBuilder suspend(long timeout)
-      {
-         method.method.asynchronous = true;
-         parameter.paramType = Parameter.ParamType.SUSPEND;
-         parameter.suspendTimeout = timeout;
-         return this;
-      }
-
       @Override
       public ResourceMethodParameterBuilder fromAnnotations()
       {
          super.fromAnnotations();
-         if (param.paramType == Parameter.ParamType.SUSPEND || param.paramType == Parameter.ParamType.SUSPENDED)
+         if (param.paramType == Parameter.ParamType.SUSPENDED)
          {
             method.method.asynchronous = true;
          }

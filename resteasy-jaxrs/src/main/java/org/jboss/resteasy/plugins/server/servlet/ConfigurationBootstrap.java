@@ -77,13 +77,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
 
 
-      String resourceMethodInterceptors = getParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
-
-      if (resourceMethodInterceptors != null)
-      {
-         throw new RuntimeException(Messages.MESSAGES.noLongerASupportedContextParam(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS));
-      }
-
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
       if (resteasySecurity != null) {
           boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);

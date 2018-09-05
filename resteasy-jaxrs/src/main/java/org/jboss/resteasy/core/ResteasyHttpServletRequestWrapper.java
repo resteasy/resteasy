@@ -72,14 +72,12 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
       return proxy.getHeader(name);
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public Enumeration<String> getHeaders(String name)
    {
       return proxy.getHeaders(name);
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public Enumeration<String> getHeaderNames()
    {

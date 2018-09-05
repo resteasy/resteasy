@@ -23,22 +23,10 @@ import java.util.Map;
  */
 public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 		MultipartFormDataInput {
-	protected Map<String, InputPart> formData = new HashMap<String, InputPart>();
 	protected Map<String, List<InputPart>> formDataMap = new HashMap<String, List<InputPart>>();
 
 	public MultipartFormDataInputImpl(MediaType contentType, Providers workers) {
 		super(contentType, workers);
-	}
-
-   /**
-    * @deprecated Will be removed in the future. Use
-    * {@link MultipartFormDataInputImpl#getFormDataMap()} instead.
-    * 
-    * @return A parameter map containing only one value per name.
-    */
-	@Deprecated
-	public Map<String, InputPart> getFormData() {
-		return formData;
 	}
 
 	public Map<String, List<InputPart>> getFormDataMap() {
@@ -80,7 +68,6 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 			List<InputPart> list = formDataMap.get(name);
 			if (list == null) {
 				list = new LinkedList<InputPart>();
-				formData.put(name, currPart);
 				formDataMap.put(name, list);
 			}
 			list.add(currPart);
