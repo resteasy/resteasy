@@ -1,11 +1,12 @@
 package org.jboss.resteasy.skeleton.key.config;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.i18n.Messages;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +38,7 @@ public class ManagedResourceConfigLoader
    protected void init(InputStream is)
    {
       ObjectMapper mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.setSerializationInclusion(Include.NON_DEFAULT);
       remoteSkeletonKeyConfig = null;
       try
       {

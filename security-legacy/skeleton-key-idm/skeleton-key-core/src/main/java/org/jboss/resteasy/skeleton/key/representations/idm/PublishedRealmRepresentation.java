@@ -1,9 +1,10 @@
 package org.jboss.resteasy.skeleton.key.representations.idm;
 
 import org.bouncycastle.openssl.PEMWriter;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.jboss.resteasy.skeleton.key.PemUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.IOException;
 import java.io.StringWriter;

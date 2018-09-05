@@ -2,9 +2,6 @@ package org.jboss.resteasy.test.jose;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSHeader;
@@ -16,6 +13,10 @@ import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -47,8 +48,8 @@ public class JWSTest {
    @Test
    public void testHeaderSerialization() throws Exception {
       ObjectMapper mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-      mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      mapper.enable(SerializationFeature.INDENT_OUTPUT);
       JWSHeader header = new JWSHeader(Algorithm.HS256, null, null);
       String val = header.toString();
       logger.info(val);
