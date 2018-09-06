@@ -14,6 +14,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
@@ -23,7 +24,10 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
+import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
+import org.jboss.resteasy.plugins.providers.jsonb.JsonBindingProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeUser;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -62,7 +66,10 @@ public class SseJsonEventTest
       final CountDownLatch latch = new CountDownLatch(1);
       final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
       final AtomicInteger errors = new AtomicInteger(0);
-      Client client = ClientBuilder.newBuilder().build();
+      ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+      Configuration config = clientBuilder.property("resteasy.preferJacksonOverJsonB", true).getConfiguration();
+      ResteasyProviderFactory.pushContext(Configuration.class, config);
+      Client client = clientBuilder.withConfig(config).build();
       try
       {
          WebTarget target = client.target(generateURL("/sse/eventsjson"));
@@ -78,13 +85,15 @@ public class SseJsonEventTest
                throw new RuntimeException(ex);
             });
             eventSource.open();
+
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          }
-         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-         Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
 
       }
       finally
       {
+         ResteasyProviderFactory.getContextDataMap().remove(Configuration.class);
          client.close();
       }
       Assert.assertEquals("One message was expected.", 1, results.size());
@@ -105,9 +114,14 @@ public class SseJsonEventTest
       final CountDownLatch latch = new CountDownLatch(1);
       final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
       final AtomicInteger errors = new AtomicInteger(0);
-      Client client = ClientBuilder.newClient();
+      ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+      Configuration config = clientBuilder.property("resteasy.preferJacksonOverJsonB", true).getConfiguration();
+      ResteasyProviderFactory.pushContext(Configuration.class, config);
+      Client client = clientBuilder.withConfig(config).build();
       try
       {
+         client.property("resteasy.preferJacksonOverJsonB", true);
+         ResteasyProviderFactory.pushContext(Configuration.class, client.getConfiguration());
          WebTarget target = client.target(generateURL("/sse/eventsjson"));
          target.register(CustomJacksonProvider.class);
          SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -134,8 +148,8 @@ public class SseJsonEventTest
       }
       finally
       {
+         ResteasyProviderFactory.getContextDataMap().remove(Configuration.class);
          client.close();
       }
    }
-
 }

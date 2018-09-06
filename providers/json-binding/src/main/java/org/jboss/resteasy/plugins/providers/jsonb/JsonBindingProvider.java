@@ -15,6 +15,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -43,13 +44,19 @@ import org.jboss.resteasy.util.Types;
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
-   private final boolean disabled;
+   private boolean disabled;
    
    public JsonBindingProvider() {
       super();
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
                 || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+      if (!disabled)
+      {
+         Configuration config = ResteasyProviderFactory.getContextData(Configuration.class);
+         disabled = config != null
+               && Boolean.parseBoolean(String.valueOf(config.getProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB)));
+      }
    }
    
    @Override
@@ -59,6 +66,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       {
          return false;
       }
+
       if (isGenericJaxb(type, genericType))
       {
          return false;
