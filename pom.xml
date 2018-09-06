@@ -23,12 +23,11 @@
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
         <!-- Modularized JDK support (various workarounds) - activated via profile -->
         <modular.jdk.args/>
-        <modular.jdk.props/>
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
+        <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.surefire.plugin>2.19.1</version.surefire.plugin>
