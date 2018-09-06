@@ -10,7 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -75,7 +75,7 @@ public class TestLinksNoPackage
 		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		httpClient = HttpClientBuilder.create().build();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
 		url = generateBaseUrl();
 		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);

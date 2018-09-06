@@ -364,34 +364,9 @@ public class ResteasyClientBuilder extends ClientBuilder
       return providerFactory;
    }
 
-   @Deprecated
-   public ResteasyClient buildOld()
-   {
-      ClientConfiguration config = new ClientConfiguration(getProviderFactory());
-      for (Map.Entry<String, Object> entry : properties.entrySet())
-      {
-         config.property(entry.getKey(), entry.getValue());
-      }
-
-      ExecutorService executor = asyncExecutor;
-
-      if (executor == null)
-      {
-         cleanupExecutor = true;
-         executor = Executors.newFixedThreadPool(10);
-      }
-
-      ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder4().resteasyClientBuilder(this).build();
-      return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
-
-   }
-
    @Override
    public ResteasyClient build()
    {
-      if (HTTPClientVersionCheck.isUseOldHTTPClient() || !HTTPClientVersionCheck.isNewHTTPClientAvailable()) {
-         return buildOld();
-      }
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
       {

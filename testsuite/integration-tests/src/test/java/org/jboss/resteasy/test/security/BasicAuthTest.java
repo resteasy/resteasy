@@ -13,7 +13,7 @@ import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
@@ -65,7 +65,7 @@ public class BasicAuthTest {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-            ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+            ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
             authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
         }
         // unauthorizedClient
@@ -74,7 +74,7 @@ public class BasicAuthTest {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials_other);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-            ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+            ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
             unauthorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
         }
         // noAutorizationClient
@@ -222,7 +222,7 @@ public class BasicAuthTest {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
         CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-        ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+        ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
 
         ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
         Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();

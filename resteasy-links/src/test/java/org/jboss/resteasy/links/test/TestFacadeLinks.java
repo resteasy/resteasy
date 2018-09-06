@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -59,7 +59,7 @@ public class TestFacadeLinks
 	private Class<?> resourceType;
 	private String url;
 	private BookStoreService client;
-	private HttpClient httpClient;
+	private CloseableHttpClient httpClient;
 	
 	public TestFacadeLinks(Class<?> resourceType){
 		this.resourceType = resourceType;
@@ -70,7 +70,7 @@ public class TestFacadeLinks
 		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		httpClient = HttpClientBuilder.create().build();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+		ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);
 		url = generateBaseUrl();
 		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
