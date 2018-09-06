@@ -142,6 +142,21 @@
                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
             </properties>
         </profile>
+
+        <!-- https://issues.jboss.org/browse/MODULES-372 - JDK 11 - module not found java.se -->
+        <profile>
+            <id>modular-jdk</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <modular.jdk.args>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+                    --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
+                    --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED
+                    --add-modules=java.se</modular.jdk.args>
+            </properties>
+        </profile>
+
         <profile>
             <id>ipv6</id>
             <activation>
