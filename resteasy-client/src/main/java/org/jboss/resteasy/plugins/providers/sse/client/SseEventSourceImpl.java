@@ -37,7 +37,7 @@ public class SseEventSourceImpl implements SseEventSource
 
    private final long reconnectDelay;
 
-   private final ScheduledExecutorService executor;
+   private final SseEventSourceScheduler sseEventSourceScheduler;
 
    private enum State {
       PENDING, OPEN, CLOSED
@@ -138,41 +138,16 @@ public class SseEventSourceImpl implements SseEventSource
          {
             scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
          }
-         this.executor = scheduledExecutor != null ? scheduledExecutor : Executors
-               .newSingleThreadScheduledExecutor(new DaemonThreadFactory(name));
+         this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name);
       }
       else
       {
-         this.executor = executor;
+         this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
       }
    
       if (open)
       {
          open();
-      }
-   }
-
-   private static class DaemonThreadFactory implements ThreadFactory
-  {
-
-      private final ThreadGroup group;
-
-      private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-      private final String namePrefix;
-      
-      DaemonThreadFactory(String name)
-      {
-         SecurityManager s = System.getSecurityManager();
-         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-         namePrefix = name + "-thread-";
-      }
-
-      public Thread newThread(Runnable r)
-      {
-         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-         t.setDaemon(true);
-         return t;
       }
    }
 
@@ -194,7 +169,7 @@ public class SseEventSourceImpl implements SseEventSource
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
       EventHandler handler = new EventHandler(reconnectDelay, lastEventId, verb, entity, mediaTypes);
-      executor.submit(handler);
+      sseEventSourceScheduler.schedule(handler, 0, TimeUnit.SECONDS);
       handler.awaitConnected();
    }
 
@@ -255,10 +230,7 @@ public class SseEventSourceImpl implements SseEventSource
       internalClose();
       try
       {
-         if (!executor.awaitTermination(timeout, unit))
-         {
-            return false;
-         }
+         return sseEventSourceScheduler.awaitTermination(timeout, unit);
       }
       catch (InterruptedException e)
       {
@@ -268,8 +240,6 @@ public class SseEventSourceImpl implements SseEventSource
          Thread.currentThread().interrupt();
          return false;
       }
-
-      return true;
    }
    
    private void internalClose()
@@ -291,7 +261,7 @@ public class SseEventSourceImpl implements SseEventSource
             });
          }
       }
-      executor.shutdownNow();
+      sseEventSourceScheduler.shutdownNow();
       onCompleteConsumers.forEach(Runnable::run);
    }
 
@@ -490,14 +460,7 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          EventHandler processor = new EventHandler(this);
-         if (delay > 0)
-         {
-            executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
-         }
-         else
-         {
-            executor.submit(processor);
-         }
+         sseEventSourceScheduler.schedule(processor, delay, TimeUnit.MILLISECONDS);
       }
    }
 
