@@ -14,8 +14,11 @@ import org.jboss.resteasy.plugins.stats.RegistryEntry;
 import org.jboss.resteasy.plugins.stats.PostResourceMethod;
 import org.jboss.resteasy.plugins.stats.PutResourceMethod;
 import org.jboss.resteasy.plugins.stats.HeadResourceMethod;
+import org.jboss.resteasy.plugins.stats.OptionsResourceMethod;
 import org.jboss.resteasy.plugins.stats.DeleteResourceMethod;
 import org.jboss.resteasy.plugins.stats.ResourceMethodEntry;
+import org.jboss.resteasy.plugins.stats.SubresourceLocator;
+import org.jboss.resteasy.plugins.stats.TraceResourceMethod;
 import org.jboss.resteasy.plugins.stats.GetResourceMethod;
 import org.jboss.resteasy.test.providers.jaxb.resource.StatsProxy;
 import org.jboss.resteasy.test.providers.jaxb.resource.StatsResource;
@@ -44,7 +47,10 @@ public class StatsTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(StatsTest.class.getSimpleName());
         war.addClass(StatsTest.class);
-        return TestUtil.finishContainerPrepare(war, null, StatsResource.class, RegistryStatsResource.class);
+      return TestUtil.finishContainerPrepare(war, null, StatsResource.class, RegistryStatsResource.class,
+            ResourceMethodEntry.class, GetResourceMethod.class, PutResourceMethod.class, DeleteResourceMethod.class,
+            PostResourceMethod.class, OptionsResourceMethod.class, HeadResourceMethod.class, TraceResourceMethod.class,
+            RegistryData.class, RegistryEntry.class, SubresourceLocator.class);
     }
 
     @Before
