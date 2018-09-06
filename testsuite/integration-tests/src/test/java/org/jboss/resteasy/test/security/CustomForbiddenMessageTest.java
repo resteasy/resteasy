@@ -12,7 +12,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.CustomForbiddenMessageExceptionMapper;
@@ -70,7 +70,7 @@ public class CustomForbiddenMessageTest {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-            ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+            ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
             authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
         }
     }

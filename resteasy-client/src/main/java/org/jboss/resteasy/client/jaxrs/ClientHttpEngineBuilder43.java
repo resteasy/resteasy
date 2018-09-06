@@ -32,7 +32,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
-import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 
 public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
@@ -195,8 +194,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
            });
        }
 
-       ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient,
-            true);
+      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, true);
       engine.setResponseBufferSize(responseBufferSize);
       engine.setHostnameVerifier(verifier);
       // this may be null.  We can't really support this with Apache Client.

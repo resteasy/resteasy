@@ -8,7 +8,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.test.client.resource.EntityBufferingInFileResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -102,7 +103,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testBytes1() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.BY, 16, 10, true);
+        doTest(ApacheHttpClientEngine.MemoryUnit.BY, 16, 10, true);
     }
 
     /**
@@ -114,7 +115,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testBytes2() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.BY, 16, 20, false);
+        doTest(ApacheHttpClientEngine.MemoryUnit.BY, 16, 20, false);
     }
 
     /**
@@ -126,7 +127,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testKilobytes1() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.KB, 1, 500, true);
+        doTest(ApacheHttpClientEngine.MemoryUnit.KB, 1, 500, true);
     }
 
     /**
@@ -138,7 +139,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testKilobytes2() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.KB, 1, 2000, false);
+        doTest(ApacheHttpClientEngine.MemoryUnit.KB, 1, 2000, false);
     }
 
     /**
@@ -150,7 +151,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testMegabytes1() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.MB, 1, 500000, true);
+        doTest(ApacheHttpClientEngine.MemoryUnit.MB, 1, 500000, true);
     }
 
     /**
@@ -162,7 +163,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
      */
     @Test
     public void testMegabytes2() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.MB, 1, 2000000, false);
+        doTest(ApacheHttpClientEngine.MemoryUnit.MB, 1, 2000000, false);
     }
 
     /**
@@ -176,10 +177,10 @@ public class EntityBufferingInFileTest extends ClientTestBase{
             "from EAP7 rfe list, this is not priority now.")
     @Test
     public void testGigabytes1() throws Exception {
-        doTest(ApacheHttpClient4Engine.MemoryUnit.GB, 1, 500000000, true);
+        doTest(ApacheHttpClientEngine.MemoryUnit.GB, 1, 500000000, true);
     }
 
-    protected void doTest(ApacheHttpClient4Engine.MemoryUnit memoryUnit, int threshold, int length, boolean inMemory) throws Exception {
+    protected void doTest(ApacheHttpClientEngine.MemoryUnit memoryUnit, int threshold, int length, boolean inMemory) throws Exception {
         try {
             TestClientExecutor executor = new TestClientExecutor();
             executor.setFileUploadMemoryUnit(memoryUnit);
@@ -205,7 +206,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
         }
     }
 
-    static class TestClientExecutor extends ApacheHttpClient4Engine {
+    static class TestClientExecutor extends ApacheHttpClient43Engine {
         private HttpEntity entityToBuild;
 
         protected HttpEntity buildEntity(final ClientInvocation request) throws IOException {

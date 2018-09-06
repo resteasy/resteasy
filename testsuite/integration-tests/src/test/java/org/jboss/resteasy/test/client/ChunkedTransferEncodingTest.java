@@ -13,7 +13,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.test.client.resource.ChunkedTransferEncodingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -38,7 +37,6 @@ public class ChunkedTransferEncodingTest {
    
     static ResteasyClient clientDefault;
     static ResteasyClient clientEngine43;
-    static ResteasyClient clientEngine4;
     static final String testFilePath;
     static long fileLength;
     static File file;
@@ -59,14 +57,12 @@ public class ChunkedTransferEncodingTest {
         fileLength = file.length();
         clientDefault = new ResteasyClientBuilder().build();
         clientEngine43 = new ResteasyClientBuilder().httpEngine(new ApacheHttpClient43Engine()).build();
-        clientEngine4 = new ResteasyClientBuilder().httpEngine(new ApacheHttpClient4Engine()).build();
     }
 
     @After
     public void after() throws Exception {
         clientDefault.close();
         clientEngine43.close();
-        clientEngine4.close();
     }
 
     private String generateURL(String path) {
@@ -87,9 +83,6 @@ public class ChunkedTransferEncodingTest {
        doTestTarget(clientEngine43, Boolean.TRUE, "chunked null");
        doTestTarget(clientEngine43, Boolean.FALSE, "null " + fileLength);
        doTestTarget(clientEngine43,null, "null " + fileLength);
-       doTestTarget(clientEngine4, Boolean.TRUE, "chunked null");
-       doTestTarget(clientEngine4, Boolean.FALSE, "null " + fileLength);
-       doTestTarget(clientEngine4,null, "null " + fileLength);
     }
     
     public void doTestTarget(ResteasyClient client, Boolean b, String expected) throws Exception
@@ -119,9 +112,6 @@ public class ChunkedTransferEncodingTest {
        doTestRequest(clientEngine43, Boolean.TRUE, "chunked null");
        doTestRequest(clientEngine43, Boolean.FALSE, "null " + fileLength);
        doTestRequest(clientEngine43, null, "null " + fileLength);
-       doTestRequest(clientEngine4, Boolean.TRUE, "chunked null");
-       doTestRequest(clientEngine4, Boolean.FALSE, "null " + fileLength);
-       doTestRequest(clientEngine4, null, "null " + fileLength);
     }
     
     protected void doTestRequest(ResteasyClient client, Boolean b, String expected) throws Exception

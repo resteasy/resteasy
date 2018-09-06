@@ -15,7 +15,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterExceptionFilter;
 import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterExceptionResource;
 import org.jboss.resteasy.test.core.interceptors.resource.ClientResponseFilterExceptionResourceImpl;
@@ -74,7 +74,7 @@ public class ClientResponseFilterExceptionTest {
          .setMaxConnPerRoute(2)
          .setMaxConnTotal(2);
 
-      ClientHttpEngine engine = ApacheHttpClient4EngineFactory.create(httpClientBuilder.build(), true);
+      ClientHttpEngine engine = ApacheHttpClientEngine.create(httpClientBuilder.build(), true);
 
       ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder().httpEngine(engine)
          .register(ClientResponseFilterExceptionFilter.class)

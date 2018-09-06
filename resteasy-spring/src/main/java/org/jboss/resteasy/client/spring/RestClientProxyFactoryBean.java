@@ -4,7 +4,7 @@ import org.apache.http.client.HttpClient;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -86,11 +86,11 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       {
          if (httpClient == null)
          {
-            clientEngine = new ApacheHttpClient4Engine();
+            clientEngine = ApacheHttpClientEngine.create();
          }
          else
          {
-            clientEngine = new ApacheHttpClient4Engine(httpClient);
+            clientEngine = ApacheHttpClientEngine.create(httpClient, true);
          }
       }
       ResteasyWebTarget target = clientBuilder.httpEngine(clientEngine).build().target(baseUri);

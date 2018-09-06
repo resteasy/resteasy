@@ -9,14 +9,14 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 
 public class JaxrsModule implements Module
 {
 
    public void configure(final Binder binder)
    {
-      binder.bind(ClientHttpEngine.class).to(ApacheHttpClient4Engine.class);
+      binder.bind(ClientHttpEngine.class).to(ApacheHttpClient43Engine.class);
       binder.bind(RuntimeDelegate.class).toInstance(RuntimeDelegate.getInstance());
       binder.bind(Response.ResponseBuilder.class).toProvider(ResponseBuilderProvider.class);
       binder.bind(UriBuilder.class).toProvider(UriBuilderProvider.class);
