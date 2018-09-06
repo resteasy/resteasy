@@ -4,7 +4,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -52,28 +51,13 @@ class SseEventSourceScheduler
 
    private final AtomicBoolean closed;
 
-   SseEventSourceScheduler(ScheduledExecutorService scheduledExecutorService, String threadName, final Runnable onTerminated)
+   SseEventSourceScheduler(ScheduledExecutorService scheduledExecutorService, String threadName)
    {
       this.scheduledExecutorService = scheduledExecutorService == null
             ? Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(threadName))
             : scheduledExecutorService;
       this.shutdownExecutorService = scheduledExecutorService == null;
-      this.phaser = new Phaser(1)
-      {
-         @Override
-         protected boolean onAdvance(int phase, int registeredParties)
-         {
-            boolean terminated = super.onAdvance(phase, registeredParties);
-            if (terminated)
-            {
-               if (onTerminated != null)
-               {
-                  onTerminated.run();
-               }
-            }
-            return terminated;
-         }
-      };
+      this.phaser = new Phaser(1);
       this.closed = new AtomicBoolean(false);
    }
    

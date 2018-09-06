@@ -138,11 +138,11 @@ public class SseEventSourceImpl implements SseEventSource
          {
             scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
          }
-         this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name, ()-> onCompleteConsumers.forEach(Runnable::run));
+         this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name);
       }
       else
       {
-         this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name, ()-> onCompleteConsumers.forEach(Runnable::run));
+         this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
       }
    
       if (open)
@@ -262,6 +262,7 @@ public class SseEventSourceImpl implements SseEventSource
          }
       }
       sseEventSourceScheduler.shutdownNow();
+      onCompleteConsumers.forEach(Runnable::run);
    }
 
    public void setAlwaysReconnect(boolean always)
