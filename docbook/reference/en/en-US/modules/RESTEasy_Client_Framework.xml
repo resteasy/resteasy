@@ -68,10 +68,8 @@
         <emphasis role="bold">Note. </emphasis> The ability to send in chunked mode depends on the underlying
         transport layer; in particular, it depends on which implementation of
         <classname>org.jboss.resteasy.client.jaxrs.ClientHttpEngine</classname> is being used. Currently,
-        only the default implementation, <classname>ApacheHttpClient43Engine</classname>
-        and the older <classname>ApacheHttpClient4Engine</classname>, both in package
-        <classname>org.jboss.resteasy.client.jaxrs.engines</classname>,
-        support chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
+        only the default implementation, <classname>ApacheHttpClient43Engine</classname>,
+        supports chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
     </section>
@@ -518,11 +516,6 @@ name: b
            implementation is <code class="classname">ApacheHttpClient43Engine</code>, which uses
            version 4.3 of the <code class="classname">HttpClient</code> from the Apache
            <code class="classname">HttpComponents</code> project.
-           <code class="classname">ApacheHttpClient4Engine</code> is an implementation that
-           uses the pre-Apache 4.3 version, to provide backward compatibility.
-           RESTEasy automatically selects one of these two
-           <code class="classname">ClientHttpEngine</code> implementations based upon the
-           detection of the Apache version.
        </para>
        <para>
            <code class="classname">ApacheHttpAsyncClient4Engine</code>, instead, is built on top
@@ -554,11 +547,7 @@ name: b
                <tbody>
                    <row>
                        <entry>ApacheHttpClient43Engine</entry>
-                       <entry>Uses HttpComponents HttpClient 4.3 api</entry>
-                   </row>
-                   <row>
-                       <entry>ApacheHttpClient4Engine</entry>
-                       <entry>Uses HttpComponents HttpClient pre-4.3 api</entry>
+                       <entry>Uses HttpComponents HttpClient 4.3+</entry>
                    </row>
                    <row>
                        <entry>ApacheHttpAsyncClient4Engine</entry>
@@ -624,8 +613,7 @@ ResteasyClient client = new RESTEasyClientBuilder().httpEngine(myEngine).build()
            that it is possible to use the client framework without ever referencing
            <classname>HttpClient</classname>. For some applications it may be necessary to drill
            down into the <classname>HttpClient</classname> details.
-           <classname>ApacheHttpClient43Engine</classname> and
-           <classname>ApacheHttpClient4Engine</classname> can
+           <classname>ApacheHttpClient43Engine</classname> can
            be supplied with an instance of
            <classname>org.apache.http.client.HttpClient</classname> and an instance of
            <classname>org.apache.http.protocol.HttpContext</classname>, which can carry
@@ -635,8 +623,7 @@ ResteasyClient client = new RESTEasyClientBuilder().httpEngine(myEngine).build()
            <classname>HttpContextProvider</classname>
            is a RESTEasy provided interface through which a custom
            <classname>HttpContext</classname> is supplied to
-           <classname>ApacheHttpClient43Engine</classname> and
-           <classname>ApacheHttpClient4Engine</classname>.
+           <classname>ApacheHttpClient43Engine</classname>.
        <para>
 
        <programlisting>
@@ -657,7 +644,7 @@ public interface HttpContextProvider {
 
        <programlisting>
 DefaultHttpClient httpClient = new DefaultHttpClient();
-ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient,
+ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient,
    new HttpContextProvider() {
            @Override
            public HttpContext getContext() {
@@ -690,30 +677,34 @@ Client client = new ResteasyClientBuilder().httpEngine(engine).build();
       </para>
     </section>
 
-    <section id="apache_pre_4_3">
-        <title>Apache HTTP Client pre-4.3 APIs</title>
+    <section id="apache_4_3">
+        <title>Apache HTTP Client 4.3 APIs</title>
      <para>
-         The Apache pre-4.3 <classname>HttpClient</classname> implementation uses
-         <classname>org.apache.http.impl.conn.SingleClientConnManager</classname>
-         to manage a single socket and allows
-         <classname>org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager</classname>
-         to replace <classname>SingleClientConnManager</classname> for multithreaded applications.
-         <classname>SingleClientConnManager</classname> manages a single socket at any given time and
-         supports the use case in which one or more invocations are made serially
-         from a single thread.
-     </para>
-
-     <para>
-        Here is an example of replacing the <classname>SingleClientConnManager</classname>
-        with <classname>ThreadSafeClientConnManager</classname> in
-        <classname>ApacheHttpClient4Engine</classname>.
+         The RESTEasy Client framework automatically creates and properly configures the underlying
+         Apache HTTP Client engine. When the <classname>ApacheHttpClient43Engine</classname> is
+         manually created, though, the user can either let it build and use a default
+         <classname>HttpClient</classname> instance or provide a custom one:
      </para>
      <programlisting>
-ClientConnectionManager cm = new ThreadSafeClientConnManager();
-HttpClient httpClient = new DefaultHttpClient(cm);
-ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+public ApacheHttpClient43Engine() {
+   ...
+}
+
+public ApacheHttpClient43Engine(HttpClient httpClient) {
+   ...
+}
+
+public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient) {
+   ...
+}
      </programlisting>
-     
+     <para>
+         The <emphasis>closeHttpClient</emphasis> parameter on the last constructor above allows controlling
+         whether the Apache <classname>HttpClient</classname> is to be closed upon engine finalization.
+         The default value is <emphasis>true</emphasis>. When a custom <classname>HttpClient</classname>
+         instance is not provided, the default instance will always be closed together with the engine.
+     </para>
+
      <para>
          For more information about HttpClient (4.x), see the documentation
          at <ulink url="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/">
@@ -727,12 +718,9 @@ ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
          makes it available for reuse.  <emphasis role="bold">Closing</emphasis>
          a connection frees its resources and makes it unusable.
      </para>
+
      <para>
-         <classname>SingleClientConnManager</classname> manages
-         a single socket, which it allocates to at most a single invocation
-         at any given time.  Before that socket can be reused, it has to be
-         released from its current use, which can occur in one of two ways.  If
-         an execution of a request or a call on
+         If an execution of a request or a call on
          a proxy returns a class other than <classname>Response</classname>,
          then RESTEasy will take care of releasing the connection.  For example,
          in the fragments
@@ -778,22 +766,13 @@ response.close();
          
      <para>
          On the other hand,
-         <methodname>ApacheHttpClient4Engine.finalize()</methodname> will close any open
-         sockets, but only if it created the <classname>HttpClient</classname> it has been
-         using.  If an <classname>HttpClient</classname> has been passed into the
-         <classname>ApacheHttpClient4Executor</classname>, then the user is responsible
-         for closing the connections:
+         <methodname>ApacheHttpClient43Engine.finalize()</methodname> will close any open
+         sockets, unless the user set <emphasis>closeHttpClient</emphasis> as <emphasis>false</emphasis> when building
+         the engine, in which case he is responsible for closing the connections.
      </para>
      
-     <programlisting>
-HttpClient httpClient = new DefaultHttpClient();
-ApacheHttpClient4Engine executor = new ApacheHttpClient4Engine(httpClient);
-...
-httpClient.getConnectionManager().shutdown();
-     </programlisting>
-     
      <para>
-         Note that if <classname>ApacheHttpClient4Engine</classname> has created its own
+         Note that if <classname>ApacheHttpClient43Engine</classname> has created its own
          instance of <classname>HttpClient</classname>, it is not necessary to wait
          for <methodname>finalize()</methodname> to close open sockets.  The
          <classname>ClientHttpEngine</classname> interface has a <methodname>close()</methodname>
@@ -804,20 +783,7 @@ httpClient.getConnectionManager().shutdown();
         Finally, if your javax.ws.rs.client.Client class has created the engine automatically for you, you should
         call Client.close() and this will clean up any socket connections.
     </para>
-    </section>
 
-    <section id="apache_4_3">
-        <title>Apache HTTP Client 4.3 APIs</title>
-        <para>
-            The Apache 4.3 <classname>HttpClient</classname> implementation uses
-            <classname>org.apache.http.impl.conn.BasicHttpClientConnectionManager</classname>
-            to manage a single socket and
-            <classname>org.apache.http.impl.conn.PoolingHttpClientConnectionManager</classname>
-            to service connection requests from multiple execution threads.
-            RESTEasy's <classname>ClientHttpclientBuilder43</classname> and
-            <classname>ApacheHttpClient43Engine</classname>
-            uses them as well.
-        </para>
     </section>
 
     <section id="apache_asynch">
