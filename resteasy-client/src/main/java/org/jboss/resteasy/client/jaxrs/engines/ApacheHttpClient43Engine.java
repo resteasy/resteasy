@@ -124,8 +124,10 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
 
    public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient)
    {
-      if (closeHttpClient && !(httpClient instanceof CloseableHttpClient)) {
-         throw new IllegalArgumentException("httpClient must be a CloseableHttpClient instance in order for allowing engine to close it!");
+      if (closeHttpClient && !(httpClient instanceof CloseableHttpClient))
+      {
+         throw new IllegalArgumentException(
+               "httpClient must be a CloseableHttpClient instance in order for allowing engine to close it!");
       }
       this.httpClient = httpClient;
       this.allowClosingHttpClient = closeHttpClient;
@@ -518,7 +520,6 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
       }
    }
 
-   //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    /**
     * Build the HttpEntity to be sent to the Service as part of (POST) request. Creates a off-memory
     * {@link FileExposingFileEntity} or a regular in-memory {@link ByteArrayEntity} depending on if the request
