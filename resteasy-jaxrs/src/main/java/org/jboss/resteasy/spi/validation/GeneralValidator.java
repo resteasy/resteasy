@@ -5,12 +5,12 @@ import java.lang.reflect.Method;
 import org.jboss.resteasy.spi.HttpRequest;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
  * Javadoc adapted from javax.validation.Validator and javax.validation.executable.ExecutableValidator:
- * 
+ *
  * @author Emmanuel Bernard
  * @author Hardy Ferentschik
  * @author Gunnar Morling
@@ -30,6 +30,7 @@ public interface GeneralValidator
     *         during the validation process
     */
    void validate(HttpRequest request, Object object, Class<?>... groups);
+
    /**
     * Validates all constraints placed on the parameters of the given method.
     *
@@ -45,7 +46,8 @@ public interface GeneralValidator
     * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
+   void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues,
+         Class<?>... groups);
 
    /**
     * Validates all return value constraints of the given method.
@@ -61,28 +63,27 @@ public interface GeneralValidator
     * @throws javax.validation.ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   void validateReturnValue(
-         HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
+   void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
 
    /**
     * Indicates if validation is turned on for a class.
-    * 
+    *
     * @param clazz Class to be examined
     * @return true if and only if validation is turned on for clazz
     */
    boolean isValidatable(Class<?> clazz);
-     
+
    /**
     * Indicates if validation is turned on for a method.
-    * 
+    *
     * @param method method to be examined
     * @return true if and only if validation is turned on for method
-    */   
+    */
    boolean isMethodValidatable(Method method);
 
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
-    * 
+    *
     * @param request http request
     */
    void checkViolations(HttpRequest request);

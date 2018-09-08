@@ -1,8 +1,9 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -13,10 +14,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
  * This provider is for reading xop packages packed as multipart/related. For

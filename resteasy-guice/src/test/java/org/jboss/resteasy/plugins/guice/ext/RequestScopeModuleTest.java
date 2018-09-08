@@ -8,7 +8,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
 import org.jboss.resteasy.plugins.guice.RequestScoped;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;

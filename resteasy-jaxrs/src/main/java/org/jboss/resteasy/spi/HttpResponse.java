@@ -36,7 +36,7 @@ public interface HttpResponse extends Closeable
     * reset status and headers.  Will fail if response is committed
     */
    void reset();
-   
+
    default void close() throws IOException {
       // RESTEASY-1650
       getOutputStream().close();

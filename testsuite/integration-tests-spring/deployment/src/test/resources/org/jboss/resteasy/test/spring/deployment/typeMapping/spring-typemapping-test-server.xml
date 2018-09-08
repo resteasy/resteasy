@@ -5,7 +5,7 @@
     <import resource="classpath:springmvc-resteasy.xml" />
 
     <!-- override the bean definition for deployment -->
-    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.core.ResteasyDeploymentImpl" init-method="start" destroy-method="stop">
         <property name="mediaTypeMappings">
             <map>
                 <entry key="json" value="application/json" />

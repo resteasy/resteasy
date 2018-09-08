@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.spring.deployment.resource.Greeting;
 import org.jboss.resteasy.test.spring.deployment.resource.GreetingController;
 import org.jboss.resteasy.test.spring.deployment.resource.JaxrsApplication;
 import org.jboss.resteasy.test.spring.deployment.resource.NumbersResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;

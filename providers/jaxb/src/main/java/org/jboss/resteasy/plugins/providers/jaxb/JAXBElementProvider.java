@@ -1,9 +1,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.util.NoContent;
-import org.jboss.resteasy.util.Types;
-import org.xml.sax.InputSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -17,13 +20,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.util.Types;
+import org.jboss.resteasy.util.NoContent;
+import org.xml.sax.InputSource;
 
 /**
  * <p>

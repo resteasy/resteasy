@@ -17,6 +17,8 @@ import io.netty.handler.ssl.SniHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
+
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -50,7 +52,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    protected String hostname = null;
    protected int configuredPort = 8080;
    protected int runtimePort = -1;
-   protected ResteasyDeployment deployment = new ResteasyDeployment();
+   protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
    protected String root = "";
    protected SecurityDomain domain;
    private EventLoopGroup eventLoopGroup;

@@ -34,11 +34,12 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
 /**
  * Created by hbraun on 15.01.18.
  */
+@SuppressWarnings("rawtypes")
 class MicroprofileClientBuilder implements RestClientBuilder {
 
    private static final String DEFAULT_MAPPER_PROP = "microprofile.rest.client.disable.default.mapper";

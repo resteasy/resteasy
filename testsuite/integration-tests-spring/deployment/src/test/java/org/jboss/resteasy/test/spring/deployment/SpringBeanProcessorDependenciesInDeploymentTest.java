@@ -22,7 +22,7 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorRes
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverter;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorScannedResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

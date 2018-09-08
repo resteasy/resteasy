@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeR
 import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeSubResourceIntf;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeSubResourceSubIntf;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeInvocationHandler;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

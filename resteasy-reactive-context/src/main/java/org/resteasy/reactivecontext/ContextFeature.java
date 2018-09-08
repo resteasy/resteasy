@@ -5,7 +5,7 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import io.reactiverse.reactivecontexts.core.Context;

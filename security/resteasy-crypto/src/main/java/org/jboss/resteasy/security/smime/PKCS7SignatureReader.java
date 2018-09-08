@@ -4,7 +4,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;

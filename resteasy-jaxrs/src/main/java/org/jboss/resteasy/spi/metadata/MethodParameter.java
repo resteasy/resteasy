@@ -13,7 +13,7 @@ public class MethodParameter extends Parameter
    protected Annotation[] annotations = {};
    protected ResourceLocator locator;
 
-   protected MethodParameter(ResourceLocator locator, String name, Class<?> type, Type genericType,Annotation[] annotations)
+   protected MethodParameter(final ResourceLocator locator, final String name, final Class<?> type, final Type genericType, final Annotation[] annotations)
    {
       super(locator.getResourceClass(), type, genericType);
       this.annotations = annotations;

@@ -36,7 +36,7 @@ public class StringParameterInjectorTest {
         Field declaredField = StringParameterInjectorType.class.getDeclaredField("name");
         StringParameterInjector injector = new StringParameterInjector(String.class, String.class, "name",
                 StringParameterInjectorType.class, null, declaredField,
-                declaredField.getAnnotations(), new ResteasyProviderFactory());
+                declaredField.getAnnotations(), ResteasyProviderFactory.newInstance());
 
         assertSame("Ignored annotation missing", MY_SPECIAL_STRING, injector.extractValue("ignored"));
     }
@@ -50,7 +50,7 @@ public class StringParameterInjectorTest {
         final Type type = StringParameterInjectorGenericType.class.getDeclaredMethod("returnSomething").getGenericReturnType();
         final StringParameterInjector injector = new StringParameterInjector(
                 List.class, type, "ignored", String.class, null, null,
-                new Annotation[0], new ResteasyProviderFactory());
+                new Annotation[0], ResteasyProviderFactory.newInstance());
         final Object result = injector.extractValue("");
         assertNotNull("Injector should not return null", result);
     }

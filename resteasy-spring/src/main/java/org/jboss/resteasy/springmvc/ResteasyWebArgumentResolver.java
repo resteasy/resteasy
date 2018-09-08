@@ -6,7 +6,7 @@ import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.annotation.RestfulData;
-import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;

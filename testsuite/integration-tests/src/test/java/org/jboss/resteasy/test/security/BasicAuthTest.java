@@ -19,7 +19,7 @@ import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceMoreSecured;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

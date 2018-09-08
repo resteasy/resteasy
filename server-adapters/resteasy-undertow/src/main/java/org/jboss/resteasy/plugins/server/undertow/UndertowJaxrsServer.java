@@ -9,6 +9,7 @@ import io.undertow.servlet.api.ServletContainer;
 import io.undertow.servlet.api.ServletInfo;
 
 import org.jboss.resteasy.util.PortProvider;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
@@ -99,7 +100,7 @@ public class UndertowJaxrsServer
     */
    public DeploymentInfo undertowDeployment(Class<? extends Application> application, String mapping)
    {
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setApplicationClass(application.getName());
       DeploymentInfo di = undertowDeployment(deployment, mapping);
       di.setClassLoader(application.getClassLoader());
@@ -209,7 +210,7 @@ public class UndertowJaxrsServer
    {
       if (contextPath == null) contextPath = "/";
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setApplicationClass(application.getName());
       DeploymentInfo di = undertowDeployment(deployment);
       di.setClassLoader(application.getClassLoader());
@@ -244,7 +245,7 @@ public class UndertowJaxrsServer
    {
       if (contextPath == null) contextPath = "/";
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setApplication(application);
       DeploymentInfo di = undertowDeployment(deployment);
       di.setClassLoader(application.getClass().getClassLoader());

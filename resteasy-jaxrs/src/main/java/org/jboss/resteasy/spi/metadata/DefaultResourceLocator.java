@@ -1,10 +1,10 @@
 package org.jboss.resteasy.spi.metadata;
 
-import org.jboss.resteasy.util.Types;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,7 +21,7 @@ public class DefaultResourceLocator implements ResourceLocator
    protected String fullpath;
    protected String path;
 
-   public DefaultResourceLocator(ResourceClass resourceClass, Method method, Method annotatedMethod)
+   public DefaultResourceLocator(final ResourceClass resourceClass, final Method method, final Method annotatedMethod)
    {
       this.resourceClass = resourceClass;
       this.annotatedMethod = annotatedMethod;

@@ -1,11 +1,13 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.jboss.resteasy.util.HttpResponseCodes;
+
+import org.jboss.resteasy.spi.HttpResponseCodes;
+
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * (RESTEASY-1485) Address concerns of a possible XSS attack by removing some

@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementEntityMessageR
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementEntityMessageWriter;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementReadableWritableEntity;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -21,9 +20,10 @@ import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

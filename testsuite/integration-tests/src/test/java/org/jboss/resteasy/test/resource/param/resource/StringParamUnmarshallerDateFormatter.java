@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.test.resource.param.StringParamUnmarshallerTest;
-import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.text.ParseException;

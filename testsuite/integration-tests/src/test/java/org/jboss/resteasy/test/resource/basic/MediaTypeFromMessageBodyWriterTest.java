@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.providers.custom.resource.MediaTypeFromMessageBod
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterListAsText;
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterListAsXML;
 import org.jboss.resteasy.test.resource.basic.resource.MediaTypeFromMessageBodyWriterResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

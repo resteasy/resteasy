@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.response.resource.VariantComplexResource;
 import org.jboss.resteasy.test.response.resource.VariantEncodingResource;
 import org.jboss.resteasy.test.response.resource.VariantLanguageResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

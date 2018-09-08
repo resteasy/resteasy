@@ -1,7 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.util.HttpResponseCodes;
-
 import javax.ws.rs.core.Response;
 
 
@@ -20,60 +18,60 @@ public class Failure extends RuntimeException
    protected boolean loggable;
    protected Response response;
 
-   public Failure(String s, Response response)
+   public Failure(final String s, final Response response)
    {
       super(s);
       this.response = response;
    }
 
-   public Failure(String s, Throwable throwable, Response response)
+   public Failure(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable);
       this.response = response;
    }
 
-   public Failure(Throwable throwable, Response response)
+   public Failure(final Throwable throwable, final Response response)
    {
       super(throwable);
       this.response = response;
    }
 
-   public Failure(String s, Throwable throwable)
+   public Failure(final String s, final Throwable throwable)
    {
       super(s, throwable);
       this.errorCode = HttpResponseCodes.SC_INTERNAL_SERVER_ERROR;
    }
 
-   public Failure(Throwable throwable)
+   public Failure(final Throwable throwable)
    {
       super(throwable);
       this.errorCode = HttpResponseCodes.SC_INTERNAL_SERVER_ERROR;
    }
 
-   public Failure(String s)
+   public Failure(final String s)
    {
       super(s);
       this.errorCode = HttpResponseCodes.SC_INTERNAL_SERVER_ERROR;
    }
 
-   public Failure(int errorCode)
+   public Failure(final int errorCode)
    {
       this.errorCode = errorCode;
    }
 
-   public Failure(String s, int errorCode)
+   public Failure(final String s, final int errorCode)
    {
       super(s);
       this.errorCode = errorCode;
    }
 
-   public Failure(String s, Throwable throwable, int errorCode)
+   public Failure(final String s, final Throwable throwable, final int errorCode)
    {
       super(s, throwable);
       this.errorCode = errorCode;
    }
 
-   public Failure(Throwable throwable, int errorCode)
+   public Failure(final Throwable throwable, final int errorCode)
    {
       super(throwable);
       this.errorCode = errorCode;

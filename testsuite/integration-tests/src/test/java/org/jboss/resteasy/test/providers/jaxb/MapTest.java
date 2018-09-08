@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.MapFoo;
 import org.jboss.resteasy.test.providers.jaxb.resource.MapJaxb;
 import org.jboss.resteasy.test.providers.jaxb.resource.MapResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletTimeoutHandler;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletServiceUnavailableExceptionMapper;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletXmlData;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletPrintingErrorHandler;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;

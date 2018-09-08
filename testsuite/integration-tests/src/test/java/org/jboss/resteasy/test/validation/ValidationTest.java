@@ -23,7 +23,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationFooConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationClassConstraint;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

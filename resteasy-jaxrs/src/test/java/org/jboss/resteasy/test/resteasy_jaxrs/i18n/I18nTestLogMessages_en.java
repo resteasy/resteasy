@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.resteasy_jaxrs.i18n;
 import java.util.Locale;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *

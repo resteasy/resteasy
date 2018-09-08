@@ -11,7 +11,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

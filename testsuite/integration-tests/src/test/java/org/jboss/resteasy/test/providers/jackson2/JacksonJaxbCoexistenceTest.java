@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenc
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceProduct2;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlProduct;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

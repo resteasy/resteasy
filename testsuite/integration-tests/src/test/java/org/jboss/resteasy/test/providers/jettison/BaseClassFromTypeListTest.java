@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jettison.resource.BaseClassFromTypeList
 import org.jboss.resteasy.test.providers.jettison.resource.BaseClassFromTypeListCustomer;
 import org.jboss.resteasy.test.providers.jettison.resource.BaseClassFromTypeListInAccountsIntf;
 import org.jboss.resteasy.test.providers.jettison.resource.BaseClassFromTypeListResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

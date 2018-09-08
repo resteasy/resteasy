@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.xxe.resource.xxeNamespace.FavoriteMovieXmlRootEle
 import org.jboss.resteasy.test.xxe.resource.xxeNamespace.FavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.xxeNamespace.MovieResource;
 import org.jboss.resteasy.test.xxe.resource.xxeNamespace.ObjectFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

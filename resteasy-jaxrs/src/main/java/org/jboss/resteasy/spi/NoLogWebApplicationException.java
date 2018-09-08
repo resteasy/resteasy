@@ -15,37 +15,37 @@ public class NoLogWebApplicationException extends WebApplicationException
    {
    }
 
-   public NoLogWebApplicationException(Response response)
+   public NoLogWebApplicationException(final Response response)
    {
       super(response);
    }
 
-   public NoLogWebApplicationException(int status)
+   public NoLogWebApplicationException(final int status)
    {
       super(status);
    }
 
-   public NoLogWebApplicationException(Response.Status status)
+   public NoLogWebApplicationException(final Response.Status status)
    {
       super(status);
    }
 
-   public NoLogWebApplicationException(Throwable cause)
+   public NoLogWebApplicationException(final Throwable cause)
    {
       super(cause);
    }
 
-   public NoLogWebApplicationException(Throwable cause, Response response)
+   public NoLogWebApplicationException(final Throwable cause, final Response response)
    {
       super(cause, response);
    }
 
-   public NoLogWebApplicationException(Throwable cause, int status)
+   public NoLogWebApplicationException(final Throwable cause, final int status)
    {
       super(cause, status);
    }
 
-   public NoLogWebApplicationException(Throwable cause, Response.Status status)
+   public NoLogWebApplicationException(final Throwable cause, final Response.Status status)
    {
       super(cause, status);
    }

@@ -29,7 +29,7 @@ import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionResour
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionSubInterface;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionSubResource;
 import org.jboss.resteasy.test.validation.resource.TestValidationOnExecuteSubInterface;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

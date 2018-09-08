@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

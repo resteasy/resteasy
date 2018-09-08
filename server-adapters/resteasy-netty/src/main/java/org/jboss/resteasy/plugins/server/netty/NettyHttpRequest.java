@@ -6,7 +6,7 @@ import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;

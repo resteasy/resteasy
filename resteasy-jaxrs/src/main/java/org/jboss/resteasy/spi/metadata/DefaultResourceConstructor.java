@@ -13,7 +13,7 @@ public class DefaultResourceConstructor implements ResourceConstructor
    protected Constructor constructor;
    protected ConstructorParameter[] params = {};
 
-   public DefaultResourceConstructor(ResourceClass resourceClass, Constructor constructor)
+   public DefaultResourceConstructor(final ResourceClass resourceClass, final Constructor constructor)
    {
       this.resourceClass = resourceClass;
       this.constructor = constructor;

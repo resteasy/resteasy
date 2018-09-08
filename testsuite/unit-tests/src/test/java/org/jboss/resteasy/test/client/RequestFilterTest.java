@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.client.resource.RequestFilterAnnotation;
 import org.jboss.resteasy.test.client.resource.RequestFilterGetEntity;
 import org.jboss.resteasy.test.client.resource.RequestFilterSetEntity;
 import org.jboss.resteasy.test.client.resource.RequestFilterThrowCustomException;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

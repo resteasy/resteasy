@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreResource
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumValidator;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSubResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

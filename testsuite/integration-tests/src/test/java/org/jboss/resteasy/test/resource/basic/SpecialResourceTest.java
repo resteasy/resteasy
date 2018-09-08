@@ -16,7 +16,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceApiResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceDeleteResource;
 import org.jboss.resteasy.test.resource.basic.resource.SpecialResourceStreamResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

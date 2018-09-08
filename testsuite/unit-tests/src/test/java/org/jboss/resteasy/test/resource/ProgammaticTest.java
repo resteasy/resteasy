@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 

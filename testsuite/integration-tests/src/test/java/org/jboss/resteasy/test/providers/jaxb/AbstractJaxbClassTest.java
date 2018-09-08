@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassCustomer
 import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassCompanyCustomer;
 import org.jboss.resteasy.test.providers.jaxb.resource.AbstractJaxbClassPrivatCustomer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

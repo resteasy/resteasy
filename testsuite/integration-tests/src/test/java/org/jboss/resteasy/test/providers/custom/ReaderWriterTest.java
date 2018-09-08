@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterNowhereClie
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSpaces;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSub;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

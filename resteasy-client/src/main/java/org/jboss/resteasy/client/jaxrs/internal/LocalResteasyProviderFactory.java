@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import javax.ws.rs.RuntimeType;
 
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -12,7 +13,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * <p>
  * Date April 27, 2016
  */
-public class LocalResteasyProviderFactory extends ResteasyProviderFactory
+public class LocalResteasyProviderFactory extends ResteasyProviderFactoryImpl
 {
    
    public LocalResteasyProviderFactory(ResteasyProviderFactory factory)

@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxyBase;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxySpecificProxy;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxyResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

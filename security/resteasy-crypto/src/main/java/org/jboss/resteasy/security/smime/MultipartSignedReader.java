@@ -3,7 +3,7 @@ package org.jboss.resteasy.security.smime;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;

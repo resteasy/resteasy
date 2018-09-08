@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.CorsHeaders;
 import org.jboss.resteasy.test.core.interceptors.resource.CorsFiltersResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;

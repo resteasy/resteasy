@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.basic.resource.ScanProxy;
 import org.jboss.resteasy.test.resource.basic.resource.ScanResource;
 import org.jboss.resteasy.test.resource.basic.resource.ScanSubresource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -10,6 +10,7 @@ import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -40,7 +41,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          Method method = TestMessagesAbstract.class.getMethod("testLocale");
          ResourceClass resourceClass = new DefaultResourceClass(TestMessagesAbstract.class, "path");
          ResourceMethod resourceMethod = new DefaultResourceMethod(resourceClass, method, method);
-         ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+         ResteasyProviderFactory providerFactory = new ResteasyProviderFactoryImpl();
          InjectorFactory injectorFactory = new InjectorFactoryImpl();
          ResourceBuilder resourceBuilder = new ResourceBuilder();
          POJOResourceFactory resourceFactory = new POJOResourceFactory(resourceBuilder, clazz);
