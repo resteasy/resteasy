@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.AfterClass;
@@ -97,7 +98,7 @@ public class UndertowParameterTest {
    public static void beforeClass() throws Exception
    {
       server = new UndertowJaxrsServer().start();
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setDeploymentSensitiveFactoryEnabled(true);
       deployment.setApplication(new TestApp());
       deployment.start();

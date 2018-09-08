@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.core.basic.resource.ApplicationConfigInterface;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationConfigQuotedTextWriter;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationConfigResource;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationConfigService;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

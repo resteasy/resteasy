@@ -28,15 +28,14 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          throw new RuntimeException(Messages.MESSAGES.unknownObjectPassedAsConstraintViolation(o));
       }
       ConstraintViolation<?> v = ConstraintViolation.class.cast(o);
-      
+
       Iterator<Node> nodes = v.getPropertyPath().iterator();
       Node firstNode = nodes.next();
       if (firstNode.getKind() == ElementKind.METHOD)
       {
          Node secondNode = nodes.next();
-         
-         if (secondNode.getKind() == ElementKind.PARAMETER ||
-             secondNode.getKind() == ElementKind.CROSS_PARAMETER)
+
+         if (secondNode.getKind() == ElementKind.PARAMETER || secondNode.getKind() == ElementKind.CROSS_PARAMETER)
          {
             return ConstraintType.Type.PARAMETER;
          }
@@ -54,7 +53,7 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       {
          return ConstraintType.Type.CLASS;
       }
-      
+
       if (firstNode.getKind() == ElementKind.PROPERTY)
       {
          String fieldName = firstNode.getName();
@@ -71,9 +70,9 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
                String getterName = "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                Method m = getMethod(v.getLeafBean().getClass(), getterName);
                if (m.getReturnType().equals(boolean.class))
-                {
+               {
                   return ConstraintType.Type.PROPERTY;
-                }
+               }
                else
                {
                   return ConstraintType.Type.FIELD;
@@ -85,10 +84,10 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
             }
          }
       }
-      
+
       throw new RuntimeException(Messages.MESSAGES.unexpectedPathNode(firstNode.getKind()));
    }
-   
+
    private static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException
    {
       Method method = null;
@@ -111,7 +110,8 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       return method;
    }
 
-   private static Method checkMethodAccess(final Class<?> clazz, final String methodName) {
+   private static Method checkMethodAccess(final Class<?> clazz, final String methodName)
+   {
       Method method = null;
       try
       {
@@ -121,15 +121,18 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          }
          else
          {
-            method = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
+            method = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>()
+            {
                @Override
-               public Method run() throws Exception {
+               public Method run() throws Exception
+               {
                   return clazz.getDeclaredMethod(methodName);
                }
             });
          }
       }
-      catch(PrivilegedActionException pae) {
+      catch (PrivilegedActionException pae)
+      {
       }
       catch (NoSuchMethodException e)
       {

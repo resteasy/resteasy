@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.util.resource.TypesGenericAnotherBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericClassFooBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericClassBar;
 import org.jboss.resteasy.test.util.resource.TypesGenericClassSub;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 

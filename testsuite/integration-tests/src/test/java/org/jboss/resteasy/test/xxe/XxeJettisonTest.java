@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.xxe.resource.xxeJettison.FavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.xxeJettison.JettisonMovieResource;
 import org.jboss.resteasy.test.xxe.resource.xxeJettison.MovieMap;
 import org.jboss.resteasy.test.xxe.resource.xxeJettison.ObjectFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

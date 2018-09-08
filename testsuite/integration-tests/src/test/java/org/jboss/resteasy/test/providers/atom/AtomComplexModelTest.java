@@ -23,7 +23,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelNote;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelState;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelUuid;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelVersionNumber;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

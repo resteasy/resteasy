@@ -2,7 +2,7 @@ package org.jboss.resteasy.wadl;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.wadl.i18n.LogMessages;
 import org.jboss.resteasy.wadl.i18n.Messages;
 

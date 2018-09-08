@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyJaxbCredit;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyJaxbResource;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyJaxbResourceIntf;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

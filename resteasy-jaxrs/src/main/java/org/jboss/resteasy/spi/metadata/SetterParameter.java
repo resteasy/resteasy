@@ -14,7 +14,7 @@ public class SetterParameter extends Parameter
    protected Method setter;
    protected Method annotatedMethod;
 
-   protected SetterParameter(ResourceClass declaredClass, Method setter, Method annotatedMethod)
+   protected SetterParameter(final ResourceClass declaredClass, final Method setter, final Method annotatedMethod)
    {
       super(declaredClass, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0]);
       this.setter = setter;

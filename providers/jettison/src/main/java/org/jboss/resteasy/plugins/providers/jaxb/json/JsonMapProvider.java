@@ -1,22 +1,5 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,6 +14,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

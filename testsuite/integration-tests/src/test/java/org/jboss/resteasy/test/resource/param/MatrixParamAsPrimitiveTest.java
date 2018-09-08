@@ -22,7 +22,7 @@ import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveWra
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveWrappersDefaultNull;
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveWrappersDefaultOverride;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

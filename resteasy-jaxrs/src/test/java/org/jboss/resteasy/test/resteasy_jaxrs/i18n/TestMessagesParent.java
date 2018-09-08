@@ -9,31 +9,33 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
  * Copyright Aug 20, 2015
  */
-abstract public class TestMessagesParent
+public abstract class TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesParent.class);
-   static protected Locale savedLocale;
+
+   protected static Locale savedLocale;
+
    protected Properties properties = new Properties();
 
    @BeforeClass
-   static public void beforeClass()
+   public static void beforeClass()
    {
-      savedLocale = Locale.getDefault();  
+      savedLocale = Locale.getDefault();
    }
-   
+
    @AfterClass
-   static public void afterClass()
+   public static void afterClass()
    {
       Locale.setDefault(savedLocale);
       LOG.info("Reset default locale to: " + savedLocale);
    }
-   
+
    public boolean before(Locale locale, String filename) throws Exception
    {
       LOG.info("default locale: " + Locale.getDefault());
@@ -47,19 +49,20 @@ abstract public class TestMessagesParent
       }
       properties.load(is);
       LOG.info("properties.size(): " + properties.size());
-      return getExpectedNumberOfMethods() == properties.size(); 
+      return getExpectedNumberOfMethods() == properties.size();
    }
-   
+
    protected String getExpected(String id, String message, Object... args)
    {
-      String expected = "RESTEASY" + id + ": " + String.format(replacePositionalSpecifiers(String.class.cast(properties.get(message))), args);
+      String expected = "RESTEASY" + id + ": "
+            + String.format(replacePositionalSpecifiers(String.class.cast(properties.get(message))), args);
       LOG.info("expected: " + expected);
-      return expected;    
+      return expected;
    }
-   
+
    protected String replacePositionalSpecifiers(String s)
    {
-//      LOG.info("before: " + s);
+      //      LOG.info("before: " + s);
       int pos0 = s.indexOf("{0}");
       if (pos0 > -1)
       {
@@ -75,10 +78,11 @@ abstract public class TestMessagesParent
       {
          s = s.substring(0, pos2) + "%3$s" + (pos2 + 3 >= s.length() ? "" : s.substring(pos2 + 3));
       }
-//      LOG.info("after: " + s);
+      //      LOG.info("after: " + s);
       return s;
    }
-   
-   abstract protected int getExpectedNumberOfMethods();
-   abstract protected Locale getLocale();
+
+   protected abstract int getExpectedNumberOfMethods();
+
+   protected abstract Locale getLocale();
 }

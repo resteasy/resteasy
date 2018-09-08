@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilter
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifier;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierFilter;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.PersonType;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

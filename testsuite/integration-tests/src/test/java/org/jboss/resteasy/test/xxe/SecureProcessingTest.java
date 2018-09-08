@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRoot
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.ObjectFactory;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

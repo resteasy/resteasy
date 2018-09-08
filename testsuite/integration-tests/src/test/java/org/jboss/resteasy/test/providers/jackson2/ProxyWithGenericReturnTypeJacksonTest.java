@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericRetur
 import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericReturnTypeJacksonSubResourceSubIntf;
 import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericReturnTypeJacksonAbstractParent;
 import org.jboss.resteasy.test.providers.jackson2.resource.ProxyWithGenericReturnTypeJacksonType2;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.cdi.extensions.resource.ScopeExtensionPlannedObso
 import org.jboss.resteasy.test.cdi.extensions.resource.ScopeExtensionPlannedObsolescenceScope;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

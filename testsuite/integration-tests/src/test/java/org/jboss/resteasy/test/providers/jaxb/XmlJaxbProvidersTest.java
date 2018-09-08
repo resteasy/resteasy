@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.Itemtype;
 import org.jboss.resteasy.test.providers.jaxb.resource.JAXBCache;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersHelper;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlStreamFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

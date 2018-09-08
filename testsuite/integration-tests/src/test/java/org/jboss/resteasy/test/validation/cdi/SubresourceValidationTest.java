@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationQueryBeanParam;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationResource;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationSubResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

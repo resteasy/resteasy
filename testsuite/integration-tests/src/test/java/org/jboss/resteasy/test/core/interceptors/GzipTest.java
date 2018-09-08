@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.core.interceptors.resource.GzipProxy;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.Pair;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

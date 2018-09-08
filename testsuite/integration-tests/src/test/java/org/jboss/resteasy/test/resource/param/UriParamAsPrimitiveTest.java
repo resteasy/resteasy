@@ -28,7 +28,7 @@ import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResour
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriLongWrapper;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriShort;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriShortWrapper;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

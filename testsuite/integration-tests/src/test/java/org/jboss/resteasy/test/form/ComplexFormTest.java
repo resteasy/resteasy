@@ -8,7 +8,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.form.resource.ComplexFormAddress;
 import org.jboss.resteasy.test.form.resource.ComplexFormPerson;
 import org.jboss.resteasy.test.form.resource.ComplexFormResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

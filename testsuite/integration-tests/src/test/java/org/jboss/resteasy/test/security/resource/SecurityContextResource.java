@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.security.resource;
 
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

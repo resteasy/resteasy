@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionCustom
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionException;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionNotFoundMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperInjectionResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

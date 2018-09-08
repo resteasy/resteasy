@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.custom.resource;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

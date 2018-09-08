@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -22,8 +22,11 @@ import org.junit.Test;
 public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestLogMessages_Abstract.class);
-   static protected Locale savedLocale;
+
+   protected static Locale savedLocale;
+
    protected static final String BASE = "002";
+
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
    public void before(Level level, Locale locale, String filename) throws Exception
@@ -43,7 +46,8 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    @Test
    public void testLocale() throws Exception
    {
-      String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/LogMessages.i18n_" + getLocale().toString() + ".properties";
+      String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/LogMessages.i18n_" + getLocale().toString()
+            + ".properties";
       if (!(before(getLocale(), filename)))
       {
          LOG.info(getClass() + ": " + filename + " not found.");
@@ -51,20 +55,19 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       }
       doTest(getLocale(), filename);
    }
-   
+
    protected void doTest(Locale locale, String filename) throws Exception
    {
       doTestFatal(locale, filename);
       doTestError(locale, filename);
-      doTestWarn (locale, filename);
-      doTestInfo (locale, filename);
+      doTestWarn(locale, filename);
+      doTestInfo(locale, filename);
       doTestDebug(locale, filename);
       doTestTrace(locale, filename);
    }
 
-   
    protected void doTestFatal(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.FATAL, getLocale(), filename);
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
       LogMessages.LOGGER.couldNotDeleteFile("path", new Exception("Sluggo says"));
@@ -72,7 +75,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestError(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.ERROR, getLocale(), filename);
 
       // ERROR
@@ -90,7 +93,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestWarn(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.WARN, locale, filename);
 
       // ERROR
@@ -115,7 +118,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestInfo(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.INFO, locale, filename);
 
       // ERROR
@@ -146,7 +149,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestDebug(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.DEBUG, locale, filename);
 
       // ERROR
@@ -178,7 +181,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestTrace(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.TRACE, locale, filename);
 
       // ERROR
@@ -208,13 +211,13 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       expected = getExpected(BASE + "300", "creatingContextObject", "key", "value");
       Assert.assertTrue(baos.toString().contains(expected));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      LOG.info("expected number of methods: " +LogMessages.class.getDeclaredMethods().length);
-      return LogMessages.class.getDeclaredMethods().length;  
+      LOG.info("expected number of methods: " + LogMessages.class.getDeclaredMethods().length);
+      return LogMessages.class.getDeclaredMethods().length;
    }
-   
-   abstract protected Locale getLocale();
+
+   protected abstract Locale getLocale();
 }

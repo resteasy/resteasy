@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.interception;
 
-import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class JaxrsInterceptorRegistryTest {
     @Test
     public void shouldUseNameBindingAnnotation() throws Exception {
         final List<Class<? extends Annotation>> bound = new ArrayList<Class<? extends Annotation>>();
-        JaxrsInterceptorRegistry<JaxrsInterceptorRegistryTestFilter> jaxrsInterceptorRegistry = new JaxrsInterceptorRegistry<JaxrsInterceptorRegistryTestFilter>(null, JaxrsInterceptorRegistryTestFilter.class);
+        JaxrsInterceptorRegistryImpl<JaxrsInterceptorRegistryTestFilter> jaxrsInterceptorRegistry = new JaxrsInterceptorRegistryImpl<JaxrsInterceptorRegistryTestFilter>(null, JaxrsInterceptorRegistryTestFilter.class);
         jaxrsInterceptorRegistry.new AbstractInterceptorFactory(JaxrsInterceptorRegistryTestFilter.class) {
             @Override
             protected void initialize() {

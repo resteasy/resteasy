@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectBasicObjectIn
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectClientIntf;
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectHateoasObject;
 import org.jboss.resteasy.test.client.proxy.resource.ResponseObjectResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

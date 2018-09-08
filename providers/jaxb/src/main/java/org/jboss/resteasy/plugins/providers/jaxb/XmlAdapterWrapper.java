@@ -6,8 +6,8 @@ import java.lang.reflect.ParameterizedType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * 

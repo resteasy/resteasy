@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResource;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResourceIntf;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;

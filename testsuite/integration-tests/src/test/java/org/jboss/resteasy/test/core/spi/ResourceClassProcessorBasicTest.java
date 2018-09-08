@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorProxyEndP
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPointCDI;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPointEJB;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

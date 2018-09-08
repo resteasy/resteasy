@@ -31,7 +31,7 @@ import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * Created by rsearls on 6/26/17.

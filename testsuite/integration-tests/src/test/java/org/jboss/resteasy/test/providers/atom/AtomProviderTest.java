@@ -14,7 +14,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomProviderResource;
 import org.jboss.resteasy.test.providers.atom.resource.AtomProviderCustomer;
 import org.jboss.resteasy.test.providers.atom.resource.AtomProviderDataCollectionRecord;
 import org.jboss.resteasy.test.providers.atom.resource.ObjectFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

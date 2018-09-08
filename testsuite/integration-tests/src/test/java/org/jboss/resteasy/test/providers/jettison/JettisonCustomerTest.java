@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jettison.resource.JettisonCustomer;
 import org.jboss.resteasy.test.providers.jettison.resource.JettisonCustomerList;
 import org.jboss.resteasy.test.providers.jettison.resource.JettisonCustomerManagementResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

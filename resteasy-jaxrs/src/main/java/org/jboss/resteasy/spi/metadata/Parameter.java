@@ -1,16 +1,16 @@
 package org.jboss.resteasy.spi.metadata;
 
-import org.jboss.resteasy.util.Types;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-abstract public class Parameter
+public abstract class Parameter
 {
    public enum ParamType
    {
@@ -38,7 +38,7 @@ abstract public class Parameter
    protected boolean encoded;
    protected String defaultValue;
 
-   protected Parameter(ResourceClass resourceClass, Class<?> type, Type genericType)
+   protected Parameter(final ResourceClass resourceClass, final Class<?> type, final Type genericType)
    {
       this.resourceClass = resourceClass;
       this.genericType = Types.resolveTypeVariables(resourceClass.getClazz(), genericType);

@@ -12,7 +12,7 @@ import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlRootE
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbMovieResource;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.ObjectFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

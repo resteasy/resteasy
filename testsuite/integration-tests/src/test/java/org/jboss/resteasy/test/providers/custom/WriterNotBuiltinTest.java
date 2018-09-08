@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.custom.resource.WriterNotBuiltinTestWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCustomer;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

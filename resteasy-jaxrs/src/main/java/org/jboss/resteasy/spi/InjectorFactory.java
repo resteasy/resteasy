@@ -1,6 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
