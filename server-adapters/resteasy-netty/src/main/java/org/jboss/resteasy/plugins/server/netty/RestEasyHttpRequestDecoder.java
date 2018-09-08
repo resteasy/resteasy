@@ -10,7 +10,7 @@ import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 /**
  * This {@link OneToOneDecoder} is responsible for decode {@link org.jboss.netty.handler.codec.http.HttpRequest}

@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.core.basic.resource.ContextBeforeEncoderIntercept
 import org.jboss.resteasy.test.core.basic.resource.ContextEncoderInterceptor;
 import org.jboss.resteasy.test.core.basic.resource.ContextEndInterceptor;
 import org.jboss.resteasy.test.core.basic.resource.ContextService;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;

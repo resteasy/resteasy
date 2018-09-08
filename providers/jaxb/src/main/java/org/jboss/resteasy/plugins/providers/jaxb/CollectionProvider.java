@@ -1,15 +1,20 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.Types;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -34,21 +39,16 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.Types;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

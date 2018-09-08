@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapLocatingReso
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapLocatingResourceBean;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapSimpleResource;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapSimpleResourceBean;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -12,7 +12,7 @@ public class FieldParameter extends Parameter
 {
    protected Field field;
 
-   protected FieldParameter(ResourceClass declaredClass, Field field)
+   protected FieldParameter(final ResourceClass declaredClass, final Field field)
    {
       super(declaredClass, field.getType(), field.getGenericType());
       this.field = field;

@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -476,7 +477,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    @Override
    public ResteasyClientBuilder withConfig(Configuration config)
    {
-      providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
+      providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactoryImpl());
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {

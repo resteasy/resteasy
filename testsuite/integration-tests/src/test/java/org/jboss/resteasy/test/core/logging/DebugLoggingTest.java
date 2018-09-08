@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.core.logging.resource.DebugLoggingEndPoint;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingReaderInterceptorCustom;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingWriterInterceptorCustom;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingCustomReaderAndWriter;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

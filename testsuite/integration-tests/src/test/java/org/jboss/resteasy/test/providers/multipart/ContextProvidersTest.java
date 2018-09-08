@@ -40,7 +40,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersCust
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersName;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersResource;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersXop;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

@@ -5,14 +5,14 @@ import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilD;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilE;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilI;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilJ;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
- * @tpTestCaseDetails Test for org.jboss.resteasy.util.Types class.
+ * @tpTestCaseDetails Test for org.jboss.resteasy.spi.util.Types class.
  * @tpSince RESTEasy 3.0.16
  */
 public class InterfaceTypeUtilTest {

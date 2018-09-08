@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.resource.ViolationExceptionObject;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionReaderWriter;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithReturnValues;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

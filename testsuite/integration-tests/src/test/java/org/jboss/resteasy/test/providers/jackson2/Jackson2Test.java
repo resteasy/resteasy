@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlProduct;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJacksonAnnotation;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2XmlResourceWithJAXB;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;

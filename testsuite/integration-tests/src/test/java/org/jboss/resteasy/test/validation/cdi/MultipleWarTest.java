@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumValidator;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarResource;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

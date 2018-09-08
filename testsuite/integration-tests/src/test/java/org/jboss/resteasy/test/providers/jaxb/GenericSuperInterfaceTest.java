@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceIVdc
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceTop;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceUpdatableResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceStoragePool;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

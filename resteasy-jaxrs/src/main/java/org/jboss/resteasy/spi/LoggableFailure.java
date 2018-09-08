@@ -12,58 +12,58 @@ import javax.ws.rs.core.Response;
  */
 public class LoggableFailure extends Failure
 {
-   public LoggableFailure(String s, Response response)
+   public LoggableFailure(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public LoggableFailure(String s, Throwable throwable, Response response)
+   public LoggableFailure(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public LoggableFailure(Throwable throwable, Response response)
+   public LoggableFailure(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }
 
-   public LoggableFailure(String s, Throwable throwable)
+   public LoggableFailure(final String s, final Throwable throwable)
    {
       super(s, throwable);
       loggable = true;
    }
 
-   public LoggableFailure(Throwable throwable)
+   public LoggableFailure(final Throwable throwable)
    {
       super(throwable);
       loggable = true;
    }
 
-   public LoggableFailure(String s)
+   public LoggableFailure(final String s)
    {
       super(s);
       loggable = true;
    }
 
-   public LoggableFailure(int errorCode)
+   public LoggableFailure(final int errorCode)
    {
       super(errorCode);
       loggable = true;
    }
 
-   public LoggableFailure(String s, int errorCode)
+   public LoggableFailure(final String s, final int errorCode)
    {
       super(s, errorCode);
       loggable = true;
    }
 
-   public LoggableFailure(String s, Throwable throwable, int errorCode)
+   public LoggableFailure(final String s, final Throwable throwable, final int errorCode)
    {
       super(s, throwable, errorCode);
       loggable = true;
    }
 
-   public LoggableFailure(Throwable throwable, int errorCode)
+   public LoggableFailure(final Throwable throwable, final int errorCode)
    {
       super(throwable, errorCode);
       loggable = true;

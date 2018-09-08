@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiority
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityBImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityCImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

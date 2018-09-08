@@ -2,6 +2,8 @@ package org.jboss.resteasy.plugins.server.sun.http;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -33,7 +35,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  */
 public class HttpContextBuilder
 {
-   protected ResteasyDeployment deployment = new ResteasyDeployment();
+   protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
    protected String path = "/";
    protected ResteasyHttpHandler handler;
    protected SecurityDomain securityDomain;

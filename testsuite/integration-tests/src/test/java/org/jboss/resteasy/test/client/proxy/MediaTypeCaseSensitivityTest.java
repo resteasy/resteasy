@@ -10,7 +10,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuff;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuffProvider;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuffResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

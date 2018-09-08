@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.client.resource.ClientResponseFilterHeaders;
 import org.jboss.resteasy.test.client.resource.ClientResponseFilterStatusOverride;
 import org.jboss.resteasy.test.client.resource.ClientResponseFilterInterceptorReaderOne;
 import org.jboss.resteasy.test.client.resource.ClientResponseFilterInterceptorReaderTwo;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.jboss.resteasy.spi.touri.ObjectToURI;
+import org.jboss.resteasy.plugins.touri.ObjectToURI;
 import org.jboss.resteasy.spi.touri.URIResolver;
 import org.jboss.resteasy.test.util.resource.ObjectToURICustomURIableObject;
 import org.jboss.resteasy.test.util.resource.ObjectToURIMappedByObject;

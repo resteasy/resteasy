@@ -1,5 +1,28 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.annotations.providers.NoJackson;
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.util.FindAnnotation;
+import org.jboss.resteasy.util.DelegatingOutputStream;
+
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -14,29 +37,6 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import org.jboss.resteasy.annotations.providers.jackson.Formatted;
-import org.jboss.resteasy.annotations.providers.NoJackson;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.util.DelegatingOutputStream;
-import org.jboss.resteasy.util.FindAnnotation;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Only different from Jackson one is *+json in @Produces/@Consumes

@@ -1,11 +1,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.lang.annotation.Annotation;
 
 import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
+
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

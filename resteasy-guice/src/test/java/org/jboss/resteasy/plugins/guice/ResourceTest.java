@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.guice;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;

@@ -118,18 +118,18 @@ public class ResteasyJAXRSImplTest
    private void testRuntimeDelegateGetInstance() {
       RuntimeDelegate.setInstance(null);
       RuntimeDelegate rd = RuntimeDelegate.getInstance();
-      Assert.assertEquals(ResteasyProviderFactory.class.getName(), rd.getClass().getName());
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rd.getClass()));
       RuntimeDelegate.setInstance(null);
    }
    
    private void testResteasyProviderFactoryGetInstance() {
       ResteasyProviderFactory.setInstance(null);
       ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
-      Assert.assertEquals(ResteasyProviderFactory.class, rpf.getClass());
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpf.getClass()));
       Assert.assertEquals(rpf, ResteasyProviderFactory.getInstance());
       ResteasyProviderFactory.setInstance(null);
       ResteasyProviderFactory rpf2 = ResteasyProviderFactory.getInstance();
-      Assert.assertEquals(ResteasyProviderFactory.class, rpf2.getClass());
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpf2.getClass()));
       Assert.assertNotEquals(rpf, rpf2);
       ResteasyProviderFactory.setInstance(null);
    }
@@ -142,15 +142,15 @@ public class ResteasyJAXRSImplTest
       RegisterBuiltin.register(rpf2);
       ResteasyProviderFactory rpf3 = ResteasyProviderFactory.newInstance();
       RegisterBuiltin.register(rpf3);
-      Assert.assertEquals(ResteasyProviderFactory.class, rpf.getClass());
-      Assert.assertEquals(ResteasyProviderFactory.class, rpf2.getClass());
-      Assert.assertEquals(ResteasyProviderFactory.class, rpf3.getClass());
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpf.getClass()));
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpf2.getClass()));
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpf3.getClass()));
       Assert.assertNotEquals(rpf, rpf2);
       Assert.assertNotEquals(rpf, rpf3);
       Assert.assertNotEquals(rpf2, rpf3);
       
       ResteasyProviderFactory rpfGI = ResteasyProviderFactory.getInstance();
-      Assert.assertEquals(ResteasyProviderFactory.class, rpfGI.getClass());
+      Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpfGI.getClass()));
       Assert.assertNotEquals(rpfGI, rpf3);
    }
 

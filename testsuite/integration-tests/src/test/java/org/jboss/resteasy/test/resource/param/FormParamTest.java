@@ -9,7 +9,7 @@ import org.jboss.resteasy.test.resource.param.resource.FormParamEntityThrowsIlle
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityWithConstructor;
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityWithFromString;
 import org.jboss.resteasy.test.resource.param.resource.FormParamResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

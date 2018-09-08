@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.resource;
 
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import java.net.URI;

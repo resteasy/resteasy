@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.client.resource;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
 
 import java.io.InputStream;

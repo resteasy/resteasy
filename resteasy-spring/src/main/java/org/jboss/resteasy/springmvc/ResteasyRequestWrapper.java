@@ -1,11 +1,11 @@
 package org.jboss.resteasy.springmvc;
 
-import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

@@ -41,7 +41,7 @@ public class MultipurtContainsJsonTest {
     }
 
     public static MessageBodyWriter<MultipartFormDataOutput> getWriter() {
-        ResteasyProviderFactory factory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
+        ResteasyProviderFactory factory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
         RegisterBuiltin.register(factory);
         factory.registerProviderInstance(new ProviderFactoryPrecendencePlainTextWriter());
         factory.registerProviderInstance(new ProviderFactoryPrecedenceIntegerPlainTextWriter());

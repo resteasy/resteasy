@@ -1,7 +1,7 @@
 package org.jboss.resteasy.api.validation;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *

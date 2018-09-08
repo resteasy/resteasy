@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsResource;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsSticker;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

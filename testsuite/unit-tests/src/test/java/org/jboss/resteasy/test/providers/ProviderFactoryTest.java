@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers;
 
-import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -44,7 +45,7 @@ public class ProviderFactoryTest {
 
     @Before
     public void createBean() {
-        factory = new ResteasyProviderFactory();
+        factory = ResteasyProviderFactory.newInstance();
     }
 
     /**
@@ -116,7 +117,7 @@ public class ProviderFactoryTest {
          ResteasyProviderFactory rpf1 = ResteasyProviderFactory.newInstance();
          RegisterBuiltin.register(rpf1);
          rpf1.registerProvider(MyInterceptor.class);
-         ResteasyDeployment dep1 = new ResteasyDeployment();
+         ResteasyDeployment dep1 = new ResteasyDeploymentImpl();
          dep1.setProviderFactory(rpf1);
          dep1.setDeploymentSensitiveFactoryEnabled(true);
          dep1.start();
@@ -135,7 +136,7 @@ public class ProviderFactoryTest {
 
             }
          });
-         ResteasyDeployment dep2 = new ResteasyDeployment();
+         ResteasyDeployment dep2 = new ResteasyDeploymentImpl();
          dep2.setProviderFactory(rpf2);
          dep2.setDeploymentSensitiveFactoryEnabled(true);
          dep2.getResourceClasses().add(NamespaceMappingResource.class.getName());
@@ -153,8 +154,8 @@ public class ProviderFactoryTest {
    @Test
    public void testProviderFactoryAsJaxRsConfiguration()
    {
-      ResteasyProviderFactory emptyResteasyProviderFactory = new ResteasyProviderFactory();
-      ResteasyProviderFactory resteasyProviderFactory = new ResteasyProviderFactory();
+      ResteasyProviderFactory emptyResteasyProviderFactory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
       resteasyProviderFactory.register(new MyFeature());
 
       // test that getClasses() behavior is spec compliant

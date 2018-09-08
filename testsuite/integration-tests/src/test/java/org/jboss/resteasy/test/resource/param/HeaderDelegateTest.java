@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateInterface4;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateResource;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateSubDelegate;
 import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

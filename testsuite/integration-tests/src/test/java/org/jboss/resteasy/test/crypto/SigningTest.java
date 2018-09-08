@@ -18,7 +18,7 @@ import org.jboss.resteasy.security.doseta.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.test.crypto.resource.SigningResource;
 import org.jboss.resteasy.test.crypto.resource.SigningProxy;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

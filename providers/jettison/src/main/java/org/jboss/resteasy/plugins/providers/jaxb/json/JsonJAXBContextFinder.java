@@ -1,10 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
-import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.lang.annotation.Annotation;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -12,8 +9,12 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.lang.annotation.Annotation;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

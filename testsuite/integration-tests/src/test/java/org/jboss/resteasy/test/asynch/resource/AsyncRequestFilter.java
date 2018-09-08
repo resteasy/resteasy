@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -67,7 +68,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
                // TODO Auto-generated catch block
                LOG.error("Error:", e);
             }
-            ResteasyAsynchronousResponse resp = req.getAsyncContext().getAsyncResponse();
+            AsyncResponse resp = req.getAsyncContext().getAsyncResponse();
             resp.register((CompletionCallback) (t) -> {
                if(callbackException != null)
                   throw new RuntimeException("Callback called twice");

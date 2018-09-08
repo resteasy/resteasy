@@ -32,7 +32,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationExceptionSubResourc
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionSuperResource;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionTestGroup1;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionTestGroup2;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
