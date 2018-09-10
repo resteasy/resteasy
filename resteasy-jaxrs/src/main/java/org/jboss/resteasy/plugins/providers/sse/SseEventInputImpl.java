@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.InboundSseEvent;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -35,6 +36,8 @@ public class SseEventInputImpl implements EventInput, Closeable
    private boolean lastFieldWasData;
    
    private boolean escape = false;
+   
+   private Providers providers;
 
    private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
 
@@ -168,7 +171,12 @@ public class SseEventInputImpl implements EventInput, Closeable
             throw new IOException(Messages.MESSAGES.readEventException(), e);
          }
       }
-      return eventBuilder.build();
+      InboundSseEventImpl event = (InboundSseEventImpl) eventBuilder.build();
+      if (this.providers != null)
+      {
+         event.setProvider(this.providers);
+      }
+      return event;
    }
 
    private int readLine(final InputStream in, final int delimiter, final OutputStream out) throws IOException
@@ -294,5 +302,8 @@ public class SseEventInputImpl implements EventInput, Closeable
          }
       }
       return null;
+   }
+   public void setProviders(Providers providers) {
+      this.providers = providers;
    }
 }

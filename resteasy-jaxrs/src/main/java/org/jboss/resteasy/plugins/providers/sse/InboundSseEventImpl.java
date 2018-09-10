@@ -11,6 +11,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.InboundSseEvent;
 
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -34,6 +35,8 @@ public class InboundSseEventImpl implements InboundSseEvent
    private final MediaType mediaType;
 
    private final MultivaluedMap<String, String> headers;
+   
+   private Providers providers;
 
    static class Builder
    {
@@ -188,13 +191,20 @@ public class InboundSseEventImpl implements InboundSseEvent
    }
 
    public <T> T readData(GenericType<T> type, MediaType mediaType)
-   {
+   {  
       //System.out.println("Thread " + Thread.currentThread().getName() + "read data");
       final MediaType effectiveMediaType = mediaType == null ? this.mediaType : mediaType;
-      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-      RegisterBuiltin.register(factory);
-      final MessageBodyReader reader = factory.getClientMessageBodyReader(type.getRawType(), type.getType(),
-            annotations, mediaType);
+      MessageBodyReader reader = null;
+      if (this.providers != null)
+      {
+         reader = providers.getMessageBodyReader(type.getRawType(), type.getType(), annotations, mediaType);
+      }
+      else
+      {
+         ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+         RegisterBuiltin.register(factory);
+         reader = factory.getClientMessageBodyReader(type.getRawType(), type.getType(), annotations, mediaType);
+      }
       if (reader == null)
       {
          throw new IllegalStateException(Messages.MESSAGES.notFoundMBR(type.getClass().getName()));
@@ -247,6 +257,11 @@ public class InboundSseEventImpl implements InboundSseEvent
    public MediaType getMediaType()
    {
 	   return mediaType;
+   }
+   
+   public void setProvider(Providers providers) {
+      this.providers = providers;
+      
    }
 
 }

@@ -23,6 +23,7 @@ import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
@@ -375,6 +376,7 @@ public class SseEventSourceImpl implements SseEventSource
             }
             try
             {
+	       eventInput.setProviders((ClientConfiguration)target.getConfiguration());
                InboundSseEvent event = eventInput.read();
                if (event != null)
                {
