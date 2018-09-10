@@ -244,7 +244,7 @@
                                 </goals>
                                 <configuration>
                                      <!--Temporarily exclude the tests only failed on Travis-->
-                                     <excludes>
+                                     <excludes combine.children="append">
                                      </excludes>
                                 </configuration>
                             </execution>
