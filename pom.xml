@@ -220,6 +220,36 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>travis</id>
+            <activation>
+                <property>
+                    <name>travis</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                         <!-- default test execution -->
+                            <execution>
+                                <id>default-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                 <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                     <!--Temporarily exclude the tests only failed on Travis-->
+                                     <excludes combine.children="append">
+                                     </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+      </profile>
     </profiles>
 
     <contributors>
