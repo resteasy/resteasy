@@ -57,6 +57,10 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          disabled = config != null
                && Boolean.parseBoolean(String.valueOf(config.getProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB)));
       }
+      if (!disabled)
+      {
+         disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
+      }
    }
    
    @Override
