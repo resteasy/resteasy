@@ -489,6 +489,7 @@
                                 <excludes>
                                     <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                    <exclude>**/SseJsonEventTest</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
@@ -504,6 +505,7 @@
                             <configuration>
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
+                                    <include>**/SseJsonEventTest.java</include>
                                 </includes>
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
