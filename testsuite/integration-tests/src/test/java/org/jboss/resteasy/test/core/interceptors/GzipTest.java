@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.core.interceptors;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -13,15 +23,14 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipProxy;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
-import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.Pair;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -33,15 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
  * @tpSubChapter Interceptors
@@ -71,7 +71,7 @@ public class GzipTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder()
+        client = (ResteasyClient)ClientBuilder.newBuilder()
                     .register(AcceptEncodingGZIPFilter.class)
                     .register(GZIPDecodingInterceptor.class)
                     .register(GZIPEncodingInterceptor.class)

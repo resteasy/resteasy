@@ -1,16 +1,14 @@
 package org.jboss.resteasy.test;
 
-import io.netty.channel.ChannelHandlerContext;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.plugins.server.netty.NettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Locale;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
@@ -27,15 +25,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Locale;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.jboss.resteasy.test.TestPortProvider.getHost;
-import static org.jboss.resteasy.test.TestPortProvider.getPort;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -140,8 +138,8 @@ public class NettyTest
    @Test
    public void testHeadContentLength() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Client client = ClientBuilder.newBuilder().build();
+      WebTarget target = client.target(generateURL("/test"));
       Response getResponse = target.request().buildGet().invoke();
       String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
       Assert.assertEquals("hello world", val);

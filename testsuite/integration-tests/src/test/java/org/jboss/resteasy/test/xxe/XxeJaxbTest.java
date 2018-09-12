@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlType;
@@ -87,7 +87,7 @@ public class XxeJaxbTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

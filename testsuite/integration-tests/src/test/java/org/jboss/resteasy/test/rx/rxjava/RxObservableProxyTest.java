@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,7 +112,7 @@ public class RxObservableProxyTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(RxObservableResource.class);
    }
 
@@ -497,7 +498,7 @@ public class RxObservableProxyTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(ObservableRxInvokerProvider.class);
          RxObservableResource proxy = client.target(generateURL("/")).proxy(RxObservableResource.class);
          Observable<String> observable = proxy.get();
@@ -550,12 +551,12 @@ public class RxObservableProxyTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(ObservableRxInvokerProvider.class);
       RxObservableResource proxy1 = client1.target(generateURL("/")).proxy(RxObservableResource.class);
       Observable<String> observable1 = proxy1.get();   
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(ObservableRxInvokerProvider.class);
       RxObservableResource proxy2 = client2.target(generateURL("/")).proxy(RxObservableResource.class);
       Observable<String> observable2 = proxy2.get();

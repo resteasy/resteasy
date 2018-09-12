@@ -18,9 +18,6 @@ public interface ResteasyWebTarget extends WebTarget
 
    <T> ProxyBuilder<T> proxyBuilder(Class<T> proxyInterface);
 
-   // override
-
-
    @Override
    ResteasyWebTarget resolveTemplate(String name, Object value) throws NullPointerException;
 
@@ -97,6 +94,6 @@ public interface ResteasyWebTarget extends WebTarget
 
    @Override
    ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts);
-   
+
    ResteasyWebTarget setChunked(boolean chunked);
 }

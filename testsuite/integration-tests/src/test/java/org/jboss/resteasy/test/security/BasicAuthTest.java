@@ -1,10 +1,20 @@
 package org.jboss.resteasy.test.security;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Hashtable;
+
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -15,11 +25,11 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceMoreSecured;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,14 +40,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Hashtable;
 
 /**
  * @tpSubChapter Security
@@ -66,7 +68,7 @@ public class BasicAuthTest {
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
             ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
-            authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+            authorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         }
         // unauthorizedClient
         {
@@ -75,10 +77,10 @@ public class BasicAuthTest {
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials_other);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
             ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
-            unauthorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+            unauthorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         }
         // noAutorizationClient
-        noAutorizationClient = new ResteasyClientBuilder().build();
+        noAutorizationClient = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass
@@ -224,7 +226,7 @@ public class BasicAuthTest {
         CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
         ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
 
-        ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient authorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));

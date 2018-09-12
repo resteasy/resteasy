@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.asynch;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingMsgBodyWriterInterceptor;
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingInterceptor;
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingResource;
@@ -64,7 +64,7 @@ public class AsyncPostProcessingTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

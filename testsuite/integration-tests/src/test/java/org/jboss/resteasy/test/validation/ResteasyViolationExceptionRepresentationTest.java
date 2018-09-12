@@ -11,8 +11,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionConstraint;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionLengthConstraint;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionLengthValidator;
@@ -31,6 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
@@ -46,7 +46,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 public class ResteasyViolationExceptionRepresentationTest {
 
     protected static final Logger logger = LogManager.getLogger(ResteasyViolationExceptionRepresentationTest.class.getName());
-    static ResteasyClient client;
+    static Client client;
 
     private static final String TEST_VIOLATIONS_BEFORE_RETURN_VALUE = "violations_test";
     private static final String TEST_RETURN_VALUES = "return_value";
@@ -74,7 +74,7 @@ public class ResteasyViolationExceptionRepresentationTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
         client.register(ViolationExceptionReaderWriter.class);
     }
 

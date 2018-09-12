@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.DuplicitePathDupliciteApplicationOne;
 import org.jboss.resteasy.test.response.resource.DuplicitePathDupliciteApplicationTwo;
 import org.jboss.resteasy.test.response.resource.DuplicitePathDupliciteResourceOne;
@@ -63,7 +63,7 @@ public class DuplicitePathTest {
 
     @BeforeClass
     public static void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass

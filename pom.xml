@@ -97,6 +97,7 @@
                 <module>resteasy-dependencies-bom</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-impl</module>
+                <module>resteasy-jaxrs-client-api</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
@@ -150,6 +151,7 @@
             <modules>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-impl</module>
+                <module>resteasy-jaxrs-client-api</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-jetty</module>
                 <module>resteasy-client-microprofile</module>  

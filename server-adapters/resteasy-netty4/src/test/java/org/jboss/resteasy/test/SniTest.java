@@ -16,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
@@ -91,7 +92,7 @@ public class SniTest
 
     private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
     {
-        ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder resteasyClientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
         if(sslContext != null) {
             resteasyClientBuilder.sslContext(sslContext);
         }

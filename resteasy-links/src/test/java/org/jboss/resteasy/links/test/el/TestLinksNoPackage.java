@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -77,7 +79,7 @@ public class TestLinksNoPackage
 		httpClient = HttpClientBuilder.create().build();
 		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
 		url = generateBaseUrl();
-		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+		ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
 	}
 

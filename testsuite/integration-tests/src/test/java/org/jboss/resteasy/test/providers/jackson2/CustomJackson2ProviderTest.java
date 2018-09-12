@@ -1,12 +1,22 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import static org.hamcrest.CoreMatchers.containsString;
+
+import java.io.File;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
-import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
+import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -18,15 +28,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-
-import static org.hamcrest.CoreMatchers.containsString;
 
 
 /**
@@ -67,7 +68,7 @@ public class CustomJackson2ProviderTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

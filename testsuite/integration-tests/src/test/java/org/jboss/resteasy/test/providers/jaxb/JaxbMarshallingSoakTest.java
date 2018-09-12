@@ -5,6 +5,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakAsyncService;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakItem;
@@ -22,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -54,14 +58,14 @@ public class JaxbMarshallingSoakTest {
     public static String itemString;
     int timeout = TimeoutUtil.adjust(60);
 
-    static ResteasyClient client;
+    static Client client;
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder()
-                .establishConnectionTimeout(5000, TimeUnit.MILLISECONDS)
+        client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+                .connectTimeout(5000, TimeUnit.MILLISECONDS)
                 .connectionCheckoutTimeout(5000, TimeUnit.MILLISECONDS)
-                .socketTimeout(5000, TimeUnit.MILLISECONDS)
+                .readTimeout(5000, TimeUnit.MILLISECONDS)
                 .maxPooledPerRoute(500)
                 .build();
     }
@@ -111,7 +115,7 @@ public class JaxbMarshallingSoakTest {
         itemString = setString();
         logger.info(String.format("Request: %s", itemString));
         for (int i = 0; i < iterator; i++) {
-            ResteasyWebTarget target = client.target(generateURL("/mpac/add?oneway=true"));
+            WebTarget target = client.target(generateURL("/mpac/add?oneway=true"));
             Response response = target.request().post(Entity.entity(itemString, "application/xml"));
             Assert.assertEquals(HttpResponseCodes.SC_ACCEPTED, response.getStatus());
             response.close();

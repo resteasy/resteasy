@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.NullEntityResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -40,7 +40,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testPostNull() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/null"));
         String response = target.request().post(null, String.class);
         Assert.assertEquals("Wrong response", "", response);
@@ -53,7 +53,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testEntity() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/entity"));
         String response = target.request().post(Entity.entity(null, MediaType.WILDCARD), String.class);
         Assert.assertEquals("Wrong response", "", response);
@@ -66,7 +66,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testForm() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/form"));
         String response = target.request().post(Entity.form((Form) null), String.class);
         Assert.assertEquals("Wrong response", null, response);
@@ -79,7 +79,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testHtml() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/html"));
         String response = target.request().post(Entity.html(null), String.class);
         Assert.assertEquals("Wrong response", "", response);
@@ -92,7 +92,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testXhtml() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/xhtml"));
         String response = target.request().post(Entity.xhtml(null), String.class);
         Assert.assertEquals("Wrong response", "", response);
@@ -105,7 +105,7 @@ public class NullEntityTest extends ClientTestBase{
      */
     @Test
     public void testXml() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/xml"));
         String response = target.request().post(Entity.xml(null), String.class);
         Assert.assertEquals("Wrong response", "", response);

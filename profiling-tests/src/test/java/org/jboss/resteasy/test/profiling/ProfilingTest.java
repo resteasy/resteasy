@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 
@@ -73,7 +74,7 @@ public class ProfilingTest
    {
       InMemoryClientEngine engine = new InMemoryClientEngine();
       engine.getDispatcher().getRegistry().addPerRequestResource(JsonTest.class);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       final int ITERATIONS = 1000;
 
 //      long start = System.currentTimeMillis();

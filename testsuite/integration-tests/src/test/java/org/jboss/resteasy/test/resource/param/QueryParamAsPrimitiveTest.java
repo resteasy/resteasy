@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveResource;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveResourceArray;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveResourceArrayDefault;
@@ -96,7 +96,7 @@ public class QueryParamAsPrimitiveTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         resourceQueryPrimitives = ProxyBuilder.builder(QueryParamAsPrimitiveResourceQueryPrimitivesInterface.class, client.target(generateBaseUrl())).build();
         resourceQueryPrimitiveWrappers = ProxyBuilder.builder(QueryParamAsPrimitiveResourceResourceWrappersInterface.class, client.target(generateBaseUrl())).build();
         resourceQueryPrimitiveList = ProxyBuilder.builder(QueryParamAsPrimitiveResourceResourceListInterface.class, client.target(generateBaseUrl())).build();

@@ -13,6 +13,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -60,7 +61,7 @@ public class AsyncBenchTest extends ClientTestBase
       long start = System.currentTimeMillis();
       final String oldProp = System.getProperty("http.maxConnections");
       System.setProperty("http.maxConnections", String.valueOf(MAX_CONNECTIONS));
-      nioClient = new ResteasyClientBuilder().useAsyncHttpEngine().build();
+      nioClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).useAsyncHttpEngine().build();
       WebTarget wt = nioClient.target(generateURL("/test"));
       runCallback(wt, "NIO");
       long end = System.currentTimeMillis() - start;
@@ -79,7 +80,7 @@ public class AsyncBenchTest extends ClientTestBase
    public void testPost() throws Exception
    {
       long start = System.currentTimeMillis();
-      client = new ResteasyClientBuilder().connectionPoolSize(MAX_CONNECTIONS).maxPooledPerRoute(MAX_CONNECTIONS).build();
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(MAX_CONNECTIONS).maxPooledPerRoute(MAX_CONNECTIONS).build();
       WebTarget wt2 = client.target(generateURL("/test"));
       runCallback(wt2, "BIO");
       long end = System.currentTimeMillis() - start;

@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.client.proxy.resource.MediaTypeCaseSensitivityStuff;
@@ -65,7 +65,7 @@ public class MediaTypeCaseSensitivityTest {
      */
     @Test
     public void testItPost() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(PortProviderUtil.generateURL("/stuff", MediaTypeCaseSensitivityTest.class.getSimpleName()));
         Response response = base.request().post(Entity.entity("bill", "Application/Stuff"));
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
@@ -80,7 +80,7 @@ public class MediaTypeCaseSensitivityTest {
      */
     @Test
     public void testItGet() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(PortProviderUtil.generateURL("/stuff", MediaTypeCaseSensitivityTest.class.getSimpleName()));
         Response response = base.request().get();
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());

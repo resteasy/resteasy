@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperApplicationRuntimeCustomMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperApplicationRuntimeMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperApplicationRuntimeResource;
@@ -44,7 +44,7 @@ public class ExceptionMapperApplicationRuntimeExceptionTest {
      */
     @Test
     public void testMapper() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(PortProviderUtil.generateURL("/test", ExceptionMapperApplicationRuntimeExceptionTest.class.getSimpleName()));
         Response response = base.request().get();
 

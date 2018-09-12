@@ -1,10 +1,12 @@
 package org.jboss.resteasy.test.resource.param;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.SerializableWithParametersObject;
 import org.jboss.resteasy.test.resource.param.resource.SerializableWithParametersResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -14,8 +16,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.Invocation;
 
 /**
  * @tpSubChapter Resource
@@ -49,7 +49,7 @@ public class SerializableWithParametersTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testSerialize() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().register(org.jboss.resteasy.plugins.providers.SerializableProvider.class).build();
+        Client client = ClientBuilder.newBuilder().register(org.jboss.resteasy.plugins.providers.SerializableProvider.class).build();
         Invocation.Builder request = client.target(generateURL("/test")).request();
         SerializableWithParametersObject foo = request.get(SerializableWithParametersObject.class);
         Assert.assertEquals("Wrong response", new SerializableWithParametersObject("abc"), foo);

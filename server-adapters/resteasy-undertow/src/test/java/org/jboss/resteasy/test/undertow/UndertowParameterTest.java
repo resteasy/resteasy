@@ -11,12 +11,12 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class UndertowParameterTest {
 
-   private static ResteasyClient client;
+   private static Client client;
    private static UndertowJaxrsServer server;
    private static Map<String, String> contextParams = new HashMap<String, String>();
    private static Map<String, String> initParams = new HashMap<String, String>();
@@ -108,7 +108,7 @@ public class UndertowParameterTest {
       initParams.put("initKey2", "initValue2");
       initParams.put("resteasy.servlet.context.deployment", "false");
       server.deploy(deployment, "/", contextParams, initParams);
-      client = new ResteasyClientBuilder().build();
+      client = ClientBuilder.newClient();
    }
    
    @AfterClass

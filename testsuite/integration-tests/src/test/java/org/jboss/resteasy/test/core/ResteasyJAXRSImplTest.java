@@ -112,7 +112,7 @@ public class ResteasyJAXRSImplTest
    
    private void testClientBuilderNewBuilder() {
       ClientBuilder client = ClientBuilder.newBuilder();
-      Assert.assertEquals(ResteasyClientBuilder.class.getName(), client.getClass().getName());
+      Assert.assertTrue(client instanceof ResteasyClientBuilder);
    }
    
    private void testRuntimeDelegateGetInstance() {

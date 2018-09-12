@@ -1,17 +1,27 @@
 package org.jboss.resteasy.test.spring.deployment;
 
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCounter;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomer;
+import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverter;
+import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerService;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyBean;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyBeanFactoryBean;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyInnerBean;
-import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorSpringBeanProcessorMyInnerBeanImpl;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyIntercepted;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyInterceptedResource;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyInterceptor;
@@ -19,10 +29,8 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyP
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyResource;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyWriter;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorResourceConfiguration;
-import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverter;
-import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorScannedResource;
-import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorSpringBeanProcessorMyInnerBeanImpl;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -36,13 +44,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
-
 /**
  * @tpSubChapter Spring
  * @tpChapter Integration tests - dependencies included in deployment
@@ -54,7 +55,7 @@ import java.util.logging.LoggingPermission;
 @RunAsClient
 public class SpringBeanProcessorDependenciesInDeploymentTest {
 
-    static ResteasyClient client;
+    static Client client;
     private static final String ERROR_MESSAGE = "Got unexpected entity from the server";
 
     private String generateURL(String path) {
@@ -63,7 +64,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

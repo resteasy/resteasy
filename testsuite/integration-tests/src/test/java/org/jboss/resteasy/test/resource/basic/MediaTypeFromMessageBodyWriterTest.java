@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.resource.basic;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -55,7 +57,7 @@ public class MediaTypeFromMessageBodyWriterTest {
     private static String ACCEPT_IE11="text/html, application/xhtml+xml, */*";
     private static Collection<Target> tgts = new ArrayList<Target>();
     private static Collection<String> accepts = new ArrayList<String>();
-    private static ResteasyClient client;
+    private static Client client;
     
     static
     {
@@ -92,7 +94,7 @@ public class MediaTypeFromMessageBodyWriterTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.ComplexPathParamExtensionResource;
 import org.jboss.resteasy.test.resource.param.resource.ComplexPathParamRegressionResteasy145;
 import org.jboss.resteasy.test.resource.param.resource.ComplexPathParamSubRes;
@@ -52,7 +52,7 @@ public class ComplexPathParamTest {
     }
 
     private void basicTest(String path, String body) {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL(path)).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong content of response, url may not be decoded correctly", body, response.readEntity(String.class));

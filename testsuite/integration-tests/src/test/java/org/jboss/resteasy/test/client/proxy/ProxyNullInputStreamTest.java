@@ -1,10 +1,12 @@
 package org.jboss.resteasy.test.client.proxy;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamClientResponseFilter;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyNullInputStreamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -43,8 +45,8 @@ public class ProxyNullInputStreamTest {
 
    @Test
    public void testNullPointerEx () throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().register(ProxyNullInputStreamClientResponseFilter.class).build();
-      ProxyNullInputStreamResource pResource = client.target(generateURL("/test/user/mydb"))
+      Client client = ClientBuilder.newBuilder().register(ProxyNullInputStreamClientResponseFilter.class).build();
+      ProxyNullInputStreamResource pResource = ((ResteasyWebTarget)client.target(generateURL("/test/user/mydb")))
               .proxyBuilder(ProxyNullInputStreamResource.class)
               .build();
       try

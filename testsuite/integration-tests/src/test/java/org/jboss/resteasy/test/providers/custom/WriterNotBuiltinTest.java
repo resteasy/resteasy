@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.providers.custom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.custom.resource.WriterNotBuiltinTestWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCustomer;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
@@ -74,7 +74,7 @@ public class WriterNotBuiltinTest {
      */
     @Test
     public void test1New() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(PortProviderUtil.generateURL("/string", WriterNotBuiltinTest.class.getSimpleName()))
                 .request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

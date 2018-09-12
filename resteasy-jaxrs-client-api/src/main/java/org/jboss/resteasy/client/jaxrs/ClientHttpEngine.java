@@ -1,10 +1,9 @@
 package org.jboss.resteasy.client.jaxrs;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,7 +23,7 @@ public interface ClientHttpEngine
     * @return {@link HostnameVerifier}
     */
    HostnameVerifier getHostnameVerifier();
-   ClientResponse invoke(ClientInvocation request);
+   Response invoke(Invocation request);
    void close();
 
 }

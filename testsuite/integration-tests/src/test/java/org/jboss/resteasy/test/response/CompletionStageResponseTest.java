@@ -10,7 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.CompletionStageProxy;
 import org.jboss.resteasy.test.response.resource.CompletionStageResponseMessageBodyWriter;
@@ -57,7 +57,7 @@ public class CompletionStageResponseTest {
 
    @BeforeClass
    public static void setup() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       
       // Undertow's default behavior is to send an HTML error page only if the client and 
       // server are communicating on a loopback connection. Otherwise, it returns "".
@@ -103,7 +103,7 @@ public class CompletionStageResponseTest {
    @Test
    public void testResponse() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/response")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
