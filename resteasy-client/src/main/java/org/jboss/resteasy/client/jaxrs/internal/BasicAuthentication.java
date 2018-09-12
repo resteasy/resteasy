@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.util.BasicAuthHelper;
 

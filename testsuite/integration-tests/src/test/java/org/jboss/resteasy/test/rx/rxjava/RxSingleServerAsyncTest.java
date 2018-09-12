@@ -15,7 +15,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TestException;
@@ -81,7 +81,7 @@ public class RxSingleServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @AfterClass
@@ -300,12 +300,12 @@ public class RxSingleServerAsyncTest {
    public void testGetTwoClients() throws Exception {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(CompletionStageRxInvokerProvider.class);
       Builder request1 = client1.target(generateURL("/get/string")).request();
       Response response1 = request1.get();      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(CompletionStageRxInvokerProvider.class);
       Builder request2 = client2.target(generateURL("/get/string")).request();
       Response response2 = request2.get();

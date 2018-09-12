@@ -8,7 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFoo;
@@ -56,7 +56,7 @@ public class ValidationXMLTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationXMLFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationXMLFooReaderWriter.class);
     }
 
     @After

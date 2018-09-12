@@ -6,7 +6,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.ClientURI;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.inmodule.resource.Contact;
 import org.jboss.resteasy.test.spring.inmodule.resource.ContactService;
 import org.jboss.resteasy.test.spring.inmodule.resource.Contacts;
@@ -27,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FilePermission;
@@ -95,7 +95,7 @@ public class ContactsTest {
      */
     @Test
     public void testData() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         proxy = client.target(generateURL("")).proxy(ContactProxy.class);
         Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
         Assert.assertEquals(201, response.getStatus());

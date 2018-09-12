@@ -1,12 +1,28 @@
 package org.jboss.resteasy.test.spring.deployment;
 
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
+
+import javax.management.MBeanPermission;
+import javax.management.MBeanServerPermission;
+import javax.management.MBeanTrustPermission;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.ClientURI;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.Contact;
 import org.jboss.resteasy.test.spring.deployment.resource.ContactService;
 import org.jboss.resteasy.test.spring.deployment.resource.Contacts;
@@ -21,21 +37,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.management.MBeanPermission;
-import javax.management.MBeanServerPermission;
-import javax.management.MBeanTrustPermission;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -109,7 +110,7 @@ public class ContactsDependenciesInDeploymentTest {
      */
     @Test
     public void testData() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         proxy = client.target(generateURL("")).proxy(ContactProxy.class);
         Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
         Assert.assertEquals(201, response.getStatus());

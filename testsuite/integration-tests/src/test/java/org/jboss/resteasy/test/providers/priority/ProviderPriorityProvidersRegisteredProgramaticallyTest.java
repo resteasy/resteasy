@@ -12,7 +12,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.priority.resource.ProviderPriorityExceptionMapperAAA;
@@ -73,7 +73,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
       RegisterBuiltin.register(factory);
       ResteasyProviderFactory.setInstance(factory);
 
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @After

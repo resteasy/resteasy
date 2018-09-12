@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.spring.inmodule;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCounter;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomer;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomerService;
@@ -35,6 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.FilePermission;
@@ -53,7 +53,7 @@ import java.util.logging.LoggingPermission;
 @RunAsClient
 public class SpringBeanProcessorTest {
 
-    static ResteasyClient client;
+    static Client client;
     private static final String ERROR_MESSAGE = "Got unexpected entity from the server";
 
     private String generateURL(String path) {
@@ -62,7 +62,7 @@ public class SpringBeanProcessorTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

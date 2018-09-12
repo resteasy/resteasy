@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionMapperCandlepinException;
 import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionMapperCandlepinUnauthorizedException;
 import org.jboss.resteasy.test.core.interceptors.resource.PreProcessorExceptionMapperPreProcessSecurityInterceptor;
@@ -49,7 +49,7 @@ public class PreProcessorExceptionMapperTest {
      */
     @Test
     public void testMapper() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL("/interception", GzipTest.class.getSimpleName())).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
         response.close();

@@ -4,8 +4,6 @@ import javax.json.JsonArray;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.Greeting;
 import org.jboss.resteasy.test.spring.deployment.resource.GreetingController;
 import org.jboss.resteasy.test.spring.deployment.resource.JaxrsApplication;
@@ -26,6 +24,8 @@ import org.junit.runner.RunWith;
 import javax.management.MBeanPermission;
 import javax.management.MBeanServerPermission;
 import javax.management.MBeanTrustPermission;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.FilePermission;
@@ -43,7 +43,7 @@ import java.util.logging.LoggingPermission;
 @RunAsClient
 public class JaxrsWithSpringMVCTest {
 
-    static ResteasyClient client;
+    static Client client;
 
     @Deployment
     private static Archive<?> deploy() {
@@ -79,7 +79,7 @@ public class JaxrsWithSpringMVCTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

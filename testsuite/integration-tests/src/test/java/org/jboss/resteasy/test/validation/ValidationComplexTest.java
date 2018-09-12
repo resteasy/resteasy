@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexA;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexArrayOfStrings;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexB;
@@ -109,7 +109,7 @@ public class ValidationComplexTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationComplexFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationComplexFooReaderWriter.class);
     }
 
     @After

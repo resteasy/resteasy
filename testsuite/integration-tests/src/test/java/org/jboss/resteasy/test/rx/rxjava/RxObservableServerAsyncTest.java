@@ -17,7 +17,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -112,7 +112,7 @@ public class RxObservableServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @Before
@@ -417,12 +417,12 @@ public class RxObservableServerAsyncTest {
 
    @Test
    public void testGetTwoClients() throws Exception {
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       Builder request1 = client1.target(generateURL("/get/string")).request();
       Response response1 = request1.get();
       List<String> list1 = response1.readEntity(LIST_OF_STRING);      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       Builder request2 = client2.target(generateURL("/get/string")).request();
       Response response2 = request2.get();
       List<String> list2 = response2.readEntity(LIST_OF_STRING); 

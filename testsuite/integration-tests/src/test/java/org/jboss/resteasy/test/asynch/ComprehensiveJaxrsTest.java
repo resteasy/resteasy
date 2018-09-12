@@ -26,6 +26,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletApp;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletAsyncResponseBlockingQueue;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletJaxrsResource;
@@ -81,7 +82,7 @@ public class ComprehensiveJaxrsTest
    @Before
    public void beforeTest()
    {
-      client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
    }
 
    @After

@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxy;
 import org.jboss.resteasy.test.client.proxy.resource.NullEntityProxyGreeter;
@@ -35,7 +35,7 @@ public class NullEntityProxyTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass

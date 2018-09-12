@@ -1,4 +1,4 @@
-package org.jboss.resteasy.client.jaxrs;
+package org.jboss.resteasy.client.jaxrs.engines;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;

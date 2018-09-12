@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.HeaderParamsAsPrimitivesArrayDefaultNullProxy;
 import org.jboss.resteasy.test.resource.param.resource.HeaderParamsAsPrimitivesArrayDefaultOverrideProxy;
 import org.jboss.resteasy.test.resource.param.resource.HeaderParamsAsPrimitivesArrayDefaultProxy;
@@ -146,7 +146,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        proxyClient = new ResteasyClientBuilder().build();
+        proxyClient = (ResteasyClient)ClientBuilder.newClient();
         resourceHeaderPrimitives = proxyClient.target(generateBaseUrl())
                 .proxyBuilder(HeaderParamsAsPrimitivesPrimitivesProxy.class).build();
         resourceHeaderPrimitivesDefault = proxyClient.target(generateBaseUrl())
@@ -188,7 +188,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     public void basicTest(String type, String value) {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .header(type, value)
@@ -199,7 +199,7 @@ public class HeaderParamsAsPrimitivesTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/wrappers")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .header(type, value)
@@ -210,7 +210,7 @@ public class HeaderParamsAsPrimitivesTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/list")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .header(type, value)
@@ -225,7 +225,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     public void testDefault(String base, String type, String value) {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default/null")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -235,7 +235,7 @@ public class HeaderParamsAsPrimitivesTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -245,7 +245,7 @@ public class HeaderParamsAsPrimitivesTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default/override")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .header(type, value)
@@ -275,7 +275,7 @@ public class HeaderParamsAsPrimitivesTest {
     @Test
     public void testSet() {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/set")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/boolean")
                     .header("header", "one")
@@ -287,7 +287,7 @@ public class HeaderParamsAsPrimitivesTest {
             response.close();
             client.close();
 
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             HeaderParamsAsPrimitivesSetProxy setClient = client.target(generateBaseUrl())
                     .proxyBuilder(HeaderParamsAsPrimitivesSetProxy.class).build();
             HashSet<String> set = new HashSet<>();
@@ -298,7 +298,7 @@ public class HeaderParamsAsPrimitivesTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/sortedset")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/boolean")
                     .header("header", "one")
@@ -312,7 +312,7 @@ public class HeaderParamsAsPrimitivesTest {
             client.close();
 
 
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             HeaderParamsAsPrimitivesSortedSetProxy setClient = client.target(generateBaseUrl())
                     .proxyBuilder(HeaderParamsAsPrimitivesSortedSetProxy.class).build();
             TreeSet<String> set = new TreeSet<String>();
@@ -679,7 +679,7 @@ public class HeaderParamsAsPrimitivesTest {
      */
     @Test
     public void testBadPrimitiveValue() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL("/")).request()
                 .header(HttpHeaderNames.ACCEPT, "application/int")
                 .header("int", "abcdef")
@@ -695,7 +695,7 @@ public class HeaderParamsAsPrimitivesTest {
      */
     @Test
     public void testBadPrimitiveWrapperValue() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL("/wrappers")).request()
                 .header(HttpHeaderNames.ACCEPT, "application/int")
                 .header("int", "abcdef")
@@ -711,7 +711,7 @@ public class HeaderParamsAsPrimitivesTest {
      */
     @Test
     public void testBadPrimitiveListValue() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL("/list")).request()
                 .header(HttpHeaderNames.ACCEPT, "application/int")
                 .header("int", "abcdef")

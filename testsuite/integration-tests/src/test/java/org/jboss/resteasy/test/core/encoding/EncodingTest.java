@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.encoding.resource.EncodingTestResource;
 import org.jboss.resteasy.test.core.encoding.resource.EncodingTestClient;
 import org.jboss.resteasy.util.Encode;
@@ -64,7 +64,7 @@ public class EncodingTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         testClient = client.target(PortProviderUtil.generateBaseUrl(EncodingTest.class.getSimpleName())).proxyBuilder(EncodingTestClient.class).build();
     }
 

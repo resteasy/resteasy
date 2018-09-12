@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonResource;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonConverterProvider;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonArrayConverter;
@@ -75,7 +75,7 @@ public class MultiValuedParamCustomClassTest {
      */
     @Test
     public void testQueryParam() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
 
@@ -127,7 +127,7 @@ public class MultiValuedParamCustomClassTest {
      */
     @Test
     public void testHeaderParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/headerParam/customConversion_list")
@@ -178,7 +178,7 @@ public class MultiValuedParamCustomClassTest {
      */
     @Test
     public void testMatrixParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/matrixParam/customConversion_list")
@@ -229,7 +229,7 @@ public class MultiValuedParamCustomClassTest {
      */
     @Test
     public void testCookieParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
 
@@ -283,7 +283,7 @@ public class MultiValuedParamCustomClassTest {
      */
     @Test
     public void testPathParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/pathParam/customConversion_list/" + name1 + "," + name2 + "," + name3)

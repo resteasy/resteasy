@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.exception.resource.UnauthorizedExceptionInterface;
 import org.jboss.resteasy.test.client.exception.resource.UnauthorizedExceptionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -45,7 +45,7 @@ public class UnauthorizedExceptionTest {
      */
     @Test
     public void testMe() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         UnauthorizedExceptionInterface proxy = client.target(generateURL("")).proxy(UnauthorizedExceptionInterface.class);
         try {
             proxy.postIt("hello");

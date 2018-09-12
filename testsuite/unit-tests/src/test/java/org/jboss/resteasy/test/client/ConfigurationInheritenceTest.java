@@ -33,6 +33,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature1;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature2;
@@ -80,7 +81,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactoryImpl {
      */
     @Test
     public void testClientBuilderToClient() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         clientBuilder.register(ConfigurationInheritenceTestFeature1.class);
         clientBuilder.register(testFeature2);
         clientBuilder.register(new ConfigurationInheritenceTestFilter1());
@@ -116,7 +117,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactoryImpl {
      */
     @Test
     public void testClientToWebTarget() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         Client client = clientBuilder.build();
         client.register(ConfigurationInheritenceTestFeature1.class);
         client.register(testFeature2);
@@ -153,7 +154,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactoryImpl {
      */
     @Test
     public void testRuntimeType() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         Assert.assertEquals("Wrong RuntimeType in ClientBuilder", RuntimeType.CLIENT, clientBuilder.getConfiguration().getRuntimeType());
         Client client = clientBuilder.build();
         Assert.assertEquals("Wrong RuntimeType in Client", RuntimeType.CLIENT, client.getConfiguration().getRuntimeType());

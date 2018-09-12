@@ -90,7 +90,7 @@ public class SseTest
          });
          eventSource.open();
 
-         Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
+         Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          for (int counter = 0; counter < 5; counter++)
          {
@@ -119,7 +119,7 @@ public class SseTest
    {
       final CountDownLatch missedEventLatch = new CountDownLatch(3);
       final List<String> missedEvents = new ArrayList<String>();
-      WebTarget lastEventTarget = new ResteasyClientBuilder().connectionPoolSize(10).build()
+      WebTarget lastEventTarget = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build()
             .target(generateURL("/service/server-sent-events"));
       SseEventSourceImpl lastEventSource = (SseEventSourceImpl) SseEventSource.target(lastEventTarget).build();
       lastEventSource.register(event -> {
@@ -146,7 +146,7 @@ public class SseTest
       final List<String> results = new ArrayList<String>();
       final CountDownLatch latch = new CountDownLatch(6);
       final AtomicInteger errors = new AtomicInteger(0);
-      Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events")).path("domains").path("1");
 
       SseEventSource eventSource = SseEventSource.target(target).build();
@@ -177,7 +177,7 @@ public class SseTest
    public void testBroadcast() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(3);
-      Client client = new ResteasyClientBuilder().build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
       final String textMessage = "This is broadcast message";
       Consumer<InboundSseEvent> checkConsumer = insse -> {
@@ -192,7 +192,7 @@ public class SseTest
       eventSource.register(checkConsumer);
       eventSource.open();
 
-      Client client2 = new ResteasyClientBuilder().build();
+      Client client2 = ClientBuilder.newClient();
       WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
 
       SseEventSource eventSource2 = SseEventSource.target(target2).build();
@@ -240,7 +240,7 @@ public class SseTest
       client2.target(generateURL("/service/server-sent-events/broadcast")).request()
             .post(Entity.entity("close one subscriber", MediaType.SERVER_SENT_EVENTS));
 
-      Client closeClient = new ResteasyClientBuilder().build();
+      Client closeClient = ClientBuilder.newClient();
       WebTarget closeTarget = closeClient.target(generateURL("/service/sse"));
       Assert.assertTrue("Subscribed eventsink is not closed", closeTarget.request().delete().readEntity(Boolean.class));
       eventSource2.close();
@@ -259,7 +259,7 @@ public class SseTest
       final CountDownLatch latch = new CountDownLatch(10);
       final List<String> results = new ArrayList<String>();
       final AtomicInteger errors = new AtomicInteger(0);
-      ResteasyClient client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       String requestPath = PortProviderUtil.generateURL("/service/server-sent-events",
             SseTest.class.getSimpleName(), PortProviderUtil.getHost(), proxyPort);
       WebTarget target = client.target(requestPath);
@@ -295,7 +295,7 @@ public class SseTest
          });
          eventSource.open();
 
-         Client messageClient = new ResteasyClientBuilder().build();
+         Client messageClient = ClientBuilder.newClient();
          WebTarget messageTarget = messageClient
                .target(generateURL("/service/server-sent-events/addMessageAndDisconnect"));
          messageTarget.request().post(Entity.text("msg"));
@@ -316,7 +316,7 @@ public class SseTest
    public void testEventSourceConsumer() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(1);
-      Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
       List<Throwable> errorList = new ArrayList<Throwable>();
       Thread t = new Thread(new Runnable()
@@ -370,7 +370,7 @@ public class SseTest
          });
          eventSource.open();
 
-         Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
+         Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          messageTarget.request().post(Entity.text("data0a"));
          messageTarget.request().post(Entity.text("data1a\ndata1b\n\rdata1c"));
@@ -484,7 +484,7 @@ public class SseTest
    public void testNoReconnectAfterEventSinkClose() throws Exception
    {
       List<String> results = new ArrayList<String>();
-      Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
       SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();
       sourceImpl.setAlwaysReconnect(false);

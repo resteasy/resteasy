@@ -6,6 +6,8 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -117,7 +119,7 @@ public class TestSecureLinks
 				return localContext;
 			}
 		});
-		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+		ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
 	}
 

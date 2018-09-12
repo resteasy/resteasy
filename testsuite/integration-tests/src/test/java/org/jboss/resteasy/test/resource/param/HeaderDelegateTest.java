@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -103,7 +103,7 @@ public class HeaderDelegateTest {
      */
     @Test
     public void lastModifiedTest() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/last"));
         Invocation.Builder request = target.request();
         Response response = request.get();

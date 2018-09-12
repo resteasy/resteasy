@@ -1,9 +1,10 @@
-package org.jboss.resteasy.client.jaxrs;
+package org.jboss.resteasy.client.jaxrs.engines;
 
 import java.util.concurrent.Future;
 
 import javax.ws.rs.client.InvocationCallback;
 
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 

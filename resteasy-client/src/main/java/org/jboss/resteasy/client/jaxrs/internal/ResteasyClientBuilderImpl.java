@@ -1,8 +1,12 @@
-package org.jboss.resteasy.client.jaxrs;
+package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
@@ -11,11 +15,7 @@ import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocket;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
 import java.security.KeyStore;
@@ -36,24 +36,8 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResteasyClientBuilder extends ClientBuilder
+public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
 {
-   public enum HostnameVerificationPolicy
-   {
-      /**
-       * Hostname verification is not done on the server's certificate
-       */
-      ANY,
-      /**
-       * Allows wildcards in subdomain names i.e. *.foo.com
-       */
-      WILDCARD,
-      /**
-       * CN must match hostname connecting to
-       */
-      STRICT
-   }
-
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
    protected String clientPrivateKeyPassword;
@@ -86,7 +70,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param providerFactory provider factory
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder providerFactory(ResteasyProviderFactory providerFactory)
+   public ResteasyClientBuilderImpl providerFactory(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       return this;
@@ -97,10 +81,10 @@ public class ResteasyClientBuilder extends ClientBuilder
     *
     * @param asyncExecutor executor service
     * @return an updated client builder instance
-    * @deprecated use {@link ResteasyClientBuilder#executorService(ExecutorService)} instead
+    * @deprecated use {@link ResteasyClientBuilderImpl#executorService(ExecutorService)} instead
     */
    @Deprecated
-   public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor)
+   public ResteasyClientBuilderImpl asyncExecutor(ExecutorService asyncExecutor)
    {
       return asyncExecutor(asyncExecutor, false);
    }
@@ -113,7 +97,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @return an updated client builder instance
     */
    @Deprecated
-   public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
+   public ResteasyClientBuilderImpl asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
    {
       this.asyncExecutor = asyncExecutor;
       this.cleanupExecutor = cleanupExecutor;
@@ -127,7 +111,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param unit the time unit of the ttl argument
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder connectionTTL(long ttl, TimeUnit unit)
+   public ResteasyClientBuilderImpl connectionTTL(long ttl, TimeUnit unit)
    {
       this.connectionTTL = ttl;
       this.connectionTTLUnit = unit;
@@ -135,28 +119,15 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder readTimeout(long timeout, TimeUnit unit)
+   public ResteasyClientBuilderImpl readTimeout(long timeout, TimeUnit unit)
    {
       this.socketTimeout = timeout;
       this.socketTimeoutUnits = unit;
       return this;
    }
 
-   /**
-    * The timeout for waiting for data. A timeout value of zero is interpreted as an infinite timeout
-    *
-    * @param timeout the maximum time to wait
-    * @param unit the time unit of the timeout argument
-    * @return an updated client builder instance
-    */
-   @Deprecated
-   public ResteasyClientBuilder socketTimeout(long timeout, TimeUnit unit)
-   {
-      return readTimeout(timeout, unit);
-   }
-
    @Override
-   public ResteasyClientBuilder connectTimeout(long timeout, TimeUnit unit)
+   public ResteasyClientBuilderImpl connectTimeout(long timeout, TimeUnit unit)
    {
       this.establishConnectionTimeout = timeout;
       this.establishConnectionTimeoutUnits = unit;
@@ -164,26 +135,12 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    /**
-    * When trying to make an initial socket connection, what is the timeout?
-    *
-    * @param timeout the maximum time to wait
-    * @param unit the time unit of the timeout argument
-    * @return an updated client builder instance
-    */
-   @Deprecated
-   public ResteasyClientBuilder establishConnectionTimeout(long timeout, TimeUnit unit)
-   {
-      return connectTimeout(timeout, unit);
-   }
-
-
-   /**
     * If connection pooling enabled, how many connections to pool per url?
     *
     * @param maxPooledPerRoute max pool size per url
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder maxPooledPerRoute(int maxPooledPerRoute)
+   public ResteasyClientBuilderImpl maxPooledPerRoute(int maxPooledPerRoute)
    {
       this.maxPooledPerRoute = maxPooledPerRoute;
       return this;
@@ -195,7 +152,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param unit the units the timeout is in
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder connectionCheckoutTimeout(long timeout, TimeUnit unit)
+   public ResteasyClientBuilderImpl connectionCheckoutTimeout(long timeout, TimeUnit unit)
    {
        this.connectionCheckoutTimeoutMs = (int) TimeUnit.MILLISECONDS.convert(timeout, unit);
        return this;
@@ -207,7 +164,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param connectionPoolSize connection pool size
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder connectionPoolSize(int connectionPoolSize)
+   public ResteasyClientBuilderImpl connectionPoolSize(int connectionPoolSize)
    {
       this.connectionPoolSize = connectionPoolSize;
       return this;
@@ -220,7 +177,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param size response buffer size
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder responseBufferSize(int size)
+   public ResteasyClientBuilderImpl responseBufferSize(int size)
    {
       this.responseBufferSize = size;
       return this;
@@ -233,7 +190,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * host you are communicating with.
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder disableTrustManager()
+   public ResteasyClientBuilderImpl disableTrustManager()
    {
       this.disableTrustManager = true;
       return this;
@@ -245,7 +202,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param policy SSL policy
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder hostnameVerification(HostnameVerificationPolicy policy)
+   public ResteasyClientBuilderImpl hostnameVerification(HostnameVerificationPolicy policy)
    {
       this.policy = policy;
       return this;
@@ -257,34 +214,34 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param httpEngine http engine
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder httpEngine(ClientHttpEngine httpEngine)
+   public ResteasyClientBuilderImpl httpEngine(ClientHttpEngine httpEngine)
    {
       this.httpEngine = httpEngine;
       return this;
    }
 
-   public ResteasyClientBuilder useAsyncHttpEngine()
+   public ResteasyClientBuilderImpl useAsyncHttpEngine()
    {
       this.httpEngine = new ApacheHttpAsyncClient4Engine(HttpAsyncClients.createSystem(), true);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder sslContext(SSLContext sslContext)
+   public ResteasyClientBuilderImpl sslContext(SSLContext sslContext)
    {
       this.sslContext = sslContext;
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder trustStore(KeyStore truststore)
+   public ResteasyClientBuilderImpl trustStore(KeyStore truststore)
    {
       this.truststore = truststore;
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder keyStore(KeyStore keyStore, String password)
+   public ResteasyClientBuilderImpl keyStore(KeyStore keyStore, String password)
    {
       this.clientKeyStore = keyStore;
       this.clientPrivateKeyPassword = password;
@@ -292,7 +249,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder keyStore(KeyStore keyStore, char[] password)
+   public ResteasyClientBuilderImpl keyStore(KeyStore keyStore, char[] password)
    {
       this.clientKeyStore = keyStore;
       this.clientPrivateKeyPassword = new String(password);
@@ -300,7 +257,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder property(String name, Object value)
+   public ResteasyClientBuilderImpl property(String name, Object value)
    {
       getProviderFactory().property(name, value);
       return this;
@@ -312,7 +269,7 @@ public class ResteasyClientBuilder extends ClientBuilder
      * @param sniHostNames host names
      * @return an updated client builder instance
      */
-   public ResteasyClientBuilder sniHostNames(String... sniHostNames) {
+   public ResteasyClientBuilderImpl sniHostNames(String... sniHostNames) {
       this.sniHostNames.addAll(Arrays.asList(sniHostNames));
       return this;
    }
@@ -323,7 +280,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param hostname host name
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder defaultProxy(String hostname)
+   public ResteasyClientBuilderImpl defaultProxy(String hostname)
    {
       return defaultProxy(hostname, -1, null);
    }
@@ -335,7 +292,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param port port
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder defaultProxy(String hostname, int port)
+   public ResteasyClientBuilderImpl defaultProxy(String hostname, int port)
    {
       return defaultProxy(hostname, port, null);
    }
@@ -348,13 +305,13 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param scheme scheme
     * @return an updated client builder instance
     */
-   public ResteasyClientBuilder defaultProxy(String hostname, int port, final String scheme)
+   public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme)
    {
       this.defaultProxy = new HttpHost(hostname, port, scheme);
 	   return this;
    }
 
-   protected ResteasyProviderFactory getProviderFactory()
+   public ResteasyProviderFactory getProviderFactory()
    {
       if (providerFactory == null)
       {
@@ -388,25 +345,11 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
-      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
-   }
-
-   protected void prepareSocketForSni(SSLSocket socket)
-   {
-      if(!sniHostNames.isEmpty()) {
-         List<SNIServerName> sniNames = new ArrayList<>(sniHostNames.size());
-         for(String sniHostName : sniHostNames) {
-            sniNames.add(new SNIHostName(sniHostName));
-         }
-
-         SSLParameters sslParameters = socket.getSSLParameters();
-         sslParameters.setServerNames(sniNames);
-         socket.setSSLParameters(sslParameters);
-      }
+      return new ResteasyClientImpl(engine, executor, cleanupExecutor, scheduledExecutorService, config);
    }
 
    @Override
-   public ResteasyClientBuilder hostnameVerifier(HostnameVerifier verifier)
+   public ResteasyClientBuilderImpl hostnameVerifier(HostnameVerifier verifier)
    {
       this.verifier = verifier;
       return this;
@@ -419,63 +362,63 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder register(Class<?> componentClass)
+   public ResteasyClientBuilderImpl register(Class<?> componentClass)
    {
       getProviderFactory().register(componentClass);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Class<?> componentClass, int priority)
+   public ResteasyClientBuilderImpl register(Class<?> componentClass, int priority)
    {
       getProviderFactory().register(componentClass, priority);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Class<?> componentClass, Class<?>... contracts)
+   public ResteasyClientBuilderImpl register(Class<?> componentClass, Class<?>... contracts)
    {
       getProviderFactory().register(componentClass, contracts);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   public ResteasyClientBuilderImpl register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
       getProviderFactory().register(componentClass, contracts);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Object component)
+   public ResteasyClientBuilderImpl register(Object component)
    {
       getProviderFactory().register(component);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Object component, int priority)
+   public ResteasyClientBuilderImpl register(Object component, int priority)
    {
       getProviderFactory().register(component, priority);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Object component, Class<?>... contracts)
+   public ResteasyClientBuilderImpl register(Object component, Class<?>... contracts)
    {
       getProviderFactory().register(component, contracts);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder register(Object component, Map<Class<?>, Integer> contracts)
+   public ResteasyClientBuilderImpl register(Object component, Map<Class<?>, Integer> contracts)
    {
       getProviderFactory().register(component, contracts);
       return this;
    }
 
    @Override
-   public ResteasyClientBuilder withConfig(Configuration config)
+   public ResteasyClientBuilderImpl withConfig(Configuration config)
    {
       providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactoryImpl());
       providerFactory.setProperties(config.getProperties());
@@ -498,15 +441,136 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ClientBuilder executorService(ExecutorService executorService)
+   public ResteasyClientBuilder executorService(ExecutorService executorService)
    {
       return asyncExecutor(executorService, false);
    }
 
    @Override
-   public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
+   public ResteasyClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
    {
       this.scheduledExecutorService = scheduledExecutorService;
       return this;
    }
+
+   @Override
+   public long getConnectionTTL(TimeUnit unit)
+   {
+      return connectionTTLUnit.equals(unit) ? connectionTTL : unit.convert(connectionTTL, connectionTTLUnit);
+   }
+
+   @Override
+   public int getMaxPooledPerRoute()
+   {
+      return maxPooledPerRoute;
+   }
+
+   @Override
+   public long getConnectionCheckoutTimeout(TimeUnit unit)
+   {
+      return TimeUnit.MILLISECONDS.equals(unit) ? connectionCheckoutTimeoutMs : unit.convert(connectionCheckoutTimeoutMs, TimeUnit.MILLISECONDS);
+   }
+
+   @Override
+   public int getConnectionPoolSize()
+   {
+      return connectionPoolSize;
+   }
+
+   @Override
+   public int getResponseBufferSize()
+   {
+      return responseBufferSize;
+   }
+
+   @Override
+   public boolean isTrustManagerDisabled()
+   {
+      return disableTrustManager;
+   }
+
+   @Override
+   public HostnameVerificationPolicy getHostnameVerification()
+   {
+      return policy;
+   }
+
+   @Override
+   public ClientHttpEngine getHttpEngine()
+   {
+      return httpEngine;
+   }
+
+   @Override
+   public boolean isUseAsyncHttpEngine()
+   {
+      return httpEngine != null && (httpEngine instanceof ApacheHttpAsyncClient4Engine);
+   }
+
+   @Override
+   public List<String> getSniHostNames()
+   {
+      return sniHostNames;
+   }
+
+   @Override
+   public String getDefaultProxyHostname()
+   {
+      return defaultProxy != null ? defaultProxy.getHostName() : null;
+   }
+
+   @Override
+   public int getDefaultProxyPort()
+   {
+      return defaultProxy != null ? defaultProxy.getPort() : -1;
+   }
+
+   @Override
+   public String getDefaultProxyScheme()
+   {
+      return defaultProxy != null ? defaultProxy.getSchemeName() : null;
+   }
+   
+   @Override
+   public long getReadTimeout(TimeUnit unit)
+   {
+      return socketTimeoutUnits.equals(unit) ? socketTimeout : unit.convert(socketTimeout, socketTimeoutUnits);
+   }
+
+   @Override
+   public long getConnectionTimeout(TimeUnit unit)
+   {
+      return establishConnectionTimeoutUnits.equals(unit) ? establishConnectionTimeout : unit.convert(establishConnectionTimeout, establishConnectionTimeoutUnits);
+   }
+
+   @Override
+   public SSLContext getSSLContext()
+   {
+      return sslContext;
+   }
+
+   @Override
+   public KeyStore getKeyStore()
+   {
+      return clientKeyStore;
+   }
+
+   @Override
+   public String getKeyStorePassword()
+   {
+      return clientPrivateKeyPassword;
+   }
+
+   @Override
+   public KeyStore getTrustStore()
+   {
+      return truststore;
+   }
+
+   @Override
+   public HostnameVerifier getHostnameVerifier()
+   {
+      return verifier;
+   }
+
 }

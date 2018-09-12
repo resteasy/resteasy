@@ -13,7 +13,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionCrazyConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionCrazyValidator;
@@ -89,7 +89,7 @@ public class ValidationExceptionsTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After
