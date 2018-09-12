@@ -4,7 +4,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -27,7 +27,7 @@ public class ValidationSuppressPathTestBase {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
     @After

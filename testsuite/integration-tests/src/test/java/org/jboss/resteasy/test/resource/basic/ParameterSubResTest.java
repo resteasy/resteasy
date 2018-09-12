@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.ApplicationScopeObject;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorResource;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorSubresource;
@@ -76,7 +76,7 @@ public class ParameterSubResTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

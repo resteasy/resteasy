@@ -43,9 +43,9 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext;
@@ -481,7 +481,7 @@ public class ClientInvocation implements Invocation
          ClientResponse aborted = filterRequest(requestContext);
 
          // spec requires that aborted response go through filter/interceptor chains.
-         ClientResponse response = (aborted != null) ? aborted : client.httpEngine().invoke(this);
+         ClientResponse response = (aborted != null) ? aborted : (ClientResponse)client.httpEngine().invoke(this);
          return filterResponse(requestContext, response);
       }
       catch (ResponseProcessingException e)

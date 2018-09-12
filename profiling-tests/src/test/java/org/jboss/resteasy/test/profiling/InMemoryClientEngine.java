@@ -12,10 +12,12 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -62,8 +64,9 @@ public class InMemoryClientEngine implements ClientHttpEngine
    }
 
    @Override
-   public ClientResponse invoke(ClientInvocation request)
+   public Response invoke(Invocation req)
    {
+      ClientInvocation request = (ClientInvocation)req;
       MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getMethod(), request.getUri(), baseUri);
       final MockHttpResponse mockResponse = new MockHttpResponse();
       mockHttpRequest.setAsynchronousContext(new SynchronousExecutionContext((SynchronousDispatcher)dispatcher, mockHttpRequest, mockResponse));

@@ -6,8 +6,8 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;

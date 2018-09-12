@@ -18,6 +18,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
@@ -345,7 +346,7 @@ public class ApacheHttpClient43Test {
         }
 
 
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(executor).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(executor).build();
         return client;
     }
 

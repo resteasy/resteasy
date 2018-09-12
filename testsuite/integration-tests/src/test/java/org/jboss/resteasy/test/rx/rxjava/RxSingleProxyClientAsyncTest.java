@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -18,10 +19,10 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava.SingleRxInvokerProvider;
 import org.jboss.resteasy.test.client.resource.TestResource.TRACE;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
+import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
-import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
 import org.jboss.resteasy.test.rx.rxjava.resource.RxSingleResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -82,7 +83,7 @@ public class RxSingleProxyClientAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(RxSingleResource.class);
    }
 
@@ -288,7 +289,7 @@ public class RxSingleProxyClientAsyncTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(SingleRxInvokerProvider.class);
          RxSingleResource proxy = client.target(generateURL("/")).proxy(RxSingleResource.class);
          Single<String> single = proxy.get();
@@ -331,11 +332,11 @@ public class RxSingleProxyClientAsyncTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(SingleRxInvokerProvider.class);
       RxSingleResource proxy1 = client1.target(generateURL("/")).proxy(RxSingleResource.class);
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(SingleRxInvokerProvider.class);
       RxSingleResource proxy2 = client2.target(generateURL("/")).proxy(RxSingleResource.class);
 

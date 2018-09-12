@@ -8,7 +8,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
 import org.jboss.resteasy.test.rx.resource.RxCompletionStageResourceImpl;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
@@ -69,7 +69,7 @@ public class RxCompletionStageProxyServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(SimpleResource.class);
    }
 
@@ -203,12 +203,12 @@ public class RxCompletionStageProxyServerAsyncTest {
    public void testGetTwoClients() throws Exception {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(CompletionStageRxInvokerProvider.class);
       SimpleResource proxy1 = client1.target(generateURL("/")).proxy(SimpleResource.class);
       String s1 = proxy1.get();   
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(CompletionStageRxInvokerProvider.class);
       SimpleResource  proxy2 = client2.target(generateURL("/")).proxy(SimpleResource.class);
       String s2 = proxy2.get();

@@ -9,7 +9,7 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -19,7 +19,7 @@ import org.jboss.logging.annotations.MessageLogger;
 public interface LogMessages extends BasicLogger
 {
    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
-   
+
    @LogMessage(level = Level.DEBUG)
    @Message(id = Messages.BASE + 171, value = "Ignoring exception thrown within InvocationCallback")
    void exceptionIgnored(@Cause Throwable ex);

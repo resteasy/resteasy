@@ -1,12 +1,14 @@
-package org.jboss.resteasy.client.jaxrs;
+package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
@@ -24,7 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResteasyClient implements Client
+public class ResteasyClientImpl implements ResteasyClient
 {
    protected volatile ClientHttpEngine httpEngine;
    protected volatile ExecutorService asyncInvocationExecutor;
@@ -34,7 +36,7 @@ public class ResteasyClient implements Client
    protected boolean cleanupExecutor;
 
 
-   protected ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor,
+   protected ResteasyClientImpl(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor,
          ScheduledExecutorService scheduledExecutorService, ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
@@ -44,7 +46,7 @@ public class ResteasyClient implements Client
       this.scheduledExecutorService = scheduledExecutorService;
    }
 
-   protected ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
+   protected ResteasyClientImpl(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
    {
       this.cleanupExecutor = cleanupExecutor;
       this.httpEngine = httpEngine;
@@ -134,7 +136,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient property(String name, Object value)
+   public ResteasyClientImpl property(String name, Object value)
    {
       abortIfClosed();
       configuration.property(name, value);
@@ -142,7 +144,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Class<?> componentClass)
+   public ResteasyClientImpl register(Class<?> componentClass)
    {
       abortIfClosed();
       configuration.register(componentClass);
@@ -150,7 +152,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Class<?> componentClass, int priority)
+   public ResteasyClientImpl register(Class<?> componentClass, int priority)
    {
       abortIfClosed();
       configuration.register(componentClass, priority);
@@ -158,7 +160,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Class<?> componentClass, Class<?>... contracts)
+   public ResteasyClientImpl register(Class<?> componentClass, Class<?>... contracts)
    {
       abortIfClosed();
       configuration.register(componentClass, contracts);
@@ -166,7 +168,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   public ResteasyClientImpl register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
       abortIfClosed();
       configuration.register(componentClass, contracts);
@@ -174,7 +176,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Object component)
+   public ResteasyClientImpl register(Object component)
    {
       abortIfClosed();
       configuration.register(component);
@@ -182,7 +184,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Object component, int priority)
+   public ResteasyClientImpl register(Object component, int priority)
    {
       abortIfClosed();
       configuration.register(component, priority);
@@ -190,7 +192,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Object component, Class<?>... contracts)
+   public ResteasyClientImpl register(Object component, Class<?>... contracts)
    {
       abortIfClosed();
       configuration.register(component, contracts);
@@ -198,7 +200,7 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient register(Object component, Map<Class<?>, Integer> contracts)
+   public ResteasyClientImpl register(Object component, Map<Class<?>, Integer> contracts)
    {
       abortIfClosed();
       configuration.register(component, contracts);

@@ -11,7 +11,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
@@ -31,6 +30,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -49,9 +50,9 @@ import java.nio.file.Paths;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SpringMvcHttpResponseCodesTest {
-    private static ResteasyClient authorizedClient;
-    private static ResteasyClient userAuthorizedClient;
-    private static ResteasyClient nonAutorizedClient;
+    private static Client authorizedClient;
+    private static Client userAuthorizedClient;
+    private static Client nonAutorizedClient;
 
     @Deployment
     private static Archive<?> deploy() {
@@ -74,7 +75,7 @@ public class SpringMvcHttpResponseCodesTest {
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
             ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(client);
-            authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+            authorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         }
 
         // userAuthorizedClient
@@ -84,11 +85,11 @@ public class SpringMvcHttpResponseCodesTest {
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials_other);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
             ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(client);
-            userAuthorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+            userAuthorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         }
 
         // non-authorized client
-        nonAutorizedClient = new ResteasyClientBuilder().build();
+        nonAutorizedClient = ClientBuilder.newClient();
     }
 
     @After

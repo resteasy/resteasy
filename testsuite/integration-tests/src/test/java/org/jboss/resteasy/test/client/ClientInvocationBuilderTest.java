@@ -15,7 +15,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.utils.TestUtil;
@@ -55,7 +55,7 @@ public class ClientInvocationBuilderTest extends ClientTestBase{
 
     @Test
     public void testBuildMethodReturnNewInstance() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             ResteasyWebTarget webTarget = client.target(generateURL(""));
             Builder invocationBuilder = webTarget.request();
@@ -93,7 +93,7 @@ public class ClientInvocationBuilderTest extends ClientTestBase{
 
     @Test
     public void testBuildMethodResetEntity() throws InterruptedException, ExecutionException {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             ResteasyWebTarget webTarget = client.target(generateURL(""));
             Builder invocationBuilder = webTarget.request().accept(MediaType.TEXT_PLAIN_TYPE);

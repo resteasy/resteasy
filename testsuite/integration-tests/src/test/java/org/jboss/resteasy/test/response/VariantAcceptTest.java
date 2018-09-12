@@ -13,7 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.VariantAcceptResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -75,7 +75,7 @@ public class VariantAcceptTest {
      */
     @Test
     public void testVariant() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/variant")).request();
         request.accept(MediaType.WILDCARD_TYPE);
         request.accept(MediaType.TEXT_HTML_TYPE);
@@ -91,7 +91,7 @@ public class VariantAcceptTest {
      */
     @Test
     public void testVariantWithParameters() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/params")).request();
         request.accept(WILDCARD_WITH_PARAMS);
         request.accept(MediaType.TEXT_HTML_TYPE);
@@ -108,7 +108,7 @@ public class VariantAcceptTest {
      */
     @Test
     public void testVariantWithQParameter() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/simple")).request();
         request.accept("application/json;q=0.3, application/xml;q=0.2");
         Response response = request.get();

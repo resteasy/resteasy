@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.exception.resource.ClientErrorBadMediaTypeHeaderDelegate;
 import org.jboss.resteasy.test.client.exception.resource.ClientErrorBadMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -53,7 +53,7 @@ public class ClientErrorBadMediaTypeTest {
     @Test
     public void testBadContentType() throws Exception {
         // test
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(generateURL("/")).request().post(Entity.entity("content", "foo/bar"));
         logger.info("status: " + response.getStatus());
         Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());

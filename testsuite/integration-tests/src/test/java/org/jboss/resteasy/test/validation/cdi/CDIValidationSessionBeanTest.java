@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationSessionBeanProxy;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationSessionBeanResource;
@@ -52,7 +52,7 @@ public class CDIValidationSessionBeanTest {
      */
     @Test
     public void testInvalidParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/test/resource/0")).request();
         ClientResponse response = (ClientResponse) request.get();
         String answer = response.readEntity(String.class);

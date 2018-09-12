@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumValidator;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarResource;
@@ -67,7 +67,7 @@ public class MultipleWarTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
     @After

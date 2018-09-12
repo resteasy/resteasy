@@ -11,6 +11,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
@@ -55,8 +57,8 @@ public class ChunkedTransferEncodingTest {
     public void init() {
         file = new File(testFilePath);
         fileLength = file.length();
-        clientDefault = new ResteasyClientBuilder().build();
-        clientEngine43 = new ResteasyClientBuilder().httpEngine(new ApacheHttpClient43Engine()).build();
+        clientDefault = (ResteasyClient)ClientBuilder.newClient();
+        clientEngine43 = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(new ApacheHttpClient43Engine()).build();
     }
 
     @After

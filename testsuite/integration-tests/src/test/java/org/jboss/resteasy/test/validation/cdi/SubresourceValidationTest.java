@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationQueryBeanParam;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationResource;
@@ -50,7 +50,7 @@ public class SubresourceValidationTest {
      */
     @Test
     public void testSubresource() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/sub/17?limit=abcdef")).request();
         ClientResponse response = (ClientResponse) request.get();
         ViolationReport r = new ViolationReport(response.readEntity(String.class));
@@ -64,7 +64,7 @@ public class SubresourceValidationTest {
      */
     @Test
     public void testReturnValue() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/sub/return/abcd")).request();
         ClientResponse response = (ClientResponse) request.get();
         ViolationReport r = new ViolationReport(response.readEntity(String.class));

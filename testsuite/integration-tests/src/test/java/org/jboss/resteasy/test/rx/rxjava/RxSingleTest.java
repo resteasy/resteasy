@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -92,7 +93,7 @@ public class RxSingleTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @Before
@@ -387,7 +388,7 @@ public class RxSingleTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(SingleRxInvokerProvider.class);
          SingleRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
          Single<Response> single = invoker.get();
@@ -432,12 +433,12 @@ public class RxSingleTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single1 = (Single<Response>) invoker1.get();      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single2 = (Single<Response>) invoker2.get();

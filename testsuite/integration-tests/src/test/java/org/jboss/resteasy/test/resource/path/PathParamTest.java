@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.path.resource.EmailResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamCarResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamDigits;
@@ -50,7 +50,7 @@ public class PathParamTest {
 
         String[] Headers = {"list=abcdef"};
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         for (String header : Headers) {
             Invocation.Builder request = client.target(PortProviderUtil.generateURL("/PathParamTest/a/b/c/d/e/f", PathLimitedTest.class.getSimpleName())).request();
             request.header("Accept", "text/plain");
@@ -67,7 +67,7 @@ public class PathParamTest {
      */
     @Test
     public void test178() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         {
             Invocation.Builder request = client.target(PortProviderUtil.generateURL("/digits/5150", PathLimitedTest.class.getSimpleName())).request();
             Response response = request.get();
@@ -90,7 +90,7 @@ public class PathParamTest {
      */
     @Test
     public void testCarResource() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(PortProviderUtil.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006", PathLimitedTest.class.getSimpleName())).request();
         Response response = request.get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -120,7 +120,7 @@ public class PathParamTest {
      */
     @Test
     public void testEmail() throws Exception {
-       ResteasyClient client = new ResteasyClientBuilder().build();
+       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
        Response response = client.target(PortProviderUtil.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com", PathLimitedTest.class.getSimpleName())).request().get();
        String str = response.readEntity(String.class);
        Assert.assertEquals("burke", str);

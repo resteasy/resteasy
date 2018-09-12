@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.core.interceptors;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.CorsHeaders;
 import org.jboss.resteasy.test.core.interceptors.resource.CorsFiltersResource;
@@ -89,7 +89,7 @@ public class CorsFiltersTest {
     public void testPreflight() throws Exception {
         String testedURL = "http://" + PortProviderUtil.getHost();
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test"));
         Response response = target.request().header(CorsHeaders.ORIGIN, testedURL)
                 .options();
@@ -126,7 +126,7 @@ public class CorsFiltersTest {
     @Test
     public void testVaryOriginHeader() {
         String testedURL = "http://" + PortProviderUtil.getHost();
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test"));
 
         Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));

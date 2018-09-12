@@ -7,7 +7,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassConstraint;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassValidator;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionResource;
@@ -55,7 +55,7 @@ public class PathSuppressionTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass

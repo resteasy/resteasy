@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,16 +17,14 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
 import org.jboss.resteasy.test.core.interceptors.resource.Pair;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -48,7 +48,7 @@ import com.google.common.net.HttpHeaders;
 @RunAsClient
 public class GzipSizeTest {
 
-    static ResteasyClient client;
+    static Client client;
     protected static final Logger logger = LogManager.getLogger(GzipSizeTest.class.getName());
 
     @Deployment
@@ -68,7 +68,7 @@ public class GzipSizeTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder() // Activate gzip compression on client:
+        client = ClientBuilder.newBuilder() // Activate gzip compression on client:
                     .register(AcceptEncodingGZIPFilter.class)
                     .register(new GZIPDecodingInterceptor(16))
                     .register(GZIPEncodingInterceptor.class)

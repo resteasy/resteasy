@@ -17,6 +17,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -30,7 +31,7 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
@@ -74,8 +75,8 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
     }
 
     @Override
-    public ClientResponse invoke(ClientInvocation invocation) {
-        Future<ClientResponse> future = submit(invocation, true, NOP, null);
+    public ClientResponse invoke(Invocation invocation) {
+        Future<ClientResponse> future = submit((ClientInvocation)invocation, true, NOP, null);
         try {
             return future.get(1, TimeUnit.HOURS); // There's already an idle and connect timeout, do we need one here?
         } catch (InterruptedException e) {
@@ -94,7 +95,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
      * which will read the data through its stream.  It is not possible to use the synchronous JAX-RS message
      * decoding infrastructure without buffering or spinning up auxiliary threads (arguably more expensive than buffering).
      *
-     * @see AsyncClientHttpEngine#submit(ClientInvocation, boolean, InvocationCallback, org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine.ResultExtractor)
+     * @see AsyncClientHttpEngine#submit(ClientInvocation, boolean, InvocationCallback, org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor)
      */
     @Override
     public <T> Future<T> submit(ClientInvocation invocation, boolean bufIn, InvocationCallback<T> callback, ResultExtractor<T> extractor) {

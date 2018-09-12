@@ -10,6 +10,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.test.client.resource.ClientExecutorShutdownTestResource;
@@ -62,7 +63,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
     @Test
     public void testApacheHttpClient4ExecutorNonSharedHttpClientFinalize() throws Throwable {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.finalize();
@@ -86,7 +87,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
     @Test
     public void testApacheHttpClient4ExecutorNonSharedHttpClientClose() throws Throwable {
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.close();
@@ -111,7 +112,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
     public void testApacheHttpClient4ExecutorSharedHttpClientFinalize() throws Throwable {
         HttpClient httpClient = HttpClientBuilder.create().build();
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, false);
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         engine.finalize();
@@ -134,7 +135,7 @@ public class ClientExecutorShutdownTest extends ClientTestBase{
     public void testApacheHttpClient4ExecutorSharedHttpClientClose() throws Throwable {
         HttpClient httpClient = HttpClientBuilder.create().build();
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, false);
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         Response response = client.target(generateURL("/test")).request().post(null);
         Assert.assertEquals("Original httpclient and engine httpclient are not the same instance",
                 HttpResponseCodes.SC_NO_CONTENT, response.getStatus());

@@ -7,7 +7,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2JAXBResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.resource.Jackson2Resource;
@@ -127,7 +127,7 @@ public class Jackson2Test {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

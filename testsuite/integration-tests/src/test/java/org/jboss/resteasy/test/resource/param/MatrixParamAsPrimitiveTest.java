@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveArray;
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveArrayDefault;
 import org.jboss.resteasy.test.resource.param.resource.MatrixParamAsPrimitiveArrayDefaultNull;
@@ -77,7 +77,7 @@ public class MatrixParamAsPrimitiveTest {
     public void basicTest(String type, String value) {
         String param = ";" + type + "=" + value;
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -87,7 +87,7 @@ public class MatrixParamAsPrimitiveTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/wrappers" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -97,7 +97,7 @@ public class MatrixParamAsPrimitiveTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/list" + param + param + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -107,7 +107,7 @@ public class MatrixParamAsPrimitiveTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/array" + param + param + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -119,7 +119,7 @@ public class MatrixParamAsPrimitiveTest {
 
     public void testDefault(String base, String type, String value) {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default/null")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -129,7 +129,7 @@ public class MatrixParamAsPrimitiveTest {
         }
 
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -140,7 +140,7 @@ public class MatrixParamAsPrimitiveTest {
 
         String param = ";" + type + "=" + value;
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL(base + "default/override" + param)).request()
                     .header(HttpHeaderNames.ACCEPT, "application/" + type)
                     .get();
@@ -469,7 +469,7 @@ public class MatrixParamAsPrimitiveTest {
     @Test
     public void testBadPrimitiveValue() {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();
@@ -486,7 +486,7 @@ public class MatrixParamAsPrimitiveTest {
     @Test
     public void testBadPrimitiveWrapperValue() {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/wrappers;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();
@@ -503,7 +503,7 @@ public class MatrixParamAsPrimitiveTest {
     @Test
     public void testBadPrimitiveListValue() {
         {
-            client = new ResteasyClientBuilder().build();
+            client = (ResteasyClient)ClientBuilder.newClient();
             Response response = client.target(generateURL("/list;int=abcdef;int=abcdef")).request()
                     .header(HttpHeaderNames.ACCEPT, "application/int")
                     .get();

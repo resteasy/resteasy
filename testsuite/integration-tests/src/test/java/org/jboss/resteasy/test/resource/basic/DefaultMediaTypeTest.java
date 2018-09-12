@@ -7,7 +7,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.DefaultMediaTypeCustomObject;
 import org.jboss.resteasy.test.resource.basic.resource.DefaultMediaTypeResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -51,7 +51,7 @@ public class DefaultMediaTypeTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

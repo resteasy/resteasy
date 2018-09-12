@@ -10,7 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapper;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapperArrayConverter;
 import org.jboss.resteasy.test.resource.param.resource.DateParamConverter;
@@ -92,7 +92,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testQueryParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			QueryParamResourceClient queryParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).queryParam();
 			
@@ -121,7 +121,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testHeaderParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			HeaderParamResourceClient headerParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).headerParam();
 			
@@ -149,7 +149,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testMatrixParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			MatrixParamResourceClient matrixParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).matrixParam();
 			
@@ -177,7 +177,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testCookieParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			CookieParamResourceClient cookieParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).cookieParam();
 			
@@ -205,7 +205,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testFormParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			FormParamResourceClient formParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).formParam();
 			
@@ -234,7 +234,7 @@ public class MultiValuedParamDateProxyTest {
      */
     @Test
     public void testPathParam() {
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 		try {
 			PathParamResourceClient pathParamResourceClient = client.target(generateBaseUrl()).proxy(MultiValuedParamResourceClient.class).pathParam();
 

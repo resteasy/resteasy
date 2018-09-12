@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.EmbeddedMultipartCustomer;
@@ -57,7 +57,7 @@ public class EmbeddedMultipartTest {
      */
     @Test
     public void testEmbedded() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/embedded"));
         EmbeddedMultipartCustomer customer = new EmbeddedMultipartCustomer("bill");
         MultipartOutput innerPart = new MultipartOutput();
@@ -76,7 +76,7 @@ public class EmbeddedMultipartTest {
      */
     @Test
     public void testCustomer() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/customer"));
         EmbeddedMultipartCustomer customer = new EmbeddedMultipartCustomer("bill");
         MultipartOutput outerPart = new MultipartOutput();
@@ -93,7 +93,7 @@ public class EmbeddedMultipartTest {
      */
     @Test
     public void testInvalid() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             ResteasyWebTarget target = client.target(generateURL("/invalid"));
             EmbeddedMultipartCustomer customer = new EmbeddedMultipartCustomer("bill");

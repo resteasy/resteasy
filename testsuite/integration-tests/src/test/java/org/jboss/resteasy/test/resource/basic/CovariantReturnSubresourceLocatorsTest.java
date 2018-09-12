@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.CovariantReturnSubresourceLocatorsRootProxy;
 import org.jboss.resteasy.test.resource.basic.resource.CovariantReturnSubresourceLocatorsSubProxy;
 import org.jboss.resteasy.test.resource.basic.resource.CovariantReturnSubresourceLocatorsSubProxyRootImpl;
@@ -44,7 +44,7 @@ public class CovariantReturnSubresourceLocatorsTest {
      */
     @Test
     public void basicTest() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(PortProviderUtil.generateURL("/path/sub/xyz",
                 CovariantReturnSubresourceLocatorsTest.class.getSimpleName())).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

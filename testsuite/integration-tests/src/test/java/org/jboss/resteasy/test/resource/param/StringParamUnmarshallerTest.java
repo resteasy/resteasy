@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerDateFormatter;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerFruit;
 import org.jboss.resteasy.test.resource.param.resource.StringParamUnmarshallerService;
@@ -54,7 +54,7 @@ public class StringParamUnmarshallerTest {
 
     @Test
     public void testDate() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/datetest/04-23-1977")).request();
         String date = request.get(String.class);
         Assert.assertTrue("Received wrong date", date.contains("Sat Apr 23 00:00:00"));
@@ -64,7 +64,7 @@ public class StringParamUnmarshallerTest {
 
     @Test
     public void testFruitAndSport() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/fromstring/ORANGE/football")).request();
         Assert.assertEquals("Received wrong response", "footballORANGE", request.get(String.class));
         client.close();

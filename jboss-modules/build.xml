@@ -156,6 +156,7 @@
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs-public">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs-client-api"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">

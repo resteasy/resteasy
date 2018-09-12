@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.EncodingMimeMultipartFormProviderResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -60,7 +60,7 @@ public class EncodingMimeMultipartFormProviderTest {
         MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
         mpfdo.addFormData("file_upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE, EncodingMimeMultipartFormProviderResource.FILENAME_NON_ASCII);
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Response response = client.target(TEST_URI + "/file").request()
               .post(Entity.entity(mpfdo, MediaType.MULTIPART_FORM_DATA_TYPE));
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());

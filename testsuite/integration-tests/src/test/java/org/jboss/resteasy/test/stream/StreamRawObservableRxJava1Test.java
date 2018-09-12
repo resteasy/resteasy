@@ -8,7 +8,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.stream.resource.StreamRawObservableRxJava1Resource;
 import org.jboss.resteasy.test.stream.resource.StreamRawByteArrayMessageBodyReaderWriter;
 import org.jboss.resteasy.test.stream.resource.StreamRawByteMessageBodyReaderWriter;
@@ -66,7 +66,7 @@ public class StreamRawObservableRxJava1Test {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @AfterClass

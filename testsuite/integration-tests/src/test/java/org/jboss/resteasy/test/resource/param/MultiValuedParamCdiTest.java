@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamCdiResource;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonConverterProvider;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamPersonArrayConverter;
@@ -72,7 +72,7 @@ public class MultiValuedParamCdiTest {
      */
     @Test
     public void testQueryParam() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
 

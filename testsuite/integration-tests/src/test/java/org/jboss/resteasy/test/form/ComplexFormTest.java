@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.ComplexFormAddress;
 import org.jboss.resteasy.test.form.resource.ComplexFormPerson;
 import org.jboss.resteasy.test.form.resource.ComplexFormResource;
@@ -50,7 +50,7 @@ public class ComplexFormTest {
         .param("invoice.street", "Main Street")
         .param("shipping.street", "Station Street");
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
         Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
