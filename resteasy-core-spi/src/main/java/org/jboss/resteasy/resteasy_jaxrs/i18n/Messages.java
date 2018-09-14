@@ -26,13 +26,15 @@ import org.jboss.resteasy.api.validation.ConstraintType;
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages
 {
-   Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+   public Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
 
    int BASE = 3000;
 
    int BASE_ASYNC = 9500;
 
    int BASE_VALIDATOR_11 = 8500;
+   
+   int BASE_EMBEDEDSERVER = 17500;
 
    @Message(id = BASE_VALIDATOR_11 + 0, value = "ResteasyViolationException has invalid format: %s")
    String exceptionHasInvalidFormat(String line);
@@ -835,4 +837,16 @@ public interface Messages
 
    @Message(id = BASE + 13, value = "Error creating array from %s")
    String errorCreatingArray(String s);
+
+   @Message(id = BASE_EMBEDEDSERVER + 0, value = "[Embedded Container Start]")
+   String embeddedContainerStart();
+
+   @Message(id = BASE_EMBEDEDSERVER + 5, value = "[Embedded Container Stop]")
+   String embeddedContainerStop();
+
+   @Message(id = BASE_EMBEDEDSERVER + 10, value = "Error parsing request")
+   String errorParsingRequest();
+   
+   @Message(id = BASE_EMBEDEDSERVER + 15, value = "WTF!")
+   String wtf();
 }

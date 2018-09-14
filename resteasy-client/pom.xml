@@ -60,8 +60,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>

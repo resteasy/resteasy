@@ -162,4 +162,18 @@ public class SseBroadcasterImpl implements SseBroadcaster
       });
    }
 
+   /**
+    * Close the broadcaster and release any resources associated with it. The closing of
+    * registered {@link SseEventSink} is controlled by the {@code cascading} parameter.
+    * <p>
+    * Subsequent calls have no effect and are ignored. Once the {@link SseBroadcaster} is closed,
+    * invoking any other method on the broadcaster instance would result in an
+    * {@link IllegalStateException} being thrown.
+    *
+    * @param cascading Boolean value that controls closing of registered {@link SseEventSink}
+    *                  instances.
+    */
+   public void close(boolean cascading) {
+      //TODO: implement this 
+   }
 }

@@ -17,6 +17,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
@@ -34,6 +35,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
@@ -45,8 +47,13 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.annotation.Priority;
+import javax.net.ssl.SSLParameters;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.JAXRS;
+import javax.ws.rs.JAXRS.Configuration.Builder;
+import javax.ws.rs.JAXRS.Configuration.SSLClientAuthentication;
+import javax.ws.rs.JAXRS.Instance;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.Produces;
 import javax.ws.rs.RuntimeType;
@@ -97,12 +104,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -2644,10 +2655,132 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
+   public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
+   {
+      return CompletableFuture.supplyAsync(new Supplier<Instance>()
+      {
 
+         @Override
+         public Instance get()
+         {
+            SunHttpJaxrsServer server = new SunHttpJaxrsServer();
+            server.setPort(configuration.port());
+            server.setHost(configuration.host());
+            server.setRootResourcePath(configuration.rootPath());
+            if (configuration.sslContext() != null)
+            {
+               SSLParameters sslParams = configuration.sslContext().getDefaultSSLParameters();
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.NONE)
+               {
+                  sslParams.setNeedClientAuth(false);
+               }
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.OPTIONAL)
+               {
+                  sslParams.setWantClientAuth(true);
+               }
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.MANDATORY)
+               {
+                  sslParams.setNeedClientAuth(true);
+               }
+               server.setSslParameters(sslParams);
+               server.setSSLContext(configuration.sslContext());
+            }
+            server.setProtocol(configuration.protocol());
+
+            ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+            deployment.setApplication(application);
+            server.setDeployment(deployment);
+            server.start();
+            return new Instance()
+            {
+               @Override
+               public javax.ws.rs.JAXRS.Configuration configuration()
+               {
+                  return configuration;
+               }
+
+               @Override
+               public CompletionStage<StopResult> stop()
+               {
+                  return CompletableFuture.supplyAsync(new Supplier<StopResult>() {
+
+                     @Override
+                     public StopResult get()
+                     {
+                         server.stop();
+                         return new StopResult() {
+
+                           @Override
+                           public <T> T unwrap(Class<T> nativeClass)
+                           {
+                              return null;
+                           }
+                            
+                         };
+                     }
+                    
+                  });
+               }
+
+               @Override
+               public <T> T unwrap(Class<T> nativeClass)
+               {
+                  return null;
+               }
+
+            };
+         }
+      });
+   }
    public <T> T getContextData(Class<T> type)
    {
       return ResteasyContext.getContextData(type);
    }
 
+
+   @Override
+   public Builder createConfigurationBuilder()
+   {
+       return new ConfigurationBuilder();
+   }
+   
+   public class ConfigurationBuilder implements Builder {
+      private Map<String, Object> properties = new HashMap<String, Object>();
+      @SuppressWarnings("rawtypes")
+      private BiFunction propertiesProvider;
+      @Override
+      public javax.ws.rs.JAXRS.Configuration build()
+      {
+          return new ServerConfiguration();
+      }
+
+      @Override
+      public <T> Builder from(BiFunction<String, Class<T>, Optional<T>> propertiesProvider)
+      {
+         Objects.requireNonNull(propertiesProvider);
+         this.propertiesProvider = propertiesProvider;
+         return this;
+      }
+
+      @Override
+      public Builder property(String name, Object value)
+      {
+         properties.put(name, value);
+         return this;
+      }
+      
+      private class ServerConfiguration implements javax.ws.rs.JAXRS.Configuration {
+         @Override
+         public Object property(String name)
+         {
+            Object result = properties.get(name);
+            if (result == null && propertiesProvider != null)
+            {
+               result = propertiesProvider.apply(name, Object.class);
+               return ((Optional)result).isPresent() ? ((Optional)result).get() : null;
+            }
+            return result;
+         }
+      }
+   }
 }
