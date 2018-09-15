@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
+
 /**
 *
 * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -41,7 +43,16 @@ public class ViolationReport
 
    public ViolationReport(final String s)
    {
-      this(new ResteasyViolationException(s));
+      this(new ResteasyViolationException(s)
+      {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+         public ConstraintTypeUtil getConstraintTypeUtil()
+         {
+            return null;
+         }
+      });
    }
 
    public ViolationReport()

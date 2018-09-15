@@ -6,6 +6,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceImpl;
 import org.jboss.resteasy.test.validation.cdi.resource.SessionResourceLocal;
@@ -54,7 +56,7 @@ public class ValidationSessionBeanTest {
         Response response = client.target(generateURL("/test/resource")).queryParam("param", "abc").request().get();
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
         int c = e.getViolations().size();
         Assert.assertTrue(c == 1 || c == 2);
         TestUtil.countViolations(e, c, 0, 0, 0, c, 0);

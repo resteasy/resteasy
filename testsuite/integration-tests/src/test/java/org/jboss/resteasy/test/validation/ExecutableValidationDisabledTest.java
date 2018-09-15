@@ -7,6 +7,8 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassValidator;
@@ -148,7 +150,7 @@ public class ExecutableValidationDisabledTest {
         Assert.assertNotNull("Missing validation header", header);
         Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
         String entity = response.readEntity(String.class);
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         TestUtil.countViolations(e, 3, 1, 1, 1, 0, 0);
         ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", violation.getMessage());

@@ -125,7 +125,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return (ValidationException) exception;
       }
-      return new ResteasyViolationException(simpleViolationsContainer);
+      return new ResteasyViolationExceptionImpl(simpleViolationsContainer);
    }
 
    @Override
@@ -138,7 +138,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          if (violationsContainer != null && violationsContainer.size() > 0)
          {
-            throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+            throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
          }
       }
    }
@@ -154,7 +154,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       SimpleViolationsContainer violationsContainer = SimpleViolationsContainer.class.cast(request.getAttribute(SimpleViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+         throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
 
@@ -187,7 +187,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             || hasApplicationScope(object))
           && violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+         throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
 
@@ -210,7 +210,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       violationsContainer.addViolations(cvs);
       if (violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+         throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
    
@@ -571,7 +571,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          violationsContainer.addViolations(cvs);
          if (violationsContainer.size() > 0)
          {
-            throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+            throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
          }
       }
       

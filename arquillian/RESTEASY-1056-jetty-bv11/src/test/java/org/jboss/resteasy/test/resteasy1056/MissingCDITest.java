@@ -12,6 +12,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 import org.jboss.resteasy.resteasy1056.TestApplication;
 import org.jboss.resteasy.resteasy1056.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
@@ -60,7 +61,7 @@ public class MissingCDITest {
         String entity = response.readEntity(String.class);
 //        System.out.println("Result: " + entity);
         assertEquals(400, response.getStatus());
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         countViolations(e, 1, 0, 0, 0, 1, 0);
         ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
         Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));

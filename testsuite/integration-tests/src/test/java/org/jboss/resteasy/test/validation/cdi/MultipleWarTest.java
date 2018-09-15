@@ -6,6 +6,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumValidator;
@@ -92,7 +94,7 @@ public class MultipleWarTest {
             response = request1.request().get();
             String answer = response.readEntity(String.class);
             assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 4, 1, 1, 1, 1, 0);
             ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
             Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be greater than or equal to 3"));
@@ -107,7 +109,7 @@ public class MultipleWarTest {
             response = request2.request().get();
             answer = response.readEntity(String.class);
             assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-            e = new ResteasyViolationException(String.class.cast(answer));
+            e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 4, 1, 1, 1, 1, 0);
             cv = e.getFieldViolations().iterator().next();
             Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be greater than or equal to 3"));
@@ -134,7 +136,7 @@ public class MultipleWarTest {
             response = request1.request().get();
             String answer = response.readEntity(String.class);
             assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
             Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be less than or equal to 0"));
@@ -143,7 +145,7 @@ public class MultipleWarTest {
             response = request2.request().get();
             answer = response.readEntity(String.class);
             assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-            e = new ResteasyViolationException(String.class.cast(answer));
+            e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
             TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
             cv = e.getReturnValueViolations().iterator().next();
             Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("must be less than or equal to 0"));
