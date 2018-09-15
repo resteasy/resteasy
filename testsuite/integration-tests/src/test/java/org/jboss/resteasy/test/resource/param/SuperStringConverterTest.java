@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompany;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverter;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverterProvider;
@@ -61,7 +61,7 @@ public class SuperStringConverterTest {
      */
     @Test
     public void testPerson() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         client.register(SuperStringConverterPersonConverterProvider.class);
         client.register(SuperStringConverterCompanyConverterProvider.class);
 
@@ -77,7 +77,7 @@ public class SuperStringConverterTest {
      */
     @Test
     public void testCompany() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         client.register(SuperStringConverterPersonConverterProvider.class);
         client.register(SuperStringConverterCompanyConverterProvider.class);
         SuperStringConverterMyClient proxy = ProxyBuilder.builder(SuperStringConverterMyClient.class, client.target(generateBaseUrl())).build();

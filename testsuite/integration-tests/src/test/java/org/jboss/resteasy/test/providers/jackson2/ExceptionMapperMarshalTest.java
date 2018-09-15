@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperIOExceptionMapper;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalErrorMessage;
@@ -14,8 +14,8 @@ import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarsha
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalMyCustomExceptionMapper;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.MyEntity;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -68,7 +68,7 @@ public class ExceptionMapperMarshalTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

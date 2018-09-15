@@ -6,13 +6,13 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonXmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceProduct2;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceXmlProduct;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -65,7 +65,7 @@ public class JacksonJaxbCoexistenceTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

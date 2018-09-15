@@ -1,28 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.core.ProvidersContextRetainer;
-import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
-import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
-import org.jboss.resteasy.plugins.providers.sse.EventInput;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.HeaderValueProcessor;
-import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.InputStreamToByteArray;
-import org.jboss.resteasy.util.ReadFromStream;
-import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.ReaderInterceptor;
-
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -32,6 +9,29 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
+
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
+
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
+import org.jboss.resteasy.plugins.providers.sse.EventInput;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.HeaderValueProcessor;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.util.Types;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.ReadFromStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

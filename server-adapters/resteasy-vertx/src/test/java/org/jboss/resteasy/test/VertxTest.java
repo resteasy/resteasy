@@ -157,8 +157,8 @@ public class VertxTest
    @Test
    public void testHeadContentLength() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/test"));
       Response getResponse = target.request().buildGet().invoke();
       String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
       Assert.assertEquals("hello world", val);

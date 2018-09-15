@@ -1,13 +1,12 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.specimpl.LinkBuilderImpl;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Link;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -18,6 +17,7 @@ public class LinkHeader
    private Map<String, Link> linksByRelationship = new HashMap<String, Link>();
    private Map<String, Link> linksByTitle = new HashMap<String, Link>();
    private List<Link> links = new ArrayList<Link>();
+   private static final HeaderDelegate<LinkHeader> delegate = RuntimeDelegate.getInstance().createHeaderDelegate(LinkHeader.class);
 
    public LinkHeader addLink(final Link link)
    {
@@ -27,7 +27,7 @@ public class LinkHeader
 
    public LinkHeader addLink(final String title, final String rel, final String href, final String type)
    {
-      final Link link = new LinkBuilderImpl().uri(href).rel(rel).title(title).type(type).build();
+      final Link link = Link.fromUri(href).rel(rel).title(title).type(type).build();
       return addLink(link);
    }
 
@@ -73,11 +73,11 @@ public class LinkHeader
 
    public static LinkHeader valueOf(String val)
    {
-      return LinkHeaderDelegate.from(val);
+      return delegate.fromString(val);
    }
 
    public String toString()
    {
-      return LinkHeaderDelegate.getString(this);
+      return delegate.toString(this);
    }
 }

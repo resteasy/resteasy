@@ -8,7 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointCDI;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorEndPointEJB;
@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorProxyEndP
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPointCDI;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPointEJB;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -100,7 +100,7 @@ public class ResourceClassProcessorBasicTest {
 
     @BeforeClass
     public static void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass
@@ -236,7 +236,7 @@ public class ResourceClassProcessorBasicTest {
     @Test
     @Category(ExpectedFailing.class)
     public void proxyTest() {
-        ResteasyClient proxyClient= new ResteasyClientBuilder()
+        ResteasyClient proxyClient= (ResteasyClient)ClientBuilder.newBuilder()
                 .register(ResourceClassProcessorImplementation.class)
                 .build();
 

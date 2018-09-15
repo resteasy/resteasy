@@ -13,7 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -99,7 +99,7 @@ public class RxObservableProxyServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
    }
 
@@ -315,11 +315,11 @@ public class RxObservableProxyServerAsyncTest {
 
    @Test
    public void testGetTwoClients() throws Exception {
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       RxObservableNoStreamResource proxy1 = client1.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
       List<String> list1 = proxy1.get();  
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       RxObservableNoStreamResource proxy2 = client2.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
       List<String> list2 = proxy2.get(); 
 

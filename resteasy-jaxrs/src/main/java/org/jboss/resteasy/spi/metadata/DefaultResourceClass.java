@@ -19,7 +19,7 @@ public class DefaultResourceClass implements ResourceClass
    protected ResourceConstructor constructor; // only one allowed
    protected String path;
 
-   public DefaultResourceClass(Class<?> clazz, String path)
+   public DefaultResourceClass(final Class<?> clazz, final String path)
    {
       this.clazz = clazz;
       this.path = path;

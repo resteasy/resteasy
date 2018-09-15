@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterLowPriorityCustomerWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterHignPriorityCustomerWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterClient;
@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterNowhereClie
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSpaces;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterSub;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -86,7 +86,7 @@ public class ReaderWriterTest {
 
     @BeforeClass
     public static void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass

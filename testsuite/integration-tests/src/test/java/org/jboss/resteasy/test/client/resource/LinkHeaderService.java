@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.client.resource;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.LinkHeader;
 
 import javax.ws.rs.HEAD;
@@ -9,6 +9,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -20,7 +21,7 @@ public class LinkHeaderService {
 
     @POST
     public Response post(@HeaderParam("Link") LinkHeader linkHeader) {
-        logger.info("SERVER LinkHeader: " + new LinkHeaderDelegate().toString(linkHeader));
+        logger.info("SERVER LinkHeader: " + toString(linkHeader));
         return Response.noContent().header("Link", linkHeader).build();
     }
 
@@ -55,6 +56,23 @@ public class LinkHeaderService {
         builder.path("poller");
         String link = "<" + builder.build().toString() + ">; rel=\"top-message\"; title=\"top-message\"";
         return link;
+    }
+    
+    private static String toString(LinkHeader value)
+    {
+       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+       return getString(value);
+    }
+
+    private static String getString(LinkHeader value)
+    {
+       StringBuffer buf = new StringBuffer();
+       for (Link link : value.getLinks())
+       {
+          if (buf.length() > 0) buf.append(", ");
+          buf.append(link.toString());
+       }
+       return buf.toString();
     }
 
 }

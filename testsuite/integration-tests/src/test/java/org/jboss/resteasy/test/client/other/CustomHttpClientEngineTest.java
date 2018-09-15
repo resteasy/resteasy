@@ -6,6 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4Resource;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4ResourceImpl;
@@ -45,7 +46,7 @@ public class CustomHttpClientEngineTest {
      */
     @Test
     public void test() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = ((ResteasyClientBuilder)ClientBuilder.newBuilder());
         ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
         ResteasyClient client = clientBuilder.httpEngine(engine).build();
         Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));

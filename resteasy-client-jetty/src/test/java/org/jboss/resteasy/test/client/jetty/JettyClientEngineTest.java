@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -59,7 +60,7 @@ public class JettyClientEngineTest {
         }
         if (client == null) {
             final HttpClient hc = new HttpClient();
-            client = new ResteasyClientBuilder().httpEngine(new JettyClientEngine(hc)).build();
+            client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(new JettyClientEngine(hc)).build();
         }
         return client;
     }

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.client.other.resource;
 
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 public class ApacheHttpClient4ResourceImpl implements ApacheHttpClient4Resource {
     public String get() {

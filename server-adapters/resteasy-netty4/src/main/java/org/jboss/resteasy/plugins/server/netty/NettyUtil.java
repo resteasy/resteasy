@@ -3,7 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import io.netty.handler.codec.http.HttpRequest;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;

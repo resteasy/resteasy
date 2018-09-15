@@ -18,7 +18,7 @@ import org.jboss.resteasy.test.cdi.generic.resource.Primate;
 import org.jboss.resteasy.test.cdi.generic.resource.UpperBoundHierarchyHolder;
 import org.jboss.resteasy.test.cdi.generic.resource.VisitList;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

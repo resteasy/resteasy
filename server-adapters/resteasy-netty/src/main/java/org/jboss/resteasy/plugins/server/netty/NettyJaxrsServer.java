@@ -9,6 +9,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -40,7 +41,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    protected String hostname = null;
    protected int configuredPort = 8080;
    protected int runtimePort = -1;
-   protected ResteasyDeployment deployment = new ResteasyDeployment();
+   protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
    protected String root = "";
    protected SecurityDomain domain;
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;

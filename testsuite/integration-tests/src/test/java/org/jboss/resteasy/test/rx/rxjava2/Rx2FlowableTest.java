@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -110,7 +111,7 @@ public class Rx2FlowableTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @Before
@@ -673,7 +674,7 @@ public class Rx2FlowableTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(FlowableRxInvokerProvider.class);
          FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
          Flowable<String> flowable = (Flowable<String>) invoker.get();
@@ -730,12 +731,12 @@ public class Rx2FlowableTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
       Flowable<String> flowable1 = (Flowable<String>) invoker1.get();      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
       Flowable<String> flowable2 = (Flowable<String>) invoker2.get();   

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

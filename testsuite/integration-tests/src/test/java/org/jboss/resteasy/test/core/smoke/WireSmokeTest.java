@@ -1,13 +1,18 @@
 package org.jboss.resteasy.test.core.smoke;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.smoke.resource.WireSmokeLocatingResource;
 import org.jboss.resteasy.test.core.smoke.resource.WireSmokeSimpleResource;
 import org.jboss.resteasy.test.core.smoke.resource.WireSmokeSimpleSubresource;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -17,11 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Smoke tests for jaxrs
@@ -50,7 +50,7 @@ public class WireSmokeTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

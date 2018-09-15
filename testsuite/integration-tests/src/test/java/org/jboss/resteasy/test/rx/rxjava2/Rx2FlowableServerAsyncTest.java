@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.GenericType;
@@ -55,7 +57,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Rx2FlowableServerAsyncTest {
 
-   private static ResteasyClient client;
+   private static Client client;
 
    private final static List<String> xStringList = new ArrayList<String>();
    private final static List<String> aStringList = new ArrayList<String>();   
@@ -104,7 +106,7 @@ public class Rx2FlowableServerAsyncTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = ClientBuilder.newClient();
    }
 
    @Before
@@ -409,12 +411,12 @@ public class Rx2FlowableServerAsyncTest {
    
    @Test
    public void testGetTwoClients() throws Exception {
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      Client client1 = ClientBuilder.newClient();
       Builder request1 = client1.target(generateURL("/get/string")).request();
       Response response1 = request1.get();
       List<String> list1 = response1.readEntity(LIST_OF_STRING);      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      Client client2 = ClientBuilder.newClient();
       Builder request2 = client2.target(generateURL("/get/string")).request();
       Response response2 = request2.get();
       List<String> list2 = response2.readEntity(LIST_OF_STRING); 

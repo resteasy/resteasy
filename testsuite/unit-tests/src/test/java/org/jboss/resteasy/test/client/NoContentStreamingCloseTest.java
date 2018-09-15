@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.client;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestFilter;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestInputStream;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestResponse;
@@ -35,7 +36,7 @@ public class NoContentStreamingCloseTest {
         String expected = "hi";
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(expected.getBytes());
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter(NoContentStreamingCloseTestResponse.buildStreamingResponse(testInputStream, -1))) //
                 .build();
 
@@ -61,7 +62,7 @@ public class NoContentStreamingCloseTest {
     public void testEmptyInputStream() throws Exception {
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(new byte[0]);
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter(NoContentStreamingCloseTestResponse.buildStreamingResponse(testInputStream, 0))) //
                 .build();
 
@@ -86,7 +87,7 @@ public class NoContentStreamingCloseTest {
     public void testEmptyReader() throws Exception {
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(new byte[0]);
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter(NoContentStreamingCloseTestResponse.buildStreamingResponse(testInputStream, 0))) //
                 .build();
 
@@ -111,7 +112,7 @@ public class NoContentStreamingCloseTest {
     public void testEmptyDataSource() throws Exception {
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(new byte[0]);
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter(NoContentStreamingCloseTestResponse.buildStreamingResponse(testInputStream, 0))) //
                 .build();
 
@@ -136,7 +137,7 @@ public class NoContentStreamingCloseTest {
     public void testEmptyStreamSource() throws Exception {
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(new byte[0]);
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter( //
                         NoContentStreamingCloseTestResponse.buildStreamingResponse("application/streamsource+xml", testInputStream, 0))) //
                 .build();
@@ -162,7 +163,7 @@ public class NoContentStreamingCloseTest {
     public void testEmptyByteArray() throws Exception {
         NoContentStreamingCloseTestInputStream testInputStream = new NoContentStreamingCloseTestInputStream(new byte[0]);
 
-        ResteasyClient client = new ResteasyClientBuilder() //
+        ResteasyClient client = new ResteasyClientBuilderImpl() //
                 .register(new NoContentStreamingCloseTestFilter(NoContentStreamingCloseTestResponse.buildStreamingResponse(testInputStream, 0))) //
                 .build();
 

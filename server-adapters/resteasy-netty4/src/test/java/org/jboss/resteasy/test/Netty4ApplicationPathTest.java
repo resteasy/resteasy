@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -65,7 +66,7 @@ public class Netty4ApplicationPathTest
       Client client = null;
       try
       {
-         ResteasyDeployment deployment = new ResteasyDeployment();
+         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
          deployment.setApplicationClass(TestApplication.class.getName());
          server = new NettyJaxrsServer();
          server.setDeployment(deployment);
@@ -102,7 +103,7 @@ public class Netty4ApplicationPathTest
       Client client = null;
       try
       {
-         ResteasyDeployment deployment = new ResteasyDeployment();
+         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
          Application app = new TestApplication();
          deployment.setApplication(app);
          server = new NettyJaxrsServer();
@@ -140,7 +141,7 @@ public class Netty4ApplicationPathTest
       Client client = null;
       try
       {
-         ResteasyDeployment deployment = new ResteasyDeployment();
+         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
          deployment.setApplicationClass(TestApplication.class.getName());
          server = new NettyJaxrsServer();
          server.setRootResourcePath("/new-rest-test");

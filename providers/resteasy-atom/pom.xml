@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${project.version}</version>
         </dependency>

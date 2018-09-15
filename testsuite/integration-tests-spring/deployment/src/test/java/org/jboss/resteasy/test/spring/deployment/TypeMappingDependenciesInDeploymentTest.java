@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.TypeMappingResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;

@@ -7,7 +7,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionResource;
 import org.jboss.resteasy.test.cdi.injection.resource.LazyInitUriInfoInjectionSingletonResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -48,7 +48,7 @@ public class LazyInitUriInfoInjectionTest {
      */
     @Test
     public void testDup() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(generateURL("test?h=world"));
         String val = base.request().get().readEntity(String.class);
         Assert.assertEquals(val, "world");

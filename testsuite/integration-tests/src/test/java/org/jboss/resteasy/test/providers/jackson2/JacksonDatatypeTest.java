@@ -6,12 +6,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeEndPoint;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonDatatypeJacksonProducer;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -53,7 +53,7 @@ public class JacksonDatatypeTest {
 
     @BeforeClass
     public static void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @AfterClass

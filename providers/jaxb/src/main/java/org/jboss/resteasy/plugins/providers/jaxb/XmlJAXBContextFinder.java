@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.lang.annotation.Annotation;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -9,8 +9,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.lang.annotation.Annotation;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 
 /**

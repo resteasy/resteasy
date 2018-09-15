@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.profiling;
 
 import org.junit.Assert;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.Registry;
@@ -55,7 +56,7 @@ public class MockedProfilingTest
       //final int WARMUP = 1000;
       //final int INTERATIONS = 1000000;
 
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.start();
       Registry registry = deployment.getRegistry();
       registry.addPerRequestResource(CleartextResource.class);

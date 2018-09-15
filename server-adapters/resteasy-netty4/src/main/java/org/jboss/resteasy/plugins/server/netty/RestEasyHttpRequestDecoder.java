@@ -14,7 +14,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 /**
  * This {@link MessageToMessageDecoder} is responsible for decode {@link io.netty.handler.codec.http.HttpRequest}

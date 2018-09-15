@@ -33,7 +33,8 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature1;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature2;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritenceTestFeature3;
@@ -61,7 +62,7 @@ import org.junit.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-1345
  * @tpSince RESTEasy 3.0.17
  */
-public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
+public class ConfigurationInheritenceTest extends ResteasyProviderFactoryImpl {
     private static ConfigurationInheritenceTestFeature2 testFeature2 = new ConfigurationInheritenceTestFeature2();
     private static ConfigurationInheritenceTestFeature4 testFeature4 = new ConfigurationInheritenceTestFeature4();
     private static ConfigurationInheritenceTestFeature6 testFeature6 = new ConfigurationInheritenceTestFeature6();
@@ -80,7 +81,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
      */
     @Test
     public void testClientBuilderToClient() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         clientBuilder.register(ConfigurationInheritenceTestFeature1.class);
         clientBuilder.register(testFeature2);
         clientBuilder.register(new ConfigurationInheritenceTestFilter1());
@@ -116,7 +117,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
      */
     @Test
     public void testClientToWebTarget() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         Client client = clientBuilder.build();
         client.register(ConfigurationInheritenceTestFeature1.class);
         client.register(testFeature2);
@@ -153,7 +154,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
      */
     @Test
     public void testRuntimeType() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilderImpl();
         Assert.assertEquals("Wrong RuntimeType in ClientBuilder", RuntimeType.CLIENT, clientBuilder.getConfiguration().getRuntimeType());
         Client client = clientBuilder.build();
         Assert.assertEquals("Wrong RuntimeType in Client", RuntimeType.CLIENT, client.getConfiguration().getRuntimeType());

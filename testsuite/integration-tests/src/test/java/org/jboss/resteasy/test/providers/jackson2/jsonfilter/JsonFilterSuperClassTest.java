@@ -1,18 +1,22 @@
 package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterChild;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterChildResource;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterParent;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifier;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierFilter;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.PersonType;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -22,10 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -59,7 +59,7 @@ public class JsonFilterSuperClassTest {
      */
     @Test
     public void testJacksonStringInSuperClass() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/superclass/333"));
         Response response = target.request().get();
         response.bufferEntity();

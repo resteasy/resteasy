@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
 import org.junit.AfterClass;
@@ -16,6 +13,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
@@ -62,8 +62,8 @@ public class HeadContentLengthTest
    @Test
    public void testBasic() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/test"));
       String val = target.request().get(String.class);
       Assert.assertEquals("hello world", val);
    }
@@ -71,8 +71,8 @@ public class HeadContentLengthTest
    @Test
    public void testHeadContentLength() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/test"));
       Response getResponse = target.request().buildGet().invoke();
       String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
       Assert.assertEquals("hello world", val);

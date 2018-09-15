@@ -7,12 +7,12 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.utils.TestUtil;
@@ -133,7 +133,7 @@ public class ChunkedTransferEncodingUnitTest
 
    @Test
    public void testChunkedTarget() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       target.setChunked(true);
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
@@ -148,7 +148,7 @@ public class ChunkedTransferEncodingUnitTest
    
    @Test
    public void testChunkedRequest() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       request.setChunked(true);

@@ -11,7 +11,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedOutput;
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderClient;
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderCustomer;
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

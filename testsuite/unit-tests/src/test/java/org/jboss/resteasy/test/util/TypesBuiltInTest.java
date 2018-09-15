@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.util;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.test.util.resource.TypesTestProvider;
 import org.jboss.resteasy.test.util.resource.TypesTestProviderSubclass;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.util.Types;
 import org.junit.Test;
 
 import javax.ws.rs.ext.ExceptionMapper;

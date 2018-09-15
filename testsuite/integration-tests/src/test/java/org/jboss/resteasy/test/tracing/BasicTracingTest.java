@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.Assert;
 import org.junit.Test;
 

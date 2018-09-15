@@ -24,7 +24,7 @@ import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerRe
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerResponseFilterMax;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;

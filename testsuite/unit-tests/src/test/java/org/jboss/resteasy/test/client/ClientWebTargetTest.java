@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.client;
 
+import java.util.Collections;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Collections;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -24,7 +24,7 @@ public class ClientWebTargetTest {
     public void propertyNullTest() throws Exception {
         String property = "property";
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = new ResteasyClientBuilderImpl().build();
         ClientWebTarget clientWebTarget = (ClientWebTarget) client.target("");
 
         Assert.assertTrue("Client properties should not be empty", client.getConfiguration().getProperties().isEmpty());

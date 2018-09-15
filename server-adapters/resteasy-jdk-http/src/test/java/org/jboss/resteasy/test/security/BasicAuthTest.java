@@ -12,6 +12,7 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -37,11 +38,11 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -166,7 +167,7 @@ public class BasicAuthTest
       cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
       CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
       BaseProxy proxy = target.proxy(BaseProxy.class);
       String val = proxy.get();
@@ -197,7 +198,7 @@ public class BasicAuthTest
       cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
       CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
  
       {
          Builder request = client.target(generateURL("/secured")).request();
@@ -234,7 +235,7 @@ public class BasicAuthTest
       cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
       CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       Response response = client.target(generateURL("/secured2")).request().get();
       Assert.assertEquals(404, response.getStatus());
       response.close();
@@ -254,7 +255,7 @@ public class BasicAuthTest
       }
 
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");

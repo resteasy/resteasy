@@ -10,7 +10,7 @@ import org.jboss.resteasy.test.core.basic.resource.ApplicationTestMappedApplicat
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestResourceA;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestResourceB;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

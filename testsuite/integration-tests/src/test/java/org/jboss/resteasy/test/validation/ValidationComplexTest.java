@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexA;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexArrayOfStrings;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexB;
@@ -56,7 +56,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWith
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithSubLocators;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithValidField;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexSubResourceWithCrossParameterConstraint;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -109,7 +109,7 @@ public class ValidationComplexTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationComplexFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationComplexFooReaderWriter.class);
     }
 
     @After

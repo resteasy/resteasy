@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
@@ -52,7 +52,7 @@ public class JaxbSmokeTest {
 
     @Before
     public void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

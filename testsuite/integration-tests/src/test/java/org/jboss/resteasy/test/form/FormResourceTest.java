@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.form.resource.FormResource;
 import org.jboss.resteasy.test.form.resource.FormResourceSecond;
@@ -77,7 +77,7 @@ public class FormResourceTest {
      */
     @Test
     public void testMultiValueParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/myform/server"));
         Response response = target.request().get();
         int status = response.getStatus();
@@ -105,7 +105,7 @@ public class FormResourceTest {
      */
     @Test
     public void testProxy691() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL(""));
         FormResourceProxy proxy = target.proxy(FormResourceProxy.class);
         proxy.post(null);
@@ -118,7 +118,7 @@ public class FormResourceTest {
      */
     @Test
     public void testProxy() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL(""));
         FormResourceClientProxy proxy = target.proxy(FormResourceClientProxy.class);
         FormResourceClientForm form = new FormResourceClientForm();
@@ -163,7 +163,7 @@ public class FormResourceTest {
     @Test
     public void testFormResource() throws Exception {
         InputStream in = null;
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             ResteasyWebTarget target = client.target(TEST_URI);
             Invocation.Builder request = target.request();

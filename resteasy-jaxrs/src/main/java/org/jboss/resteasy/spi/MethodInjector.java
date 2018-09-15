@@ -2,8 +2,6 @@ package org.jboss.resteasy.spi;
 
 import java.util.concurrent.CompletionStage;
 
-import org.jboss.resteasy.core.ValueInjector;
-
 /**
  * Will invoke a method in the context of an HTTP request.  Does all the parameter injection for you.
  *

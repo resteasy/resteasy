@@ -13,7 +13,7 @@ import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.AsyncResponse;

@@ -17,7 +17,7 @@
 
     <!-- ========== Resteasy setup ================ -->
 
-    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.core.ResteasyDeploymentImpl" init-method="start" destroy-method="stop">
         <description>
             This bean manages configuring your resteasy runtime.
         </description>

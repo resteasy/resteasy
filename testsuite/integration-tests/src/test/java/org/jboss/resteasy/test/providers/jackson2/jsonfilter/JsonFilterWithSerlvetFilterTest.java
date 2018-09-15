@@ -9,7 +9,9 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Resource;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifier;
@@ -54,7 +56,7 @@ public class JsonFilterWithSerlvetFilterTest {
      */
     @Test
     public void testJacksonString() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
+        Client client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
         response.bufferEntity();

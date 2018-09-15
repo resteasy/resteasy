@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  * MappedBy(Resource=FooResource.class, method="getFoo")
  * public class Foo
  * {
- * 	private int id;
- * 	// getters and setters
+ *  private int id;
+ *  // getters and setters
  * }
  *
  * {@literal @}Path("/foo")public class FooResource {
@@ -35,10 +35,10 @@ import java.lang.annotation.Target;
  * @version $Revision: 1 $
  */
 
-@Target({ElementType.TYPE})
+@Target(
+{ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MappedBy
-{
+public @interface MappedBy {
    Class<?> resource();
 
    String method() default "";

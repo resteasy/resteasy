@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
@@ -61,7 +62,7 @@ public class RxTest
 	@Before
 	public void before()
 	{
-		client = new ResteasyClientBuilder()
+		client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
 				.readTimeout(5, TimeUnit.SECONDS)
 				.connectionCheckoutTimeout(5, TimeUnit.SECONDS)
 				.connectTimeout(5, TimeUnit.SECONDS)

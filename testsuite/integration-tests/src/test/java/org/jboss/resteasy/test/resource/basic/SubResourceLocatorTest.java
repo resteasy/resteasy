@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorBaseCrudService;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorBaseService;
 import org.jboss.resteasy.test.resource.basic.resource.SubResourceLocatorFoo;
@@ -52,7 +52,7 @@ public class SubResourceLocatorTest {
      */
     @Test
     public void test657() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(PortProviderUtil.generateURL("/platform/users/89080/data/ada/jsanchez110",
                 SubResourceLocatorTest.class.getSimpleName()));
 

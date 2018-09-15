@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -83,7 +83,7 @@ public abstract class GzipAbstractTestBase {
      */
     protected void testNormalClient(URL deploymentUrl, boolean manuallyUseGzipOnClient, String assertAllowGzipOnServer, boolean assertAllowGzipOnClient,
                                     boolean assertServerReturnGzip) throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
 
         if (manuallyUseGzipOnClient) {
             client.register(org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter.class);

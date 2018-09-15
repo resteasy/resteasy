@@ -5,13 +5,11 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.providers.jaxb.resource.CharSetFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.providers.jaxb.resource.CharSetMovieResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -40,8 +38,6 @@ import java.util.Map;
 @RunAsClient
 public class CharSetRE1066Test
 {
-   protected static ResteasyDeployment deployment;
-   protected static Dispatcher dispatcher;
    public static final MediaType APPLICATION_XML_UTF16_TYPE;
    public static final MediaType TEXT_PLAIN_UTF16_TYPE;
    public static final MediaType WILDCARD_UTF16_TYPE;
@@ -62,7 +58,7 @@ public class CharSetRE1066Test
 
    @Before
    public void before() {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @After

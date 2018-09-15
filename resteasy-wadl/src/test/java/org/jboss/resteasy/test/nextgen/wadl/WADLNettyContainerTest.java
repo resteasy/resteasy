@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.nextgen.wadl;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -24,7 +25,7 @@ public class WADLNettyContainerTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ResteasyDeployment deployment = new ResteasyDeployment();
+        ResteasyDeployment deployment = new ResteasyDeploymentImpl();
         deployment.setSecurityEnabled(true);
 
         netty = new NettyJaxrsServer();

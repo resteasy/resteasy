@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
 import org.jboss.resteasy.test.validation.resource.ValidationHibernateI18NResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -44,7 +44,7 @@ public class ValidationHibernateI18NTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
     @After

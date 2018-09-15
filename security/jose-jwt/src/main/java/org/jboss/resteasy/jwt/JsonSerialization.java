@@ -1,5 +1,6 @@
 package org.jboss.resteasy.jwt;
 
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -23,7 +24,7 @@ public class JsonSerialization
 {
    public static byte[] toByteArray(Object token, boolean indent) throws Exception
    {
-      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+      ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
       factory.register(new JWTContextResolver(indent));
       factory.register(ResteasyJackson2Provider.class);
 
@@ -83,7 +84,7 @@ public class JsonSerialization
 
    public static <T> T fromBytes(Class<T> type, byte[] bytes) throws IOException
    {
-      ResteasyProviderFactory factory = new ResteasyProviderFactory();
+      ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl();
       factory.register(ResteasyJackson2Provider.class);
       factory.register(JWTContextResolver.class);
 

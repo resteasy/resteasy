@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.QualityFactorResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.QualityFactorThing;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -43,7 +43,7 @@ public class QualityFactorTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

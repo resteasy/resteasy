@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.sun.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.util.PortProvider;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -59,7 +60,7 @@ public class HttpServerContainer
    
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain, Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
    {
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setSecurityEnabled(true);
       return start(bindPath, domain, deployment, initParams, contextParams);
    }

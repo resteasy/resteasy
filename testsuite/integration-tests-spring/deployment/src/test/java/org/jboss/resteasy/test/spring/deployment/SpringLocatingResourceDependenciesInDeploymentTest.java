@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringLocatingLocatingResource;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringLocatingSimpleResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
@@ -19,6 +19,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -36,7 +39,7 @@ import java.util.logging.LoggingPermission;
 @RunAsClient
 public class SpringLocatingResourceDependenciesInDeploymentTest {
 
-    static ResteasyClient client;
+    static Client client;
 
     @Deployment
     private static Archive<?> deploy() {
@@ -64,7 +67,7 @@ public class SpringLocatingResourceDependenciesInDeploymentTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = ClientBuilder.newClient();
     }
 
     @After

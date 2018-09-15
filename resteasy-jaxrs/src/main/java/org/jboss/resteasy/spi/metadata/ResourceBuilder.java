@@ -1,36 +1,7 @@
 package org.jboss.resteasy.spi.metadata;
 
-import org.jboss.resteasy.annotations.Body;
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.annotations.Query;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.IsHttpMethod;
-import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.MethodHashing;
-import org.jboss.resteasy.util.PickConstructor;
-import org.jboss.resteasy.util.Types;
+import static org.jboss.resteasy.spi.util.FindAnnotation.findAnnotation;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -51,7 +22,36 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.annotations.Body;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.annotations.Query;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.util.MethodHashing;
+import org.jboss.resteasy.spi.util.PickConstructor;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -63,12 +63,16 @@ public class ResourceBuilder
    public static class ResourceClassBuilder
    {
       final DefaultResourceClass resourceClass;
+
       List<FieldParameter> fields = new ArrayList<FieldParameter>();
+
       List<SetterParameter> setters = new ArrayList<SetterParameter>();
+
       List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
+
       List<ResourceLocator> resourceLocators = new ArrayList<ResourceLocator>();
 
-      public ResourceClassBuilder(Class<?> root, String path)
+      public ResourceClassBuilder(final Class<?> root, final String path)
       {
          this.resourceClass = new DefaultResourceClass(root, path);
       }
@@ -125,7 +129,7 @@ public class ResourceBuilder
    {
       final Parameter parameter;
 
-      public ParameterBuilder(Parameter parameter)
+      public ParameterBuilder(final Parameter parameter)
       {
          this.parameter = parameter;
       }
@@ -133,64 +137,64 @@ public class ResourceBuilder
       public T type(Class<?> type)
       {
          parameter.type = type;
-         return (T)this;
+         return (T) this;
       }
 
       public T genericType(Type type)
       {
          parameter.genericType = type;
-         return (T)this;
+         return (T) this;
       }
 
       public T type(GenericType type)
       {
          parameter.type = type.getRawType();
          parameter.genericType = type.getType();
-         return (T)this;
+         return (T) this;
       }
 
       public T beanParam()
       {
          parameter.paramType = Parameter.ParamType.BEAN_PARAM;
-         return (T)this;
+         return (T) this;
       }
 
       public T context()
       {
          parameter.paramType = Parameter.ParamType.CONTEXT;
-         return (T)this;
+         return (T) this;
       }
 
       public T messageBody()
       {
          parameter.paramType = Parameter.ParamType.MESSAGE_BODY;
-         return (T)this;
+         return (T) this;
       }
 
       public T encoded()
       {
          parameter.encoded = true;
-         return (T)this;
+         return (T) this;
       }
 
       public T defaultValue(String defaultValue)
       {
          parameter.defaultValue = defaultValue;
-         return (T)this;
+         return (T) this;
       }
 
       public T cookieParam(String name)
       {
          parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       public T formParam(String name)
       {
          parameter.paramType = Parameter.ParamType.FORM_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       /**
@@ -203,7 +207,7 @@ public class ResourceBuilder
       {
          parameter.paramType = Parameter.ParamType.FORM;
          parameter.paramName = prefix;
-         return (T)this;
+         return (T) this;
       }
 
       /**
@@ -215,36 +219,35 @@ public class ResourceBuilder
       {
          parameter.paramType = Parameter.ParamType.FORM;
          parameter.paramName = "";
-         return (T)this;
+         return (T) this;
       }
-
 
       public T headerParam(String name)
       {
          parameter.paramType = Parameter.ParamType.HEADER_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       public T matrixParam(String name)
       {
          parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       public T pathParam(String name)
       {
          parameter.paramType = Parameter.ParamType.PATH_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       public T queryParam(String name)
       {
          parameter.paramType = Parameter.ParamType.QUERY_PARAM;
          parameter.paramName = name;
-         return (T)this;
+         return (T) this;
       }
 
       @SuppressWarnings("deprecation")
@@ -254,9 +257,11 @@ public class ResourceBuilder
          AccessibleObject injectTarget = parameter.getAccessibleObject();
          Class<?> type = parameter.getResourceClass().getClazz();
 
-         parameter.encoded = findAnnotation(annotations, Encoded.class) != null || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
+         parameter.encoded = findAnnotation(annotations, Encoded.class) != null
+               || injectTarget.isAnnotationPresent(Encoded.class) || type.isAnnotationPresent(Encoded.class);
          DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
-         if (defaultValue != null) parameter.defaultValue = defaultValue.value();
+         if (defaultValue != null)
+            parameter.defaultValue = defaultValue.value();
 
          QueryParam queryParam;
          org.jboss.resteasy.annotations.jaxrs.QueryParam queryParam2;
@@ -274,20 +279,21 @@ public class ResourceBuilder
          Form form;
          Suspended suspended;
 
-
          if ((queryParam = findAnnotation(annotations, QueryParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
             parameter.paramName = queryParam.value();
          }
-         else if ((queryParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.QueryParam.class)) != null)
+         else if ((queryParam2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.QueryParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
-            if (queryParam2.value() != null && queryParam2.value().length() > 0) {
+            if (queryParam2.value() != null && queryParam2.value().length() > 0)
+            {
                parameter.paramName = queryParam2.value();
             }
          }
-         else if(( query = findAnnotation(annotations, Query.class))!= null)
+         else if ((query = findAnnotation(annotations, Query.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.QUERY;
             parameter.paramName = ""; // TODO query.prefix();
@@ -297,10 +303,12 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.HEADER_PARAM;
             parameter.paramName = header.value();
          }
-         else if ((header2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.HeaderParam.class)) != null)
+         else if ((header2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.HeaderParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.HEADER_PARAM;
-            if (header2.value() != null && header2.value().length() > 0) {
+            if (header2.value() != null && header2.value().length() > 0)
+            {
                parameter.paramName = header2.value();
             }
          }
@@ -309,10 +317,12 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.FORM_PARAM;
             parameter.paramName = formParam.value();
          }
-         else if ((formParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.FormParam.class)) != null)
+         else if ((formParam2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.FormParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.FORM_PARAM;
-            if (formParam2.value() != null && formParam2.value().length() > 0) {
+            if (formParam2.value() != null && formParam2.value().length() > 0)
+            {
                parameter.paramName = formParam2.value();
             }
          }
@@ -321,10 +331,12 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
             parameter.paramName = cookie.value();
          }
-         else if ((cookie2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.CookieParam.class)) != null)
+         else if ((cookie2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.CookieParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
-            if (cookie2.value() != null && cookie2.value().length() > 0) {
+            if (cookie2.value() != null && cookie2.value().length() > 0)
+            {
                parameter.paramName = cookie2.value();
             }
          }
@@ -333,10 +345,12 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.PATH_PARAM;
             parameter.paramName = uriParam.value();
          }
-         else if ((uriParam2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.PathParam.class)) != null)
+         else if ((uriParam2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.PathParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.PATH_PARAM;
-            if (uriParam2.value() != null && uriParam2.value().length() > 0) {
+            if (uriParam2.value() != null && uriParam2.value().length() > 0)
+            {
                parameter.paramName = uriParam2.value();
             }
          }
@@ -354,10 +368,12 @@ public class ResourceBuilder
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
             parameter.paramName = matrix.value();
          }
-         else if ((matrix2 = findAnnotation(annotations, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class)) != null)
+         else if ((matrix2 = findAnnotation(annotations,
+               org.jboss.resteasy.annotations.jaxrs.MatrixParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
-            if (matrix2.value() != null && matrix2.value().length() > 0) {
+            if (matrix2.value() != null && matrix2.value().length() > 0)
+            {
                parameter.paramName = matrix2.value();
             }
          }
@@ -381,16 +397,17 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.UNKNOWN;
          }
-         return (T)this;
+         return (T) this;
       }
    }
 
    public static class ConstructorParameterBuilder extends ParameterBuilder<ConstructorParameterBuilder>
    {
       final ResourceConstructorBuilder constructor;
+
       final ConstructorParameter param;
 
-      public ConstructorParameterBuilder(ResourceConstructorBuilder builder, ConstructorParameter param)
+      public ConstructorParameterBuilder(final ResourceConstructorBuilder builder, final ConstructorParameter param)
       {
          super(param);
          this.constructor = builder;
@@ -409,12 +426,15 @@ public class ResourceBuilder
 
    }
 
-   public static class LocatorMethodParameterBuilder<T extends LocatorMethodParameterBuilder<T>>  extends ParameterBuilder<T>
+   public static class LocatorMethodParameterBuilder<T extends LocatorMethodParameterBuilder<T>>
+         extends
+            ParameterBuilder<T>
    {
       final ResourceLocatorBuilder locator;
+
       final MethodParameter param;
 
-      public LocatorMethodParameterBuilder(ResourceLocatorBuilder method, MethodParameter param)
+      public LocatorMethodParameterBuilder(final ResourceLocatorBuilder method, final MethodParameter param)
       {
          super(param);
          this.locator = method;
@@ -423,7 +443,7 @@ public class ResourceBuilder
 
       public T param(int i)
       {
-         return (T)locator.param(i);
+         return (T) locator.param(i);
       }
 
       public ResourceClassBuilder buildMethod()
@@ -433,11 +453,13 @@ public class ResourceBuilder
 
    }
 
-   public static class ResourceMethodParameterBuilder extends LocatorMethodParameterBuilder<ResourceMethodParameterBuilder>
+   public static class ResourceMethodParameterBuilder
+         extends
+            LocatorMethodParameterBuilder<ResourceMethodParameterBuilder>
    {
       final ResourceMethodBuilder method;
 
-      public ResourceMethodParameterBuilder(ResourceMethodBuilder method, MethodParameter param)
+      public ResourceMethodParameterBuilder(final ResourceMethodBuilder method, final MethodParameter param)
       {
          super(method, param);
          this.method = method;
@@ -470,13 +492,15 @@ public class ResourceBuilder
    {
 
       ResourceConstructor constructor;
+
       ResourceClassBuilder resourceClassBuilder;
 
-      public ResourceConstructorBuilder(ResourceClassBuilder resourceClassBuilder, Constructor constructor)
+      public ResourceConstructorBuilder(final ResourceClassBuilder resourceClassBuilder, final Constructor constructor)
       {
          this.resourceClassBuilder = resourceClassBuilder;
          this.constructor = new DefaultResourceConstructor(resourceClassBuilder.resourceClass, constructor);
       }
+
       public ConstructorParameterBuilder param(int i)
       {
          return new ConstructorParameterBuilder(this, constructor.getParams()[i]);
@@ -493,13 +517,14 @@ public class ResourceBuilder
    {
 
       DefaultResourceLocator locator;
+
       ResourceClassBuilder resourceClassBuilder;
 
       ResourceLocatorBuilder()
       {
       }
 
-      public ResourceLocatorBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
+      public ResourceLocatorBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
       {
          this.resourceClassBuilder = resourceClassBuilder;
          this.locator = new DefaultResourceLocator(resourceClassBuilder.resourceClass, method, annotatedMethod);
@@ -508,20 +533,20 @@ public class ResourceBuilder
       public T returnType(Class<?> type)
       {
          locator.returnType = type;
-         return (T)this;
+         return (T) this;
       }
 
       public T genericReturnType(Type type)
       {
          locator.genericReturnType = type;
-         return (T)this;
+         return (T) this;
       }
 
       public T returnType(GenericType type)
       {
          locator.returnType = type.getRawType();
          locator.genericReturnType = type.getType();
-         return (T)this;
+         return (T) this;
       }
 
       public LocatorMethodParameterBuilder param(int i)
@@ -531,9 +556,11 @@ public class ResourceBuilder
 
       public ResourceClassBuilder buildMethod()
       {
-         ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (locator.resourceClass.getPath() != null) builder.path(locator.resourceClass.getPath());
-         if (locator.path != null) builder.path(locator.path);
+         ResteasyUriBuilder builder = (ResteasyUriBuilder) RuntimeDelegate.getInstance().createUriBuilder();
+         if (locator.resourceClass.getPath() != null)
+            builder.path(locator.resourceClass.getPath());
+         if (locator.path != null)
+            builder.path(locator.path);
          String pathExpression = builder.getPath();
          if (pathExpression == null)
             pathExpression = "";
@@ -549,7 +576,7 @@ public class ResourceBuilder
       public T path(String path)
       {
          locator.path = path;
-         return (T)this;
+         return (T) this;
       }
    }
 
@@ -557,7 +584,7 @@ public class ResourceBuilder
    {
       DefaultResourceMethod method;
 
-      ResourceMethodBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
+      ResourceMethodBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
       {
          this.method = new DefaultResourceMethod(resourceClassBuilder.resourceClass, method, annotatedMethod);
          this.locator = this.method;
@@ -620,7 +647,7 @@ public class ResourceBuilder
          {
             if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
             {
-               if (MediaTypeHelper.isTextLike(mt))
+               if (isTextLike(mt))
                {
                   ResteasyDeployment deployment = ResteasyProviderFactory.getContextData(ResteasyDeployment.class);
                   if (deployment != null && !deployment.isAddCharset())
@@ -633,13 +660,20 @@ public class ResourceBuilder
          return this;
       }
 
+      private static boolean isTextLike(MediaType mediaType)
+      {
+         return "text".equalsIgnoreCase(mediaType.getType()) || ("application".equalsIgnoreCase(mediaType.getType())
+               && mediaType.getSubtype().toLowerCase().startsWith("xml"));
+      }
+
       protected MediaType[] parseMediaTypes(String[] produces)
       {
          List<MediaType> mediaTypes = new ArrayList<MediaType>();
          for (String produce : produces)
          {
             String[] split = produce.split(",");
-            for (String s : split) mediaTypes.add(MediaType.valueOf(s));
+            for (String s : split)
+               mediaTypes.add(MediaType.valueOf(s));
          }
          MediaType[] types = new MediaType[mediaTypes.size()];
          types = mediaTypes.toArray(types);
@@ -666,9 +700,11 @@ public class ResourceBuilder
 
       public ResourceClassBuilder buildMethod()
       {
-         ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (method.resourceClass.getPath() != null) builder.path(method.resourceClass.getPath());
-         if (method.path != null) builder.path(method.path);
+         ResteasyUriBuilder builder = (ResteasyUriBuilder) RuntimeDelegate.getInstance().createUriBuilder();
+         if (method.resourceClass.getPath() != null)
+            builder.path(method.resourceClass.getPath());
+         if (method.path != null)
+            builder.path(method.path);
          String pathExpression = builder.getPath();
          if (pathExpression == null)
             pathExpression = "";
@@ -685,8 +721,10 @@ public class ResourceBuilder
    public static class FieldParameterBuilder extends ParameterBuilder<FieldParameterBuilder>
    {
       FieldParameter field;
+
       ResourceClassBuilder resourceClassBuilder;
-      FieldParameterBuilder(ResourceClassBuilder resourceClassBuilder, FieldParameter parameter)
+
+      FieldParameterBuilder(final ResourceClassBuilder resourceClassBuilder, final FieldParameter parameter)
       {
          super(parameter);
          this.field = parameter;
@@ -704,8 +742,10 @@ public class ResourceBuilder
    public static class SetterParameterBuilder extends ParameterBuilder<SetterParameterBuilder>
    {
       SetterParameter setter;
+
       ResourceClassBuilder resourceClassBuilder;
-      SetterParameterBuilder(ResourceClassBuilder resourceClassBuilder, SetterParameter parameter)
+
+      SetterParameterBuilder(final ResourceClassBuilder resourceClassBuilder, final SetterParameter parameter)
       {
          super(parameter);
          this.setter = parameter;
@@ -730,7 +770,8 @@ public class ResourceBuilder
    public void registerResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {
       List<ResourceClassProcessor> l = processors.get(priority);
-      if (l == null) {
+      if (l == null)
+      {
          l = new LinkedList<ResourceClassProcessor>();
          processors.put(priority, l);
       }
@@ -792,7 +833,8 @@ public class ResourceBuilder
       ResourceConstructorBuilder builder = buildRootResource(annotatedResourceClass).constructor(constructor);
       if (constructor.getParameterTypes() != null)
       {
-         for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
+         for (int i = 0; i < constructor.getParameterTypes().length; i++)
+            builder.param(i).fromAnnotations();
       }
       ResourceClass resourceClass = applyProcessors(builder.buildConstructor().buildClass());
       return resourceClass.getConstructor();
@@ -829,23 +871,26 @@ public class ResourceBuilder
    private ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
       // stupid hack for Weld as it loses generic type information, but retains annotations.
-      if (!clazz.isInterface() && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class) && clazz.isSynthetic())
+      if (!clazz.isInterface() && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)
+            && clazz.isSynthetic())
       {
          clazz = clazz.getSuperclass();
       }
 
-
       ResourceClassBuilder builder = null;
-      if (isLocator) builder = buildLocator(clazz);
+      if (isLocator)
+         builder = buildLocator(clazz);
       else
       {
          Path path = clazz.getAnnotation(Path.class);
-         if (path == null) builder = buildRootResource(clazz, null);
-         else builder = buildRootResource(clazz, path.value());
+         if (path == null)
+            builder = buildRootResource(clazz, null);
+         else
+            builder = buildRootResource(clazz, path.value());
       }
       for (Method method : clazz.getMethods())
       {
-         if(!method.isSynthetic() && !method.getDeclaringClass().equals(Object.class))
+         if (!method.isSynthetic() && !method.getDeclaringClass().equals(Object.class))
             processMethod(isLocator, builder, clazz, method);
 
       }
@@ -855,6 +900,20 @@ public class ResourceBuilder
       }
       processSetters(builder, clazz);
       return applyProcessors(builder.buildClass());
+   }
+
+   private static Set<String> getHttpMethods(Method method)
+   {
+      HashSet<String> methods = new HashSet<String>();
+      for (Annotation annotation : method.getAnnotations())
+      {
+         HttpMethod http = annotation.annotationType().getAnnotation(HttpMethod.class);
+         if (http != null)
+            methods.add(http.value());
+      }
+      if (methods.size() == 0)
+         return null;
+      return methods;
    }
 
    @Deprecated
@@ -878,7 +937,7 @@ public class ResourceBuilder
       }
 
       // Check the method itself for JAX-RS annotations
-      if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
+      if (implementation.isAnnotationPresent(Path.class) || getHttpMethods(implementation) != null)
       {
          return implementation;
       }
@@ -897,19 +956,22 @@ public class ResourceBuilder
       }
 
       // Check super-classes for inherited annotations
-      for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
+      for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz
+            .getSuperclass())
       {
-         final Method overriddenMethod = Types.findOverriddenMethod(implementation.getDeclaringClass(), clazz, implementation);
+         final Method overriddenMethod = Types.findOverriddenMethod(implementation.getDeclaringClass(), clazz,
+               implementation);
          if (overriddenMethod == null)
          {
             continue;
          }
 
-         if (overriddenMethod.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(overriddenMethod) != null)
+         if (overriddenMethod.isAnnotationPresent(Path.class) || getHttpMethods(overriddenMethod) != null)
          {
             return overriddenMethod;
          }
-         if (overriddenMethod.isAnnotationPresent(Produces.class) || overriddenMethod.isAnnotationPresent(Consumes.class))
+         if (overriddenMethod.isAnnotationPresent(Produces.class)
+               || overriddenMethod.isAnnotationPresent(Consumes.class))
          {
             // Abort the search for inherited annotations as specified by the JAX-RS specification.
             // If a implementation method has any JAX-RS annotations then all the annotations
@@ -927,14 +989,17 @@ public class ResourceBuilder
 
          for (Class<?> classInterface : clazz.getInterfaces())
          {
-            final Method overriddenInterfaceMethod = Types.getImplementedInterfaceMethod(root, classInterface, implementation);
+            final Method overriddenInterfaceMethod = Types.getImplementedInterfaceMethod(root, classInterface,
+                  implementation);
             if (overriddenInterfaceMethod == null)
             {
                continue;
             }
-            if (!overriddenInterfaceMethod.isAnnotationPresent(Path.class) && IsHttpMethod.getHttpMethods(overriddenInterfaceMethod) == null)
+            if (!overriddenInterfaceMethod.isAnnotationPresent(Path.class)
+                  && getHttpMethods(overriddenInterfaceMethod) == null)
             {
-               if (overriddenInterfaceMethod.isAnnotationPresent(Produces.class) || overriddenInterfaceMethod.isAnnotationPresent(Consumes.class))
+               if (overriddenInterfaceMethod.isAnnotationPresent(Produces.class)
+                     || overriddenInterfaceMethod.isAnnotationPresent(Consumes.class))
                {
                   // Abort the search for inherited annotations as specified by the JAX-RS specification.
                   // If a implementation method has any JAX-RS annotations then all the annotations
@@ -942,7 +1007,9 @@ public class ResourceBuilder
                   // Therefore a method can be omitted if it is neither a resource method nor a sub-resource method /
                   // sub-resource locator but is annotated with other JAX-RS annotations.
                   return null;
-               } else {
+               }
+               else
+               {
                   continue;
                }
             }
@@ -971,8 +1038,9 @@ public class ResourceBuilder
       {
          processDeclaredFields(resourceClassBuilder, root);
          root = root.getSuperclass();
-//      } while (root.getSuperclass() != null && !root.getSuperclass().equals(Object.class));
-      } while (root != null && !root.equals(Object.class));
+         //      } while (root.getSuperclass() != null && !root.getSuperclass().equals(Object.class));
+      }
+      while (root != null && !root.equals(Object.class));
    }
 
    protected void processSetters(ResourceClassBuilder resourceClassBuilder, Class<?> root)
@@ -982,57 +1050,80 @@ public class ResourceBuilder
       {
          processDeclaredSetters(resourceClassBuilder, root, hashes);
          root = root.getSuperclass();
-      } while (root != null && !root.equals(Object.class));
+      }
+      while (root != null && !root.equals(Object.class));
    }
 
    protected void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, final Class<?> root)
    {
       Field[] fieldList = new Field[0];
-      try {
-         if (System.getSecurityManager() == null) {
+      try
+      {
+         if (System.getSecurityManager() == null)
+         {
             fieldList = root.getDeclaredFields();
-         } else {
-            fieldList = AccessController.doPrivileged(new PrivilegedExceptionAction<Field[]>() {
+         }
+         else
+         {
+            fieldList = AccessController.doPrivileged(new PrivilegedExceptionAction<Field[]>()
+            {
                @Override
-               public Field[] run() throws Exception {
+               public Field[] run() throws Exception
+               {
                   return root.getDeclaredFields();
                }
             });
          }
-      } catch (PrivilegedActionException pae) {
+      }
+      catch (PrivilegedActionException pae)
+      {
 
       }
 
       for (Field field : fieldList)
       {
          FieldParameterBuilder builder = resourceClassBuilder.field(field).fromAnnotations();
-         if (builder.field.paramType == Parameter.ParamType.MESSAGE_BODY && !field.isAnnotationPresent(Body.class)) continue;
-         if (builder.field.paramType == Parameter.ParamType.UNKNOWN) continue;
+         if (builder.field.paramType == Parameter.ParamType.MESSAGE_BODY && !field.isAnnotationPresent(Body.class))
+            continue;
+         if (builder.field.paramType == Parameter.ParamType.UNKNOWN)
+            continue;
          builder.buildField();
       }
    }
-   protected void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root, Set<Long> visitedHashes)
+
+   protected void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root,
+         Set<Long> visitedHashes)
    {
       Method[] methodList = new Method[0];
-      try {
-         if (System.getSecurityManager() == null) {
+      try
+      {
+         if (System.getSecurityManager() == null)
+         {
             methodList = root.getDeclaredMethods();
-         } else {
-            methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
+         }
+         else
+         {
+            methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>()
+            {
                @Override
-               public Method[] run() throws Exception {
+               public Method[] run() throws Exception
+               {
                   return root.getDeclaredMethods();
                }
             });
          }
-      } catch (PrivilegedActionException pae) {
+      }
+      catch (PrivilegedActionException pae)
+      {
 
       }
 
       for (Method method : methodList)
       {
-         if (!method.getName().startsWith("set")) continue;
-         if (method.getParameterTypes().length != 1) continue;
+         if (!method.getName().startsWith("set"))
+            continue;
+         if (method.getParameterTypes().length != 1)
+            continue;
          long hash = 0;
          try
          {
@@ -1042,21 +1133,25 @@ public class ResourceBuilder
          {
             throw new RuntimeException(e);
          }
-         if (!Modifier.isPrivate(method.getModifiers()) && visitedHashes.contains(hash)) continue;
+         if (!Modifier.isPrivate(method.getModifiers()) && visitedHashes.contains(hash))
+            continue;
          visitedHashes.add(hash);
          SetterParameterBuilder builder = resourceClassBuilder.setter(method).fromAnnotations();
-         if (builder.setter.paramType == Parameter.ParamType.MESSAGE_BODY && !method.isAnnotationPresent(Body.class)) continue;
-         if (builder.setter.paramType == Parameter.ParamType.UNKNOWN) continue;
+         if (builder.setter.paramType == Parameter.ParamType.MESSAGE_BODY && !method.isAnnotationPresent(Body.class))
+            continue;
+         if (builder.setter.paramType == Parameter.ParamType.UNKNOWN)
+            continue;
          builder.buildSetter();
       }
    }
 
-   protected void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
+   protected void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root,
+         Method implementation)
    {
       Method method = getAnnotatedMethod(root, implementation);
       if (method != null)
       {
-         Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+         Set<String> httpMethods = getHttpMethods(method);
 
          ResourceLocatorBuilder resourceLocatorBuilder;
 
@@ -1071,26 +1166,40 @@ public class ResourceBuilder
 
             for (String httpMethod : httpMethods)
             {
-               if (httpMethod.equalsIgnoreCase(HttpMethod.GET)) resourceMethodBuilder.get();
-               else if (httpMethod.equalsIgnoreCase(HttpMethod.PUT)) resourceMethodBuilder.put();
-               else if (httpMethod.equalsIgnoreCase(HttpMethod.POST)) resourceMethodBuilder.post();
-               else if (httpMethod.equalsIgnoreCase(HttpMethod.DELETE)) resourceMethodBuilder.delete();
-               else if (httpMethod.equalsIgnoreCase(HttpMethod.OPTIONS)) resourceMethodBuilder.options();
-               else if (httpMethod.equalsIgnoreCase(HttpMethod.HEAD)) resourceMethodBuilder.head();
-               else resourceMethodBuilder.httpMethod(httpMethod);
+               if (httpMethod.equalsIgnoreCase(HttpMethod.GET))
+                  resourceMethodBuilder.get();
+               else if (httpMethod.equalsIgnoreCase(HttpMethod.PUT))
+                  resourceMethodBuilder.put();
+               else if (httpMethod.equalsIgnoreCase(HttpMethod.POST))
+                  resourceMethodBuilder.post();
+               else if (httpMethod.equalsIgnoreCase(HttpMethod.DELETE))
+                  resourceMethodBuilder.delete();
+               else if (httpMethod.equalsIgnoreCase(HttpMethod.OPTIONS))
+                  resourceMethodBuilder.options();
+               else if (httpMethod.equalsIgnoreCase(HttpMethod.HEAD))
+                  resourceMethodBuilder.head();
+               else
+                  resourceMethodBuilder.httpMethod(httpMethod);
             }
             Produces produces = method.getAnnotation(Produces.class);
-            if (produces == null) produces = resourceClassBuilder.resourceClass.getClazz().getAnnotation(Produces.class);
-            if (produces == null) produces = method.getDeclaringClass().getAnnotation(Produces.class);
-            if (produces != null) resourceMethodBuilder.produces(produces.value());
+            if (produces == null)
+               produces = resourceClassBuilder.resourceClass.getClazz().getAnnotation(Produces.class);
+            if (produces == null)
+               produces = method.getDeclaringClass().getAnnotation(Produces.class);
+            if (produces != null)
+               resourceMethodBuilder.produces(produces.value());
 
             Consumes consumes = method.getAnnotation(Consumes.class);
-            if (consumes == null) consumes = resourceClassBuilder.resourceClass.getClazz().getAnnotation(Consumes.class);
-            if (consumes == null) consumes = method.getDeclaringClass().getAnnotation(Consumes.class);
-            if (consumes != null) resourceMethodBuilder.consumes(consumes.value());
+            if (consumes == null)
+               consumes = resourceClassBuilder.resourceClass.getClazz().getAnnotation(Consumes.class);
+            if (consumes == null)
+               consumes = method.getDeclaringClass().getAnnotation(Consumes.class);
+            if (consumes != null)
+               resourceMethodBuilder.consumes(consumes.value());
          }
          Path methodPath = method.getAnnotation(Path.class);
-         if (methodPath != null) resourceLocatorBuilder.path(methodPath.value());
+         if (methodPath != null)
+            resourceLocatorBuilder.path(methodPath.value());
          for (int i = 0; i < resourceLocatorBuilder.locator.params.length; i++)
          {
             resourceLocatorBuilder.param(i).fromAnnotations();
@@ -1105,7 +1214,8 @@ public class ResourceBuilder
    private ResourceClass applyProcessors(ResourceClass original)
    {
       ResourceClass current = original;
-      for (List<ResourceClassProcessor> l : processors.values()) {
+      for (List<ResourceClassProcessor> l : processors.values())
+      {
          for (ResourceClassProcessor processor : l)
          {
             current = processor.process(current);

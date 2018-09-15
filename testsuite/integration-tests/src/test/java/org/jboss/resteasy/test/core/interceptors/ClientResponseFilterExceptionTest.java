@@ -6,13 +6,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -44,7 +47,7 @@ import io.reactivex.Single;
 @RunAsClient
 public class ClientResponseFilterExceptionTest {
 
-   private static ResteasyClient client;
+   private static Client client;
    private static ClientResponseFilterExceptionResource service;
    private static CountDownLatch latch;;
 
@@ -76,13 +79,11 @@ public class ClientResponseFilterExceptionTest {
 
       ClientHttpEngine engine = ApacheHttpClientEngine.create(httpClientBuilder.build(), true);
 
-      ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder().httpEngine(engine)
-         .register(ClientResponseFilterExceptionFilter.class)
-         ;
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine)
+         .register(ClientResponseFilterExceptionFilter.class).build();
 
-      client = clientBuilder.build();
-      ResteasyWebTarget target = client.target(generateURL("/"));
-      service = target.proxy(ClientResponseFilterExceptionResource.class);
+      WebTarget target = client.target(generateURL("/"));
+      service = ((ResteasyWebTarget)target).proxy(ClientResponseFilterExceptionResource.class);
       latch = new CountDownLatch(10);
    }
 

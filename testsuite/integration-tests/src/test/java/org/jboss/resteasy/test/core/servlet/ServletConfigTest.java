@@ -4,12 +4,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.servlet.resource.ServletConfigApplication;
 import org.jboss.resteasy.test.core.servlet.resource.ServletConfigException;
 import org.jboss.resteasy.test.core.servlet.resource.ServletConfigExceptionMapper;
 import org.jboss.resteasy.test.core.servlet.resource.ServletConfigResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -49,7 +49,7 @@ public class ServletConfigTest {
 
     @Before
     public void setup() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

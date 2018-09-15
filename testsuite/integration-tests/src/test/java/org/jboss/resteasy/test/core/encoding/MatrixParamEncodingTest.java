@@ -6,11 +6,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.test.core.encoding.resource.MatrixParamEncodingResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -40,7 +39,7 @@ public class MatrixParamEncodingTest {
 
     @Before
     public void setup() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
 
@@ -105,7 +104,7 @@ public class MatrixParamEncodingTest {
      */
     @Test
     public void testMatrixParamUriBuilderDecoded() throws Exception {
-        UriBuilder uriBuilder = ResteasyUriBuilder.fromUri(generateURL("/decoded"));
+        UriBuilder uriBuilder = UriBuilder.fromUri(generateURL("/decoded"));
         uriBuilder.matrixParam("param", "ac/dc");
         ResteasyWebTarget target = client.target(uriBuilder.build().toString());
         logger.info("Sending request to " + uriBuilder.build().toString());
@@ -122,7 +121,7 @@ public class MatrixParamEncodingTest {
      */
     @Test
     public void testMatrixParamUriBuilderEncoded() throws Exception {
-        UriBuilder uriBuilder = ResteasyUriBuilder.fromUri(generateURL("/encoded"));
+        UriBuilder uriBuilder = UriBuilder.fromUri(generateURL("/encoded"));
         uriBuilder.matrixParam("param", "ac/dc");
         ResteasyWebTarget target = client.target(uriBuilder.build().toString());
         logger.info("Sending request to " + uriBuilder.build().toString());
