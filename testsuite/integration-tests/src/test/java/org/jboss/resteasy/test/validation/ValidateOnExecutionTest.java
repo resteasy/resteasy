@@ -15,6 +15,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Class;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Interface;
@@ -136,7 +138,7 @@ public class ValidateOnExecutionTest {
                     Entity.entity("abc", MediaType.TEXT_PLAIN_TYPE));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
         }
@@ -147,7 +149,7 @@ public class ValidateOnExecutionTest {
                     Entity.entity("abc", MediaType.TEXT_PLAIN_TYPE));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
         }
@@ -158,7 +160,7 @@ public class ValidateOnExecutionTest {
                     Entity.text(new String()));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
         }
@@ -169,7 +171,7 @@ public class ValidateOnExecutionTest {
                     Entity.entity("abc", MediaType.TEXT_PLAIN_TYPE));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
         }
@@ -179,7 +181,7 @@ public class ValidateOnExecutionTest {
                     Entity.text(new String()));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
         }
@@ -189,7 +191,7 @@ public class ValidateOnExecutionTest {
                     Entity.entity("abc", MediaType.TEXT_PLAIN_TYPE));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
         }
@@ -199,7 +201,7 @@ public class ValidateOnExecutionTest {
                     Entity.text(new String()));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
         }
@@ -210,7 +212,7 @@ public class ValidateOnExecutionTest {
                     Entity.entity("abc", MediaType.TEXT_PLAIN_TYPE));
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
-            ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
             logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
             TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
         }
