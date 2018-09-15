@@ -11,6 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionConstraint;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionLengthConstraint;
 import org.jboss.resteasy.test.validation.resource.ViolationExceptionLengthValidator;
@@ -121,7 +122,7 @@ public class ResteasyViolationExceptionRepresentationTest {
         Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
         Object entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
-        ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         logger.info("Received exception: " + e.toString());
         TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
         ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
@@ -137,7 +138,7 @@ public class ResteasyViolationExceptionRepresentationTest {
         Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
         entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
-        e = new ResteasyViolationException(String.class.cast(entity));
+        e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
         cv = e.getReturnValueViolations().iterator().next();
         Assert.assertEquals("Exception has wrong message", cv.getMessage(), "s must have length: 3 <= length <= 5");
@@ -152,7 +153,7 @@ public class ResteasyViolationExceptionRepresentationTest {
         Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
         entity = response.readEntity(String.class);
         logger.info("Entity from response: " + entity);
-        e = new ResteasyViolationException(String.class.cast(entity));
+        e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         TestUtil.countViolations(e, 2, 0, 0, 0, 0, 2);
         Iterator<ResteasyConstraintViolation> it = e.getReturnValueViolations().iterator();
         ResteasyConstraintViolation cv1 = it.next();
@@ -195,7 +196,7 @@ public class ResteasyViolationExceptionRepresentationTest {
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
         Assert.assertNotNull("Header of response should not be null", header);
         Assert.assertTrue("Validation header is not correct", Boolean.valueOf(header));
-        ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
         logger.info("exception: " + e.toString());
         TestUtil.countViolations(e, 4, 1, 1, 1, 1, 0);
         ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();

@@ -8,6 +8,8 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooConstraint;
@@ -105,7 +107,7 @@ public class ValidationCoreTest {
             String header = response.getHeaderString(Validation.VALIDATION_HEADER);
             Assert.assertNotNull("Validation header is missing", header);
             Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
-            ResteasyViolationException e = new ResteasyViolationException(entity);
+            ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
             ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
             Assert.assertTrue(WRONG_ERROR_MSG, violation.getMessage().equals("s must have length: 1 <= length <= 3"));
             Assert.assertEquals(WRONG_ERROR_MSG, "ValidationCoreFoo[abcdef]", violation.getValue());

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers.validation;
+package org.jboss.resteasy.spi.validation;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
 

@@ -18,11 +18,10 @@ import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
-import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil11;
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -33,7 +32,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * {@literal @}TODO Need to work on representation of exceptions
  * {@literal @}TODO Add javadoc.
  */
-public class ResteasyViolationException extends ConstraintViolationException
+public abstract class ResteasyViolationException extends ConstraintViolationException
 {
    private static final long serialVersionUID = 2623733139912277260L;
 
@@ -57,7 +56,7 @@ public class ResteasyViolationException extends ConstraintViolationException
 
    private List<List<ResteasyConstraintViolation>> violationLists;
 
-   private transient ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
+   private transient ConstraintTypeUtil util = getConstraintTypeUtil();
 
    private boolean suppressPath;
 
@@ -110,23 +109,6 @@ public class ResteasyViolationException extends ConstraintViolationException
       setException(container.getException());
    }
 
-   public ResteasyViolationException(final ViolationsContainer<?> container)
-   {
-      super(null);
-      convertToStrings(container);
-      setException(container.getException());
-      accept = new ArrayList<CloneableMediaType>();
-      accept.add(CloneableMediaType.TEXT_PLAIN_TYPE);
-   }
-
-   public ResteasyViolationException(final ViolationsContainer<?> container, final List<MediaType> accept)
-   {
-      super(null);
-      convertToStrings(container);
-      setException(container.getException());
-      this.accept = toCloneableMediaTypeList(accept);
-   }
-
    public ResteasyViolationException(final String stringRep)
    {
       super(null);
@@ -134,6 +116,8 @@ public class ResteasyViolationException extends ConstraintViolationException
       convertFromString(stringRep);
    }
 
+   public abstract ConstraintTypeUtil getConstraintTypeUtil();
+   
    public List<MediaType> getAccept()
    {
       return toMediaTypeList(accept);
@@ -224,26 +208,6 @@ public class ResteasyViolationException extends ConstraintViolationException
          }
       }
       return sb.toString();
-   }
-
-   protected void convertToStrings(ViolationsContainer<?> container)
-   {
-      if (violationLists != null)
-      {
-         return;
-      }
-      violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
-      fieldViolations = container.getFieldViolations();
-      propertyViolations = container.getPropertyViolations();
-      classViolations = container.getClassViolations();
-      parameterViolations = container.getParameterViolations();
-      returnValueViolations = container.getReturnValueViolations();
-
-      violationLists.add(fieldViolations);
-      violationLists.add(propertyViolations);
-      violationLists.add(classViolations);
-      violationLists.add(parameterViolations);
-      violationLists.add(returnValueViolations);
    }
 
    protected void convertFromString(String stringRep)

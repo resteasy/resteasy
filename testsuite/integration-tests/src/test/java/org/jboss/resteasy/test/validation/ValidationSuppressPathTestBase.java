@@ -4,6 +4,8 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
@@ -44,7 +46,7 @@ public class ValidationSuppressPathTestBase {
         Assert.assertNotNull("Validation header is missing", header);
         Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
         String entity = response.readEntity(String.class);
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         TestUtil.countViolations(e, 4, 1, 1, 1, 1, 0);
         ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
         Assert.assertEquals(WRONG_ERROR_MSG, fieldPath, violation.getPath());
@@ -65,7 +67,7 @@ public class ValidationSuppressPathTestBase {
         Assert.assertNotNull("Validation header is missing", header);
         Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
         String entity = response.readEntity(String.class);
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
         Assert.assertEquals(WRONG_ERROR_MSG, returnValuePath, violation.getPath());
         response.close();

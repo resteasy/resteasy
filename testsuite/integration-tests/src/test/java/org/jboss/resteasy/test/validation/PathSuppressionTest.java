@@ -7,6 +7,8 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassConstraint;
 import org.jboss.resteasy.test.validation.resource.PathSuppressionClassValidator;
@@ -139,7 +141,7 @@ public class PathSuppressionTest {
         Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ViolationReport report = new ViolationReport(String.class.cast(answer));
+        ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
         TestUtil.countViolations(report, 1, 1, 1, 1, 0);
         ResteasyConstraintViolation violation = report.getFieldViolations().iterator().next();
         Assert.assertEquals("Expected validation error is not in response", fieldPath, violation.getPath());
@@ -160,7 +162,7 @@ public class PathSuppressionTest {
         Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        ViolationReport report = new ViolationReport(String.class.cast(answer));
+        ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
         ResteasyConstraintViolation violation = report.getReturnValueViolations().iterator().next();
         Assert.assertEquals("Expected validation error is not in response", returnValuePath, violation.getPath());

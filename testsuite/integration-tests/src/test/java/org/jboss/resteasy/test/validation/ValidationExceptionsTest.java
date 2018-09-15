@@ -13,6 +13,8 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationExceptionCrazyConstraint;
@@ -310,7 +312,7 @@ public class ValidationExceptionsTest {
         String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
         Assert.assertNotNull(ERROR_HEADER_MESSAGE, header);
         Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
-		ResteasyViolationException resteasyViolationException = new ResteasyViolationException(
+		ResteasyViolationException resteasyViolationException = new ResteasyViolationExceptionImpl(
 				response.readEntity(String.class));
 		List<ResteasyConstraintViolation> classViolations = resteasyViolationException.getClassViolations();
 		Assert.assertEquals(1, classViolations.size());
