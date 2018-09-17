@@ -1,17 +1,15 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.mock.MockHttpResponse;
-import org.jboss.resteasy.spi.Dispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.net.URI;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 
-import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
+import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.spi.HttpRequest;
 
 /**
  * <p>
@@ -106,7 +104,7 @@ public class InternalDispatcher
    {
       try
       {
-         Dispatcher dispatcher = getContextData(Dispatcher.class);
+         Dispatcher dispatcher = ResteasyContext.getContextData(Dispatcher.class);
          if (dispatcher == null)
          {
             return null;
@@ -122,7 +120,7 @@ public class InternalDispatcher
 
    protected void enhanceRequest(MockHttpRequest request)
    {
-      HttpRequest previousRequest = getContextData(HttpRequest.class);
+      HttpRequest previousRequest = ResteasyContext.getContextData(HttpRequest.class);
       if (previousRequest != null)
       {
          getHeaders(request).putAll(getHeaders(previousRequest));
@@ -136,7 +134,7 @@ public class InternalDispatcher
 
    public static MockHttpRequest createRequest(String relativeUri, String verb)
    {
-      UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
+      UriInfo uriInfo = ResteasyContext.getContextData(UriInfo.class);
 
       URI baseUri = uriInfo.getBaseUri();
       URI absoluteUri = baseUri.resolve(parseRelativeUri(relativeUri));

@@ -1,20 +1,23 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.channel.ChannelHandlerContext;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+
+import javax.ws.rs.core.SecurityContext;
+
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.core.SecurityContext;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations
@@ -76,8 +79,8 @@ public class RequestDispatcher
          try
          {
 
-            ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
-            ResteasyProviderFactory.pushContext(ChannelHandlerContext.class, ctx);
+            ResteasyContext.pushContext(SecurityContext.class, securityContext);
+            ResteasyContext.pushContext(ChannelHandlerContext.class, ctx);
              if (handleNotFound)
             {
                dispatcher.invoke(request, response);
@@ -89,7 +92,7 @@ public class RequestDispatcher
          }
          finally
          {
-            ResteasyProviderFactory.clearContextData();
+            ResteasyContext.clearContextData();
          }
       }
       finally

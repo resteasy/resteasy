@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
+import org.jboss.resteasy.spi.util.Types;
 
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
@@ -54,7 +55,7 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
-      if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
+      if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
       }
@@ -63,6 +64,11 @@ public class ContextParameterInjector implements ValueInjector
          return CompletableFuture.completedFuture(new SseImpl());
       }
       return CompletableFuture.completedFuture(createProxy());
+   }
+
+   private static boolean hasAsyncContextData(ResteasyProviderFactory factory, Type genericType)
+   {
+      return factory.getAsyncContextInjectors().containsKey(Types.boxPrimitives(genericType));
    }
 
    private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData, boolean unwrapAsync)
@@ -78,10 +84,10 @@ public class ContextParameterInjector implements ValueInjector
                if(!request.getAsyncContext().isSuspended())
                   request.getAsyncContext().suspend();
                
-               Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+               Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
                // Don't forget to restore the context
                return ((CompletionStage<Object>) contextData).thenApply(value -> {
-                  ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+                  ResteasyContext.pushContextDataMap(contextDataMap);
                   return value;
                });
             }
@@ -134,7 +140,7 @@ public class ContextParameterInjector implements ValueInjector
    public CompletionStage<Object> inject(boolean unwrapAsync)
    {
       //if (type.equals(Providers.class)) return factory;
-      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || factory.hasAsyncContextData(genericType))
+      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations, unwrapAsync));
       }

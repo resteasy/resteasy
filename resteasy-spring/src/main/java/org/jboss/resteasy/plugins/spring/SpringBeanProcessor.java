@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.spring;
 
 import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -162,14 +163,14 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          {
             return;
          }
-         HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
+         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
          if (request == null || isSingleton(beanName))
          {
             propertyInjector.inject(bean, false);
          }
          else
          {
-            HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
+            HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
             propertyInjector.inject(request, response, bean, false);
          }
       }

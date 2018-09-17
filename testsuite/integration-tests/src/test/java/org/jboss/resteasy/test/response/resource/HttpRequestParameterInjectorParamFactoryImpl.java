@@ -1,6 +1,15 @@
 package org.jboss.resteasy.test.response.resource;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.resteasy.core.InjectorFactoryImpl;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -8,15 +17,7 @@ import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
-import javax.servlet.http.HttpServletRequest;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Type;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactoryImpl {
-    @SuppressWarnings("unchecked")
     @Override
     public ValueInjector createParameterExtractor(Class injectTargetClass,
                                                   AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
@@ -28,7 +29,7 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
             return new ValueInjector() {
                @Override
                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-                  return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
+                  return CompletableFuture.completedFuture(ResteasyContext.getContextData(HttpServletRequest.class)
                         .getParameter(param.value()));
                }
 
@@ -50,7 +51,7 @@ public class HttpRequestParameterInjectorParamFactoryImpl extends InjectorFactor
             return new ValueInjector() {
                @Override
                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-                  return CompletableFuture.completedFuture(ResteasyProviderFactory.getContextData(HttpServletRequest.class)
+                  return CompletableFuture.completedFuture(ResteasyContext.getContextData(HttpServletRequest.class)
                         .getParameter(param.value()));
                }
 

@@ -1,21 +1,15 @@
 package org.jboss.resteasy.links.impl;
 
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.spi.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.links.ELProvider;
-import org.jboss.resteasy.links.LinkELProvider;
-import org.jboss.resteasy.links.LinkResource;
-import org.jboss.resteasy.links.LinkResources;
-import org.jboss.resteasy.links.ParamBinding;
-import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.jboss.resteasy.links.ResourceFacade;
-import org.jboss.resteasy.links.i18n.LogMessages;
-import org.jboss.resteasy.links.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.ResteasyUriBuilder;
-import org.jboss.resteasy.spi.util.FindAnnotation;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.security.RolesAllowed;
 import javax.el.ELContext;
@@ -30,16 +24,22 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.links.ELProvider;
+import org.jboss.resteasy.links.LinkELProvider;
+import org.jboss.resteasy.links.LinkResource;
+import org.jboss.resteasy.links.LinkResources;
+import org.jboss.resteasy.links.ParamBinding;
+import org.jboss.resteasy.links.RESTServiceDiscovery;
+import org.jboss.resteasy.links.ResourceFacade;
+import org.jboss.resteasy.links.i18n.LogMessages;
+import org.jboss.resteasy.links.i18n.Messages;
+import org.jboss.resteasy.spi.ResourceInvoker;
+import org.jboss.resteasy.spi.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 public class RESTUtils {
 
@@ -191,7 +191,7 @@ public class RESTUtils {
 		RolesAllowed rolesAllowed = m.getAnnotation(RolesAllowed.class);
 		if(rolesAllowed == null)
 			return true;
-		SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
+		SecurityContext context = ResteasyContext.getContextData(SecurityContext.class);
 		for(String role : rolesAllowed.value())
 			if(context.isUserInRole(role))
 				return true;

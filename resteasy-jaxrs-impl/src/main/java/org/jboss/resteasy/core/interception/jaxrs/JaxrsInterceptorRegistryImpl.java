@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
@@ -109,7 +110,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
          {
             if (nameBound.size() > 0)
             {
-               Application application = ResteasyProviderFactory.getContextData(Application.class);
+               Application application = ResteasyContext.getContextData(Application.class);
                // must match all namebound annotations
                for (Class<? extends Annotation> annotation : nameBound)
                {

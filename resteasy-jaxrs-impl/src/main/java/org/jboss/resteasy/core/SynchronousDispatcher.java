@@ -190,7 +190,7 @@ public class SynchronousDispatcher implements Dispatcher
       if (!bufferExceptionEntityRead)
       {
          bufferExceptionEntityRead = true;
-         ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+         ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
          if (context != null)
          {
             String s = context.getParameter("resteasy.buffer.exception.entity");
@@ -333,7 +333,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
-      Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      Map contextDataMap = ResteasyContext.getContextDataMap();
       contextDataMap.put(HttpRequest.class, request);
       contextDataMap.put(HttpResponse.class, response);
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
@@ -366,7 +366,7 @@ public class SynchronousDispatcher implements Dispatcher
    {
       // be extra careful in the clean up process. Only pop if there was an
       // equivalent push.
-      ResteasyProviderFactory.addContextDataLevel();
+      ResteasyContext.addContextDataLevel();
       boolean pushedBody = false;
       try
       {
@@ -385,7 +385,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         ResteasyProviderFactory.removeContextDataLevel();
+         ResteasyContext.removeContextDataLevel();
          if (pushedBody)
          {
             MessageBodyParameterInjector.popBody();
@@ -395,7 +395,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void clearContextData()
    {
-	  Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+	  Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
 	  if (cleanables != null)
 	  {
 		  for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
@@ -410,7 +410,7 @@ public class SynchronousDispatcher implements Dispatcher
 			  }
 		  }
 	  }
-	  ResteasyProviderFactory.clearContextData();
+	  ResteasyContext.clearContextData();
       // just in case there were internalDispatches that need to be cleaned up
       MessageBodyParameterInjector.clearBodies();
    }
@@ -523,7 +523,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         ResteasyProviderFactory.removeContextDataLevel();
+         ResteasyContext.removeContextDataLevel();
       }
    }
 
@@ -558,7 +558,7 @@ public class SynchronousDispatcher implements Dispatcher
             if(t != null)
                unhandledAsynchronousException(response, t);
             onComplete.accept(null);
-            ResteasyProviderFactory.removeContextDataLevel();
+            ResteasyContext.removeContextDataLevel();
          });
       }
       catch (Throwable ex)

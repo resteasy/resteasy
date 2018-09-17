@@ -1,10 +1,10 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.CMSSignedData;
-import org.jboss.resteasy.security.BouncyIntegration;
-import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.util.Types;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -13,11 +13,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+
+import org.bouncycastle.cms.CMSSignedData;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -58,7 +59,7 @@ public class PKCS7SignatureReader implements MessageBodyReader<PKCS7SignatureInp
          input.setAnnotations(annotations);
          input.setData(data);
 
-         Providers providers = ResteasyProviderFactory.getContextData(Providers.class);
+         Providers providers = ResteasyContext.getContextData(Providers.class);
          input.setProviders(providers);
          return input;
       }

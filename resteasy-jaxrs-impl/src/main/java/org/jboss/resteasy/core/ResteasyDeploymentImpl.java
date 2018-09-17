@@ -205,7 +205,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       dispatcher.getDefaultContextObjects().put(ResteasyDeployment.class, this);
 
       // push context data so we can inject it
-      Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      Map contextDataMap = ResteasyContext.getContextDataMap();
       contextDataMap.putAll(dispatcher.getDefaultContextObjects());
 
       try
@@ -321,7 +321,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
       finally
       {
-         ResteasyProviderFactory.removeContextDataLevel();
+         ResteasyContext.removeContextDataLevel();
       }
    }
 
@@ -364,7 +364,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
       Application app = (Application)providerFactory.createProviderInstance(clazz);
       dispatcher.getDefaultContextObjects().put(Application.class, app);
-      ResteasyProviderFactory.pushContext(Application.class, app);
+      ResteasyContext.pushContext(Application.class, app);
       PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
       propertyInjector.inject(app, false);
       return app;
@@ -393,7 +393,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       if (application != null)
       {
          dispatcher.getDefaultContextObjects().put(Application.class, application);
-         ResteasyProviderFactory.getContextDataMap().put(Application.class, application);
+         ResteasyContext.getContextDataMap().put(Application.class, application);
          if (processApplication(application))
          {
             // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.

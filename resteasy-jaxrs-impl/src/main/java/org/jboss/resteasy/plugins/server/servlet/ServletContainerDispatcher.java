@@ -1,5 +1,19 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.SecurityContext;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -13,18 +27,6 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.SecurityContext;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations
@@ -98,15 +100,15 @@ public class ServletContainerDispatcher
             {
                try
                {
-                  Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+                  Map contextDataMap = ResteasyContext.getContextDataMap();
                   contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-                  Application app = ResteasyDeployment.createApplication(application.trim(), dispatcher, providerFactory);
+                  Application app = ResteasyDeploymentImpl.createApplication(application.trim(), dispatcher, providerFactory);
                   // push context data so we can inject it
                   processApplication(app);
                }
                finally
                {
-                  ResteasyProviderFactory.removeContextDataLevel();
+                  ResteasyContext.removeContextDataLevel();
                }
             }
          }
@@ -218,10 +220,10 @@ public class ServletContainerDispatcher
          {
             HttpRequest in = requestFactory.createResteasyHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
 
-            ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-            ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+            ResteasyContext.pushContext(HttpServletRequest.class, request);
+            ResteasyContext.pushContext(HttpServletResponse.class, response);
 
-            ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+            ResteasyContext.pushContext(SecurityContext.class, new ServletSecurityContext(request));
             if (handleNotFound)
             {
                dispatcher.invoke(in, theResponse);
@@ -233,7 +235,7 @@ public class ServletContainerDispatcher
          }
          finally
          {
-            ResteasyProviderFactory.clearContextData();
+            ResteasyContext.clearContextData();
          }
       }
       finally

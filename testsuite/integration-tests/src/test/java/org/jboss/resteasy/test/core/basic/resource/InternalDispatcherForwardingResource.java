@@ -1,11 +1,6 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
-import org.jboss.resteasy.core.InternalDispatcher;
-import org.jboss.resteasy.core.MessageBodyParameterInjector;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
-import org.junit.Assert;
+import java.util.Stack;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,7 +15,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.Stack;
+
+import org.jboss.resteasy.core.InternalDispatcher;
+import org.jboss.resteasy.core.MessageBodyParameterInjector;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
+import org.junit.Assert;
 
 @Path("/")
 public class InternalDispatcherForwardingResource {
@@ -121,9 +122,9 @@ public class InternalDispatcherForwardingResource {
 
         } finally {
             Assert.assertEquals(count, MessageBodyParameterInjector.bodyCount());
-            Assert.assertEquals(count + 1, ResteasyProviderFactory.getContextDataLevelCount());
+            Assert.assertEquals(count + 1, ResteasyContext.getContextDataLevelCount());
         }
-        return ResteasyProviderFactory.getContextDataLevelCount();
+        return ResteasyContext.getContextDataLevelCount();
     }
 
     @GET

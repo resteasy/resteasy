@@ -20,6 +20,7 @@ import javax.ws.rs.sse.SseEventSink;
 import org.jboss.resteasy.annotations.SseElementType;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -51,9 +52,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
    {
       this.writer = writer;
-      contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap = ResteasyContext.getContextDataMap();
 
-      request = ResteasyProviderFactory.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
+      request = ResteasyContext.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
       asyncContext = request.getAsyncContext();
 
       if (!asyncContext.isSuspended())
@@ -68,7 +69,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
       }
 
-      response = ResteasyProviderFactory.getContextData(HttpResponse.class);
+      response = ResteasyContext.getContextData(HttpResponse.class);
    }
 
    @Override
@@ -212,7 +213,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       synchronized (lock)
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         ResteasyContext.pushContextDataMap(contextDataMap);
          try
          {
             if (event != null)
@@ -278,7 +279,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
          finally
          {
-            ResteasyProviderFactory.removeContextDataLevel();
+            ResteasyContext.removeContextDataLevel();
          }
       }
    }

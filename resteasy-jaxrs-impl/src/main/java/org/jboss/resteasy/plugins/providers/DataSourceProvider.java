@@ -3,13 +3,6 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.plugins.server.servlet.Cleanable;
-import org.jboss.resteasy.plugins.server.servlet.Cleanables;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.NoContent;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +20,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.util.NoContent;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -107,7 +107,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (count > -1) {
              tempFile = File.createTempFile("resteasy-provider-datasource", null);
              FileOutputStream fos = new FileOutputStream(tempFile);
-             Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+             Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
              if (cleanables != null)
              {
                 cleanables.addCleanable(new TempFileCleanable(tempFile));

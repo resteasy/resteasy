@@ -16,14 +16,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.ResteasyContext;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-
-import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
 
 /**
  * 
@@ -66,7 +67,7 @@ public class HtmlRenderableWriter implements MessageBodyWriter<Renderable>
 	      viewingPleasure.render(
 	            // disable async processing as that would mess with interceptors,
 	            // and entityStream is committed after writeTo and interceptors returns.
-	            new HttpServletRequestWrapper(getContextData(HttpServletRequest.class)) {
+	            new HttpServletRequestWrapper(ResteasyContext.getContextData(HttpServletRequest.class)) {
 	               
 	               @Override
 	               public boolean isAsyncSupported() {
@@ -96,7 +97,7 @@ public class HtmlRenderableWriter implements MessageBodyWriter<Renderable>
 	            
 	            // RESTEASY-1422: wrap entityStream to make sure headers added through JAX-RS are committed when the ServletOutputStream is written to.
 	            // Also disable async processing on the ServletOutputStream, for consistency with the request.
-	            new HttpServletResponseWrapper(getContextData(HttpServletResponse.class)) {
+	            new HttpServletResponseWrapper(ResteasyContext.getContextData(HttpServletResponse.class)) {
 	               
 	               private ServletOutputStream outputStream;
 	               private PrintWriter writer;

@@ -1,5 +1,11 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import java.io.IOException;
+
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -8,15 +14,9 @@ import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.cache.server.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-
-import java.io.IOException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -47,7 +47,7 @@ public class ServerCacheFeature implements Feature
 
    protected ResteasyConfiguration getResteasyConfiguration()
    {
-      return ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      return ResteasyContext.getContextData(ResteasyConfiguration.class);
    }
 
    protected String getConfigProperty(String name)

@@ -3,7 +3,6 @@ package org.jboss.resteasy.spi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,6 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -29,23 +27,16 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
-import org.jboss.resteasy.spi.util.ThreadLocalStack;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings(
-{"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 public abstract class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
-   static final ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
-
-   private static final int maxForwards = 20;
-
    private static volatile ResteasyProviderFactory instance;
 
    private static boolean registerBuiltinByDefault = true;
@@ -67,73 +58,12 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract Set<Class<?>> getProviderClasses();
 
    public abstract Set<Object> getProviderInstances();
-
-   public static <T> void pushContext(Class<T> type, T data)
-   {
-      getContextDataMap().put(type, data);
-   }
-
-   public static void pushContextDataMap(Map<Class<?>, Object> map)
-   {
-      contextualData.push(map);
-   }
-
-   public static Map<Class<?>, Object> getContextDataMap()
-   {
-      return getContextDataMap(true);
-   }
-
-   public static <T> T getContextData(Class<T> type)
-   {
-      return (T) getContextDataMap().get(type);
-   }
-
-   public abstract boolean hasAsyncContextData(Type genericType);
+   
+   public abstract <T> T getContextData(Class<T> type);
 
    public abstract <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations,
          boolean unwrapAsync);
 
-   public static <T> T popContextData(Class<T> type)
-   {
-      return (T) getContextDataMap().remove(type);
-   }
-
-   public static void clearContextData()
-   {
-      contextualData.clear();
-   }
-
-   private static Map<Class<?>, Object> getContextDataMap(boolean create)
-   {
-      Map<Class<?>, Object> map = contextualData.get();
-      if (map == null)
-      {
-         contextualData.setLast(map = new HashMap<Class<?>, Object>());
-      }
-      return map;
-   }
-
-   public static Map<Class<?>, Object> addContextDataLevel()
-   {
-      if (getContextDataLevelCount() == maxForwards)
-      {
-         throw new BadRequestException(
-               Messages.MESSAGES.excededMaximumForwards(getContextData(UriInfo.class).getPath()));
-      }
-      Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
-      contextualData.push(map);
-      return map;
-   }
-
-   public static int getContextDataLevelCount()
-   {
-      return contextualData.size();
-   }
-
-   public static void removeContextDataLevel()
-   {
-      contextualData.pop();
-   }
 
    /**
     * Will not initialize singleton if not set.

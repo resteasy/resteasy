@@ -30,7 +30,6 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -54,7 +53,7 @@ public abstract class AsyncResponseConsumer
    public AsyncResponseConsumer(ResourceMethodInvoker method)
    {
       this.method = method;
-      contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap = ResteasyContext.getContextDataMap();
       dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       if(httpRequest.getAsyncContext().isSuspended())
@@ -98,13 +97,13 @@ public abstract class AsyncResponseConsumer
          isComplete = true;
          doComplete();
          asyncResponse.completionCallbacks(t);
-         ResteasyProviderFactory.removeContextDataLevel();
+         ResteasyContext.removeContextDataLevel();
       }
    }
 
    protected void internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
 
@@ -151,7 +150,7 @@ public abstract class AsyncResponseConsumer
    
    protected void internalResume(Throwable t, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       try {
@@ -465,7 +464,7 @@ public abstract class AsyncResponseConsumer
       {
          super(method, asyncStreamProvider);
          sse = new SseImpl();
-         sseEventSink = ResteasyProviderFactory.getContextData(SseEventSink.class);
+         sseEventSink = ResteasyContext.getContextData(SseEventSink.class);
       }
       
       @Override

@@ -1,21 +1,22 @@
 package org.jboss.resteasy.test.util;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Set;
+
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.util.resource.ResponseBuilderRequest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.RuntimeDelegate;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Set;
 
 /**
  * @tpSubChapter Util tests
@@ -35,7 +36,7 @@ public class ResponseBuilderTest {
         HttpRequest httpRequest = MockHttpRequest.create("GET", REQUEST_URI,
                 BASE_URI);
 
-        ResteasyProviderFactory.getContextDataMap().put(HttpRequest.class,
+        ResteasyContext.getContextDataMap().put(HttpRequest.class,
                 httpRequest);
 
         builder = new ResponseBuilderImpl();
@@ -43,7 +44,7 @@ public class ResponseBuilderTest {
 
     @After
     public void after() throws Exception {
-        ResteasyProviderFactory.removeContextDataLevel();
+       ResteasyContext.removeContextDataLevel();
     }
 
     /**

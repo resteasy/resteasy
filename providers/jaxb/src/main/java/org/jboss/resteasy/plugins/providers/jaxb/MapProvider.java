@@ -35,10 +35,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.spi.util.Types;
 import org.w3c.dom.Attr;
@@ -63,7 +63,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    
    public MapProvider()
    {
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
          String s = context.getParameter("resteasy.document.expand.entity.references");

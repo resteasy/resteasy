@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.net.URI;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -9,7 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import java.net.URI;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
 
 /**
  * If invoked within the context of a JAX-RS call, it will automatically build a
@@ -28,7 +28,7 @@ public class BaseLink extends Link
 
    public BaseLink(String rel, String relativeLink)
    {
-      UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
+      UriInfo uriInfo = ResteasyContext.getContextData(UriInfo.class);
       if (uriInfo == null)
          throw new IllegalStateException(Messages.MESSAGES.consructorMustBeCalled());
       URI uri = uriInfo.getBaseUriBuilder().path(relativeLink).build();

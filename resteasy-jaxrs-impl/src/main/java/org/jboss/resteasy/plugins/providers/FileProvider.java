@@ -1,20 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.plugins.server.servlet.Cleanable;
-import org.jboss.resteasy.plugins.server.servlet.Cleanables;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.NoContent;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,6 +10,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.util.NoContent;
 
 /**
  * @author <a href="mailto:mlittle@redhat.com">Mark Little</a>
@@ -77,7 +78,7 @@ public class FileProvider implements MessageBodyReader<File>,
       if (downloadedFile == null)
          downloadedFile = File.createTempFile(PREFIX, SUFFIX);
 
-      Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+      Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
       if (cleanables != null)
       {
          cleanables.addCleanable(new FileHolder(downloadedFile));
@@ -120,7 +121,7 @@ public class FileProvider implements MessageBodyReader<File>,
                        OutputStream entityStream) throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-      HttpHeaders headers = ResteasyProviderFactory.getContextData(HttpHeaders.class);
+      HttpHeaders headers = ResteasyContext.getContextData(HttpHeaders.class);
       if (headers == null)
       {
          writeIt(uploadFile, entityStream);

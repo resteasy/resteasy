@@ -1,8 +1,24 @@
 package org.jboss.resteasy.cdi;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
@@ -13,21 +29,6 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Jozef Hartinger
@@ -201,7 +202,7 @@ public class CdiInjectorFactory implements InjectorFactory
        try
        {
            // Look for BeanManager in ServletContext
-           ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
+           ServletContext servletContext = ResteasyContext.getContextData(ServletContext.class);
            // null check for RESTEASY-1009
            if (servletContext != null)
            {

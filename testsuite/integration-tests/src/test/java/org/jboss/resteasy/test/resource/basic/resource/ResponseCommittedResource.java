@@ -6,8 +6,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.basic.ResponseCommittedTest;
 
 @Path("")
@@ -17,7 +17,7 @@ public class ResponseCommittedResource {
    @Path("")
    public Response works() throws Exception {
 
-      Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       httpResponse.sendError(ResponseCommittedTest.TEST_STATUS);
       Response response = Response.ok("ok").build();

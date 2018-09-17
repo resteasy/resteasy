@@ -8,6 +8,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.SimpleViolationsContainer;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
 public class ResteasyViolationExceptionImpl extends ResteasyViolationException
@@ -60,5 +62,10 @@ public class ResteasyViolationExceptionImpl extends ResteasyViolationException
    public ConstraintTypeUtil getConstraintTypeUtil()
    {
       return new ConstraintTypeUtil11();  
+   }
+   
+   protected ResteasyConfiguration getResteasyConfiguration()
+   {
+      return ResteasyContext.getContextData(ResteasyConfiguration.class);
    }
 }

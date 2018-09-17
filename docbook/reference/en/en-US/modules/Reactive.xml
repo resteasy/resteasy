@@ -304,7 +304,7 @@ public void testGetStringAsyncSync() throws Exception {
        <para>
           Since running code asynchronously is so common in this context, it is worth pointing out
           that objects obtained by way of the annotation <code>@Context</code> or by way of calling
-          <code>ResteasyProviderFactory.getContextData()</code> are sensitive to the
+          <code>ResteasyContext.getContextData()</code> are sensitive to the
           executing thread. For example, given resource method
        </para>
    
@@ -314,7 +314,7 @@ public void testGetStringAsyncSync() throws Exception {
 @Produces("text/plain")
 public CompletionStage&lt;String&gt; text(@Context HttpRequest request) {
    System.out.println("request (inline): " + request);
-   System.out.println("application (inline): " + ResteasyProviderFactory.getContextData(Application.class));
+   System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
    ExecutorService executor = Executors.newSingleThreadExecutor();
    executor.submit(
@@ -322,7 +322,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest request) {
             public void run() {
                try {
                   System.out.println("request (async): " + request); 
-                  System.out.println("application (async): " + ResteasyProviderFactory.getContextData(Application.class));
+                  System.out.println("application (async): " + ResteasyContext.getContextData(Application.class));
                   cs.complete("hello");
                } catch (Exception e) {
                   e.printStackTrace();
@@ -355,11 +355,11 @@ org.jboss.resteasy.spi.LoggableFailure: RESTEASY003880: Unable to find contextua
 @Produces("text/plain")
 public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
    System.out.println("request (inline): " + request);
-   System.out.println("application (inline): " + ResteasyProviderFactory.getContextData(Application.class));
+   System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
    ExecutorService executor = Executors.newSingleThreadExecutor();
    final String httpMethodFinal = request.getHttpMethod();
-   final Map&lt;String, Object&gt; mapFinal = ResteasyProviderFactory.getContextData(Application.class).getProperties();
+   final Map&lt;String, Object&gt; mapFinal = ResteasyContext.getContextData(Application.class).getProperties();
    executor.submit(
          new Runnable() {
             public void run() {
@@ -385,7 +385,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
 @Produces("text/plain")
 public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
    System.out.println("request (inline): " + request);
-   System.out.println("application (inline): " + ResteasyProviderFactory.getContextData(Application.class));
+   System.out.println("application (inline): " + ResteasyContext.getContextData(Application.class));
    CompletableFuture&lt;String&gt; cs = new CompletableFuture&lt;&gt;();
    ExecutorService executor = Executors.newSingleThreadExecutor();
    executor.submit(
@@ -393,7 +393,7 @@ public CompletionStage&lt;String&gt; text(@Context HttpRequest req) {
             public void run() {
                try {
                   System.out.println("request (async): " + request); 
-                  System.out.println("application (async): " + ResteasyProviderFactory.getContextData(Application.class));
+                  System.out.println("application (async): " + ResteasyContext.getContextData(Application.class));
                   cs.complete("hello");
                } catch (Exception e) {
                   e.printStackTrace();

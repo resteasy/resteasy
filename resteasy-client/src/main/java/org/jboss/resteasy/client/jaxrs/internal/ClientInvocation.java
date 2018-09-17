@@ -47,11 +47,11 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -608,16 +608,16 @@ public class ClientInvocation implements Invocation
 
    private Providers pushProvidersContext()
    {
-      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
-      ResteasyProviderFactory.pushContext(Providers.class, configuration);
+      Providers current = ResteasyContext.getContextData(Providers.class);
+      ResteasyContext.pushContext(Providers.class, configuration);
       return current;
    }
 
    private void popProvidersContext(Providers current)
    {
-      ResteasyProviderFactory.popContextData(Providers.class);
+      ResteasyContext.popContextData(Providers.class);
       if (current != null)
-         ResteasyProviderFactory.pushContext(Providers.class, current);
+         ResteasyContext.pushContext(Providers.class, current);
    }
 
    private ClientResponse filterRequest(ClientRequestContextImpl requestContext)

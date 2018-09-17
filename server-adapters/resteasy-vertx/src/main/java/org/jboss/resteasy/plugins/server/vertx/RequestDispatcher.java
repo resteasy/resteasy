@@ -1,23 +1,26 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+
+import javax.ws.rs.core.SecurityContext;
+
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 
-import javax.ws.rs.core.SecurityContext;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 
 /**
  * Helper/delegate class to unify Servlet and Filter dispatcher implementations
@@ -83,11 +86,11 @@ public class RequestDispatcher
          try
          {
 
-            ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
-            ResteasyProviderFactory.pushContext(Context.class, context);
-            ResteasyProviderFactory.pushContext(HttpServerRequest.class, req);
-            ResteasyProviderFactory.pushContext(HttpServerResponse.class, resp);
-            ResteasyProviderFactory.pushContext(Vertx.class, context.owner());
+            ResteasyContext.pushContext(SecurityContext.class, securityContext);
+            ResteasyContext.pushContext(Context.class, context);
+            ResteasyContext.pushContext(HttpServerRequest.class, req);
+            ResteasyContext.pushContext(HttpServerResponse.class, resp);
+            ResteasyContext.pushContext(Vertx.class, context.owner());
             if (handleNotFound)
             {
                dispatcher.invoke(vertxReq, vertxResp);
@@ -97,7 +100,7 @@ public class RequestDispatcher
             }
          } finally
          {
-            ResteasyProviderFactory.clearContextData();
+            ResteasyContext.clearContextData();
          }
       } finally
       {

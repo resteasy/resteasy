@@ -113,7 +113,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
-
    /**
     * Allow us to sort message body implementations that are more specific for their types
     * i.e. MessageBodyWriter&#x3C;Object&#x3E; is less specific than MessageBodyWriter&#x3C;String&#x3E;.
@@ -545,14 +544,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       return classContracts;
    }
 
-   public boolean hasAsyncContextData(Type genericType)
-   {
-      return getAsyncContextInjectors().containsKey(Types.boxPrimitives(genericType));
-   }
-
    public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync)
    {
-      T ret = (T) getContextDataMap().get(rawType);
+      T ret = (T) ResteasyContext.getContextDataMap().get(rawType);
       if (ret != null)
          return ret;
       ContextInjector contextInjector = getContextInjectors().get(genericType);
@@ -2657,5 +2651,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
+
+   public <T> T getContextData(Class<T> type)
+   {
+      return ResteasyContext.getContextData(type);
+   }   
 
 }

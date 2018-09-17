@@ -96,7 +96,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       private int getMaxUses()
       {
          maxUses = DEFAULT_MAX_USES;
-         ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+         ServletContext context = ResteasyContext.getContextData(ServletContext.class);
          if (context != null)
          {
             String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);

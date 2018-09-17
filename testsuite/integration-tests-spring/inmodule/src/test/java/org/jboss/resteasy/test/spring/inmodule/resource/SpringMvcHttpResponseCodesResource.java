@@ -8,7 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.ResteasyContext;
 
 @Path("/")
 public class SpringMvcHttpResponseCodesResource {
@@ -27,7 +27,7 @@ public class SpringMvcHttpResponseCodesResource {
     public SpringMvcHttpResponseCodesPerson postJsonSecured(SpringMvcHttpResponseCodesPerson person) {
         //Using the workaround below instead of @RolesAllowed("admin")
         //as I can't easily turn security on in the ResteasyDeployment built through the springmvc-resteasy.xml descriptor
-        SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
+        SecurityContext context = ResteasyContext.getContextData(SecurityContext.class);
         if (context != null) {
             if (!context.isUserInRole("admin")) {
                 throw new ForbiddenException();

@@ -21,11 +21,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
@@ -58,7 +58,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
       this.httpRequest = request;
       this.requestFilters = requestFilters;
       this.continuation = continuation;
-      contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap = ResteasyContext.getContextDataMap();
    }
 
    public HttpRequest getHttpRequest()
@@ -200,19 +200,19 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    @Override
    public SecurityContext getSecurityContext()
    {
-      return ResteasyProviderFactory.getContextData(SecurityContext.class);
+      return ResteasyContext.getContextData(SecurityContext.class);
    }
 
    @Override
    public void setSecurityContext(SecurityContext context)
    {
-      ResteasyProviderFactory.pushContext(SecurityContext.class, context);
+      ResteasyContext.pushContext(SecurityContext.class, context);
    }
 
    @Override
    public Request getRequest()
    {
-      return ResteasyProviderFactory.getContextData(Request.class);
+      return ResteasyContext.getContextData(Request.class);
    }
 
    @Override
@@ -233,7 +233,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    {
       if(suspended && !inFilter)
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         ResteasyContext.pushContextDataMap(contextDataMap);
          httpRequest.getAsyncContext().getAsyncResponse().resume(response);
       }
       else
@@ -255,7 +255,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          return;
       }
          
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
       try {
          filter();
@@ -277,7 +277,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
       }
       else
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         ResteasyContext.pushContextDataMap(contextDataMap);
          writeException(t);
       }
    }

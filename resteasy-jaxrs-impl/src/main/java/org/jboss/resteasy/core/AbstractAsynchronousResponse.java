@@ -1,11 +1,12 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -14,13 +15,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,7 +44,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       this.dispatcher = dispatcher;
       this.request = request;
       this.response = response;
-      contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap = ResteasyContext.getContextDataMap();
    }
 
 
@@ -170,7 +169,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       Response response = null;
       if (entity == null)
       {
@@ -224,7 +223,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
          onComplete.accept(t);
          completionCallbacks(exc);

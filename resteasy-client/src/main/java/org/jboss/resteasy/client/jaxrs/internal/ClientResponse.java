@@ -19,6 +19,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
@@ -26,7 +27,6 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -322,8 +322,8 @@ public abstract class ClientResponse extends BuiltResponse
       }
 
 
-      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
-      ResteasyProviderFactory.pushContext(Providers.class, configuration);
+      Providers current = ResteasyContext.getContextData(Providers.class);
+      ResteasyContext.pushContext(Providers.class, configuration);
       Object obj = null;
       try
       {
@@ -387,8 +387,8 @@ public abstract class ClientResponse extends BuiltResponse
       }
       finally
       {
-         ResteasyProviderFactory.popContextData(Providers.class);
-         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+         ResteasyContext.popContextData(Providers.class);
+         if (current != null) ResteasyContext.pushContext(Providers.class, current);
          if (obj instanceof ProvidersContextRetainer)
          {
             ((ProvidersContextRetainer) obj).setProviders(configuration);

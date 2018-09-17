@@ -1,19 +1,20 @@
 package org.jboss.resteasy.plugins.stats;
 
-import org.jboss.resteasy.spi.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocatorInvoker;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResourceInvoker;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,7 +27,7 @@ public class RegistryStatsResource
    @Produces({"application/xml", "application/json"})
    public RegistryData get() throws JAXBException
    {
-      ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyProviderFactory.getContextData(Registry.class);
+      ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyContext.getContextData(Registry.class);
 
       RegistryData data = new RegistryData();
 
