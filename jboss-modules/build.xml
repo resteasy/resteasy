@@ -155,12 +155,12 @@
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs-public">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs-client-api"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-core-spi"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-api"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs-impl"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-core"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client-microprofile"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-tracing-api"/>
