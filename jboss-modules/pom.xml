@@ -116,17 +116,17 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-impl</artifactId>
+            <artifactId>resteasy-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-client-api</artifactId>
+            <artifactId>resteasy-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
