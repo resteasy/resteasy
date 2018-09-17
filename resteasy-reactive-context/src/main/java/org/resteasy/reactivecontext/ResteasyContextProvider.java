@@ -2,7 +2,7 @@ package org.resteasy.reactivecontext;
 
 import java.util.Map;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.ResteasyContext;
 
 import io.reactiverse.reactivecontexts.core.ContextProvider;
 
@@ -12,20 +12,20 @@ public class ResteasyContextProvider implements ContextProvider<Map<Class<?>, Ob
    @Override
    public Map<Class<?>, Object> install(Map<Class<?>, Object> state)
    {
-      ResteasyProviderFactory.pushContextDataMap(state);
+      ResteasyContext.pushContextDataMap(state);
       return null;
    }
 
    @Override
    public void restore(Map<Class<?>, Object> previousState)
    {
-      ResteasyProviderFactory.removeContextDataLevel();
+      ResteasyContext.removeContextDataLevel();
    }
 
    @Override
    public Map<Class<?>, Object> capture()
    {
-      return ResteasyProviderFactory.getContextDataMap();
+      return ResteasyContext.getContextDataMap();
    }
 
 }

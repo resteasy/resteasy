@@ -1,9 +1,9 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.doseta.i18n.LogMessages;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.InputStreamToByteArray;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -13,10 +13,10 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.doseta.i18n.LogMessages;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
+import org.jboss.resteasy.util.InputStreamToByteArray;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -70,7 +70,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
             KeyRepository repository = (KeyRepository) context.getProperty(KeyRepository.class.getName());
             if (repository == null)
             {
-               repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
+               repository = ResteasyContext.getContextData(KeyRepository.class);
             }
             verifier.setRepository(repository);
          }

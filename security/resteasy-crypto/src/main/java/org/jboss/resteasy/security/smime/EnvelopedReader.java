@@ -1,9 +1,13 @@
 package org.jboss.resteasy.security.smime;
 
-import org.jboss.resteasy.security.BouncyIntegration;
-import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.util.Types;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
@@ -14,14 +18,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -80,7 +81,7 @@ public class EnvelopedReader implements MessageBodyReader<EnvelopedInput>
       {
          throw new ReaderException(e);
       }
-      Providers providers = ResteasyProviderFactory.getContextData(Providers.class);
+      Providers providers = ResteasyContext.getContextData(Providers.class);
       input.setProviders(providers);
       input.setAnnotations(annotations);
       input.setBody(body);

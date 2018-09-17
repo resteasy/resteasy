@@ -1,16 +1,18 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.Filter;
-import com.sun.net.httpserver.HttpExchange;
-import org.apache.commons.codec.binary.Base64;
-import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.spi.HttpResponseCodes;
-
-import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.security.Principal;
+
+import javax.ws.rs.core.SecurityContext;
+
+import org.apache.commons.codec.binary.Base64;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.util.HttpHeaderNames;
+
+import com.sun.net.httpserver.Filter;
+import com.sun.net.httpserver.HttpExchange;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -81,13 +83,13 @@ public class BasicAuthFilter extends Filter
 
             try
             {
-               ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
+               ResteasyContext.pushContext(SecurityContext.class, securityContext);
                chain.doFilter(exchange);
                return;
             }
             finally
             {
-               ResteasyProviderFactory.clearContextData();
+               ResteasyContext.clearContextData();
             }
 
          }

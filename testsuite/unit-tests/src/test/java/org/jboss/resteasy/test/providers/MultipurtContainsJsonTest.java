@@ -1,7 +1,19 @@
 package org.jboss.resteasy.test.providers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -11,16 +23,6 @@ import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceInteg
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecendencePlainTextWriter;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.junit.Test;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @tpSubChapter Providers
@@ -45,7 +47,7 @@ public class MultipurtContainsJsonTest {
         RegisterBuiltin.register(factory);
         factory.registerProviderInstance(new ProviderFactoryPrecendencePlainTextWriter());
         factory.registerProviderInstance(new ProviderFactoryPrecedenceIntegerPlainTextWriter());
-        ResteasyProviderFactory.pushContext(Providers.class, factory);
+        ResteasyContext.pushContext(Providers.class, factory);
 
 
         MultipartFormDataOutput data = getMultipartWithoutJSON();

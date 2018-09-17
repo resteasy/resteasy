@@ -41,10 +41,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.spi.util.Types;
 import org.w3c.dom.Element;
@@ -69,7 +69,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    public CollectionProvider()
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : CollectionProvider", getClass().getName());
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
          String s = context.getParameter("resteasy.document.expand.entity.references");

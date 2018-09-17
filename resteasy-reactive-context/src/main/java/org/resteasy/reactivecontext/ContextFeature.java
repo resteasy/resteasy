@@ -5,8 +5,8 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import io.reactiverse.reactivecontexts.core.Context;
 
@@ -20,7 +20,7 @@ public class ContextFeature implements Feature
       // this is tied to the deployment, which is what we want for the reactive context
       if(context.getConfiguration().getRuntimeType() == RuntimeType.CLIENT)
          return false;
-      Dispatcher dispatcher = ResteasyProviderFactory.getContextData(Dispatcher.class);
+      Dispatcher dispatcher = ResteasyContext.getContextData(Dispatcher.class);
       if(dispatcher == null) {
          // this can happen, but it means we're not able to find a deployment
          return false;

@@ -5,8 +5,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
@@ -174,7 +174,7 @@ public interface RESTEasyTracingLogger
        RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
        if (tracingLogger.isLogEnabled("START")) {
            StringBuilder text = new StringBuilder();
-           SecurityContext securityContext = ResteasyProviderFactory.getContextData(SecurityContext.class);
+           SecurityContext securityContext = ResteasyContext.getContextData(SecurityContext.class);
            text.append(String.format("baseUri=[%s] requestUri=[%s] method=[%s] authScheme=[%s]",
                    request.getUri().getBaseUri(), request.getUri().getRequestUri(), request.getHttpMethod(),
                    RESTEasyTracingUtils.toStringOrNA(securityContext == null ? null : securityContext.getAuthenticationScheme())));

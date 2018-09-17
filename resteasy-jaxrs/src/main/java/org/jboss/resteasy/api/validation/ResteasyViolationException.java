@@ -303,10 +303,12 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       }
       return index;
    }
+   
+   protected abstract ResteasyConfiguration getResteasyConfiguration();
 
    protected void checkSuppressPath()
    {
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = getResteasyConfiguration();
       if (context != null)
       {
          String s = context.getParameter(SUPPRESS_VIOLATION_PATH);

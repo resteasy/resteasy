@@ -347,7 +347,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    
    protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
-      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+      ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
       CompletionStage<Object> rtn = null;
       try
@@ -366,7 +366,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       final RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
       final long timestamp = tracingLogger.timestamp("METHOD_INVOKE");
       try {
-         ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+         ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
          PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
                  () -> invokeOnTargetAfterFilter(request, response, target));
@@ -539,8 +539,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
-		PostResourceMethodInvokers postResourceMethodInvokers = ResteasyProviderFactory
-				.getContextData(PostResourceMethodInvokers.class);
+		PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
 		return this.methodInjector.invoke(request, response, target)
 		      .handle((ret, exception) -> {
          // on success

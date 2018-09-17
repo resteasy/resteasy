@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
 /**
@@ -49,6 +50,12 @@ public class ViolationReport
 
 		@Override
          public ConstraintTypeUtil getConstraintTypeUtil()
+         {
+            return null;
+         }
+
+         @Override
+         protected ResteasyConfiguration getResteasyConfiguration()
          {
             return null;
          }

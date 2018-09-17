@@ -28,10 +28,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
-import org.jboss.resteasy.spi.util.ThreadLocalStack;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.ThreadLocalStack;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

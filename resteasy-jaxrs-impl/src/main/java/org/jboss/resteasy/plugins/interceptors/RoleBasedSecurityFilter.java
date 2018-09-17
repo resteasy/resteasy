@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ForbiddenException;
@@ -9,7 +9,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.io.IOException;
+
+import org.jboss.resteasy.core.ResteasyContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,7 +40,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
       if (permitAll) return;
       if (rolesAllowed != null)
       {
-         SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
+         SecurityContext context = ResteasyContext.getContextData(SecurityContext.class);
          if (context != null)
          {
             for (String role : rolesAllowed)

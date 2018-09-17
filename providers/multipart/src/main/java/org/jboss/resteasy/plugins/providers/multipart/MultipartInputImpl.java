@@ -1,6 +1,34 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.SequenceInputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.MimeIOException;
@@ -28,40 +56,11 @@ import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Providers;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -193,8 +192,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    {
       this.contentType = contentType;
       this.workers = workers;
-      HttpRequest httpRequest = ResteasyProviderFactory
-              .getContextData(HttpRequest.class);
+      HttpRequest httpRequest = ResteasyContext.getContextData(HttpRequest.class);
       if (httpRequest != null)
       {
          String defaultContentType = (String) httpRequest
@@ -330,7 +328,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             if (savedProviders != null)
             {
-               ResteasyProviderFactory.pushContext(Providers.class, savedProviders);  
+               ResteasyContext.pushContext(Providers.class, savedProviders);  
             }
             MessageBodyReader<T> reader = workers.getMessageBodyReader(type, genericType, empty, contentType);
             if (reader == null)
@@ -346,7 +344,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             if (savedProviders != null)
             {
-               ResteasyProviderFactory.popContextData(Providers.class);
+               ResteasyContext.popContextData(Providers.class);
             }
          }
       }

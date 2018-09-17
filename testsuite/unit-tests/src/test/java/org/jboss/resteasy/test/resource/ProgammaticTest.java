@@ -7,11 +7,11 @@ import java.lang.reflect.Method;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.test.resource.resource.ProgrammaticResource;
@@ -37,7 +37,7 @@ public class ProgammaticTest {
    
    @Before
    public void before() {
-      ResteasyProviderFactory.getContextDataMap().put(Configurable.class, dispatcher.getProviderFactory());
+      ResteasyContext.getContextDataMap().put(Configurable.class, dispatcher.getProviderFactory());
    }
    
    /**

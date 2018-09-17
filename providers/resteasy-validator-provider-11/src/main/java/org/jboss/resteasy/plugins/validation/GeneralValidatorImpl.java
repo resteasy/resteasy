@@ -28,12 +28,12 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -83,7 +83,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionNotOnClasspath());
       }
       
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
          String s = context.getParameter(SUPPRESS_VIOLATION_PATH);

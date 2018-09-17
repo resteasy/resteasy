@@ -171,7 +171,7 @@ public class ServerResponseWriter
         }
         
         boolean addCharset = true;
-        ResteasyDeployment deployment = ResteasyProviderFactory.getContextData(ResteasyDeployment.class);
+        ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
         if (deployment != null)
         {
            addCharset = deployment.isAddCharset();

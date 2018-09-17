@@ -1,15 +1,11 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.RecipientInformation;
-import org.bouncycastle.cms.RecipientInformationStore;
-import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipient;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
-import org.bouncycastle.mail.smime.SMIMEEnveloped;
-import org.bouncycastle.mail.smime.SMIMEUtil;
-import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 
 import javax.mail.Header;
 import javax.mail.MessagingException;
@@ -20,12 +16,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.Enumeration;
+import org.bouncycastle.cms.RecipientInformation;
+import org.bouncycastle.cms.RecipientInformationStore;
+import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipient;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
+import org.bouncycastle.mail.smime.SMIMEEnveloped;
+import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -201,8 +201,8 @@ public class EnvelopedInputImpl implements EnvelopedInput
       {
          throw new RuntimeException(Messages.MESSAGES.couldNotFindMessageBodyReader(t.getClass().getName()));
       }
-      Providers old = ResteasyProviderFactory.getContextData(Providers.class);
-      ResteasyProviderFactory.pushContext(Providers.class, providers);
+      Providers old = ResteasyContext.getContextData(Providers.class);
+      ResteasyContext.pushContext(Providers.class, providers);
       try
       {
          InputStream inputStream = null;
@@ -222,8 +222,8 @@ public class EnvelopedInputImpl implements EnvelopedInput
       }
       finally
       {
-         ResteasyProviderFactory.popContextData(Providers.class);
-         if (old != null) ResteasyProviderFactory.pushContext(Providers.class, old);
+         ResteasyContext.popContextData(Providers.class);
+         if (old != null) ResteasyContext.pushContext(Providers.class, old);
       }
    }
 

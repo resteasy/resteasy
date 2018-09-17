@@ -1,16 +1,5 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.doseta.i18n.LogMessages;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.ParameterParser;
-
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.ws.rs.core.SecurityContext;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessController;
@@ -23,6 +12,17 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.ws.rs.core.SecurityContext;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.doseta.i18n.LogMessages;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
+import org.jboss.resteasy.util.Base64;
+import org.jboss.resteasy.util.ParameterParser;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -113,7 +113,7 @@ public class DosetaKeyRepository implements KeyRepository
    {
       if (userPrincipalAsPrivateSelector)
       {
-         SecurityContext securityContext = ResteasyProviderFactory.getContextData(SecurityContext.class);
+         SecurityContext securityContext = ResteasyContext.getContextData(SecurityContext.class);
          if (securityContext != null)
          {
             return securityContext.getUserPrincipal().getName();

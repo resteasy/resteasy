@@ -1,7 +1,6 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.annotations.security.doseta.Signed;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -13,7 +12,9 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
-import java.io.IOException;
+
+import org.jboss.resteasy.annotations.security.doseta.Signed;
+import org.jboss.resteasy.core.ResteasyContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -50,7 +51,7 @@ public class ServerDigitalSigningHeaderDecoratorFeature implements DynamicFeatur
       @Override
       public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
       {
-         KeyRepository repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
+         KeyRepository repository = ResteasyContext.getContextData(KeyRepository.class);
          DKIMSignature header = createHeader(repository);
          responseContext.getHeaders().add(DKIMSignature.DKIM_SIGNATURE, header);
       }

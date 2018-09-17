@@ -40,7 +40,7 @@ import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.spi.util.ThreadLocalStack;
+import org.jboss.resteasy.util.ThreadLocalStack;
 
 /**
  * Allow applications to push/pop provider factories onto the stack.

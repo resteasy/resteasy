@@ -11,6 +11,7 @@ import javax.ws.rs.ext.ContextResolver;
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -50,8 +51,8 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
          propertyInjector = getPropertyInjector();
       }
 
-      HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
-      HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
+      HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
+      HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
 
       if ((request != null) && (response != null))
       {

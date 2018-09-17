@@ -1,8 +1,8 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
@@ -190,11 +190,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.LOCATION);
          return this;
       }
-      if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
+      if (!location.isAbsolute() && ResteasyContext.getContextData(HttpRequest.class) != null)
       {
          String path = location.toString();
          if (path.startsWith("/")) path = path.substring(1);
-         URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
+         URI baseUri = ResteasyContext.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
       }
       metadata.putSingle(HttpHeaderNames.LOCATION, location);
@@ -209,11 +209,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.CONTENT_LOCATION);
          return this;
       }
-      if (!location.isAbsolute() && ResteasyProviderFactory.getContextData(HttpRequest.class) != null)
+      if (!location.isAbsolute() && ResteasyContext.getContextData(HttpRequest.class) != null)
       {
          String path = location.toString();
          if (path.startsWith("/")) path = path.substring(1);
-         URI baseUri = ResteasyProviderFactory.getContextData(HttpRequest.class).getUri().getBaseUri();
+         URI baseUri = ResteasyContext.getContextData(HttpRequest.class).getUri().getBaseUri();
          location = baseUri.resolve(path);
       }
       metadata.putSingle(HttpHeaderNames.CONTENT_LOCATION, location);

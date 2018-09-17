@@ -1,11 +1,20 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.DateUtil;
+import static org.jboss.resteasy.resteasy_jaxrs.i18n.Messages.MESSAGES;
+import static org.jboss.resteasy.spi.HttpResponseCodes.SC_PRECONDITION_FAILED;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT_CHARSET;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT_ENCODING;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT_LANGUAGE;
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_MATCH;
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_MODIFIED_SINCE;
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_NONE_MATCH;
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_UNMODIFIED_SINCE;
+import static org.jboss.resteasy.util.HttpHeaderNames.VARY;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
@@ -13,13 +22,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-import static org.jboss.resteasy.resteasy_jaxrs.i18n.Messages.MESSAGES;
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
-import static org.jboss.resteasy.spi.HttpResponseCodes.SC_PRECONDITION_FAILED;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.util.DateUtil;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -47,7 +56,7 @@ public class RequestImpl implements Request
    }
 
    private boolean isRfc7232preconditions() {
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       return context != null && Boolean.parseBoolean(context.getParameter("resteasy.rfc7232preconditions"));
    }
 

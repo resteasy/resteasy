@@ -17,26 +17,6 @@ public interface ResteasyDeployment
 
    void merge(ResteasyDeployment other);
 
-   static Application createApplication(String applicationClass, Dispatcher dispatcher, ResteasyProviderFactory providerFactory)
-   {
-      Class<?> clazz = null;
-      try
-      {
-         clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-
-      Application app = (Application)providerFactory.createProviderInstance(clazz);
-      dispatcher.getDefaultContextObjects().put(Application.class, app);
-      ResteasyProviderFactory.pushContext(Application.class, app);
-      PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
-      propertyInjector.inject(app, false);
-      return app;
-   }
-
    void registration();
 
    void stop();

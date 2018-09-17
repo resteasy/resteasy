@@ -1,9 +1,10 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.annotations.security.doseta.Verifications;
-import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -23,11 +24,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.jboss.resteasy.annotations.security.doseta.Verifications;
+import org.jboss.resteasy.annotations.security.doseta.Verify;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -133,7 +134,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
          KeyRepository repository = (KeyRepository) context.getProperty(KeyRepository.class.getName());
          if (repository == null)
          {
-            repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
+            repository = ResteasyContext.getContextData(KeyRepository.class);
          }
          verifier.setRepository(repository);
       }

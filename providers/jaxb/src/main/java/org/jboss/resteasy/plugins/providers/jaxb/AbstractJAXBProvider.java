@@ -1,14 +1,12 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
-import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.NoContent;
-import org.jboss.resteasy.util.TypeConverter;
-import org.xml.sax.InputSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,13 +20,15 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.util.NoContent;
+import org.jboss.resteasy.util.TypeConverter;
+import org.xml.sax.InputSource;
 
 /**
  * A AbstractJAXBProvider.
@@ -49,7 +49,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    public AbstractJAXBProvider()
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : AbstractJAXBProvider", getClass().getName());
-      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
          String s = context.getParameter("resteasy.document.expand.entity.references");

@@ -21,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -30,7 +31,6 @@ import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
@@ -71,7 +71,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       this.responseFilters = responseFilters;
       this.continuation = continuation;
       this.onComplete = onComplete;
-      contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      contextDataMap = ResteasyContext.getContextDataMap();
    }
 
    public BuiltResponse getJaxrsResponse()
@@ -300,7 +300,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          return;
       }
 
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
       try {
          filter();
@@ -322,7 +322,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       }
       else
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         ResteasyContext.pushContextDataMap(contextDataMap);
          writeException(t);
       }
    }

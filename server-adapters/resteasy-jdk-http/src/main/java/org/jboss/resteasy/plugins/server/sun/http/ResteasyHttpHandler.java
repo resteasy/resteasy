@@ -1,18 +1,19 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import java.io.IOException;
 
-import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import java.io.IOException;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -63,8 +64,8 @@ public class ResteasyHttpHandler implements HttpHandler
 
          try
          {
-            ResteasyProviderFactory.pushContext(HttpExchange.class, httpExchange);
-            ResteasyProviderFactory.pushContext(HttpContext.class, httpExchange.getHttpContext());
+            ResteasyContext.pushContext(HttpExchange.class, httpExchange);
+            ResteasyContext.pushContext(HttpContext.class, httpExchange.getHttpContext());
             dispatcher.invoke(request, response);
             if (!response.isCommitted())
             {
@@ -81,7 +82,7 @@ public class ResteasyHttpHandler implements HttpHandler
          }
          finally
          {
-            ResteasyProviderFactory.clearContextData();
+            ResteasyContext.clearContextData();
             httpExchange.getResponseBody().close();
          }
       }

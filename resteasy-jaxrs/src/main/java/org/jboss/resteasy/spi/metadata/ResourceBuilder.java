@@ -649,7 +649,7 @@ public class ResourceBuilder
             {
                if (isTextLike(mt))
                {
-                  ResteasyDeployment deployment = ResteasyProviderFactory.getContextData(ResteasyDeployment.class);
+                  ResteasyDeployment deployment = ResteasyProviderFactory.getInstance().getContextData(ResteasyDeployment.class);
                   if (deployment != null && !deployment.isAddCharset())
                   {
                      LogMessages.LOGGER.mediaTypeLacksCharset(mt, method.getMethod().getName());
