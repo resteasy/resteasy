@@ -7,8 +7,8 @@
         <version>4.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>resteasy-jaxrs</artifactId>
-    <name>RESTEasy JAX-RS Implementation</name>
+    <artifactId>resteasy-core-spi</artifactId>
+    <name>RESTEasy JAX-RS Core SPI</name>
     <description/>
     <packaging>jar</packaging>
 

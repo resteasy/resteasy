@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>resteasy-jaxrs-client-api</artifactId>
+    <artifactId>resteasy-client-api</artifactId>
     <name>RESTEasy JAX-RS Client API</name>
 
     <dependencies>
@@ -20,7 +20,7 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
