@@ -57,7 +57,8 @@ public class CustomJackson2ProviderTest {
         String version = System.getProperty("project.version");
         try {
             war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-servlet-initializer:" + version).toArray(new File[]{}));
-            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-jaxrs:" + version).toArray(new File[]{}));
+            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core:" + version).toArray(new File[]{}));
+            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core-spi:" + version).toArray(new File[]{}));
             war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-jackson2-provider:" + version).toArray(new File[]{}));
 
         } catch (Exception e) {
