@@ -13,10 +13,10 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerResponseContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public abstract class AsyncResponseFilter implements ContainerResponseFilter {
 
@@ -87,7 +87,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          throw new AsyncFilterException("ouch");
       }else if("async-throw-late".equals(action)) {
          ctx.suspend();
-         HttpRequest req = ResteasyProviderFactory.getContextData(HttpRequest.class);
+         HttpRequest req = ResteasyContext.getContextData(HttpRequest.class);
          ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(() -> {
             try

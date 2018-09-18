@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -53,13 +54,13 @@ public class SseBroadcastTest {
         final AtomicInteger errors = new AtomicInteger(0);
         final String textMessage = "This is broadcast message";
 
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/broadcast/subscribe"));
 
-        Client client2 = new ResteasyClientBuilder().build();
+        Client client2 = ClientBuilder.newClient();
         WebTarget target2 = client2.target(generateURL("/broadcast/subscribe"));
 
-        Client client3 = new ResteasyClientBuilder().build();
+        Client client3 = ClientBuilder.newClient();
         WebTarget target3 = client2.target(generateURL("/broadcast/subscribe"));
 
         SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -118,7 +119,7 @@ public class SseBroadcastTest {
     public void testBroadcasterOnCloseCallbackCloseBroadsCasterOnServer() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger errors = new AtomicInteger(0);
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/broadcast/subscribe"));
 
         SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -141,7 +142,7 @@ public class SseBroadcastTest {
             client.close();
         }
 
-        Client checkClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
+        Client checkClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
         checkClient.target(generateURL("/broadcast")).request().delete();
         boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
         Assert.assertTrue(onCloseCalled);
@@ -157,7 +158,7 @@ public class SseBroadcastTest {
      */
     @Test
     public void testBroadcasterOnCloseCallbackCloseSinkOnServer() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/broadcast/subscribe"));
 
         SseEventSource msgEventSource = SseEventSource.target(target).reconnectingEvery(5, TimeUnit.MINUTES).build();
@@ -176,7 +177,7 @@ public class SseBroadcastTest {
             client.close();
         }
 
-        Client checkClient = new ResteasyClientBuilder().build();
+        Client checkClient = ClientBuilder.newClient();
         boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
         Assert.assertTrue(onCloseCalled);
         checkClient.close();
@@ -185,7 +186,7 @@ public class SseBroadcastTest {
 
     private void removeBroadcaster() {
         // Close broadcaster
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         client.target(generateURL("/broadcast")).request().delete();
         client.close();
     }

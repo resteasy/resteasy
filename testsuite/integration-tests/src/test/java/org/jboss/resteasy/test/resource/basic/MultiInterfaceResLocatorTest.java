@@ -3,12 +3,12 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorIntf1;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorIntf2;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorResource;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorSubresource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,7 +47,7 @@ public class MultiInterfaceResLocatorTest {
      */
     @Test
     public void test() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         Response response = client.target(generateURL("/test/hello1/")).request().get();
         String entity = response.readEntity(String.class);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

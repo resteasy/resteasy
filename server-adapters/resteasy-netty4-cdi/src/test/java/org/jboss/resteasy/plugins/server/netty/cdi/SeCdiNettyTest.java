@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -47,7 +48,7 @@ public class SeCdiNettyTest {
 
         ResteasyCdiExtension cdiExtension = container.select(ResteasyCdiExtension.class).get();
         CdiNettyJaxrsServer netty = new CdiNettyJaxrsServer(container);
-        ResteasyDeployment rd = new ResteasyDeployment();
+        ResteasyDeployment rd = new ResteasyDeploymentImpl();
         rd.setActualResourceClasses(cdiExtension.getResources());
         rd.setInjectorFactory(new CdiInjectorFactory(container.getBeanManager()));
         rd.getActualProviderClasses().addAll(cdiExtension.getProviders());

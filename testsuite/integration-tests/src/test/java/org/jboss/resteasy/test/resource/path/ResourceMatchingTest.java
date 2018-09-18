@@ -13,7 +13,7 @@ import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingStringBean
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingStringBeanEntityProvider;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingWeightResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingYetAnotherSubresource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

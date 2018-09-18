@@ -4,10 +4,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet;
 import org.jboss.resteasy.test.core.servlet.resource.FilterResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,7 +47,7 @@ public class FilterTest {
      */
     @Test
     public void testDispatchDynamic() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/test/dispatch/dynamic")).request();
         Response response = request.get();
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

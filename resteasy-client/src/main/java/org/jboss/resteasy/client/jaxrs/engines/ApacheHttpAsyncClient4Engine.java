@@ -15,6 +15,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
@@ -49,7 +50,6 @@ import org.apache.http.nio.util.SharedInputBuffer;
 import org.apache.http.nio.util.SimpleInputBuffer;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
@@ -119,11 +119,11 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    }
 
    @Override
-   public ClientResponse invoke(ClientInvocation request)
+   public Response invoke(Invocation request)
    {
       // Doing blocking requests with an async httpclient is quite useless.
       // But it is better to use the same httpclient in any case just for sharing+configuring only one connectionpool.
-      Future<ClientResponse> future = submit(request, false, null, new ResultExtractor<ClientResponse>() {
+      Future<ClientResponse> future = submit((ClientInvocation)request, false, null, new ResultExtractor<ClientResponse>() {
          @Override
          public ClientResponse extractResult(ClientResponse response)
          {

@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.atom.Content;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.plugins.providers.atom.Person;
@@ -23,7 +23,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelNote;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelState;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelUuid;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelVersionNumber;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -97,7 +97,7 @@ public class AtomComplexModelTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

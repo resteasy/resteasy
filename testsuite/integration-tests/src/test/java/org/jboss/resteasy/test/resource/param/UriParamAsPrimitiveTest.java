@@ -9,7 +9,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBoolean;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBooleanInterface;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriBooleanWrapper;
@@ -28,7 +28,7 @@ import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResour
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriLongWrapper;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriShort;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriShortWrapper;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,7 +56,7 @@ public class UriParamAsPrimitiveTest {
 
     @BeforeClass
     public static void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         resourceUriBoolean = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriBooleanInterface.class, client.target(generateBaseUrl())).build();
         resourceUriByte = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriByteInterface.class, client.target(generateBaseUrl())).build();
     }

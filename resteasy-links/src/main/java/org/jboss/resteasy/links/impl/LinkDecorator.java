@@ -1,16 +1,17 @@
 package org.jboss.resteasy.links.impl;
 
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.links.AddLinks;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.DecoratorProcessor;
+import java.lang.annotation.Annotation;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Marshaller.Listener;
-import java.lang.annotation.Annotation;
+
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.links.AddLinks;
+import org.jboss.resteasy.spi.DecoratorProcessor;
+import org.jboss.resteasy.spi.Registry;
 
 public class LinkDecorator implements DecoratorProcessor<Marshaller, AddLinks> {
 
@@ -19,8 +20,8 @@ public class LinkDecorator implements DecoratorProcessor<Marshaller, AddLinks> {
 		target.setListener(new Listener() {
 			@Override
 			public void beforeMarshal(Object entity) {
-				UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
-				ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyProviderFactory.getContextData(Registry.class);
+				UriInfo uriInfo = ResteasyContext.getContextData(UriInfo.class);
+				ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyContext.getContextData(Registry.class);
 
 				// find all rest service classes and scan them
 				RESTUtils.addDiscovery(entity, uriInfo, registry);

@@ -18,7 +18,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.core.ResteasyContext;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class SseEventSinkClosingTestResource {
 
 		@Override
 		public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-			ResteasyProviderFactory.pushContext(ContainerRequestContext.class, containerRequestContext);
+		   ResteasyContext.pushContext(ContainerRequestContext.class, containerRequestContext);
 		}
 
 	}

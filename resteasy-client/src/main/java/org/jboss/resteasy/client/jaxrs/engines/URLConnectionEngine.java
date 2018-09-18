@@ -9,7 +9,9 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,9 +35,9 @@ public class URLConnectionEngine implements ClientHttpEngine
      * {@inheritDoc}
      */
     @Override
-    public ClientResponse invoke(ClientInvocation request)
+    public Response invoke(Invocation inv)
     {
-
+        ClientInvocation request = (ClientInvocation) inv;
         final HttpURLConnection connection;
 
         final int status;

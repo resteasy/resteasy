@@ -26,7 +26,7 @@ public class ContractsTest {
      */
     @Test
     public void testLimitedContract() {
-        ResteasyProviderFactory factory = new ResteasyProviderFactory();
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
         factory.register(ContractsDataReaderWriter.class, MessageBodyReader.class);
         MessageBodyReader reader = factory.getMessageBodyReader(ContractsData.class, ContractsData.class, null, MediaType.APPLICATION_ATOM_XML_TYPE);
         Assert.assertNotNull("Reader is not assigned", reader);
@@ -40,7 +40,7 @@ public class ContractsTest {
      */
     @Test
     public void testLimitedContractMap() {
-        ResteasyProviderFactory factory = new ResteasyProviderFactory();
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
         Map<Class<?>, Integer> contract = new HashMap<Class<?>, Integer>();
         contract.put(MessageBodyReader.class, 5);
         factory.register(ContractsDataReaderWriter.class, contract);

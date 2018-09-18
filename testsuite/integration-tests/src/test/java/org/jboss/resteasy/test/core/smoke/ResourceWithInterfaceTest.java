@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceResourceWithInterface;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceSimpleClient;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -37,7 +37,7 @@ public class ResourceWithInterfaceTest {
      */
     @Test
     public void testNoDefaultsResource() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResourceWithInterfaceSimpleClient proxy = client.target(PortProviderUtil.generateBaseUrl(ResourceWithInterfaceTest.class.getSimpleName())).proxyBuilder(ResourceWithInterfaceSimpleClient.class).build();
 
         Assert.assertEquals("Wrong client answer.", "basic", proxy.getBasic());

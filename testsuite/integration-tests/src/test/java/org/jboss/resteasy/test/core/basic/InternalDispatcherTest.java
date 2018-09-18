@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherForwardingResource;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -75,7 +75,7 @@ public class InternalDispatcherTest {
 
     @Before
     public void setup() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
 
         Assert.assertTrue("No singleton founded", TestApplication.singletons.iterator().hasNext());
         Object objectResource = TestApplication.singletons.iterator().next();

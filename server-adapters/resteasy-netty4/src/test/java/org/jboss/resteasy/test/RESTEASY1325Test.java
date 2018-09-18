@@ -16,6 +16,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -65,7 +67,7 @@ public class RESTEASY1325Test
    public void testIdleCloseConnection() throws Exception
    {
       NettyJaxrsServer netty = new NettyJaxrsServer();
-      ResteasyDeployment deployment = new ResteasyDeployment();
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       netty.setDeployment(deployment);
       netty.setPort(TestPortProvider.getPort());
       netty.setRootResourcePath("");

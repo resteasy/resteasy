@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.inmodule.resource.JavaConfigResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.JavaConfigService;
 import org.jboss.resteasy.test.spring.inmodule.resource.JavaConfigBeanConfiguration;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.annotations.security.doseta.Signed;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -12,7 +11,9 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
-import java.io.IOException;
+
+import org.jboss.resteasy.annotations.security.doseta.Signed;
+import org.jboss.resteasy.core.ResteasyContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,7 +53,7 @@ public class ClientDigitalSigningHeaderDecoratorFeature implements DynamicFeatur
          KeyRepository repository = (KeyRepository) requestContext.getProperty(KeyRepository.class.getName());
          if (repository == null)
          {
-            repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
+            repository = ResteasyContext.getContextData(KeyRepository.class);
          }
          DKIMSignature header = createHeader(repository);
          requestContext.getHeaders().add(DKIMSignature.DKIM_SIGNATURE, header);

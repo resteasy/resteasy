@@ -5,7 +5,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCacheFeature;
@@ -75,7 +75,7 @@ public class ClientCacheTest {
     @Test
     public void testProxy() throws Exception {
         count.set(0);
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateBaseUrl());
         target.register(BrowserCacheFeature.class);
 
@@ -150,7 +150,7 @@ public class ClientCacheTest {
      */
     @Test
     public void testMaxSize() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateBaseUrl());
         target.register(BrowserCacheFeature.class);
         LightweightBrowserCache cache = (LightweightBrowserCache) target.getConfiguration().getProperty(BrowserCache.class.getName());

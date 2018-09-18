@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.ParamConverterClient;
 import org.jboss.resteasy.test.resource.param.resource.ParamConverterDefaultClient;
 import org.jboss.resteasy.test.resource.param.resource.ParamConverterDefaultResource;
@@ -50,7 +50,7 @@ public class ParamConverterTest {
      */
     @Test
     public void testIt() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ParamConverterClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterClient.class);
         proxy.put("pojo", "pojo", "pojo", "pojo");
         client.close();
@@ -62,7 +62,7 @@ public class ParamConverterTest {
      */
     @Test
     public void testDefault() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         ParamConverterDefaultClient proxy = client.target(generateBaseUrl()).proxy(ParamConverterDefaultClient.class);
         proxy.put();
         client.close();

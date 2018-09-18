@@ -12,6 +12,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.net.URI;
 
+import javax.ws.rs.client.ClientBuilder;
+
 /**
  * {@link org.springframework.beans.factory.FactoryBean} to generate a client
  * proxy from a REST annotated interface.
@@ -79,7 +81,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       if (resteasyProviderFactory == null)
          resteasyProviderFactory = ResteasyProviderFactory.getInstance();
       RegisterBuiltin.register(resteasyProviderFactory);
-      ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+      ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
       clientBuilder.providerFactory(resteasyProviderFactory);
       
       if (clientEngine == null)

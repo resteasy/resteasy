@@ -4,7 +4,8 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl;
+import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Configuration;
@@ -63,12 +64,12 @@ public class ClientWebTarget implements ResteasyWebTarget
     */
    private static UriBuilder uriBuilderFromUri(URI uri)
    {
-       return new ResteasyUriBuilder().uri(uri);
+       return new ResteasyUriBuilderImpl().uri(uri);
    }
    
    private static UriBuilder uriBuilderFromUri(String uri)
    {
-       return new ResteasyUriBuilder().uri(uri);
+       return new ResteasyUriBuilderImpl().uri(uri);
    }
    
    @Override
@@ -314,7 +315,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (uriBuilder instanceof ResteasyUriBuilder) {
           copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (String obj : stringValues)
       {
@@ -332,7 +333,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (uriBuilder instanceof ResteasyUriBuilder) {
           copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {

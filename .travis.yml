@@ -1,15 +1,13 @@
 install:
  - mvn clean; java -version
 script:
- - mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
+ - mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION -Dtest=CustomJackson2ProviderTest -DfailIfNoTests=false install
 
 language: java
 jdk:
   - oraclejdk8
   - oraclejdk10
 env:
-  - SERVER_VERSION=12.0.0.Final
-  - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
 cache:
  directories:
@@ -20,3 +18,5 @@ addons:
       - oracle-java8-installer
 before_install:
   - "if [ -d \"$JAVA_HOME/jre\" ]; then SEC_LIB=$JAVA_HOME/jre; else SEC_LIB=$JAVA_HOME; fi; sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $SEC_LIB/lib/security;"
+after_script:
+ - ls -l /home/travis/build/resteasy/Resteasy/testsuite/integration-tests/target/test-server/wildfly-14.0.0.Final/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/main; cat /home/travis/build/resteasy/Resteasy/testsuite/integration-tests/target/test-server/wildfly-14.0.0.Final/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/main/module.xml; cat /home/travis/build/resteasy/Resteasy/testsuite/integration-tests/target/surefire-reports/*

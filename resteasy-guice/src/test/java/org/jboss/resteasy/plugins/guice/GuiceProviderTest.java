@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;

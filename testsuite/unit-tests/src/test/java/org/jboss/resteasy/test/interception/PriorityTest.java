@@ -1,8 +1,9 @@
 package org.jboss.resteasy.test.interception;
 
-import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistryImpl;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistryImpl;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
@@ -36,9 +37,9 @@ public class PriorityTest {
      */
     @Test
     public void testPriority() throws Exception {
-        ContainerResponseFilterRegistry containerResponseFilterRegistry = new ContainerResponseFilterRegistry(new ResteasyProviderFactory());
-        ClientResponseFilterRegistry clientResponseFilterRegistry = new ClientResponseFilterRegistry(new ResteasyProviderFactory());
-        JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilterRegistry = new JaxrsInterceptorRegistry<ClientRequestFilter>(new ResteasyProviderFactory(), ClientRequestFilter.class);
+        JaxrsInterceptorRegistry<ContainerResponseFilter> containerResponseFilterRegistry = new ContainerResponseFilterRegistryImpl(ResteasyProviderFactory.newInstance());
+        JaxrsInterceptorRegistry<ClientResponseFilter> clientResponseFilterRegistry = new ClientResponseFilterRegistryImpl(ResteasyProviderFactory.newInstance());
+        JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilterRegistry = new JaxrsInterceptorRegistryImpl<ClientRequestFilter>(ResteasyProviderFactory.newInstance(), ClientRequestFilter.class);
 
         containerResponseFilterRegistry.registerClass(PriorityContainerResponseFilter2.class);
         containerResponseFilterRegistry.registerClass(PriorityContainerResponseFilter1.class);
@@ -75,7 +76,7 @@ public class PriorityTest {
      */
     @Test
     public void testPriorityOverride() {
-        JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilterRegistry = new JaxrsInterceptorRegistry<ClientRequestFilter>(new ResteasyProviderFactory(), ClientRequestFilter.class);
+        JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilterRegistry = new JaxrsInterceptorRegistryImpl<ClientRequestFilter>(ResteasyProviderFactory.newInstance(), ClientRequestFilter.class);
 
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter3.class, 100);
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter1.class, 200);

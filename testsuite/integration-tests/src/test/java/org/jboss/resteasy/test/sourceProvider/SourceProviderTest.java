@@ -6,7 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.sourceProvider.resource.Book;
 import org.jboss.resteasy.test.sourceProvider.resource.BookResource;
 import org.jboss.resteasy.test.sourceProvider.resource.SourceProviderApp;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

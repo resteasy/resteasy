@@ -1,13 +1,5 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Key;
-import com.google.inject.Provider;
-import com.google.inject.Scope;
-
-import org.jboss.resteasy.plugins.guice.RequestScoped;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
@@ -15,6 +7,14 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.guice.RequestScoped;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Key;
+import com.google.inject.Provider;
+import com.google.inject.Scope;
 
 /**
  * Binds the {@link RequestScoped} to the current HTTP request and
@@ -37,11 +37,11 @@ public class RequestScopeModule extends AbstractModule
                public T get()
                {
                   Class<T> instanceClass = (Class<T>) key.getTypeLiteral().getType();
-                  T instance = ResteasyProviderFactory.getContextData(instanceClass);
+                  T instance = ResteasyContext.getContextData(instanceClass);
 
                   if (instance == null) {
                      instance = creator.get();
-                     ResteasyProviderFactory.pushContext(instanceClass, instance);
+                     ResteasyContext.pushContext(instanceClass, instance);
                   }
 
                   return instance;
@@ -76,7 +76,7 @@ public class RequestScopeModule extends AbstractModule
 
       @Override
       public T get() {
-         return ResteasyProviderFactory.getContextData(instanceClass);
+         return ResteasyContext.getContextData(instanceClass);
       }
    }
 }

@@ -4,10 +4,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.UnauthorizedHttpCodeProxy;
 import org.jboss.resteasy.test.client.proxy.resource.UnauthorizedHttpCodeResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -40,7 +40,7 @@ public class UnauthorizedHttpCodeTest {
      */
     @Test
     public void testProxy() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         UnauthorizedHttpCodeProxy proxy = client.target(PortProviderUtil.generateURL("/", UnauthorizedHttpCodeTest.class.getSimpleName())).proxy(UnauthorizedHttpCodeProxy.class);
         try {
             proxy.getFoo();

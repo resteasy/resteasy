@@ -7,7 +7,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
@@ -18,7 +17,7 @@ import org.jboss.resteasy.security.doseta.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.test.crypto.resource.SigningResource;
 import org.jboss.resteasy.test.crypto.resource.SigningProxy;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -34,6 +33,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -76,7 +76,7 @@ public class SigningTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
     }
 
     @After

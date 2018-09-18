@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.spring.unit;
 
+import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,6 @@ public class SpringContextLoaderTest {
     }
 
     private ResteasyDeployment someDeployment() {
-        return new ResteasyDeployment();
+        return new ResteasyDeploymentImpl();
     }
 }

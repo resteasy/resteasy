@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapper;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderExceptionMapperRuntimeException;
 import org.jboss.resteasy.test.response.resource.ResponseHeaderResource;
@@ -50,7 +50,7 @@ public class ResponseHeaderTest {
     */
    @Test
    public void testMapperWithResteasyClient() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       WebTarget base = client.target(PortProviderUtil.generateURL("/test",
               ResponseHeaderTest.class.getSimpleName()));
       Response response = base.request().get();

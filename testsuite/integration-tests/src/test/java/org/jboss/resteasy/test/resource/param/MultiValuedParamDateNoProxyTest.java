@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapper;
 import org.jboss.resteasy.test.resource.param.resource.CookieParamWrapperArrayConverter;
@@ -96,7 +96,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testQueryParam() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/queryParam/customConversion_multiValuedParam")
@@ -159,7 +159,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testHeaderParam() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
 
@@ -219,7 +219,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testMatrixParam() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/matrixParam/customConversion_multiValuedParam")
@@ -278,7 +278,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testCookieParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/cookieParam/customConversion_multiValuedCookieParam")
@@ -337,7 +337,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testFormParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             Form form = new Form();
@@ -406,7 +406,7 @@ public class MultiValuedParamDateNoProxyTest {
      */
     @Test
     public void testPathParam() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         try {
             Response response;
             response = client.target(generateBaseUrl() + "/pathParam/customConversion_multiValuedPathParam/20161217/20161218/20161219")

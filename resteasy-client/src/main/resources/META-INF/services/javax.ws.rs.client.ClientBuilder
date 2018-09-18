@@ -1,1 +1,1 @@
-org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
+org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl

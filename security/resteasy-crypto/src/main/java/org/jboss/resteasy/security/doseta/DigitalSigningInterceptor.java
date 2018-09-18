@@ -1,8 +1,15 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.doseta.i18n.LogMessages;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -18,16 +25,9 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.List;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.security.doseta.i18n.LogMessages;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -158,7 +158,7 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ContainerRe
       PrivateKey privateKey = dosetaSignature.getPrivateKey();
       if (privateKey == null)
       {
-         if (repository == null) repository = ResteasyProviderFactory.getContextData(KeyRepository.class);
+         if (repository == null) repository = ResteasyContext.getContextData(KeyRepository.class);
 
          if (repository == null)
          {

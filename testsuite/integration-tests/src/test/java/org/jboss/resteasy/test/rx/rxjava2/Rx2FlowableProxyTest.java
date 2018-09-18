@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -103,7 +104,7 @@ public class Rx2FlowableProxyTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(Rx2FlowableResource.class);
    }
 
@@ -490,7 +491,7 @@ public class Rx2FlowableProxyTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(FlowableRxInvokerProvider.class);
          Rx2FlowableResource proxy = client.target(generateURL("/")).proxy(Rx2FlowableResource.class);
          Flowable<String> flowable = proxy.get();
@@ -541,12 +542,12 @@ public class Rx2FlowableProxyTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(FlowableRxInvokerProvider.class);
       Rx2FlowableResource proxy1 = client1.target(generateURL("/")).proxy(Rx2FlowableResource.class);
       Flowable<String> flowable1 = (Flowable<String>) proxy1.get();
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(FlowableRxInvokerProvider.class);
       Rx2FlowableResource proxy2 = client2.target(generateURL("/")).proxy(Rx2FlowableResource.class);
       Flowable<String> flowable2 = (Flowable<String>) proxy2.get();

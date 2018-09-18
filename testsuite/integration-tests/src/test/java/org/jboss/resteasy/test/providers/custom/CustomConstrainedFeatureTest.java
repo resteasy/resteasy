@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,11 +13,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.custom.resource.CustomClientConstrainedFeature;
 import org.jboss.resteasy.test.providers.custom.resource.CustomConstrainedFeatureResource;
 import org.jboss.resteasy.test.providers.custom.resource.CustomServerConstrainedFeature;
-import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -61,9 +61,9 @@ public class CustomConstrainedFeatureTest {
        // ResteasyProviderFactory providerFactory = ResteasyProviderFactory.newInstance();
        // providerFactory.register(CustomClientConstrainedFeature.class);
        // providerFactory.register(CustomServerConstrainedFeature.class);
-       // ResteasyClient client = new ResteasyClientBuilder().build();
+       // ResteasyClientImpl client = new ResteasyClientBuilderImpl().build();
        // the line below does the same as if there is providers file in META-INF/services/javax.ws.rs.ext.Providers
-       ResteasyClient client = new ResteasyClientBuilder().register(CustomClientConstrainedFeature.class).register(CustomServerConstrainedFeature.class).build();
+       ResteasyClient client = (ResteasyClient)ClientBuilder.newBuilder().register(CustomClientConstrainedFeature.class).register(CustomServerConstrainedFeature.class).build();
        assertTrue(CustomConstrainedFeatureResource.ERROR_CLIENT_FEATURE, CustomClientConstrainedFeature.wasInvoked());
        assertFalse(CustomConstrainedFeatureResource.ERROR_SERVER_FEATURE, CustomServerConstrainedFeature.wasInvoked());
        Response response = client.target(TEST_URI).request().get();

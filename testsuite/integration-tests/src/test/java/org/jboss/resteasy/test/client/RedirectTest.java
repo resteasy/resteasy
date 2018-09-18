@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.client;
 
+import java.util.PropertyPermission;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -21,8 +23,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -63,7 +63,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          Response response = client.target(generateURL("/redirect/" + RedirectTest.class.getSimpleName())).request()
@@ -93,7 +93,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          Response response = client.target(generateURL("/post-redirect")).request()
@@ -123,7 +123,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          RedirectProxyResource proxy = client.target(generateURL("/"))
@@ -154,7 +154,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          RedirectProxyResource proxy = client.target(generateURL("/"))
@@ -185,7 +185,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          RedirectProxyResource proxy = client.target(generateURL("/"))
@@ -216,7 +216,7 @@ public class RedirectTest extends ClientTestBase
    {
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
       engine.setFollowRedirects(true);
-      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
       try
       {
          RedirectProxyResource proxy = client.target(generateURL("/"))
@@ -295,7 +295,7 @@ public class RedirectTest extends ClientTestBase
    @Test
    public void testNoRedirectProxy()
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       try
       {
          RedirectProxyResource proxy = client.target(generateURL("/"))

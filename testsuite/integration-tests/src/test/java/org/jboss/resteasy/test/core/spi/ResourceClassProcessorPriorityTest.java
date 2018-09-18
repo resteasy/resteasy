@@ -5,12 +5,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityAImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityBImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityCImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -85,7 +85,7 @@ public class ResourceClassProcessorPriorityTest {
     @Test
     public void priorityTest() {
         // init client
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
 
         // do request
         Response response = client.target(generateURL("/pure/pure")).request().get();

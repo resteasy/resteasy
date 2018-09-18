@@ -12,10 +12,11 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -86,7 +87,7 @@ public class TwoSecurityDomainsTest {
             credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
             ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(client);
-            authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+            authorizedClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         }
     }
 

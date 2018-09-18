@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsynchBasicResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -91,10 +92,10 @@ public class AsynchBasicTest {
     }
 
     private ResteasyClient initClient() {
-        return new ResteasyClientBuilder()
-                .socketTimeout(5, TimeUnit.SECONDS)
+        return ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+                .readTimeout(5, TimeUnit.SECONDS)
                 .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
-                .establishConnectionTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
                 .build();
     }
 

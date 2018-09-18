@@ -1,7 +1,7 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.logging.Logger.Level;
-import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;

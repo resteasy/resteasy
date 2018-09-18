@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.cdi.injection.resource.ApplicationUser;
 import org.jboss.resteasy.test.cdi.injection.resource.UserManager;
 import org.jboss.resteasy.test.cdi.injection.resource.UserRepository;
@@ -55,7 +55,7 @@ public class InjectionJpaEnumTypeTest {
      */
     @Test
     public void testEnumJackson() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(generateURL("/user"));
         String val = base.request().accept(MediaType.APPLICATION_JSON_TYPE).get().readEntity(String.class);
         Assert.assertEquals("{\"id\":1,\"userType\":\"TYPE_ONE\"}", val);
@@ -67,7 +67,7 @@ public class InjectionJpaEnumTypeTest {
      */
     @Test
     public void testEnumJaxb() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         WebTarget base = client.target(generateURL("/user"));
         String val = base.request().accept(MediaType.APPLICATION_XML_TYPE).get().readEntity(String.class);
         Assert.assertTrue(val.contains("<applicationUser><id>1</id><userType>TYPE_ONE</userType></applicationUser>"));

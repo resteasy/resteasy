@@ -8,7 +8,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFoo;
@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -52,7 +52,7 @@ public class ValidationJaxbTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
     @After

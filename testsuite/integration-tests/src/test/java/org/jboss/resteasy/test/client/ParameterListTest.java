@@ -8,7 +8,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.test.client.resource.ParameterListInterface;
 import org.jboss.resteasy.test.client.resource.ParameterListResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

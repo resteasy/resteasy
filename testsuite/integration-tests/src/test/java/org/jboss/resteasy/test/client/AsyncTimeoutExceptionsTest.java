@@ -6,10 +6,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsResource;
 import org.jboss.resteasy.test.client.resource.AsyncTimeoutExceptionsSticker;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -111,7 +112,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setDefaultRequestConfig(reqConfig)
                 .build();
-        return new ResteasyClientBuilder().httpEngine(ApacheHttpClientEngine.create(httpClient, true)).build();  // RESTEasy specific
+        return ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(ApacheHttpClientEngine.create(httpClient, true)).build();  // RESTEasy specific
     }
 
     /**

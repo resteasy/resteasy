@@ -5,7 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.Order;
 import org.jboss.resteasy.test.providers.jaxb.resource.Ordertype;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersOrderClient;
@@ -17,7 +17,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.Itemtype;
 import org.jboss.resteasy.test.providers.jaxb.resource.JAXBCache;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersHelper;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlStreamFactory;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -73,7 +73,7 @@ public class XmlJaxbProvidersTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build();
+        client = (ResteasyClient)ClientBuilder.newClient();
         proxy = ProxyBuilder.builder(XmlJaxbProvidersOrderClient.class, client.target(generateURL("/"))).build();
     }
 

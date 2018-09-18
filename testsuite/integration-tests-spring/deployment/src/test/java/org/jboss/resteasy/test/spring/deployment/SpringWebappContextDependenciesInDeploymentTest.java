@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.spring.deployment;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringWebappContextResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

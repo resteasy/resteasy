@@ -64,7 +64,7 @@ public class RxTest
    @Before
    public void before()
    {
-      client = new ResteasyClientBuilder()
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
             .readTimeout(5, TimeUnit.SECONDS)
             .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
             .connectTimeout(5, TimeUnit.SECONDS)

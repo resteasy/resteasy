@@ -1,5 +1,18 @@
 package org.jboss.resteasy.test.providers.datasource;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.activation.DataSource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,7 +23,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.test.providers.datasource.resource.DataSourceProviderInputStreamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -21,17 +33,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.activation.DataSource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @tpSubChapter DataSource provider
@@ -61,7 +62,7 @@ public class DataSourceProviderInputStreamTest {
      */
     @Test
     public void testDataSourceProviderRestClient() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
+        Client client = ClientBuilder.newClient();
         client.register(DataSourceProvider.class);
         WebTarget target = client.target(generateURL("/"));
         int expectedLength = DataSourceProviderInputStreamResource.KBs * 1024;

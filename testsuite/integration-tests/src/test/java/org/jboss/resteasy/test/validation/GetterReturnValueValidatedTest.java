@@ -6,11 +6,13 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.validation.resource.GetterReturnValueValidatedResourceResetCount;
 import org.jboss.resteasy.test.validation.resource.GetterReturnValueValidatedResourceWithGetterViolation;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -50,7 +52,7 @@ public class GetterReturnValueValidatedTest {
 
     @Before
     public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
     @After
@@ -78,7 +80,7 @@ public class GetterReturnValueValidatedTest {
         Assert.assertNotNull("Missing validation header", header);
         Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
         String entity = response.readEntity(String.class);
-        ResteasyViolationException e = new ResteasyViolationException(entity);
+        ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
         TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
         response.close();
     }

@@ -1,9 +1,18 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
+import javax.xml.bind.JAXBContext;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCacheChild;
@@ -15,13 +24,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBContext;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -56,7 +58,7 @@ public class JaxbCacheTest {
     @Test
     public void testCache() throws Exception {
         ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        ResteasyProviderFactory.pushContext(Providers.class, factory);
+        ResteasyContext.pushContext(Providers.class, factory);
         {
             ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
             JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
@@ -87,7 +89,7 @@ public class JaxbCacheTest {
     @Test
     public void testCache2() throws Exception {
         ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        ResteasyProviderFactory.pushContext(Providers.class, factory);
+        ResteasyContext.pushContext(Providers.class, factory);
         {
             ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
             JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);

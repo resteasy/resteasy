@@ -1,26 +1,5 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
-import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
-import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-
-import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,6 +17,26 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

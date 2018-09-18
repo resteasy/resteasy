@@ -13,7 +13,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;

@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceClient;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceForm;
 import org.jboss.resteasy.test.form.resource.FormBodyResourceResource;
@@ -38,7 +38,7 @@ public class FormBodyResourceTest {
      */
     @Test
     public void test() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
         FormBodyResourceClient proxy = client.target(
                 PortProviderUtil.generateBaseUrl(FormParameterTest.class.getSimpleName()))
                 .proxyBuilder(FormBodyResourceClient.class).build();

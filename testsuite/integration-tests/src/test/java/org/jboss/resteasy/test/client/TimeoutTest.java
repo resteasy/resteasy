@@ -6,6 +6,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.TimeoutResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -55,11 +56,11 @@ public class TimeoutTest extends ClientTestBase{
      */
     @Test
     public void testTimeout() throws Exception {
-        ResteasyClient clientengine = new ResteasyClientBuilder().socketTimeout(2, TimeUnit.SECONDS).build();
+        ResteasyClient clientengine = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).readTimeout(2, TimeUnit.SECONDS).build();
         ClientHttpEngine engine = clientengine.httpEngine();
         Assert.assertNotNull("Client engine is was not created", engine);
 
-        ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
+        ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
         ResteasyWebTarget target = client.target(generateURL("/timeout"));
         try {
             target.queryParam("sleep", "5").request().get();

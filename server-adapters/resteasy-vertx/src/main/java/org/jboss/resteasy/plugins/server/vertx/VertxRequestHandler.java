@@ -13,7 +13,7 @@ import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 import java.io.IOException;
 

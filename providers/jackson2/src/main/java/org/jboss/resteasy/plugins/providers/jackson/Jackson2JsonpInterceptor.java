@@ -17,12 +17,13 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * <p>
@@ -107,7 +108,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     private boolean wrapInTryCatch = false;
 
     public Jackson2JsonpInterceptor() {
-        ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+        ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
         if (context != null) {
             wrapInTryCatch = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.silent"));
             enabled = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"));

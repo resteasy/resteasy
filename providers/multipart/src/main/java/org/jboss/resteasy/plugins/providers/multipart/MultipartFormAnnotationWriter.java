@@ -1,18 +1,5 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import org.jboss.resteasy.annotations.providers.multipart.PartFilename;
-import org.jboss.resteasy.annotations.providers.multipart.PartType;
-import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.util.FindAnnotation;
-
-import javax.ws.rs.FormParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -22,6 +9,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.AccessController;
+
+import javax.ws.rs.FormParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.annotations.providers.multipart.PartFilename;
+import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

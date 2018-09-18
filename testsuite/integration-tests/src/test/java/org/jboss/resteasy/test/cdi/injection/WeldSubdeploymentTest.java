@@ -15,7 +15,7 @@ import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentCdiJpaInj
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentRequestResource;
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentStatefulResource;
 import org.jboss.resteasy.test.cdi.injection.resource.WeldSubdeploymentStatelessResource;
-import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.shrinkwrap.api.Archive;

@@ -12,7 +12,9 @@ import java.util.Map;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.apache.http.Header;
@@ -247,8 +249,10 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
       return new BufferedInputStream(is, responseBufferSize);
    }
 
-   public ClientResponse invoke(ClientInvocation request)
+   @Override
+   public Response invoke(Invocation inv)
    {
+      ClientInvocation request = (ClientInvocation)inv;
       String uri = request.getUri().toString();
       final HttpRequestBase httpMethod = createHttpMethod(uri, request.getMethod());
       final HttpResponse res;

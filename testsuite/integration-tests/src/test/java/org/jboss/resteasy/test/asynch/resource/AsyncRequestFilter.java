@@ -5,16 +5,16 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerRequestContext;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public abstract class AsyncRequestFilter implements ContainerRequestFilter {
 
@@ -56,7 +56,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
          ctx.abortWith(Response.ok(name).build());
       }else if("async-throw-late".equals(action)) {
          ctx.suspend();
-         HttpRequest req = ResteasyProviderFactory.getContextData(HttpRequest.class);
+         HttpRequest req = ResteasyContext.getContextData(HttpRequest.class);
          ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(() -> {
             try
@@ -67,7 +67,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
                // TODO Auto-generated catch block
                LOG.error("Error:", e);
             }
-            ResteasyAsynchronousResponse resp = req.getAsyncContext().getAsyncResponse();
+            AsyncResponse resp = req.getAsyncContext().getAsyncResponse();
             resp.register((CompletionCallback) (t) -> {
                if(callbackException != null)
                   throw new RuntimeException("Callback called twice");

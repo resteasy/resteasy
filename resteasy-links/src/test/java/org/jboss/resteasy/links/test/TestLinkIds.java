@@ -4,12 +4,14 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
@@ -40,7 +42,7 @@ public class TestLinkIds
       httpClient = HttpClientBuilder.create().build();
       ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);
       url = generateBaseUrl();
-      ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+      ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
       client = target.proxy(IDServiceTest.class);
    }
 

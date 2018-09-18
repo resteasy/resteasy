@@ -20,6 +20,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
+import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.rxjava2.ObservableRxInvoker;
 import org.jboss.resteasy.rxjava2.ObservableRxInvokerProvider;
 import org.jboss.resteasy.test.rx.resource.Bytes;
@@ -111,7 +113,7 @@ public class Rx2ObservableTest {
    //////////////////////////////////////////////////////////////////////////////
    @BeforeClass
    public static void beforeClass() throws Exception {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
    }
 
    @Before
@@ -673,7 +675,7 @@ public class Rx2ObservableTest {
          latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
-         ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
+         ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
          client.register(ObservableRxInvokerProvider.class);
          ObservableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
          Observable<String> observable = (Observable<String>) invoker.get();
@@ -730,12 +732,12 @@ public class Rx2ObservableTest {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
-      ResteasyClient client1 = new ResteasyClientBuilder().build();
+      ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(ObservableRxInvokerProvider.class);
       ObservableRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable1 = (Observable<String>) invoker1.get();      
 
-      ResteasyClient client2 = new ResteasyClientBuilder().build();
+      ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(ObservableRxInvokerProvider.class);
       ObservableRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable2 = (Observable<String>) invoker2.get();   

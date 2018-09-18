@@ -10,8 +10,8 @@ import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomSubExce
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperResource;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebAppExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.NotFoundExceptionMapper;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;

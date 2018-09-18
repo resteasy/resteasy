@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.spi.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

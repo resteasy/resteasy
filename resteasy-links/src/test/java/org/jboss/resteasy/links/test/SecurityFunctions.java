@@ -1,12 +1,12 @@
 package org.jboss.resteasy.links.test;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
 import javax.ws.rs.core.SecurityContext;
+
+import org.jboss.resteasy.core.ResteasyContext;
 
 public class SecurityFunctions {
 	public static boolean hasPermission(Object target, String permission){
-		SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
+		SecurityContext context = ResteasyContext.getContextData(SecurityContext.class);
 		if(context.isUserInRole("admin"))
 			return true;
 		if(context.isUserInRole("power-user")){
@@ -24,7 +24,7 @@ public class SecurityFunctions {
 	}
 
 	public static boolean hasRole(String role){
-		SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
+		SecurityContext context = ResteasyContext.getContextData(SecurityContext.class);
 		return context.isUserInRole(role);
 	}
 }

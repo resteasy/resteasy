@@ -21,9 +21,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.annotations.cache.Cache;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.cache.server.ServerCacheFeature;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
