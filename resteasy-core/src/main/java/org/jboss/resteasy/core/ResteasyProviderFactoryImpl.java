@@ -114,10 +114,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiFunction;
-<<<<<<< HEAD:resteasy-core/src/main/java/org/jboss/resteasy/core/ResteasyProviderFactoryImpl.java
 import java.util.function.Supplier;
-=======
->>>>>>> [RESTESY-1926]:Add JAXRS.Configuration, ConfigurationBuilder implementation:resteasy-jaxrs/src/main/java/org/jboss/resteasy/spi/ResteasyProviderFactory.java
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -2659,7 +2656,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
-<<<<<<< HEAD:resteasy-core/src/main/java/org/jboss/resteasy/core/ResteasyProviderFactoryImpl.java
    public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
    {
       return CompletableFuture.supplyAsync(new Supplier<Instance>()
@@ -2736,17 +2732,68 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             };
          }
       });
-=======
-   public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration) {
-      return null;
->>>>>>> [RESTESY-1926]:Add JAXRS.Configuration, ConfigurationBuilder implementation:resteasy-jaxrs/src/main/java/org/jboss/resteasy/spi/ResteasyProviderFactory.java
    }
    public <T> T getContextData(Class<T> type)
    {
       return ResteasyContext.getContextData(type);
+   }   
+   public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
+   {
+      return CompletableFuture.supplyAsync(new Supplier<Instance>()
+      {
+
+         @Override
+         public Instance get()
+         {
+            SunHttpJaxrsServer server = new SunHttpJaxrsServer();
+            server.setPort(configuration.port());
+            server.setRootResourcePath(configuration.rootPath());
+            ResteasyDeployment deployment = new ResteasyDeployment();
+            deployment.setApplication(application);
+            server.setDeployment(deployment);
+            server.start();
+            return new Instance()
+            {
+               @Override
+               public javax.ws.rs.JAXRS.Configuration configuration()
+               {
+                  return configuration;
+               }
+
+               @Override
+               public CompletionStage<StopResult> stop()
+               {
+                  return CompletableFuture.supplyAsync(new Supplier<StopResult>() {
+                     @Override
+                     public StopResult get()
+                     {
+                         server.stop();
+                         return new StopResult() {
+
+                           @Override
+                           public <T> T unwrap(Class<T> nativeClass)
+                           {
+                              //TODO:implement this;
+                              return null;
+                           }
+                            
+                         };
+                     }
+                    
+                  });
+               }
+
+               @Override
+               public <T> T unwrap(Class<T> nativeClass)
+               {
+                  // TODO Auto-generated method stub
+                  return null;
+               }
+
+            };
+         }
+      });
    }
-
-
    @Override
    public Builder createConfigurationBuilder()
    {
@@ -2754,11 +2801,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    }
    
    public class ConfigurationBuilder implements Builder {
-<<<<<<< HEAD:resteasy-core/src/main/java/org/jboss/resteasy/core/ResteasyProviderFactoryImpl.java
       private Map<String, Object> properties = new HashMap<String, Object>();
-=======
-      private Map<String, Object> properties;
->>>>>>> [RESTESY-1926]:Add JAXRS.Configuration, ConfigurationBuilder implementation:resteasy-jaxrs/src/main/java/org/jboss/resteasy/spi/ResteasyProviderFactory.java
       @SuppressWarnings("rawtypes")
       private BiFunction propertiesProvider;
       @Override
