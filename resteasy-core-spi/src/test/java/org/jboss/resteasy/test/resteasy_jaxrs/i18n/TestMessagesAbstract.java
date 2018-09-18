@@ -22,7 +22,7 @@ import org.junit.Test;
 public abstract class TestMessagesAbstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 3);
+   protected static final String BASE = String.format("00%4s", Messages.BASE_EMBEDEDSERVER).substring(0, 3);
 
    @Test
    public void testLocale() throws Exception

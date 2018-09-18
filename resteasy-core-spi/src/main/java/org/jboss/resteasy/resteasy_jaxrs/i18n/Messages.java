@@ -33,7 +33,6 @@ public interface Messages
    int BASE_ASYNC = 9500;
 
    int BASE_VALIDATOR_11 = 8500;
-   
    int BASE_EMBEDEDSERVER = 17500;
 
    @Message(id = BASE_VALIDATOR_11 + 0, value = "ResteasyViolationException has invalid format: %s")
