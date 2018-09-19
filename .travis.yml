@@ -1,7 +1,7 @@
 install:
  - mvn clean; java -version
 script:
- - mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
+ - mvn -B -Ptravis -fae -Dserver.version=$SERVER_VERSION -DfailIfNoTests=false -Dtest=FooTest install
 
 language: java
 jdk:
@@ -20,3 +20,5 @@ addons:
       - oracle-java8-installer
 before_install:
   - "if [ -d \"$JAVA_HOME/jre\" ]; then SEC_LIB=$JAVA_HOME/jre; else SEC_LIB=$JAVA_HOME; fi; sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $SEC_LIB/lib/security;"
+after_install:
+  - ls -la /home/travis/.m2/repository/org/wildfly/wildfly-dist/$SERVER_VERSION/wildfly-dist-$SERVER_VERSION.zip
