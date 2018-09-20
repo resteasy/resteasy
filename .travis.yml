@@ -1,7 +1,7 @@
 install:
  - mvn clean; java -version
 script:
- - mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
+ - travis_wait 60 mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
