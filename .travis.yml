@@ -1,7 +1,7 @@
 install:
  - mvn clean
 script:
- - mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
+ - travis_wait 60 mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
@@ -11,9 +11,9 @@ env:
   - SERVER_VERSION=12.0.0.Final
   - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
-cache:
- directories:
-  - $HOME/.m2
+#cache:
+# directories:
+#  - $HOME/.m2
 addons:
   apt:
     packages:
