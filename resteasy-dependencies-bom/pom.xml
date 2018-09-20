@@ -85,7 +85,8 @@
         <version.weld.api>3.0.SP4</version.weld.api>
         <version.weld>3.0.5.Final</version.weld>
         <version.json.patch>1.9</version.json.patch>
-        <version.io.reactiverse.reactive-contexts>1.0.0</version.io.reactiverse.reactive-contexts>
+        <version.org.microprofile.context-propagation>1.0-RC1</version.org.microprofile.context-propagation>
+        <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
         <version.io.reactivex.rxjava2-rxjava>2.2.5</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.14.Final</version.org.hibernate.validator>
@@ -822,14 +823,24 @@
                 <version>${version.json.patch}</version>
             </dependency>
             <dependency>
-                <groupId>io.reactiverse</groupId>
-                <artifactId>reactive-contexts-core</artifactId>
-                <version>${version.io.reactiverse.reactive-contexts}</version>
+                <groupId>org.eclipse.microprofile.context-propagation</groupId>
+                <artifactId>microprofile-context-propagation-api</artifactId>
+                <version>${version.org.microprofile.context-propagation}</version>
             </dependency>
             <dependency>
-                <groupId>io.reactiverse</groupId>
-                <artifactId>reactive-contexts-propagators-rxjava2</artifactId>
-                <version>${version.io.reactiverse.reactive-contexts}</version>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-context-propagation</artifactId>
+                <version>${version.io.smallrye.context-propagation}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-context-propagation-api</artifactId>
+                <version>${version.io.smallrye.context-propagation}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>smallrye-context-propagation-propagators-rxjava2</artifactId>
+                <version>${version.io.smallrye.context-propagation}</version>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>
