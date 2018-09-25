@@ -6,8 +6,8 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class AbstractMapperDefault extends AbstractMapper<RuntimeException> {
-    @Override
-    protected void handleError(final Response.ResponseBuilder builder, final RuntimeException e) {
-        builder.entity("default").type(MediaType.TEXT_HTML_TYPE);
-    }
+   @Override
+   protected void handleError(final Response.ResponseBuilder builder, final RuntimeException e) {
+      builder.entity("default").type(MediaType.TEXT_HTML_TYPE);
+   }
 }

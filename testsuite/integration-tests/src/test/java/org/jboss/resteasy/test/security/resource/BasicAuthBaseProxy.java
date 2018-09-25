@@ -6,18 +6,18 @@ import java.util.List;
 
 @Path("/secured")
 public interface BasicAuthBaseProxy {
-    @GET
-    String get();
+   @GET
+   String get();
 
-    @GET
-    @Path("/authorized")
-    String getAuthorized();
+   @GET
+   @Path("/authorized")
+   String getAuthorized();
 
-    @GET
-    @Path("/deny")
-    String deny();
+   @GET
+   @Path("/deny")
+   String deny();
 
-    @GET
-    @Path("/failure")
-    List<String> getFailure();
+   @GET
+   @Path("/failure")
+   List<String> getFailure();
 }

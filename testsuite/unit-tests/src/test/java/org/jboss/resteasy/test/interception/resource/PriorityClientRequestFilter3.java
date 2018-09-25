@@ -7,8 +7,8 @@ import java.io.IOException;
 
 @Priority(300)
 public class PriorityClientRequestFilter3 implements ClientRequestFilter {
-    @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
+   @Override
+   public void filter(ClientRequestContext requestContext) throws IOException {
 
-    }
+   }
 }

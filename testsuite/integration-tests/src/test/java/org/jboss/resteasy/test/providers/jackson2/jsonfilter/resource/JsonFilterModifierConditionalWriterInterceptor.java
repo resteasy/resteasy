@@ -11,11 +11,11 @@ import java.io.IOException;
 @Provider
 public class JsonFilterModifierConditionalWriterInterceptor implements WriterInterceptor {
 
-    private ObjectFilterModifierConditional modifier = new ObjectFilterModifierConditional();
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        //set a threadlocal modifier
-        ObjectWriterInjector.set(modifier);
-        context.proceed();
-    }
+   private ObjectFilterModifierConditional modifier = new ObjectFilterModifierConditional();
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+      //set a threadlocal modifier
+      ObjectWriterInjector.set(modifier);
+      context.proceed();
+   }
 }

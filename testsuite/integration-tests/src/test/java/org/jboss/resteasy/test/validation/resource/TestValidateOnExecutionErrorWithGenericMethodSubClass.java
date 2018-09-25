@@ -7,10 +7,10 @@ import javax.ws.rs.Path;
 
 @Path("")
 public class TestValidateOnExecutionErrorWithGenericMethodSubClass extends TestValidateOnExecutionErrorWithGenericMethodSuperClass<String> {
-    @POST
-    @Path("bar")
-    @ValidateOnExecution(type = {ExecutableType.ALL})
-    @Override
-    public void override(String qux) {
-    }
+   @POST
+   @Path("bar")
+   @ValidateOnExecution(type = {ExecutableType.ALL})
+   @Override
+   public void override(String qux) {
+   }
 }

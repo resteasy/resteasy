@@ -9,11 +9,11 @@ import java.io.IOException;
 
 public class RequestFilterSetEntity implements ClientRequestFilter {
 
-    private static Logger logger = Logger.getLogger(RequestFilterSetEntity.class);
+   private static Logger logger = Logger.getLogger(RequestFilterSetEntity.class);
 
-    @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        logger.info("*** filter 1 ***");
-        requestContext.setEntity("test", null, MediaType.APPLICATION_JSON_TYPE);
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext) throws IOException {
+      logger.info("*** filter 1 ***");
+      requestContext.setEntity("test", null, MediaType.APPLICATION_JSON_TYPE);
+   }
 }

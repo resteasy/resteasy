@@ -17,67 +17,67 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class Book {
-	@XmlAttribute
-	private String author;
-	@XmlID
-	@XmlAttribute
-	private String title;
-	@XmlElement
-	// These both fail deserialisation for some reason
-//	@XmlElement(name = "link", namespace = "http://www.w3.org/2005/Atom")
-//	@XmlElementRef
-	private RESTServiceDiscovery rest;
+   @XmlAttribute
+   private String author;
+   @XmlID
+   @XmlAttribute
+   private String title;
+   @XmlElement
+   // These both fail deserialisation for some reason
+//   @XmlElement(name = "link", namespace = "http://www.w3.org/2005/Atom")
+//   @XmlElementRef
+   private RESTServiceDiscovery rest;
 
-	private List<Comment> comments = new ArrayList<Comment>();
-	
-	public Book(String title, String author) {
-		this.author = author;
-		this.title = title;
-	}
+   private List<Comment> comments = new ArrayList<Comment>();
 
-	public Book() {
-	}
+   public Book(String title, String author) {
+      this.author = author;
+      this.title = title;
+   }
 
-	public String getAuthor() {
-		return author;
-	}
+   public Book() {
+   }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+   public String getAuthor() {
+      return author;
+   }
 
-	public String getTitle() {
-		return title;
-	}
+   public void setAuthor(String author) {
+      this.author = author;
+   }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+   public String getTitle() {
+      return title;
+   }
 
-	public RESTServiceDiscovery getRest() {
-		return rest;
-	}
+   public void setTitle(String title) {
+      this.title = title;
+   }
 
-	public void setRest(RESTServiceDiscovery rest) {
-		this.rest = rest;
-	}
+   public RESTServiceDiscovery getRest() {
+      return rest;
+   }
 
-	public List<Comment> getComments() {
-		return comments;
-	}
+   public void setRest(RESTServiceDiscovery rest) {
+      this.rest = rest;
+   }
 
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-	}
+   public List<Comment> getComments() {
+      return comments;
+   }
 
-	public void addComment(int id, String text){
-		comments.add(new Comment(id, text, this));
-	}
+   public void setComments(List<Comment> comments) {
+      this.comments = comments;
+   }
 
-	public Comment getComment(int commentId) {
-		for(Comment c : comments)
-			if(c.getId() == commentId)
-				return c;
-		return null;
-	}
+   public void addComment(int id, String text){
+      comments.add(new Comment(id, text, this));
+   }
+
+   public Comment getComment(int commentId) {
+      for(Comment c : comments)
+         if(c.getId() == commentId)
+            return c;
+      return null;
+   }
 }

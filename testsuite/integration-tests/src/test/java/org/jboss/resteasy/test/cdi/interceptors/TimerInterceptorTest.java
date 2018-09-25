@@ -32,43 +32,43 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class TimerInterceptorTest {
-    protected static final Logger log = LogManager.getLogger(TimerInterceptorTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(TimerInterceptorTest.class.getName());
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(TimerInterceptorTest.class.getSimpleName())
-                .addClasses(UtilityProducer.class, PortProviderUtil.class)
-                .addClasses(TimerInterceptorResourceIntf.class, TimerInterceptorResource.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(TimerInterceptorTest.class.getSimpleName())
+            .addClasses(UtilityProducer.class, PortProviderUtil.class)
+            .addClasses(TimerInterceptorResourceIntf.class, TimerInterceptorResource.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, TimerInterceptorTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, TimerInterceptorTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Timer is sheduled and than is called.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testTimerInterceptor() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Timer is sheduled and than is called.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testTimerInterceptor() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        // Schedule timer.
-        WebTarget base = client.target(generateURL("/timer/schedule"));
-        Response response = base.request().get();
-        log.info("Status: " + response.getStatus());
-        assertEquals(200, response.getStatus());
-        response.close();
+      // Schedule timer.
+      WebTarget base = client.target(generateURL("/timer/schedule"));
+      Response response = base.request().get();
+      log.info("Status: " + response.getStatus());
+      assertEquals(200, response.getStatus());
+      response.close();
 
-        // Verify timer expired and timer interceptor was executed.
-        base = client.target(generateURL("/timer/test"));
-        response = base.request().get();
-        log.info("Status: " + response.getStatus());
-        assertEquals(200, response.getStatus());
-        response.close();
+      // Verify timer expired and timer interceptor was executed.
+      base = client.target(generateURL("/timer/test"));
+      response = base.request().get();
+      log.info("Status: " + response.getStatus());
+      assertEquals(200, response.getStatus());
+      response.close();
 
-        client.close();
-    }
+      client.close();
+   }
 }

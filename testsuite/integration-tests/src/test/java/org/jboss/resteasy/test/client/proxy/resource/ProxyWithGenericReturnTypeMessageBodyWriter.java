@@ -16,43 +16,43 @@ import java.util.List;
 
 @Provider
 public class ProxyWithGenericReturnTypeMessageBodyWriter implements MessageBodyWriter<List<String>> {
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return true;
+   }
 
-    @Override
-    public long getSize(List<String> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
+   @Override
+   public long getSize(List<String> t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return -1;
+   }
 
-    @Override
-    public void writeTo(List<String> t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        String val;
-        if (genericType == null) {
-            val = "null";
-        } else if (genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
-            val = ((Class) parameterizedType.getRawType()).getSimpleName() + "<";
-            Type paramType = parameterizedType.getActualTypeArguments()[0];
-            if (paramType instanceof Class) {
-                val += ((Class) paramType).getSimpleName();
-            } else {
-                val += paramType.toString();
-            }
-            val += ">";
-        } else if (genericType instanceof TypeVariable) {
-            val = "TypeVariable";
-        } else if (genericType instanceof GenericArrayType) {
-            val = "GenericArrayType";
-        } else {
-            val = "Type";
-        }
+   @Override
+   public void writeTo(List<String> t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders,
+                  OutputStream entityStream) throws IOException,
+         WebApplicationException {
+      String val;
+      if (genericType == null) {
+         val = "null";
+      } else if (genericType instanceof ParameterizedType) {
+         ParameterizedType parameterizedType = (ParameterizedType) genericType;
+         val = ((Class) parameterizedType.getRawType()).getSimpleName() + "<";
+         Type paramType = parameterizedType.getActualTypeArguments()[0];
+         if (paramType instanceof Class) {
+            val += ((Class) paramType).getSimpleName();
+         } else {
+            val += paramType.toString();
+         }
+         val += ">";
+      } else if (genericType instanceof TypeVariable) {
+         val = "TypeVariable";
+      } else if (genericType instanceof GenericArrayType) {
+         val = "GenericArrayType";
+      } else {
+         val = "Type";
+      }
 
-        entityStream.write(val.getBytes());
-    }
+      entityStream.write(val.getBytes());
+   }
 }

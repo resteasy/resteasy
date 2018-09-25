@@ -7,8 +7,8 @@ package org.jboss.resteasy.spi;
 public interface HttpResponseCodes
 {
    /*
-          * Server status codes; see RFC 2068.
-          */
+         * Server status codes; see RFC 2068.
+         */
 
    /**
     * Status code (100) indicating the client can continue.

@@ -8,9 +8,9 @@ import java.util.List;
  */
 public interface MultipartInput {
 
-	List<InputPart> getParts();
+   List<InputPart> getParts();
 
-	String getPreamble();
+   String getPreamble();
 
    /**
     * Call this method to delete any temporary files created from unmarshalling this multipart message

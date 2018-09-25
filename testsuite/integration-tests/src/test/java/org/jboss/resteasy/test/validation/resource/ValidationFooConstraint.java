@@ -17,13 +17,13 @@ import javax.validation.Payload;
 @Target({TYPE, PARAMETER, METHOD})
 @Retention(RUNTIME)
 public @interface ValidationFooConstraint {
-    String message() default "s must have length: {min} <= length <= {max}";
+   String message() default "s must have length: {min} <= length <= {max}";
 
-    Class<?>[] groups() default {};
+   Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+   Class<? extends Payload>[] payload() default {};
 
-    int min();
+   int min();
 
-    int max();
+   int max();
 }

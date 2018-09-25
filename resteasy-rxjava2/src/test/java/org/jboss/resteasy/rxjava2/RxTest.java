@@ -32,11 +32,11 @@ import io.reactivex.Single;
 
 public class RxTest
 {
-    private static NettyJaxrsServer server;
+   private static NettyJaxrsServer server;
 
-    private static CountDownLatch latch;
-    private static AtomicReference<Object> value = new AtomicReference<Object>();
-    private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
+   private static CountDownLatch latch;
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
+   private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
 
    @BeforeClass
    public static void beforeClass() throws Exception
@@ -69,97 +69,97 @@ public class RxTest
             .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
             .connectTimeout(5, TimeUnit.SECONDS)
             .build();
-        value.set(null);
-        latch = new CountDownLatch(1);
-    }
+      value.set(null);
+      latch = new CountDownLatch(1);
+   }
 
-    @After
-    public void after()
-    {
-        client.close();
-    }
+   @After
+   public void after()
+   {
+      client.close();
+   }
 
-    @Test
-    public void testSingle() throws Exception {
-        Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
-        single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-        latch.await();
-        assertEquals("got it", value.get());
-    }
+   @Test
+   public void testSingle() throws Exception {
+      Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
+      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
+      latch.await();
+      assertEquals("got it", value.get());
+   }
 
-    @Test
-    public void testSingleContext() throws Exception {
-        Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
-        single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-        latch.await();
-        assertEquals("got it", value.get());
-    }
+   @Test
+   public void testSingleContext() throws Exception {
+      Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
+      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
+      latch.await();
+      assertEquals("got it", value.get());
+   }
 
-    @Test
-    public void testObservable() throws Exception {
-        ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
-        @SuppressWarnings("unchecked")
-        Observable<String> observable = (Observable<String>) invoker.get();
-        List<String> data = new ArrayList<String>();
-        observable.subscribe(
-            (String s) -> data.add(s),
-            (Throwable t) -> LOG.error(t.getMessage(), t),
-            () -> latch.countDown());
-        latch.await();
-        assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-    }
+   @Test
+   public void testObservable() throws Exception {
+      ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
+      @SuppressWarnings("unchecked")
+      Observable<String> observable = (Observable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      observable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> latch.countDown());
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
 
-    @Test
-    public void testObservableContext() throws Exception {
-        ObservableRxInvoker invoker = ClientBuilder.newClient().target(generateURL("/context/observable")).request().rx(ObservableRxInvoker.class);
-        @SuppressWarnings("unchecked")
-        Observable<String> observable = (Observable<String>) invoker.get();
-        List<String> data = new ArrayList<String>();
-        observable.subscribe(
-            (String s) -> data.add(s),
-            (Throwable t) -> LOG.error(t.getMessage(), t),
-            () -> latch.countDown());
-        latch.await();
-        assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-    }
+   @Test
+   public void testObservableContext() throws Exception {
+      ObservableRxInvoker invoker = ClientBuilder.newClient().target(generateURL("/context/observable")).request().rx(ObservableRxInvoker.class);
+      @SuppressWarnings("unchecked")
+      Observable<String> observable = (Observable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      observable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> latch.countDown());
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
 
-    @Test
-    public void testFlowable() throws Exception {
-        FlowableRxInvoker invoker = client.target(generateURL("/flowable")).request().rx(FlowableRxInvoker.class);
-        @SuppressWarnings("unchecked")
-        Flowable<String> flowable = (Flowable<String>) invoker.get();
-        List<String> data = new ArrayList<String>();
-        flowable.subscribe(
-            (String s) -> data.add(s),
-            (Throwable t) -> LOG.error(t.getMessage(), t),
-            () -> latch.countDown());
-        latch.await();
-        assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-    }
+   @Test
+   public void testFlowable() throws Exception {
+      FlowableRxInvoker invoker = client.target(generateURL("/flowable")).request().rx(FlowableRxInvoker.class);
+      @SuppressWarnings("unchecked")
+      Flowable<String> flowable = (Flowable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      flowable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> latch.countDown());
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
 
-    @Test
-    public void testFlowablecontext() throws Exception {
-        FlowableRxInvoker invoker = client.target(generateURL("/context/flowable")).request().rx(FlowableRxInvoker.class);
-        @SuppressWarnings("unchecked")
-        Flowable<String> flowable = (Flowable<String>) invoker.get();
-        List<String> data = new ArrayList<String>();
-        flowable.subscribe(
-            (String s) -> data.add(s),
-            (Throwable t) -> LOG.error(t.getMessage(), t),
-            () -> {latch.countDown(); LOG.info("onComplete()");});
-        latch.await();
-        assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-    }
+   @Test
+   public void testFlowablecontext() throws Exception {
+      FlowableRxInvoker invoker = client.target(generateURL("/context/flowable")).request().rx(FlowableRxInvoker.class);
+      @SuppressWarnings("unchecked")
+      Flowable<String> flowable = (Flowable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      flowable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> {latch.countDown(); LOG.info("onComplete()");});
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
 
-    // @Test
-    public void testChunked() throws Exception
-    {
-        Invocation.Builder request = client.target(generateURL("/chunked")).request();
-        Response response = request.get();
-        String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("onetwo", entity);
-    }
+   // @Test
+   public void testChunked() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/chunked")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("onetwo", entity);
+   }
 
    @Test
    public void testInjection()

@@ -8,14 +8,14 @@ import javax.ws.rs.FormParam;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class Foo {
-    @FormParam("bar")
-    private String bar;
+   @FormParam("bar")
+   private String bar;
 
-    public String getBar() {
-        return bar;
-    }
+   public String getBar() {
+      return bar;
+   }
 
-    public void setBar(String bar) {
-        this.bar = bar;
-    }
+   public void setBar(String bar) {
+      this.bar = bar;
+   }
 }

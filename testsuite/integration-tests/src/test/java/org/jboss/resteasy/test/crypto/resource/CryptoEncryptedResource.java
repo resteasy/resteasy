@@ -10,16 +10,16 @@ import javax.ws.rs.Path;
 
 @Path("/smime/encrypted")
 public class CryptoEncryptedResource {
-    @GET
-    public EnvelopedOutput get() {
-        EnvelopedOutput output = new EnvelopedOutput("hello world", "text/plain");
-        output.setCertificate(CryptoCertResource.cert);
-        return output;
-    }
+   @GET
+   public EnvelopedOutput get() {
+      EnvelopedOutput output = new EnvelopedOutput("hello world", "text/plain");
+      output.setCertificate(CryptoCertResource.cert);
+      return output;
+   }
 
-    @POST
-    public void post(EnvelopedInput<String> input) {
-        String str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
-        Assert.assertEquals("input", str);
-    }
+   @POST
+   public void post(EnvelopedInput<String> input) {
+      String str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
+      Assert.assertEquals("input", str);
+   }
 }

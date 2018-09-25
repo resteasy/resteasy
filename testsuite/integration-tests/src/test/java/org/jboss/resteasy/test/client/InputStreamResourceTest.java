@@ -37,18 +37,18 @@ public class InputStreamResourceTest extends ClientTestBase{
 
    @BeforeClass
    public static void setup() {
-       resteasyClient = ClientBuilder.newClient();
+      resteasyClient = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void close() {
-       resteasyClient.close();
+      resteasyClient.close();
    }
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(InputStreamResourceTest.class.getSimpleName());
-       return TestUtil.finishContainerPrepare(war, null, InputStreamResourceService.class);
+      WebArchive war = TestUtil.prepareArchive(InputStreamResourceTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, InputStreamResourceService.class);
    }
 
    /**
@@ -57,14 +57,14 @@ public class InputStreamResourceTest extends ClientTestBase{
     */
    @Test
    public void testClientResponse() throws Exception {
-       InputStreamResourceClient client = ProxyBuilder.builder(InputStreamResourceClient.class, resteasyClient.target(generateURL(""))).build();
-       Assert.assertEquals("hello", client.getAsString());
-       Response is = client.getAsInputStream();
-       Assert.assertEquals("hello", new String(ReadFromStream.readFromStream(1024, is.readEntity(InputStream.class))));
-       is.close();
-       client.postString("new value");
-       Assert.assertEquals("new value", client.getAsString());
-       client.postInputStream(new ByteArrayInputStream("new value 2".getBytes()));
-       Assert.assertEquals("new value 2", client.getAsString());
+      InputStreamResourceClient client = ProxyBuilder.builder(InputStreamResourceClient.class, resteasyClient.target(generateURL(""))).build();
+      Assert.assertEquals("hello", client.getAsString());
+      Response is = client.getAsInputStream();
+      Assert.assertEquals("hello", new String(ReadFromStream.readFromStream(1024, is.readEntity(InputStream.class))));
+      is.close();
+      client.postString("new value");
+      Assert.assertEquals("new value", client.getAsString());
+      client.postInputStream(new ByteArrayInputStream("new value 2".getBytes()));
+      Assert.assertEquals("new value 2", client.getAsString());
    }
 }

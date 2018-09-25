@@ -60,11 +60,11 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AppService extends AppCommonAttributes {
     
-    private static final long serialVersionUID = 1090747778031855442L;
-    private List<AppWorkspace> workspace = new ArrayList<AppWorkspace>();
+   private static final long serialVersionUID = 1090747778031855442L;
+   private List<AppWorkspace> workspace = new ArrayList<AppWorkspace>();
 
-    public List<AppWorkspace> getWorkspace() {
-        return workspace;
-    }
+   public List<AppWorkspace> getWorkspace() {
+      return workspace;
+   }
 
 }

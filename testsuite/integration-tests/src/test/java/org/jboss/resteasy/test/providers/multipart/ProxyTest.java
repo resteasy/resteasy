@@ -27,47 +27,47 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ProxyTest {
 
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyTest.class.getSimpleName());
-        war.addClass(ProxyApiService.class);
-        war.addClass(ProxyAttachment.class);
-        return TestUtil.finishContainerPrepare(war, null, ProxyResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyTest.class.getSimpleName());
+      war.addClass(ProxyApiService.class);
+      war.addClass(ProxyAttachment.class);
+      return TestUtil.finishContainerPrepare(war, null, ProxyResource.class);
+   }
 
-    private static String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(ProxyTest.class.getSimpleName());
-    }
+   private static String generateBaseUrl() {
+      return PortProviderUtil.generateBaseUrl(ProxyTest.class.getSimpleName());
+   }
 
-    @BeforeClass
-    public static void before() throws Exception
-    {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void before() throws Exception
+   {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void after() throws Exception
-    {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception
+   {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails ProxyAttachment object and string object is in request
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNewBuilder() {
-        ProxyApiService apiService = client.target(generateBaseUrl()).proxy(ProxyApiService.class);
-        tryCall(apiService);
-    }
+   /**
+    * @tpTestDetails ProxyAttachment object and string object is in request
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNewBuilder() {
+      ProxyApiService apiService = client.target(generateBaseUrl()).proxy(ProxyApiService.class);
+      tryCall(apiService);
+   }
 
-    private void tryCall(ProxyApiService apiService) {
-        ProxyAttachment attachment = new ProxyAttachment();
-        attachment.setData("foo".getBytes());
-        apiService.postAttachment(attachment, "some-key"); // any exception in ProxyResource would be thrown from proxy too, no assert needed
-    }
+   private void tryCall(ProxyApiService apiService) {
+      ProxyAttachment attachment = new ProxyAttachment();
+      attachment.setData("foo".getBytes());
+      apiService.postAttachment(attachment, "some-key"); // any exception in ProxyResource would be thrown from proxy too, no assert needed
+   }
 
 
 }

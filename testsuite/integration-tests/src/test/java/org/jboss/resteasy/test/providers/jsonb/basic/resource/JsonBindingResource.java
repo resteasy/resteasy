@@ -55,7 +55,7 @@ public class JsonBindingResource {
          throw new Exception("JsonbTransient annotation doesn't work");
       }
       return "{\"color\":\"tabby\",\"sort\":\"semi-british\",\"name\":\"Rosa\",\"domesticated\":true,\"transientVar\":\""
-      + RETURNED_TRANSIENT_VALUE + "\"}";
+         + RETURNED_TRANSIENT_VALUE + "\"}";
    }
 
    @Path("get/cat")

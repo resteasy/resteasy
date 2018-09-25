@@ -130,17 +130,17 @@ public class NettyHttpRequest extends BaseHttpRequest
 
    public NettyHttpResponse getResponse()
    {
-       return httpResponse;
+      return httpResponse;
    }
 
    public boolean isKeepAlive()
    {
-       return httpResponse.isKeepAlive();
+      return httpResponse.isKeepAlive();
    }
 
    public boolean is100ContinueExpected()
    {
-       return is100ContinueExpected;
+      return is100ContinueExpected;
    }
 
    @Override

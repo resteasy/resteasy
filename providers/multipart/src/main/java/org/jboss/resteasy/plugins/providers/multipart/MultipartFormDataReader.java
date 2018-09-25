@@ -24,9 +24,7 @@ import java.lang.reflect.Type;
 @Consumes("multipart/form-data")
 public class MultipartFormDataReader implements MessageBodyReader<MultipartFormDataInput>
 {
-   protected
-   @Context
-   Providers workers;
+   protected @Context Providers workers;
 
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

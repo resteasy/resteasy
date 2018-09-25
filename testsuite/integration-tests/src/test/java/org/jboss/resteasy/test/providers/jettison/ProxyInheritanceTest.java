@@ -33,45 +33,45 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ProxyInheritanceTest {
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyInheritanceTest.class.getSimpleName());
-        war.addClasses(NamespaceMappingTestBase.class, NamespaceMappingTestExtends.class,
-                NamespaceMappingResource.class, ObjectFactory.class);
-        war.addClasses(CRUDEntityWebservice.class, MyService.class,
-                UserEntity.class, UserEntityWebservice.class);
-        war.addAsManifestResource("jboss-deployment-structure-no-jackson.xml", "jboss-deployment-structure.xml");
-        return TestUtil.finishContainerPrepare(war, null, MyService.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyInheritanceTest.class.getSimpleName());
+      war.addClasses(NamespaceMappingTestBase.class, NamespaceMappingTestExtends.class,
+            NamespaceMappingResource.class, ObjectFactory.class);
+      war.addClasses(CRUDEntityWebservice.class, MyService.class,
+            UserEntity.class, UserEntityWebservice.class);
+      war.addAsManifestResource("jboss-deployment-structure-no-jackson.xml", "jboss-deployment-structure.xml");
+      return TestUtil.finishContainerPrepare(war, null, MyService.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(ProxyInheritanceTest.class.getSimpleName());
-    }
+   private String generateBaseUrl() {
+      return PortProviderUtil.generateBaseUrl(ProxyInheritanceTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for new client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNewClient() {
-        UserEntity u = new UserEntity();
-        u.setUsername("user");
+   /**
+    * @tpTestDetails Test for new client
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNewClient() {
+      UserEntity u = new UserEntity();
+      u.setUsername("user");
 
-        UserEntityWebservice serviceClient =  client.target(generateBaseUrl()).proxy(UserEntityWebservice.class);
-        UserEntity newUser = serviceClient.create(u);
+      UserEntityWebservice serviceClient =  client.target(generateBaseUrl()).proxy(UserEntityWebservice.class);
+      UserEntity newUser = serviceClient.create(u);
 
-        assertEquals("Wrong response from proxy", "user", newUser.getUsername());
-    }
+      assertEquals("Wrong response from proxy", "user", newUser.getUsername());
+   }
 }

@@ -105,22 +105,22 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          byte[] buffer = new byte[4096];
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
-             tempFile = File.createTempFile("resteasy-provider-datasource", null);
-             FileOutputStream fos = new FileOutputStream(tempFile);
-             Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
-             if (cleanables != null)
-             {
-                cleanables.addCleanable(new TempFileCleanable(tempFile));
-             }
-             fos.write(buffer, 0, count);
-             try
-             {
-                ProviderHelper.writeTo(in, fos);
-             }
-             finally
-             {
-                fos.close();
-             }
+            tempFile = File.createTempFile("resteasy-provider-datasource", null);
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
+            if (cleanables != null)
+            {
+               cleanables.addCleanable(new TempFileCleanable(tempFile));
+            }
+            fos.write(buffer, 0, count);
+            try
+            {
+               ProviderHelper.writeTo(in, fos);
+            }
+            finally
+            {
+               fos.close();
+            }
          }
       }
 
@@ -287,13 +287,13 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
       @Override
       public void clean() throws Exception {
-          if(tempFile.exists())
-          {
-             if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
-             {
-                tempFile.deleteOnExit();
-             }
-          }
+         if(tempFile.exists())
+         {
+            if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
+            {
+               tempFile.deleteOnExit();
+            }
+         }
       }
    }
 }

@@ -32,45 +32,45 @@ import java.util.logging.LoggingPermission;
 public class ContextRefreshTest {
 
 
-    private static Logger logger = Logger.getLogger(ContextRefreshTest.class);
+   private static Logger logger = Logger.getLogger(ContextRefreshTest.class);
 
-    @Deployment
-    private static Archive<?> deploy() {
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, ContextRefreshTest.class.getSimpleName() + ".war")
-                .addClass(ContextRefreshResource.class)
-                .addClass(ContextRefreshTrigger.class)
-                .addClass(ContextRefreshTest.class)
-                .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "web.xml", "web.xml")
-                .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "contextRefresh/applicationContext.xml", "applicationContext.xml");
-        archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
+   @Deployment
+   private static Archive<?> deploy() {
+      WebArchive archive = ShrinkWrap.create(WebArchive.class, ContextRefreshTest.class.getSimpleName() + ".war")
+            .addClass(ContextRefreshResource.class)
+            .addClass(ContextRefreshTrigger.class)
+            .addClass(ContextRefreshTest.class)
+            .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "web.xml", "web.xml")
+            .addAsWebInfResource(ContextRefreshTest.class.getPackage(), "contextRefresh/applicationContext.xml", "applicationContext.xml");
+      archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
 
-        // Permission needed for "arquillian.debug" to run
-        // "suppressAccessChecks" required for access to arquillian-core.jar
-        // remaining permissions needed to run springframework
-        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+      // Permission needed for "arquillian.debug" to run
+      // "suppressAccessChecks" required for access to arquillian-core.jar
+      // remaining permissions needed to run springframework
+      archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new PropertyPermission("arquillian.*", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
-        ), "permissions.xml");
+      ), "permissions.xml");
 
-        return archive;
-    }
+      return archive;
+   }
 
-    /**
-     * @tpTestDetails Refresh the persistent representation of the spring configuration twice
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testContextRefresh() throws Exception {
-        Assert.assertTrue(ContextRefreshTrigger.isOK());
-        Enumeration<?> en = ContextRefreshTrigger.getApplicationContext().getServletContext().getAttributeNames();
-        while (en.hasMoreElements()) {
-            logger.info(en.nextElement());
-        }
-        Object o = ContextRefreshTrigger.getApplicationContext().getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-        logger.info(o);
-        Assert.assertFalse(o instanceof Exception);
-    }
+   /**
+    * @tpTestDetails Refresh the persistent representation of the spring configuration twice
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testContextRefresh() throws Exception {
+      Assert.assertTrue(ContextRefreshTrigger.isOK());
+      Enumeration<?> en = ContextRefreshTrigger.getApplicationContext().getServletContext().getAttributeNames();
+      while (en.hasMoreElements()) {
+         logger.info(en.nextElement());
+      }
+      Object o = ContextRefreshTrigger.getApplicationContext().getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+      logger.info(o);
+      Assert.assertFalse(o instanceof Exception);
+   }
 }

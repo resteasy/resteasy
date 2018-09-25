@@ -7,10 +7,10 @@ import javax.ws.rs.core.Response;
 
 @Path("/")
 public class ExceptionBufferingResource {
-    @GET
-    @Path("test")
-    public String test() {
-        Response response = Response.serverError().entity("test").build();
-        throw new WebApplicationException(response);
-    }
+   @GET
+   @Path("test")
+   public String test() {
+      Response response = Response.serverError().entity("test").build();
+      throw new WebApplicationException(response);
+   }
 }

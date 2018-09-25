@@ -35,13 +35,13 @@ public class InheritanceTest
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
-       war.addClass(InheritenceParentResource.class);
-       return TestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
+      WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
+      war.addClass(InheritenceParentResource.class);
+      return TestUtil.finishContainerPrepare(war, null, InheritenceParentResourceImpl.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
    }
    
    @BeforeClass

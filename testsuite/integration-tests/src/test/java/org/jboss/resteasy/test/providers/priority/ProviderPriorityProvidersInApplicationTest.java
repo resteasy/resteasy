@@ -51,7 +51,7 @@ public class ProviderPriorityProvidersInApplicationTest {
       war.addClasses(ProviderPriorityFoo.class, 
             ProviderPriorityFooParamConverter.class,
             ProviderPriorityTestException.class
-            );
+      );
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(ProviderPriorityExceptionMapperCCC.class);
       singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);

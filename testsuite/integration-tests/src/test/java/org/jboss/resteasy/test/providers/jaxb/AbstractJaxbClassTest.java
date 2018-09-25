@@ -34,30 +34,30 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class AbstractJaxbClassTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(AbstractJaxbClassTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, AbstractJaxbClassCompanyCustomer.class, AbstractJaxbClassCustomer.class,
-                AbstractJaxbClassPerson.class, AbstractJaxbClassPrivatCustomer.class, AbstractJaxbClassResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(AbstractJaxbClassTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, AbstractJaxbClassCompanyCustomer.class, AbstractJaxbClassCustomer.class,
+            AbstractJaxbClassPerson.class, AbstractJaxbClassPrivatCustomer.class, AbstractJaxbClassResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, AbstractJaxbClassTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, AbstractJaxbClassTest.class.getSimpleName());
+   }
 
-    private static final String customerXml = "<?xml version=\"1.0\"?>\n"
+   private static final String customerXml = "<?xml version=\"1.0\"?>\n"
             + "<abstractJaxbClassPrivatCustomer>\n"
             + "<nachname>Test</nachname>\n"
             + "<vorname>Theo</vorname>\n"
@@ -65,23 +65,23 @@ public class AbstractJaxbClassTest {
             + "<adresse><plz>76133</plz><ort>Karlsruhe</ort><strasse>Moltkestrasse</strasse><hausnr>31</hausnr></adresse>\n"
             + "</abstractJaxbClassPrivatCustomer>";
 
-    /**
-     * @tpTestDetails Test for Abstract jaxb class with @XmlSeeAlso annotation
-     * @tpInfo RESTEASY-126
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPost() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL(""));
-        String xmlInput = "<?xml version=\"1.0\"?><abstractJaxbClassPerson><name>bill</name></abstractJaxbClassPerson>";
-        Response response = target.request().post(Entity.xml(xmlInput));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-        response.close();
+   /**
+    * @tpTestDetails Test for Abstract jaxb class with @XmlSeeAlso annotation
+    * @tpInfo RESTEASY-126
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPost() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL(""));
+      String xmlInput = "<?xml version=\"1.0\"?><abstractJaxbClassPerson><name>bill</name></abstractJaxbClassPerson>";
+      Response response = target.request().post(Entity.xml(xmlInput));
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      response.close();
 
-        ResteasyWebTarget target2 = client.target(generateURL("/customer"));
-        Response response2 = target2.request().post(Entity.entity(customerXml, "application/xml"));
-        Assert.assertEquals(204, response2.getStatus());
-        response2.close();
-    }
+      ResteasyWebTarget target2 = client.target(generateURL("/customer"));
+      Response response2 = target2.request().post(Entity.entity(customerXml, "application/xml"));
+      Assert.assertEquals(204, response2.getStatus());
+      response2.close();
+   }
 
 }

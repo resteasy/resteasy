@@ -10,10 +10,10 @@ import org.jboss.resteasy.annotations.Query;
 
 @Path("search")
 public class QueryResource {
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public String get(@Query QuerySearchQuery searchQuery) {
-        return searchQuery.toString();
-    }
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   @Consumes(MediaType.TEXT_PLAIN)
+   public String get(@Query QuerySearchQuery searchQuery) {
+      return searchQuery.toString();
+   }
 }

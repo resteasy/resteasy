@@ -9,19 +9,19 @@ import java.util.logging.Logger;
 
 @Decorator
 public abstract class DecoratorsBookWriterInterceptorDecorator implements WriterInterceptor {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @Inject
-    @Delegate
-    private DecoratorsBookWriterInterceptor interceptor;
+   @Inject
+   @Delegate
+   private DecoratorsBookWriterInterceptor interceptor;
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context) throws java.io.IOException, javax.ws.rs.WebApplicationException {
-        log.info("entering DecoratorsBookWriterInterceptorDecorator.aroundWriteTo()");
-        DecoratorsVisitList.add(DecoratorsVisitList.WRITER_INTERCEPTOR_DECORATOR_ENTER);
-        interceptor.aroundWriteTo(context);
-        DecoratorsVisitList.add(DecoratorsVisitList.WRITER_INTERCEPTOR_DECORATOR_LEAVE);
-        log.info("leaving DecoratorsBookWriterInterceptorDecorator.aroundWriteTo()");
-    }
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws java.io.IOException, javax.ws.rs.WebApplicationException {
+      log.info("entering DecoratorsBookWriterInterceptorDecorator.aroundWriteTo()");
+      DecoratorsVisitList.add(DecoratorsVisitList.WRITER_INTERCEPTOR_DECORATOR_ENTER);
+      interceptor.aroundWriteTo(context);
+      DecoratorsVisitList.add(DecoratorsVisitList.WRITER_INTERCEPTOR_DECORATOR_LEAVE);
+      log.info("leaving DecoratorsBookWriterInterceptorDecorator.aroundWriteTo()");
+   }
 }

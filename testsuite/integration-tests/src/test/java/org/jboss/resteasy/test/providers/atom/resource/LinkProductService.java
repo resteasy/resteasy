@@ -10,15 +10,15 @@ import javax.ws.rs.Produces;
 
 @Path("/products")
 public class LinkProductService {
-    @GET
-    @Produces("application/xml")
-    @Path("{id}")
-    public LinkProduct getProduct(@PathParam("id") int id) {
-        LinkProduct p = new LinkProduct();
-        p.setId(id);
-        p.setName("iphone");
-        p.getLinks().add(new RelativeLink("self", "/self"));
-        p.getLinks().add(new BaseLink("create", "/products"));
-        return p;
-    }
+   @GET
+   @Produces("application/xml")
+   @Path("{id}")
+   public LinkProduct getProduct(@PathParam("id") int id) {
+      LinkProduct p = new LinkProduct();
+      p.setId(id);
+      p.setName("iphone");
+      p.getLinks().add(new RelativeLink("self", "/self"));
+      p.getLinks().add(new BaseLink("create", "/products"));
+      return p;
+   }
 }

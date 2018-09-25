@@ -28,18 +28,18 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
       Stream.MODE mode = stream != null ? stream.value() : null;
       Class<?> clazz = method.getReturnType();
       if ((mode == Stream.MODE.GENERAL && ResteasyProviderFactory.getInstance().getAsyncStreamProvider(clazz) != null)  ||
-          requestContext instanceof PostMatchContainerRequestContext && ((PostMatchContainerRequestContext) requestContext).getResourceMethod().isSse())
+         requestContext instanceof PostMatchContainerRequestContext && ((PostMatchContainerRequestContext) requestContext).getResourceMethod().isSse())
       {
-    	  SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
-    	  ResteasyContext.getContextDataMap().put(SseEventSink.class, sink);
-    	  ResteasyContext.getContextData(PostResourceMethodInvokers.class).addInvokers(new PostResourceMethodInvoker()
-          {
-             @Override
-             public void invoke()
-             {
-                sink.flushResponseToClient();
-             }
-          });
+         SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
+         ResteasyContext.getContextDataMap().put(SseEventSink.class, sink);
+         ResteasyContext.getContextData(PostResourceMethodInvokers.class).addInvokers(new PostResourceMethodInvoker()
+         {
+            @Override
+            public void invoke()
+            {
+               sink.flushResponseToClient();
+            }
+         });
       }
    }
 

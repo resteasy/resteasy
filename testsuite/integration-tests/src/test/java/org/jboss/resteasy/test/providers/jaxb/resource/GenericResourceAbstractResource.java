@@ -7,10 +7,10 @@ import javax.ws.rs.core.Response;
 
 public class GenericResourceAbstractResource<T> {
 
-    @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response createEntity(T entity) {
-        return Response.ok("Success!").build();
-    }
+   @POST
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response createEntity(T entity) {
+      return Response.ok("Success!").build();
+   }
 
 }

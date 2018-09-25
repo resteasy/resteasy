@@ -10,18 +10,18 @@ import java.net.URI;
 
 @Path("/redirect")
 public class ClientResponseRedirectResource {
-    @GET
-    public Response get() {
-        try {
-            return Response.seeOther(URI.create(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName()))).build();
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
-    }
+   @GET
+   public Response get() {
+      try {
+         return Response.seeOther(URI.create(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName()))).build();
+      } catch (IllegalArgumentException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-    @GET
-    @Path("data")
-    public String getData() {
-        return "data";
-    }
+   @GET
+   @Path("data")
+   public String getData() {
+      return "data";
+   }
 }

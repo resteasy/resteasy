@@ -34,33 +34,33 @@ import java.util.List;
 @RunAsClient
 public class ProxyWithGenericReturnTypeTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeTest.class.getSimpleName());
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeTest.class.getSimpleName());
 
-        war.addClass(ProxyWithGenericReturnTypeInvocationHandler.class);
-        war.addClass(ProxyWithGenericReturnTypeSubResourceIntf.class);
-        war.addClass(ProxyWithGenericReturnTypeSubResourceSubIntf.class);
+      war.addClass(ProxyWithGenericReturnTypeInvocationHandler.class);
+      war.addClass(ProxyWithGenericReturnTypeSubResourceIntf.class);
+      war.addClass(ProxyWithGenericReturnTypeSubResourceSubIntf.class);
 
-        List<Class<?>> singletons = new ArrayList<>();
-        singletons.add(ProxyWithGenericReturnTypeMessageBodyWriter.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, ProxyWithGenericReturnTypeResource.class);
-    }
+      List<Class<?>> singletons = new ArrayList<>();
+      singletons.add(ProxyWithGenericReturnTypeMessageBodyWriter.class);
+      return TestUtil.finishContainerPrepare(war, null, singletons, ProxyWithGenericReturnTypeResource.class);
+   }
 
-    /**
-     * @tpTestDetails Test for new client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void newClientTest() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Test for new client
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void newClientTest() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(PortProviderUtil.generateURL("/test/list/", ProxyWithGenericReturnTypeTest.class.getSimpleName()));
-        Response response = base.request().get();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/test/list/", ProxyWithGenericReturnTypeTest.class.getSimpleName()));
+      Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Wrong content of response, list was not decoden on server", response.readEntity(String.class).indexOf("List<String>") >= 0);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertTrue("Wrong content of response, list was not decoden on server", response.readEntity(String.class).indexOf("List<String>") >= 0);
 
-        client.close();
-    }
+      client.close();
+   }
 }

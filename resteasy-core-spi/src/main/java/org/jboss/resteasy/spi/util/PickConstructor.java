@@ -43,7 +43,7 @@ public final class PickConstructor
          if (con.getParameterTypes().length >= numParameters)
          {
             if (con.getParameterTypes().length > numParameters) {
-                potentialConflict = false;
+               potentialConflict = false;
             }
             boolean noContextAnnotation = false;
             if (con.getParameterAnnotations() != null)
@@ -58,7 +58,7 @@ public final class PickConstructor
             }
             if (noContextAnnotation) continue;
             if (con.getParameterTypes().length == numParameters && numParameters != 0) {
-                potentialConflict = true;
+               potentialConflict = true;
             }
             numParameters = con.getParameterTypes().length;
             pick = con;
@@ -97,7 +97,7 @@ public final class PickConstructor
          if (con.getParameterTypes().length >= numParameters)
          {
             if (con.getParameterTypes().length > numParameters) {
-                potentialConflict = false;
+               potentialConflict = false;
             }
 
             boolean noContextAnnotation = false;
@@ -113,7 +113,7 @@ public final class PickConstructor
             }
             if (noContextAnnotation) continue;
             if (con.getParameterTypes().length == numParameters && numParameters != 0) {
-                potentialConflict = true;
+               potentialConflict = true;
             }
             numParameters = con.getParameterTypes().length;
             pick = con;

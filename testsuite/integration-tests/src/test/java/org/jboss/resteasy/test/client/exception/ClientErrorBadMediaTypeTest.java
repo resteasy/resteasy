@@ -30,34 +30,34 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ClientErrorBadMediaTypeTest {
 
-    private static Logger logger = Logger.getLogger(ClientErrorBadMediaTypeTest.class);
+   private static Logger logger = Logger.getLogger(ClientErrorBadMediaTypeTest.class);
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ClientErrorBadMediaTypeTest.class.getSimpleName());
-        war.addClass(PortProviderUtil.class);
-        war.addClass(TestUtil.class);
-        war.addClass(ClientErrorBadMediaTypeHeaderDelegate.class);
-        return TestUtil.finishContainerPrepare(war, null, ClientErrorBadMediaTypeResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ClientErrorBadMediaTypeTest.class.getSimpleName());
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      war.addClass(ClientErrorBadMediaTypeHeaderDelegate.class);
+      return TestUtil.finishContainerPrepare(war, null, ClientErrorBadMediaTypeResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientErrorBadMediaTypeTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ClientErrorBadMediaTypeTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails This test uses not defined "foo/bar" media type.
-     *                Upstream variant of this test was updated by JBEAP-2594.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testBadContentType() throws Exception {
-        // test
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Response response = client.target(generateURL("/")).request().post(Entity.entity("content", "foo/bar"));
-        logger.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails This test uses not defined "foo/bar" media type.
+    *                Upstream variant of this test was updated by JBEAP-2594.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testBadContentType() throws Exception {
+      // test
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Response response = client.target(generateURL("/")).request().post(Entity.entity("content", "foo/bar"));
+      logger.info("status: " + response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+      response.close();
+      client.close();
+   }
 }

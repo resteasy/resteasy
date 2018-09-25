@@ -67,22 +67,22 @@ public abstract class AsyncResponseConsumer
    }
 
    public static AsyncResponseConsumer makeAsyncResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider) {
-	  if(method.isSse())
-	  {
-		  return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);
-	  }
-	  Stream stream = method.getMethod().getAnnotation(Stream.class);
-	  if (stream != null) 
-	  {
-	     if (Stream.MODE.RAW.equals(stream.value()))
-	     {
-	        return new AsyncRawStreamingResponseConsumer(method, asyncStreamProvider); 
-	     }
-	     else
-	     {
-	        return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);  
-	     }
-	  }
+      if(method.isSse())
+      {
+         return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);
+      }
+      Stream stream = method.getMethod().getAnnotation(Stream.class);
+      if (stream != null)
+      {
+         if (Stream.MODE.RAW.equals(stream.value()))
+         {
+            return new AsyncRawStreamingResponseConsumer(method, asyncStreamProvider);
+         }
+         else
+         {
+            return new AsyncGeneralStreamingSseResponseConsumer(method, asyncStreamProvider);
+         }
+      }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);
    }
 
@@ -471,9 +471,9 @@ public abstract class AsyncResponseConsumer
       protected void doComplete()
       {
          // don't call super.doComplete which completes the asyncContext because Sse does that
-    	  // we can be done by exception before we've even subscribed
-          if(subscription != null)
-             subscription.cancel();
+         // we can be done by exception before we've even subscribed
+         if(subscription != null)
+            subscription.cancel();
          sseEventSink.close();
       }
 

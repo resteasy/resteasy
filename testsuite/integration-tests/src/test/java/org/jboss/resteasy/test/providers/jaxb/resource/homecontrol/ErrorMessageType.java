@@ -33,10 +33,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ErrorMessageType", propOrder = {
-        "type",
-        "domain",
-        "message",
-        "timestamp"
+      "type",
+      "domain",
+      "message",
+      "timestamp"
 })
 public class ErrorMessageType {
 

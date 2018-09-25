@@ -10,29 +10,29 @@ import javax.ws.rs.Produces;
 
 @Path("/prototyped")
 public class SpringBeanProcessorMyPrototypedResource {
-    private SpringBeanProcessorCustomer springBeanProcessorCustomer;
+   private SpringBeanProcessorCustomer springBeanProcessorCustomer;
 
-    private int counter = 0;
-    private static Logger logger = Logger.getLogger(SpringBeanProcessorMyPrototypedResource.class);
+   private int counter = 0;
+   private static Logger logger = Logger.getLogger(SpringBeanProcessorMyPrototypedResource.class);
 
-    public SpringBeanProcessorMyPrototypedResource() {
-        logger.info("here");
-    }
+   public SpringBeanProcessorMyPrototypedResource() {
+      logger.info("here");
+   }
 
-    @GET
-    @Path("{id}")
-    @Produces("text/plain")
-    public String callGet(@PathParam("id") String id) {
-        Assert.assertEquals("Got unexpected value", "1", id);
-        return springBeanProcessorCustomer.getName() + (counter++);
-    }
+   @GET
+   @Path("{id}")
+   @Produces("text/plain")
+   public String callGet(@PathParam("id") String id) {
+      Assert.assertEquals("Got unexpected value", "1", id);
+      return springBeanProcessorCustomer.getName() + (counter++);
+   }
 
-    public SpringBeanProcessorCustomer getSpringBeanProcessorCustomer() {
-        return springBeanProcessorCustomer;
-    }
+   public SpringBeanProcessorCustomer getSpringBeanProcessorCustomer() {
+      return springBeanProcessorCustomer;
+   }
 
-    public void setSpringBeanProcessorCustomer(SpringBeanProcessorCustomer springBeanProcessorCustomer) {
-        this.springBeanProcessorCustomer = springBeanProcessorCustomer;
-    }
+   public void setSpringBeanProcessorCustomer(SpringBeanProcessorCustomer springBeanProcessorCustomer) {
+      this.springBeanProcessorCustomer = springBeanProcessorCustomer;
+   }
 
 }

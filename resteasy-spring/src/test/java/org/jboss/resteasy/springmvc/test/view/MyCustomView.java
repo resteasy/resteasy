@@ -10,15 +10,15 @@ import java.util.Map;
 @Component
 public class MyCustomView implements View {
 
-	public String getContentType() {
-		return "application/custom";
-	}
+   public String getContentType() {
+      return "application/custom";
+   }
 
-	@SuppressWarnings("rawtypes")
-	public void render(Map model, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		response.setContentType(getContentType());
-		response.getOutputStream().print("Hi, I'm custom!");
-	}
+   @SuppressWarnings("rawtypes")
+   public void render(Map model, HttpServletRequest request,
+         HttpServletResponse response) throws Exception {
+      response.setContentType(getContentType());
+      response.getOutputStream().print("Hi, I'm custom!");
+   }
 
 }

@@ -9,6 +9,6 @@ import javax.ws.rs.Produces;
 @Path("/exception")
 @Produces("text/plain")
 public interface EjbExceptionUnwrapFooResource {
-    @GET
-    void testException();
+   @GET
+   void testException();
 }

@@ -93,12 +93,12 @@ public class AnotherPublisherResponseTest {
                future.complete(null);
             }
          }, t -> {
-            logger.error(t.getMessage(), t);
-            errors.add(t);
-         }, () -> {
-            // bah, never called
-            future.complete(null);
-         });
+               logger.error(t.getMessage(), t);
+               errors.add(t);
+            }, () -> {
+               // bah, never called
+               future.complete(null);
+            });
          source.open();
          future.get(5000, TimeUnit.SECONDS);
          Assert.assertEquals(2, collector.size());

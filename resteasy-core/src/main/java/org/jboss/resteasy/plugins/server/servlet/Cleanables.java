@@ -10,15 +10,15 @@ import java.util.HashSet;
 */
 public class Cleanables
 {
-	private HashSet<Cleanable> cleanables = new HashSet<Cleanable>();
+   private HashSet<Cleanable> cleanables = new HashSet<Cleanable>();
 
-	public HashSet<Cleanable> getCleanables()
-	{
-		return cleanables;
-	}
+   public HashSet<Cleanable> getCleanables()
+   {
+      return cleanables;
+   }
 
-	public void addCleanable(Cleanable cleanable)
-	{
-		cleanables.add(cleanable);
-	}
+   public void addCleanable(Cleanable cleanable)
+   {
+      cleanables.add(cleanable);
+   }
 }

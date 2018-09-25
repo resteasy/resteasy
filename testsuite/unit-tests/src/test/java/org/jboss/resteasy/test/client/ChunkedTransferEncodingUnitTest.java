@@ -53,7 +53,7 @@ public class ChunkedTransferEncodingUnitTest
    static final String testFilePath;
 
    static {
-       testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
+      testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
    }
    
    //////////////////////////////////////////////////////////////////////////////

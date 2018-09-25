@@ -123,7 +123,7 @@ public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements 
    }
 
    protected JAXBContext find(Class<?> type, MediaType mediaType, ConcurrentHashMap<Class<?>, JAXBContext> cache, Mapped mapped, BadgerFish badger)
-           throws JAXBException
+         throws JAXBException
    {
       JAXBContext jaxb;
       jaxb = cache.get(type);

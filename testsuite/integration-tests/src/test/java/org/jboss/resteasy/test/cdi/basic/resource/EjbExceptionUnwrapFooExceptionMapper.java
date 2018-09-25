@@ -6,8 +6,8 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class EjbExceptionUnwrapFooExceptionMapper implements ExceptionMapper<EjbExceptionUnwrapFooException> {
-    public Response toResponse(EjbExceptionUnwrapFooException exception) {
-        return Response.status(409).build();
-    }
+   public Response toResponse(EjbExceptionUnwrapFooException exception) {
+      return Response.status(409).build();
+   }
 
 }

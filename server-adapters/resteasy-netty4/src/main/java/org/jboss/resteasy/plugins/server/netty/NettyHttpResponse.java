@@ -45,7 +45,7 @@ public class NettyHttpResponse implements HttpResponse
 
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
    {
-	   this(ctx, keepAlive, providerFactory, null);
+      this(ctx, keepAlive, providerFactory, null);
    }
 
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory, HttpMethod method)
@@ -167,24 +167,24 @@ public class NettyHttpResponse implements HttpResponse
 
    public DefaultHttpResponse getDefaultHttpResponse()
    {
-       DefaultHttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
-       transformResponseHeaders(res);
-       return res;
+      DefaultHttpResponse res = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
+      transformResponseHeaders(res);
+      return res;
    }
 
    public DefaultHttpResponse getEmptyHttpResponse()
    {
-       DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
-       if (method == null || !method.equals(HttpMethod.HEAD)) //[RESTEASY-1627]
-       {
-          res.headers().add(HttpHeaderNames.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
-       }
-       transformResponseHeaders(res);
-       return res;
+      DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
+      if (method == null || !method.equals(HttpMethod.HEAD)) //[RESTEASY-1627]
+      {
+         res.headers().add(HttpHeaderNames.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+      }
+      transformResponseHeaders(res);
+      return res;
    }
 
    private void transformResponseHeaders(io.netty.handler.codec.http.HttpResponse res) {
-       RestEasyHttpResponseEncoder.transformHeaders(this, res, providerFactory);
+      RestEasyHttpResponseEncoder.transformHeaders(this, res, providerFactory);
    }
 
    public void prepareChunkStream() {
@@ -213,8 +213,8 @@ public class NettyHttpResponse implements HttpResponse
 
    @Override
    public void flushBuffer() throws IOException {
-	   if(os != null)
-		   os.flush();
-	   ctx.flush();
+      if(os != null)
+         os.flush();
+      ctx.flush();
    }
 }

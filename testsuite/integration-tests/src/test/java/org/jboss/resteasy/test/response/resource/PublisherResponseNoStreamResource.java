@@ -25,7 +25,7 @@ public class PublisherResponseNoStreamResource {
    @Produces("application/json")
    public Publisher<String> text(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
-	   return Flowable.fromArray("one", "two");
+      return Flowable.fromArray("one", "two");
    }
 
    @GET
@@ -75,7 +75,7 @@ public class PublisherResponseNoStreamResource {
    @Path("sse")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public Publisher<String> sse() {
-	   return Flowable.fromArray("one", "two");
+      return Flowable.fromArray("one", "two");
    }
 
    @GET

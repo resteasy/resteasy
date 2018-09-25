@@ -33,58 +33,58 @@ import java.util.List;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class PKCS7SignatureSmokeTest {
-    protected static final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
-    static Client client;
+   protected static final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
+   static Client client;
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(PKCS7SignatureSmokeTest.class.getSimpleName());
-        List<Class<?>> singletons = new ArrayList<>(1);
-        singletons.add(PKCS7SignatureSmokeResource.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(PKCS7SignatureSmokeTest.class.getSimpleName());
+      List<Class<?>> singletons = new ArrayList<>(1);
+      singletons.add(PKCS7SignatureSmokeResource.class);
+      return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
+   }
 
-    private String generateURL() {
-        return PortProviderUtil.generateBaseUrl(PKCS7SignatureSmokeTest.class.getSimpleName());
-    }
+   private String generateURL() {
+      return PortProviderUtil.generateBaseUrl(PKCS7SignatureSmokeTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Get encoded data
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void encodedData() throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL());
-        String data = target.path("test/signed/text").request().get(String.class);
-        logger.info(data);
-        client.close();
-    }
+   /**
+    * @tpTestDetails Get encoded data
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void encodedData() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL());
+      String data = target.path("test/signed/text").request().get(String.class);
+      logger.info(data);
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Get decoded data
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void decodedData() throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL());
-        target = target.path("test/signed/pkcs7-signature");
-        PKCS7SignatureInput signed = target.request().get(PKCS7SignatureInput.class);
-        @SuppressWarnings(value = "unchecked")
-        String output = (String) signed.getEntity(String.class, MediaType.TEXT_PLAIN_TYPE);
-        logger.info(output);
-        Assert.assertEquals("Wrong content of response", "hello world", output);
-    }
+   /**
+    * @tpTestDetails Get decoded data
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void decodedData() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL());
+      target = target.path("test/signed/pkcs7-signature");
+      PKCS7SignatureInput signed = target.request().get(PKCS7SignatureInput.class);
+      @SuppressWarnings(value = "unchecked")
+      String output = (String) signed.getEntity(String.class, MediaType.TEXT_PLAIN_TYPE);
+      logger.info(output);
+      Assert.assertEquals("Wrong content of response", "hello world", output);
+   }
 }
 

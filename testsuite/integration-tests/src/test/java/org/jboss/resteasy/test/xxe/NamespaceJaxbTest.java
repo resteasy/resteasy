@@ -36,150 +36,150 @@ import java.util.Map;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class NamespaceJaxbTest {
-    protected static ResteasyClient client;
-    protected static final String WRONG_RESPONSE_ERROR_MSG = "Response has wrong content";
-    @Deployment
-    public static Archive<?> deployDefault() {
-        WebArchive war = TestUtil.prepareArchive(NamespaceJaxbTest.class.getSimpleName());
-        Map<String, String> contextParam = new HashMap<>();
-        contextParam.put("resteasy.document.expand.entity.references", "false");
-        war.addClasses(FavoriteMovie.class, FavoriteMovieXmlRootElement.class, FavoriteMovieXmlType.class, ObjectFactory.class);
-        return TestUtil.finishContainerPrepare(war, contextParam, MovieResource.class);
-    }
+   protected static ResteasyClient client;
+   protected static final String WRONG_RESPONSE_ERROR_MSG = "Response has wrong content";
+   @Deployment
+   public static Archive<?> deployDefault() {
+      WebArchive war = TestUtil.prepareArchive(NamespaceJaxbTest.class.getSimpleName());
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put("resteasy.document.expand.entity.references", "false");
+      war.addClasses(FavoriteMovie.class, FavoriteMovieXmlRootElement.class, FavoriteMovieXmlType.class, ObjectFactory.class);
+      return TestUtil.finishContainerPrepare(war, contextParam, MovieResource.class);
+   }
 
-    @Before
-    public void init() throws Exception {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() throws Exception {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, NamespaceJaxbTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, NamespaceJaxbTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check XML root element
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testXmlRootElement() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/xmlRootElement"));
-        FavoriteMovieXmlRootElement movie = new FavoriteMovieXmlRootElement();
-        movie.setTitle("La Regle du Jeu");
-        Response response = target.request().post(Entity.entity(movie, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Regle du Jeu", entity);
-    }
+   /**
+    * @tpTestDetails Check XML root element
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testXmlRootElement() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/xmlRootElement"));
+      FavoriteMovieXmlRootElement movie = new FavoriteMovieXmlRootElement();
+      movie.setTitle("La Regle du Jeu");
+      Response response = target.request().post(Entity.entity(movie, "application/xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Regle du Jeu", entity);
+   }
 
-    /**
-     * @tpTestDetails Check XML type
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testXmlType() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/xmlType"));
-        FavoriteMovieXmlType movie = new FavoriteMovieXmlType();
-        movie.setTitle("La Cage Aux Folles");
-        Response response = target.request().post(Entity.entity(movie, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
-    }
+   /**
+    * @tpTestDetails Check XML type
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testXmlType() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/xmlType"));
+      FavoriteMovieXmlType movie = new FavoriteMovieXmlType();
+      movie.setTitle("La Cage Aux Folles");
+      Response response = target.request().post(Entity.entity(movie, "application/xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
+   }
 
-    /**
-     * @tpTestDetails Check JAXB element
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testJAXBElement() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/JAXBElement"));
-        String str = "<?xml version=\"1.0\"?>\r" +
-                "<favoriteMovieXmlType xmlns=\"http://abc.com\"><title>La Cage Aux Folles</title></favoriteMovieXmlType>";
-        Response response = target.request().post(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
-    }
+   /**
+    * @tpTestDetails Check JAXB element
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testJAXBElement() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/JAXBElement"));
+      String str = "<?xml version=\"1.0\"?>\r" +
+            "<favoriteMovieXmlType xmlns=\"http://abc.com\"><title>La Cage Aux Folles</title></favoriteMovieXmlType>";
+      Response response = target.request().post(Entity.entity(str, "application/xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
+   }
 
-    /**
-     * @tpTestDetails Check list
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testList() throws Exception {
-        doCollectionTest("list");
-    }
+   /**
+    * @tpTestDetails Check list
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testList() throws Exception {
+      doCollectionTest("list");
+   }
 
-    /**
-     * @tpTestDetails Check set
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSet() throws Exception {
-        doCollectionTest("set");
-    }
+   /**
+    * @tpTestDetails Check set
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSet() throws Exception {
+      doCollectionTest("set");
+   }
 
-    /**
-     * @tpTestDetails Check array
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testArray() throws Exception {
-        doCollectionTest("array");
-    }
+   /**
+    * @tpTestDetails Check array
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testArray() throws Exception {
+      doCollectionTest("array");
+   }
 
-    /**
-     * @tpTestDetails Check map
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMap() throws Exception {
-        doMapTest();
-    }
+   /**
+    * @tpTestDetails Check map
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMap() throws Exception {
+      doMapTest();
+   }
 
-    void doCollectionTest(String path) throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/" + path));
-        String str = "<?xml version=\"1.0\"?>\r" +
-                "<collection>" +
-                "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
-                "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
-                "</collection>";
-        Response response = target.request().post(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        if (entity.indexOf("Cage") < entity.indexOf("Regle")) {
-            Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "/La Cage Aux Folles/La Regle du Jeu", entity);
-        } else {
-            Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "/La Regle du Jeu/La Cage Aux Folles", entity);
-        }
-    }
+   void doCollectionTest(String path) throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/" + path));
+      String str = "<?xml version=\"1.0\"?>\r" +
+            "<collection>" +
+            "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
+            "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
+            "</collection>";
+      Response response = target.request().post(Entity.entity(str, "application/xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      if (entity.indexOf("Cage") < entity.indexOf("Regle")) {
+         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "/La Cage Aux Folles/La Regle du Jeu", entity);
+      } else {
+         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "/La Regle du Jeu/La Cage Aux Folles", entity);
+      }
+   }
 
-    void doMapTest() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/map"));
-        String str = "<?xml version=\"1.0\"?>\r" +
-                "<map>" +
-                "<entry key=\"new\">" +
-                "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
-                "</entry>" +
-                "<entry key=\"old\">" +
-                "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
-                "</entry>" +
-                "</map>";
-        Response response = target.request().post(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        boolean result = false;
-        if ("/La Cage Aux Folles/La Regle du Jeu".equals(entity)) {
-            result = true;
-        } else if ("/La Regle du Jeu/La Cage Aux Folles".equals(entity)) {
-            result = true;
-        }
+   void doMapTest() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/map"));
+      String str = "<?xml version=\"1.0\"?>\r" +
+            "<map>" +
+            "<entry key=\"new\">" +
+            "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
+            "</entry>" +
+            "<entry key=\"old\">" +
+            "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
+            "</entry>" +
+            "</map>";
+      Response response = target.request().post(Entity.entity(str, "application/xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      boolean result = false;
+      if ("/La Cage Aux Folles/La Regle du Jeu".equals(entity)) {
+         result = true;
+      } else if ("/La Regle du Jeu/La Cage Aux Folles".equals(entity)) {
+         result = true;
+      }
 
-        Assert.assertTrue(WRONG_RESPONSE_ERROR_MSG, result);
-    }
+      Assert.assertTrue(WRONG_RESPONSE_ERROR_MSG, result);
+   }
 }

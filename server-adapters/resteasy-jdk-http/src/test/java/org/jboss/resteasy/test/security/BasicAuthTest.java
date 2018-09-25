@@ -143,10 +143,8 @@ public class BasicAuthTest
    public static void before() throws Exception
    {
       SimpleSecurityDomain domain = new SimpleSecurityDomain();
-      String[] roles =
-              {"admin"};
-      String[] basic =
-              {"user"};
+      String[] roles = {"admin"};
+      String[] basic = {"user"};
       domain.addUser("bill", "password", roles);
       domain.addUser("mo", "password", basic);
       dispatcher = HttpServerContainer.start("", domain).getDispatcher();
@@ -199,7 +197,7 @@ public class BasicAuthTest
       CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
- 
+   
       {
          Builder request = client.target(generateURL("/secured")).request();
          Response response = request.get();

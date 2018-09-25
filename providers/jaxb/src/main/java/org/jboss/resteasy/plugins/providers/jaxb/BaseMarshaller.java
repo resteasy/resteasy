@@ -18,7 +18,7 @@ public abstract class BaseMarshaller implements Marshaller
    protected String charset = StandardCharsets.UTF_8.name();
 
    public void marshal(Object o, OutputStream outputStream)
-           throws JAXBException
+         throws JAXBException
    {
       try
       {
@@ -31,7 +31,7 @@ public abstract class BaseMarshaller implements Marshaller
    }
 
    public void setProperty(String s, Object o)
-           throws PropertyException
+         throws PropertyException
    {
       marshaller.setProperty(s, o);
       if (s.equals(Marshaller.JAXB_ENCODING)) charset = o.toString();

@@ -256,7 +256,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -320,7 +320,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -384,7 +384,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -400,8 +400,8 @@ public class RxObservableTest {
       ObservableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.head();
       observable.subscribe(
-              (String s) -> value.set(s), // HEAD - no body
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+         (String s) -> value.set(s), // HEAD - no body
+         (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -459,7 +459,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -527,7 +527,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -591,7 +591,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
@@ -655,7 +655,7 @@ public class RxObservableTest {
          (byte[] b) -> bytesList.add(b),
          (Throwable t) -> errors.incrementAndGet(),
          () -> latch.countDown()
-         );
+      );
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());

@@ -7,17 +7,17 @@ import java.util.Collection;
 @XmlRootElement(name = "customers")
 public class JettisonCustomerList {
 
-    @XmlElementRef
-    public Collection<JettisonCustomer> customers;
+   @XmlElementRef
+   public Collection<JettisonCustomer> customers;
 
-    public JettisonCustomerList() {
-    }
+   public JettisonCustomerList() {
+   }
 
-    public JettisonCustomerList(Collection<JettisonCustomer> customers) {
-        this.customers = customers;
-    }
+   public JettisonCustomerList(Collection<JettisonCustomer> customers) {
+      this.customers = customers;
+   }
 
-    public int size() {
-        return customers.size();
-    }
+   public int size() {
+      return customers.size();
+   }
 }

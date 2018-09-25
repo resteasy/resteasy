@@ -4,7 +4,7 @@ import org.jboss.resteasy.spi.touri.URITemplate;
 
 @URITemplate("/foo/{id}")
 public class ObjectToURITemplateObject extends ObjectToURIAbstractURITemplateObject {
-    public ObjectToURITemplateObject(final int id) {
-        super(id);
-    }
+   public ObjectToURITemplateObject(final int id) {
+      super(id);
+   }
 }

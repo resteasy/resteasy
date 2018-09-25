@@ -194,7 +194,6 @@ public class Verification
    /**
     * Headers can be a {@literal Map<String, Object> or a Map<String, List<Object>>}.  This gives some compatibility with
     * JAX-RS's MultivaluedMap.   If a map of lists, every value of each header duplicate will be added.
-
     *
     * @param signature signature
     * @param headers headers map

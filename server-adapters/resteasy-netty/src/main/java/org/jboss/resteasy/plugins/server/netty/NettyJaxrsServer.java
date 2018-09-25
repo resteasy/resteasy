@@ -66,7 +66,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setIoWorkerCount(int ioWorkerCount) 
    {
-       this.ioWorkerCount = ioWorkerCount;
+      this.ioWorkerCount = ioWorkerCount;
    }
    
    /**
@@ -79,7 +79,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setExecutorThreadCount(int executorThreadCount)
    {
-       this.executorThreadCount = executorThreadCount;
+      this.executorThreadCount = executorThreadCount;
    }
 
    /**
@@ -89,20 +89,20 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setMaxRequestSize(int maxRequestSize) 
    {
-       this.maxRequestSize  = maxRequestSize;
+      this.maxRequestSize  = maxRequestSize;
    }
    
    public void setKeepAlive(boolean isKeepAlive) 
    {
-       this.isKeepAlive = isKeepAlive;
+      this.isKeepAlive = isKeepAlive;
    }
 
    public String getHostname() {
-       return hostname;
+      return hostname;
    }
 
    public void setHostname(String hostname) {
-       this.hostname = hostname;
+      this.hostname = hostname;
    }
 
    public int getPort()
@@ -115,25 +115,25 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.configuredPort = port;
    }
 
-    /**
-     * Add additional {@link org.jboss.netty.channel.ChannelHandler}s to the {@link org.jboss.netty.bootstrap.ServerBootstrap}.
-     * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
-     *
-     * @param channelHandlers the additional {@link org.jboss.netty.channel.ChannelHandler}s.
-     */
-    public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
-        this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
-    }
+   /**
+    * Add additional {@link org.jboss.netty.channel.ChannelHandler}s to the {@link org.jboss.netty.bootstrap.ServerBootstrap}.
+    * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+    *
+    * @param channelHandlers the additional {@link org.jboss.netty.channel.ChannelHandler}s.
+    */
+   public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
+      this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+   }
 
-    /**
-     * Add channel options to Netty {@link org.jboss.netty.bootstrap.ServerBootstrap}.
-     *
-     * @param channelOptions a {@link java.util.Map} containing the Netty bootstrap options.
-     * @see org.jboss.netty.bootstrap.ServerBootstrap#setOptions(java.util.Map)
-     */
-    public void setChannelOptions(final Map<String, Object> channelOptions) {
-        this.channelOptions = channelOptions == null ? Collections.<String, Object>emptyMap() : channelOptions;
-    }
+   /**
+    * Add channel options to Netty {@link org.jboss.netty.bootstrap.ServerBootstrap}.
+    *
+    * @param channelOptions a {@link java.util.Map} containing the Netty bootstrap options.
+    * @see org.jboss.netty.bootstrap.ServerBootstrap#setOptions(java.util.Map)
+    */
+   public void setChannelOptions(final Map<String, Object> channelOptions) {
+      this.channelOptions = channelOptions == null ? Collections.<String, Object>emptyMap() : channelOptions;
+   }
 
    @Override
    public void setDeployment(ResteasyDeployment deployment)
@@ -184,9 +184,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
       ChannelPipelineFactory factory;
       if (sslContext == null) {
-          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers);
+         factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers);
       } else {
-          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers, sslContext);
+         factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers, sslContext);
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);
@@ -197,9 +197,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       // Bind and start to accept incoming connections.
       final InetSocketAddress socketAddress;
       if(null == hostname || hostname.isEmpty()) {
-          socketAddress = new InetSocketAddress(configuredPort);
+         socketAddress = new InetSocketAddress(configuredPort);
       } else {
-          socketAddress = new InetSocketAddress(hostname, configuredPort);
+         socketAddress = new InetSocketAddress(hostname, configuredPort);
       }
 
       channel = bootstrap.bind(socketAddress);
@@ -213,7 +213,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       runtimePort = -1;
       allChannels.close().awaitUninterruptibly();
       if (bootstrap != null) {
-          bootstrap.releaseExternalResources();
+         bootstrap.releaseExternalResources();
       }
       deployment.stop();
    }

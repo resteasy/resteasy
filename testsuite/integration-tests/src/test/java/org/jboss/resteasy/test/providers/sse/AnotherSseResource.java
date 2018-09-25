@@ -30,7 +30,7 @@ public class AnotherSseResource
    private final SseResource sseResource;
    
    public AnotherSseResource(SseResource sseResource) {
-	   this.sseResource = sseResource;
+      this.sseResource = sseResource;
    }
 
    @GET
@@ -45,11 +45,11 @@ public class AnotherSseResource
       }
       eventSink = sink;
       synchronized (this.sseBroadcasterLock) {
-    	  //subscribe
-    	  if (sseBroadcaster == null)
-    	  {
-    		  sseBroadcaster = sse.newBroadcaster();
-    	  }
+         //subscribe
+         if (sseBroadcaster == null)
+         {
+            sseBroadcaster = sse.newBroadcaster();
+         }
       }
       this.sseResource.subscribe(sink);
       sseBroadcaster.register(sink);
@@ -61,7 +61,7 @@ public class AnotherSseResource
    {
       if (this.sseBroadcaster == null)
       {
-    	  throw new IllegalStateException("No Sse broadcaster created.");
+         throw new IllegalStateException("No Sse broadcaster created.");
       }
       this.sseBroadcaster.broadcast(sse.newEvent(message));
    }

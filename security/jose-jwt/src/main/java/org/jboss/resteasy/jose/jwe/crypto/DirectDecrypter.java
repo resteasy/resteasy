@@ -34,13 +34,13 @@ import java.nio.charset.StandardCharsets;
 public class DirectDecrypter
 {
    public static byte[] decrypt(final SecretKey key,
-                                final JWEHeader readOnlyJWEHeader,
-                                final String encodedHeader,
-                                final String encryptedKey,
-                                final String encodedIv,
-                                final String encodedCipherText,
-                                final String encodedAuthTag
-                               )
+                        final JWEHeader readOnlyJWEHeader,
+                        final String encodedHeader,
+                        final String encryptedKey,
+                        final String encodedIv,
+                        final String encodedCipherText,
+                        final String encodedAuthTag
+   )
    {
 
       // Validate required JWE parts
@@ -105,4 +105,3 @@ public class DirectDecrypter
       return DeflateHelper.applyDecompression(readOnlyJWEHeader.getCompressionAlgorithm(), plainText);
    }
 }
-

@@ -4,6 +4,6 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public interface EjbExceptionUnwrapLocatingResource {
-    @Path("locating")
-    EjbExceptionUnwrapSimpleResource getLocating();
+   @Path("locating")
+   EjbExceptionUnwrapSimpleResource getLocating();
 }

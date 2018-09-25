@@ -106,11 +106,11 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *                             Only effective if thrown prior to the response being committed.
     */
    public IIOImage readFrom(Class<IIOImage> type,
-                            Type genericType,
-                            Annotation[] annotations,
-                            MediaType mediaType,
-                            MultivaluedMap<String, String> httpHeaders,
-                            InputStream entityStream) throws IOException
+                     Type genericType,
+                     Annotation[] annotations,
+                     MediaType mediaType,
+                     MultivaluedMap<String, String> httpHeaders,
+                     InputStream entityStream) throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       ImageReader reader = IIOImageProviderHelper.getImageReaderByMediaType(mediaType);
@@ -183,9 +183,9 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       }
 
       /*
-      * If the image output type supports compression, set it to the highest
-      * maximum
-      */
+       * If the image output type supports compression, set it to the highest
+       * maximum
+       */
       ImageWriterParams writerParams = org.jboss.resteasy.spi.util.FindAnnotation.findAnnotation(annotations,
               ImageWriterParams.class);
       if (writerParams != null)

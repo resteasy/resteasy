@@ -7,10 +7,10 @@ import javax.ws.rs.Produces;
 
 @Path("/")
 public class DateFormatPathResource {
-    @Path("/widget/{date}")
-    @GET
-    @Produces("text/plain")
-    public String get(@PathParam("date") String date) {
-        return date;
-    }
+   @Path("/widget/{date}")
+   @GET
+   @Produces("text/plain")
+   public String get(@PathParam("date") String date) {
+      return date;
+   }
 }

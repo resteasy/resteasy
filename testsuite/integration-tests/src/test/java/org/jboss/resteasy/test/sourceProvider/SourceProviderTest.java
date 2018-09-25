@@ -31,46 +31,46 @@ import java.nio.charset.StandardCharsets;
 @RunAsClient
 public class SourceProviderTest {
 
-    private static Client client;
-    private String book = "<book><title>Monkey kingdom</title></book>";
+   private static Client client;
+   private String book = "<book><title>Monkey kingdom</title></book>";
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(SourceProviderTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, SourceProviderApp.class,
-                BookResource.class, Book.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(SourceProviderTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, SourceProviderApp.class,
+            BookResource.class, Book.class);
+   }
 
-    @Before
-    public void before() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @Before
+   public void before() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @After
-    public void close() throws Exception {
-        client.close();
-    }
+   @After
+   public void close() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SourceProviderTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, SourceProviderTest.class.getSimpleName());
+   }
 
-    @Test
-    public void testSourceWithStringReader() throws Exception {
-        Response response = client.target(generateURL("/test")).request()
-            .post(Entity.entity(new StreamSource(new StringReader(book)), "application/*+xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        Assert.assertTrue(entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
-    }
+   @Test
+   public void testSourceWithStringReader() throws Exception {
+      Response response = client.target(generateURL("/test")).request()
+         .post(Entity.entity(new StreamSource(new StringReader(book)), "application/*+xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      Assert.assertTrue(entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
+   }
 
-    @Test
-    public void testSourceWithInputStream() throws Exception {
-        InputStream stream = new ByteArrayInputStream(book.getBytes(StandardCharsets.UTF_8));
-        Response response = client.target(generateURL("/test")).request()
-            .post(Entity.entity(new StreamSource(stream), "application/*+xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String entity = response.readEntity(String.class);
-        Assert.assertTrue(entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
-    }
+   @Test
+   public void testSourceWithInputStream() throws Exception {
+      InputStream stream = new ByteArrayInputStream(book.getBytes(StandardCharsets.UTF_8));
+      Response response = client.target(generateURL("/test")).request()
+         .post(Entity.entity(new StreamSource(stream), "application/*+xml"));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String entity = response.readEntity(String.class);
+      Assert.assertTrue(entity.contentEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><book><title>Monkey kingdom</title></book>"));
+   }
 }

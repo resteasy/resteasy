@@ -6,8 +6,8 @@ import javax.ws.rs.core.Response;
 
 @Path("/regression")
 public class UnauthorizedHttpCodeResource {
-    @GET
-    public Response get() {
-        return Response.status(401).entity("hello").type("application/error").build();
-    }
+   @GET
+   public Response get() {
+      return Response.status(401).entity("hello").type("application/error").build();
+   }
 }

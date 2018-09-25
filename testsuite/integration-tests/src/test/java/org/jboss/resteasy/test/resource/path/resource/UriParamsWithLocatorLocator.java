@@ -7,10 +7,10 @@ import javax.ws.rs.PathParam;
 
 @Path("/")
 public class UriParamsWithLocatorLocator {
-    @Path("/{id}")
-    public UriParamsWithLocatorResource get(@PathParam("id") String id) {
-        Assert.assertEquals("1", id);
-        return new UriParamsWithLocatorResource();
+   @Path("/{id}")
+   public UriParamsWithLocatorResource get(@PathParam("id") String id) {
+      Assert.assertEquals("1", id);
+      return new UriParamsWithLocatorResource();
 
-    }
+   }
 }

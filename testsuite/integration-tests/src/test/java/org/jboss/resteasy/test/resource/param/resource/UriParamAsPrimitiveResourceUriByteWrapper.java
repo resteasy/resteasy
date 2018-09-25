@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/byte/wrapper/{arg}")
 public class UriParamAsPrimitiveResourceUriByteWrapper {
-    @GET
-    public String doGet(@PathParam("arg") Byte v) {
-        Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 127 == v.byteValue());
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") Byte v) {
+      Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 127 == v.byteValue());
+      return "content";
+   }
 }

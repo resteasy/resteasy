@@ -4,13 +4,13 @@ import java.io.IOException;
 
 public class CallbackExceptionThrowingStringBean extends CallbackStringBean {
 
-    public CallbackExceptionThrowingStringBean(final String header) {
-        super(header);
-    }
+   public CallbackExceptionThrowingStringBean(final String header) {
+      super(header);
+   }
 
-    @Override
-    public String get() {
-        throw new RuntimeException(new IOException(super.get()));
-    }
+   @Override
+   public String get() {
+      throw new RuntimeException(new IOException(super.get()));
+   }
 
 }

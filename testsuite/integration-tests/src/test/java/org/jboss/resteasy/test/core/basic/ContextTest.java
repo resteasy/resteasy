@@ -33,118 +33,117 @@ import java.io.FilePermission;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ContextTest {
-    public static final String WRONG_RESPONSE_ERROR_MSG = "Wrong content of response";
+   public static final String WRONG_RESPONSE_ERROR_MSG = "Wrong content of response";
 
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, ContextTest.class.getSimpleName() + ".war");
-        war.addClasses(ContextAfterEncoderInterceptor.class, ContextBeforeEncoderInterceptor.class, ContextService.class,
-                ContextEncoderInterceptor.class, ContextEndInterceptor.class);
-        war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.html", "index.html");
-        war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextWeb.xml", "web.xml");
-        // undertow requires read permission in order to perform forward request.
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read")
-            ), "permissions.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, ContextTest.class.getSimpleName() + ".war");
+      war.addClasses(ContextAfterEncoderInterceptor.class, ContextBeforeEncoderInterceptor.class, ContextService.class,
+            ContextEncoderInterceptor.class, ContextEndInterceptor.class);
+      war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.html", "index.html");
+      war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextWeb.xml", "web.xml");
+      // undertow requires read permission in order to perform forward request.
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new FilePermission("<<ALL FILES>>", "read")
+         ), "permissions.xml");
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ContextTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ContextTest.class.getSimpleName());
+   }
 
-    @Before
-    public void setup() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void setup() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Test for forwarding request to external HTML file
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testForward() throws Exception {
-        Response response = client.target(generateURL("/test/forward")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "hello world", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test for forwarding request to external HTML file
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testForward() throws Exception {
+      Response response = client.target(generateURL("/test/forward")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "hello world", response.readEntity(String.class));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Base URL should not be affected by URL parameter
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRepeat() throws Exception {
-        Response response = client.target(generateURL("/test/test")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
-        response.close();
-        response = client.target(generateURL("/test/")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Base URL should not be affected by URL parameter
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRepeat() throws Exception {
+      Response response = client.target(generateURL("/test/test")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
+      response.close();
+      response = client.target(generateURL("/test/")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Resource get wrong injected URL", generateURL("/test/"), response.readEntity(String.class));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Test for getting servlet context in REST resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testServletContext() throws Exception {
-        final String HEADER_ERROR_MESSAGE = "Response don't have correct headers";
-        Response response = client.target(generateURL("/test/test/servletcontext")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("before-encoder"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("after-encoder"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("end"));
-        Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("encoder"));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test for getting servlet context in REST resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testServletContext() throws Exception {
+      final String HEADER_ERROR_MESSAGE = "Response don't have correct headers";
+      Response response = client.target(generateURL("/test/test/servletcontext")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
+      Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("before-encoder"));
+      Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("after-encoder"));
+      Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("end"));
+      Assert.assertNotNull(HEADER_ERROR_MESSAGE, response.getHeaderString("encoder"));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Test for getting servlet config in REST resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testServletConfig() throws Exception {
-        Response response = client.target(generateURL("/test/test/servletconfig")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test for getting servlet config in REST resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testServletConfig() throws Exception {
+      Response response = client.target(generateURL("/test/test/servletconfig")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "ok", response.readEntity(String.class));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails XML extension mapping test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testXmlMappings() throws Exception {
-        Response response = client.target(generateURL("/test/stuff.xml")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "xml", response.readEntity(String.class));
-        response.close();
+   /**
+    * @tpTestDetails XML extension mapping test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testXmlMappings() throws Exception {
+      Response response = client.target(generateURL("/test/stuff.xml")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "xml", response.readEntity(String.class));
+      response.close();
 
-    }
+   }
 
-    /**
-     * @tpTestDetails Json extension mapping test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testJsonMappings() throws Exception {
-        Response response = client.target(generateURL("/test/stuff.json")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "json", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Json extension mapping test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testJsonMappings() throws Exception {
+      Response response = client.target(generateURL("/test/stuff.json")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "json", response.readEntity(String.class));
+      response.close();
+   }
 }
-

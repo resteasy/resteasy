@@ -70,7 +70,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
    }
 
    public static MultivaluedMap<String, String> parseForm(InputStream entityStream, String charset)
-           throws IOException
+         throws IOException
    {
       char[] buffer = new char[100];
       StringBuffer buf = new StringBuffer();

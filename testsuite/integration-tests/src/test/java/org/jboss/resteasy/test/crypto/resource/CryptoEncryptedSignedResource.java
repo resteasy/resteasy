@@ -12,21 +12,21 @@ import javax.ws.rs.Path;
 
 @Path("/smime/encrypted/signed")
 public class CryptoEncryptedSignedResource {
-    @GET
-    public EnvelopedOutput get() {
-        SignedOutput signed = new SignedOutput("hello world", "text/plain");
-        signed.setCertificate(CryptoCertResource.cert);
-        signed.setPrivateKey(CryptoCertResource.privateKey);
+   @GET
+   public EnvelopedOutput get() {
+      SignedOutput signed = new SignedOutput("hello world", "text/plain");
+      signed.setCertificate(CryptoCertResource.cert);
+      signed.setPrivateKey(CryptoCertResource.privateKey);
 
-        EnvelopedOutput output = new EnvelopedOutput(signed, "multipart/signed");
-        output.setCertificate(CryptoCertResource.cert);
-        return output;
-    }
+      EnvelopedOutput output = new EnvelopedOutput(signed, "multipart/signed");
+      output.setCertificate(CryptoCertResource.cert);
+      return output;
+   }
 
-    @POST
-    public void post(EnvelopedInput<SignedInput<String>> input) throws Exception {
-        SignedInput<String> str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
-        Assert.assertEquals("input", str.getEntity());
-        Assert.assertTrue(str.verify(CryptoCertResource.cert));
-    }
+   @POST
+   public void post(EnvelopedInput<SignedInput<String>> input) throws Exception {
+      SignedInput<String> str = input.getEntity(CryptoCertResource.privateKey, CryptoCertResource.cert);
+      Assert.assertEquals("input", str.getEntity());
+      Assert.assertTrue(str.verify(CryptoCertResource.cert));
+   }
 }

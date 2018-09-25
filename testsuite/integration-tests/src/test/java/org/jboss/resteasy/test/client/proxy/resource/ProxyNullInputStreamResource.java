@@ -13,4 +13,3 @@ public interface ProxyNullInputStreamResource {
    @Path("/user/{db}")
    void getUserHead(@PathParam("db") String db);
 }
-

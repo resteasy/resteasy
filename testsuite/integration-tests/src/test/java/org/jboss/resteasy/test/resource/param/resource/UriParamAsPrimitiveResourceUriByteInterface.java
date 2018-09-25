@@ -6,6 +6,6 @@ import javax.ws.rs.PathParam;
 
 @Path("/byte/{arg}")
 public interface UriParamAsPrimitiveResourceUriByteInterface {
-    @GET
-    String doGet(@PathParam("arg") byte v);
+   @GET
+   String doGet(@PathParam("arg") byte v);
 }

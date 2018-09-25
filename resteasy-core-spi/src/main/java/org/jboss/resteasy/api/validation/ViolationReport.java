@@ -46,9 +46,9 @@ public class ViolationReport
    {
       this(new ResteasyViolationException(s)
       {
-		private static final long serialVersionUID = 1L;
+         private static final long serialVersionUID = 1L;
 
-		@Override
+         @Override
          public ConstraintTypeUtil getConstraintTypeUtil()
          {
             return null;

@@ -32,39 +32,39 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class JettisonCustomerTest {
 
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JettisonCustomerTest.class.getSimpleName());
-        war.addClasses(JettisonCustomer.class, JettisonCustomerList.class);
-        return TestUtil.finishContainerPrepare(war, null, JettisonCustomerManagementResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JettisonCustomerTest.class.getSimpleName());
+      war.addClasses(JettisonCustomer.class, JettisonCustomerList.class);
+      return TestUtil.finishContainerPrepare(war, null, JettisonCustomerManagementResource.class);
+   }
 
-    @Before
-    public void before() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void before() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JettisonCustomerTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JettisonCustomerTest.class.getSimpleName());
+   }
 
-    @Test
-    public void testCustomer() {
-        ResteasyWebTarget target = client.target(generateURL("/management/customers"));
-        Response response = target.request().get();
+   @Test
+   public void testCustomer() {
+      ResteasyWebTarget target = client.target(generateURL("/management/customers"));
+      Response response = target.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        JettisonCustomerList customers = response.readEntity(JettisonCustomerList.class);
-        Assert.assertEquals(4, customers.size());
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      JettisonCustomerList customers = response.readEntity(JettisonCustomerList.class);
+      Assert.assertEquals(4, customers.size());
 
-        response.close();
-    }
+      response.close();
+   }
 }

@@ -40,137 +40,137 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "JaxbNameSpacePrefixItem", propOrder = {
-        "productName",
-        "quantity",
-        "usPrice",
-        "comment",
-        "shipDate"
+      "productName",
+      "quantity",
+      "usPrice",
+      "comment",
+      "shipDate"
 })
 public class JaxbNameSpacePrefixItem {
 
-    @XmlElement(required = true)
-    protected String productName;
-    protected int quantity;
-    @XmlElement(name = "USPrice", required = true)
-    protected BigDecimal usPrice;
-    protected String comment;
-    @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar shipDate;
-    @XmlAttribute(required = true)
-    protected String partNum;
+   @XmlElement(required = true)
+   protected String productName;
+   protected int quantity;
+   @XmlElement(name = "USPrice", required = true)
+   protected BigDecimal usPrice;
+   protected String comment;
+   @XmlSchemaType(name = "date")
+   protected XMLGregorianCalendar shipDate;
+   @XmlAttribute(required = true)
+   protected String partNum;
 
-    /**
-     * Gets the value of the productName property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getProductName() {
-        return productName;
-    }
+   /**
+    * Gets the value of the productName property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getProductName() {
+      return productName;
+   }
 
-    /**
-     * Sets the value of the productName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setProductName(String value) {
-        this.productName = value;
-    }
+   /**
+    * Sets the value of the productName property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setProductName(String value) {
+      this.productName = value;
+   }
 
-    /**
-     * Gets the value of the quantity property.
-     */
-    public int getQuantity() {
-        return quantity;
-    }
+   /**
+    * Gets the value of the quantity property.
+    */
+   public int getQuantity() {
+      return quantity;
+   }
 
-    /**
-     * Sets the value of the quantity property.
-     */
-    public void setQuantity(int value) {
-        this.quantity = value;
-    }
+   /**
+    * Sets the value of the quantity property.
+    */
+   public void setQuantity(int value) {
+      this.quantity = value;
+   }
 
-    /**
-     * Gets the value of the usPrice property.
-     *
-     * @return possible object is
-     * {@link BigDecimal }
-     */
-    public BigDecimal getUSPrice() {
-        return usPrice;
-    }
+   /**
+    * Gets the value of the usPrice property.
+    *
+    * @return possible object is
+    * {@link BigDecimal }
+    */
+   public BigDecimal getUSPrice() {
+      return usPrice;
+   }
 
-    /**
-     * Sets the value of the usPrice property.
-     *
-     * @param value allowed object is
-     *              {@link BigDecimal }
-     */
-    public void setUSPrice(BigDecimal value) {
-        this.usPrice = value;
-    }
+   /**
+    * Sets the value of the usPrice property.
+    *
+    * @param value allowed object is
+    *              {@link BigDecimal }
+    */
+   public void setUSPrice(BigDecimal value) {
+      this.usPrice = value;
+   }
 
-    /**
-     * Gets the value of the comment property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getComment() {
-        return comment;
-    }
+   /**
+    * Gets the value of the comment property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getComment() {
+      return comment;
+   }
 
-    /**
-     * Sets the value of the comment property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setComment(String value) {
-        this.comment = value;
-    }
+   /**
+    * Sets the value of the comment property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setComment(String value) {
+      this.comment = value;
+   }
 
-    /**
-     * Gets the value of the shipDate property.
-     *
-     * @return possible object is
-     * {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getShipDate() {
-        return shipDate;
-    }
+   /**
+    * Gets the value of the shipDate property.
+    *
+    * @return possible object is
+    * {@link XMLGregorianCalendar }
+    */
+   public XMLGregorianCalendar getShipDate() {
+      return shipDate;
+   }
 
-    /**
-     * Sets the value of the shipDate property.
-     *
-     * @param value allowed object is
-     *              {@link XMLGregorianCalendar }
-     */
-    public void setShipDate(XMLGregorianCalendar value) {
-        this.shipDate = value;
-    }
+   /**
+    * Sets the value of the shipDate property.
+    *
+    * @param value allowed object is
+    *              {@link XMLGregorianCalendar }
+    */
+   public void setShipDate(XMLGregorianCalendar value) {
+      this.shipDate = value;
+   }
 
-    /**
-     * Gets the value of the partNum property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getPartNum() {
-        return partNum;
-    }
+   /**
+    * Gets the value of the partNum property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getPartNum() {
+      return partNum;
+   }
 
-    /**
-     * Sets the value of the partNum property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setPartNum(String value) {
-        this.partNum = value;
-    }
+   /**
+    * Sets the value of the partNum property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setPartNum(String value) {
+      this.partNum = value;
+   }
 
 }

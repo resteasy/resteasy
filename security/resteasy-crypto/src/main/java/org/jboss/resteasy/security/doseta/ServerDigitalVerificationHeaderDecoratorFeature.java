@@ -88,12 +88,12 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
          for (int j = 0; j < annotations[i].length; j++)
          {
             if (annotations[i][j].annotationType().equals(MatrixParam.class)
-             || annotations[i][j].annotationType().equals(QueryParam.class)
-             || annotations[i][j].annotationType().equals(PathParam.class)
-             || annotations[i][j].annotationType().equals(CookieParam.class)
-             || annotations[i][j].annotationType().equals(HeaderParam.class)
-             || annotations[i][j].annotationType().equals(Context.class)
-             || annotations[i][j].annotationType().equals(FormParam.class))
+               || annotations[i][j].annotationType().equals(QueryParam.class)
+               || annotations[i][j].annotationType().equals(PathParam.class)
+               || annotations[i][j].annotationType().equals(CookieParam.class)
+               || annotations[i][j].annotationType().equals(HeaderParam.class)
+               || annotations[i][j].annotationType().equals(Context.class)
+               || annotations[i][j].annotationType().equals(FormParam.class))
             {
                match = true;
                break;

@@ -43,87 +43,87 @@ import java.io.Reader;
 @RunAsClient
 public class ClientProviderTest extends ClientTestBase{
 
-    static Client client;
+   static Client client;
 
-    @Before
-    public void before() {
-        client = ClientBuilder.newClient();
-    }
+   @Before
+   public void before() {
+      client = ClientBuilder.newClient();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ClientProviderTest.class.getSimpleName());
-        war.addClass(ClientTestBase.class);
-        return TestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ClientProviderTest.class.getSimpleName());
+      war.addClass(ClientTestBase.class);
+      return TestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
+   }
 
-    @After
-    public void close() {
-        client.close();
-    }
+   @After
+   public void close() {
+      client.close();
+   }
 
-    @Path("/")
-    @Produces("text/plain")
-    @Consumes("text/plain")
-    public static class ClientProviderResource {
-        @POST
-        @Path("post")
-        public String post(String value) {
-            return value;
-        }
+   @Path("/")
+   @Produces("text/plain")
+   @Consumes("text/plain")
+   public static class ClientProviderResource {
+      @POST
+      @Path("post")
+      public String post(String value) {
+         return value;
+      }
 
-        @GET
-        @Path("get")
-        public String nothing() {
-            return "OK";
-        }
-    }
+      @GET
+      @Path("get")
+      public String nothing() {
+         return "OK";
+      }
+   }
 
-    public static final String readFromStream(InputStream stream) throws IOException {
-        InputStreamReader isr = new InputStreamReader(stream);
-        return readFromReader(isr);
-    }
+   public static final String readFromStream(InputStream stream) throws IOException {
+      InputStreamReader isr = new InputStreamReader(stream);
+      return readFromReader(isr);
+   }
 
-    public static final String readFromReader(Reader reader) throws IOException {
-        BufferedReader br = new BufferedReader(reader);
-        String entity = br.readLine();
-        br.close();
-        return entity;
-    }
+   public static final String readFromReader(Reader reader) throws IOException {
+      BufferedReader br = new BufferedReader(reader);
+      String entity = br.readLine();
+      br.close();
+      return entity;
+   }
 
-    /**
-     * @tpTestDetails Create WebTarget from client and register custom MessageBodyReader on it
-     * @tpPassCrit Verify application provided MessageBodyReader is used instead of built-in one,
-     * verify that following request is is processed by built-in MessageBodyReader again
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void applicationDefinedMessageBodyReaderTest() {
-        WebTarget base = client.target(generateURL("/") + "get");
-        String result = base.register(ClientProviderStringEntityProviderReader.class).request().get(String.class);
-        Assert.assertEquals("Application defined provider reader: OK", result);
+   /**
+    * @tpTestDetails Create WebTarget from client and register custom MessageBodyReader on it
+    * @tpPassCrit Verify application provided MessageBodyReader is used instead of built-in one,
+    * verify that following request is is processed by built-in MessageBodyReader again
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void applicationDefinedMessageBodyReaderTest() {
+      WebTarget base = client.target(generateURL("/") + "get");
+      String result = base.register(ClientProviderStringEntityProviderReader.class).request().get(String.class);
+      Assert.assertEquals("Application defined provider reader: OK", result);
 
-        base = client.target(generateURL("/") + "get");
-        result = base.request().get(String.class);
-        Assert.assertEquals("OK", result);
-    }
+      base = client.target(generateURL("/") + "get");
+      result = base.request().get(String.class);
+      Assert.assertEquals("OK", result);
+   }
 
-    /**
-     * @tpTestDetails Create WebTarget from client and register custom MessageBodyWriter on it
-     * @tpPassCrit Verify application provided MessageBodyWriter is used instead of built-in one,
-     * verify that following request is is processed by built-in MessageBodyWriter again
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void applicationDefinedMessageBodyWriterTest() {
-        WebTarget base = client.target(generateURL("/") + "post");
-        String result = base.register(ClientProviderStringEntityProviderWriter.class).request().post(Entity.text("test"), String.class);
-        Assert.assertEquals("Application defined provider writer: text/plain[Content-Type=text/plain]", result);
+   /**
+    * @tpTestDetails Create WebTarget from client and register custom MessageBodyWriter on it
+    * @tpPassCrit Verify application provided MessageBodyWriter is used instead of built-in one,
+    * verify that following request is is processed by built-in MessageBodyWriter again
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void applicationDefinedMessageBodyWriterTest() {
+      WebTarget base = client.target(generateURL("/") + "post");
+      String result = base.register(ClientProviderStringEntityProviderWriter.class).request().post(Entity.text("test"), String.class);
+      Assert.assertEquals("Application defined provider writer: text/plain[Content-Type=text/plain]", result);
 
-        base = client.target(generateURL("/") + "post");
-        result = base.request().post(Entity.text("test"), String.class);
-        Assert.assertEquals("test", result);
-    }
+      base = client.target(generateURL("/") + "post");
+      result = base.request().post(Entity.text("test"), String.class);
+      Assert.assertEquals("test", result);
+   }
 
 
 }

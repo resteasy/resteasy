@@ -52,7 +52,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Path("get/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> getBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
 
    @PUT
@@ -84,8 +84,8 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> putBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
 
    @POST
@@ -117,8 +117,8 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> postBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
    
    @DELETE
@@ -146,7 +146,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Path("delete/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> deleteBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @HEAD
@@ -181,7 +181,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Path("options/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> optionsBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @TRACE
@@ -209,7 +209,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    @Path("trace/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> traceBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @GET

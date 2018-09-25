@@ -7,23 +7,23 @@ import javax.ws.rs.PathParam;
 
 @Path("/{s}/{t}")
 public class ValidationComplexResourceWithFieldAndProperty {
-    @Size(min = 2, max = 4)
-    @PathParam("s")
-    private String s;
+   @Size(min = 2, max = 4)
+   @PathParam("s")
+   private String s;
 
-    private String t;
+   private String t;
 
-    @Size(min = 3, max = 5)
-    public String getT() {
-        return t;
-    }
+   @Size(min = 3, max = 5)
+   public String getT() {
+      return t;
+   }
 
-    @PathParam("t")
-    public void setT(String t) {
-        this.t = t;
-    }
+   @PathParam("t")
+   public void setT(String t) {
+      this.t = t;
+   }
 
-    @POST
-    public void post() {
-    }
+   @POST
+   public void post() {
+   }
 }

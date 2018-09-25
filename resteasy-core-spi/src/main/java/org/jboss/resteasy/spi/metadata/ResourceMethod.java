@@ -9,13 +9,13 @@ import javax.ws.rs.core.MediaType;
  */
 public interface ResourceMethod extends ResourceLocator
 {
-  Set<String> getHttpMethods();
+   Set<String> getHttpMethods();
 
-  MediaType[] getProduces();
+   MediaType[] getProduces();
 
-  MediaType[] getConsumes();
+   MediaType[] getConsumes();
 
-  boolean isAsynchronous();
+   boolean isAsynchronous();
 
-  void markAsynchronous();
+   void markAsynchronous();
 }

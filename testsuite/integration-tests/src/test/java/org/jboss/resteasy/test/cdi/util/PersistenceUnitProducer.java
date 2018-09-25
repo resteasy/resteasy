@@ -7,8 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 public class PersistenceUnitProducer {
-    @Produces
-    @CDIInjectionResourceBinding
-    @PersistenceContext(unitName = "test")
-    EntityManager persistenceContext;
+   @Produces
+   @CDIInjectionResourceBinding
+   @PersistenceContext(unitName = "test")
+   EntityManager persistenceContext;
 }

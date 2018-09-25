@@ -47,42 +47,42 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ContactsDependenciesInDeploymentTest {
 
-    private static Logger logger = Logger.getLogger(ContactsDependenciesInDeploymentTest.class);
-    private static ContactProxy proxy;
-    private static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(ContactsDependenciesInDeploymentTest.class);
+   private static ContactProxy proxy;
+   private static ResteasyClient client;
 
 
-    @Path(ContactsResource.CONTACTS_URL)
-    public interface ContactProxy {
-        @Path("data")
-        @POST
-        @Consumes(MediaType.APPLICATION_XML)
-        Response createContact(Contact contact);
+   @Path(ContactsResource.CONTACTS_URL)
+   public interface ContactProxy {
+      @Path("data")
+      @POST
+      @Consumes(MediaType.APPLICATION_XML)
+      Response createContact(Contact contact);
 
-        @GET
-        @Produces(MediaType.APPLICATION_XML)
-        Contact getContact(@ClientURI String uri);
+      @GET
+      @Produces(MediaType.APPLICATION_XML)
+      Contact getContact(@ClientURI String uri);
 
-        @GET
-        String getString(@ClientURI String uri);
-    }
+      @GET
+      String getString(@ClientURI String uri);
+   }
 
-    @Deployment
-    private static Archive<?> deploy() {
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, ContactsDependenciesInDeploymentTest.class.getSimpleName() + ".war")
-                .addClass(ContactsResource.class)
-                .addClass(ContactService.class)
-                .addClass(Contacts.class)
-                .addClass(Contact.class)
-                .addClass(ContactsDependenciesInDeploymentTest.class)
-                .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/web.xml", "web.xml")
-                .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/springmvc-servlet.xml", "springmvc-servlet.xml");
+   @Deployment
+   private static Archive<?> deploy() {
+      WebArchive archive = ShrinkWrap.create(WebArchive.class, ContactsDependenciesInDeploymentTest.class.getSimpleName() + ".war")
+            .addClass(ContactsResource.class)
+            .addClass(ContactService.class)
+            .addClass(Contacts.class)
+            .addClass(Contact.class)
+            .addClass(ContactsDependenciesInDeploymentTest.class)
+            .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/web.xml", "web.xml")
+            .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/springmvc-servlet.xml", "springmvc-servlet.xml");
 
-        // spring specific permissions needed.
-        // Permission  accessClassInPackage.sun.reflect.annotation is required in order
-        // for spring to introspect annotations.  Security exception is eaten by spring
-        // and not posted via the server.
-        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+      // spring specific permissions needed.
+      // Permission  accessClassInPackage.sun.reflect.annotation is required in order
+      // for spring to introspect annotations.  Security exception is eaten by spring
+      // and not posted via the server.
+      archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new MBeanServerPermission("createMBeanServer"),
             new MBeanPermission("org.springframework.context.support.LiveBeansView#-[liveBeansView:application=/ContactsDependenciesInDeploymentTest]", "registerMBean,unregisterMBean"),
             new MBeanTrustPermission("register"),
@@ -93,34 +93,34 @@ public class ContactsDependenciesInDeploymentTest {
             new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
-        ), "permissions.xml");
+      ), "permissions.xml");
 
-        TestUtilSpring.addSpringLibraries(archive);
-        return archive;
-    }
+      TestUtilSpring.addSpringLibraries(archive);
+      return archive;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ContactsDependenciesInDeploymentTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ContactsDependenciesInDeploymentTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test is using component-scan and annotation-config spring features. This features are unusable if
-     * running with spring dependency 3.2.8.RELEASE and earlier. Only Spring 4 is supported.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testData() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-        proxy = client.target(generateURL("")).proxy(ContactProxy.class);
-        Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
-        Assert.assertEquals(201, response.getStatus());
-        String duskisUri = (String) response.getMetadata().getFirst(HttpHeaderNames.LOCATION);
-        logger.info(duskisUri);
-        Assert.assertTrue("Unexpected response from the server", duskisUri.endsWith(ContactsResource.CONTACTS_URL + "/data/Duskis"));
-        response.close();
-        Assert.assertEquals("Unexpected response from the server", "Solomon", proxy.getContact(duskisUri).getFirstName());
-        response = proxy.createContact(new Contact("Bill", "Burkie"));
-        response.close();
-        logger.info(proxy.getString(generateURL(ContactsResource.CONTACTS_URL + "/data")));
-    }
+   /**
+    * @tpTestDetails Test is using component-scan and annotation-config spring features. This features are unusable if
+    * running with spring dependency 3.2.8.RELEASE and earlier. Only Spring 4 is supported.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testData() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+      proxy = client.target(generateURL("")).proxy(ContactProxy.class);
+      Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
+      Assert.assertEquals(201, response.getStatus());
+      String duskisUri = (String) response.getMetadata().getFirst(HttpHeaderNames.LOCATION);
+      logger.info(duskisUri);
+      Assert.assertTrue("Unexpected response from the server", duskisUri.endsWith(ContactsResource.CONTACTS_URL + "/data/Duskis"));
+      response.close();
+      Assert.assertEquals("Unexpected response from the server", "Solomon", proxy.getContact(duskisUri).getFirstName());
+      response = proxy.createContact(new Contact("Bill", "Burkie"));
+      response.close();
+      logger.info(proxy.getString(generateURL(ContactsResource.CONTACTS_URL + "/data")));
+   }
 }

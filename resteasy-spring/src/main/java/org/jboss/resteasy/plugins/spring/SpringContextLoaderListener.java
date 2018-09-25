@@ -63,8 +63,8 @@ public class SpringContextLoaderListener extends ContextLoaderListener
    }
    
    @Override
-	protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
-		super.customizeContext(servletContext, configurableWebApplicationContext);
-		this.springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
-	}
+   protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
+      super.customizeContext(servletContext, configurableWebApplicationContext);
+      this.springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
+   }
 }

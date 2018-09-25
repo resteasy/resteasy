@@ -6,17 +6,17 @@ import javax.ws.rs.Produces;
 
 @Path("/test")
 public class JettisonMediaTypeService {
-    @GET
-    @Path("bug")
-    @Produces({"application/json;charset=UTF-8"})
-    public JettisonMediaTypeObject bug() {
-        return new JettisonMediaTypeObject();
-    }
+   @GET
+   @Path("bug")
+   @Produces({"application/json;charset=UTF-8"})
+   public JettisonMediaTypeObject bug() {
+      return new JettisonMediaTypeObject();
+   }
 
-    @GET
-    @Path("nobug")
-    @Produces({"application/json"})
-    public JettisonMediaTypeObject nobug() {
-        return new JettisonMediaTypeObject();
-    }
+   @GET
+   @Path("nobug")
+   @Produces({"application/json"})
+   public JettisonMediaTypeObject nobug() {
+      return new JettisonMediaTypeObject();
+   }
 }

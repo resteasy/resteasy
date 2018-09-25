@@ -18,33 +18,33 @@ import java.util.List;
 @XmlRootElement(name = "product")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class LinkProduct {
-    protected int id;
+   protected int id;
 
-    protected String name;
+   protected String name;
 
 
-    private ArrayList<Link> linkList = new ArrayList<Link>();
+   private ArrayList<Link> linkList = new ArrayList<Link>();
 
-    @XmlAttribute
-    public int getId() {
-        return id;
-    }
+   @XmlAttribute
+   public int getId() {
+      return id;
+   }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+   public void setId(int id) {
+      this.id = id;
+   }
 
-    @XmlElement
-    public String getName() {
-        return name;
-    }
+   @XmlElement
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    @XmlElementRef
-    public List<Link> getLinks() {
-        return linkList;
-    }
+   @XmlElementRef
+   public List<Link> getLinks() {
+      return linkList;
+   }
 }

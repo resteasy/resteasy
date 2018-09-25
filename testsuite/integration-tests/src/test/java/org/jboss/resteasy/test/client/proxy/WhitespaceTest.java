@@ -30,48 +30,48 @@ import javax.ws.rs.Produces;
 @RunAsClient
 public class WhitespaceTest {
 
-    static ResteasyClient client;
-    private static final String SPACES_REQUEST = "something something";
+   static ResteasyClient client;
+   private static final String SPACES_REQUEST = "something something";
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(WhitespaceTest.class.getSimpleName());
-        war.addClass(WhitespaceTest.class);
-        return TestUtil.finishContainerPrepare(war, null, WhiteSpaceResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(WhitespaceTest.class.getSimpleName());
+      war.addClass(WhitespaceTest.class);
+      return TestUtil.finishContainerPrepare(war, null, WhiteSpaceResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, WhitespaceTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, WhitespaceTest.class.getSimpleName());
+   }
 
-    @Path(value = "/sayhello")
-    public interface HelloClient {
+   @Path(value = "/sayhello")
+   public interface HelloClient {
 
-        @GET
-        @Path("/en/{in}")
-        @Produces("text/plain")
-        String sayHi(@PathParam(value = "in") String in);
-    }
+      @GET
+      @Path("/en/{in}")
+      @Produces("text/plain")
+      String sayHi(@PathParam(value = "in") String in);
+   }
 
-    /**
-     * @tpTestDetails Client sends GET requests thru client proxy. The string parameter passed in the request has white
-     * space in it. The parameter is delivered with white space in the response as well.
-     * @tpPassCrit The response entity contains white space as the original request
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testEchoWithWhiteSpace() {
-        HelloClient proxy = client.target(generateURL("")).proxy(HelloClient.class);
-        Assert.assertEquals(SPACES_REQUEST, proxy.sayHi(SPACES_REQUEST));
-    }
+   /**
+    * @tpTestDetails Client sends GET requests thru client proxy. The string parameter passed in the request has white
+    * space in it. The parameter is delivered with white space in the response as well.
+    * @tpPassCrit The response entity contains white space as the original request
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testEchoWithWhiteSpace() {
+      HelloClient proxy = client.target(generateURL("")).proxy(HelloClient.class);
+      Assert.assertEquals(SPACES_REQUEST, proxy.sayHi(SPACES_REQUEST));
+   }
 }

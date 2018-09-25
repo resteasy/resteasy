@@ -17,43 +17,43 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
-	@Override
-	protected void writeParts(MultipartOutput multipartOutput,
-									  OutputStream entityStream, byte[] boundaryBytes) throws IOException {
-		if (!(multipartOutput instanceof MultipartFormDataOutput))
-			throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
-		MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
-		for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
-			for (OutputPart outputPart : entry.getValue()) {
-				if (outputPart.getEntity() == null) {
-					continue;
-				}
-				MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
-				headers.putSingle("Content-Disposition", "form-data; name=\""
-						+ entry.getKey() + "\""
-						+ getFilename(outputPart));
-				writePart(entityStream, boundaryBytes, outputPart, headers);
-			}
-		}
-	}
+   @Override
+   protected void writeParts(MultipartOutput multipartOutput,
+                             OutputStream entityStream, byte[] boundaryBytes) throws IOException {
+      if (!(multipartOutput instanceof MultipartFormDataOutput))
+         throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
+      MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
+      for (Map.Entry<String, List<OutputPart>> entry : form.getFormDataMap().entrySet()) {
+         for (OutputPart outputPart : entry.getValue()) {
+            if (outputPart.getEntity() == null) {
+               continue;
+            }
+            MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
+            headers.putSingle("Content-Disposition", "form-data; name=\""
+                  + entry.getKey() + "\""
+                  + getFilename(outputPart));
+            writePart(entityStream, boundaryBytes, outputPart, headers);
+         }
+      }
+   }
 
-	private String getFilename(OutputPart part) {
-		String filename = part.getFilename(); 
-		if (filename == null) {
-			return "";
-		} else {
-		    String encodedFilename = filename;
-		    try {
-		       encodedFilename = URLEncoder.encode(filename, "UTF-8");
-		       // append encoding charset into the value if and only if encoding was needed
-		       if (!encodedFilename.equals(filename)) {
-		          // encoding was needed, so per rfc5987 we have to prepend charset
-		          return "; filename*=utf-8''" + encodedFilename;
-		       }
-		    } catch (UnsupportedEncodingException e) {
-		       // should not happen
-		    }
-		    return "; filename=\"" + filename + "\"";
-		}
-	}	
+   private String getFilename(OutputPart part) {
+      String filename = part.getFilename();
+      if (filename == null) {
+         return "";
+      } else {
+         String encodedFilename = filename;
+         try {
+            encodedFilename = URLEncoder.encode(filename, "UTF-8");
+            // append encoding charset into the value if and only if encoding was needed
+            if (!encodedFilename.equals(filename)) {
+            // encoding was needed, so per rfc5987 we have to prepend charset
+               return "; filename*=utf-8''" + encodedFilename;
+            }
+         } catch (UnsupportedEncodingException e) {
+            // should not happen
+         }
+         return "; filename=\"" + filename + "\"";
+      }
+   }
 }

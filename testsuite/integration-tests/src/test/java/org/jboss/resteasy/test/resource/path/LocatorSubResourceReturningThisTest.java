@@ -34,58 +34,58 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class LocatorSubResourceReturningThisTest {
 
-    @Path("resource")
-    public static class LocatorSubResourceReturningThisSubResource extends LocatorSubResourceReturningThisPathParamTest {
+   @Path("resource")
+   public static class LocatorSubResourceReturningThisSubResource extends LocatorSubResourceReturningThisPathParamTest {
 
-        @Path("subresource")
-        public LocatorSubResourceReturningThisSubResource subresorce() {
-            return this;
-        }
-    }
+      @Path("subresource")
+      public LocatorSubResourceReturningThisSubResource subresorce() {
+         return this;
+      }
+   }
 
-    @Path(value = "/PathParamTest")
-    public static class LocatorSubResourceReturningThisPathParamTest {
+   @Path(value = "/PathParamTest")
+   public static class LocatorSubResourceReturningThisPathParamTest {
 
-        @Produces(MediaType.TEXT_PLAIN)
-        @GET
-        @Path("/ParamEntityWithConstructor/{id}")
-        public String paramEntityWithConstructorTest(
-                @DefaultValue("PathParamTest") @PathParam("id") LocatorSubResourceReturningThisParamEntityWithConstructor paramEntityWithConstructor) {
-            return paramEntityWithConstructor.getValue();
-        }
-    }
+      @Produces(MediaType.TEXT_PLAIN)
+      @GET
+      @Path("/ParamEntityWithConstructor/{id}")
+      public String paramEntityWithConstructorTest(
+            @DefaultValue("PathParamTest") @PathParam("id") LocatorSubResourceReturningThisParamEntityWithConstructor paramEntityWithConstructor) {
+         return paramEntityWithConstructor.getValue();
+      }
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(LocatorSubResourceReturningThisTest.class.getSimpleName());
-        war.addClasses(LocatorSubResourceReturningThisPathParamTest.class, LocatorSubResourceReturningThisParamEntityPrototype.class,
-                LocatorSubResourceReturningThisParamEntityWithConstructor.class);
-        return TestUtil.finishContainerPrepare(war, null, LocatorSubResourceReturningThisSubResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(LocatorSubResourceReturningThisTest.class.getSimpleName());
+      war.addClasses(LocatorSubResourceReturningThisPathParamTest.class, LocatorSubResourceReturningThisParamEntityPrototype.class,
+            LocatorSubResourceReturningThisParamEntityWithConstructor.class);
+      return TestUtil.finishContainerPrepare(war, null, LocatorSubResourceReturningThisSubResource.class);
+   }
 
-    static Client client;
+   static Client client;
 
-    @BeforeClass
-    public static void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Client sends GET request for the resource Locator, which returns itself. The Resource Locator here
-     * extends the resource with HTTP methods annotations directly.
-     * @tpPassCrit Correct response is returned from the server
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void LocatorWithSubWithPathAnnotationTest() {
-        Response response = client.target(PortProviderUtil.generateURL("/resource/subresource/ParamEntityWithConstructor/ParamEntityWithConstructor=JAXRS", LocatorSubResourceReturningThisTest.class.getSimpleName())).request().get();
-        Assert.assertEquals(200, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails Client sends GET request for the resource Locator, which returns itself. The Resource Locator here
+    * extends the resource with HTTP methods annotations directly.
+    * @tpPassCrit Correct response is returned from the server
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void LocatorWithSubWithPathAnnotationTest() {
+      Response response = client.target(PortProviderUtil.generateURL("/resource/subresource/ParamEntityWithConstructor/ParamEntityWithConstructor=JAXRS", LocatorSubResourceReturningThisTest.class.getSimpleName())).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
 
 }

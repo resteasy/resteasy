@@ -33,14 +33,14 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  * @version $Revision: $
  */
 public class ArchiveAppender implements AuxiliaryArchiveAppender {
-	@Override
-	public Archive<?> createAuxiliaryArchive() {
-		return ShrinkWrap
-				.create(JavaArchive.class, "arquillian-systemproperties.jar")
-				.addPackage(SystemPropertiesRemoteExtension.class.getPackage())
-				.addClass(SystemProperties.class)
-				.addAsServiceProvider(RemoteLoadableExtension.class,
-						SystemPropertiesRemoteExtension.class);
-	}
+   @Override
+   public Archive<?> createAuxiliaryArchive() {
+      return ShrinkWrap
+            .create(JavaArchive.class, "arquillian-systemproperties.jar")
+            .addPackage(SystemPropertiesRemoteExtension.class.getPackage())
+            .addClass(SystemProperties.class)
+            .addAsServiceProvider(RemoteLoadableExtension.class,
+                  SystemPropertiesRemoteExtension.class);
+   }
 
 }

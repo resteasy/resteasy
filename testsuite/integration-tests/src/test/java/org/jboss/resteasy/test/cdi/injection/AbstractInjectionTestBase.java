@@ -10,42 +10,42 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 public class AbstractInjectionTestBase {
 
-    public static void initQueue() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
+   public static void initQueue() throws Exception {
+      OnlineManagementClient client = TestUtil.clientInit();
 
-        // disable security and create queue
-        if (TestUtil.isWildFly9x()) {
-            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=false)");
-            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
-        } else {
-            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
-            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
-        }
+      // disable security and create queue
+      if (TestUtil.isWildFly9x()) {
+         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=false)");
+         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+      } else {
+         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
+         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+      }
 
-        // reload server
-        Administration admin = new Administration(client, 240);
-        admin.reload();
+      // reload server
+      Administration admin = new Administration(client, 240);
+      admin.reload();
 
-        client.close();
-    }
+      client.close();
+   }
 
-    @AfterClass
-    public static void destroyQueue() throws Exception {
-        OnlineManagementClient client = TestUtil.clientInit();
+   @AfterClass
+   public static void destroyQueue() throws Exception {
+      OnlineManagementClient client = TestUtil.clientInit();
 
-        // remove queue and enable security
-        if (TestUtil.isWildFly9x()) {
-            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=true)");
-            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:remove");
-        } else {
-            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
-            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
-        }
+      // remove queue and enable security
+      if (TestUtil.isWildFly9x()) {
+         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=true)");
+         TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:remove");
+      } else {
+         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
+         TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
+      }
 
-        // reload server
-        Administration admin = new Administration(client, 240);
-        admin.reload();
+      // reload server
+      Administration admin = new Administration(client, 240);
+      admin.reload();
 
-        client.close();
-    }
+      client.close();
+   }
 }

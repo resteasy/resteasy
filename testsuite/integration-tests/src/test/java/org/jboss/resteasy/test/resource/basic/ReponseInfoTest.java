@@ -31,48 +31,48 @@ import java.util.PropertyPermission;
 @RunAsClient
 public class ReponseInfoTest {
 
-    static Client client;
+   static Client client;
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
-        war.addClasses(PortProviderUtil.class, ReponseInfoTest.class);
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
+      war.addClasses(PortProviderUtil.class, ReponseInfoTest.class);
 
-        // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
-    }
+      // Use of PortProviderUtil in the deployment
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("node", "read"),
+            new PropertyPermission("ipv6", "read"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new PropertyPermission("org.jboss.resteasy.port", "read")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
+   }
 
-    private void basicTest(String path) {
-        WebTarget base = client.target(PortProviderUtil.generateURL(path, ReponseInfoTest.class.getSimpleName()));
+   private void basicTest(String path) {
+      WebTarget base = client.target(PortProviderUtil.generateURL(path, ReponseInfoTest.class.getSimpleName()));
 
-        Response response = base.request().get();
+      Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-    }
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check URI location from HTTP headers from response prepared in resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testUriInfo() throws Exception {
-            basicTest("/simple");
-    }
+   /**
+    * @tpTestDetails Check URI location from HTTP headers from response prepared in resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testUriInfo() throws Exception {
+      basicTest("/simple");
+   }
 }

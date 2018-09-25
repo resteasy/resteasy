@@ -32,41 +32,41 @@ import java.lang.annotation.RetentionPolicy;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class StringParamUnmarshallerTest {
-    @Retention(RetentionPolicy.RUNTIME)
-    @StringParameterUnmarshallerBinder(StringParamUnmarshallerDateFormatter.class)
-    public @interface StringParamUnmarshallerDateFormat {
-        String value();
-    }
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(StringParamUnmarshallerTest.class.getSimpleName());
-        war.addClass(StringParamUnmarshallerDateFormatter.class);
-        war.addClass(StringParamUnmarshallerFruit.class);
-        war.addClass(StringParamUnmarshallerSport.class);
-        war.addClass(StringParamUnmarshallerDateFormat.class);
-        return TestUtil.finishContainerPrepare(war, null, StringParamUnmarshallerService.class);
-    }
+   @Retention(RetentionPolicy.RUNTIME)
+   @StringParameterUnmarshallerBinder(StringParamUnmarshallerDateFormatter.class)
+   public @interface StringParamUnmarshallerDateFormat {
+      String value();
+   }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(StringParamUnmarshallerTest.class.getSimpleName());
+      war.addClass(StringParamUnmarshallerDateFormatter.class);
+      war.addClass(StringParamUnmarshallerFruit.class);
+      war.addClass(StringParamUnmarshallerSport.class);
+      war.addClass(StringParamUnmarshallerDateFormat.class);
+      return TestUtil.finishContainerPrepare(war, null, StringParamUnmarshallerService.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, StringParamUnmarshallerTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, StringParamUnmarshallerTest.class.getSimpleName());
+   }
 
 
-    @Test
-    public void testDate() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/datetest/04-23-1977")).request();
-        String date = request.get(String.class);
-        Assert.assertTrue("Received wrong date", date.contains("Sat Apr 23 00:00:00"));
-        Assert.assertTrue("Received wrong date", date.contains("1977"));
-        client.close();
-    }
+   @Test
+   public void testDate() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/datetest/04-23-1977")).request();
+      String date = request.get(String.class);
+      Assert.assertTrue("Received wrong date", date.contains("Sat Apr 23 00:00:00"));
+      Assert.assertTrue("Received wrong date", date.contains("1977"));
+      client.close();
+   }
 
-    @Test
-    public void testFruitAndSport() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/fromstring/ORANGE/football")).request();
-        Assert.assertEquals("Received wrong response", "footballORANGE", request.get(String.class));
-        client.close();
-    }
+   @Test
+   public void testFruitAndSport() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/fromstring/ORANGE/football")).request();
+      Assert.assertEquals("Received wrong response", "footballORANGE", request.get(String.class));
+      client.close();
+   }
 }

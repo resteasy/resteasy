@@ -56,66 +56,66 @@ public class TestLinksInvalidEL
       dispatcher = null;
    }
 
-	@Parameters
-	public static List<Class<?>[]> getParameters(){
-		List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
-		classes.add(new Class<?>[]{BookStoreInvalidEL.class});
-		return classes;
-	}
+   @Parameters
+   public static List<Class<?>[]> getParameters(){
+      List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
+      classes.add(new Class<?>[]{BookStoreInvalidEL.class});
+      return classes;
+   }
 
-	private Class<?> resourceType;
-	private String url;
-	private BookStoreService client;
-	private HttpClient httpClient;
-	
-	public TestLinksInvalidEL(Class<?> resourceType){
-		this.resourceType = resourceType;
-	}
-	
-	@Before
-	public void before(){
-		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = HttpClientBuilder.create().build();
-		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
-		url = generateBaseUrl();
-		ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
-		client = target.proxy(BookStoreService.class);
-	}
+   private Class<?> resourceType;
+   private String url;
+   private BookStoreService client;
+   private HttpClient httpClient;
 
-	@SuppressWarnings("deprecation")
-    @After
-	public void after(){
-		// TJWS does not support chunk encodings well so I need to kill kept
-		// alive connections
-		httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
-		dispatcher.getRegistry().removeRegistrations(resourceType);
-	}
-	
-	@Test
-	public void testELWorksWithoutPackageXML() throws Exception
-	{
-		try{
-			client.getBookXML("foo");
-			Assert.fail("This should have caused a 500");
-		}catch(InternalServerErrorException x){
-			LOG.error("Failure is "+x.getResponse().readEntity(String.class));
-			Assert.assertEquals(500, x.getResponse().getStatus());
-	    }catch(Exception x){
-	         Assert.fail("Expected InternalServerErrorException");
-	    }
-	}
-	@Test
-	public void testELWorksWithoutPackageJSON() throws Exception
-	{
-		try{
-			client.getBookJSON("foo");
-			Assert.fail("This should have caused a 500");
-		}catch(InternalServerErrorException x){
-			LOG.error("Failure is "+x.getResponse().readEntity(String.class));
-			Assert.assertEquals(500, x.getResponse().getStatus());
-		}catch(Exception x){
-		   Assert.fail("Expected InternalServerErrorException");
-		}
-	}
+   public TestLinksInvalidEL(Class<?> resourceType){
+      this.resourceType = resourceType;
+   }
+
+   @Before
+   public void before(){
+      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      httpClient = HttpClientBuilder.create().build();
+      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
+      url = generateBaseUrl();
+      ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
+      client = target.proxy(BookStoreService.class);
+   }
+
+   @SuppressWarnings("deprecation")
+   @After
+   public void after(){
+      // TJWS does not support chunk encodings well so I need to kill kept
+      // alive connections
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+      dispatcher.getRegistry().removeRegistrations(resourceType);
+   }
+
+   @Test
+   public void testELWorksWithoutPackageXML() throws Exception
+   {
+      try{
+         client.getBookXML("foo");
+         Assert.fail("This should have caused a 500");
+      }catch(InternalServerErrorException x){
+         LOG.error("Failure is "+x.getResponse().readEntity(String.class));
+         Assert.assertEquals(500, x.getResponse().getStatus());
+      }catch(Exception x){
+         Assert.fail("Expected InternalServerErrorException");
+      }
+   }
+   @Test
+   public void testELWorksWithoutPackageJSON() throws Exception
+   {
+      try{
+         client.getBookJSON("foo");
+         Assert.fail("This should have caused a 500");
+      }catch(InternalServerErrorException x){
+         LOG.error("Failure is "+x.getResponse().readEntity(String.class));
+         Assert.assertEquals(500, x.getResponse().getStatus());
+      }catch(Exception x){
+         Assert.fail("Expected InternalServerErrorException");
+      }
+   }
 }

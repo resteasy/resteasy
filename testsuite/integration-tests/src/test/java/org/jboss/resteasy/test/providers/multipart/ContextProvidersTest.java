@@ -66,444 +66,444 @@ import static org.hamcrest.CoreMatchers.is;
 @RunAsClient
 public class ContextProvidersTest {
 
-    protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
+   protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
 
-    public static final Annotation PART_TYPE_APPLICATION_XML = new S1() {
-        private static final long serialVersionUID = 1L;
+   public static final Annotation PART_TYPE_APPLICATION_XML = new S1() {
+      private static final long serialVersionUID = 1L;
 
-        @Override
-        public String value() {
-            return "application/xml";
-        }
-    };
-    public static final Annotation MULTIPART_FORM = new S2() {
-        private static final long serialVersionUID = 1L;
-    };
-    public static final Annotation XOP_WITH_MULTIPART_RELATED = new S3() {
-        private static final long serialVersionUID = 1L;
-    };
-    static final MediaType MULTIPART_MIXED = new MediaType("multipart", "mixed");
-    static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
-    static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
-    static final javax.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<ContextProvidersName>>() {
-    };
+      @Override
+      public String value() {
+         return "application/xml";
+      }
+   };
+   public static final Annotation MULTIPART_FORM = new S2() {
+      private static final long serialVersionUID = 1L;
+   };
+   public static final Annotation XOP_WITH_MULTIPART_RELATED = new S3() {
+      private static final long serialVersionUID = 1L;
+   };
+   static final MediaType MULTIPART_MIXED = new MediaType("multipart", "mixed");
+   static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
+   static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
+   static final javax.ws.rs.core.GenericType<List<ContextProvidersName>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<ContextProvidersName>>() {
+   };
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
-        war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
-        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
+      war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
+   }
 
-    /**
-     * @tpTestDetails Form data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetFormData() throws Exception {
-        doTestGetFormData();
-    }
+   /**
+    * @tpTestDetails Form data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetFormData() throws Exception {
+      doTestGetFormData();
+   }
 
-    public void doTestGetFormData() throws Exception {
-        try {
-            MultipartFormDataInput entity = get("/get/form", MultipartFormDataInput.class);
+   public void doTestGetFormData() throws Exception {
+      try {
+         MultipartFormDataInput entity = get("/get/form", MultipartFormDataInput.class);
 
-            // Get parts by name.
-            ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bill", c.getName());
-            String s = entity.getFormDataPart("bob", String.class, null);
-            Assert.assertEquals("Wrong response", "Bob", s);
+         // Get parts by name.
+         ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
+         Assert.assertEquals("Wrong response", "Bill", c.getName());
+         String s = entity.getFormDataPart("bob", String.class, null);
+         Assert.assertEquals("Wrong response", "Bob", s);
 
-            // Iterate over list of parts.
-            for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
+         // Iterate over list of parts.
+         for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
 //                logger.debug("key: " + formDataEntry.getKey());
-                for (InputPart inputPart : formDataEntry.getValue()) {
-                    if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
-                        c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                        Assert.assertEquals("Wrong response", "Bill", c.getName());
-                    } else {
-                        s = inputPart.getBody(String.class, null);
-                        Assert.assertEquals("Wrong response", "Bob", s);
-                    }
-                }
+            for (InputPart inputPart : formDataEntry.getValue()) {
+               if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
+                  c = inputPart.getBody(ContextProvidersCustomer.class, null);
+                  Assert.assertEquals("Wrong response", "Bill", c.getName());
+               } else {
+                  s = inputPart.getBody(String.class, null);
+                  Assert.assertEquals("Wrong response", "Bob", s);
+               }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
+         }
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
 
-    /**
-     * @tpTestDetails Mixed data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetMixed() throws Exception {
-        doTestGetMixed();
-    }
+   /**
+    * @tpTestDetails Mixed data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetMixed() throws Exception {
+      doTestGetMixed();
+   }
 
-    void doTestGetMixed() throws Exception {
-        try {
-            MultipartInput entity = get("/get/mixed", MultipartInput.class);
+   void doTestGetMixed() throws Exception {
+      try {
+         MultipartInput entity = get("/get/mixed", MultipartInput.class);
 
-            // Iterate over list of parts.
-            List<InputPart> parts = entity.getParts();
-            for (Iterator<InputPart> it = parts.iterator(); it.hasNext(); ) {
-                InputPart inputPart = it.next();
-                if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
-                    ContextProvidersCustomer c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                    Assert.assertEquals("Wrong response", "Bill", c.getName());
-                } else {
-                    String s = inputPart.getBody(String.class, null);
-                    Assert.assertEquals("Wrong response", "Bob", s);
-                }
+         // Iterate over list of parts.
+         List<InputPart> parts = entity.getParts();
+         for (Iterator<InputPart> it = parts.iterator(); it.hasNext(); ) {
+            InputPart inputPart = it.next();
+            if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
+               ContextProvidersCustomer c = inputPart.getBody(ContextProvidersCustomer.class, null);
+               Assert.assertEquals("Wrong response", "Bill", c.getName());
+            } else {
+               String s = inputPart.getBody(String.class, null);
+               Assert.assertEquals("Wrong response", "Bob", s);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
+         }
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
 
-    /**
-     * @tpTestDetails List data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetList() throws Exception {
-        doTestGetList();
-    }
+   /**
+    * @tpTestDetails List data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetList() throws Exception {
+      doTestGetList();
+   }
 
-    void doTestGetList() throws Exception {
-        try {
-            MultipartInput entity = get("/get/list", MultipartInput.class);
+   void doTestGetList() throws Exception {
+      try {
+         MultipartInput entity = get("/get/list", MultipartInput.class);
 
-            // Iterate over list of parts.
-            List<InputPart> parts = entity.getParts();
-            Set<String> customers = new HashSet<String>();
-            for (Iterator<InputPart> it = parts.iterator(); it.hasNext(); ) {
-                InputPart inputPart = it.next();
-                customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
+         // Iterate over list of parts.
+         List<InputPart> parts = entity.getParts();
+         Set<String> customers = new HashSet<String>();
+         for (Iterator<InputPart> it = parts.iterator(); it.hasNext(); ) {
+            InputPart inputPart = it.next();
+            customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
+         }
+         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
+
+   /**
+    * @tpTestDetails Map data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetMap() throws Exception {
+      doTestGetMap();
+   }
+
+   public void doTestGetMap() throws Exception {
+      try {
+         MultipartFormDataInput entity = get("/get/map", MultipartFormDataInput.class);
+
+         // Get parts by name.
+         ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
+         Assert.assertEquals("Wrong response", "Bill", c.getName());
+         c = entity.getFormDataPart("bob", ContextProvidersCustomer.class, null);
+         Assert.assertEquals("Wrong response", "Bob", c.getName());
+
+         // Iterate over map of parts.
+         Set<String> customers = new HashSet<>();
+         for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
+            for (InputPart inputPart : formDataEntry.getValue()) {
+               customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
-            Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
+         }
+         Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
+         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+         Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
 
-    /**
-     * @tpTestDetails Map data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetMap() throws Exception {
-        doTestGetMap();
-    }
+   /**
+    * @tpTestDetails Related data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetRelated() throws Exception {
+      doTestGetRelated();
+   }
 
-    public void doTestGetMap() throws Exception {
-        try {
-            MultipartFormDataInput entity = get("/get/map", MultipartFormDataInput.class);
+   void doTestGetRelated() throws Exception {
+      try {
+         MultipartRelatedInput entity = get("/get/related", MultipartRelatedInput.class);
 
-            // Get parts by name.
-            ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bill", c.getName());
-            c = entity.getFormDataPart("bob", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bob", c.getName());
+         // Iterate over map of parts.
+         Map<String, InputPart> map = entity.getRelatedMap();
+         Set<String> keys = map.keySet();
+         Assert.assertEquals(2, keys.size());
+         Assert.assertThat("Wrong count of keys from response", new Integer(keys.size()), is(2));
+         Assert.assertTrue(keys.contains("bill"));
+         Assert.assertTrue(keys.contains("bob"));
+         Assert.assertThat("Missing key from response", keys, hasItems("bill"));
+         Assert.assertThat("Missing key from response", keys, hasItems("bob"));
+         Set<String> parts = new HashSet<>();
+         for (InputPart inputPart : map.values()) {
+            parts.add(inputPart.getBody(String.class, null));
+         }
+         Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
+         Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
 
-            // Iterate over map of parts.
-            Set<String> customers = new HashSet<>();
-            for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
-                for (InputPart inputPart : formDataEntry.getValue()) {
-                    customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
-                }
-            }
-            Assert.assertThat("Wrong count of customers from response", new Integer(customers.size()), is(2));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
+   /**
+    * @tpTestDetails Multipart form data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetMultipartForm() throws Exception {
+      doTestGetMultipartForm();
+   }
 
-    /**
-     * @tpTestDetails Related data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetRelated() throws Exception {
-        doTestGetRelated();
-    }
+   void doTestGetMultipartForm() throws Exception {
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = MULTIPART_FORM;
+      ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
+      ContextProvidersCustomer customer = form.getCustomer();
+      Assert.assertEquals("Wrong response", "Bill", customer.getName());
+   }
 
-    void doTestGetRelated() throws Exception {
-        try {
-            MultipartRelatedInput entity = get("/get/related", MultipartRelatedInput.class);
+   /**
+    * @tpTestDetails Xop data in get request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetXop() throws Exception {
+      doTestGetXop();
+   }
 
-            // Iterate over map of parts.
-            Map<String, InputPart> map = entity.getRelatedMap();
-            Set<String> keys = map.keySet();
-            Assert.assertEquals(2, keys.size());
-            Assert.assertThat("Wrong count of keys from response", new Integer(keys.size()), is(2));
-            Assert.assertTrue(keys.contains("bill"));
-            Assert.assertTrue(keys.contains("bob"));
-            Assert.assertThat("Missing key from response", keys, hasItems("bill"));
-            Assert.assertThat("Missing key from response", keys, hasItems("bob"));
-            Set<String> parts = new HashSet<>();
-            for (InputPart inputPart : map.values()) {
-                parts.add(inputPart.getBody(String.class, null));
-            }
-            Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
+   void doTestGetXop() throws Exception {
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = XOP_WITH_MULTIPART_RELATED;
+      ContextProvidersXop xop = get("/get/xop", ContextProvidersXop.class, annotations);
+      Assert.assertEquals("Wrong response", "goodbye world", new String(xop.getBytes()));
+   }
 
-    /**
-     * @tpTestDetails Multipart form data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetMultipartForm() throws Exception {
-        doTestGetMultipartForm();
-    }
+   /**
+    * @tpTestDetails Mixed data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostMixed() throws Exception {
+      doTestPostMixed();
+   }
 
-    void doTestGetMultipartForm() throws Exception {
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = MULTIPART_FORM;
-        ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
-        ContextProvidersCustomer customer = form.getCustomer();
-        Assert.assertEquals("Wrong response", "Bill", customer.getName());
-    }
+   @SuppressWarnings("unchecked")
+   void doTestPostMixed() throws Exception {
+      MultipartOutput output = new MultipartOutput();
+      output.addPart(new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
+      output.addPart("Bob", MediaType.TEXT_PLAIN_TYPE);
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = PART_TYPE_APPLICATION_XML;
+      List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
+      names = post("/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+      Assert.assertEquals(2, names.size());
+      Assert.assertTrue(names.contains(new ContextProvidersName("Bill")));
+      Assert.assertTrue(names.contains(new ContextProvidersName("Bob")));
+   }
 
-    /**
-     * @tpTestDetails Xop data in get request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetXop() throws Exception {
-        doTestGetXop();
-    }
+   /**
+    * @tpTestDetails Form data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostFormData() throws Exception {
+      doTestPostFormData();
+   }
 
-    void doTestGetXop() throws Exception {
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = XOP_WITH_MULTIPART_RELATED;
-        ContextProvidersXop xop = get("/get/xop", ContextProvidersXop.class, annotations);
-        Assert.assertEquals("Wrong response", "goodbye world", new String(xop.getBytes()));
-    }
+   @SuppressWarnings("unchecked")
+   public void doTestPostFormData() throws Exception {
 
-    /**
-     * @tpTestDetails Mixed data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostMixed() throws Exception {
-        doTestPostMixed();
-    }
+      MultipartFormDataOutput output = new MultipartFormDataOutput();
+      output.addFormData("bill", new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
+      output.addFormData("bob", "Bob", MediaType.TEXT_PLAIN_TYPE);
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = PART_TYPE_APPLICATION_XML;
+      List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
+      names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+   }
 
-    @SuppressWarnings("unchecked")
-    void doTestPostMixed() throws Exception {
-        MultipartOutput output = new MultipartOutput();
-        output.addPart(new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
-        output.addPart("Bob", MediaType.TEXT_PLAIN_TYPE);
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = PART_TYPE_APPLICATION_XML;
-        List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post("/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(2, names.size());
-        Assert.assertTrue(names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(names.contains(new ContextProvidersName("Bob")));
-    }
+   /**
+    * @tpTestDetails List data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostList() throws Exception {
+      doTestPostList();
+   }
 
-    /**
-     * @tpTestDetails Form data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostFormData() throws Exception {
-        doTestPostFormData();
-    }
+   @SuppressWarnings("unchecked")
+   public void doTestPostList() throws Exception {
+      List<ContextProvidersCustomer> customers = new ArrayList<ContextProvidersCustomer>();
+      customers.add(new ContextProvidersCustomer("Bill"));
+      customers.add(new ContextProvidersCustomer("Bob"));
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = PART_TYPE_APPLICATION_XML;
+      List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
+      names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+   }
 
-    @SuppressWarnings("unchecked")
-    public void doTestPostFormData() throws Exception {
+   /**
+    * @tpTestDetails Map data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostMap() throws Exception {
+      doTestPostMap();
+   }
 
-        MultipartFormDataOutput output = new MultipartFormDataOutput();
-        output.addFormData("bill", new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
-        output.addFormData("bob", "Bob", MediaType.TEXT_PLAIN_TYPE);
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = PART_TYPE_APPLICATION_XML;
-        List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
-    }
+   @SuppressWarnings("unchecked")
+   public void doTestPostMap() throws Exception {
+      Map<String, ContextProvidersCustomer> customers = new HashMap<String, ContextProvidersCustomer>();
+      customers.put("bill", new ContextProvidersCustomer("Bill"));
+      customers.put("bob", new ContextProvidersCustomer("Bob"));
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = PART_TYPE_APPLICATION_XML;
+      List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
+      names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
+   }
 
-    /**
-     * @tpTestDetails List data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostList() throws Exception {
-        doTestPostList();
-    }
+   /**
+    * @tpTestDetails Related data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostRelated() throws Exception {
+      doTestPostRelated();
+   }
 
-    @SuppressWarnings("unchecked")
-    public void doTestPostList() throws Exception {
-        List<ContextProvidersCustomer> customers = new ArrayList<ContextProvidersCustomer>();
-        customers.add(new ContextProvidersCustomer("Bill"));
-        customers.add(new ContextProvidersCustomer("Bob"));
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = PART_TYPE_APPLICATION_XML;
-        List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
-    }
+   @SuppressWarnings("unchecked")
+   void doTestPostRelated() throws Exception {
+      MultipartRelatedOutput output = new MultipartRelatedOutput();
+      output.setStartInfo("text/html");
+      output.addPart("Bill", new MediaType("image", "png"), "bill", "binary");
+      output.addPart("Bob", new MediaType("image", "png"), "bob", "binary");
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = PART_TYPE_APPLICATION_XML;
+      List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
+      names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+      Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
+      Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+   }
 
-    /**
-     * @tpTestDetails Map data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostMap() throws Exception {
-        doTestPostMap();
-    }
+   /**
+    * @tpTestDetails Multipart form data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostMultipartForm() throws Exception {
+      doTestPostMultipartForm();
+   }
 
-    @SuppressWarnings("unchecked")
-    public void doTestPostMap() throws Exception {
-        Map<String, ContextProvidersCustomer> customers = new HashMap<String, ContextProvidersCustomer>();
-        customers.put("bill", new ContextProvidersCustomer("Bill"));
-        customers.put("bob", new ContextProvidersCustomer("Bob"));
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = PART_TYPE_APPLICATION_XML;
-        List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
-    }
+   void doTestPostMultipartForm() throws Exception {
+      ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
+      form.setCustomer(new ContextProvidersCustomer("Bill"));
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = MULTIPART_FORM;
+      String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
+      Assert.assertEquals("Wrong response", "Bill", name);
+   }
 
-    /**
-     * @tpTestDetails Related data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostRelated() throws Exception {
-        doTestPostRelated();
-    }
+   /**
+    * @tpTestDetails Xop data in post request is used.
+    * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPostXop() throws Exception {
+      doTestPostXop();
+   }
 
-    @SuppressWarnings("unchecked")
-    void doTestPostRelated() throws Exception {
-        MultipartRelatedOutput output = new MultipartRelatedOutput();
-        output.setStartInfo("text/html");
-        output.addPart("Bill", new MediaType("image", "png"), "bill", "binary");
-        output.addPart("Bob", new MediaType("image", "png"), "bob", "binary");
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = PART_TYPE_APPLICATION_XML;
-        List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
-    }
+   void doTestPostXop() throws Exception {
+      ContextProvidersXop xop = new ContextProvidersXop("hello world".getBytes());
+      Annotation[] annotations = new Annotation[1];
+      annotations[0] = XOP_WITH_MULTIPART_RELATED;
+      String s = post("/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
+      Assert.assertEquals("Wrong response", "hello world", s);
+   }
 
-    /**
-     * @tpTestDetails Multipart form data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostMultipartForm() throws Exception {
-        doTestPostMultipartForm();
-    }
+   <T> T get(String path, Class<T> clazz) throws Exception {
+      return get(path, clazz, null);
+   }
 
-    void doTestPostMultipartForm() throws Exception {
-        ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
-        form.setCustomer(new ContextProvidersCustomer("Bill"));
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = MULTIPART_FORM;
-        String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "Bill", name);
-    }
+   <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
+      try {
+         Client client = ClientBuilder.newClient();
+         WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
+         Response response = target.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         T entity = response.readEntity(clazz, annotations);
+         client.close();
+         return entity;
+      } catch (Exception e) {
+         throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+      }
+   }
 
-    /**
-     * @tpTestDetails Xop data in post request is used.
-     * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPostXop() throws Exception {
-        doTestPostXop();
-    }
+   @SuppressWarnings({"unchecked"})
+   <S, T> T post(String path, S payload, MediaType mediaType, Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
+      Entity<S> entity = Entity.entity(payload, mediaType, annotations);
+      Response response = target.request().post(entity);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      T result = null;
+      if (genericReturnType != null) {
+         result = response.readEntity(new GenericType<T>(genericReturnType));
+      } else {
+         result = response.readEntity(returnType);
+      }
+      client.close();
+      return result;
+   }
 
-    void doTestPostXop() throws Exception {
-        ContextProvidersXop xop = new ContextProvidersXop("hello world".getBytes());
-        Annotation[] annotations = new Annotation[1];
-        annotations[0] = XOP_WITH_MULTIPART_RELATED;
-        String s = post("/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "hello world", s);
-    }
+   public abstract static class S1 extends AnnotationLiteral<PartType> implements PartType {
+      private static final long serialVersionUID = 1L;
+   }
 
-    <T> T get(String path, Class<T> clazz) throws Exception {
-        return get(path, clazz, null);
-    }
+   public abstract static class S2 extends AnnotationLiteral<MultipartForm> implements MultipartForm {
+      private static final long serialVersionUID = 1L;
+   }
 
-    <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
-       try {
-          Client client = ClientBuilder.newClient();
-          WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-          Response response = target.request().get();
-          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-          T entity = response.readEntity(clazz, annotations);
-           client.close();
-          return entity;
-        } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
-        }
-    }
-
-    @SuppressWarnings({"unchecked"})
-    <S, T> T post(String path, S payload, MediaType mediaType, Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
-       Client client = ClientBuilder.newClient();
-       WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-       Entity<S> entity = Entity.entity(payload, mediaType, annotations);
-       Response response = target.request().post(entity);
-       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-       T result = null;
-       if (genericReturnType != null) {
-          result = response.readEntity(new GenericType<T>(genericReturnType));
-       } else {
-          result = response.readEntity(returnType);
-       }
-       client.close();
-       return result;
-    }
-
-    public abstract static class S1 extends AnnotationLiteral<PartType> implements PartType {
-        private static final long serialVersionUID = 1L;
-    }
-
-    public abstract static class S2 extends AnnotationLiteral<MultipartForm> implements MultipartForm {
-        private static final long serialVersionUID = 1L;
-    }
-
-    public abstract static class S3 extends AnnotationLiteral<XopWithMultipartRelated> implements XopWithMultipartRelated {
-        private static final long serialVersionUID = 1L;
-    }
+   public abstract static class S3 extends AnnotationLiteral<XopWithMultipartRelated> implements XopWithMultipartRelated {
+      private static final long serialVersionUID = 1L;
+   }
 }

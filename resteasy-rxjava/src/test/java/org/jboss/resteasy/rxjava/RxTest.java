@@ -29,11 +29,11 @@ import rx.Single;
 
 public class RxTest
 {
-	private static NettyJaxrsServer server;
+   private static NettyJaxrsServer server;
 
-	private static CountDownLatch latch;
-	private static AtomicReference<Object> value = new AtomicReference<Object>();
-	private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
+   private static CountDownLatch latch;
+   private static AtomicReference<Object> value = new AtomicReference<Object>();
+   private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
 
    @BeforeClass
    public static void beforeClass() throws Exception
@@ -57,73 +57,73 @@ public class RxTest
    }
 
 
-	private ResteasyClient client;
+   private ResteasyClient client;
 
-	@Before
-	public void before()
-	{
-		client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
-				.readTimeout(5, TimeUnit.SECONDS)
-				.connectionCheckoutTimeout(5, TimeUnit.SECONDS)
-				.connectTimeout(5, TimeUnit.SECONDS)
-				.build();
-		value.set(null);
-		latch = new CountDownLatch(1);
-	}
+   @Before
+   public void before()
+   {
+      client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+            .readTimeout(5, TimeUnit.SECONDS)
+            .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .build();
+      value.set(null);
+      latch = new CountDownLatch(1);
+   }
 
-	@After
-	public void after()
-	{
-		client.close();
-	}
+   @After
+   public void after()
+   {
+      client.close();
+   }
 
-	@Test
-	public void testSingle() throws Exception
-	{
-		Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
-		single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-		latch.await();
-		assertEquals("got it", value.get());
-	}
-	
-	@Test
-	public void testSingleContext() throws Exception
-	{
-		Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
-		single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
-		latch.await();
-		assertEquals("got it", value.get());
-	}
+   @Test
+   public void testSingle() throws Exception
+   {
+      Single<Response> single = client.target(generateURL("/single")).request().rx(SingleRxInvoker.class).get();
+      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
+      latch.await();
+      assertEquals("got it", value.get());
+   }
 
-	@Test
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public void testObservable() throws Exception
-	{
-		ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
-		Observable<String> observable = (Observable<String>) invoker.get();
-		List<String> data = new ArrayList<String>();
-		observable.subscribe(
-				(String s) -> data.add(s),
-				(Throwable t) -> LOG.error(t.getMessage(), t),
-				() -> latch.countDown());
-		latch.await();
-		assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-	}
-	
-	@Test
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public void testObservableContext() throws Exception
-	{
-		ObservableRxInvoker invoker = client.target(generateURL("/context/observable")).request().rx(ObservableRxInvoker.class);
-		Observable<String> observable = (Observable<String>) invoker.get();
-		List<String> data = new ArrayList<String>();
-		observable.subscribe(
-				(String s) -> data.add(s),
-				(Throwable t) -> LOG.error(t.getMessage(), t),
-				() -> latch.countDown());
-		latch.await();
-		assertArrayEquals(new String[] {"one", "two"}, data.toArray());
-	}
+   @Test
+   public void testSingleContext() throws Exception
+   {
+      Single<Response> single = client.target(generateURL("/context/single")).request().rx(SingleRxInvoker.class).get();
+      single.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
+      latch.await();
+      assertEquals("got it", value.get());
+   }
+
+   @Test
+   @SuppressWarnings({ "unchecked", "deprecation" })
+   public void testObservable() throws Exception
+   {
+      ObservableRxInvoker invoker = client.target(generateURL("/observable")).request().rx(ObservableRxInvoker.class);
+      Observable<String> observable = (Observable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      observable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> latch.countDown());
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
+
+   @Test
+   @SuppressWarnings({ "unchecked", "deprecation" })
+   public void testObservableContext() throws Exception
+   {
+      ObservableRxInvoker invoker = client.target(generateURL("/context/observable")).request().rx(ObservableRxInvoker.class);
+      Observable<String> observable = (Observable<String>) invoker.get();
+      List<String> data = new ArrayList<String>();
+      observable.subscribe(
+         (String s) -> data.add(s),
+         (Throwable t) -> LOG.error(t.getMessage(), t),
+         () -> latch.countDown());
+      latch.await();
+      assertArrayEquals(new String[] {"one", "two"}, data.toArray());
+   }
 
    @Test
    public void testInjection()

@@ -10,35 +10,35 @@ import java.util.logging.Logger;
 @ValidationClassConstraint(5)
 public class ValidationResourceWithAllViolationTypes {
 
-    private static Logger logger = Logger.getLogger(ValidationResourceWithAllViolationTypes.class.getName());
+   private static Logger logger = Logger.getLogger(ValidationResourceWithAllViolationTypes.class.getName());
 
-    @Size(min = 2, max = 4)
-    @PathParam("s")
-    String s;
+   @Size(min = 2, max = 4)
+   @PathParam("s")
+   String s;
 
-    private String t;
+   private String t;
 
-    @Size(min = 3, max = 5)
-    public String getT() {
-        return t;
-    }
+   @Size(min = 3, max = 5)
+   public String getT() {
+      return t;
+   }
 
-    public String retrieveS() {
-        return s;
-    }
+   public String retrieveS() {
+      return s;
+   }
 
-    @PathParam("t")
-    public void setT(String t) {
-        logger.info(this + " t: " + t);
-        this.t = t;
-    }
+   @PathParam("t")
+   public void setT(String t) {
+      logger.info(this + " t: " + t);
+      this.t = t;
+   }
 
-    @POST
-    @Path("{s}/{t}")
-    @ValidationFooConstraint(min = 4, max = 5)
-    public ValidationFoo post(@ValidationFooConstraint(min = 3, max = 5) ValidationFoo validationFoo, @PathParam("s") String s) {
-        logger.info(this + " s: " + s);
-        logger.info(this + " this.s: " + this.s);
-        return validationFoo;
-    }
+   @POST
+   @Path("{s}/{t}")
+   @ValidationFooConstraint(min = 4, max = 5)
+   public ValidationFoo post(@ValidationFooConstraint(min = 3, max = 5) ValidationFoo validationFoo, @PathParam("s") String s) {
+      logger.info(this + " s: " + s);
+      logger.info(this + " this.s: " + this.s);
+      return validationFoo;
+   }
 }

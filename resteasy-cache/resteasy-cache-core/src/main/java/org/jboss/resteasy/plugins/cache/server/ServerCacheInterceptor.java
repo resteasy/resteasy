@@ -45,9 +45,9 @@ public class ServerCacheInterceptor implements WriterInterceptor
 
 
    private static final String pseudo[] = {"0", "1", "2",
-           "3", "4", "5", "6", "7", "8",
-           "9", "A", "B", "C", "D", "E",
-           "F"};
+      "3", "4", "5", "6", "7", "8",
+      "9", "A", "B", "C", "D", "E",
+      "F"};
 
    public static String byteArrayToHexString(byte[] bytes)
    {
@@ -91,7 +91,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
-       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
 
       if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitFilter.DO_NOT_CACHE_RESPONSE) != null)
       {
@@ -139,15 +139,15 @@ public class ServerCacheInterceptor implements WriterInterceptor
          }
          
          if (!cc.isPrivate() && !cc.isNoStore()) {
-             MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
-             if (context.getHeaders().containsKey(HttpHeaders.VARY)) {
-                 for (Object varyHeader : context.getHeaders().get(HttpHeaders.VARY)) {
-                     if (request.getMutableHeaders().containsKey(varyHeader)) {
-                         varyHeaders.addAll((String) varyHeader, request.getMutableHeaders().get(varyHeader));
-                     }
-                 }
-             }
-             cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag, varyHeaders);
+            MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
+            if (context.getHeaders().containsKey(HttpHeaders.VARY)) {
+               for (Object varyHeader : context.getHeaders().get(HttpHeaders.VARY)) {
+                  if (request.getMutableHeaders().containsKey(varyHeader)) {
+                     varyHeaders.addAll((String) varyHeader, request.getMutableHeaders().get(varyHeader));
+                  }
+               }
+            }
+            cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag, varyHeaders);
          }
 
          // check to see if ETags are the same.  If they are, we don't need to send a response back.

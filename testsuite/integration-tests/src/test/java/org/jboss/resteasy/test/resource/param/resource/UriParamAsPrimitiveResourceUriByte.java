@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/byte/{arg}")
 public class UriParamAsPrimitiveResourceUriByte {
-    @GET
-    public String doGet(@PathParam("arg") byte v) {
-        Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 127 == v);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") byte v) {
+      Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 127 == v);
+      return "content";
+   }
 }

@@ -17,42 +17,42 @@ import java.util.Map;
 
 @Path("mime")
 public interface MimeMultipartProviderClient {
-    @Path("mixed")
-    @PUT
-    @Consumes("multipart/mixed")
-    void putMixed(MultipartOutput output);
+   @Path("mixed")
+   @PUT
+   @Consumes("multipart/mixed")
+   void putMixed(MultipartOutput output);
 
-    @Path("form")
-    @PUT
-    @Consumes("multipart/form-data")
-    void putFormData(MultipartFormDataOutput output);
+   @Path("form")
+   @PUT
+   @Consumes("multipart/form-data")
+   void putFormData(MultipartFormDataOutput output);
 
-    @Path("related")
-    @PUT
-    @Consumes(MultipartConstants.MULTIPART_RELATED)
-    void putRelated(MultipartRelatedOutput output);
+   @Path("related")
+   @PUT
+   @Consumes(MultipartConstants.MULTIPART_RELATED)
+   void putRelated(MultipartRelatedOutput output);
 
-    @Path("mixed")
-    @PUT
-    @Consumes("multipart/mixed")
-    void putMixedList(
+   @Path("mixed")
+   @PUT
+   @Consumes("multipart/mixed")
+   void putMixedList(
             @PartType("application/xml") List<MimeMultipartProviderCustomer> mimeMultipartProviderCustomers);
 
-    @Path("form")
-    @PUT
-    @Consumes("multipart/form-data")
-    void putFormDataMap(
+   @Path("form")
+   @PUT
+   @Consumes("multipart/form-data")
+   void putFormDataMap(
             @PartType("application/xml") Map<String, MimeMultipartProviderCustomer> customers);
 
-    @Path("form/class")
-    @PUT
-    @Consumes("multipart/form-data")
-    void putFormDataMap(
+   @Path("form/class")
+   @PUT
+   @Consumes("multipart/form-data")
+   void putFormDataMap(
             @MultipartForm MimeMultipartProviderResource.Form form);
 
-    @Path("xop")
-    @PUT
-    @Consumes(MultipartConstants.MULTIPART_RELATED)
-    void putXop(
+   @Path("xop")
+   @PUT
+   @Consumes(MultipartConstants.MULTIPART_RELATED)
+   void putXop(
             @XopWithMultipartRelated MimeMultipartProviderResource.Xop bean);
 }

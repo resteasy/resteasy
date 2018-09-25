@@ -154,7 +154,7 @@ public class ClientInvoker implements MethodInvoker
 
    protected ClientInvocation createRequest(Object[] args)
    {
-	  WebTarget target = this.webTarget;
+      WebTarget target = this.webTarget;
       for (int i = 0; i < processors.length; i++)
       {
          if (processors != null && processors[i] instanceof WebTargetProcessor)
@@ -167,7 +167,7 @@ public class ClientInvoker implements MethodInvoker
 
       ClientConfiguration parentConfiguration=(ClientConfiguration) target.getConfiguration();
       ClientInvocation clientInvocation = new ClientInvocation(this.webTarget.getResteasyClient(), target.getUri(),
-    		  new ClientRequestHeaders(parentConfiguration), parentConfiguration);
+            new ClientRequestHeaders(parentConfiguration), parentConfiguration);
       clientInvocation.setClientInvoker(this);
       if (accepts != null)
       {

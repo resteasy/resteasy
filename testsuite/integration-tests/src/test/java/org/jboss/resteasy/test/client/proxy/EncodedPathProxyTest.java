@@ -29,56 +29,56 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EncodedPathProxyTest {
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(EncodedPathProxyTest.class.getSimpleName());
-        war.addClasses(EncodedPathProxyInterface.class);
-        return TestUtil.finishContainerPrepare(war, null, EncodedPathProxyResource.class);
-    }
+   @Deployment
+   public static Archive<?> deployUriInfoSimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(EncodedPathProxyTest.class.getSimpleName());
+      war.addClasses(EncodedPathProxyInterface.class);
+      return TestUtil.finishContainerPrepare(war, null, EncodedPathProxyResource.class);
+   }
 
-    private static String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(EncodedPathProxyTest.class.getSimpleName());
-    }
+   private static String generateBaseUrl() {
+      return PortProviderUtil.generateBaseUrl(EncodedPathProxyTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Verify "/" in "t;hawkular/f;jk-feed" is sent encoded
-     * @tpSince RESTEasy 3.1.4
-     */
-    @Test
-    public void testEncodeProxy() throws Exception
-    {
-       ResteasyWebTarget target = client.target(generateBaseUrl());
-       EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
-       Response response = proxy.encode("t;hawkular/f;jk-feed", null);
-       Assert.assertEquals(200, response.getStatus());
-       String uri = response.readEntity(String.class);
-       Assert.assertEquals(generateBaseUrl() + "/test/encode/t;hawkular%2Ff;jk-feed", uri);
-    }
+   /**
+    * @tpTestDetails Verify "/" in "t;hawkular/f;jk-feed" is sent encoded
+    * @tpSince RESTEasy 3.1.4
+    */
+   @Test
+   public void testEncodeProxy() throws Exception
+   {
+      ResteasyWebTarget target = client.target(generateBaseUrl());
+      EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
+      Response response = proxy.encode("t;hawkular/f;jk-feed", null);
+      Assert.assertEquals(200, response.getStatus());
+      String uri = response.readEntity(String.class);
+      Assert.assertEquals(generateBaseUrl() + "/test/encode/t;hawkular%2Ff;jk-feed", uri);
+   }
 
-    /**
-     * @tpTestDetails Verify "/" in "t;hawkular/f;jk-feed" is sent unencoded
-     * @tpSince RESTEasy 3.1.4
-     */
-    @Test
-    public void testNoencodeProxy() throws Exception
-    {
-       ResteasyWebTarget target = client.target(generateBaseUrl());
-       EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
-       Response response = proxy.noencode("t;hawkular/f;jk-feed", null);
-       Assert.assertEquals(200, response.getStatus());
-       String uri = response.readEntity(String.class);
-       Assert.assertEquals(generateBaseUrl() + "/test/noencode/t;hawkular/f;jk-feed", uri);
-    }
+   /**
+    * @tpTestDetails Verify "/" in "t;hawkular/f;jk-feed" is sent unencoded
+    * @tpSince RESTEasy 3.1.4
+    */
+   @Test
+   public void testNoencodeProxy() throws Exception
+   {
+      ResteasyWebTarget target = client.target(generateBaseUrl());
+      EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
+      Response response = proxy.noencode("t;hawkular/f;jk-feed", null);
+      Assert.assertEquals(200, response.getStatus());
+      String uri = response.readEntity(String.class);
+      Assert.assertEquals(generateBaseUrl() + "/test/noencode/t;hawkular/f;jk-feed", uri);
+   }
 }

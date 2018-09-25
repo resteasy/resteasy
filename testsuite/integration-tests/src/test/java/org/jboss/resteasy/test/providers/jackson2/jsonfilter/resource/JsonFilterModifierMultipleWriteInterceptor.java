@@ -9,13 +9,13 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 
 public class JsonFilterModifierMultipleWriteInterceptor implements WriterInterceptor {
-    private ObjectFilterModifierMultiple modifier = new ObjectFilterModifierMultiple();
+   private ObjectFilterModifierMultiple modifier = new ObjectFilterModifierMultiple();
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context)
-            throws IOException, WebApplicationException {
-        //set a threadlocal modifier
-        ObjectWriterInjector.set(modifier);
-        context.proceed();
-    }
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context)
+         throws IOException, WebApplicationException {
+      //set a threadlocal modifier
+      ObjectWriterInjector.set(modifier);
+      context.proceed();
+   }
 }

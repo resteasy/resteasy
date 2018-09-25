@@ -24,6 +24,6 @@ public interface Renderable
     * @throws WebApplicationException if application error occurred
     */
    void render(HttpServletRequest request, HttpServletResponse response)
-       throws IOException, ServletException, WebApplicationException;
+      throws IOException, ServletException, WebApplicationException;
 
 }

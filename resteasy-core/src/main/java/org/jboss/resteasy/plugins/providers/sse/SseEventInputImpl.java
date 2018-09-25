@@ -184,24 +184,24 @@ public class SseEventInputImpl implements EventInput, Closeable
       int b;
       while ((b = in.read()) != -1)
       {
-          if (!textLike && escape && b == '\\')
-          {
-              b = in.read();
-              if (b != '\\' && b != '\n' && b != '\r')
-              {
-                  throw new RuntimeException(Messages.MESSAGES.expectedExcapedCharacter(b));
-              }
-              out.write(b);
-              continue;
-          }
-          if (b == delimiter || b == '\n' || b == '\r')
-          {
-              break;
-          }
-          else if (out != null)
-          {
-              out.write(b);
-          }
+         if (!textLike && escape && b == '\\')
+         {
+            b = in.read();
+            if (b != '\\' && b != '\n' && b != '\r')
+            {
+               throw new RuntimeException(Messages.MESSAGES.expectedExcapedCharacter(b));
+            }
+            out.write(b);
+            continue;
+         }
+         if (b == delimiter || b == '\n' || b == '\r')
+         {
+            break;
+         }
+         else if (out != null)
+         {
+            out.write(b);
+         }
       }
       return b;
    }
@@ -262,30 +262,30 @@ public class SseEventInputImpl implements EventInput, Closeable
          byte b = (byte) data;
          if (!textLike && b == '\\')
          {
-             buffer.write(b);
-             b = (byte) in.read();
+            buffer.write(b);
+            b = (byte) in.read();
          }
          else
          {
-             if (b == '\r' || b == '\n')
-             {
-                 eolBuffer[pos] = b;
-                 //if it meets \r\r , \n\n , \r\n\r\n or \n\r\n\r\n
-                 if ((pos > 0 && eolBuffer[pos] == eolBuffer[pos - 1])
+            if (b == '\r' || b == '\n')
+            {
+               eolBuffer[pos] = b;
+               //if it meets \r\r , \n\n , \r\n\r\n or \n\r\n\r\n
+               if ((pos > 0 && eolBuffer[pos] == eolBuffer[pos - 1])
                      || (pos >= 3 && new String(eolBuffer, 0, pos, StandardCharsets.UTF_8).contains(DELIMITER)))
-                 {
-                     boundary = true;
-                 }
-                 //take it a boundary if there are 5 unexpected eols  
-                 if (pos++ > 4)
-                 {
-                     boundary = true;
-                 }
-             }
-             else
-             {
-                 pos = 0;
-             }
+               {
+                  boundary = true;
+               }
+               //take it a boundary if there are 5 unexpected eols
+               if (pos++ > 4)
+               {
+                  boundary = true;
+               }
+            }
+            else
+            {
+               pos = 0;
+            }
          }
          buffer.write(b);
          if (boundary && buffer.size() > pos)

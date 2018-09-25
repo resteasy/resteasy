@@ -39,7 +39,7 @@ public class SpringResourceFactory implements ResourceFactory
    }
 
    public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response,
-                                ResteasyProviderFactory factory)
+                        ResteasyProviderFactory factory)
    {
       return CompletableFuture.completedFuture(beanFactory.getBean(beanName));
    }

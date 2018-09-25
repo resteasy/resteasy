@@ -14,45 +14,45 @@ import java.net.URI;
 
 @Path("/")
 public class UriInfoSimpleSingletonResource {
-    private static Logger logger = Logger.getLogger(UriInfoSimpleSingletonResource.class);
+   private static Logger logger = Logger.getLogger(UriInfoSimpleSingletonResource.class);
 
-    @Context
-    UriInfo myInfo;
+   @Context
+   UriInfo myInfo;
 
-    @Path("/simple")
-    @GET
-    public String get(@Context UriInfo info, @QueryParam("abs") String abs) {
-        logger.info("abs query: " + abs);
-        URI base = null;
-        if (abs == null) {
-            base = PortProviderUtil.createURI("/", UriInfoSimpleSingletonResource.class.getSimpleName());
-        } else {
-            base = PortProviderUtil.createURI("/" + abs + "/", UriInfoSimpleSingletonResource.class.getSimpleName());
-        }
+   @Path("/simple")
+   @GET
+   public String get(@Context UriInfo info, @QueryParam("abs") String abs) {
+      logger.info("abs query: " + abs);
+      URI base = null;
+      if (abs == null) {
+         base = PortProviderUtil.createURI("/", UriInfoSimpleSingletonResource.class.getSimpleName());
+      } else {
+         base = PortProviderUtil.createURI("/" + abs + "/", UriInfoSimpleSingletonResource.class.getSimpleName());
+      }
 
-        logger.info("BASE URI: " + info.getBaseUri());
-        logger.info("Request URI: " + info.getRequestUri());
-        Assert.assertEquals(base.getPath(), info.getBaseUri().getPath());
-        Assert.assertEquals("/simple", info.getPath());
-        return "CONTENT";
-    }
+      logger.info("BASE URI: " + info.getBaseUri());
+      logger.info("Request URI: " + info.getRequestUri());
+      Assert.assertEquals(base.getPath(), info.getBaseUri().getPath());
+      Assert.assertEquals("/simple", info.getPath());
+      return "CONTENT";
+   }
 
-    @Path("/simple/fromField")
-    @GET
-    public String get(@QueryParam("abs") String abs) {
-        logger.info("abs query: " + abs);
-        URI base = null;
-        if (abs == null) {
-            base = PortProviderUtil.createURI("/", UriInfoSimpleSingletonResource.class.getSimpleName());
-        } else {
-            base = PortProviderUtil.createURI("/" + abs + "/", UriInfoSimpleSingletonResource.class.getSimpleName());
-        }
+   @Path("/simple/fromField")
+   @GET
+   public String get(@QueryParam("abs") String abs) {
+      logger.info("abs query: " + abs);
+      URI base = null;
+      if (abs == null) {
+         base = PortProviderUtil.createURI("/", UriInfoSimpleSingletonResource.class.getSimpleName());
+      } else {
+         base = PortProviderUtil.createURI("/" + abs + "/", UriInfoSimpleSingletonResource.class.getSimpleName());
+      }
 
-        logger.info("BASE URI: " + myInfo.getBaseUri());
-        logger.info("Request URI: " + myInfo.getRequestUri());
-        Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
-        Assert.assertEquals("/simple/fromField", myInfo.getPath());
-        return "CONTENT";
-    }
+      logger.info("BASE URI: " + myInfo.getBaseUri());
+      logger.info("Request URI: " + myInfo.getRequestUri());
+      Assert.assertEquals(base.getPath(), myInfo.getBaseUri().getPath());
+      Assert.assertEquals("/simple/fromField", myInfo.getPath());
+      return "CONTENT";
+   }
 
 }

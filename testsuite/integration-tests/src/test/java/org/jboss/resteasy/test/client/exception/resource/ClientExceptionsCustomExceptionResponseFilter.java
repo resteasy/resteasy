@@ -8,9 +8,9 @@ import java.io.IOException;
 
 public class ClientExceptionsCustomExceptionResponseFilter implements ClientResponseFilter {
 
-    @Override
-    public void filter(ClientRequestContext clientRequestContext, ClientResponseContext clientResponseContext) throws IOException {
-        WebApplicationException exc = new ClientExceptionsCustomException("custom message");
-        throw exc;
-    }
+   @Override
+   public void filter(ClientRequestContext clientRequestContext, ClientResponseContext clientResponseContext) throws IOException {
+      WebApplicationException exc = new ClientExceptionsCustomException("custom message");
+      throw exc;
+   }
 }

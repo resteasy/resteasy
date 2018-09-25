@@ -37,33 +37,33 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class AlternativeSelectedInheritanceTest {
-    protected static final Logger log = LogManager.getLogger(AlternativeSelectedInheritanceTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(AlternativeSelectedInheritanceTest.class.getName());
 
-    @SuppressWarnings(value = "unchecked")
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(AlternativeSelectedInheritanceTest.class.getSimpleName());
-        war.addClasses(UtilityProducer.class)
-                .addClasses(CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class)
-                .addClasses(CDIInheritenceBook.class, CDIInheritenceBookVanillaAlternative.class, CDIInheritenceBookSelectedAlternative.class, CDIInheritenceInheritanceResource.class)
-                .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "alternativeSelectedBeans.xml", "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
+   @SuppressWarnings(value = "unchecked")
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(AlternativeSelectedInheritanceTest.class.getSimpleName());
+      war.addClasses(UtilityProducer.class)
+            .addClasses(CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class)
+            .addClasses(CDIInheritenceBook.class, CDIInheritenceBookVanillaAlternative.class, CDIInheritenceBookSelectedAlternative.class, CDIInheritenceInheritanceResource.class)
+            .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "alternativeSelectedBeans.xml", "beans.xml");
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
 
-    /**
-     * @tpTestDetails Client get request. Resource check inheritance bean on server.
-     * @tpPassCrit Response status should not contain error.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAlternative() throws Exception {
-        Client client = ClientBuilder.newClient();
-        log.info("starting testAlternative()");
-        WebTarget base = client.target(PortProviderUtil.generateURL("/alternative/selected/", AlternativeSelectedInheritanceTest.class.getSimpleName()));
-        Response response = base.request().get();
-        log.info("Status: " + response.getStatus());
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Client get request. Resource check inheritance bean on server.
+    * @tpPassCrit Response status should not contain error.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testAlternative() throws Exception {
+      Client client = ClientBuilder.newClient();
+      log.info("starting testAlternative()");
+      WebTarget base = client.target(PortProviderUtil.generateURL("/alternative/selected/", AlternativeSelectedInheritanceTest.class.getSimpleName()));
+      Response response = base.request().get();
+      log.info("Status: " + response.getStatus());
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      client.close();
+   }
 }

@@ -8,18 +8,18 @@ import java.util.List;
 @XmlRootElement
 public class InheritanceZoo {
 
-    private List<InheritanceAnimal> animals;
+   private List<InheritanceAnimal> animals;
 
-    public InheritanceZoo() {
-        animals = new ArrayList<InheritanceAnimal>();
-    }
+   public InheritanceZoo() {
+      animals = new ArrayList<InheritanceAnimal>();
+   }
 
-    @XmlElementRef
-    public List<InheritanceAnimal> getAnimals() {
-        return animals;
-    }
+   @XmlElementRef
+   public List<InheritanceAnimal> getAnimals() {
+      return animals;
+   }
 
-    public void add(InheritanceAnimal animal) {
-        animals.add(animal);
-    }
+   public void add(InheritanceAnimal animal) {
+      animals.add(animal);
+   }
 }

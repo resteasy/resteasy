@@ -6,6 +6,6 @@ import javax.ws.rs.PathParam;
 
 @Path("/boolean/{arg}")
 public interface UriParamAsPrimitiveResourceUriBooleanInterface {
-    @GET
-    String doGet(@PathParam("arg") boolean v);
+   @GET
+   String doGet(@PathParam("arg") boolean v);
 }

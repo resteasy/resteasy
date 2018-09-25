@@ -38,165 +38,165 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CDIValidationCoreTest {
-    private static final Logger log = LoggerFactory.getLogger(CDIValidationCoreTest.class);
+   private static final Logger log = LoggerFactory.getLogger(CDIValidationCoreTest.class);
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(CDIValidationCoreTest.class.getSimpleName())
-                .addClass(CDIValidationCoreSubResource.class)
-                .addClasses(CDIValidationCoreSumConstraint.class, CDIValidationCoreSumValidator.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, CDIValidationCoreResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(CDIValidationCoreTest.class.getSimpleName())
+            .addClass(CDIValidationCoreSubResource.class)
+            .addClasses(CDIValidationCoreSumConstraint.class, CDIValidationCoreSumValidator.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new HibernateValidatorPermission("accessPrivateMembers")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, CDIValidationCoreResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CDIValidationCoreTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CDIValidationCoreTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check validation with all valid parameters
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAllValid() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/input/11/13/17")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        int answer = response.readEntity(Integer.class);
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", 17, answer);
-    }
+   /**
+    * @tpTestDetails Check validation with all valid parameters
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testAllValid() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/input/11/13/17")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      int answer = response.readEntity(Integer.class);
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      assertEquals("Wrong content of response", 17, answer);
+   }
 
-    /**
-     * @tpTestDetails Check validation with invalid inputs
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInputsInvalid() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/input/1/2/3")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 1, 1, 1, 1, 0);
-        ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
-        cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
-        cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
-        cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 7"));
-    }
+   /**
+    * @tpTestDetails Check validation with invalid inputs
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInputsInvalid() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/input/1/2/3")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
+      cv = r.getPropertyViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
+      cv = r.getClassViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+      cv = r.getParameterViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 7"));
+   }
 
-    /**
-     * @tpTestDetails Check validation with invalid return value
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testReturnValueInvalid() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/input/5/7/9")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 0, 0, 0, 0, 1);
-        ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 11"));
-    }
+   /**
+    * @tpTestDetails Check validation with invalid return value
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testReturnValueInvalid() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/input/5/7/9")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 11"));
+   }
 
-    /**
-     * @tpTestDetails Check validation with valid locators
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testLocatorAllValid() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/locator/5/7/17/19")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        int result = response.readEntity(int.class);
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", 19, result);
-    }
+   /**
+    * @tpTestDetails Check validation with valid locators
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testLocatorAllValid() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/locator/5/7/17/19")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      int result = response.readEntity(int.class);
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      assertEquals("Wrong content of response", 19, result);
+   }
 
-    /**
-     * @tpTestDetails Check validation with invalid subparameters
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testLocatorInvalidSubparameter() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/locator/5/7/13/0")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 0, 0, 0, 1, 0);
-        ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 13"));
-    }
+   /**
+    * @tpTestDetails Check validation with invalid subparameters
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testLocatorInvalidSubparameter() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/locator/5/7/13/0")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 13"));
+   }
 
-    /**
-     * @tpTestDetails Check validation with locators and invalid return values
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testLocatorInvalidReturnValue() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/locator/5/7/13/15")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 0, 0, 0, 0, 1);
-        ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 17"));
-    }
+   /**
+    * @tpTestDetails Check validation with locators and invalid return values
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testLocatorInvalidReturnValue() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/locator/5/7/13/15")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 17"));
+   }
 
-    /**
-     * @tpTestDetails Check validation with invalid inputs and no executables
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInputsInvalidNoExecutableValidation() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/none/1/2/3")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 1, 1, 1, 0, 0);
-        ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
-        cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
-        cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
-    }
+   /**
+    * @tpTestDetails Check validation with invalid inputs and no executables
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInputsInvalidNoExecutableValidation() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/none/1/2/3")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 1, 1, 1, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
+      cv = r.getPropertyViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
+      cv = r.getClassViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+   }
 
-    /**
-     * @tpTestDetails Check validation with invalid inputs and no parameters are used
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInputsInvalidNoParameters() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Invocation.Builder request = client.target(generateURL("/noParams/1/2")).request();
-        ClientResponse response = (ClientResponse) request.get();
-        String answer = response.readEntity(String.class);
-        assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        ViolationReport r = new ViolationReport(answer);
-        TestUtil.countViolations(r, 1, 1, 1, 0, 0);
-        ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
-        cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
-        cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
-    }
+   /**
+    * @tpTestDetails Check validation with invalid inputs and no parameters are used
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInputsInvalidNoParameters() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/noParams/1/2")).request();
+      ClientResponse response = (ClientResponse) request.get();
+      String answer = response.readEntity(String.class);
+      assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      ViolationReport r = new ViolationReport(answer);
+      TestUtil.countViolations(r, 1, 1, 1, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 3"));
+      cv = r.getPropertyViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 5"));
+      cv = r.getClassViolations().iterator().next();
+      Assert.assertTrue("Expected validation error is not in response", cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+   }
 }

@@ -7,15 +7,15 @@ import javax.ws.rs.PathParam;
 
 @Path("/{s}")
 public class ValidationComplexResourceWithArray {
-    @Valid
-    ValidationComplexArrayOfStrings aos;
+   @Valid
+   ValidationComplexArrayOfStrings aos;
 
 
-    public ValidationComplexResourceWithArray(@PathParam("s") final String s) {
-        aos = new ValidationComplexArrayOfStrings(s);
-    }
+   public ValidationComplexResourceWithArray(@PathParam("s") final String s) {
+      aos = new ValidationComplexArrayOfStrings(s);
+   }
 
-    @POST
-    public void post() {
-    }
+   @POST
+   public void post() {
+   }
 }

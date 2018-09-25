@@ -33,41 +33,41 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ProxyCastingTest {
-    private static Client client;
-    private static ResteasyWebTarget target;
+   private static Client client;
+   private static ResteasyWebTarget target;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyCastingTest.class.getSimpleName());
-        war.addClasses(ProxyCastingNothing.class,
-                ProxyCastingInterfaceA.class, ProxyCastingInterfaceB.class);
-        return TestUtil.finishContainerPrepare(war, null, ProxyCastingResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyCastingTest.class.getSimpleName());
+      war.addClasses(ProxyCastingNothing.class,
+            ProxyCastingInterfaceA.class, ProxyCastingInterfaceB.class);
+      return TestUtil.finishContainerPrepare(war, null, ProxyCastingResource.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ProxyCastingTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ProxyCastingTest.class.getSimpleName());
+   }
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = ClientBuilder.newClient();
-        target = (ResteasyWebTarget) client.target(generateURL("/foobar"));
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = ClientBuilder.newClient();
+      target = (ResteasyWebTarget) client.target(generateURL("/foobar"));
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Cast one proxy to other proxy. New client.
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    public void testNewClient() throws Exception {
-        ProxyCastingInterfaceA a = ProxyBuilder.builder(ProxyCastingInterfaceA.class, target).build();
-        assertEquals("FOO", a.getFoo());
-        ProxyCastingInterfaceB b = ((org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy) a).as(ProxyCastingInterfaceB.class);
-        assertEquals("BAR", b.getBar());
-    }
+   /**
+    * @tpTestDetails Cast one proxy to other proxy. New client.
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   public void testNewClient() throws Exception {
+      ProxyCastingInterfaceA a = ProxyBuilder.builder(ProxyCastingInterfaceA.class, target).build();
+      assertEquals("FOO", a.getFoo());
+      ProxyCastingInterfaceB b = ((org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy) a).as(ProxyCastingInterfaceB.class);
+      assertEquals("BAR", b.getBar());
+   }
 }

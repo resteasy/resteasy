@@ -32,43 +32,43 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ExceptionMapperJaxbTest {
 
-    private static Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
-    static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ExceptionMapperJaxbTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperJaxbMapper.class, ExceptionMapperJaxbResource.class,
-                AbstractJaxbClassPerson.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ExceptionMapperJaxbTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperJaxbMapper.class, ExceptionMapperJaxbResource.class,
+            AbstractJaxbClassPerson.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ExceptionMapperJaxbTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ExceptionMapperJaxbTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for custom JAXBUnmarshalException excetion mapper
-     * @tpInfo RESTEASY-519
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testFailure() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/test"));
-        Response response = target.request().post(Entity.entity("<person", "application/xml"));
-        Assert.assertEquals(400, response.getStatus());
-        String output = response.readEntity(String.class);
-        logger.info(output);
-    }
+   /**
+    * @tpTestDetails Test for custom JAXBUnmarshalException excetion mapper
+    * @tpInfo RESTEASY-519
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testFailure() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Response response = target.request().post(Entity.entity("<person", "application/xml"));
+      Assert.assertEquals(400, response.getStatus());
+      String output = response.readEntity(String.class);
+      logger.info(output);
+   }
 
 
 }

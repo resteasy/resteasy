@@ -19,46 +19,46 @@ import org.junit.Test;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class WADLNettyContainerTest {
-    private static NettyJaxrsServer netty;
-    private static int port = TestPortProvider.getPort();
-    private static Client client = ClientBuilder.newClient();
+   private static NettyJaxrsServer netty;
+   private static int port = TestPortProvider.getPort();
+   private static Client client = ClientBuilder.newClient();
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-        deployment.setSecurityEnabled(true);
+   @BeforeClass
+   public static void setup() throws Exception {
+      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+      deployment.setSecurityEnabled(true);
 
-        netty = new NettyJaxrsServer();
-        netty.setDeployment(deployment);
-        netty.setPort(port);
-        netty.setRootResourcePath("");
-        netty.setSecurityDomain(null);
-        netty.start();
+      netty = new NettyJaxrsServer();
+      netty.setDeployment(deployment);
+      netty.setPort(port);
+      netty.setRootResourcePath("");
+      netty.setSecurityDomain(null);
+      netty.start();
 
-        deployment.getRegistry().addPerRequestResource(BasicResource.class);
-        deployment.getRegistry().addPerRequestResource(ResteasyWadlDefaultResource.class);
-        deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
-        ResteasyWadlDefaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
-    }
+      deployment.getRegistry().addPerRequestResource(BasicResource.class);
+      deployment.getRegistry().addPerRequestResource(ResteasyWadlDefaultResource.class);
+      deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
+      ResteasyWadlDefaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
+   }
 
-    @AfterClass
-    public static void end() throws Exception {
-        try {
-            client.close();
-        } catch (Exception e) {
+   @AfterClass
+   public static void end() throws Exception {
+      try {
+         client.close();
+      } catch (Exception e) {
 
-        }
-        netty.stop();
-        netty = null;
-    }
+      }
+      netty.stop();
+      netty = null;
+   }
 
-    @Test
-    public void test() throws Exception {
-        WADLBasicTest basicTest = new WADLBasicTest();
-        basicTest.setClient(client);
-        basicTest.setUrl("http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
-                Integer.valueOf(port).toString()));
-        basicTest.testBasicSet();
-        basicTest.testResteasy1246();
-    }
+   @Test
+   public void test() throws Exception {
+      WADLBasicTest basicTest = new WADLBasicTest();
+      basicTest.setClient(client);
+      basicTest.setUrl("http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
+            Integer.valueOf(port).toString()));
+      basicTest.testBasicSet();
+      basicTest.testResteasy1246();
+   }
 }

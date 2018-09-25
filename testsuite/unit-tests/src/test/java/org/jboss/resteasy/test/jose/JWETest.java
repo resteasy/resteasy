@@ -24,64 +24,64 @@ import java.security.interfaces.RSAPublicKey;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JWETest {
-    private static final String ERROR_MSG = "Wrong conversion";
-    private static final String BOUNCY_CASTLE_ERROR = "BouncyCastle security provider can't be used in non-OpenJDK (missing signatures)";
-    protected final Logger logger = LogManager.getLogger(JWETest.class.getName());
+   private static final String ERROR_MSG = "Wrong conversion";
+   private static final String BOUNCY_CASTLE_ERROR = "BouncyCastle security provider can't be used in non-OpenJDK (missing signatures)";
+   protected final Logger logger = LogManager.getLogger(JWETest.class.getName());
 
-    /**
-     * @tpTestDetails RSA test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRSA() throws Exception {
-        Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+   /**
+    * @tpTestDetails RSA test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRSA() throws Exception {
+      Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+      KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
-        String content = "Live long and prosper.";
+      String content = "Live long and prosper.";
 
-        {
-            String encoded = new JWEBuilder().contentBytes(content.getBytes()).RSA1_5((RSAPublicKey) keyPair.getPublic());
-            logger.info("encoded: " + encoded);
-            byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
-            String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
-        }
-        {
-            String encoded = new JWEBuilder().contentBytes(content.getBytes()).RSA_OAEP((RSAPublicKey) keyPair.getPublic());
-            logger.info("encoded: " + encoded);
-            byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
-            String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
-        }
-        {
-            String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256().RSA1_5((RSAPublicKey) keyPair.getPublic());
-            logger.info("encoded: " + encoded);
-            byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
-            String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
-        }
-        {
-            String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256().RSA_OAEP((RSAPublicKey) keyPair.getPublic());
-            logger.info("encoded: " + encoded);
-            byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
-            String from = new String(raw);
-            Assert.assertEquals(ERROR_MSG, content, from);
-        }
-    }
+      {
+         String encoded = new JWEBuilder().contentBytes(content.getBytes()).RSA1_5((RSAPublicKey) keyPair.getPublic());
+         logger.info("encoded: " + encoded);
+         byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
+         String from = new String(raw);
+         Assert.assertEquals(ERROR_MSG, content, from);
+      }
+      {
+         String encoded = new JWEBuilder().contentBytes(content.getBytes()).RSA_OAEP((RSAPublicKey) keyPair.getPublic());
+         logger.info("encoded: " + encoded);
+         byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
+         String from = new String(raw);
+         Assert.assertEquals(ERROR_MSG, content, from);
+      }
+      {
+         String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256().RSA1_5((RSAPublicKey) keyPair.getPublic());
+         logger.info("encoded: " + encoded);
+         byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
+         String from = new String(raw);
+         Assert.assertEquals(ERROR_MSG, content, from);
+      }
+      {
+         String encoded = new JWEBuilder().contentBytes(content.getBytes()).A128CBC_HS256().RSA_OAEP((RSAPublicKey) keyPair.getPublic());
+         logger.info("encoded: " + encoded);
+         byte[] raw = new JWEInput(encoded).decrypt((RSAPrivateKey) keyPair.getPrivate()).getRawContent();
+         String from = new String(raw);
+         Assert.assertEquals(ERROR_MSG, content, from);
+      }
+   }
 
-    /**
-     * @tpTestDetails Direct test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDirect() throws Exception {
-        Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
-        String content = "Live long and prosper.";
-        String encoded = new JWEBuilder().contentBytes(content.getBytes()).dir("geheim");
-        logger.info("encoded: " + encoded);
-        byte[] raw = new JWEInput(encoded).decrypt("geheim").getRawContent();
-        String from = new String(raw);
-        Assert.assertEquals(ERROR_MSG, content, from);
+   /**
+    * @tpTestDetails Direct test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDirect() throws Exception {
+      Assume.assumeTrue(TestUtil.getErrorMessageForKnownIssue("JBEAP-3550", BOUNCY_CASTLE_ERROR), TestUtil.isOpenJDK());
+      String content = "Live long and prosper.";
+      String encoded = new JWEBuilder().contentBytes(content.getBytes()).dir("geheim");
+      logger.info("encoded: " + encoded);
+      byte[] raw = new JWEInput(encoded).decrypt("geheim").getRawContent();
+      String from = new String(raw);
+      Assert.assertEquals(ERROR_MSG, content, from);
 
-    }
+   }
 }

@@ -22,12 +22,12 @@ public class AsyncInjectionLongInjector implements ContextInjector<CompletionSta
          if(annotation.annotationType() == AsyncInjectionPrimitiveInjectorSpecifier.class) {
             AsyncInjectionPrimitiveInjectorSpecifier.Type value = ((AsyncInjectionPrimitiveInjectorSpecifier)annotation).value();
             switch(value) {
-            case NO_RESULT:
-               return null;
-            case NULL:
-               return CompletableFuture.completedFuture(null);
-            case VALUE:
-               return CompletableFuture.completedFuture(42l);
+               case NO_RESULT:
+                  return null;
+               case NULL:
+                  return CompletableFuture.completedFuture(null);
+               case VALUE:
+                  return CompletableFuture.completedFuture(42l);
             }
             break;
          }

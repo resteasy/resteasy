@@ -11,21 +11,20 @@ import java.util.logging.Logger;
 
 @Provider
 public class EventsBookWriterInterceptor implements WriterInterceptor {
-    @Inject
-    @EventsWriteIntercept
-    Event<String> writeInterceptEvent;
+   @Inject
+   @EventsWriteIntercept
+   Event<String> writeInterceptEvent;
 
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        log.info("*** Intercepting call in EventsBookWriterInterceptor.write()");
-        log.info("EventsBookWriterInterceptor firing writeInterceptEvent");
-        writeInterceptEvent.fire("writeInterceptEvent");
-        context.proceed();
-        log.info("*** Back from intercepting call in EventsBookWriterInterceptor.write()");
-    }
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+      log.info("*** Intercepting call in EventsBookWriterInterceptor.write()");
+      log.info("EventsBookWriterInterceptor firing writeInterceptEvent");
+      writeInterceptEvent.fire("writeInterceptEvent");
+      context.proceed();
+      log.info("*** Back from intercepting call in EventsBookWriterInterceptor.write()");
+   }
 
 }
-

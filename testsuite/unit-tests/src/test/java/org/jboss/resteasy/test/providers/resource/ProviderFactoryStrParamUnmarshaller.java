@@ -7,13 +7,13 @@ import java.sql.Date;
 
 public class ProviderFactoryStrParamUnmarshaller implements StringParameterUnmarshaller<Date> {
 
-    @Override
-    public void setAnnotations(Annotation[] annotations) {
-    }
+   @Override
+   public void setAnnotations(Annotation[] annotations) {
+   }
 
-    @Override
-    public Date fromString(String str) {
-        return null;
-    }
+   @Override
+   public Date fromString(String str) {
+      return null;
+   }
 
 }

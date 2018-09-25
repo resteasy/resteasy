@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/long/{arg}")
 public class UriParamAsPrimitiveResourceUriLong {
-    @GET
-    public String doGet(@PathParam("arg") long v) {
-        Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 9223372036854775807L, v);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") long v) {
+      Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 9223372036854775807L, v);
+      return "content";
+   }
 }

@@ -9,12 +9,12 @@ public class RESTEasyParamBasicProxyResource implements RESTEasyParamBasicProxy
    protected static final Logger logger = Logger.getLogger(RESTEasyParamBasicProxyResource.class.getName());
 
    public Response post(
-           String cookieParam3,
-           String formParam3,
-           String headerParam3,
-           String matrixParam3,
-           String pathParam3,
-           String queryParam3)
+         String cookieParam3,
+         String formParam3,
+         String headerParam3,
+         String matrixParam3,
+         String pathParam3,
+         String queryParam3)
    {
 
       StringBuilder details = new StringBuilder();

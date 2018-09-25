@@ -11,12 +11,12 @@ import javax.ws.rs.Produces;
 @Produces({"application/junk+xml"})
 public interface JaxbJunkXmlOrderClient {
 
-    @GET
-    @Path("/{name}")
-    Parent getParent(@PathParam("name")
+   @GET
+   @Path("/{name}")
+   Parent getParent(@PathParam("name")
                      String name);
 
-    @POST
-    Parent postParent(Parent parent);
+   @POST
+   Parent postParent(Parent parent);
 
 }

@@ -92,7 +92,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.method = method;
       this.methodAnnotations = this.method.getAnnotatedMethod().getAnnotations();
 
-       resourceInfo = new ResourceInfo()
+      resourceInfo = new ResourceInfo()
       {
          @Override
          public Method getResourceMethod()
@@ -147,65 +147,65 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       
       asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
       if(asyncResponseProvider == null){
-    	  asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
+         asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
       }
       
       if (isSseResourceMethod(method)) 
       {
-    	  isSse = true;
-    	  method.markAsynchronous();
+         isSse = true;
+         method.markAsynchronous();
       }
    }
    
-	// spec section 9.3 Server API:
-	// A resource method that injects an SseEventSink and
-	// produces the media type text/event-stream is an SSE resource method.
-	private boolean isSseResourceMethod(ResourceMethod resourceMethod) {
+   // spec section 9.3 Server API:
+   // A resource method that injects an SseEventSink and
+   // produces the media type text/event-stream is an SSE resource method.
+   private boolean isSseResourceMethod(ResourceMethod resourceMethod) {
 
-		// First exclusive condition to be a SSE resource method is to only
-		// produce text/event-stream
-		MediaType[] producedMediaTypes = resourceMethod.getProduces();
-		boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
-				&& MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(producedMediaTypes[0]);
-		if (!onlyProduceServerSentEventsMediaType)
-		{
-			return false;
-		}
+      // First exclusive condition to be a SSE resource method is to only
+      // produce text/event-stream
+      MediaType[] producedMediaTypes = resourceMethod.getProduces();
+      boolean onlyProduceServerSentEventsMediaType = producedMediaTypes != null && producedMediaTypes.length == 1
+            && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(producedMediaTypes[0]);
+      if (!onlyProduceServerSentEventsMediaType)
+      {
+         return false;
+      }
 
-		// Second condition to be a SSE resource method is to be injected with a
-		// SseEventSink parameter
-		MethodParameter[] resourceMethodParameters = resourceMethod.getParams();
-		if (resourceMethodParameters != null)
-		{
-			for (MethodParameter resourceMethodParameter : resourceMethodParameters)
-			{
-				if (Parameter.ParamType.CONTEXT.equals(resourceMethodParameter.getParamType())
-						&& SseEventSink.class.equals(resourceMethodParameter.getType()))
-				{
-					return true;
-				}
-			}
-		}
+      // Second condition to be a SSE resource method is to be injected with a
+      // SseEventSink parameter
+      MethodParameter[] resourceMethodParameters = resourceMethod.getParams();
+      if (resourceMethodParameters != null)
+      {
+         for (MethodParameter resourceMethodParameter : resourceMethodParameters)
+         {
+            if (Parameter.ParamType.CONTEXT.equals(resourceMethodParameter.getParamType())
+                  && SseEventSink.class.equals(resourceMethodParameter.getType()))
+            {
+               return true;
+            }
+         }
+      }
 
-		// Resteasy specific:
-		// Or the given application should register a
-		// org.jboss.resteasy.spi.AsyncStreamProvider compatible with resource
-		// method return type and the resource method must not be annotated with
-		// any org.jboss.resteasy.annotations.Stream annotation
-		if (asyncStreamProvider != null)
-		{
-			for (Annotation annotation : resourceMethod.getAnnotatedMethod().getAnnotations())
-			{
-				if (annotation.annotationType() == Stream.class)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
+      // Resteasy specific:
+      // Or the given application should register a
+      // org.jboss.resteasy.spi.AsyncStreamProvider compatible with resource
+      // method return type and the resource method must not be annotated with
+      // any org.jboss.resteasy.annotations.Stream annotation
+      if (asyncStreamProvider != null)
+      {
+         for (Annotation annotation : resourceMethod.getAnnotatedMethod().getAnnotations())
+         {
+            if (annotation.annotationType() == Stream.class)
+            {
+               return false;
+            }
+         }
+         return true;
+      }
 
-		return false;
-	}
+      return false;
+   }
 
    public void cleanup()
    {
@@ -356,7 +356,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       catch (RuntimeException ex)
       {
-        throw new ProcessingException(ex);
+         throw new ProcessingException(ex);
 
       }
       return rtn;
@@ -369,7 +369,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
          PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
-                 () -> invokeOnTargetAfterFilter(request, response, target));
+            () -> invokeOnTargetAfterFilter(request, response, target));
          // let it handle the continuation
          return requestContext.filter();
       } finally {
@@ -406,11 +406,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       else if (asyncStreamProvider != null)
       {
-    	 asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
+         asyncResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
       }
       else
       {
-          asyncResponseConsumer = null;
+         asyncResponseConsumer = null;
       }
 
       try
@@ -433,7 +433,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       } 
    }
    
-	private BuiltResponse afterInvoke(HttpRequest request, AsyncResponseConsumer asyncResponseConsumer, Object rtn)
+   private BuiltResponse afterInvoke(HttpRequest request, AsyncResponseConsumer asyncResponseConsumer, Object rtn)
    {
       if(asyncResponseConsumer != null)
       {
@@ -539,26 +539,26 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
-		PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
-		return this.methodInjector.invoke(request, response, target)
-		      .handle((ret, exception) -> {
-         // on success
-         if (exception == null && postResourceMethodInvokers != null) {
-            postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-         }
-         // finally
-         if (postResourceMethodInvokers != null) {
-            postResourceMethodInvokers.clear();
-         }
-         if(exception != null)
-         {
-            SynchronousDispatcher.rethrow(exception);
-            // never reached
-            return null;
-         }
-         return ret;
-		});
-	}
+      PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
+      return this.methodInjector.invoke(request, response, target)
+            .handle((ret, exception) -> {
+               // on success
+               if (exception == null && postResourceMethodInvokers != null) {
+                  postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+               }
+               // finally
+               if (postResourceMethodInvokers != null) {
+                  postResourceMethodInvokers.clear();
+               }
+               if(exception != null)
+               {
+                  SynchronousDispatcher.rethrow(exception);
+                  // never reached
+                  return null;
+               }
+               return ret;
+            });
+   }
    
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
    {
@@ -692,7 +692,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    
    public boolean isSse() 
    {
-	 return isSse;
+      return isSse;
    }
 
    public void markMethodAsAsync()

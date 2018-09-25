@@ -5,10 +5,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 public class ReaderWriterSub {
-    @Path("/without")
-    @GET
-    @Produces("text/plain")
-    public String get() {
-        return "hello";
-    }
+   @Path("/without")
+   @GET
+   @Produces("text/plain")
+   public String get() {
+      return "hello";
+   }
 }

@@ -10,9 +10,9 @@ import java.io.IOException;
 
 @Priority(100)
 public class PriorityExecutionContainerResponseFilter3 implements ContainerResponseFilter {
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        PriorityExecutionTest.logger.info(this);
-        PriorityExecutionTest.interceptors.add("PriorityExecutionContainerResponseFilter3");
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+      PriorityExecutionTest.logger.info(this);
+      PriorityExecutionTest.interceptors.add("PriorityExecutionContainerResponseFilter3");
+   }
 }

@@ -16,21 +16,21 @@ import java.util.Map;
 @Path("/application.xml")
 public class ResteasyWadlDefaultResource {
 
-    private final static ResteasyWadlWriter apiWriter = new ResteasyWadlServletWriter();
-    private final static Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
+   private final static ResteasyWadlWriter apiWriter = new ResteasyWadlServletWriter();
+   private final static Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
-    public static Map<String, ResteasyWadlServiceRegistry> getServices() {
-        return services;
-    }
+   public static Map<String, ResteasyWadlServiceRegistry> getServices() {
+      return services;
+   }
 
-    @GET
-    @Produces("application/xml")
-    public String output() {
-        try {
-            return this.apiWriter.getStringWriter("", services).toString();
-        } catch (JAXBException e) {
-           LogMessages.LOGGER.error(Messages.MESSAGES.cantProcessWadl(), e);
-        }
-        return null;
-    }
+   @GET
+   @Produces("application/xml")
+   public String output() {
+      try {
+         return this.apiWriter.getStringWriter("", services).toString();
+      } catch (JAXBException e) {
+         LogMessages.LOGGER.error(Messages.MESSAGES.cantProcessWadl(), e);
+      }
+      return null;
+   }
 }

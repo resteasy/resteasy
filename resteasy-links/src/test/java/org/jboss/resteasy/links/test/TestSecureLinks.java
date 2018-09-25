@@ -81,99 +81,99 @@ public class TestSecureLinks
       dispatcher = null;
    }
 
-	@Parameters
-	public static List<Class<?>[]> getParameters(){
-		return Arrays.asList(new Class<?>[]{SecureBookStore.class}, new Class<?>[]{SecureBookStoreMinimal.class});
-	}
+   @Parameters
+   public static List<Class<?>[]> getParameters(){
+      return Arrays.asList(new Class<?>[]{SecureBookStore.class}, new Class<?>[]{SecureBookStoreMinimal.class});
+   }
 
-	private Class<?> resourceType;
-	private String url;
-	private BookStoreService client;
-	private CloseableHttpClient httpClient;
-	private CredentialsProvider cp;
-	public TestSecureLinks(Class<?> resourceType){
-		this.resourceType = resourceType;
-	}
+   private Class<?> resourceType;
+   private String url;
+   private BookStoreService client;
+   private CloseableHttpClient httpClient;
+   private CredentialsProvider cp;
+   public TestSecureLinks(Class<?> resourceType){
+      this.resourceType = resourceType;
+   }
 
-	@Before
-	public void before(){
-		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		url = generateBaseUrl();
-		
-		cp = new BasicCredentialsProvider();
-		httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
-		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, new HttpContextProvider() {
-			@Override
-			public HttpContext getContext() {
-				// Configure HttpClient to authenticate preemptively
-				// by prepopulating the authentication data cache.
-				// 1. Create AuthCache instance
-				AuthCache authCache = new BasicAuthCache();
-				// 2. Generate BASIC scheme object and add it to the local auth cache
-				BasicScheme basicAuth = new BasicScheme();
-				authCache.put(getHttpHost(url), basicAuth);
-				// 3. Add AuthCache to the execution context
-				BasicHttpContext localContext = new BasicHttpContext();
-				localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
-				return localContext;
-			}
-		});
-		ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
-		client = target.proxy(BookStoreService.class);
-	}
+   @Before
+   public void before(){
+      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      url = generateBaseUrl();
 
-	@After
-	public void after(){
-		dispatcher.getRegistry().removeRegistrations(resourceType);
-		cp = null;
-	}
-	
-	@Test
-	public void testSecureLinksAdmin() throws Exception
-	{
-		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "asd"));
-		Book book = client.getBookXML("foo");
-		checkBookLinks1(url, book, "add", "update", "list", "self", "remove");
-	}
+      cp = new BasicCredentialsProvider();
+      httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
+      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, new HttpContextProvider() {
+         @Override
+         public HttpContext getContext() {
+            // Configure HttpClient to authenticate preemptively
+            // by prepopulating the authentication data cache.
+            // 1. Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // 2. Generate BASIC scheme object and add it to the local auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(getHttpHost(url), basicAuth);
+            // 3. Add AuthCache to the execution context
+            BasicHttpContext localContext = new BasicHttpContext();
+            localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
+            return localContext;
+         }
+      });
+      ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
+      client = target.proxy(BookStoreService.class);
+   }
 
-	@Test
-	public void testSecureLinksPowerUser() throws Exception
-	{
-		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("power-user", "asd"));
-		Book book = client.getBookXML("foo");
-		checkBookLinks1(url, book, "add", "update", "list", "self");
-	}
+   @After
+   public void after(){
+      dispatcher.getRegistry().removeRegistrations(resourceType);
+      cp = null;
+   }
 
-	@Test
-	public void testSecureLinksUser() throws Exception
-	{
-		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("user", "asd"));
-		Book book = client.getBookXML("foo");
-		checkBookLinks1(url, book, "list", "self");
-	}
+   @Test
+   public void testSecureLinksAdmin() throws Exception
+   {
+      cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "asd"));
+      Book book = client.getBookXML("foo");
+      checkBookLinks1(url, book, "add", "update", "list", "self", "remove");
+   }
 
-	private void checkBookLinks1(String url, Book book, String... expectedLinks) {
-		Assert.assertNotNull(book);
-		Assert.assertEquals("foo", book.getTitle());
-		Assert.assertEquals("bar", book.getAuthor());
-		RESTServiceDiscovery links = book.getRest();
-		Assert.assertNotNull(links);
-		Assert.assertEquals(expectedLinks.length, links.size());
-		for (String expectedLink : expectedLinks) {
-			Assert.assertNotNull(links.getLinkForRel(expectedLink));
-		}
-	}
+   @Test
+   public void testSecureLinksPowerUser() throws Exception
+   {
+      cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("power-user", "asd"));
+      Book book = client.getBookXML("foo");
+      checkBookLinks1(url, book, "add", "update", "list", "self");
+   }
 
-	private HttpHost getHttpHost(String url)
-	{
-		int i1 = url.indexOf(':');
-		String scheme = url.substring(0, i1);
-		int i2 = url.indexOf(':', i1 + 1);
-		String host = url.substring(i1 + 3, i2);
-		int i3 = url.indexOf('/', i2 + 1);
-		String port = i3 == -1 ? url.substring(i2 + 1)
-				               : url.substring(i2 + 1, i3); 
-		return new HttpHost(host, Integer.valueOf(port), scheme);
-	}
+   @Test
+   public void testSecureLinksUser() throws Exception
+   {
+      cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("user", "asd"));
+      Book book = client.getBookXML("foo");
+      checkBookLinks1(url, book, "list", "self");
+   }
+
+   private void checkBookLinks1(String url, Book book, String... expectedLinks) {
+      Assert.assertNotNull(book);
+      Assert.assertEquals("foo", book.getTitle());
+      Assert.assertEquals("bar", book.getAuthor());
+      RESTServiceDiscovery links = book.getRest();
+      Assert.assertNotNull(links);
+      Assert.assertEquals(expectedLinks.length, links.size());
+      for (String expectedLink : expectedLinks) {
+         Assert.assertNotNull(links.getLinkForRel(expectedLink));
+      }
+   }
+
+   private HttpHost getHttpHost(String url)
+   {
+      int i1 = url.indexOf(':');
+      String scheme = url.substring(0, i1);
+      int i2 = url.indexOf(':', i1 + 1);
+      String host = url.substring(i1 + 3, i2);
+      int i3 = url.indexOf('/', i2 + 1);
+      String port = i3 == -1 ? url.substring(i2 + 1)
+                           : url.substring(i2 + 1, i3);
+      return new HttpHost(host, Integer.valueOf(port), scheme);
+   }
 }

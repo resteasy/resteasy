@@ -13,20 +13,20 @@ import java.lang.annotation.Annotation;
 
 public class AtomComplexModelAtomAssetMetadtaProcessor implements DecoratorProcessor<Marshaller, AtomComplexModelAtomAssetMetadataDecorators> {
 
-    private static Logger logger = Logger.getLogger(AtomComplexModelAtomAssetMetadtaProcessor.class);
+   private static Logger logger = Logger.getLogger(AtomComplexModelAtomAssetMetadtaProcessor.class);
 
-    @Override
-    public Marshaller decorate(Marshaller target, AtomComplexModelAtomAssetMetadataDecorators annotation, Class type, Annotation[] annotations, MediaType mediaType) {
-        Class[] classes = new Class[]{AtomAssetMetadata.class, Entry.class};
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(classes);
-            return jaxbContext.createMarshaller();
-        } catch (Exception e) {
+   @Override
+   public Marshaller decorate(Marshaller target, AtomComplexModelAtomAssetMetadataDecorators annotation, Class type, Annotation[] annotations, MediaType mediaType) {
+      Class[] classes = new Class[]{AtomAssetMetadata.class, Entry.class};
+      try {
+         JAXBContext jaxbContext = JAXBContext.newInstance(classes);
+         return jaxbContext.createMarshaller();
+      } catch (Exception e) {
 
-            StringWriter errors = new StringWriter();
-            e.printStackTrace(new PrintWriter(errors));
-            logger.error(errors.toString());
-        }
-        return null;
-    }
+         StringWriter errors = new StringWriter();
+         e.printStackTrace(new PrintWriter(errors));
+         logger.error(errors.toString());
+      }
+      return null;
+   }
 }

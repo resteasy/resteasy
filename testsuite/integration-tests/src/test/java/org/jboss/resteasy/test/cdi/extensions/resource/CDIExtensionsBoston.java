@@ -21,4 +21,3 @@ import static java.lang.annotation.ElementType.PARAMETER;
 @Inherited
 public @interface CDIExtensionsBoston {
 }
-

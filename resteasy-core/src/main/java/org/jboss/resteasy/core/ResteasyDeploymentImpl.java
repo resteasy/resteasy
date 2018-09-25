@@ -602,19 +602,19 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       final Map<String, Object> properties = config.getProperties();
       if (properties != null && !properties.isEmpty())
       {
-          Feature appliationPropertiesRegistrationfeature = new Feature()
-          {
-			 @Override
-			 public boolean configure(FeatureContext featureContext)
-			 {
-				for (Map.Entry<String, Object> property : properties.entrySet())
-				{
-				   featureContext = featureContext.property(property.getKey(), property.getValue());
-				}
-				return true;
-			 }
-          };
-	      this.providers.add(0, appliationPropertiesRegistrationfeature);
+         Feature appliationPropertiesRegistrationfeature = new Feature()
+         {
+            @Override
+            public boolean configure(FeatureContext featureContext)
+            {
+               for (Map.Entry<String, Object> property : properties.entrySet())
+               {
+                  featureContext = featureContext.property(property.getKey(), property.getValue());
+               }
+               return true;
+            }
+         };
+         this.providers.add(0, appliationPropertiesRegistrationfeature);
       }
       return registered;
    }

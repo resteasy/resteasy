@@ -271,9 +271,9 @@ public abstract class ClientResponse extends BuiltResponse
          {
             entity = readFrom(type, genericType, getMediaType(), anns);
             if (entity == null || (entity != null
-                    && !InputStream.class.isInstance(entity)
-                    && !Reader.class.isInstance(entity)
-                    && bufferedEntity == null))
+               && !InputStream.class.isInstance(entity)
+               && !Reader.class.isInstance(entity)
+               && bufferedEntity == null))
             {
                try
                {
@@ -427,15 +427,15 @@ public abstract class ClientResponse extends BuiltResponse
 
    protected void resetEntity()
    {
-       entity = null;
-       bufferedEntity = null;
-       streamFullyRead = false;
+      entity = null;
+      bufferedEntity = null;
+      streamFullyRead = false;
    }
 
    @Override
    public void abortIfClosed()
    {
-       if (bufferedEntity == null) super.abortIfClosed();
+      if (bufferedEntity == null) super.abortIfClosed();
    }
    
 }

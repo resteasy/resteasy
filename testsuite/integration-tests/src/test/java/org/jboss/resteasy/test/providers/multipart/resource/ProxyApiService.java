@@ -10,8 +10,8 @@ import javax.ws.rs.PathParam;
 @Path("Api")
 public interface ProxyApiService {
 
-    @Path("test/{key}")
-    @Consumes("multipart/form-data")
-    @POST
-    void postAttachment(@MultipartForm ProxyAttachment attachment, @PathParam("key") String key);
+   @Path("test/{key}")
+   @Consumes("multipart/form-data")
+   @POST
+   void postAttachment(@MultipartForm ProxyAttachment attachment, @PathParam("key") String key);
 }

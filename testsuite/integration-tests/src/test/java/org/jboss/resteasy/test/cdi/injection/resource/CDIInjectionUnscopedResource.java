@@ -5,4 +5,3 @@ import javax.ws.rs.Path;
 @Path("/unscoped")
 public class CDIInjectionUnscopedResource {
 }
-

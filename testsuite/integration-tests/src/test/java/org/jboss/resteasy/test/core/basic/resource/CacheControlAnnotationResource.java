@@ -8,18 +8,18 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class CacheControlAnnotationResource {
-    @GET
-    @Cache(maxAge = 3600)
-    @Path("/maxage")
-    public String getMaxAge() {
-        return "maxage";
-    }
+   @GET
+   @Cache(maxAge = 3600)
+   @Path("/maxage")
+   public String getMaxAge() {
+      return "maxage";
+   }
 
-    @GET
-    @NoCache
-    @Path("nocache")
-    public String getNoCache() {
-        return "nocache";
-    }
+   @GET
+   @NoCache
+   @Path("nocache")
+   public String getNoCache() {
+      return "nocache";
+   }
 
 }

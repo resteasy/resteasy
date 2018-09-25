@@ -34,7 +34,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       {
          if (annotation.annotationType().isAnnotationPresent(NameBinding.class))
          {
-             nameBound.add(annotation.annotationType());
+            nameBound.add(annotation.annotationType());
          }
       }
       return nameBound;

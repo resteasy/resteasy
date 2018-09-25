@@ -256,7 +256,7 @@ public class InboundSseEventImpl implements InboundSseEvent
    
    public MediaType getMediaType()
    {
-	   return mediaType;
+      return mediaType;
    }
    
    public void setProvider(Providers providers)

@@ -38,68 +38,68 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ServerCacheInterceptorTest {
 
-	private static ResteasyClient clientA;
-    private static ResteasyClient clientB;
+   private static ResteasyClient clientA;
+   private static ResteasyClient clientB;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-    	List<Class<?>> singletons = new ArrayList<>();
-    	singletons.add(ServerCacheFeature.class);
-    	WebArchive war = TestUtil.prepareArchive(ServerCacheInterceptorTest.class.getSimpleName());
-        // This test is not supposed to run with security manager
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new AllPermission()), "permissions.xml");
-        war.addClasses(ServerCache.class, InfinispanCache.class, ServerCacheHitFilter.class, ServerCacheInterceptor.class);
-		war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.infinispan\n"), "MANIFEST.MF");
-		return TestUtil.finishContainerPrepare(war, null, singletons, ServerCacheInterceptorResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      List<Class<?>> singletons = new ArrayList<>();
+      singletons.add(ServerCacheFeature.class);
+      WebArchive war = TestUtil.prepareArchive(ServerCacheInterceptorTest.class.getSimpleName());
+      // This test is not supposed to run with security manager
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new AllPermission()), "permissions.xml");
+      war.addClasses(ServerCache.class, InfinispanCache.class, ServerCacheHitFilter.class, ServerCacheInterceptor.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.infinispan\n"), "MANIFEST.MF");
+      return TestUtil.finishContainerPrepare(war, null, singletons, ServerCacheInterceptorResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ServerCacheInterceptorTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ServerCacheInterceptorTest.class.getSimpleName());
+   }
 
-    @Before
-    public void setup() {
-        clientA = (ResteasyClient)ClientBuilder.newClient();
-        clientB = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void setup() {
+      clientA = (ResteasyClient)ClientBuilder.newClient();
+      clientB = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        clientA.close();
-        clientB.close();
-    }
+   @After
+   public void after() throws Exception {
+      clientA.close();
+      clientB.close();
+   }
 
-    /**
-     * @tpTestDetails Verifies that a 'public' resource is cached by the server side cache. 
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void cachePublicResource() {
-        String responseA = clientA.target(generateURL("/public")).request().get(String.class);
-        String responseB = clientB.target(generateURL("/public")).request().get(String.class);
-        Assert.assertEquals(responseA, responseB);
-    }
+   /**
+    * @tpTestDetails Verifies that a 'public' resource is cached by the server side cache. 
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void cachePublicResource() {
+      String responseA = clientA.target(generateURL("/public")).request().get(String.class);
+      String responseB = clientB.target(generateURL("/public")).request().get(String.class);
+      Assert.assertEquals(responseA, responseB);
+   }
 
-    /**
-     * @tpTestDetails Verifies that a 'private' resource is not cached by the server side cache.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void doNotCachePrivateResource() {
-        String responseA = clientA.target(generateURL("/private")).request().get(String.class);
-        String responseB = clientB.target(generateURL("/private")).request().get(String.class);
-        Assert.assertNotEquals(responseA, responseB);
-    }
+   /**
+    * @tpTestDetails Verifies that a 'private' resource is not cached by the server side cache.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void doNotCachePrivateResource() {
+      String responseA = clientA.target(generateURL("/private")).request().get(String.class);
+      String responseB = clientB.target(generateURL("/private")).request().get(String.class);
+      Assert.assertNotEquals(responseA, responseB);
+   }
 
-    /**
-     * @tpTestDetails Verifies that a resource marked with the 'no-store' directive is not cached by the server side cache.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void doNotCacheNoStoreResource() {
-        String responseA = clientA.target(generateURL("/no-store")).request().get(String.class);
-        String responseB = clientB.target(generateURL("/no-store")).request().get(String.class);
-        Assert.assertNotEquals(responseA, responseB);
-    }
+   /**
+    * @tpTestDetails Verifies that a resource marked with the 'no-store' directive is not cached by the server side cache.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void doNotCacheNoStoreResource() {
+      String responseA = clientA.target(generateURL("/no-store")).request().get(String.class);
+      String responseB = clientB.target(generateURL("/no-store")).request().get(String.class);
+      Assert.assertNotEquals(responseA, responseB);
+   }
 
 }

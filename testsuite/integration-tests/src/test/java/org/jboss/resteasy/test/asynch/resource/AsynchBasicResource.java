@@ -14,38 +14,38 @@ import javax.ws.rs.core.Context;
 @Path("/")
 public class AsynchBasicResource {
 
-    protected final Logger logger = Logger.getLogger(AsynchBasicResource.class.getName());
+   protected final Logger logger = Logger.getLogger(AsynchBasicResource.class.getName());
 
-    @Context
-    private ServletConfig config;
+   @Context
+   private ServletConfig config;
 
-    @Context
-    private ServletContext context;
+   @Context
+   private ServletContext context;
 
-    @POST
-    public String post(String content) throws Exception {
-        logger.info("in post");
-        Assert.assertNotNull(config);
-        Assert.assertNotNull(context);
-        logger.info("Asserts passed");
-        config.getServletContext();
-        context.getMajorVersion();
-        logger.info("Called injected passed");
+   @POST
+   public String post(String content) throws Exception {
+      logger.info("in post");
+      Assert.assertNotNull(config);
+      Assert.assertNotNull(context);
+      logger.info("Asserts passed");
+      config.getServletContext();
+      context.getMajorVersion();
+      logger.info("Called injected passed");
 
-        Thread.sleep(1500);
-        AsynchBasicTest.latch.countDown();
+      Thread.sleep(1500);
+      AsynchBasicTest.latch.countDown();
 
-        return content;
-    }
+      return content;
+   }
 
-    @PUT
-    public void put(String content) throws Exception {
-        Assert.assertNotNull(config);
-        Assert.assertNotNull(context);
-        config.getServletContext();
-        context.getMajorVersion();
-        Assert.assertEquals("content", content);
-        Thread.sleep(500);
-        AsynchBasicTest.latch.countDown();
-    }
+   @PUT
+   public void put(String content) throws Exception {
+      Assert.assertNotNull(config);
+      Assert.assertNotNull(context);
+      config.getServletContext();
+      context.getMajorVersion();
+      Assert.assertEquals("content", content);
+      Thread.sleep(500);
+      AsynchBasicTest.latch.countDown();
+   }
 }

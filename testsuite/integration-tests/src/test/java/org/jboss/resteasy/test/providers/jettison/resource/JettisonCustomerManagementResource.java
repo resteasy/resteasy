@@ -17,26 +17,26 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_XML)
 public class JettisonCustomerManagementResource {
 
-    @GET
-    @Path("/customers")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Mapped(namespaceMap = {
-            @XmlNsMap(namespace = "http://namespace.org/customermanagement", jsonName = "cusotmers")
-    })
-    public JettisonCustomerList findCutomerJSON() {
+   @GET
+   @Path("/customers")
+   @Produces(MediaType.APPLICATION_JSON)
+   @Mapped(namespaceMap = {
+         @XmlNsMap(namespace = "http://namespace.org/customermanagement", jsonName = "cusotmers")
+   })
+   public JettisonCustomerList findCutomerJSON() {
 
-        int capacity = 4;
-        final List<JettisonCustomer> customers = new ArrayList<>(capacity);
-        for (int i = 0; i < capacity; i++) {
-            final JettisonCustomer cust = new JettisonCustomer();
-            cust.setId(Long.valueOf(i));
-            cust.setSurname("Lastname" + i);
-            cust.setSince(new Date());
+      int capacity = 4;
+      final List<JettisonCustomer> customers = new ArrayList<>(capacity);
+      for (int i = 0; i < capacity; i++) {
+         final JettisonCustomer cust = new JettisonCustomer();
+         cust.setId(Long.valueOf(i));
+         cust.setSurname("Lastname" + i);
+         cust.setSince(new Date());
 
-            customers.add(cust);
-        }
+         customers.add(cust);
+      }
 
-        final JettisonCustomerList customerList = new JettisonCustomerList(customers);
-        return customerList;
-    }
+      final JettisonCustomerList customerList = new JettisonCustomerList(customers);
+      return customerList;
+   }
 }

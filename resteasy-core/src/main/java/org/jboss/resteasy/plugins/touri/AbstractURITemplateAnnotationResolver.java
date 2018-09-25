@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractURITemplateAnnotationResolver implements
-        URIResolver
+      URIResolver
 {
 
    @SuppressWarnings("rawtypes")
@@ -74,7 +74,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    }
 
    private Map<String, PropertyDescriptor> getPropertyDescriptors(
-           Class<? extends Object> clazz)
+         Class<? extends Object> clazz)
    {
       try
       {

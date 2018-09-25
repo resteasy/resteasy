@@ -38,33 +38,33 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class ServletInitializerTwoTest {
 
-    @Deployment
-    public static Archive<?> createTestArchiveTwo() {
-        File pomFile = Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.resteasy:resteasy-servlet-initializer")
-            .withoutTransitivity().asSingleFile();
+   @Deployment
+   public static Archive<?> createTestArchiveTwo() {
+      File pomFile = Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.resteasy:resteasy-servlet-initializer")
+         .withoutTransitivity().asSingleFile();
 
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1630-two.war")
-            .addClasses(TestApplicationPath.class)
-            .addAsLibraries(pomFile)
-            .addClasses(TestResource.class);
-        return war;
-    }
+      WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1630-two.war")
+         .addClasses(TestApplicationPath.class)
+         .addAsLibraries(pomFile)
+         .addClasses(TestResource.class);
+      return war;
+   }
 
-    @ArquillianResource
-    URI baseUri;
+   @ArquillianResource
+   URI baseUri;
 
-    /**
-     * No web.xml provided in app.  The server must auto scan for files.
-     * @throws Exception
-     */
-    @Test
-    public void testEndpoint() throws Exception {
-        Response response = ResteasyClientBuilder.newClient()
-            .target(baseUri.toString() + "two/test/17").request().get();
+   /**
+    * No web.xml provided in app.  The server must auto scan for files.
+    * @throws Exception
+    */
+   @Test
+   public void testEndpoint() throws Exception {
+      Response response = ResteasyClientBuilder.newClient()
+         .target(baseUri.toString() + "two/test/17").request().get();
 //        System.out.println("Status: " + response.getStatus());
-        String entity = response.readEntity(String.class);
+      String entity = response.readEntity(String.class);
 //        System.out.println("Result: " + entity);
-        assertEquals(200, response.getStatus());
-        Assert.assertEquals("17", entity);
-    }
+      assertEquals(200, response.getStatus());
+      Assert.assertEquals("17", entity);
+   }
 }

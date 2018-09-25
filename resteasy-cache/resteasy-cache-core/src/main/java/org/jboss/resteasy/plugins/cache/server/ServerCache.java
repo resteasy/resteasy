@@ -13,14 +13,14 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public interface ServerCache
 {
-    static boolean mayVary(Entry cached, MultivaluedMap<String, String> current) {
-        boolean mayVary = false;
-        for (Map.Entry<String, List<String>> entry : cached.getVaryHeaders().entrySet()) {
-            String headerName = entry.getKey();
-            mayVary |= !(current.containsKey(headerName) && current.get(headerName).containsAll(entry.getValue()));
-        }
-        return mayVary;
-    }
+   static boolean mayVary(Entry cached, MultivaluedMap<String, String> current) {
+      boolean mayVary = false;
+      for (Map.Entry<String, List<String>> entry : cached.getVaryHeaders().entrySet()) {
+         String headerName = entry.getKey();
+         mayVary |= !(current.containsKey(headerName) && current.get(headerName).containsAll(entry.getValue()));
+      }
+      return mayVary;
+   }
 
    interface Entry
    {

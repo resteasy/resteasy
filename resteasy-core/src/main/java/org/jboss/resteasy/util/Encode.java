@@ -42,9 +42,9 @@ public class Encode
        * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
        * sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
                      / "*" / "+" / "," / ";" / "="
-       * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-       *
-       */
+      * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+      *
+      */
       for (int i = 0; i < 128; i++)
       {
          if (i >= 'a' && i <= 'z') continue;
@@ -111,7 +111,7 @@ public class Encode
       /*
        * query       = *( pchar / "/" / "?" )
 
-       */
+      */
       for (int i = 0; i < 128; i++)
       {
          if (i >= 'a' && i <= 'z') continue;
@@ -220,7 +220,7 @@ public class Encode
       CharsetDecoder decoder = Charset.forName(UTF_8).newDecoder();
       while (matcher.find())
       {
-    	 builder.append(path, start, matcher.start());
+         builder.append(path, start, matcher.start());
          decoder.reset();
          String decoded = decodeBytes(matcher.group(1), decoder);
          builder.append(decoded);
@@ -288,7 +288,7 @@ public class Encode
       int start = 0;
       while (matcher.find())
       {
-    	 newSegment.append(segment, start, matcher.start());
+         newSegment.append(segment, start, matcher.start());
          foundParam = true;
          String group = matcher.group();
          // Regular expressions can have '{' and '}' characters.  Recover earlier replacement
@@ -418,7 +418,7 @@ public class Encode
       StringBuilder result = new StringBuilder();
       for (int i = 0; i < segment.length(); i++)
       {
-    	 char currentChar = segment.charAt(i);
+         char currentChar = segment.charAt(i);
          if (!encodePercent && currentChar == '%')
          {
             result.append(currentChar);
@@ -471,12 +471,12 @@ public class Encode
       int start = 0;
       while (matcher.find())
       {
-    	 newSegment.append(segment, start, matcher.start());
+         newSegment.append(segment, start, matcher.start());
          String replacement = params.get(i++);
-     	 newSegment.append(replacement);
-		 start = matcher.end();
+         newSegment.append(replacement);
+         start = matcher.end();
       }
-  	  newSegment.append(segment, start, segment.length());
+      newSegment.append(segment, start, segment.length());
       segment = newSegment.toString();
       return segment;
    }

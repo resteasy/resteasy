@@ -28,7 +28,7 @@ public class DerUtils
    }
 
    public static PrivateKey decodePrivateKey(InputStream is)
-           throws Exception
+         throws Exception
    {
 
       DataInputStream dis = new DataInputStream(is);

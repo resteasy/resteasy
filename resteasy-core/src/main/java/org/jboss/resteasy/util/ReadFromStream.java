@@ -19,7 +19,7 @@ public class ReadFromStream
     * @throws IOException if I/O error occurred
     */
    public static byte[] readFromStream(int bufferSize, InputStream entityStream)
-           throws IOException
+         throws IOException
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

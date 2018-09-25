@@ -10,15 +10,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 public class ExceptionMapperInjectionNotFoundMapper implements
-        ExceptionMapper<NotFoundException> {
-    private static Logger logger = Logger.getLogger(ExceptionMapperInjectionNotFoundMapper.class);
+      ExceptionMapper<NotFoundException> {
+   private static Logger logger = Logger.getLogger(ExceptionMapperInjectionNotFoundMapper.class);
 
-    @Context
-    HttpHeaders httpHeaders;
+   @Context
+   HttpHeaders httpHeaders;
 
-    public Response toResponse(NotFoundException exception) {
-        logger.info(String.format("Request headers: %s", httpHeaders.getRequestHeaders()));
-        logger.info("Exception is mapped!");
-        return Response.status(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED).build();
-    }
+   public Response toResponse(NotFoundException exception) {
+      logger.info(String.format("Request headers: %s", httpHeaders.getRequestHeaders()));
+      logger.info("Exception is mapped!");
+      return Response.status(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED).build();
+   }
 }

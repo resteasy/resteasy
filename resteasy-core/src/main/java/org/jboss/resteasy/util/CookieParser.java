@@ -61,5 +61,5 @@ public class CookieParser {
       {
          throw new IllegalArgumentException(Messages.MESSAGES.failedToParseCookie(cookieHeader), ex);
       }
-  }
+   }
 }

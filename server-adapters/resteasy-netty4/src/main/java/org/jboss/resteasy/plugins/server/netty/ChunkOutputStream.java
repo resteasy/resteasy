@@ -15,16 +15,16 @@ import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
  *
  * <pre>
  * {@code
-DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-HttpHeaders.setTransferEncodingChunked(response);
-response.headers().set(CONTENT_TYPE, "application/octet-stream");
-//other headers
-ctx.write(response);
-// code of the application that use the ChunkOutputStream
-// Don't forget to close the ChunkOutputStream after use!
-ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT).addListener(ChannelFutureListener.CLOSE);
-}
- </pre>
+ * DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
+ * HttpHeaders.setTransferEncodingChunked(response);
+ * response.headers().set(CONTENT_TYPE, "application/octet-stream");
+ * //other headers
+ * ctx.write(response);
+ * // code of the application that use the ChunkOutputStream
+ * // Don't forget to close the ChunkOutputStream after use!
+ * ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT).addListener(ChannelFutureListener.CLOSE);
+ * }
+ * </pre>
  * @author tbussier
  *
  */

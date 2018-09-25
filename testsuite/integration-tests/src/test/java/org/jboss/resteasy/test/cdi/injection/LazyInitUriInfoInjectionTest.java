@@ -30,31 +30,31 @@ import javax.ws.rs.client.WebTarget;
 @RunAsClient
 public class LazyInitUriInfoInjectionTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, LazyInitUriInfoInjectionSingletonResource.class, LazyInitUriInfoInjectionResource.class);
-    }
-    @ArquillianResource
-    URI baseUri;
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(LazyInitUriInfoInjectionTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, LazyInitUriInfoInjectionSingletonResource.class, LazyInitUriInfoInjectionResource.class);
+   }
+   @ArquillianResource
+   URI baseUri;
 
-    private String generateURL(String path) {
-        return baseUri.resolve(path).toString();
-    }
+   private String generateURL(String path) {
+      return baseUri.resolve(path).toString();
+   }
 
-    /**
-     * @tpTestDetails Repeat client request without query parameter
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDup() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        WebTarget base = client.target(generateURL("test?h=world"));
-        String val = base.request().get().readEntity(String.class);
-        Assert.assertEquals(val, "world");
+   /**
+    * @tpTestDetails Repeat client request without query parameter
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDup() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      WebTarget base = client.target(generateURL("test?h=world"));
+      String val = base.request().get().readEntity(String.class);
+      Assert.assertEquals(val, "world");
 
-        base = client.target(generateURL("test"));
-        val = base.request().get().readEntity(String.class);
-        Assert.assertEquals(val, "");
-    }
+      base = client.target(generateURL("test"));
+      val = base.request().get().readEntity(String.class);
+      Assert.assertEquals(val, "");
+   }
 }

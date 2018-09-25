@@ -24,26 +24,26 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private static final QName _TestExtends_QNAME = new QName("http://www.example.org/b/Test", "NamespaceMappingTestExtends");
+   private static final QName _TestExtends_QNAME = new QName("http://www.example.org/b/Test", "NamespaceMappingTestExtends");
 
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.example.b.test
-     */
-    public ObjectFactory() {
-    }
+   /**
+    * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.example.b.test
+    */
+   public ObjectFactory() {
+   }
 
-    /**
-     * Create an instance of {@link NamespaceMappingTestExtends }
-     */
-    public NamespaceMappingTestExtends createTestExtends() {
-        return new NamespaceMappingTestExtends();
-    }
+   /**
+    * Create an instance of {@link NamespaceMappingTestExtends }
+    */
+   public NamespaceMappingTestExtends createTestExtends() {
+      return new NamespaceMappingTestExtends();
+   }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link NamespaceMappingTestExtends }{@code >}}
-     */
-    @XmlElementDecl(namespace = "http://www.example.org/b/Test", name = "NamespaceMappingTestExtends")
-    public JAXBElement<NamespaceMappingTestExtends> createTestExtends(NamespaceMappingTestExtends value) {
-        return new JAXBElement<NamespaceMappingTestExtends>(_TestExtends_QNAME, NamespaceMappingTestExtends.class, null, value);
-    }
+   /**
+    * Create an instance of {@link JAXBElement }{@code <}{@link NamespaceMappingTestExtends }{@code >}}
+    */
+   @XmlElementDecl(namespace = "http://www.example.org/b/Test", name = "NamespaceMappingTestExtends")
+   public JAXBElement<NamespaceMappingTestExtends> createTestExtends(NamespaceMappingTestExtends value) {
+      return new JAXBElement<NamespaceMappingTestExtends>(_TestExtends_QNAME, NamespaceMappingTestExtends.class, null, value);
+   }
 }

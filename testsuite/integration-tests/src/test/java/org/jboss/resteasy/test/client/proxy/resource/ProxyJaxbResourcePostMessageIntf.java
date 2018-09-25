@@ -8,8 +8,8 @@ import javax.ws.rs.core.Response;
 @Path("/messages/TFM")
 public interface ProxyJaxbResourcePostMessageIntf {
 
-    @POST
-    @Consumes("application/xml")
-    Response saveMessage(ProxyJaxbResourcePostMessage msg);
+   @POST
+   @Consumes("application/xml")
+   Response saveMessage(ProxyJaxbResourcePostMessage msg);
 
 }

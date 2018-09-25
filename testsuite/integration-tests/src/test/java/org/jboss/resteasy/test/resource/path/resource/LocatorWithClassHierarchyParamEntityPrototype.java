@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.resource.path.resource;
 
 public abstract class LocatorWithClassHierarchyParamEntityPrototype {
-    protected String value;
+   protected String value;
 
-    public String getValue() {
-        return value;
-    }
+   public String getValue() {
+      return value;
+   }
 }

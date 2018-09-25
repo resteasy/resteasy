@@ -24,7 +24,7 @@ public class NettySecurityContext implements SecurityContext
       isSecure = secure;
    }
    public NettySecurityContext() {
-       this(null, null, null, false);
+      this(null, null, null, false);
    }
 
    @Override

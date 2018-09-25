@@ -29,4 +29,3 @@ public class PrettyProcessor implements DecoratorProcessor<Marshaller, Formatted
       }
    }
 }
-

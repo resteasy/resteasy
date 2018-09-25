@@ -141,9 +141,9 @@ public class PartialResponse extends Response implements Serializable
    {
       try {
          responseContext.getEntityStream().close();
-     } catch (Throwable e) {
+      } catch (Throwable e) {
          // ignore
-     }
+      }
    }
 
    @Override

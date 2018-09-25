@@ -32,63 +32,63 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class AsyncTimeoutTest {
 
-    private static final Logger LOG = Logger.getLogger(AsyncTimeoutTest.class);
+   private static final Logger LOG = Logger.getLogger(AsyncTimeoutTest.class);
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-736.war")
-                .addClasses(TestApplication.class, TestResource.class)
-                .addClasses(AsyncTimeoutTest.class)
-                .addAsWebInfResource("web.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-736.war")
+            .addClasses(TestApplication.class, TestResource.class)
+            .addClasses(AsyncTimeoutTest.class)
+            .addAsWebInfResource("web.xml");
+      return war;
+   }
 
-    @ArquillianResource
-    URI url;
+   @ArquillianResource
+   URI url;
 
-    @Test
-    public void testAsynchTimeout() throws Exception {
+   @Test
+   public void testAsynchTimeout() throws Exception {
 //        System.out.println("url = " + url);
-        Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "test/").request();
-        long start = System.currentTimeMillis();
+      Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "test/").request();
+      long start = System.currentTimeMillis();
 //        System.out.println("start:   " + start);
-        Response response = null;
-        try {
-            response = request.get();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        } finally {
+      Response response = null;
+      try {
+         response = request.get();
+      } catch (Exception e) {
+         LOG.error(e.getMessage(), e);
+      } finally {
 //            System.out.println("finish:  " + System.currentTimeMillis());
-            long elapsed = System.currentTimeMillis() - start;
+         long elapsed = System.currentTimeMillis() - start;
 //            System.out.println("elapsed: " + elapsed + " ms");
 //            System.out.println("status: " + response.getStatus());
-            assertTrue(response != null);
+         assertTrue(response != null);
 //            System.out.println("response: " + response.readEntity(String.class));
-            Assert.assertEquals("Status is wrong", 503, response.getStatus());
-            assertTrue(elapsed < 10000);
-        }
-    }
+         Assert.assertEquals("Status is wrong", 503, response.getStatus());
+         assertTrue(elapsed < 10000);
+      }
+   }
 
-    @Ignore
-    @Test
-    public void testDefaultAsynchTimeout() throws Exception {
-        Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "default/").request();
-        long start = System.currentTimeMillis();
-        LOG.info("start:   " + start);
-        Response response = null;
-        try {
-            response = request.get();
-        } catch (Exception e) {
-            LOG.error("Error: ", e);
-        } finally {
-            LOG.info("finish:  " + System.currentTimeMillis());
-            long elapsed = System.currentTimeMillis() - start;
-            LOG.info("elapsed: " + elapsed + " ms");
-            LOG.info("status: " + response.getStatus());
-            assertTrue(response != null);
-            LOG.info("response: " + response.readEntity(String.class));
-            Assert.assertEquals("Wrong response", 503, response.getStatus());
-            Assert.assertTrue("Should timeout", elapsed < 36000); // Jetty async timeout defaults to 30000.
-        }
-    }
+   @Ignore
+   @Test
+   public void testDefaultAsynchTimeout() throws Exception {
+      Builder request = ResteasyClientBuilder.newClient().target(url.toString() + "default/").request();
+      long start = System.currentTimeMillis();
+      LOG.info("start:   " + start);
+      Response response = null;
+      try {
+         response = request.get();
+      } catch (Exception e) {
+         LOG.error("Error: ", e);
+      } finally {
+         LOG.info("finish:  " + System.currentTimeMillis());
+         long elapsed = System.currentTimeMillis() - start;
+         LOG.info("elapsed: " + elapsed + " ms");
+         LOG.info("status: " + response.getStatus());
+         assertTrue(response != null);
+         LOG.info("response: " + response.readEntity(String.class));
+         Assert.assertEquals("Wrong response", 503, response.getStatus());
+         Assert.assertTrue("Should timeout", elapsed < 36000); // Jetty async timeout defaults to 30000.
+      }
+   }
 }

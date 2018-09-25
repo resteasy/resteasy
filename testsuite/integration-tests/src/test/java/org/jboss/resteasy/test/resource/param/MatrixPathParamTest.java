@@ -24,12 +24,12 @@ public class MatrixPathParamTest
 
    @Deployment
    public static Archive<?> deploy() throws Exception {
-       WebArchive war = TestUtil.prepareArchive(MatrixPathParamTest.class.getSimpleName());
-       return TestUtil.finishContainerPrepare(war, null, TestResourceServer.class, TestSubResourceServer.class);
+      WebArchive war = TestUtil.prepareArchive(MatrixPathParamTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, TestResourceServer.class, TestSubResourceServer.class);
    }
 
    private String generateBaseUrl() {
-       return PortProviderUtil.generateBaseUrl(MatrixPathParamTest.class.getSimpleName());
+      return PortProviderUtil.generateBaseUrl(MatrixPathParamTest.class.getSimpleName());
    }
    
    @Path("/")
