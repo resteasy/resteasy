@@ -187,8 +187,8 @@ public class VertxHttpResponse implements HttpResponse
    @Override
    public void flushBuffer() throws IOException {
       checkException();
-	   if(os != null) {
-		   os.flush();
-	   }
+      if(os != null) {
+         os.flush();
+      }
    }
 }

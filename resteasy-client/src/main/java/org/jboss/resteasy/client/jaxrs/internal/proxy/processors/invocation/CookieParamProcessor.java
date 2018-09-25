@@ -34,7 +34,7 @@ public class CookieParamProcessor implements InvocationProcessor
       }
       else
       {
-    	  invocation.getHeaders().cookie(new Cookie(cookieName, invocation.getClientConfiguration().toString(object)));
+         invocation.getHeaders().cookie(new Cookie(cookieName, invocation.getClientConfiguration().toString(object)));
       }
    }
 }

@@ -54,8 +54,7 @@ public class MultipleAcceptHeaderTest
 
       @GET
       @Path("accept")
-      @Produces(
-      {"application/xml", "text/plain"})
+      @Produces({"application/xml", "text/plain"})
       public String acceptXml()
       {
          return APPLICATION_XML;
@@ -77,14 +76,12 @@ public class MultipleAcceptHeaderTest
 
       @GET
       @Path("accept")
-      @Produces(
-      {"application/wrong1", "application/wrong2", "application/xml"})
+      @Produces({"application/wrong1", "application/wrong2", "application/xml"})
       String getXmlMultiple();
 
       @GET
       @Path("accept")
-      @Produces(
-      {"application/wrong1", "text/plain"})
+      @Produces({"application/wrong1", "text/plain"})
       String getXmlPlainMultiple();
    }
 

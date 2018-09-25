@@ -71,10 +71,10 @@ public class SseJsonEventTest
                results.add(event);
                latch.countDown();
             }, ex -> {
-               errors.incrementAndGet();
-               logger.error(ex.getMessage(), ex);
-               throw new RuntimeException(ex);
-            });
+                  errors.incrementAndGet();
+                  logger.error(ex.getMessage(), ex);
+                  throw new RuntimeException(ex);
+               });
             eventSource.open();
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
@@ -114,10 +114,10 @@ public class SseJsonEventTest
                results.add(event);
                latch.countDown();
             }, ex -> {
-               errors.incrementAndGet();
-               logger.error(ex.getMessage(), ex);
-               throw new RuntimeException(ex);
-            });
+                  errors.incrementAndGet();
+                  logger.error(ex.getMessage(), ex);
+                  throw new RuntimeException(ex);
+               });
             eventSource.open();
 
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);

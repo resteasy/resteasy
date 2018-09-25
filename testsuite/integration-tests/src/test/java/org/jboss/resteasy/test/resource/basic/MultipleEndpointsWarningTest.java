@@ -39,18 +39,18 @@ public class MultipleEndpointsWarningTest
    
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
-       war.addClass(LogHandler.class);
+      WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
+      war.addClass(LogHandler.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new LoggingPermission("control", "")
       ), "permissions.xml");
       // Test registers it's own LogHandler
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")), "permissions.xml");
-       return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
+      return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
    }
 
    private static String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, MultipleEndpointsWarningTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, MultipleEndpointsWarningTest.class.getSimpleName());
    }
    
    @BeforeClass

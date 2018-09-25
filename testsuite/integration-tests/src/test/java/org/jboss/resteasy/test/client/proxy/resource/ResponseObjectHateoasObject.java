@@ -9,13 +9,13 @@ import java.net.URI;
 
 @ResponseObject
 public interface ResponseObjectHateoasObject {
-    @Status
-    int status();
+   @Status
+   int status();
 
-    @LinkHeaderParam(rel = "nextLink")
-    URI nextLink();
+   @LinkHeaderParam(rel = "nextLink")
+   URI nextLink();
 
-    @GET
-    @LinkHeaderParam(rel = "nextLink")
-    String followNextLink();
+   @GET
+   @LinkHeaderParam(rel = "nextLink")
+   String followNextLink();
 }

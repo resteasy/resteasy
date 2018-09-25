@@ -243,8 +243,8 @@ public class RxSingleTest {
       SingleRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single = invoker.head();
       single.subscribe(
-              (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+         (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
+         (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

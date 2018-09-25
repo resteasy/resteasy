@@ -8,8 +8,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ApplicationPropertiesConfigPropertyApplicationInjectionFeature implements DynamicFeature {
 
-    @Override
-    public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        boolean propertyPresent = context.getConfiguration().getProperties().containsKey("Prop1");
-    }
+   @Override
+   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+      boolean propertyPresent = context.getConfiguration().getProperties().containsKey("Prop1");
+   }
 }

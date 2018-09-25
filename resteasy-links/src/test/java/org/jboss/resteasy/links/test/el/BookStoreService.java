@@ -9,14 +9,14 @@ import javax.ws.rs.Produces;
 
 @Path("/")
 public interface BookStoreService {
-	
-	@Produces({"application/xml"})
-	@Path("book/{id}")
-	@GET
-	Book getBookXML(@PathParam("id") String id);
 
-	@Produces({"application/json"})
-	@Path("book/{id}")
-	@GET
-	Book getBookJSON(@PathParam("id") String id);
+   @Produces({"application/xml"})
+   @Path("book/{id}")
+   @GET
+   Book getBookXML(@PathParam("id") String id);
+
+   @Produces({"application/json"})
+   @Path("book/{id}")
+   @GET
+   Book getBookJSON(@PathParam("id") String id);
 }

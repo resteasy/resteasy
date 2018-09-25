@@ -9,18 +9,18 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ResourceClassProcessorImplementation implements ResourceClassProcessor {
 
-    protected static final Logger logger = Logger.getLogger(ResourceClassProcessorImplementation.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResourceClassProcessorImplementation.class.getName());
 
-    @Override
-    public ResourceClass process(ResourceClass clazz) {
-        logger.info(String.format("ResourceClassProcessorImplementation#process method called on class %s",
-                            clazz.getClazz().getSimpleName()));
-        String clazzName = clazz.getClazz().getSimpleName();
-        if (clazzName.startsWith("ResourceClassProcessorEndPoint")
-                || clazzName.equals("ResourceClassProcessorProxy")
-                || clazzName.equals("ResourceClassProcessorProxyEndPoint")) {
-            return new ResourceClassProcessorClass(clazz);
-        }
-        return clazz;
-    }
+   @Override
+   public ResourceClass process(ResourceClass clazz) {
+      logger.info(String.format("ResourceClassProcessorImplementation#process method called on class %s",
+                     clazz.getClazz().getSimpleName()));
+      String clazzName = clazz.getClazz().getSimpleName();
+      if (clazzName.startsWith("ResourceClassProcessorEndPoint")
+            || clazzName.equals("ResourceClassProcessorProxy")
+            || clazzName.equals("ResourceClassProcessorProxyEndPoint")) {
+         return new ResourceClassProcessorClass(clazz);
+      }
+      return clazz;
+   }
 }

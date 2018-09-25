@@ -10,13 +10,13 @@ import javax.ws.rs.core.MediaType;
 @Path("/mime")
 public class NullPartService {
 
-    @GET
-    @Produces(MediaType.MULTIPART_FORM_DATA)
-    @MultipartForm
-    public NullPartBean createMyBean() {
-        NullPartBean myBean = new NullPartBean();
-        myBean.setSomeBinary(null);
+   @GET
+   @Produces(MediaType.MULTIPART_FORM_DATA)
+   @MultipartForm
+   public NullPartBean createMyBean() {
+      NullPartBean myBean = new NullPartBean();
+      myBean.setSomeBinary(null);
 
-        return myBean;
-    }
+      return myBean;
+   }
 }

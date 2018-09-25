@@ -8,9 +8,9 @@ import java.util.concurrent.Future;
 @Stateless
 @Dependent
 public class AsynchronousStateless implements AsynchronousStatelessLocal {
-    @Override
-    public Future<Boolean> asynch() throws InterruptedException {
-        Thread.sleep(AsynchronousResource.DELAY);
-        return new AsyncResult<Boolean>(true);
-    }
+   @Override
+   public Future<Boolean> asynch() throws InterruptedException {
+      Thread.sleep(AsynchronousResource.DELAY);
+      return new AsyncResult<Boolean>(true);
+   }
 }

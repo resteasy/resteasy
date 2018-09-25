@@ -21,56 +21,56 @@ import java.util.concurrent.CompletionStage;
 
 @Provider
 public class RequestScopedBeanQualifierInjectorFactoryImpl extends InjectorFactoryImpl implements
-        BeanFactoryAware {
-    BeanFactory beanFactory;
+      BeanFactoryAware {
+   BeanFactory beanFactory;
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public ValueInjector createParameterExtractor(Class injectTargetClass,
+   @SuppressWarnings("rawtypes")
+   @Override
+   public ValueInjector createParameterExtractor(Class injectTargetClass,
                                                   AccessibleObject injectTarget, String defaultName, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
-        final Qualifier qualifier = FindAnnotation.findAnnotation(annotations, Qualifier.class);
-        if (qualifier == null) {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type,
-                    genericType, annotations, factory);
-        } else {
-            return new ValueInjector() {
-                @Override
-                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-                   return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
-                }
+      final Qualifier qualifier = FindAnnotation.findAnnotation(annotations, Qualifier.class);
+      if (qualifier == null) {
+         return super.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type,
+               genericType, annotations, factory);
+      } else {
+         return new ValueInjector() {
+            @Override
+            public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+               return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
+            }
 
-                @Override
-                public CompletionStage<Object> inject(boolean unwrapAsync) {
-                   // do nothing.
-                   return CompletableFuture.completedFuture(null);
-                }
-            };
-        }
-    }
+            @Override
+            public CompletionStage<Object> inject(boolean unwrapAsync) {
+               // do nothing.
+               return CompletableFuture.completedFuture(null);
+            }
+         };
+      }
+   }
 
-    @Override
-    public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory) {
-        final Qualifier qualifier = FindAnnotation.findAnnotation(parameter.getAnnotations(), Qualifier.class);
-        if (qualifier == null) {
-            return super.createParameterExtractor(parameter, providerFactory);
-        } else {
-            return new ValueInjector() {
-                @Override
-                public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-                   return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
-                }
+   @Override
+   public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory) {
+      final Qualifier qualifier = FindAnnotation.findAnnotation(parameter.getAnnotations(), Qualifier.class);
+      if (qualifier == null) {
+         return super.createParameterExtractor(parameter, providerFactory);
+      } else {
+         return new ValueInjector() {
+            @Override
+            public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+               return CompletableFuture.completedFuture(beanFactory.getBean(qualifier.value()));
+            }
 
-                @Override
-                public CompletionStage<Object> inject(boolean unwrapAsync) {
-                   // do nothing.
-                   return CompletableFuture.completedFuture(null);
-                }
-            };
-        }
-    }
+            @Override
+            public CompletionStage<Object> inject(boolean unwrapAsync) {
+               // do nothing.
+               return CompletableFuture.completedFuture(null);
+            }
+         };
+      }
+   }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
+   @Override
+   public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+      this.beanFactory = beanFactory;
+   }
 }

@@ -6,12 +6,11 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
 public class ScopeExtensionPlannedObsolescenceExtension implements Extension {
-    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery event) {
-        event.addScope(ScopeExtensionPlannedObsolescenceScope.class, true, false);
-    }
+   void beforeBeanDiscovery(@Observes BeforeBeanDiscovery event) {
+      event.addScope(ScopeExtensionPlannedObsolescenceScope.class, true, false);
+   }
 
-    void afterBeanDiscovery(@Observes AfterBeanDiscovery event) {
-        event.addContext(new ScopeExtensionPlannedObsolescenceContext());
-    }
+   void afterBeanDiscovery(@Observes AfterBeanDiscovery event) {
+      event.addContext(new ScopeExtensionPlannedObsolescenceContext());
+   }
 }
-

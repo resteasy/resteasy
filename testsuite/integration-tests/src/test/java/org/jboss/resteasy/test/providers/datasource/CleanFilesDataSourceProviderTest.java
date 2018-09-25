@@ -45,144 +45,144 @@ import java.util.PropertyPermission;
 @RunAsClient
 public class CleanFilesDataSourceProviderTest {
 
-    protected static final Logger logger = Logger.getLogger(CleanFilesDataSourceProviderTest.class.getName());
-    static ResteasyClient client;
-    static String serverTmpDir;
+   protected static final Logger logger = Logger.getLogger(CleanFilesDataSourceProviderTest.class.getName());
+   static ResteasyClient client;
+   static String serverTmpDir;
 
-    @Deployment()
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
-        // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new PropertyPermission("java.io.tmpdir", "read"),
-                new FilePermission("/tmp/-", "read"),
-                new FilePermission("/tmp", "read")), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
-    }
+   @Deployment()
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
+      // DataSource provider creates tmp file in the filesystem
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("java.io.tmpdir", "read"),
+            new FilePermission("/tmp/-", "read"),
+            new FilePermission("/tmp", "read")), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-        serverTmpDir = getTmpDirectory();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+      serverTmpDir = getTmpDirectory();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CleanFilesDataSourceProviderTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CleanFilesDataSourceProviderTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests DataSourceProviders ability to read the same stream and then checks whether number of temporary
-     * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
-     * back and forth
-     * @tpInfo RESTEASY-1182
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDataSourceProviderInputStreamOnce() throws Exception {
-        // count temporary files before
-        int countBefore = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
+   /**
+    * @tpTestDetails Tests DataSourceProviders ability to read the same stream and then checks whether number of temporary
+    * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
+    * back and forth
+    * @tpInfo RESTEASY-1182
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDataSourceProviderInputStreamOnce() throws Exception {
+      // count temporary files before
+      int countBefore = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
 
-        // http request
-        HttpClient httpClient = HttpClients.custom().build();
-        HttpPost httpPost = new HttpPost(generateURL("/once"));
-        httpPost.setHeader("Content-type", "application/octet-stream");
-        httpPost.setEntity(new ByteArrayEntity(new byte[5 * 1024]));
-        HttpResponse response = httpClient.execute(httpPost);
-        // check http request results
-        int postStatus = response.getStatusLine().getStatusCode();
-        String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        Assert.assertEquals("Status of client request is not correct.", HttpStatus.SC_OK, postStatus);
-        Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
+      // http request
+      HttpClient httpClient = HttpClients.custom().build();
+      HttpPost httpPost = new HttpPost(generateURL("/once"));
+      httpPost.setHeader("Content-type", "application/octet-stream");
+      httpPost.setEntity(new ByteArrayEntity(new byte[5 * 1024]));
+      HttpResponse response = httpClient.execute(httpPost);
+      // check http request results
+      int postStatus = response.getStatusLine().getStatusCode();
+      String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+      Assert.assertEquals("Status of client request is not correct.", HttpStatus.SC_OK, postStatus);
+      Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
 
-        // count temporary files after
-        int countAfter = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
+      // count temporary files after
+      int countAfter = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
-        // Compare
-        Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
-    }
+      // Compare
+      Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
+   }
 
-    /**
-     * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice and then checks whether number of temporary
-     * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
-     * back and forth
-     * @tpInfo RESTEASY-1182
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDataSourceProviderInputStreamTwice() throws Exception {
-        // count temporary files before
-        int countBefore = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
+   /**
+    * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice and then checks whether number of temporary
+    * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
+    * back and forth
+    * @tpInfo RESTEASY-1182
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDataSourceProviderInputStreamTwice() throws Exception {
+      // count temporary files before
+      int countBefore = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
 
-        // http request
-        HttpClient httpClient = HttpClients.custom().build();
-        HttpPost httpPost = new HttpPost(generateURL("/twice"));
-        httpPost.setHeader("Content-type", "application/octet-stream");
-        httpPost.setEntity(new ByteArrayEntity(new byte[5 * 1024]));
-        HttpResponse response = httpClient.execute(httpPost);
-        // check http request results
-        int postStatus = response.getStatusLine().getStatusCode();
-        String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."), HttpStatus.SC_OK, postStatus);
-        Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
+      // http request
+      HttpClient httpClient = HttpClients.custom().build();
+      HttpPost httpPost = new HttpPost(generateURL("/twice"));
+      httpPost.setHeader("Content-type", "application/octet-stream");
+      httpPost.setEntity(new ByteArrayEntity(new byte[5 * 1024]));
+      HttpResponse response = httpClient.execute(httpPost);
+      // check http request results
+      int postStatus = response.getStatusLine().getStatusCode();
+      String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."), HttpStatus.SC_OK, postStatus);
+      Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
 
-        // count temporary files after
-        int countAfter = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
+      // count temporary files after
+      int countAfter = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
-        // Compare
-        Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
-    }
+      // Compare
+      Assert.assertEquals("Client request remove or add some temporary files.", countBefore, countAfter);
+   }
 
-    /**
-     * @tpTestDetails Tests that DataSourceProvider removes temporary file it creates in the case when input stream is not read.
-     * @tpInfo RESTEASY-1670
-     * @tpSince RESTEasy 3.0.24
-     */
-    @Test
-    public void testDataSourceProviderInputStreamNotRead() throws Exception {
-        // count temporary files before
-        int countBefore = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
+   /**
+    * @tpTestDetails Tests that DataSourceProvider removes temporary file it creates in the case when input stream is not read.
+    * @tpInfo RESTEASY-1670
+    * @tpSince RESTEasy 3.0.24
+    */
+   @Test
+   public void testDataSourceProviderInputStreamNotRead() throws Exception {
+      // count temporary files before
+      int countBefore = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " before request: " + countBefore);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
-        for (int i = 0; i < 5000; i++) {
-            baos.write(i);
-        }
-        Response response = client.target(generateURL("/never")).request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
+      for (int i = 0; i < 5000; i++) {
+         baos.write(i);
+      }
+      Response response = client.target(generateURL("/never")).request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
-        // count temporary files after
-        int countAfter = countFiles(serverTmpDir);
-        logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
+      // count temporary files after
+      int countAfter = countFiles(serverTmpDir);
+      logger.info("Count of Resteasy temporary files in " + serverTmpDir + " after request: " + countAfter);
 
-        // Compare
-        Assert.assertEquals("Client request removed or added some temporary files.", countBefore, countAfter);
-    }
+      // Compare
+      Assert.assertEquals("Client request removed or added some temporary files.", countBefore, countAfter);
+   }
 
-    private static String getTmpDirectory() {
-        Response response = client.target(generateURL("/tmpdirpath")).request().get();
-        return response.readEntity(String.class);
-    }
+   private static String getTmpDirectory() {
+      Response response = client.target(generateURL("/tmpdirpath")).request().get();
+      return response.readEntity(String.class);
+   }
 
-    private int countFiles(String dir) {
-        File tmpdir = new File(dir);
-        Assert.assertTrue(dir + " does not exists", tmpdir.isDirectory());
-        logger.info("Tmp directory = " + tmpdir);
+   private int countFiles(String dir) {
+      File tmpdir = new File(dir);
+      Assert.assertTrue(dir + " does not exists", tmpdir.isDirectory());
+      logger.info("Tmp directory = " + tmpdir);
 
-        // Get count of Resteasy temporary files
-        String[] tmpfiles = tmpdir.list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.startsWith("resteasy-provider-datasource");
-            }
-        });
-        return tmpfiles.length;
-    }
+      // Get count of Resteasy temporary files
+      String[] tmpfiles = tmpdir.list(new FilenameFilter() {
+         public boolean accept(File dir, String name) {
+            return name.startsWith("resteasy-provider-datasource");
+         }
+      });
+      return tmpfiles.length;
+   }
 }

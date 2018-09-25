@@ -88,14 +88,14 @@ public class NettyTest
       @Path("/context")
       @Produces("text/plain")
       public String context(@Context ChannelHandlerContext context) {
-          return context.channel().toString();
+         return context.channel().toString();
       }
       
       @POST
       @Path("/post")
       @Produces("text/plain")
       public String post(String postBody) {
-          return postBody;
+         return postBody;
       }
 
       @PUT
@@ -218,21 +218,21 @@ public class NettyTest
       }
    }
 
-    @Test
-    public void testChannelContext() throws Exception {
-        WebTarget target = client.target(generateURL("/context"));
-        String val = target.request().get(String.class);
-        Assert.assertNotNull(val);
-        Assert.assertFalse(val.isEmpty());
-    }
-    
-    @Test
-    public void testPost() {
+   @Test
+   public void testChannelContext() throws Exception {
+      WebTarget target = client.target(generateURL("/context"));
+      String val = target.request().get(String.class);
+      Assert.assertNotNull(val);
+      Assert.assertFalse(val.isEmpty());
+   }
+   
+   @Test
+   public void testPost() {
       WebTarget target = client.target(generateURL("/post"));
       String postBody = "hello world";
       String result = (String) target.request().post(Entity.text(postBody), String.class);
       Assert.assertEquals(postBody, result);
-    }
+   }
 
    @Test
    public void testLeak() {
@@ -257,10 +257,10 @@ public class NettyTest
     * <blockquote>
     * RFC 2616 5.1.12:
     * To allow for transition to absoluteURIs in all requests in future
-    versions of HTTP, all HTTP/1.1 servers MUST accept the absoluteURI
-    form in requests, even though HTTP/1.1 clients will only generate
-    them in requests to proxies.
-    </blockquote>
+    * versions of HTTP, all HTTP/1.1 servers MUST accept the absoluteURI
+    * form in requests, even though HTTP/1.1 clients will only generate
+    * them in requests to proxies.
+    * </blockquote>
     * @throws Exception
     */
    @Test

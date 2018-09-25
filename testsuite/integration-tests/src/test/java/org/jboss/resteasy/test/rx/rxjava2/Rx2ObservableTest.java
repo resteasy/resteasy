@@ -391,8 +391,8 @@ public class Rx2ObservableTest {
       ObservableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.head();
       observable.subscribe(
-              (String s) -> value.set(s), // HEAD - no body
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+         (String s) -> value.set(s), // HEAD - no body
+         (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -755,7 +755,8 @@ public class Rx2ObservableTest {
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(0, errors.get());
-      Assert.assertEquals(6, list.size()); for (int i = 0; i < 6; i++)
+      Assert.assertEquals(6, list.size());
+      for (int i = 0; i < 6; i++)
       {
          Assert.assertEquals("x", list.get(i));
       }

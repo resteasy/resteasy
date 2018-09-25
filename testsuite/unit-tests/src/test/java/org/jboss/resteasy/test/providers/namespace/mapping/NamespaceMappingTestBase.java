@@ -28,80 +28,80 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NamespaceMappingTestBase", propOrder = {
-        "id",
-        "name",
-        "desc"
+      "id",
+      "name",
+      "desc"
 })
 @XmlSeeAlso({
-        NamespaceMappingTestExtends.class
+      NamespaceMappingTestExtends.class
 })
 public class NamespaceMappingTestBase {
 
-    @XmlElement(required = true)
-    protected String id;
-    @XmlElement(required = true)
-    protected String name;
-    @XmlElement(required = true)
-    protected String desc;
+   @XmlElement(required = true)
+   protected String id;
+   @XmlElement(required = true)
+   protected String name;
+   @XmlElement(required = true)
+   protected String desc;
 
-    /**
-     * Gets the value of the id property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getId() {
-        return id;
-    }
+   /**
+    * Gets the value of the id property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getId() {
+      return id;
+   }
 
-    /**
-     * Sets the value of the id property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setId(String value) {
-        this.id = value;
-    }
+   /**
+    * Sets the value of the id property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setId(String value) {
+      this.id = value;
+   }
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getName() {
-        return name;
-    }
+   /**
+    * Gets the value of the name property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getName() {
+      return name;
+   }
 
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+   /**
+    * Sets the value of the name property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setName(String value) {
+      this.name = value;
+   }
 
-    /**
-     * Gets the value of the desc property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getDesc() {
-        return desc;
-    }
+   /**
+    * Gets the value of the desc property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getDesc() {
+      return desc;
+   }
 
-    /**
-     * Sets the value of the desc property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setDesc(String value) {
-        this.desc = value;
-    }
+   /**
+    * Sets the value of the desc property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setDesc(String value) {
+      this.desc = value;
+   }
 
 }

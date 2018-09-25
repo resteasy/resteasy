@@ -34,33 +34,33 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ParsingTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ParsingTest.class.getSimpleName());
-        war.addClass(ParsingAbstractData.class);
-        war.addClass(ParsingDataCollectionPackage.class);
-        war.addClass(ParsingDataCollectionRecord.class);
-        war.addClass(ObjectFactory.class);
-        return TestUtil.finishContainerPrepare(war, null, ParsingStoreResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ParsingTest.class.getSimpleName());
+      war.addClass(ParsingAbstractData.class);
+      war.addClass(ParsingDataCollectionPackage.class);
+      war.addClass(ParsingDataCollectionRecord.class);
+      war.addClass(ObjectFactory.class);
+      return TestUtil.finishContainerPrepare(war, null, ParsingStoreResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ParsingTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ParsingTest.class.getSimpleName());
+   }
 
-    private static final String XML_CONTENT_DEFAULT_NS = "<ParsingDataCollectionPackage xmlns=\"http://www.example.org/ParsingDataCollectionPackage\">\n"
+   private static final String XML_CONTENT_DEFAULT_NS = "<ParsingDataCollectionPackage xmlns=\"http://www.example.org/ParsingDataCollectionPackage\">\n"
             + "  <sourceID>System A</sourceID>\n"
             + "  <eventID>Exercise B</eventID>\n"
             + "  <dataRecords>\n"
@@ -68,7 +68,7 @@ public class ParsingTest {
             + "        <timestamp>2008-08-13T12:24:00</timestamp>\n"
             + "        <collectedData>Operator pushed easy button</collectedData>\n"
             + "     </ParsingDataCollectionRecord>\n" + "  </dataRecords>\n" + "</ParsingDataCollectionPackage>";
-    private static final String XML_CONTENT = "<ns:ParsingDataCollectionPackage xmlns:ns=\"http://www.example.org/ParsingDataCollectionPackage\">\n"
+   private static final String XML_CONTENT = "<ns:ParsingDataCollectionPackage xmlns:ns=\"http://www.example.org/ParsingDataCollectionPackage\">\n"
             + "  <sourceID>System A</sourceID>\n"
             + "  <eventID>Exercise B</eventID>\n"
             + "  <dataRecords>\n"
@@ -79,22 +79,22 @@ public class ParsingTest {
             + "  </dataRecords>\n"
             + "</ns:ParsingDataCollectionPackage>";
 
-    /**
-     * @tpTestDetails Check XML parsing
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testWire() throws Exception {
-        {
-            Response response = client.target(generateURL("/storeXML")).request().post(Entity.entity(XML_CONTENT, "application/xml"));
-            Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
-            response.close();
-        }
+   /**
+    * @tpTestDetails Check XML parsing
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testWire() throws Exception {
+      {
+         Response response = client.target(generateURL("/storeXML")).request().post(Entity.entity(XML_CONTENT, "application/xml"));
+         Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
+         response.close();
+      }
 
-        {
-            Response response = client.target(generateURL("/storeXML/abstract")).request().post(Entity.entity(XML_CONTENT, "application/xml"));
-            Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
-            response.close();
-        }
-    }
+      {
+         Response response = client.target(generateURL("/storeXML/abstract")).request().post(Entity.entity(XML_CONTENT, "application/xml"));
+         Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
+         response.close();
+      }
+   }
 }

@@ -9,9 +9,9 @@ import java.io.IOException;
 
 @Priority(Integer.MIN_VALUE)
 public class PriorityExecutionClientRequestFilterMin implements ClientRequestFilter {
-    @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        PriorityExecutionTest.logger.info(this);
-        PriorityExecutionTest.interceptors.add("PriorityExecutionClientRequestFilterMin");
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext) throws IOException {
+      PriorityExecutionTest.logger.info(this);
+      PriorityExecutionTest.interceptors.add("PriorityExecutionClientRequestFilterMin");
+   }
 }

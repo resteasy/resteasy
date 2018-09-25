@@ -22,44 +22,44 @@ import javax.ws.rs.sse.SseEventSink;
 @Path(SsePostResourceMethodInvokerTestResource.BASE_PATH)
 public class SsePostResourceMethodInvokerTestResource {
 
-	@Provider
-	@Priority(Integer.MAX_VALUE)
-	public static class ExceptionRequestFilter implements ContainerRequestFilter {
+   @Provider
+   @Priority(Integer.MAX_VALUE)
+   public static class ExceptionRequestFilter implements ContainerRequestFilter {
 
-		@Override
-		public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-			throw new IOException();
-		}
+      @Override
+      public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+         throw new IOException();
+      }
 
-	}
+   }
 
-	public static final String BASE_PATH = "ssePostResourceMethodInvoker";
-	public static final String CLOSE_PATH = "close";
+   public static final String BASE_PATH = "ssePostResourceMethodInvoker";
+   public static final String CLOSE_PATH = "close";
 
-	private final Object outputLock = new Object();
+   private final Object outputLock = new Object();
 
-	private SseEventSink eventSink;
+   private SseEventSink eventSink;
 
-	@GET
-	@Produces(MediaType.SERVER_SENT_EVENTS)
-	public void getEventSink(@Context SseEventSink sseEventSink) {
-		synchronized (this.outputLock) {
-			if (this.eventSink != null) {
-				throw new IllegalStateException("Server sink already served.");
-			}
-			this.eventSink = sseEventSink;
-		}
-	}
+   @GET
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void getEventSink(@Context SseEventSink sseEventSink) {
+      synchronized (this.outputLock) {
+         if (this.eventSink != null) {
+            throw new IllegalStateException("Server sink already served.");
+         }
+         this.eventSink = sseEventSink;
+      }
+   }
 
-	@DELETE
-	@Path(CLOSE_PATH)
-	public void close() {
-		synchronized (this.outputLock) {
-			if (this.eventSink != null) {
-				this.eventSink.close();
-				this.eventSink = null;
-			}
-		}
-	}
+   @DELETE
+   @Path(CLOSE_PATH)
+   public void close() {
+      synchronized (this.outputLock) {
+         if (this.eventSink != null) {
+            this.eventSink.close();
+            this.eventSink = null;
+         }
+      }
+   }
 
 }

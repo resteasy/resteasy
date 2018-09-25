@@ -267,11 +267,11 @@ public class GroupParameterParser
     * @return a map of name/value pairs
     */
    public List<Map<String, String>> parse(
-           final char[] chars,
-           int offset,
-           int length,
-           char separator,
-           char groupSeparator)
+         final char[] chars,
+         int offset,
+         int length,
+         char separator,
+         char groupSeparator)
    {
 
       if (chars == null)
@@ -289,14 +289,13 @@ public class GroupParameterParser
       String paramValue = null;
       while (hasChar())
       {
-         paramName = parseToken(new char[]{
-                 '=', separator, groupSeparator});
+         paramName = parseToken(new char[]{'=', separator, groupSeparator});
          paramValue = null;
          if (hasChar() && (chars[pos] == '='))
          {
             pos++; // skip '='
             paramValue = parseQuotedToken(new char[]{
-                    separator, groupSeparator});
+               separator, groupSeparator});
          }
          if ((paramName != null) && (paramName.length() > 0))
          {

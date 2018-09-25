@@ -26,21 +26,21 @@ public final class FindAnnotation
     *
     */
    private static final Class<? extends Annotation>[] JAXRS_ANNOTATIONS =
-           (Class<? extends Annotation>[]) new Class[]{
-                   QueryParam.class,
-                   HeaderParam.class,
-                   CookieParam.class,
-                   PathParam.class,
-                   MatrixParam.class,
-                   FormParam.class,
-                   Context.class,
-                   org.jboss.resteasy.annotations.jaxrs.QueryParam.class,
-                   org.jboss.resteasy.annotations.jaxrs.HeaderParam.class,
-                   org.jboss.resteasy.annotations.jaxrs.CookieParam.class,
-                   org.jboss.resteasy.annotations.jaxrs.PathParam.class,
-                   org.jboss.resteasy.annotations.jaxrs.MatrixParam.class,
-                   org.jboss.resteasy.annotations.jaxrs.FormParam.class,
-           };
+      (Class<? extends Annotation>[]) new Class[]{
+         QueryParam.class,
+         HeaderParam.class,
+         CookieParam.class,
+         PathParam.class,
+         MatrixParam.class,
+         FormParam.class,
+         Context.class,
+         org.jboss.resteasy.annotations.jaxrs.QueryParam.class,
+         org.jboss.resteasy.annotations.jaxrs.HeaderParam.class,
+         org.jboss.resteasy.annotations.jaxrs.CookieParam.class,
+         org.jboss.resteasy.annotations.jaxrs.PathParam.class,
+         org.jboss.resteasy.annotations.jaxrs.MatrixParam.class,
+         org.jboss.resteasy.annotations.jaxrs.FormParam.class,
+      };
 
    @SuppressWarnings("rawtypes")
    private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};

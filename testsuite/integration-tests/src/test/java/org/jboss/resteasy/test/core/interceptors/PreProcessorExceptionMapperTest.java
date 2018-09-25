@@ -32,28 +32,28 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 @RunAsClient
 public class PreProcessorExceptionMapperTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
-        war.addClass(PreProcessorExceptionMapperCandlepinException.class);
-        war.addClass(PreProcessorExceptionMapperCandlepinUnauthorizedException.class);
-        return TestUtil.finishContainerPrepare(war, null, PreProcessorExceptionMapperPreProcessSecurityInterceptor.class,
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
+      war.addClass(PreProcessorExceptionMapperCandlepinException.class);
+      war.addClass(PreProcessorExceptionMapperCandlepinUnauthorizedException.class);
+      return TestUtil.finishContainerPrepare(war, null, PreProcessorExceptionMapperPreProcessSecurityInterceptor.class,
                                                 PreProcessorExceptionMapperRuntimeExceptionMapper.class,
                                                 PreProcessorExceptionMapperResource.class);
-    }
+   }
 
-    /**
-     * @tpTestDetails Generate PreProcessorExceptionMapperCandlepinUnauthorizedException
-     * @tpPassCrit SC_PRECONDITION_FAILED (412) HTTP code is excepted
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMapper() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        Response response = client.target(generateURL("/interception", GzipTest.class.getSimpleName())).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Generate PreProcessorExceptionMapperCandlepinUnauthorizedException
+    * @tpPassCrit SC_PRECONDITION_FAILED (412) HTTP code is excepted
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMapper() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      Response response = client.target(generateURL("/interception", GzipTest.class.getSimpleName())).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+      response.close();
+      client.close();
+   }
 
 }

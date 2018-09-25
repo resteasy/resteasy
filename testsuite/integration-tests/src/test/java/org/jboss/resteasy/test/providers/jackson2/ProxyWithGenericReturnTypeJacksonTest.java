@@ -37,56 +37,56 @@ import javax.ws.rs.core.Response;
 @Category({ExpectedFailingOnWildFly13.class})
 public class ProxyWithGenericReturnTypeJacksonTest {
 
-    protected static final Logger logger = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class.getName());
-    static ResteasyClient client;
+   protected static final Logger logger = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
-        war.addClass(Jackson2Test.class);
-        return TestUtil.finishContainerPrepare(war, null, ProxyWithGenericReturnTypeJacksonAbstractParent.class,
-                ProxyWithGenericReturnTypeJacksonResource.class, ProxyWithGenericReturnTypeJacksonSubResourceIntf.class,
-                ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class, ProxyWithGenericReturnTypeJacksonType1.class,
-                ProxyWithGenericReturnTypeJacksonType2.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+      war.addClass(Jackson2Test.class);
+      return TestUtil.finishContainerPrepare(war, null, ProxyWithGenericReturnTypeJacksonAbstractParent.class,
+            ProxyWithGenericReturnTypeJacksonResource.class, ProxyWithGenericReturnTypeJacksonSubResourceIntf.class,
+            ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class, ProxyWithGenericReturnTypeJacksonType1.class,
+            ProxyWithGenericReturnTypeJacksonType2.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests usage of proxied subresource
-     * @tpPassCrit The resource returns Success response
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testProxyWithGenericReturnType() throws Exception {
-        WebTarget target = client.target(generateURL("/test/one/"));
-        logger.info("Sending request");
-        Response response = target.request().get();
-        String entity = response.readEntity(String.class);
-        logger.info("Received response: " + entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-        response.close();
+   /**
+    * @tpTestDetails Tests usage of proxied subresource
+    * @tpPassCrit The resource returns Success response
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testProxyWithGenericReturnType() throws Exception {
+      WebTarget target = client.target(generateURL("/test/one/"));
+      logger.info("Sending request");
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      logger.info("Received response: " + entity);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertTrue("Type property is missing.", entity.contains("type"));
+      response.close();
 
-        target = client.target(generateURL("/test/list/"));
-        logger.info("Sending request");
-        response = target.request().get();
-        entity = response.readEntity(String.class);
-        logger.info("Received response: " + entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-        response.close();
-    }
+      target = client.target(generateURL("/test/list/"));
+      logger.info("Sending request");
+      response = target.request().get();
+      entity = response.readEntity(String.class);
+      logger.info("Received response: " + entity);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertTrue("Type property is missing.", entity.contains("type"));
+      response.close();
+   }
 }

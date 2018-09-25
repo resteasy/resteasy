@@ -38,82 +38,82 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 @RunWith(Arquillian.class)
 public class DuplicateProviderRegistrationTest {
 
-    private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
-    private static final String RESTEASY_002160_ERR_MSG = "Wrong count of RESTEASY002160 warning message";
-    
-    @SuppressWarnings(value = "unchecked")
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
-        war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
-                TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
-        war.addClass(NotForForwardCompatibility.class);
-        // Arquillian in the deployment, test reads the server.log
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
-                        File.separator + "server.log", "read"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("jboss.home.dir", "read"),
-                new RuntimePermission("accessDeclaredMembers")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
-
-    private static int getRESTEASY002155WarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
-    }
-    
-    private static int getRESTEASY002160WarningCount() {
-       return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+   private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
+   private static final String RESTEASY_002160_ERR_MSG = "Wrong count of RESTEASY002160 warning message";
+   
+   @SuppressWarnings(value = "unchecked")
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
+      war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
+            TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
+      war.addClass(NotForForwardCompatibility.class);
+      // Arquillian in the deployment, test reads the server.log
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks"),
+            new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
+                  File.separator + "server.log", "read"),
+            new LoggingPermission("control", ""),
+            new PropertyPermission("arquillian.*", "read"),
+            new PropertyPermission("jboss.home.dir", "read"),
+            new RuntimePermission("accessDeclaredMembers")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
-    /**
-     * @tpTestDetails Basic test
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testDuplicateProvider() {
-        int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
-        Client client = ClientBuilder.newClient();
-        try {
-            WebTarget webTarget = client.target("http://www.changeit.com");
-            // DuplicateProviderRegistrationFeature will be registered third on the same webTarget even if
-            //   webTarget.getConfiguration().isRegistered(DuplicateProviderRegistrationFeature.class)==true
-            webTarget.register(DuplicateProviderRegistrationFeature.class).register(new DuplicateProviderRegistrationFeature()).register(new DuplicateProviderRegistrationFeature());
-        } finally {
-            client.close();
-        }
-        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
-    }
+   private static int getRESTEASY002155WarningCount() {
+      return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+   }
+   
+   private static int getRESTEASY002160WarningCount() {
+      return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+   }
 
-    /**
-     * @tpTestDetails This test is taken from javax.ws.rs.core.Configurable javadoc
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testFromJavadoc() {
-        int initRESTEASY002155WarningCount = getRESTEASY002155WarningCount();
-        int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
-        Client client = ClientBuilder.newClient();
-        try {
-            WebTarget webTarget = client.target("http://www.changeit.com");
-            webTarget.register(DuplicateProviderRegistrationInterceptor.class, ReaderInterceptor.class);
-            webTarget.register(DuplicateProviderRegistrationInterceptor.class);       // Rejected by runtime.
-            webTarget.register(new DuplicateProviderRegistrationInterceptor());       // Rejected by runtime.
-            webTarget.register(DuplicateProviderRegistrationInterceptor.class, 6500); // Rejected by runtime.
+   /**
+    * @tpTestDetails Basic test
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testDuplicateProvider() {
+      int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
+      Client client = ClientBuilder.newClient();
+      try {
+         WebTarget webTarget = client.target("http://www.changeit.com");
+         // DuplicateProviderRegistrationFeature will be registered third on the same webTarget even if
+         //   webTarget.getConfiguration().isRegistered(DuplicateProviderRegistrationFeature.class)==true
+         webTarget.register(DuplicateProviderRegistrationFeature.class).register(new DuplicateProviderRegistrationFeature()).register(new DuplicateProviderRegistrationFeature());
+      } finally {
+         client.close();
+      }
+      Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
+   }
 
-            webTarget.register(new DuplicateProviderRegistrationFeature());
-            webTarget.register(new DuplicateProviderRegistrationFeature()); // rejected by runtime.
-            webTarget.register(DuplicateProviderRegistrationFeature.class);   // rejected by runtime.
-            webTarget.register(DuplicateProviderRegistrationFeature.class, Feature.class);  // Rejected by runtime.
-        } finally {
-            client.close();
-        }
-        Assert.assertEquals(RESTEASY_002155_ERR_MSG, 4, getRESTEASY002155WarningCount() - initRESTEASY002155WarningCount);
-        Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
-    }
+   /**
+    * @tpTestDetails This test is taken from javax.ws.rs.core.Configurable javadoc
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testFromJavadoc() {
+      int initRESTEASY002155WarningCount = getRESTEASY002155WarningCount();
+      int initRESTEASY002160WarningCount = getRESTEASY002160WarningCount();
+      Client client = ClientBuilder.newClient();
+      try {
+         WebTarget webTarget = client.target("http://www.changeit.com");
+         webTarget.register(DuplicateProviderRegistrationInterceptor.class, ReaderInterceptor.class);
+         webTarget.register(DuplicateProviderRegistrationInterceptor.class);       // Rejected by runtime.
+         webTarget.register(new DuplicateProviderRegistrationInterceptor());       // Rejected by runtime.
+         webTarget.register(DuplicateProviderRegistrationInterceptor.class, 6500); // Rejected by runtime.
+
+         webTarget.register(new DuplicateProviderRegistrationFeature());
+         webTarget.register(new DuplicateProviderRegistrationFeature()); // rejected by runtime.
+         webTarget.register(DuplicateProviderRegistrationFeature.class);   // rejected by runtime.
+         webTarget.register(DuplicateProviderRegistrationFeature.class, Feature.class);  // Rejected by runtime.
+      } finally {
+         client.close();
+      }
+      Assert.assertEquals(RESTEASY_002155_ERR_MSG, 4, getRESTEASY002155WarningCount() - initRESTEASY002155WarningCount);
+      Assert.assertEquals(RESTEASY_002160_ERR_MSG, 2, getRESTEASY002160WarningCount() - initRESTEASY002160WarningCount);
+   }
 }

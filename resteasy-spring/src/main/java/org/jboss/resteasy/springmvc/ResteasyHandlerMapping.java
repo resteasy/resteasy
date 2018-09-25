@@ -62,7 +62,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    }
 
    public HandlerExecutionChain getHandler(HttpServletRequest request)
-           throws Exception
+         throws Exception
    {
       ResteasyRequestWrapper requestWrapper = RequestUtil.getRequestWrapper(
               request, request.getMethod(), prefix);

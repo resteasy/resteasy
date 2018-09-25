@@ -8,9 +8,9 @@ import java.io.UnsupportedEncodingException;
 
 @Path("test")
 public class FormUrlEncodedCharsetResource {
-    @POST
-    public Response form(MultivaluedMap<String, String> form) throws UnsupportedEncodingException {
-        String s = form.getFirst("name");
-        return Response.ok().entity(s).build();
-    }
+   @POST
+   public Response form(MultivaluedMap<String, String> form) throws UnsupportedEncodingException {
+      String s = form.getFirst("name");
+      return Response.ok().entity(s).build();
+   }
 }

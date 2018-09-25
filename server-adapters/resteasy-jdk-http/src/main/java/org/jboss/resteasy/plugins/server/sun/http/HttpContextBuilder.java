@@ -24,14 +24,13 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
      contextBuilder.cleanup();
      httpServer.stop(0);
-   </pre>
+ * </pre>
  * Create your HttpServer the way you want then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy
  * and bind it to an HttpContext.  The HttpContext attributes are available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration
  * interface using @Context within your provider and resource classes.
  *
  *
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>* @version $Revision: 1 $
  */
 public class HttpContextBuilder
 {

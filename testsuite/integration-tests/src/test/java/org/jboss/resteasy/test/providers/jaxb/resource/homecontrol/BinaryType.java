@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BinaryType")
 public class BinaryType
-        extends Base64Binary {
+      extends Base64Binary {
 
 
 }

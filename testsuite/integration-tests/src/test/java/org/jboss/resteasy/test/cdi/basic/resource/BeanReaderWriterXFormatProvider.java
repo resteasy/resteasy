@@ -25,47 +25,47 @@ import java.lang.reflect.Type;
 @Produces("application/xml")
 @Consumes("application/xml")
 public class BeanReaderWriterXFormatProvider implements MessageBodyReader<BeanReaderWriterXFormat>, MessageBodyWriter<BeanReaderWriterXFormat> {
-    private static Logger logger = Logger.getLogger(BeanReaderWriterXFormatProvider.class);
-    @Inject
-    BeanReaderWriterConfigBean bean;
+   private static Logger logger = Logger.getLogger(BeanReaderWriterXFormatProvider.class);
+   @Inject
+   BeanReaderWriterConfigBean bean;
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return BeanReaderWriterXFormat.class.isAssignableFrom(type);
-    }
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return BeanReaderWriterXFormat.class.isAssignableFrom(type);
+   }
 
-    @Override
-    public BeanReaderWriterXFormat readFrom(Class<BeanReaderWriterXFormat> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        logger.info("********** readFrom ********");
-        if (bean != null) {
-            logger.info("BeanReaderWriterXFormatProvider: BeanReaderWriterConfigBean version: " + bean.version());
-        }
-        byte[] bytes = ReadFromStream.readFromStream(1024, entityStream);
-        String val = new String(bytes);
-        String[] split = val.split(" ");
-        return new BeanReaderWriterXFormat(split[0], split[1]);
-    }
+   @Override
+   public BeanReaderWriterXFormat readFrom(Class<BeanReaderWriterXFormat> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+      logger.info("********** readFrom ********");
+      if (bean != null) {
+         logger.info("BeanReaderWriterXFormatProvider: BeanReaderWriterConfigBean version: " + bean.version());
+      }
+      byte[] bytes = ReadFromStream.readFromStream(1024, entityStream);
+      String val = new String(bytes);
+      String[] split = val.split(" ");
+      return new BeanReaderWriterXFormat(split[0], split[1]);
+   }
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return BeanReaderWriterXFormat.class.isAssignableFrom(type);
-    }
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return BeanReaderWriterXFormat.class.isAssignableFrom(type);
+   }
 
-    @Override
-    public long getSize(BeanReaderWriterXFormat xFormat, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
+   @Override
+   public long getSize(BeanReaderWriterXFormat xFormat, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return -1;
+   }
 
-    @Override
-    public void writeTo(BeanReaderWriterXFormat xFormat, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        logger.info("********** writeTo ********");
-        String message = "";
-        if (bean != null) {
-            logger.info("BeanReaderWriterXFormatProvider: BeanReaderWriterConfigBean version: " + bean.version());
-            message += xFormat.getId() + " " + bean.version();
-        } else {
-            message += xFormat.getId() + " 0";
-        }
-        entityStream.write(message.getBytes());
-    }
+   @Override
+   public void writeTo(BeanReaderWriterXFormat xFormat, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+      logger.info("********** writeTo ********");
+      String message = "";
+      if (bean != null) {
+         logger.info("BeanReaderWriterXFormatProvider: BeanReaderWriterConfigBean version: " + bean.version());
+         message += xFormat.getId() + " " + bean.version();
+      } else {
+         message += xFormat.getId() + " 0";
+      }
+      entityStream.write(message.getBytes());
+   }
 }

@@ -4,6 +4,6 @@ import javax.ws.rs.Path;
 
 @Path("resource")
 public class JaxrsComponentDetectionRootResource implements JaxrsComponentDetectionSubresourceLocal {
-    public void foo() {
-    }
+   public void foo() {
+   }
 }

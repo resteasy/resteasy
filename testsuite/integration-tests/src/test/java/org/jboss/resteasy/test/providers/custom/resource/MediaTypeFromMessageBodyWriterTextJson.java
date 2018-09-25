@@ -16,22 +16,22 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("text/json")
 public class MediaTypeFromMessageBodyWriterTextJson implements MessageBodyWriter<CustomProviderPreferenceUser> {
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return CustomProviderPreferenceUser.class.isAssignableFrom(type);
-    }
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return CustomProviderPreferenceUser.class.isAssignableFrom(type);
+   }
 
-    @Override
-    public long getSize(CustomProviderPreferenceUser customProviderPreferenceUser, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
+   @Override
+   public long getSize(CustomProviderPreferenceUser customProviderPreferenceUser, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return -1L;
+   }
 
-    @Override
-    public void writeTo(CustomProviderPreferenceUser customProviderPreferenceUser, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException, WebApplicationException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(entityStream));
-        bw.write(customProviderPreferenceUser.getUsername() + " " + customProviderPreferenceUser.getEmail());
-        bw.flush();
-    }
+   @Override
+   public void writeTo(CustomProviderPreferenceUser customProviderPreferenceUser, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                  OutputStream entityStream) throws IOException, WebApplicationException {
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(entityStream));
+      bw.write(customProviderPreferenceUser.getUsername() + " " + customProviderPreferenceUser.getEmail());
+      bw.flush();
+   }
 }

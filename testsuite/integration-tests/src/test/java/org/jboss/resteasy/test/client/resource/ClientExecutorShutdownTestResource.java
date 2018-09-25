@@ -8,10 +8,10 @@ import javax.ws.rs.Path;
 @Path("/test")
 public class ClientExecutorShutdownTestResource {
 
-    private static final Logger logger = Logger.getLogger(ClientExecutorShutdownTestResource.class);
+   private static final Logger logger = Logger.getLogger(ClientExecutorShutdownTestResource.class);
 
-    @POST
-    public void post() {
-        logger.info("In POST");
-    }
+   @POST
+   public void post() {
+      logger.info("In POST");
+   }
 }

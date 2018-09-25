@@ -34,45 +34,45 @@ import java.util.Iterator;
 @RunAsClient
 public class JAXBContextFinderTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JAXBContextFinderTest.class.getSimpleName());
-        war.addClass(JAXBContextFinderCustomerAtom.class);
-        return TestUtil.finishContainerPrepare(war, null, JAXBContextFinderAtomServer.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JAXBContextFinderTest.class.getSimpleName());
+      war.addClass(JAXBContextFinderCustomerAtom.class);
+      return TestUtil.finishContainerPrepare(war, null, JAXBContextFinderAtomServer.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JAXBContextFinderTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JAXBContextFinderTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test new client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAtomFeedNewClient() throws Exception {
-        Response response = client.target(generateURL("/atom/feed")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Feed feed = response.readEntity(Feed.class);
-        Iterator<Entry> it = feed.getEntries().iterator();
-        Entry entry1 = it.next();
-        Entry entry2 = it.next();
-        Field field = Entry.class.getDeclaredField("finder");
-        field.setAccessible(true);
-        Assert.assertNotNull("First feet is not correct", field.get(entry1));
-        Assert.assertEquals("Second feet is not correct", field.get(entry1), field.get(entry2));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test new client
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testAtomFeedNewClient() throws Exception {
+      Response response = client.target(generateURL("/atom/feed")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Feed feed = response.readEntity(Feed.class);
+      Iterator<Entry> it = feed.getEntries().iterator();
+      Entry entry1 = it.next();
+      Entry entry2 = it.next();
+      Field field = Entry.class.getDeclaredField("finder");
+      field.setAccessible(true);
+      Assert.assertNotNull("First feet is not correct", field.get(entry1));
+      Assert.assertEquals("Second feet is not correct", field.get(entry1), field.get(entry2));
+      response.close();
+   }
 }

@@ -12,24 +12,24 @@ import java.lang.annotation.Annotation;
 public interface ResteasyAsynchronousResponse extends AsyncResponse
 {
    /**
-     * Callback by the initial http request thread.  It is used to help simulate suspend/resume asynchronous semantics
-     * in containers that do not support asychronous HTTP. This method is a no-op in environments that support async HTTP.
-     */
-    void initialRequestThreadFinished();
+    * Callback by the initial http request thread.  It is used to help simulate suspend/resume asynchronous semantics
+    * in containers that do not support asychronous HTTP. This method is a no-op in environments that support async HTTP.
+    */
+   void initialRequestThreadFinished();
 
-    ContainerResponseFilter[] getResponseFilters();
+   ContainerResponseFilter[] getResponseFilters();
 
-    void setResponseFilters(ContainerResponseFilter[] responseFilters);
+   void setResponseFilters(ContainerResponseFilter[] responseFilters);
 
-    WriterInterceptor[] getWriterInterceptors();
+   WriterInterceptor[] getWriterInterceptors();
 
-    void setWriterInterceptors(WriterInterceptor[] writerInterceptors);
+   void setWriterInterceptors(WriterInterceptor[] writerInterceptors);
 
-    Annotation[] getAnnotations();
+   Annotation[] getAnnotations();
 
-    void setAnnotations(Annotation[] annotations);
+   void setAnnotations(Annotation[] annotations);
 
-    void complete();
+   void complete();
 
-    void completionCallbacks(Throwable throwable);
+   void completionCallbacks(Throwable throwable);
 }

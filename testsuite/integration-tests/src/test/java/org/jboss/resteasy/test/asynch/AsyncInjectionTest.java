@@ -48,13 +48,13 @@ import org.junit.runner.RunWith;
 //@RunWith(UndertowTestRunner.class)
 @RunAsClient
 public class AsyncInjectionTest {
-    protected static final Logger log = LogManager.getLogger(AsyncInjectionTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(AsyncInjectionTest.class.getName());
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
+   @Deployment
+   public static Archive<?> createTestArchive() {
 
-        WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
+      WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
               AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,
@@ -64,145 +64,145 @@ public class AsyncInjectionTest {
               AsyncInjectionByteInjector.class, AsyncInjectionShortInjector.class,
               AsyncInjectionIntInjector.class, AsyncInjectionLongInjector.class,
               AsyncInjectionFloatInjector.class, AsyncInjectionDoubleInjector.class);
-    }
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, AsyncInjectionTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, AsyncInjectionTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Async Injection works
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjection() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection works
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjection() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/"));
+      WebTarget base = client.target(generateURL("/"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection works for interfaces
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionInterface() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection works for interfaces
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionInterface() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/interface"));
+      WebTarget base = client.target(generateURL("/interface"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection does not suspend request if already resolved
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionResolved() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection does not suspend request if already resolved
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionResolved() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/resolved"));
+      WebTarget base = client.target(generateURL("/resolved"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection suspends request if not yet resolved
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionSuspended() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection suspends request if not yet resolved
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionSuspended() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/suspended"));
+      WebTarget base = client.target(generateURL("/suspended"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection with exceptions
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionException() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection with exceptions
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionException() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/exception"));
+      WebTarget base = client.target(generateURL("/exception"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection with async exceptions
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionExceptionAsync() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection with async exceptions
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionExceptionAsync() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/exception-async"));
+      WebTarget base = client.target(generateURL("/exception-async"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection in places where it does not work
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionExceptionLate() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection in places where it does not work
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionExceptionLate() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/late"));
+      WebTarget base = client.target(generateURL("/late"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Async Injection of primitive types
-     * @tpSince RESTEasy 4.0.0
-     */
-    @Test
-    public void testAsyncInjectionPrimitives() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Async Injection of primitive types
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testAsyncInjectionPrimitives() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/primitives"));
+      WebTarget base = client.target(generateURL("/primitives"));
 
-        Response response = base.request()
-           .get();
-        assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
+      Response response = base.request()
+         .get();
+      assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
         
-        client.close();
-    }
+      client.close();
+   }
 }

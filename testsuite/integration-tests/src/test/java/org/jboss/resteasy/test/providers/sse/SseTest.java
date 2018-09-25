@@ -84,10 +84,10 @@ public class SseTest
             results.add(event.readData(String.class));
             latch.countDown();
          }, ex -> {
-            errors.incrementAndGet();
-            logger.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
-         });
+               errors.incrementAndGet();
+               logger.error(ex.getMessage(), ex);
+               throw new RuntimeException(ex);
+            }) ;
          eventSource.open();
 
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
@@ -126,8 +126,8 @@ public class SseTest
          missedEvents.add(event.toString());
          missedEventLatch.countDown();
       }, ex -> {
-         throw new RuntimeException(ex);
-      });
+            throw new RuntimeException(ex);
+         });
       lastEventSource.open("1");
       Assert.assertTrue(
             "Waiting for missed events to be delivered has timed our, received events :"
@@ -155,10 +155,10 @@ public class SseTest
          results.add(event.readData());
          latch.countDown();
       }, ex -> {
-         errors.incrementAndGet();
-         logger.error(ex.getMessage(), ex);
-         throw new RuntimeException(ex);
-      });
+            errors.incrementAndGet();
+            logger.error(ex.getMessage(), ex);
+            throw new RuntimeException(ex);
+         });
       eventSource.open();
 
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
@@ -289,10 +289,10 @@ public class SseTest
                }.start();
             }
          }, ex -> {
-            errors.incrementAndGet();
-            logger.error("test reconnect error", ex);
-            throw new RuntimeException(ex);
-         });
+               errors.incrementAndGet();
+               logger.error("test reconnect error", ex);
+               throw new RuntimeException(ex);
+            });
          eventSource.open();
 
          Client messageClient = ClientBuilder.newClient();
@@ -329,12 +329,12 @@ public class SseTest
                eventSource.register(event -> {
                   latch.countDown();
                }, ex -> {
-                  if (ex instanceof InternalServerErrorException)
-                  {
-                     errorList.add(ex);
-                     latch.countDown();
-                  }
-               });
+                     if (ex instanceof InternalServerErrorException)
+                     {
+                        errorList.add(ex);
+                        latch.countDown();
+                     }
+                  });
                eventSource.open();
             }
          }
@@ -364,10 +364,10 @@ public class SseTest
             results.add(event.readData());
             latch.countDown();
          }, ex -> {
-            errors.incrementAndGet();
-            logger.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
-         });
+               errors.incrementAndGet();
+               logger.error(ex.getMessage(), ex);
+               throw new RuntimeException(ex);
+            });
          eventSource.open();
 
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
@@ -415,10 +415,10 @@ public class SseTest
             results.add(event.readData(String.class));
             latch.countDown();
          }, ex -> {
-            errors.incrementAndGet();
-            logger.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
-         });
+               errors.incrementAndGet();
+               logger.error(ex.getMessage(), ex);
+               throw new RuntimeException(ex);
+            });
          eventSource.open();
 
          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
@@ -450,10 +450,10 @@ public class SseTest
             results.add(event);
             latch.countDown();
          }, ex -> {
-            errors.incrementAndGet();
-            logger.error("Error:", ex);
-            throw new RuntimeException(ex);
-         });
+               errors.incrementAndGet();
+               logger.error("Error:", ex);
+               throw new RuntimeException(ex);
+            });
          eventSource.open();
 
          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
@@ -530,11 +530,11 @@ public class SseTest
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
-           logger.info(event);
+            logger.info(event);
          }, ex -> {
-            logger.error("Error:", ex);
-            errors.incrementAndGet();
-         });
+               logger.error("Error:", ex);
+               errors.incrementAndGet();
+            });
          source.open();
          Thread.sleep(1000);
       }

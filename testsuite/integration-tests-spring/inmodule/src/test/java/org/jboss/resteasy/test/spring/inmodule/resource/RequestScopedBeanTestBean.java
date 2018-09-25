@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.spring.inmodule.resource;
 
 public class RequestScopedBeanTestBean {
-    String configured;
+   String configured;
 
-    public void setConfigured(String configured) {
-        this.configured = configured;
-    }
+   public void setConfigured(String configured) {
+      this.configured = configured;
+   }
 }

@@ -339,7 +339,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
             }
             finally
             {
-              clearContextData();
+               clearContextData();
             }
             return theResponse;
          }

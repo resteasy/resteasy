@@ -11,16 +11,16 @@ import java.util.Map;
 
 public class ClientResponseFilterHeaders implements ClientResponseFilter {
 
-    private static Logger logger = Logger.getLogger(ClientResponseFilterHeaders.class);
+   private static Logger logger = Logger.getLogger(ClientResponseFilterHeaders.class);
 
-    @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-        for (Map.Entry<String, List<String>> header : responseContext.getHeaders().entrySet()) {
-            StringBuilder sb = new StringBuilder(header.getKey() + ": ");
-            for (String val : header.getValue()) {
-                sb.append(val + " ");
-            }
-            logger.info(sb.toString());
-        }
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+      for (Map.Entry<String, List<String>> header : responseContext.getHeaders().entrySet()) {
+         StringBuilder sb = new StringBuilder(header.getKey() + ": ");
+         for (String val : header.getValue()) {
+            sb.append(val + " ");
+         }
+         logger.info(sb.toString());
+      }
+   }
 }

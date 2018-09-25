@@ -37,109 +37,109 @@ import java.util.Map;
 @XmlTransient
 public class AppCommonAttributes implements Serializable
 {
-    private static final long serialVersionUID = -6132753912772236190L;
-    @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
-    @XmlSchemaType(name = "anySimpleType")
-    private String base;
-    @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
-    private String lang;
-    @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    private String space;
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+   private static final long serialVersionUID = -6132753912772236190L;
+   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
+   @XmlSchemaType(name = "anySimpleType")
+   private String base;
+   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
+   private String lang;
+   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
+   @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+   private String space;
+   @XmlAnyAttribute
+   private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Gets the value of the base property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    @javax.xml.bind.annotation.XmlTransient
-    public String getBase() {
-        return base;
-    }
+   /**
+    * Gets the value of the base property.
+    * 
+    * @return
+    *     possible object is
+    *     {@link String }
+    *     
+    */
+   @javax.xml.bind.annotation.XmlTransient
+   public String getBase() {
+      return base;
+   }
 
-    /**
-     * Sets the value of the base property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBase(String value) {
-        this.base = value;
-    }
+   /**
+    * Sets the value of the base property.
+    * 
+    * @param value
+    *     allowed object is
+    *     {@link String }
+    *     
+    */
+   public void setBase(String value) {
+      this.base = value;
+   }
 
-    /**
-     * Gets the value of the lang property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    @javax.xml.bind.annotation.XmlTransient
-    public String getLang() {
-        return lang;
-    }
+   /**
+    * Gets the value of the lang property.
+    * 
+    * @return
+    *     possible object is
+    *     {@link String }
+    *     
+    */
+   @javax.xml.bind.annotation.XmlTransient
+   public String getLang() {
+      return lang;
+   }
 
-    /**
-     * Sets the value of the lang property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLang(String value) {
-        this.lang = value;
-    }
+   /**
+    * Sets the value of the lang property.
+    * 
+    * @param value
+    *     allowed object is
+    *     {@link String }
+    *     
+    */
+   public void setLang(String value) {
+      this.lang = value;
+   }
 
-    /**
-     * Gets the value of the space property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    @javax.xml.bind.annotation.XmlTransient
-    public String getSpace() {
-        return space;
-    }
+   /**
+    * Gets the value of the space property.
+    * 
+    * @return
+    *     possible object is
+    *     {@link String }
+    *     
+    */
+   @javax.xml.bind.annotation.XmlTransient
+   public String getSpace() {
+      return space;
+   }
 
-    /**
-     * Sets the value of the space property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSpace(String value) {
-        this.space = value;
-    }
+   /**
+    * Sets the value of the space property.
+    * 
+    * @param value
+    *     allowed object is
+    *     {@link String }
+    *     
+    */
+   public void setSpace(String value) {
+      this.space = value;
+   }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     * 
-     * <p>
-     * the map is keyed by the name of the attribute and 
-     * the value is the string value of the attribute.
-     * 
-     * the map returned by this method is live, and you can add new attribute
-     * by updating the map directly. Because of this design, there's no setter.
-     * 
-     * 
-     * @return
-     *     always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
+   /**
+    * Gets a map that contains attributes that aren't bound to any typed property on this class.
+    * 
+    * <p>
+    * the map is keyed by the name of the attribute and 
+    * the value is the string value of the attribute.
+    * 
+    * the map returned by this method is live, and you can add new attribute
+    * by updating the map directly. Because of this design, there's no setter.
+    * 
+    * 
+    * @return
+    *     always non-null
+    */
+   public Map<QName, String> getOtherAttributes() {
+      return otherAttributes;
+   }
 
 }

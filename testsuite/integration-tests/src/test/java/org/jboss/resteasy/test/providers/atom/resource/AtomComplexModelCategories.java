@@ -25,15 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomComplexModelCategories {
 
-    @XmlElement(name = "value")
-    private String[] values;
+   @XmlElement(name = "value")
+   private String[] values;
 
-    public String[] getValues() {
-        return values;
-    }
+   public String[] getValues() {
+      return values;
+   }
 
-    public void setValue(String[] categories) {
-        values = categories;
-    }
+   public void setValue(String[] categories) {
+      values = categories;
+   }
 
 }

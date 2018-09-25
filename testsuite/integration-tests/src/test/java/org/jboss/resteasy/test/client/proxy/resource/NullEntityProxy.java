@@ -8,9 +8,9 @@ import javax.ws.rs.core.MediaType;
 
 @Path("hello")
 public interface NullEntityProxy {
-    @POST
-    @Path("entity")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-    NullEntityProxyGreeting helloEntity(NullEntityProxyGreeter greeter);
+   @POST
+   @Path("entity")
+   @Produces({MediaType.APPLICATION_JSON})
+   @Consumes({MediaType.APPLICATION_JSON})
+   NullEntityProxyGreeting helloEntity(NullEntityProxyGreeter greeter);
 }

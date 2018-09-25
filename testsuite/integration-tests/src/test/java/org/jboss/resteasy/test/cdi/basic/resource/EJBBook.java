@@ -22,59 +22,59 @@ import java.io.Serializable;
 @XmlRootElement(name = "book")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EJBBook implements Serializable {
-    private static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
 
-    @XmlElement
-    private int id;
+   @XmlElement
+   private int id;
 
-    @XmlElement
-    @NotNull
-    @Size(min = 1, max = 25)
-    private String name;
+   @XmlElement
+   @NotNull
+   @Size(min = 1, max = 25)
+   private String name;
 
-    public EJBBook() {
-    }
+   public EJBBook() {
+   }
 
-    public EJBBook(final String name) {
-        this.name = name;
-    }
+   public EJBBook(final String name) {
+      this.name = name;
+   }
 
-    public EJBBook(final int id, final String name) {
-        this.id = id;
-        this.name = name;
-    }
+   public EJBBook(final int id, final String name) {
+      this.id = id;
+      this.name = name;
+   }
 
-    @Id
-    public int getId() {
-        return id;
-    }
+   @Id
+   public int getId() {
+      return id;
+   }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+   public void setId(int id) {
+      this.id = id;
+   }
 
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    public String toString() {
-        return "Book[" + id + "," + name + "]";
-    }
+   public String toString() {
+      return "Book[" + id + "," + name + "]";
+   }
 
-    public boolean equals(Object o) {
-        if (o == null || !(o instanceof EJBBook)) {
-            return false;
-        }
-        return name.equals(((EJBBook) o).name);
-    }
+   public boolean equals(Object o) {
+      if (o == null || !(o instanceof EJBBook)) {
+         return false;
+      }
+      return name.equals(((EJBBook) o).name);
+   }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
+   @Override
+   public int hashCode() {
+      return super.hashCode();
+   }
 }

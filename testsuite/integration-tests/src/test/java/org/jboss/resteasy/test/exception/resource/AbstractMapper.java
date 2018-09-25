@@ -5,14 +5,14 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 public abstract class AbstractMapper<E extends Throwable> implements ExceptionMapper<E> {
 
-    @Override
-    public Response toResponse(final E exception) {
-        final Response.ResponseBuilder builder = Response.ok();
+   @Override
+   public Response toResponse(final E exception) {
+      final Response.ResponseBuilder builder = Response.ok();
 
-        handleError(builder, exception);
+      handleError(builder, exception);
 
-        return builder.build();
-    }
+      return builder.build();
+   }
 
-    protected abstract void handleError(Response.ResponseBuilder builder, E e);
+   protected abstract void handleError(Response.ResponseBuilder builder, E e);
 }

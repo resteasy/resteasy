@@ -7,6 +7,6 @@ package org.jboss.resteasy.core;
  */
 public interface PostResourceMethodInvoker {
 
-	void invoke();
+   void invoke();
 
 }

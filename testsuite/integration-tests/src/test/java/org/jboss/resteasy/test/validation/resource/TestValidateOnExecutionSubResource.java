@@ -9,10 +9,10 @@ import javax.ws.rs.Path;
 @Path("")
 @ValidateOnExecution(type = {ExecutableType.NONE})
 public class TestValidateOnExecutionSubResource extends TestValidateOnExecutionResource {
-    @POST
-    @Path("override")
-    @Size(min = 1)
-    public String override(@Size(max = 1) String s) {
-        return s;
-    }
+   @POST
+   @Path("override")
+   @Size(min = 1)
+   public String override(@Size(max = 1) String s) {
+      return s;
+   }
 }

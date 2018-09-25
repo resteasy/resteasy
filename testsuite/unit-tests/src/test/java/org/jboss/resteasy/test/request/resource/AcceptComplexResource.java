@@ -7,17 +7,17 @@ import javax.ws.rs.Produces;
 
 @Path("/")
 public class AcceptComplexResource {
-    @Consumes("text/*")
-    @Produces("text/html")
-    @GET
-    public String method1() {
-        return null;
-    }
+   @Consumes("text/*")
+   @Produces("text/html")
+   @GET
+   public String method1() {
+      return null;
+   }
 
-    @Consumes("text/xml")
-    @Produces("text/json")
-    @GET
-    public String method2() {
-        return null;
-    }
+   @Consumes("text/xml")
+   @Produces("text/json")
+   @GET
+   public String method2() {
+      return null;
+   }
 }

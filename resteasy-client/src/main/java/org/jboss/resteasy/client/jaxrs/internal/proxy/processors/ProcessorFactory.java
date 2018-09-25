@@ -39,13 +39,13 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 public class ProcessorFactory
 {
 
-	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration)
-	{
-		return createProcessors(declaringClass, method, configuration, null);
-	}
-	
-	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
-	{
+   public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration)
+   {
+      return createProcessors(declaringClass, method, configuration, null);
+   }
+
+   public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
+   {
       Object[] params = new Object[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -53,7 +53,7 @@ public class ProcessorFactory
          Annotation[] annotations = method.getParameterAnnotations()[i];
          Type genericType = method.getGenericParameterTypes()[i];
          if (TypeVariable.class.isInstance(genericType) && declaringClass.isInterface() && !declaringClass.equals(method.getDeclaringClass())) {
-        	 genericType = getTypeArgument((TypeVariable)genericType, declaringClass, method.getDeclaringClass());
+            genericType = getTypeArgument((TypeVariable)genericType, declaringClass, method.getDeclaringClass());
          }
          AccessibleObject target = method;
          params[i] = ProcessorFactory.createProcessor(declaringClass, configuration, type, annotations, genericType, target, defaultConsumes, false);
@@ -61,15 +61,15 @@ public class ProcessorFactory
       return params;
    }
 
-	   public static Object createProcessor(Class<?> declaring,
+   public static Object createProcessor(Class<?> declaring,
                                                ClientConfiguration configuration, Class<?> type,
                                                Annotation[] annotations, Type genericType, AccessibleObject target,
                                                boolean ignoreBody)
-	   {
-		   return createProcessor(declaring, configuration, type, annotations, genericType, target, null, ignoreBody);
-	   }
-	   
-	   public static Object createProcessor(Class<?> declaring,
+   {
+      return createProcessor(declaring, configuration, type, annotations, genericType, target, null, ignoreBody);
+   }
+
+   public static Object createProcessor(Class<?> declaring,
                                                ClientConfiguration configuration, Class<?> type,
                                                Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
                                                boolean ignoreBody)
@@ -144,7 +144,7 @@ public class ProcessorFactory
       {
          MediaType mediaType = MediaTypeHelper.getConsumes(declaring, target);
          if(mediaType == null)
-        	 mediaType = defaultConsumes;
+            mediaType = defaultConsumes;
          if (mediaType == null)
          {
             throw new RuntimeException(Messages.MESSAGES.mustDefineConsumesType());

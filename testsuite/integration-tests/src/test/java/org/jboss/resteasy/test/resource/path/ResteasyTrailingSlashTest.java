@@ -26,26 +26,26 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class ResteasyTrailingSlashTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResteasyTrailingSlashTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, ResteasyTrailingSlashResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ResteasyTrailingSlashTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, ResteasyTrailingSlashResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResteasyTrailingSlashTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResteasyTrailingSlashTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Client should accept also URL ended by slash
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testTrailingSlash() throws Exception {
-        Client client = ClientBuilder.newClient();
-        String val = client.target(generateURL("/test/"))
-                .request().get(String.class);
-        assertEquals("Wrong response", "hello world", val);
-        client.close();
-    }
+   /**
+    * @tpTestDetails Client should accept also URL ended by slash
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testTrailingSlash() throws Exception {
+      Client client = ClientBuilder.newClient();
+      String val = client.target(generateURL("/test/"))
+            .request().get(String.class);
+      assertEquals("Wrong response", "hello world", val);
+      client.close();
+   }
 }

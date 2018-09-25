@@ -8,10 +8,10 @@ import javax.ws.rs.Produces;
 public interface SubResourceLocatorBaseService extends SubResourceLocatorBaseCrudService<SubResourceLocatorOhaUserModel> {
 
 
-    @GET
-    @Produces("text/plain")
-    @Path("data/ada/{user}")
-    SubResourceLocatorOhaUserModel getUserDataByAdaId(
+   @GET
+   @Produces("text/plain")
+   @Path("data/ada/{user}")
+   SubResourceLocatorOhaUserModel getUserDataByAdaId(
             @PathParam("user")
             String adaId);
 }

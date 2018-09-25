@@ -11,12 +11,12 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Priority(30)
 public class ResourceClassProcessorPriiorityCImplementation implements ResourceClassProcessor {
-    protected static final Logger logger = Logger.getLogger(ResourceClassProcessorPriiorityCImplementation.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResourceClassProcessorPriiorityCImplementation.class.getName());
 
-    @Override
-    public ResourceClass process(ResourceClass clazz) {
-        logger.info("ResourceClassProcessorPriiorityCImplementation visited on server");
-        ResourceClassProcessorPriorityTest.addToVisitedProcessors("C");
-        return clazz;
-    }
+   @Override
+   public ResourceClass process(ResourceClass clazz) {
+      logger.info("ResourceClassProcessorPriiorityCImplementation visited on server");
+      ResourceClassProcessorPriorityTest.addToVisitedProcessors("C");
+      return clazz;
+   }
 }

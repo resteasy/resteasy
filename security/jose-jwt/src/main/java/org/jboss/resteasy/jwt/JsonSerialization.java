@@ -50,7 +50,7 @@ public class JsonSerialization
       }
       finally
       {
-    	  ResteasyContext.popContextData(Providers.class);
+         ResteasyContext.popContextData(Providers.class);
          if (old != null) ResteasyContext.pushContext(Providers.class, old);
       }
    }
@@ -106,7 +106,7 @@ public class JsonSerialization
       }
       finally
       {
-    	  ResteasyContext.popContextData(Providers.class);
+         ResteasyContext.popContextData(Providers.class);
          if (old != null) ResteasyContext.pushContext(Providers.class, old);
       }
    }

@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class GenericResourceModel {
-    private String _s;
+   private String _s;
 
-    public String getS() {
-        return _s;
-    }
+   public String getS() {
+      return _s;
+   }
 
-    public void setS(String s) {
-        _s = s;
-    }
+   public void setS(String s) {
+      _s = s;
+   }
 }

@@ -17,108 +17,108 @@ public final class JWECryptoParts
 {
 
 
-	/**
-	 * The encrypted key (optional).
-	 */
-	private final String encryptedKey;
+   /**
+    * The encrypted key (optional).
+    */
+   private final String encryptedKey;
 
 
-	/**
-	 * The initialisation vector (optional).
-	 */
-	private final String iv;
+   /**
+    * The initialisation vector (optional).
+    */
+   private final String iv;
 
 
-	/**
-	 * The cipher text.
-	 */
-	private final String cipherText;
+   /**
+    * The cipher text.
+    */
+   private final String cipherText;
 
 
-	/**
-	 * The authentication tag (optional).
-	 */
-	private final String authenticationTag;
+   /**
+    * The authentication tag (optional).
+    */
+   private final String authenticationTag;
 
 
-	/**
-	 * Creates a new cryptograhic JWE parts instance.
-	 *
-	 * @param encryptedKey      The encrypted key, {@code null} if not
-	 *                          required by the encryption algorithm.
-	 * @param iv                The initialisation vector (IV), 
-	 *                          {@code null} if not required by the 
-	 *                          encryption algorithm.
-	 * @param cipherText        The cipher text. Must not be {@code null}.
-	 * @param authenticationTag The authentication tag, {@code null} if the 
-	 *                          JWE algorithm provides built-in integrity 
-	 *                          check.
-	 */
-	public JWECryptoParts(final String encryptedKey,
+   /**
+    * Creates a new cryptograhic JWE parts instance.
+    *
+    * @param encryptedKey      The encrypted key, {@code null} if not
+    *                          required by the encryption algorithm.
+    * @param iv                The initialisation vector (IV),
+    *                          {@code null} if not required by the
+    *                          encryption algorithm.
+    * @param cipherText        The cipher text. Must not be {@code null}.
+    * @param authenticationTag The authentication tag, {@code null} if the
+    *                          JWE algorithm provides built-in integrity
+    *                          check.
+    */
+   public JWECryptoParts(final String encryptedKey,
                          final String iv,
                          final String cipherText,
                          final String authenticationTag
-                        ) {
+   ) {
 
-		this.encryptedKey = encryptedKey;
+      this.encryptedKey = encryptedKey;
 
-		this.iv = iv;
+      this.iv = iv;
 
-		if (cipherText == null) {
+      if (cipherText == null) {
 
-		   throw new IllegalArgumentException(Messages.MESSAGES.cipherTextMustNotBeNull());
-		}
+         throw new IllegalArgumentException(Messages.MESSAGES.cipherTextMustNotBeNull());
+      }
 
-		this.cipherText = cipherText;
+      this.cipherText = cipherText;
 
-		this.authenticationTag = authenticationTag;
-	}
-
-
-	/**
-	 * Gets the encrypted key.
-	 *
-	 * @return The encrypted key, {@code null} if not required by 
-	 *         the JWE algorithm.
-	 */
-	public String getEncryptedKey() {
-
-		return encryptedKey;
-	}
+      this.authenticationTag = authenticationTag;
+   }
 
 
-	/**
-	 * Gets the initialisation vector (IV).
-	 *
-	 * @return The initialisation vector (IV), {@code null} if not required
-	 *         by the JWE algorithm.
-	 */
-	public String getInitializationVector() {
+   /**
+    * Gets the encrypted key.
+    *
+    * @return The encrypted key, {@code null} if not required by
+    *         the JWE algorithm.
+    */
+   public String getEncryptedKey() {
 
-		return iv;
-	}
-
-
-	/**
-	 * Gets the cipher text.
-	 *
-	 * @return The cipher text.
-	 */
-	public String getCipherText() {
-
-		return cipherText;
-	}
+      return encryptedKey;
+   }
 
 
-	/**
-	 * Gets the authentication tag.
-	 *
-	 * @return The authentication tag, {@code null} if the encryption
-	 *         algorithm provides built-in integrity checking.
-	 */
-	public String getAuthenticationTag() {
+   /**
+    * Gets the initialisation vector (IV).
+    *
+    * @return The initialisation vector (IV), {@code null} if not required
+    *         by the JWE algorithm.
+    */
+   public String getInitializationVector() {
 
-		return authenticationTag;
-	}
+      return iv;
+   }
+
+
+   /**
+    * Gets the cipher text.
+    *
+    * @return The cipher text.
+    */
+   public String getCipherText() {
+
+      return cipherText;
+   }
+
+
+   /**
+    * Gets the authentication tag.
+    *
+    * @return The authentication tag, {@code null} if the encryption
+    *         algorithm provides built-in integrity checking.
+    */
+   public String getAuthenticationTag() {
+
+      return authenticationTag;
+   }
 
 }

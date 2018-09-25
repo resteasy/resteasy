@@ -7,8 +7,8 @@ import javax.ws.rs.core.Response;
 @Path("")
 public class MediaTypeFromMessageBodyWriterResource2 {
 
-    @GET
-    public Response getJson() {
-        return Response.ok().entity(new CustomProviderPreferenceUser("dummy", "dummy@dummy.com")).build();
-    }
+   @GET
+   public Response getJson() {
+      return Response.ok().entity(new CustomProviderPreferenceUser("dummy", "dummy@dummy.com")).build();
+   }
 }

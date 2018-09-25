@@ -6,11 +6,11 @@ import javax.ws.rs.Produces;
 
 @Path("/count")
 public class CounterResource {
-	private int count;
+   private int count;
 
-	@GET
-	@Produces("text/plain")
-	public Integer getCount() {
-		return ++count;
-	}
+   @GET
+   @Produces("text/plain")
+   public Integer getCount() {
+      return ++count;
+   }
 }

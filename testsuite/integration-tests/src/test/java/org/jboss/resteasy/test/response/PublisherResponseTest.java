@@ -1,26 +1,10 @@
 package org.jboss.resteasy.test.response;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.PropertyPermission;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.SseEventSource;
-
-import org.jboss.logging.Logger;
+import io.reactivex.Flowable;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
@@ -32,14 +16,24 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
-import io.reactivex.Flowable;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.sse.SseEventSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.PropertyPermission;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @tpSubChapter Publisher response type
@@ -98,9 +92,9 @@ public class PublisherResponseTest {
       Flowable<String> flowable = (Flowable<String>) invoker.get();
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
-            (String s) -> list.add(s),
-            (Throwable t) -> logger.error("Error:", t),
-            () -> latch.countDown());
+         (String s) -> list.add(s),
+         (Throwable t) -> logger.error("Error:", t),
+         () -> latch.countDown());
       latch.await();
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
       
@@ -123,9 +117,9 @@ public class PublisherResponseTest {
       Flowable<String> flowable = (Flowable<String>) invoker.get();
       AtomicReference<Object> value = new AtomicReference<Object>();
       flowable.subscribe(
-            (String s) -> {},
-            (Throwable t) -> {value.set(t);latch.countDown();},
-            () -> {});
+         (String s) -> {},
+         (Throwable t) -> {value.set(t);latch.countDown();},
+         () -> {});
       latch.await();
       ClientErrorException cee = (ClientErrorException)value.get();
       Assert.assertEquals("Got it", cee.getResponse().readEntity(String.class));
@@ -142,7 +136,7 @@ public class PublisherResponseTest {
     */
    @Test
    @Ignore// Doesn't currently work. The original version, now in PublisherResponseNoStreamTest, still works.
-          // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
+         // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
    public void testTextErrorDeferred() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
@@ -170,9 +164,9 @@ public class PublisherResponseTest {
       Flowable<String> flowable = (Flowable<String>) invoker.get();
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
-            (String s) -> list.add(s),
-            (Throwable t) -> logger.error("Error:", t),
-            () -> latch.countDown());
+         (String s) -> list.add(s),
+         (Throwable t) -> logger.error("Error:", t),
+         () -> latch.countDown());
       latch.await();
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
    }
@@ -195,15 +189,13 @@ public class PublisherResponseTest {
          if(collector.size() >= 2) {
             future.complete(null);
          }
-      }, 
-            t -> {
-               logger.error(t.getMessage(), t);
-               errors.add(t);  
-            }, 
-            () -> {
-               // bah, never called
-               future.complete(null);
-            });
+      }, t -> {
+            logger.error(t.getMessage(), t);
+            errors.add(t);
+         }, () -> {
+            // bah, never called
+            future.complete(null);
+         });
       source.open();
       future.get();
       source.close();
@@ -226,20 +218,19 @@ public class PublisherResponseTest {
       CompletableFuture<Void> future = new CompletableFuture<Void>();
       SseEventSource source = SseEventSource.target(target).build();
       source.register(evt -> {
-        String data = evt.readData(String.class);
-        collector.add(data);
-        if(collector.size() >= 2) {
-           future.complete(null);
-        }
-      }, 
-           t -> {
-              logger.error("Error:", t);
-              errors.add(t);  
-           }, 
-           () -> {
-              // bah, never called
-              future.complete(null);
-           });
+         String data = evt.readData(String.class);
+         collector.add(data);
+         if(collector.size() >= 2) {
+            future.complete(null);
+         }
+      }, t -> {
+            logger.error("Error:", t);
+            errors.add(t);
+         },
+         () -> {
+            // bah, never called
+            future.complete(null);
+         });
       source.open();
       future.get();
       source.close();
@@ -270,11 +261,12 @@ public class PublisherResponseTest {
       Flowable<String> flowable = (Flowable<String>) invoker.get();
       ArrayList<String> list = new ArrayList<String>();
       flowable.subscribe(
-            (String s) -> {list.add(s);
-                          if(list.size() >= 2) latch.countDown();
-              },
-            (Throwable t) -> logger.error("Error:", t),
-            () -> latch.countDown());
+         (String s) -> {
+            list.add(s);
+            if (list.size() >= 2) latch.countDown();
+         },
+         (Throwable t) -> logger.error("Error:", t),
+         () -> latch.countDown());
       latch.await();
       client.close();
 

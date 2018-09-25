@@ -7,12 +7,12 @@ import javax.ws.rs.Path;
  */
 @Path("/gulliverstravels")
 public class BookImpl implements Book {
-    public String getTitle() {
-        return "Gulliver's Travels";
-    }
+   public String getTitle() {
+      return "Gulliver's Travels";
+   }
 
-    @Override
-    public Chapter getChapter(int number) {
-        return new ChapterImpl(number);
-    }
+   @Override
+   public Chapter getChapter(int number) {
+      return new ChapterImpl(number);
+   }
 }

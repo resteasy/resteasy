@@ -8,17 +8,17 @@ import java.util.List;
 
 @Path("generic")
 public class ParameterSubResGenericSub {
-    @SuppressWarnings(value = "unchecked")
-    @Path("sub")
-    public ParameterSubResDoubleInterface doit() {
-        InvocationHandler handler = new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                List<Double> list = (List<Double>) args[0];
-                return list.get(0).toString();
-            }
-        };
-        Class[] intfs = {ParameterSubResDoubleInterface.class};
-        return (ParameterSubResDoubleInterface) Proxy.newProxyInstance(ParameterSubResGenericSub.class.getClassLoader(), intfs, handler);
-    }
+   @SuppressWarnings(value = "unchecked")
+   @Path("sub")
+   public ParameterSubResDoubleInterface doit() {
+      InvocationHandler handler = new InvocationHandler() {
+         @Override
+         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            List<Double> list = (List<Double>) args[0];
+            return list.get(0).toString();
+         }
+      };
+      Class[] intfs = {ParameterSubResDoubleInterface.class};
+      return (ParameterSubResDoubleInterface) Proxy.newProxyInstance(ParameterSubResGenericSub.class.getClassLoader(), intfs, handler);
+   }
 }

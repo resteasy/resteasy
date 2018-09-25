@@ -95,7 +95,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setIoWorkerCount(int ioWorkerCount)
    {
-       this.ioWorkerCount = ioWorkerCount;
+      this.ioWorkerCount = ioWorkerCount;
    }
 
    /**
@@ -107,104 +107,104 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setExecutorThreadCount(int executorThreadCount)
    {
-       this.executorThreadCount = executorThreadCount;
+      this.executorThreadCount = executorThreadCount;
    }
 
-    /**
-     * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
-     *
-     * @param maxRequestSize the max request size. This is 10mb by default.
-     */
-    public void setMaxRequestSize(int maxRequestSize) {
-        this.maxRequestSize = maxRequestSize;
-    }
+   /**
+    * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
+    *
+    * @param maxRequestSize the max request size. This is 10mb by default.
+    */
+   public void setMaxRequestSize(int maxRequestSize) {
+      this.maxRequestSize = maxRequestSize;
+   }
 
-    public void setMaxInitialLineLength(int maxInitialLineLength) {
-        this.maxInitialLineLength = maxInitialLineLength;
-    }
+   public void setMaxInitialLineLength(int maxInitialLineLength) {
+      this.maxInitialLineLength = maxInitialLineLength;
+   }
 
-    public void setMaxHeaderSize(int maxHeaderSize) {
-        this.maxHeaderSize = maxHeaderSize;
-    }
+   public void setMaxHeaderSize(int maxHeaderSize) {
+      this.maxHeaderSize = maxHeaderSize;
+   }
 
-    public void setMaxChunkSize(int maxChunkSize) {
-        this.maxChunkSize = maxChunkSize;
-    }
+   public void setMaxChunkSize(int maxChunkSize) {
+      this.maxChunkSize = maxChunkSize;
+   }
 
-    public String getHostname() {
-        return hostname;
-    }
+   public String getHostname() {
+      return hostname;
+   }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+   public void setHostname(String hostname) {
+      this.hostname = hostname;
+   }
 
-    public int getPort() {
-        return runtimePort > 0 ? runtimePort : configuredPort;
-    }
+   public int getPort() {
+      return runtimePort > 0 ? runtimePort : configuredPort;
+   }
 
-    public void setPort(int port) {
-        this.configuredPort = port;
-    }
+   public void setPort(int port) {
+      this.configuredPort = port;
+   }
 
-    public void setBacklog(int backlog)
-    {
-        this.backlog = backlog;
-    }
+   public void setBacklog(int backlog)
+   {
+      this.backlog = backlog;
+   }
 
-    public int getIdleTimeout() {
-        return idleTimeout;
-    }
+   public int getIdleTimeout() {
+      return idleTimeout;
+   }
 
-    /**
-     * Set the idle timeout.
-     * Set this value to turn on idle connection cleanup.
-     * If there is no traffic within idleTimeoutSeconds, it'll close connection.
-     * @param idleTimeoutSeconds - How many seconds to cleanup client connection. default value -1 meaning no idle timeout.
-     */
-    public void setIdleTimeout(int idleTimeoutSeconds) {
-        this.idleTimeout = idleTimeoutSeconds;
-    }
+   /**
+    * Set the idle timeout.
+    * Set this value to turn on idle connection cleanup.
+    * If there is no traffic within idleTimeoutSeconds, it'll close connection.
+    * @param idleTimeoutSeconds - How many seconds to cleanup client connection. default value -1 meaning no idle timeout.
+    */
+   public void setIdleTimeout(int idleTimeoutSeconds) {
+      this.idleTimeout = idleTimeoutSeconds;
+   }
 
-    /**
-     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-     * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
-     *
-     * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
-     */
-    public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
-        this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
-    }
+   /**
+    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+    *
+    * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+    */
+   public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
+      this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+   }
 
-    /**
-     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-     * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
-     *
-     * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
-     */
-    public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
-        this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
-    }
+   /**
+    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
+    *
+    * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+    */
+   public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
+      this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
+   }
 
-    /**
-     * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-     *
-     * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
-     * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
-     */
-    public void setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-        this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
-    }
+   /**
+    * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    *
+    * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
+    * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
+    */
+   public void setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+      this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+   }
 
-    /**
-     * Add child options to the {@link io.netty.bootstrap.ServerBootstrap}.
-     *
-     * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
-     * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
-     */
-    public void setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-        this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
-    }
+   /**
+    * Add child options to the {@link io.netty.bootstrap.ServerBootstrap}.
+    *
+    * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
+    * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
+    */
+   public void setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+      this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+   }
 
    @Override
    public void setDeployment(ResteasyDeployment deployment)
@@ -233,101 +233,101 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
    protected RequestDispatcher createRequestDispatcher()
    {
-       return new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(),
+      return new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(),
                deployment.getProviderFactory(), domain);
    }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void start() {
-        eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
-        eventExecutor = new NioEventLoopGroup(executorThreadCount);
-        deployment.start();
-        // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
-        if (deployment.getApplication() != null) {
-           ApplicationPath appPath = deployment.getApplication().getClass().getAnnotation(ApplicationPath.class);
-           if (appPath != null && (root == null || "".equals(root))) {
-              // annotation is present and original root is not set
-              String path = appPath.value();
-              setRootResourcePath(path);
-           }
-        }
-        // Configure the server.
-        bootstrap.group(eventLoopGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(createChannelInitializer())
-                .option(ChannelOption.SO_BACKLOG, backlog)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+   @SuppressWarnings("unchecked")
+   @Override
+   public void start() {
+      eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
+      eventExecutor = new NioEventLoopGroup(executorThreadCount);
+      deployment.start();
+      // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
+      if (deployment.getApplication() != null) {
+         ApplicationPath appPath = deployment.getApplication().getClass().getAnnotation(ApplicationPath.class);
+         if (appPath != null && (root == null || "".equals(root))) {
+            // annotation is present and original root is not set
+            String path = appPath.value();
+            setRootResourcePath(path);
+         }
+      }
+      // Configure the server.
+      bootstrap.group(eventLoopGroup)
+            .channel(NioServerSocketChannel.class)
+            .childHandler(createChannelInitializer())
+            .option(ChannelOption.SO_BACKLOG, backlog)
+            .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-        for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
-            bootstrap.option(entry.getKey(), entry.getValue());
-        }
+      for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
+         bootstrap.option(entry.getKey(), entry.getValue());
+      }
 
-        for (Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
-            bootstrap.childOption(entry.getKey(), entry.getValue());
-        }
+      for (Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
+         bootstrap.childOption(entry.getKey(), entry.getValue());
+      }
 
-        final InetSocketAddress socketAddress;
-        if (null == hostname || hostname.isEmpty()) {
-            socketAddress = new InetSocketAddress(configuredPort);
-        } else {
-            socketAddress = new InetSocketAddress(hostname, configuredPort);
-        }
+      final InetSocketAddress socketAddress;
+      if (null == hostname || hostname.isEmpty()) {
+         socketAddress = new InetSocketAddress(configuredPort);
+      } else {
+         socketAddress = new InetSocketAddress(hostname, configuredPort);
+      }
 
-        Channel channel = bootstrap.bind(socketAddress).syncUninterruptibly().channel();
-        runtimePort = ((InetSocketAddress) channel.localAddress()).getPort();
-    }
+      Channel channel = bootstrap.bind(socketAddress).syncUninterruptibly().channel();
+      runtimePort = ((InetSocketAddress) channel.localAddress()).getPort();
+   }
 
-    private ChannelInitializer<SocketChannel> createChannelInitializer() {
-        final RequestDispatcher dispatcher = createRequestDispatcher();
-        if (sslContext == null && sniConfiguration == null) {
-            return new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    setupHandlers(ch, dispatcher, HTTP);
-                }
-            };
-        } else if (sniConfiguration == null) {
-            return new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    SSLEngine engine = sslContext.createSSLEngine();
-                    engine.setUseClientMode(false);
-                    ch.pipeline().addFirst(new SslHandler(engine));
-                    setupHandlers(ch, dispatcher, HTTPS);
-                }
-            };
-        } else {
-            return new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addFirst(new SniHandler(sniConfiguration.buildMapping()));
-                    setupHandlers(ch, dispatcher, HTTPS);
-                }
-            };
-        }
-    }
+   private ChannelInitializer<SocketChannel> createChannelInitializer() {
+      final RequestDispatcher dispatcher = createRequestDispatcher();
+      if (sslContext == null && sniConfiguration == null) {
+         return new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+               setupHandlers(ch, dispatcher, HTTP);
+            }
+         };
+      } else if (sniConfiguration == null) {
+         return new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+               SSLEngine engine = sslContext.createSSLEngine();
+               engine.setUseClientMode(false);
+               ch.pipeline().addFirst(new SslHandler(engine));
+               setupHandlers(ch, dispatcher, HTTPS);
+            }
+         };
+      } else {
+         return new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+               ch.pipeline().addFirst(new SniHandler(sniConfiguration.buildMapping()));
+               setupHandlers(ch, dispatcher, HTTPS);
+            }
+         };
+      }
+   }
 
-    private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
-        ChannelPipeline channelPipeline = ch.pipeline();
-        channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
-        channelPipeline.addLast(new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize));
-        channelPipeline.addLast(new HttpResponseEncoder());
-        channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
-        channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
-        channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
-        channelPipeline.addLast(new RestEasyHttpResponseEncoder());
-        if (idleTimeout > 0) {
-            channelPipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTimeout));
-        }
-        channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
-    }
+   private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
+      ChannelPipeline channelPipeline = ch.pipeline();
+      channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
+      channelPipeline.addLast(new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize));
+      channelPipeline.addLast(new HttpResponseEncoder());
+      channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
+      channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
+      channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
+      channelPipeline.addLast(new RestEasyHttpResponseEncoder());
+      if (idleTimeout > 0) {
+         channelPipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTimeout));
+      }
+      channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
+   }
 
    @Override
    public void stop()
    {
-       runtimePort = -1;
-       eventLoopGroup.shutdownGracefully();
-       eventExecutor.shutdownGracefully();
+      runtimePort = -1;
+      eventLoopGroup.shutdownGracefully();
+      eventExecutor.shutdownGracefully();
    }
 }

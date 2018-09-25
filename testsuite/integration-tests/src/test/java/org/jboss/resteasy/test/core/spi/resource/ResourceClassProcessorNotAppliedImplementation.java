@@ -8,12 +8,12 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ResourceClassProcessorNotAppliedImplementation implements ResourceClassProcessor {
-    protected static final Logger logger = Logger.getLogger(ResourceClassProcessorNotAppliedImplementation.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResourceClassProcessorNotAppliedImplementation.class.getName());
 
-    @Override
-    public ResourceClass process(ResourceClass clazz) {
-        logger.info("ResourceClassProcessorNotAppliedImplementation visited on server");
-        ResourceClassProcessorNotAppliedTest.addToVisitedProcessors("A");
-        return clazz;
-    }
+   @Override
+   public ResourceClass process(ResourceClass clazz) {
+      logger.info("ResourceClassProcessorNotAppliedImplementation visited on server");
+      ResourceClassProcessorNotAppliedTest.addToVisitedProcessors("A");
+      return clazz;
+   }
 }

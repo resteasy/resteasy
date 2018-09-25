@@ -37,54 +37,54 @@ import java.util.List;
 @RunAsClient
 public class BaseClassFromTypeListTest {
 
-    public static class Parent<T> {
-        public List<T> get() {
-            return null;
-        }
-    }
+   public static class Parent<T> {
+      public List<T> get() {
+         return null;
+      }
+   }
 
-    public static class Child extends Parent<BaseClassFromTypeListCustomer> {
-    }
+   public static class Child extends Parent<BaseClassFromTypeListCustomer> {
+   }
 
-    protected final Logger logger = Logger.getLogger(BaseClassFromTypeListTest.class.getName());
+   protected final Logger logger = Logger.getLogger(BaseClassFromTypeListTest.class.getName());
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(BaseClassFromTypeListTest.class.getSimpleName());
-        war.addAsManifestResource("jboss-deployment-structure-no-jackson.xml", "jboss-deployment-structure.xml");
-        return TestUtil.finishContainerPrepare(war, null, BaseClassFromTypeListCustomer.class, BaseClassFromTypeListResource.class,
-                BaseClassFromTypeListInAccountsIntf.class, BaseClassFromTypeListStoreIntf.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(BaseClassFromTypeListTest.class.getSimpleName());
+      war.addAsManifestResource("jboss-deployment-structure-no-jackson.xml", "jboss-deployment-structure.xml");
+      return TestUtil.finishContainerPrepare(war, null, BaseClassFromTypeListCustomer.class, BaseClassFromTypeListResource.class,
+            BaseClassFromTypeListInAccountsIntf.class, BaseClassFromTypeListStoreIntf.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, BaseClassFromTypeListTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, BaseClassFromTypeListTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test with resource implementing generic interface
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testIntfTemplate() throws Exception {
-        WebTarget target = client.target(generateURL("/intf"));
-        Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String str = response.readEntity(String.class);
-        logger.info(str);
-        response = target.request().put(Entity.entity(str, "application/json"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-    }
+   /**
+    * @tpTestDetails Test with resource implementing generic interface
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testIntfTemplate() throws Exception {
+      WebTarget target = client.target(generateURL("/intf"));
+      Response response = target.request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String str = response.readEntity(String.class);
+      logger.info(str);
+      response = target.request().put(Entity.entity(str, "application/json"));
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+   }
 }

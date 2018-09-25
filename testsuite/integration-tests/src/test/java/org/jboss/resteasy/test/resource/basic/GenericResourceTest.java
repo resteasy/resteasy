@@ -41,15 +41,15 @@ public class GenericResourceTest {
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
-       war.addClass(GenericResourceStudent.class);
-       war.addClass(GenericResourceStudentInterface.class);
-       war.addClass(GenericResourceCrudResource.class);
-       return TestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class, GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
+      WebArchive war = TestUtil.prepareArchive(GenericResourceTest.class.getSimpleName());
+      war.addClass(GenericResourceStudent.class);
+      war.addClass(GenericResourceStudentInterface.class);
+      war.addClass(GenericResourceCrudResource.class);
+      return TestUtil.finishContainerPrepare(war, null, GenericResourceStudentCrudResource.class, GenericResourceStudentReader.class, GenericResourceStudentWriter.class);
    }
 
    private static String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, GenericResourceTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, GenericResourceTest.class.getSimpleName());
    }
 
    @Test

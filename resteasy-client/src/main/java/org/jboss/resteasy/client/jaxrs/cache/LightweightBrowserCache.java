@@ -78,8 +78,8 @@ public class LightweightBrowserCache implements BrowserCache
    }
 
    public Entry put(String key, MediaType mediaType,
-                    MultivaluedMap<String, String> headers, byte[] cached, int expires,
-                    String etag, String lastModified)
+               MultivaluedMap<String, String> headers, byte[] cached, int expires,
+               String etag, String lastModified)
    {
       Entry previousValue = internalCache.get(key, mediaType);
 

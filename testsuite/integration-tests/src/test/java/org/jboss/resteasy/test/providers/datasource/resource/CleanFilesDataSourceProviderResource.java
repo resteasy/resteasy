@@ -10,44 +10,44 @@ import java.io.InputStream;
 @Path("/")
 public class CleanFilesDataSourceProviderResource {
 
-    public static String clientResponse = "response_from_client";
+   public static String clientResponse = "response_from_client";
 
-    @GET
-    @Path("/tmpdirpath")
-    @Produces("text/plain")
-    public String get() {
-        return System.getProperty("java.io.tmpdir");
-    }
+   @GET
+   @Path("/tmpdirpath")
+   @Produces("text/plain")
+   public String get() {
+      return System.getProperty("java.io.tmpdir");
+   }
 
-    @POST
-    @Path("once")
-    @Produces("text/plain")
-    public String get(DataSource dataSource) throws Exception {
-        InputStream is = dataSource.getInputStream();
-        // read the input stream as a test
-        while (is.read() != -1) {
-        }
-        return clientResponse;
-    }
+   @POST
+   @Path("once")
+   @Produces("text/plain")
+   public String get(DataSource dataSource) throws Exception {
+      InputStream is = dataSource.getInputStream();
+      // read the input stream as a test
+      while (is.read() != -1) {
+      }
+      return clientResponse;
+   }
 
-    @POST
-    @Path("twice")
-    @Produces("text/plain")
-    public String getInputSteamTwice(DataSource dataSource) throws Exception {
-        InputStream is = dataSource.getInputStream();
-        // read the input stream as a test
-        while (is.read() != -1) {
-        }
-        InputStream is2 = dataSource.getInputStream();
-        is2.close();
-        return clientResponse;
-    }
+   @POST
+   @Path("twice")
+   @Produces("text/plain")
+   public String getInputSteamTwice(DataSource dataSource) throws Exception {
+      InputStream is = dataSource.getInputStream();
+      // read the input stream as a test
+      while (is.read() != -1) {
+      }
+      InputStream is2 = dataSource.getInputStream();
+      is2.close();
+      return clientResponse;
+   }
 
-    @POST
-    @Path("never")
-    @Produces("text/plain")
-    public String postDataSource(DataSource datasource) {
-        return datasource.getContentType();
-    }
+   @POST
+   @Path("never")
+   @Produces("text/plain")
+   public String postDataSource(DataSource datasource) {
+      return datasource.getContentType();
+   }
 
 }

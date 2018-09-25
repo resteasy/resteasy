@@ -30,39 +30,39 @@ import javax.ws.rs.core.Form;
 @RunAsClient
 public class HttpRequestParameterInjectorTest {
 
-    private static final String DEPLOYMENT_NAME = "app";
+   private static final String DEPLOYMENT_NAME = "app";
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
-        war.addClass(HttpRequestParameterInjectorClassicParam.class);
-        return TestUtil.finishContainerPrepare(war, null, HttpRequestParameterInjectorResource.class,
-                HttpRequestParameterInjectorParamFactoryImpl.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
+      war.addClass(HttpRequestParameterInjectorClassicParam.class);
+      return TestUtil.finishContainerPrepare(war, null, HttpRequestParameterInjectorResource.class,
+            HttpRequestParameterInjectorParamFactoryImpl.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, DEPLOYMENT_NAME);
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, DEPLOYMENT_NAME);
+   }
 
-    /**
-     * @tpTestDetails New Client usage.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomInjectorFactory() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails New Client usage.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomInjectorFactory() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        String getResult = client.target(generateURL("/foo")).queryParam("param", "getValue").request()
-                .accept("text/plain").get().readEntity(String.class);
-        Assert.assertEquals("getValue, getValue, ", getResult);
+      String getResult = client.target(generateURL("/foo")).queryParam("param", "getValue").request()
+            .accept("text/plain").get().readEntity(String.class);
+      Assert.assertEquals("getValue, getValue, ", getResult);
 
 
-        Form form = new Form().param("param", "postValue");
-        String postResult = client.target(generateURL("/foo")).request()
-                .accept("text/plain").post(Entity.form(form)).readEntity(String.class);
-        Assert.assertEquals("postValue, , postValue", postResult);
+      Form form = new Form().param("param", "postValue");
+      String postResult = client.target(generateURL("/foo")).request()
+            .accept("text/plain").post(Entity.form(form)).readEntity(String.class);
+      Assert.assertEquals("postValue, , postValue", postResult);
 
-        client.close();
-    }
+      client.close();
+   }
 
 }

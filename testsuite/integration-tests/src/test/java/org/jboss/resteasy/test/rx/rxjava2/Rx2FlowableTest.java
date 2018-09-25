@@ -390,8 +390,8 @@ public class Rx2FlowableTest {
       FlowableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(FlowableRxInvoker.class);
       Flowable<String> flowable = (Flowable<String>) invoker.head();
       flowable.subscribe(
-              (String s) -> value.set(s), // HEAD - no body
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+         (String s) -> value.set(s), // HEAD - no body
+         (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

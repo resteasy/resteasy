@@ -14,4 +14,3 @@ import javax.interceptor.InterceptorBinding;
 @Retention(RUNTIME)
 public @interface InterceptorClassBinding {
 }
-

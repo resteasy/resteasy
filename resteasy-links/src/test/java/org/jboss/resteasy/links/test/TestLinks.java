@@ -53,128 +53,128 @@ public class TestLinks
       dispatcher = null;
    }
 
-	@Parameters
-	public static List<Class<?>[]> getParameters(){
-		return Arrays.asList(new Class<?>[]{BookStore.class}, new Class<?>[]{BookStoreMinimal.class});
-	}
+   @Parameters
+   public static List<Class<?>[]> getParameters(){
+      return Arrays.asList(new Class<?>[]{BookStore.class}, new Class<?>[]{BookStoreMinimal.class});
+   }
 
-	private Class<?> resourceType;
-	private String url;
-	private BookStoreService client;
-	private CloseableHttpClient httpClient;
-	
-	public TestLinks(Class<?> resourceType){
-		this.resourceType = resourceType;
-	}
-	
-	@Before
-	public void before(){
-		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = HttpClientBuilder.create().build();
-		ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);
-		url = generateBaseUrl();
-		ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
-		client = target.proxy(BookStoreService.class);
-	}
+   private Class<?> resourceType;
+   private String url;
+   private BookStoreService client;
+   private CloseableHttpClient httpClient;
 
-	@SuppressWarnings("deprecation")
-    @After
-	public void after(){
-		// TJWS does not support chunk encodings well so I need to kill kept
-		// alive connections
-		httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
-		dispatcher.getRegistry().removeRegistrations(resourceType);
-	}
-	
-	@Test
-	public void testLinks() throws Exception
-	{
-		Book book = client.getBookXML("foo");
-		checkBookLinks1(url, book);
-		book = client.getBookJSON("foo");
-		checkBookLinks1(url, book);
-	}
+   public TestLinks(Class<?> resourceType){
+      this.resourceType = resourceType;
+   }
 
-	@Test
-	public void testComments() throws Exception
-	{
-		List<Comment> comments = client.getBookCommentsXML("foo");
-		Assert.assertNotNull(comments);
-		Assert.assertFalse(comments.isEmpty());
-		checkCommentLinks(url, comments.get(0));
-		comments = client.getBookCommentsJSON("foo");
-		Assert.assertNotNull(comments);
-		Assert.assertFalse(comments.isEmpty());
-		checkCommentLinks(url, comments.get(0));
-	}
+   @Before
+   public void before(){
+      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      httpClient = HttpClientBuilder.create().build();
+      ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);
+      url = generateBaseUrl();
+      ResteasyWebTarget target = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
+      client = target.proxy(BookStoreService.class);
+   }
 
-	private void checkBookLinks1(String url, Book book) {
-		Assert.assertNotNull(book);
-		Assert.assertEquals("foo", book.getTitle());
-		Assert.assertEquals("bar", book.getAuthor());
-		RESTServiceDiscovery links = book.getRest();
-		Assert.assertNotNull(links);
-		Assert.assertEquals(7, links.size());
-		// self
-		AtomLink atomLink = links.getLinkForRel("self");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo", atomLink.getHref());
-		// update
-		atomLink = links.getLinkForRel("update");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo", atomLink.getHref());
-		// remove
-		atomLink = links.getLinkForRel("remove");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo", atomLink.getHref());
-		// list
-		atomLink = links.getLinkForRel("list");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/books", atomLink.getHref());
-		// add
-		atomLink = links.getLinkForRel("add");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/books", atomLink.getHref());
-		// comments
-		atomLink = links.getLinkForRel("comments");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
-		// comment collection
-		atomLink = links.getLinkForRel("comment-collection");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
-	}
+   @SuppressWarnings("deprecation")
+   @After
+   public void after(){
+      // TJWS does not support chunk encodings well so I need to kill kept
+      // alive connections
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+      dispatcher.getRegistry().removeRegistrations(resourceType);
+   }
 
-	private void checkCommentLinks(String url, Comment comment) {
-		Assert.assertNotNull(comment);
-		Assert.assertEquals(0, comment.getId());
-		RESTServiceDiscovery links = comment.getRest();
-		Assert.assertNotNull(links);
-		Assert.assertEquals(6, links.size());
-		// self
-		AtomLink atomLink = links.getLinkForRel("self");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-		// update
-		atomLink = links.getLinkForRel("update");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-		// remove
-		atomLink = links.getLinkForRel("remove");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-		// list
-		atomLink = links.getLinkForRel("list");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
-		// add
-		atomLink = links.getLinkForRel("add");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
-		// collection
-		atomLink = links.getLinkForRel("collection");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
-	}
+   @Test
+   public void testLinks() throws Exception
+   {
+      Book book = client.getBookXML("foo");
+      checkBookLinks1(url, book);
+      book = client.getBookJSON("foo");
+      checkBookLinks1(url, book);
+   }
+
+   @Test
+   public void testComments() throws Exception
+   {
+      List<Comment> comments = client.getBookCommentsXML("foo");
+      Assert.assertNotNull(comments);
+      Assert.assertFalse(comments.isEmpty());
+      checkCommentLinks(url, comments.get(0));
+      comments = client.getBookCommentsJSON("foo");
+      Assert.assertNotNull(comments);
+      Assert.assertFalse(comments.isEmpty());
+      checkCommentLinks(url, comments.get(0));
+   }
+
+   private void checkBookLinks1(String url, Book book) {
+      Assert.assertNotNull(book);
+      Assert.assertEquals("foo", book.getTitle());
+      Assert.assertEquals("bar", book.getAuthor());
+      RESTServiceDiscovery links = book.getRest();
+      Assert.assertNotNull(links);
+      Assert.assertEquals(7, links.size());
+      // self
+      AtomLink atomLink = links.getLinkForRel("self");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo", atomLink.getHref());
+      // update
+      atomLink = links.getLinkForRel("update");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo", atomLink.getHref());
+      // remove
+      atomLink = links.getLinkForRel("remove");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo", atomLink.getHref());
+      // list
+      atomLink = links.getLinkForRel("list");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/books", atomLink.getHref());
+      // add
+      atomLink = links.getLinkForRel("add");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/books", atomLink.getHref());
+      // comments
+      atomLink = links.getLinkForRel("comments");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
+      // comment collection
+      atomLink = links.getLinkForRel("comment-collection");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
+   }
+
+   private void checkCommentLinks(String url, Comment comment) {
+      Assert.assertNotNull(comment);
+      Assert.assertEquals(0, comment.getId());
+      RESTServiceDiscovery links = comment.getRest();
+      Assert.assertNotNull(links);
+      Assert.assertEquals(6, links.size());
+      // self
+      AtomLink atomLink = links.getLinkForRel("self");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
+      // update
+      atomLink = links.getLinkForRel("update");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
+      // remove
+      atomLink = links.getLinkForRel("remove");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
+      // list
+      atomLink = links.getLinkForRel("list");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
+      // add
+      atomLink = links.getLinkForRel("add");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
+      // collection
+      atomLink = links.getLinkForRel("collection");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
+   }
 }

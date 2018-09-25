@@ -18,7 +18,7 @@ import java.util.Map;
 public class LinkBuilderImpl implements Link.Builder
 {
    /**
-    * A map for all the link parameters such as "rel", "type", etc.	
+    * A map for all the link parameters such as "rel", "type", etc.
     */
    protected final Map<String, String> map = new HashMap<String, String>();
    protected UriBuilder uriBuilder;
@@ -99,15 +99,15 @@ public class LinkBuilderImpl implements Link.Builder
       URI built = null;
       if (uriBuilder == null)
       {
-        built = baseUri;
+         built = baseUri;
       }
       else
       {
-        built = this.uriBuilder.build(values);
+         built = this.uriBuilder.build(values);
       }
       if (!built.isAbsolute() && baseUri != null)
       {
-        built = baseUri.resolve(built);
+         built = baseUri.resolve(built);
       }
       return new LinkImpl(built, this.map);
    }

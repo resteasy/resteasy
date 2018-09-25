@@ -80,61 +80,61 @@ public class RESTEASY1325Test
 
    }
 
-    /**
-     * Test case
-     * @throws InterruptedException
-     * @throws MalformedURLException
-     */
+   /**
+    * Test case
+    * @throws InterruptedException
+    * @throws MalformedURLException
+    */
    private void callAndIdle() throws InterruptedException, MalformedURLException {
 
-         EventLoopGroup group = new NioEventLoopGroup();
-         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<Channel>() {
-                       @Override
-                       protected void initChannel(Channel ch) throws Exception {
-                          ch.pipeline().addLast(new HttpClientCodec());
-                          ch.pipeline().addLast(new HttpObjectAggregator(4096));
-                          ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
-                             @Override
-                             protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
-//                                System.out.println("HTTP response from resteasy: "+msg);
-                                 Assert.assertEquals(HttpResponseStatus.OK, msg.status());
-                             }
-                          });
-                       }
-                    });
+      EventLoopGroup group = new NioEventLoopGroup();
+      try {
+         Bootstrap b = new Bootstrap();
+         b.group(group)
+            .channel(NioSocketChannel.class)
+            .handler(new ChannelInitializer<Channel>() {
+               @Override
+               protected void initChannel(Channel ch) throws Exception {
+                  ch.pipeline().addLast(new HttpClientCodec());
+                  ch.pipeline().addLast(new HttpObjectAggregator(4096));
+                  ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
+                     @Override
+                     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
+//                               System.out.println("HTTP response from resteasy: "+msg);
+                        Assert.assertEquals(HttpResponseStatus.OK, msg.status());
+                     }
+                  });
+               }
+            });
 
-            // first request;
-            URL url = new URL(BASE_URI+"/test");
-            // Make the connection attempt.
-            final Channel ch = b.connect(url.getHost(), url.getPort()).sync().channel();
+         // first request;
+         URL url = new URL(BASE_URI+"/test");
+         // Make the connection attempt.
+         final Channel ch = b.connect(url.getHost(), url.getPort()).sync().channel();
 
-            // Prepare the HTTP request.
-            HttpRequest request = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
-            request.headers().set(HttpHeaderNames.HOST, url.getHost());
-            request.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
-            // Send the HTTP request.
-            ch.writeAndFlush(request);
+         // Prepare the HTTP request.
+         HttpRequest request = new DefaultFullHttpRequest(
+               HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
+         request.headers().set(HttpHeaderNames.HOST, url.getHost());
+         request.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
+         // Send the HTTP request.
+         ch.writeAndFlush(request);
 
-            // waiting for server close connection after idle.
-            ch.closeFuture().await();
-         } finally {
-            // Shut down executor threads to exit.
-            group.shutdownGracefully();
-         }
+         // waiting for server close connection after idle.
+         ch.closeFuture().await();
+      } finally {
+         // Shut down executor threads to exit.
+         group.shutdownGracefully();
+      }
    }
 
-    @Path("/")
-    public static class Resource {
-        @GET
-        @Path("/test")
-        @Produces(MediaType.TEXT_PLAIN)
-        public String get() {
-            return "hello world";
-        }
-    }
+   @Path("/")
+   public static class Resource {
+      @GET
+      @Path("/test")
+      @Produces(MediaType.TEXT_PLAIN)
+      public String get() {
+         return "hello world";
+      }
+   }
 }

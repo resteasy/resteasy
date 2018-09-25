@@ -9,8 +9,8 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 public class DefaultExceptionMapper implements ExceptionMapper<Exception>{
-    @Override
-    public Response toResponse(Exception exception) {
-        return Response.status(406).entity(exception.getMessage()).build();
-    }
+   @Override
+   public Response toResponse(Exception exception) {
+      return Response.status(406).entity(exception.getMessage()).build();
+   }
 }

@@ -11,22 +11,21 @@ import java.util.logging.Logger;
 
 @Provider
 public class EventsBookReaderInterceptor implements ReaderInterceptor {
-    @Inject
-    @EventsReadIntercept
-    Event<String> readInterceptEvent;
+   @Inject
+   @EventsReadIntercept
+   Event<String> readInterceptEvent;
 
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @Override
-    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        log.info("*** Intercepting call in EventsBookReaderInterceptor.read()");
-        log.info("EventsBookReaderInterceptor firing readInterceptEvent");
-        readInterceptEvent.fire("readInterceptEvent");
-        Object result = context.proceed();
-        log.info("*** Back from intercepting call in EventsBookReaderInterceptor.read()");
-        return result;
-    }
+   @Override
+   public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
+      log.info("*** Intercepting call in EventsBookReaderInterceptor.read()");
+      log.info("EventsBookReaderInterceptor firing readInterceptEvent");
+      readInterceptEvent.fire("readInterceptEvent");
+      Object result = context.proceed();
+      log.info("*** Back from intercepting call in EventsBookReaderInterceptor.read()");
+      return result;
+   }
 
 }
-

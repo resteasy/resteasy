@@ -53,10 +53,10 @@ public class SeamFunctionMapper extends FunctionMapper
       }
    }
 
-    @Override
-    public void mapFunction(String prefix, String localName, Method meth) {
-        super.mapFunction(prefix, localName, meth);
-    }
+   @Override
+   public void mapFunction(String prefix, String localName, Method meth) {
+      super.mapFunction(prefix, localName, meth);
+   }
 
    /* @Override
    public Method resolveFunction(String prefix, String localName, int paramCount) 

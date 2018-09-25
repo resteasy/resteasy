@@ -10,10 +10,10 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/mime")
 public class InputPartDefaultContentTypeWildcardOverwriteService {
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
-    public int echoMultipartForm(@MultipartForm InputPartDefaultContentTypeWildcardOverwriteContainerBean containerBean) {
-        return containerBean.getFoo().getMyInt();
-    }
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.TEXT_PLAIN)
+   public int echoMultipartForm(@MultipartForm InputPartDefaultContentTypeWildcardOverwriteContainerBean containerBean) {
+      return containerBean.getFoo().getMyInt();
+   }
 }

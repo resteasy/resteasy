@@ -16,37 +16,37 @@ import java.util.Collection;
 
 @Provider
 public class CollectionProviderCollectionWriter implements
-        MessageBodyWriter<Collection<?>> {
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
+      MessageBodyWriter<Collection<?>> {
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType) {
-        String path = CollectionProviderTest.getPathValue(annotations);
-        // Return type : Other
-        if (path.equalsIgnoreCase(type.getSimpleName())) {
-            return CollectionProviderTest.checkOther(type, genericType);
-        } else if (path.equalsIgnoreCase("response/linkedlist")) {
-            return CollectionProviderTest.checkResponseNongeneric(type, genericType);
-        } else if (path.equalsIgnoreCase("response/genericentity/linkedlist")) {
-            return CollectionProviderTest.checkGeneric(type, genericType);
-        } else if (path.equalsIgnoreCase("genericentity/linkedlist")) {
-            return CollectionProviderTest.checkGeneric(type, genericType);
-        }
-        return false;
-    }
+      String path = CollectionProviderTest.getPathValue(annotations);
+      // Return type : Other
+      if (path.equalsIgnoreCase(type.getSimpleName())) {
+         return CollectionProviderTest.checkOther(type, genericType);
+      } else if (path.equalsIgnoreCase("response/linkedlist")) {
+         return CollectionProviderTest.checkResponseNongeneric(type, genericType);
+      } else if (path.equalsIgnoreCase("response/genericentity/linkedlist")) {
+         return CollectionProviderTest.checkGeneric(type, genericType);
+      } else if (path.equalsIgnoreCase("genericentity/linkedlist")) {
+         return CollectionProviderTest.checkGeneric(type, genericType);
+      }
+      return false;
+   }
 
-    @Override
-    public long getSize(Collection<?> t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType) {
-        return Response.Status.OK.name().length();
-    }
+   @Override
+   public long getSize(Collection<?> t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType) {
+      return Response.Status.OK.name().length();
+   }
 
-    @Override
-    public void writeTo(Collection<?> t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        entityStream.write(Response.Status.OK.name().getBytes());
-    }
+   @Override
+   public void writeTo(Collection<?> t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders,
+                  OutputStream entityStream) throws IOException,
+         WebApplicationException {
+      entityStream.write(Response.Status.OK.name().getBytes());
+   }
 
 }

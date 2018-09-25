@@ -20,22 +20,22 @@ import java.nio.charset.StandardCharsets;
 @Produces("text/plain")
 public class SseSmokeMessageBodyWriter implements MessageBodyWriter<SseSmokeUser> {
 
-    public long getSize(SseSmokeUser arg0, Class<?> arg1, ConstraintType.Type arg2, Annotation[] arg3, MediaType arg4) {
-        return getStringRepresentation(arg0).length();
-    }
+   public long getSize(SseSmokeUser arg0, Class<?> arg1, ConstraintType.Type arg2, Annotation[] arg3, MediaType arg4) {
+      return getStringRepresentation(arg0).length();
+   }
 
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        return true;
-    }
+   public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
+      return true;
+   }
 
-    public void writeTo(SseSmokeUser arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
-                        MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(arg6, StandardCharsets.UTF_8));
-        bw.write(getStringRepresentation(arg0));
-        bw.flush();
-    }
+   public void writeTo(SseSmokeUser arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
+                  MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(arg6, StandardCharsets.UTF_8));
+      bw.write(getStringRepresentation(arg0));
+      bw.flush();
+   }
 
-    private String getStringRepresentation(SseSmokeUser user) {
-        return user.getUsername() + ";" + user.getEmail();
-    }
+   private String getStringRepresentation(SseSmokeUser user) {
+      return user.getUsername() + ";" + user.getEmail();
+   }
 }

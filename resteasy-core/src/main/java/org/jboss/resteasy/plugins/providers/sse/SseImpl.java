@@ -7,7 +7,7 @@ import javax.ws.rs.sse.SseBroadcaster;
 public class SseImpl implements Sse
 {
 
-	@Override
+   @Override
    public OutboundSseEvent.Builder newEventBuilder()
    {
       return new OutboundSseEventImpl.BuilderImpl();

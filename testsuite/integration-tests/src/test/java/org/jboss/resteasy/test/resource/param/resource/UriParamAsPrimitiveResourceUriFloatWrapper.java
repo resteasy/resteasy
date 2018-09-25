@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/float/wrapper/{arg}")
 public class UriParamAsPrimitiveResourceUriFloatWrapper {
-    @GET
-    public String doGet(@PathParam("arg") Float v) {
-        Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 3.14159265f, v.floatValue(), 0.0f);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") Float v) {
+      Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 3.14159265f, v.floatValue(), 0.0f);
+      return "content";
+   }
 }

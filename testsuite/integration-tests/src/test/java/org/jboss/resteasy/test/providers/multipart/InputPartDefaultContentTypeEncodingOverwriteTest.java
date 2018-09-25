@@ -33,58 +33,58 @@ import java.lang.reflect.ReflectPermission;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class InputPartDefaultContentTypeEncodingOverwriteTest {
-    public static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=utf-8";
-    private static Client client;
+   public static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=utf-8";
+   private static Client client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
-        war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
-        war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter.class,
-                InputPartDefaultContentTypeEncodingOverwriteService.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
+      war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
+      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter.class,
+            InputPartDefaultContentTypeEncodingOverwriteService.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
+   }
 
-    @BeforeClass
-    public static void before() throws Exception
-    {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void before() throws Exception
+   {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void after() throws Exception
-    {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception
+   {
+      client.close();
+   }
 
 
-    private static final String TEST_URI = generateURL("");
+   private static final String TEST_URI = generateURL("");
 
-    /**
-     * @tpTestDetails Test for new client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testContentTypeNewClient() throws Exception {
-        String message = "--boo\r\n"
-                + "Content-Disposition: form-data; name=\"foo\"\r\n"
-                + "Content-Transfer-Encoding: 8bit\r\n\r\n" + "bar\r\n"
-                + "--boo--\r\n";
+   /**
+    * @tpTestDetails Test for new client
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testContentTypeNewClient() throws Exception {
+      String message = "--boo\r\n"
+            + "Content-Disposition: form-data; name=\"foo\"\r\n"
+            + "Content-Transfer-Encoding: 8bit\r\n\r\n" + "bar\r\n"
+            + "--boo--\r\n";
 
-        WebTarget target = client.target(generateURL("/mime"));
-        Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
-        Response response = target.request().post(entity);
+      WebTarget target = client.target(generateURL("/mime"));
+      Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
+      Response response = target.request().post(entity);
 
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
-        Assert.assertEquals("Response text is wrong",
-                MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_UTF_8),
-                MediaType.valueOf(response.readEntity(String.class)));
-    }
+      Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+      Assert.assertEquals("Response text is wrong",
+            MediaType.valueOf(TEXT_PLAIN_WITH_CHARSET_UTF_8),
+            MediaType.valueOf(response.readEntity(String.class)));
+   }
 }

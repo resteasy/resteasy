@@ -53,7 +53,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
             ProviderPriorityTestException.class,
             ProviderPriorityExceptionMapperCCC.class,
             ProviderPriorityFooParamConverterProviderCCC.class
-            );
+      );
       List<Class<?>> singletons = new ArrayList<Class<?>>();
       singletons.add(ProviderPriorityExceptionMapperCCC.class);
       singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);

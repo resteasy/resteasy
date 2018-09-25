@@ -71,7 +71,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
    
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
-           throws JAXBException
+         throws JAXBException
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
       JAXBContextFinder finder = resolver.getContext(type);
@@ -189,7 +189,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    }
 
    public static void setCharset(MediaType mediaType, Marshaller marshaller)
-           throws PropertyException
+         throws PropertyException
    {
       String charset = getCharset(mediaType);
       // specify the character encoding if it is set on the media type

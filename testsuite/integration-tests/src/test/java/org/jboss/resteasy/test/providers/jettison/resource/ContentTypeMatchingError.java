@@ -5,14 +5,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ContentTypeMatchingError {
-    private String name = "foo";
+   private String name = "foo";
 
-    @XmlElement
-    public String getName() {
-        return name;
-    }
+   @XmlElement
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 }

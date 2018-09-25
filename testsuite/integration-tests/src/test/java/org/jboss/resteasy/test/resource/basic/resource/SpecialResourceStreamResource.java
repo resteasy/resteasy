@@ -8,9 +8,9 @@ import java.io.InputStream;
 
 @Path("/inputstream")
 public class SpecialResourceStreamResource {
-    @POST
-    @Path("/test/{type}")
-    public void test(InputStream is, @PathParam("type") final String type) throws IOException {
+   @POST
+   @Path("/test/{type}")
+   public void test(InputStream is, @PathParam("type") final String type) throws IOException {
 
-    }
+   }
 }

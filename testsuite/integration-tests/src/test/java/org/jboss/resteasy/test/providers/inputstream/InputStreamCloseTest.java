@@ -30,44 +30,44 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class InputStreamCloseTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(InputStreamCloseTest.class.getSimpleName());
-        war.addClass(InputStreamCloseInputStream.class);
-        return TestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(InputStreamCloseTest.class.getSimpleName());
+      war.addClass(InputStreamCloseInputStream.class);
+      return TestUtil.finishContainerPrepare(war, null, InputStreamCloseResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InputStreamCloseTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, InputStreamCloseTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails New client test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void newClient() throws Exception {
-        // Resource creates and returns InputStream.
-        Response response = client.target(generateURL("/create/")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("hello", response.readEntity(String.class));
-        response.close();
+   /**
+    * @tpTestDetails New client test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void newClient() throws Exception {
+      // Resource creates and returns InputStream.
+      Response response = client.target(generateURL("/create/")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("hello", response.readEntity(String.class));
+      response.close();
 
-        // Verify previously created InputStream has been closed.
-        response = client.target(generateURL("/test/")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-    }
+      // Verify previously created InputStream has been closed.
+      response = client.target(generateURL("/test/")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+   }
 }

@@ -30,40 +30,40 @@ import java.io.InputStream;
 @RunAsClient
 public class ProxyInputStreamTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyInputStreamTest.class.getSimpleName());
-        war.addClass(ProxyInputStreamProxy.class);
-        return TestUtil.finishContainerPrepare(war, null, ProxyInputStreamResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyInputStreamTest.class.getSimpleName());
+      war.addClass(ProxyInputStreamProxy.class);
+      return TestUtil.finishContainerPrepare(war, null, ProxyInputStreamResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ProxyInputStreamTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ProxyInputStreamTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails New client version
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInputStreamNewClient() throws Exception {
-        ProxyInputStreamProxy proxy = client.target(generateURL("/")).proxy(ProxyInputStreamProxy.class);
-        InputStream is = proxy.get();
-        byte[] bytes = ReadFromStream.readFromStream(100, is);
-        is.close();
-        String str = new String(bytes);
-        Assert.assertEquals("hello world", str);
-    }
+   /**
+    * @tpTestDetails New client version
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInputStreamNewClient() throws Exception {
+      ProxyInputStreamProxy proxy = client.target(generateURL("/")).proxy(ProxyInputStreamProxy.class);
+      InputStream is = proxy.get();
+      byte[] bytes = ReadFromStream.readFromStream(100, is);
+      is.close();
+      String str = new String(bytes);
+      Assert.assertEquals("hello world", str);
+   }
 }

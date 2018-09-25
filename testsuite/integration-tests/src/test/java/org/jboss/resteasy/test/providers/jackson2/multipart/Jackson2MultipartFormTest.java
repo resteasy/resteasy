@@ -19,33 +19,33 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class Jackson2MultipartFormTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @BeforeClass
-    public static void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(Jackson2MultipartFormTest.class.getSimpleName());
-        war.addClass(Jackson2MultipartFormTest.class);
-        return TestUtil.finishContainerPrepare(war, null, JsonFormResource.class, JsonUser.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(Jackson2MultipartFormTest.class.getSimpleName());
+      war.addClass(Jackson2MultipartFormTest.class);
+      return TestUtil.finishContainerPrepare(war, null, JsonFormResource.class, JsonUser.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, Jackson2MultipartFormTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, Jackson2MultipartFormTest.class.getSimpleName());
+   }
 
-    @Test
-    public void testJacksonProxy() {
-        JsonForm proxy = client.target(generateURL("")).proxy(JsonForm.class);
-        String name = proxy.putMultipartForm(new JsonFormResource.Form(new JsonUser("bill")));
-        Assert.assertEquals("bill", name);
-    }
+   @Test
+   public void testJacksonProxy() {
+      JsonForm proxy = client.target(generateURL("")).proxy(JsonForm.class);
+      String name = proxy.putMultipartForm(new JsonFormResource.Form(new JsonUser("bill")));
+      Assert.assertEquals("bill", name);
+   }
 }

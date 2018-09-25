@@ -30,49 +30,49 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ProviderInjectionTest {
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(ProviderInjectionTest.class.getSimpleName());
-        war.addClass(ProviderInjectionSimpleResource.class);
-        war.addClass(PortProviderUtil.class);
-        return TestUtil.finishContainerPrepare(war, null, ProviderInjectionSimpleMessageBodyWriter.class, ProviderInjectionSimpleResourceImpl.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(ProviderInjectionTest.class.getSimpleName());
+      war.addClass(ProviderInjectionSimpleResource.class);
+      war.addClass(PortProviderUtil.class);
+      return TestUtil.finishContainerPrepare(war, null, ProviderInjectionSimpleMessageBodyWriter.class, ProviderInjectionSimpleResourceImpl.class);
+   }
 
-    @Before
-    public void setUp() throws Exception {
-        // do a request (force provider instantiation if providers were created lazily)
-        client = (ResteasyClient)ClientBuilder.newClient();
-        ProviderInjectionSimpleResource proxy = client.target(PortProviderUtil.generateBaseUrl(ProviderInjectionTest.class.getSimpleName())).proxyBuilder(ProviderInjectionSimpleResource.class).build();
-        assertEquals(proxy.foo(), "bar");
-    }
+   @Before
+   public void setUp() throws Exception {
+      // do a request (force provider instantiation if providers were created lazily)
+      client = (ResteasyClient)ClientBuilder.newClient();
+      ProviderInjectionSimpleResource proxy = client.target(PortProviderUtil.generateBaseUrl(ProviderInjectionTest.class.getSimpleName())).proxyBuilder(ProviderInjectionSimpleResource.class).build();
+      assertEquals(proxy.foo(), "bar");
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Getting constructor
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testConstructorInjection() {
-        for (ProviderInjectionSimpleMessageBodyWriter writer : ProviderInjectionSimpleMessageBodyWriter.getInstances()) {
-            assertTrue(writer.getConstructorProviders() != null);
-        }
-    }
+   /**
+    * @tpTestDetails Getting constructor
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testConstructorInjection() {
+      for (ProviderInjectionSimpleMessageBodyWriter writer : ProviderInjectionSimpleMessageBodyWriter.getInstances()) {
+         assertTrue(writer.getConstructorProviders() != null);
+      }
+   }
 
-    /**
-     * @tpTestDetails Getting field
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testFieldInjection() {
-        for (ProviderInjectionSimpleMessageBodyWriter writer : ProviderInjectionSimpleMessageBodyWriter.getInstances()) {
-            assertTrue(writer.getFieldProviders() != null);
-        }
-    }
+   /**
+    * @tpTestDetails Getting field
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testFieldInjection() {
+      for (ProviderInjectionSimpleMessageBodyWriter writer : ProviderInjectionSimpleMessageBodyWriter.getInstances()) {
+         assertTrue(writer.getFieldProviders() != null);
+      }
+   }
 
 }

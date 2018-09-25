@@ -8,8 +8,8 @@ import java.io.IOException;
 
 @Provider
 public class ResponseFilterChangeStatusResponseFilter implements ContainerResponseFilter {
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        responseContext.setStatus(201);
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+      responseContext.setStatus(201);
+   }
 }

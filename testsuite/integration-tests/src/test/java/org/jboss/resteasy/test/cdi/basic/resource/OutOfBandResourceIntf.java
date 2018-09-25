@@ -7,10 +7,10 @@ import javax.ws.rs.core.Response;
 
 @Local
 public interface OutOfBandResourceIntf {
-    Response scheduleTimer();
+   Response scheduleTimer();
 
-    Response testTimer() throws InterruptedException;
+   Response testTimer() throws InterruptedException;
 
-    @Timeout
-    void timeout(Timer timer);
+   @Timeout
+   void timeout(Timer timer);
 }

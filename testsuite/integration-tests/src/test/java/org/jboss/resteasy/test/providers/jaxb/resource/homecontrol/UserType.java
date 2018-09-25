@@ -53,9 +53,9 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "UserType", propOrder = {
-        "id",
-        "credentials",
-        "roles"
+      "id",
+      "credentials",
+      "roles"
 })
 public class UserType {
    @XmlElement(namespace = "http://creaity.de/homecontrol/rest/types/v1")
@@ -145,8 +145,8 @@ public class UserType {
     */
    @XmlAccessorType(XmlAccessType.FIELD)
    @XmlType(name = "", propOrder = {
-           "loginId",
-           "password"
+         "loginId",
+         "password"
    })
    public static class Credentials {
 

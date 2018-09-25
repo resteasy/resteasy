@@ -298,7 +298,7 @@ public class SegmentNode
          {
             String name = entry.getKey();
             if ("q".equals(name)
-                    || "qs".equals(name)) continue;
+               || "qs".equals(name)) continue;
             params.put(name, entry.getValue());
          }
          Annotation[] annotations = match.expression.invoker.getMethod().getAnnotations();

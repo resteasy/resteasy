@@ -135,11 +135,11 @@ public class SseResource
          throw new IllegalStateException("No client connected.");
       }
       synchronized (this.sseBroadcasterLock) {
-    	  //subscribe
-          if (sseBroadcaster == null)
-          {
-             sseBroadcaster = sse.newBroadcaster();
-          }
+         //subscribe
+         if (sseBroadcaster == null)
+         {
+            sseBroadcaster = sse.newBroadcaster();
+         }
       }
       sseBroadcaster.register(sink);
    }
@@ -150,7 +150,7 @@ public class SseResource
    {
       if (this.sseBroadcaster == null)
       {
-    	  throw new IllegalStateException("No Sse broadcaster created.");
+         throw new IllegalStateException("No Sse broadcaster created.");
       }
       ExecutorService service = (ExecutorService) servletContext
             .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);

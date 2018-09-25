@@ -10,22 +10,22 @@ import javax.ws.rs.core.SecurityContext;
 
 @Path("/secured2")
 public class BasicAuthBaseResourceMoreSecured {
-    private static Logger logger = Logger.getLogger(BasicAuthBaseResourceMoreSecured.class);
+   private static Logger logger = Logger.getLogger(BasicAuthBaseResourceMoreSecured.class);
 
-    public String get(@Context SecurityContext ctx) {
-        logger.info("********* IN SECURE CLIENT");
-        if (!ctx.isUserInRole("admin")) {
-            logger.info("NOT IN ROLE!!!!");
-            throw new WebApplicationException(403);
-        }
-        return "hello";
-    }
+   public String get(@Context SecurityContext ctx) {
+      logger.info("********* IN SECURE CLIENT");
+      if (!ctx.isUserInRole("admin")) {
+         logger.info("NOT IN ROLE!!!!");
+         throw new WebApplicationException(403);
+      }
+      return "hello";
+   }
 
-    @GET
-    @Path("/authorized")
-    @RolesAllowed("admin")
-    public String getAuthorized() {
-        return "authorized";
-    }
+   @GET
+   @Path("/authorized")
+   @RolesAllowed("admin")
+   public String getAuthorized() {
+      return "authorized";
+   }
 
 }

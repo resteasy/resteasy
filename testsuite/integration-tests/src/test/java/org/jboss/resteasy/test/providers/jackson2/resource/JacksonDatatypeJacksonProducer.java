@@ -13,18 +13,18 @@ import javax.ws.rs.ext.Provider;
 @Produces(MediaType.APPLICATION_JSON)
 public class JacksonDatatypeJacksonProducer implements ContextResolver<ObjectMapper> {
 
-    private final ObjectMapper json;
+   private final ObjectMapper json;
 
-    public JacksonDatatypeJacksonProducer() throws Exception {
-        this.json = new ObjectMapper()
-                .findAndRegisterModules()
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+   public JacksonDatatypeJacksonProducer() throws Exception {
+      this.json = new ObjectMapper()
+            .findAndRegisterModules()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+   }
 
-    @Override
-    public ObjectMapper getContext(Class<?> objectType) {
-        return json;
-    }
+   @Override
+   public ObjectMapper getContext(Class<?> objectType) {
+      return json;
+   }
 
 }

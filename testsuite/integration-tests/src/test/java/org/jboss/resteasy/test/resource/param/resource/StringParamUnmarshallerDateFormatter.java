@@ -10,18 +10,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class StringParamUnmarshallerDateFormatter implements StringParameterUnmarshaller<Date> {
-    private SimpleDateFormat formatter;
+   private SimpleDateFormat formatter;
 
-    public void setAnnotations(Annotation[] annotations) {
-        StringParamUnmarshallerTest.StringParamUnmarshallerDateFormat format = FindAnnotation.findAnnotation(annotations, StringParamUnmarshallerTest.StringParamUnmarshallerDateFormat.class);
-        formatter = new SimpleDateFormat(format.value());
-    }
+   public void setAnnotations(Annotation[] annotations) {
+      StringParamUnmarshallerTest.StringParamUnmarshallerDateFormat format = FindAnnotation.findAnnotation(annotations, StringParamUnmarshallerTest.StringParamUnmarshallerDateFormat.class);
+      formatter = new SimpleDateFormat(format.value());
+   }
 
-    public Date fromString(String str) {
-        try {
-            return formatter.parse(str);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
+   public Date fromString(String str) {
+      try {
+         return formatter.parse(str);
+      } catch (ParseException e) {
+         throw new RuntimeException(e);
+      }
+   }
 }

@@ -91,26 +91,26 @@ public class ResourcePropertyInjector implements PropertyInjector
                {
                   throw new InternalServerErrorException(e);
                }
-         }));
+            }));
       }
       for (SetterInjector injector : setters)
       {
          ret = ret.thenCompose(v -> 
             injector.injector.inject(request, response, unwrapAsync)
             .thenAccept(value -> {
-                     try
-                     {
-                        injector.param.getSetter().invoke(target, value);
-                     }
-                     catch (IllegalAccessException e)
-                     {
-                        throw new InternalServerErrorException(e);
-                     }
-                     catch (InvocationTargetException e)
-                     {
-                        throw new ApplicationException(e.getCause());
-                     }
-                  }));
+               try
+               {
+                  injector.param.getSetter().invoke(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
+            }));
       }
       return ret;
    }
@@ -132,26 +132,26 @@ public class ResourcePropertyInjector implements PropertyInjector
                {
                   throw new InternalServerErrorException(e);
                }
-         }));
+            }));
       }
       for (SetterInjector injector : setters)
       {
          ret = ret.thenCompose(v -> 
             injector.injector.inject(unwrapAsync)
             .thenAccept(value -> {
-                     try
-                     {
-                        injector.param.getSetter().invoke(target, value);
-                     }
-                     catch (IllegalAccessException e)
-                     {
-                        throw new InternalServerErrorException(e);
-                     }
-                     catch (InvocationTargetException e)
-                     {
-                        throw new ApplicationException(e.getCause());
-                     }
-                  }));
+               try
+               {
+                  injector.param.getSetter().invoke(target, value);
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new InternalServerErrorException(e);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
+            }));
       }
       return ret;
    }

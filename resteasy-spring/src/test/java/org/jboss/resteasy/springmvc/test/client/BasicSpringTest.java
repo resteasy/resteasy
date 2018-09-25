@@ -13,8 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations =
-{ "classpath:spring-test-client.xml" })
+@ContextConfiguration(locations = { "classpath:spring-test-client.xml" })
 @DirtiesContext
 @Ignore
 public class BasicSpringTest

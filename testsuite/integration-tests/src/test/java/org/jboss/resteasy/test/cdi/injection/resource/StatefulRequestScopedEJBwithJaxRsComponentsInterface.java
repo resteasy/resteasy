@@ -5,4 +5,3 @@ import javax.ejb.Local;
 @Local
 public interface StatefulRequestScopedEJBwithJaxRsComponentsInterface extends ReverseInjectionEJBInterface {
 }
-

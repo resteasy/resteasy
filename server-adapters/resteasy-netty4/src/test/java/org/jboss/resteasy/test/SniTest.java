@@ -29,94 +29,94 @@ import javax.ws.rs.core.MediaType;
 public class SniTest
 {
 
-    private static NettyJaxrsServer server;
+   private static NettyJaxrsServer server;
 
-    @BeforeClass
-    public static void setup()
-    {
-        SniConfiguration sniConfiguration = new SniConfiguration(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext());
-        sniConfiguration.addSniMapping("sni", SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
-        sniConfiguration.addSniMapping("untrusted", SSLCerts.NO_TRUSTED_CLIENTS_KEYSTORE.getSslContext());
+   @BeforeClass
+   public static void setup()
+   {
+      SniConfiguration sniConfiguration = new SniConfiguration(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext());
+      sniConfiguration.addSniMapping("sni", SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
+      sniConfiguration.addSniMapping("untrusted", SSLCerts.NO_TRUSTED_CLIENTS_KEYSTORE.getSslContext());
 
-        server = new NettyJaxrsServer();
-        server.setSniConfiguration(sniConfiguration);
-        server.setPort(TestPortProvider.getPort());
-        server.setRootResourcePath("");
-        server.setSecurityDomain(null);
+      server = new NettyJaxrsServer();
+      server.setSniConfiguration(sniConfiguration);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
 
-        server.start();
+      server.start();
 
-        server.getDeployment().getRegistry().addPerRequestResource(ResteasyTrailingSlashTest.Resource.class);
-    }
+      server.getDeployment().getRegistry().addPerRequestResource(ResteasyTrailingSlashTest.Resource.class);
+   }
 
-    @AfterClass
-    public static void stop() throws Exception {
-        server.stop();
-    }
+   @AfterClass
+   public static void stop() throws Exception {
+      server.stop();
+   }
 
-    @Test
-    public void testTrustedClient()
-    {
-        //given
-        Client client = createClientWithCertificate(SSLCerts.DEFAULT_TRUSTSTORE.getSslContext());
+   @Test
+   public void testTrustedClient()
+   {
+      //given
+      Client client = createClientWithCertificate(SSLCerts.DEFAULT_TRUSTSTORE.getSslContext());
 
-        //when
-        String returnValue = callRestService(client);
+      //when
+      String returnValue = callRestService(client);
 
-        //then
-        Assert.assertNotNull(returnValue);
-    }
+      //then
+      Assert.assertNotNull(returnValue);
+   }
 
-    @Test(expected = ProcessingException.class)
-    public void testTrustedClientButWithNoSNI()
-    {
-        //given
-        Client client = createClientWithCertificate(SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
+   @Test(expected = ProcessingException.class)
+   public void testTrustedClientButWithNoSNI()
+   {
+      //given
+      Client client = createClientWithCertificate(SSLCerts.SNI_SERVER_KEYSTORE.getSslContext());
 
-        //when
-        callRestService(client);
-    }
+      //when
+      callRestService(client);
+   }
 
-    @Test
-    public void testSniClient()
-    {
-        //given
-        ResteasyClient client = createClientWithCertificate(SSLCerts.SNI_TRUSTSTORE.getSslContext(), "sni");
+   @Test
+   public void testSniClient()
+   {
+      //given
+      ResteasyClient client = createClientWithCertificate(SSLCerts.SNI_TRUSTSTORE.getSslContext(), "sni");
 
-        //when
-        String returnValue = callRestService(client);
+      //when
+      String returnValue = callRestService(client);
 
-        //then
-        Assert.assertNotNull(returnValue);
-    }
+      //then
+      Assert.assertNotNull(returnValue);
+   }
 
-    private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
-    {
-        ResteasyClientBuilder resteasyClientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
-        if(sslContext != null) {
-            resteasyClientBuilder.sslContext(sslContext);
-        }
-        if(sniName != null) {
-            resteasyClientBuilder.sniHostNames(sniName);
-        }
-        return resteasyClientBuilder.build();
-    }
+   private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
+   {
+      ResteasyClientBuilder resteasyClientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
+      if(sslContext != null) {
+         resteasyClientBuilder.sslContext(sslContext);
+      }
+      if(sniName != null) {
+         resteasyClientBuilder.sniHostNames(sniName);
+      }
+      return resteasyClientBuilder.build();
+   }
 
-    private String callRestService(Client client) {
-        WebTarget target = client.target("https://localhost:8081/test");
-        return target.request().get(String.class);
-    }
+   private String callRestService(Client client) {
+      WebTarget target = client.target("https://localhost:8081/test");
+      return target.request().get(String.class);
+   }
 
-    @Path("/")
-    public static class Resource
-    {
-        @GET
-        @Path("/test/")
-        @Produces(MediaType.TEXT_PLAIN)
-        public String get()
-        {
-            return "hello world";
-        }
-    }
+   @Path("/")
+   public static class Resource
+   {
+      @GET
+      @Path("/test/")
+      @Produces(MediaType.TEXT_PLAIN)
+      public String get()
+      {
+         return "hello world";
+      }
+   }
 
 }

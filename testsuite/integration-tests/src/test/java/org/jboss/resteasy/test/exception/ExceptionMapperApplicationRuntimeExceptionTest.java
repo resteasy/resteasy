@@ -30,28 +30,28 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ExceptionMapperApplicationRuntimeExceptionTest {
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ExceptionMapperApplicationRuntimeExceptionTest.class.getSimpleName());
-        war.addClass(ExceptionMapperCustomRuntimeException.class);
-        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperApplicationRuntimeCustomMapper.class,
-                ExceptionMapperApplicationRuntimeMapper.class, ExceptionMapperApplicationRuntimeResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ExceptionMapperApplicationRuntimeExceptionTest.class.getSimpleName());
+      war.addClass(ExceptionMapperCustomRuntimeException.class);
+      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperApplicationRuntimeCustomMapper.class,
+            ExceptionMapperApplicationRuntimeMapper.class, ExceptionMapperApplicationRuntimeResource.class);
+   }
 
-    /**
-     * @tpTestDetails Check ExceptionMapper for ApplicationException
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMapper() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/test", ExceptionMapperApplicationRuntimeExceptionTest.class.getSimpleName()));
-        Response response = base.request().get();
+   /**
+    * @tpTestDetails Check ExceptionMapper for ApplicationException
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMapper() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/test", ExceptionMapperApplicationRuntimeExceptionTest.class.getSimpleName()));
+      Response response = base.request().get();
 
-        Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+      Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
 
-        response.close();
-        client.close();
-    }
+      response.close();
+      client.close();
+   }
 
 }

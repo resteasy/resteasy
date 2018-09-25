@@ -13,27 +13,27 @@ import javax.ws.rs.core.Context;
 @Path("/")
 public class TracingConfigResource extends Application {
 
-    @GET
-    @Path("/type")
-    public String type(@Context ResteasyDeployment deployment) {
-        return RESTEasyTracingLogger.getTracingConfig(deployment.getProviderFactory());
-    }
+   @GET
+   @Path("/type")
+   public String type(@Context ResteasyDeployment deployment) {
+      return RESTEasyTracingLogger.getTracingConfig(deployment.getProviderFactory());
+   }
 
-    @GET
-    @Path("/level")
-    public String level(@Context ResteasyDeployment deployment) {
-        return RESTEasyTracingLogger.getTracingThreshold(deployment.getProviderFactory());
-    }
+   @GET
+   @Path("/level")
+   public String level(@Context ResteasyDeployment deployment) {
+      return RESTEasyTracingLogger.getTracingThreshold(deployment.getProviderFactory());
+   }
 
-    @GET
-    @Path("/logger")
-    public String logger(@Context HttpRequest request) throws NoSuchMethodException {
-        RESTEasyTracingLogger logger = (RESTEasyTracingLogger) request.getAttribute(RESTEasyTracing.PROPERTY_NAME);
-        if (logger == null) {
-            return "";
-        } else {
-            return RESTEasyTracingLogger.class.getName();
-        }
-    }
+   @GET
+   @Path("/logger")
+   public String logger(@Context HttpRequest request) throws NoSuchMethodException {
+      RESTEasyTracingLogger logger = (RESTEasyTracingLogger) request.getAttribute(RESTEasyTracing.PROPERTY_NAME);
+      if (logger == null) {
+         return "";
+      } else {
+         return RESTEasyTracingLogger.class.getName();
+      }
+   }
 
 }

@@ -118,7 +118,8 @@ public class ClientResponseFilterExceptionTest {
       Assert.assertTrue(
          doTest(
             () ->  service.cs(),
-            (CompletionStage<String> cs) -> {try {cs.toCompletableFuture().get();} catch (Exception e) {incr(e);}}
+            (CompletionStage<String> cs) -> {
+               try {cs.toCompletableFuture().get();} catch (Exception e) {incr(e);}}
             ));
    }
 

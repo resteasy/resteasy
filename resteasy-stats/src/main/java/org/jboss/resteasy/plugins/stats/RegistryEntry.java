@@ -62,12 +62,12 @@ public class RegistryEntry implements Comparable<RegistryEntry>
       return methods;
    }
 
-    @Override
-    public int compareTo(RegistryEntry o)
-    {
-        if (this.getUriTemplate() == null)
-            return o.getUriTemplate() == null ? 0 : 1;
+   @Override
+   public int compareTo(RegistryEntry o)
+   {
+      if (this.getUriTemplate() == null)
+         return o.getUriTemplate() == null ? 0 : 1;
 
-        return this.getUriTemplate().compareTo(o.getUriTemplate());
-    }
+      return this.getUriTemplate().compareTo(o.getUriTemplate());
+   }
 }

@@ -43,49 +43,49 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ConcreteDecoratorTest {
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive("resteasy-cdi-ejb-test");
-        war.addClasses(UtilityProducer.class, VisitList.class);
-        war.addClasses(ObjectHolder.class, ConcreteResourceIntf.class);
-        war.addClasses(HolderBinding.class, HierarchyHolder.class);
-        war.addClasses(GenericsProducer.class);
-        war.addClasses(ConcreteResource.class);
-        war.addClasses(NestedHierarchyHolder.class);
-        war.addClasses(UpperBoundHierarchyHolder.class, LowerBoundHierarchyHolder.class);
-        war.addClasses(Animal.class, Primate.class, Australopithecus.class);
-        war.addClasses(ConcreteDecorator.class);
-        war.addAsWebInfResource(ConcreteDecoratorTest.class.getPackage(), "concrete_beans.xml", "beans.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive("resteasy-cdi-ejb-test");
+      war.addClasses(UtilityProducer.class, VisitList.class);
+      war.addClasses(ObjectHolder.class, ConcreteResourceIntf.class);
+      war.addClasses(HolderBinding.class, HierarchyHolder.class);
+      war.addClasses(GenericsProducer.class);
+      war.addClasses(ConcreteResource.class);
+      war.addClasses(NestedHierarchyHolder.class);
+      war.addClasses(UpperBoundHierarchyHolder.class, LowerBoundHierarchyHolder.class);
+      war.addClasses(Animal.class, Primate.class, Australopithecus.class);
+      war.addClasses(ConcreteDecorator.class);
+      war.addAsWebInfResource(ConcreteDecoratorTest.class.getPackage(), "concrete_beans.xml", "beans.xml");
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, "resteasy-cdi-ejb-test");
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, "resteasy-cdi-ejb-test");
+   }
 
-    /**
-     * @tpTestDetails Run REST point method and check execution of decorators.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testConcreteConcreteDecorator() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Run REST point method and check execution of decorators.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testConcreteConcreteDecorator() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        WebTarget base = client.target(generateURL("/concrete/decorators/clear"));
-        Response response = base.request().get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
+      WebTarget base = client.target(generateURL("/concrete/decorators/clear"));
+      Response response = base.request().get();
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
 
-        base = client.target(generateURL("/concrete/decorators/execute"));
-        response = base.request().get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
+      base = client.target(generateURL("/concrete/decorators/execute"));
+      response = base.request().get();
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
 
-        base = client.target(generateURL("/concrete/decorators/test"));
-        response = base.request().get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
+      base = client.target(generateURL("/concrete/decorators/test"));
+      response = base.request().get();
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
 
-        client.close();
-    }
+      client.close();
+   }
 }

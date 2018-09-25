@@ -31,7 +31,7 @@ import javax.ws.rs.client.ClientBuilder;
  * @param <T> The type representing the client interface.
  */
 public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
-        InitializingBean
+      InitializingBean
 {
    private Class<T> serviceInterface;
    private URI baseUri;
@@ -41,41 +41,41 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
    private ResteasyProviderFactory resteasyProviderFactory;
 
    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.beans.factory.FactoryBean#getObject()
-     */
+    * (non-Javadoc)
+    *
+    * @see org.springframework.beans.factory.FactoryBean#getObject()
+    */
    public T getObject() throws Exception
    {
       return client;
    }
 
    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-     */
+    * (non-Javadoc)
+    *
+    * @see org.springframework.beans.factory.FactoryBean#getObjectType()
+    */
    public Class<T> getObjectType()
    {
       return serviceInterface;
    }
 
    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.beans.factory.FactoryBean#isSingleton()
-     */
+    * (non-Javadoc)
+    *
+    * @see org.springframework.beans.factory.FactoryBean#isSingleton()
+    */
    public boolean isSingleton()
    {
       return true;
    }
 
    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
+    * (non-Javadoc)
+    *
+    * @see
+    * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+    */
    public void afterPropertiesSet() throws Exception
    {
       if (resteasyProviderFactory == null)
@@ -179,7 +179,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
     * @param resteasyProviderFactory the instance to be used by proxy generation.
     */
    public void setResteasyProviderFactory(
-           ResteasyProviderFactory resteasyProviderFactory)
+         ResteasyProviderFactory resteasyProviderFactory)
    {
       this.resteasyProviderFactory = resteasyProviderFactory;
    }

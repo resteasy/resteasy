@@ -12,11 +12,11 @@ import javax.xml.bind.JAXBElement;
 @Produces("application/json")
 public interface JaxbJsonElementClient {
 
-    @GET
-    @Path("/{name}")
-    JAXBElement<Parent> getParent(@PathParam("name") String name);
+   @GET
+   @Path("/{name}")
+   JAXBElement<Parent> getParent(@PathParam("name") String name);
 
-    @POST
-    JAXBElement<Parent> postParent(JAXBElement<Parent> parent);
+   @POST
+   JAXBElement<Parent> postParent(JAXBElement<Parent> parent);
 
 }

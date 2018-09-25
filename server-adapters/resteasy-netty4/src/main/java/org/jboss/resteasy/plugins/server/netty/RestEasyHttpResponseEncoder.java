@@ -29,17 +29,17 @@ import io.netty.handler.codec.http.LastHttpContent;
 public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHttpResponse>
 {
 
-    @Override
-    protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
-    {
-       nettyResponse.getOutputStream().flush();
-       if (nettyResponse.isCommitted()) {
-          out.add(LastHttpContent.EMPTY_LAST_CONTENT);
-       } else {
-          HttpResponse response = nettyResponse.getDefaultHttpResponse();
-          out.add(response);
-       }
-    }
+   @Override
+   protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
+   {
+      nettyResponse.getOutputStream().flush();
+      if (nettyResponse.isCommitted()) {
+         out.add(LastHttpContent.EMPTY_LAST_CONTENT);
+      } else {
+         HttpResponse response = nettyResponse.getDefaultHttpResponse();
+         out.add(response);
+      }
+   }
 
    @SuppressWarnings({ "rawtypes", "unchecked" }) 
    public static void transformHeaders(NettyHttpResponse nettyResponse, HttpResponse response, ResteasyProviderFactory factory)
@@ -61,7 +61,7 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
             RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
             if (delegate != null)
             {
-                response.headers().add(key, delegate.toString(value));
+               response.headers().add(key, delegate.toString(value));
             }
             else
             {

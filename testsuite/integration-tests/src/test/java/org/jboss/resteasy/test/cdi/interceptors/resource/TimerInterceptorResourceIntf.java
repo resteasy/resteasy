@@ -9,14 +9,14 @@ import javax.ws.rs.core.Response;
 
 @Local
 public interface TimerInterceptorResourceIntf {
-    @GET
-    @Path("timer/schedule")
-    Response scheduleTimer();
+   @GET
+   @Path("timer/schedule")
+   Response scheduleTimer();
 
-    @GET
-    @Path("timer/test")
-    Response testTimer() throws InterruptedException;
+   @GET
+   @Path("timer/test")
+   Response testTimer() throws InterruptedException;
 
-    @Timeout
-    void timeout(Timer timer);
+   @Timeout
+   void timeout(Timer timer);
 }

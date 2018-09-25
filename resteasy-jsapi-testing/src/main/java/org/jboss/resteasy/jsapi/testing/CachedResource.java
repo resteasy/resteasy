@@ -16,19 +16,19 @@ import javax.ws.rs.core.*;
 @Path("cached")
 public class CachedResource {
 
-    @GET
-    @GZIP
-    @Path("{uuid}")
-    public Response get(@Context HttpServletRequest servletRequest, @Context Request request, @PathParam("uuid") String uuid) throws Exception {
-        EntityTag tag = new EntityTag(Integer.toString(Math.abs(uuid.hashCode())));
-        Response.ResponseBuilder builder = request.evaluatePreconditions(tag);
+   @GET
+   @GZIP
+   @Path("{uuid}")
+   public Response get(@Context HttpServletRequest servletRequest, @Context Request request, @PathParam("uuid") String uuid) throws Exception {
+      EntityTag tag = new EntityTag(Integer.toString(Math.abs(uuid.hashCode())));
+      Response.ResponseBuilder builder = request.evaluatePreconditions(tag);
 
-        if (builder != null) {
-            return builder.build();
-        } else {
-            builder = Response.ok(uuid, MediaType.TEXT_PLAIN);
-            builder.tag(tag);
-            return builder.build();
-        }
-    }
+      if (builder != null) {
+         return builder.build();
+      } else {
+         builder = Response.ok(uuid, MediaType.TEXT_PLAIN);
+         builder.tag(tag);
+         return builder.build();
+      }
+   }
 }

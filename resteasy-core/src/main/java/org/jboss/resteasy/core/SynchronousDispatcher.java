@@ -149,10 +149,10 @@ public class SynchronousDispatcher implements Dispatcher
          tracingLogger.logDuration("PRE_MATCH_SUMMARY", totalTimestamp, this.requestPreprocessors.size());
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
          requestContext = new PreMatchContainerRequestContext(request, requestFilters,
-                 () -> {
-                    continuation.run();
-                    return null;
-                 });
+            () -> {
+               continuation.run();
+               return null;
+            });
          aborted = requestContext.filter();
       } catch (Exception e) {
          //logger.error("Failed in preprocess, mapping exception", e);
@@ -313,7 +313,7 @@ public class SynchronousDispatcher implements Dispatcher
    }
 
    public ResourceInvoker getInvoker(HttpRequest request)
-           throws Failure
+         throws Failure
    {
       LogMessages.LOGGER.pathInfo(request.getUri().getPath());
       if (!request.isInitial())
@@ -395,22 +395,22 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void clearContextData()
    {
-	  Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
-	  if (cleanables != null)
-	  {
-		  for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
-		  {
-			  try
-			  {
-				  it.next().clean();
-			  }
-			  catch(Exception e)
-			  {
-				// Empty
-			  }
-		  }
-	  }
-	  ResteasyContext.clearContextData();
+      Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
+      if (cleanables != null)
+      {
+         for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
+         {
+            try
+            {
+               it.next().clean();
+            }
+            catch(Exception e)
+            {
+               // Empty
+            }
+         }
+      }
+      ResteasyContext.clearContextData();
       // just in case there were internalDispatches that need to be cleaned up
       MessageBodyParameterInjector.clearBodies();
    }
@@ -574,10 +574,10 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
-               t -> {
-                  if(t != null)
-                     writeException(request, response, t, t2 -> {});
-               });
+            t -> {
+               if(t != null)
+                  writeException(request, response, t, t2 -> {});
+            });
       }
       catch (Exception e)
       {

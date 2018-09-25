@@ -31,39 +31,39 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class CustomProviderPreferenceTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(CustomProviderPreferenceTest.class.getSimpleName());
-        war.addClass(CustomProviderPreferenceUser.class);
-        return TestUtil.finishContainerPrepare(war, null, CustomProviderPreferenceUserResource.class,
-                CustomProviderPreferenceUserBodyWriter.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(CustomProviderPreferenceTest.class.getSimpleName());
+      war.addClass(CustomProviderPreferenceUser.class);
+      return TestUtil.finishContainerPrepare(war, null, CustomProviderPreferenceUserResource.class,
+            CustomProviderPreferenceUserBodyWriter.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CustomProviderPreferenceTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CustomProviderPreferenceTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Client test.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomProviderPreference() throws Exception {
-        Response response = client.target(generateURL("/user")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "jharting;email@example.com", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Client test.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomProviderPreference() throws Exception {
+      Response response = client.target(generateURL("/user")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "jharting;email@example.com", response.readEntity(String.class));
+      response.close();
+   }
 }

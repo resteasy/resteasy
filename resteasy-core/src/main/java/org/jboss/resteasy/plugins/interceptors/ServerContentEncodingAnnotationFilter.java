@@ -24,9 +24,7 @@ import java.util.Set;
 @Priority(Priorities.HEADER_DECORATOR)
 public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
 {
-   protected
-   @Context
-   HttpRequest request;
+   protected @Context HttpRequest request;
 
    Set<String> encodings;
 

@@ -10,9 +10,9 @@ import javax.ws.rs.core.MediaType;
 @Path("/testapp")
 public interface ApplicationScopeIRestServiceAppScoped {
    
-    @POST
-    @Path("/send")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @NotNull
-    String sendDto(@NotNull @Valid ApplicationScopeMyDto myDto);
+   @POST
+   @Path("/send")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @NotNull
+   String sendDto(@NotNull @Valid ApplicationScopeMyDto myDto);
 }

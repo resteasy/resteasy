@@ -6,9 +6,9 @@ import javax.ws.rs.Produces;
 
 @Path("/my")
 public class ApplicationConfigResource {
-    @GET
-    @Produces("text/quoted")
-    public String get() {
-        return "hello";
-    }
+   @GET
+   @Produces("text/quoted")
+   public String get() {
+      return "hello";
+   }
 }

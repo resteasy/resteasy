@@ -5,7 +5,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 
 public class ClientDynamicFeaturesDualFeature1 implements DynamicFeature {
-    @Override
-    public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-    }
+   @Override
+   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+   }
 }

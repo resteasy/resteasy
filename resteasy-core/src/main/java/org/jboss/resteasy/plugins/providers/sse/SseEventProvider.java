@@ -26,10 +26,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
-@Produces(
-{"text/event-stream", "application/x-stream-general"})
-@Consumes(
-{"text/event-stream", "application/x-stream-general"})
+@Produces({"text/event-stream", "application/x-stream-general"})
+@Consumes({"text/event-stream", "application/x-stream-general"})
 public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
@@ -39,7 +37,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
    {
       return OutboundSseEvent.class.isAssignableFrom(type) && 
             (MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType) ||
-             GENERAL_STREAM_TYPE.isCompatible(mediaType));
+            GENERAL_STREAM_TYPE.isCompatible(mediaType));
    }
 
    @Override
@@ -50,10 +48,9 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
    }
 
    @Override
-   @SuppressWarnings(
-   {"unchecked"})
+   @SuppressWarnings({"unchecked"})
    public void writeTo(OutboundSseEvent event, Class<?> type, Type genericType, Annotation[] annotations,
-         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;
@@ -115,63 +112,63 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      Response.Status.INTERNAL_SERVER_ERROR);
             }
             writer.writeTo(event.getData(), payloadClass, payloadType, annotations, event.getMediaType(), httpHeaders,
-                  new OutputStream()
-                  {
-                     boolean isNewLine = false;
+               new OutputStream()
+               {
+                  boolean isNewLine = false;
 
-                     @Override
-                     public void write(int b) throws IOException
+                  @Override
+                  public void write(int b) throws IOException
+                  {
+                     if (textLike)
                      {
-                        if (textLike)
+                        if (b == '\n' || b == '\r')
                         {
-                            if (b == '\n' || b == '\r')
-                            {
-                               if (!isNewLine)
-                               {
-                                  entityStream.write(SseConstants.EOL);
-                               }
-                               isNewLine = true;
-                            }
-                            else
-                            {
-                               if (isNewLine)
-                               {
-                                  entityStream.write(SseConstants.DATA_LEAD);
-                               }
-                               entityStream.write(b);
-                               isNewLine = false;
-                            }   
+                           if (!isNewLine)
+                           {
+                              entityStream.write(SseConstants.EOL);
+                           }
+                           isNewLine = true;
                         }
                         else
                         {
-                            if (escape && (b == '\n' || b == '\r' || b == '\\'))
-                            {
-                                entityStream.write('\\');
-                                entityStream.write(b);
-                            }
-                            else
-                            {
-                                entityStream.write(b);
-                            }
+                           if (isNewLine)
+                           {
+                              entityStream.write(SseConstants.DATA_LEAD);
+                           }
+                           entityStream.write(b);
+                           isNewLine = false;
                         }
                      }
-
-                     @Override
-                     public void flush() throws IOException
+                     else
                      {
-                        entityStream.flush();
-                     }
-
-                     @Override
-                     public void close() throws IOException
-                     {
-                        if (!textLike)
+                        if (escape && (b == '\n' || b == '\r' || b == '\\'))
                         {
-                            entityStream.write(SseConstants.EOL);
+                           entityStream.write('\\');
+                           entityStream.write(b);
                         }
-                        entityStream.close();
+                        else
+                        {
+                           entityStream.write(b);
+                        }
                      }
-                  });
+                  }
+
+                  @Override
+                  public void flush() throws IOException
+                  {
+                     entityStream.flush();
+                  }
+
+                  @Override
+                  public void close() throws IOException
+                  {
+                     if (!textLike)
+                     {
+                        entityStream.write(SseConstants.EOL);
+                     }
+                     entityStream.close();
+                  }
+               });
             entityStream.write(SseConstants.EOL);
 
          }
@@ -185,7 +182,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
    {
       return SseEventInputImpl.class.isAssignableFrom(cls) && 
             (MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType) ||
-             GENERAL_STREAM_TYPE.isCompatible(mediaType));
+            GENERAL_STREAM_TYPE.isCompatible(mediaType));
    }
 
    @Override
@@ -193,16 +190,16 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
          WebApplicationException
    {
-     MediaType streamType = mediaType;
-     if (mediaType.getParameters() != null)
-     {
-        Map<String, String> map = mediaType.getParameters();
-        String elementType = map.get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
-        if (elementType != null)
-        {
-           mediaType = MediaType.valueOf(elementType);
-        }
-     }
+      MediaType streamType = mediaType;
+      if (mediaType.getParameters() != null)
+      {
+         Map<String, String> map = mediaType.getParameters();
+         String elementType = map.get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
+         if (elementType != null)
+         {
+            mediaType = MediaType.valueOf(elementType);
+         }
+      }
       return new SseEventInputImpl(annotations, streamType, mediaType, httpHeaders, entityStream);
    }
 

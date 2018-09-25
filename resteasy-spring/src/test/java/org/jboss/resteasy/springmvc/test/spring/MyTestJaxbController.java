@@ -16,16 +16,14 @@ public class MyTestJaxbController
       
    }
    
-   @RequestMapping(value = "/basic/spring/object/json", method =
-   { RequestMethod.GET })
+   @RequestMapping(value = "/basic/spring/object/json", method = { RequestMethod.GET })
    public String testJaxbJson(ModelMap model)
    {
       updateModel(model);
       return "jsonView";
    }
 
-   @RequestMapping(value = "/basic/spring/object/xml", method =
-   { RequestMethod.GET })
+   @RequestMapping(value = "/basic/spring/object/xml", method = { RequestMethod.GET })
    public String testJaxbXml(ModelMap model)
    {
       updateModel(model);

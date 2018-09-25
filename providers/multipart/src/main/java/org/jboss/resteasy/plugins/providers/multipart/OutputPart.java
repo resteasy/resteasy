@@ -21,7 +21,7 @@ public class OutputPart
    
    public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
-	   this(entity, type, genericType, mediaType, null);
+      this(entity, type, genericType, mediaType, null);
    }
 
    public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
@@ -60,6 +60,6 @@ public class OutputPart
    
    public String getFilename() 
    {
-	   return filename;
+      return filename;
    }
 }

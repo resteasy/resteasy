@@ -12,17 +12,17 @@ import java.util.ArrayList;
 
 public class ExceptionMapperInjectionCustomMapper implements ExceptionMapper<ExceptionMapperCustomRuntimeException> {
 
-    private static Logger logger = Logger.getLogger(ExceptionMapperInjectionCustomMapper.class);
+   private static Logger logger = Logger.getLogger(ExceptionMapperInjectionCustomMapper.class);
 
-    @Context
-    Request request;
+   @Context
+   Request request;
 
-    public Response toResponse(ExceptionMapperCustomRuntimeException exception) {
-        logger.info("Method: " + request.getMethod());
+   public Response toResponse(ExceptionMapperCustomRuntimeException exception) {
+      logger.info("Method: " + request.getMethod());
 
-        ArrayList<Variant> list = new ArrayList<Variant>();
-        list.add(new Variant(MediaType.APPLICATION_JSON_TYPE, (String) null, null));
-        request.selectVariant(list);
-        return Response.status(Response.Status.PRECONDITION_FAILED).build();
-    }
+      ArrayList<Variant> list = new ArrayList<Variant>();
+      list.add(new Variant(MediaType.APPLICATION_JSON_TYPE, (String) null, null));
+      request.selectVariant(list);
+      return Response.status(Response.Status.PRECONDITION_FAILED).build();
+   }
 }

@@ -47,103 +47,103 @@ import java.util.Arrays;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationJaxbTest {
-    ResteasyClient client;
-    private static final String UNEXPECTED_VALIDATION_ERROR_MSG = "Unexpected validation error";
+   ResteasyClient client;
+   private static final String UNEXPECTED_VALIDATION_ERROR_MSG = "Unexpected validation error";
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ValidationJaxbTest.class.getSimpleName())
-                .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
-                .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
-                .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
-                .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ValidationJaxbTest.class.getSimpleName())
+            .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
+            .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
+            .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
+            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new HibernateValidatorPermission("accessPrivateMembers")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ValidationJaxbTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ValidationJaxbTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Raw XML check.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRawXML() throws Exception {
-        doRawTest(MediaType.APPLICATION_XML_TYPE, "<fieldViolations><constraintType>FIELD</constraintType><path>s</path>");
-    }
+   /**
+    * @tpTestDetails Raw XML check.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRawXML() throws Exception {
+      doRawTest(MediaType.APPLICATION_XML_TYPE, "<fieldViolations><constraintType>FIELD</constraintType><path>s</path>");
+   }
 
-    /**
-     * @tpTestDetails Raw JSON check.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRawJSON() throws Exception {
-        doRawTest(MediaType.APPLICATION_JSON_TYPE, "\"fieldViolations\":[{\"constraintType\":\"FIELD\",\"path\":\"s\"");
-    }
+   /**
+    * @tpTestDetails Raw JSON check.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRawJSON() throws Exception {
+      doRawTest(MediaType.APPLICATION_JSON_TYPE, "\"fieldViolations\":[{\"constraintType\":\"FIELD\",\"path\":\"s\"");
+   }
 
-    /**
-     * @tpTestDetails ViolationReport from XML check.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testXML() throws Exception {
-        doTest(MediaType.APPLICATION_XML_TYPE);
-    }
+   /**
+    * @tpTestDetails ViolationReport from XML check.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testXML() throws Exception {
+      doTest(MediaType.APPLICATION_XML_TYPE);
+   }
 
-    /**
-     * @tpTestDetails ViolationReport from JSON check.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testJSON() throws Exception {
-        doTest(MediaType.APPLICATION_JSON_TYPE);
-    }
+   /**
+    * @tpTestDetails ViolationReport from JSON check.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testJSON() throws Exception {
+      doTest(MediaType.APPLICATION_JSON_TYPE);
+   }
 
-    public void doTest(MediaType mediaType) throws Exception {
-        ValidationCoreFoo foo = new ValidationCoreFoo("p");
-        Response response = client.target(generateURL("/all/a/z")).request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
-        ViolationReport r = response.readEntity(ViolationReport.class);
-        TestUtil.countViolations(r, 1, 1, 1, 1, 0);
-        ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
-        Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "s", violation.getPath());
-        violation = r.getPropertyViolations().iterator().next();
-        Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "t", violation.getPath());
-        violation = r.getClassViolations().iterator().next();
-        Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());
-        violation = r.getParameterViolations().iterator().next();
-        String[] paths = new String[]{"post.arg0", "post.foo"};
-        Assert.assertTrue(UNEXPECTED_VALIDATION_ERROR_MSG + paths, Arrays.asList(paths).contains(violation.getPath()));
-        response.close();
-    }
+   public void doTest(MediaType mediaType) throws Exception {
+      ValidationCoreFoo foo = new ValidationCoreFoo("p");
+      Response response = client.target(generateURL("/all/a/z")).request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
+      Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      String header = response.getHeaderString(Validation.VALIDATION_HEADER);
+      Assert.assertNotNull("Validation header is missing", header);
+      Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
+      ViolationReport r = response.readEntity(ViolationReport.class);
+      TestUtil.countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
+      Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "s", violation.getPath());
+      violation = r.getPropertyViolations().iterator().next();
+      Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "t", violation.getPath());
+      violation = r.getClassViolations().iterator().next();
+      Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());
+      violation = r.getParameterViolations().iterator().next();
+      String[] paths = new String[]{"post.arg0", "post.foo"};
+      Assert.assertTrue(UNEXPECTED_VALIDATION_ERROR_MSG + paths, Arrays.asList(paths).contains(violation.getPath()));
+      response.close();
+   }
 
-    public void doRawTest(MediaType mediaType, String expected) throws Exception {
-        ValidationCoreFoo foo = new ValidationCoreFoo("p");
-        Response response = client.target(generateURL("/all/a/z")).request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
-        String report = response.readEntity(String.class);
-        Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
-        response.close();
-    }
+   public void doRawTest(MediaType mediaType, String expected) throws Exception {
+      ValidationCoreFoo foo = new ValidationCoreFoo("p");
+      Response response = client.target(generateURL("/all/a/z")).request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
+      Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      String header = response.getHeaderString(Validation.VALIDATION_HEADER);
+      Assert.assertNotNull("Validation header is missing", header);
+      Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
+      String report = response.readEntity(String.class);
+      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
+      response.close();
+   }
 }

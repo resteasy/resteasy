@@ -17,14 +17,13 @@ import org.junit.Test;
  */
 public class InterfaceTypeUtilTest {
 
-    /**
-     * @tpTestDetails Test for getTemplateParameterOfInterface method
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testType() throws Exception {
-        Assert.assertNull("Types util class works incorrectly", Types.getTemplateParameterOfInterface(InterfaceTypeUtilD.class, InterfaceTypeUtilJ.class));
-        Assert.assertEquals("Types util class works incorrectly", InterfaceTypeUtilC.class, Types.getTemplateParameterOfInterface(InterfaceTypeUtilE.class, InterfaceTypeUtilI.class));
-    }
+   /**
+    * @tpTestDetails Test for getTemplateParameterOfInterface method
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testType() throws Exception {
+      Assert.assertNull("Types util class works incorrectly", Types.getTemplateParameterOfInterface(InterfaceTypeUtilD.class, InterfaceTypeUtilJ.class));
+      Assert.assertEquals("Types util class works incorrectly", InterfaceTypeUtilC.class, Types.getTemplateParameterOfInterface(InterfaceTypeUtilE.class, InterfaceTypeUtilI.class));
+   }
 }
-

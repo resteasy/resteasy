@@ -25,29 +25,29 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ClientSmokeTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(ClientSmokeTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(ClientSmokeTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class);
+   }
 
-    /**
-     * @tpTestDetails Check results from ResourceWithInterfaceSimpleClient.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNoDefaultsResource() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        ResourceWithInterfaceSimpleClient proxy = client.target(
-                PortProviderUtil.generateBaseUrl(ClientSmokeTest.class.getSimpleName()))
-                .proxyBuilder(ResourceWithInterfaceSimpleClient.class).build();
+   /**
+    * @tpTestDetails Check results from ResourceWithInterfaceSimpleClient.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNoDefaultsResource() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      ResourceWithInterfaceSimpleClient proxy = client.target(
+            PortProviderUtil.generateBaseUrl(ClientSmokeTest.class.getSimpleName()))
+            .proxyBuilder(ResourceWithInterfaceSimpleClient.class).build();
 
-        Assert.assertEquals("Wrong client answer.", "basic", proxy.getBasic());
-        proxy.putBasic("hello world");
-        Assert.assertEquals("Wrong client answer.", "hello world", proxy.getQueryParam("hello world"));
-        Assert.assertEquals("Wrong client answer.", 1234, proxy.getUriParam(1234));
+      Assert.assertEquals("Wrong client answer.", "basic", proxy.getBasic());
+      proxy.putBasic("hello world");
+      Assert.assertEquals("Wrong client answer.", "hello world", proxy.getQueryParam("hello world"));
+      Assert.assertEquals("Wrong client answer.", 1234, proxy.getUriParam(1234));
 
-        client.close();
-    }
+      client.close();
+   }
 
 }

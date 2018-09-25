@@ -32,53 +32,53 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ReadDataSourceTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment()
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ReadDataSourceTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, ReadDataSourceResource.class);
-    }
+   @Deployment()
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ReadDataSourceTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, ReadDataSourceResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ReadDataSourceTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ReadDataSourceTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice and verifies the results of both reads
-     * are equal
-     * @tpInfo RESTEASY-1182
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDataSourceInputStream() throws Exception {
-        WebTarget target = client.target(generateURL("/" + ReadDataSourceResource.PATH_UPLOAD));
+   /**
+    * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice and verifies the results of both reads
+    * are equal
+    * @tpInfo RESTEASY-1182
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDataSourceInputStream() throws Exception {
+      WebTarget target = client.target(generateURL("/" + ReadDataSourceResource.PATH_UPLOAD));
 
-        Response response = target.request().post(Entity.entity(createContent(), "text/plain"));
+      Response response = target.request().post(Entity.entity(createContent(), "text/plain"));
 
-        final StringBuilder msg = new StringBuilder();
-        final String entity = response.readEntity(String.class);
-        if (entity != null) {
-            msg.append("\n").append(entity);
-        }
-        Assert.assertEquals("Unexpected response: " + msg.toString(), HttpResponseCodes.SC_OK, response.getStatus());
-    }
+      final StringBuilder msg = new StringBuilder();
+      final String entity = response.readEntity(String.class);
+      if (entity != null) {
+         msg.append("\n").append(entity);
+      }
+      Assert.assertEquals("Unexpected response: " + msg.toString(), HttpResponseCodes.SC_OK, response.getStatus());
+   }
 
-    private StringEntity createContent() throws UnsupportedEncodingException {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < 2500; i++) {
-            stringBuilder.append(i).append(":\n");
-        }
-        return new StringEntity(stringBuilder.toString());
-    }
+   private StringEntity createContent() throws UnsupportedEncodingException {
+      StringBuilder stringBuilder = new StringBuilder();
+      for (int i = 0; i < 2500; i++) {
+         stringBuilder.append(i).append(":\n");
+      }
+      return new StringEntity(stringBuilder.toString());
+   }
 }

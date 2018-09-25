@@ -238,8 +238,8 @@ public class Rx2SingleTest {
       SingleRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single = invoker.head();
       single.subscribe(
-              (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+         (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
+         (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -380,7 +380,7 @@ public class Rx2SingleTest {
       }
 
       {
-        latch = new CountDownLatch(1);
+         latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
          ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).executorService(executor).build();
@@ -400,8 +400,8 @@ public class Rx2SingleTest {
       SingleRxInvoker invoker = client.target(generateURL("/exception/unhandled")).request().rx(SingleRxInvoker.class);
       Single<Thing> single = (Single<Thing>) invoker.get(Thing.class);
       single.subscribe(
-            (Thing t) -> {},
-            (Throwable t) -> {value.set(t); latch.countDown();});
+         (Thing t) -> {},
+         (Throwable t) -> {value.set(t); latch.countDown();});
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Throwable t = unwrap((Throwable) value.get(), InternalServerErrorException.class);
@@ -414,8 +414,8 @@ public class Rx2SingleTest {
       SingleRxInvoker invoker = client.target(generateURL("/exception/handled")).request().rx(SingleRxInvoker.class);
       Single<Thing> single = (Single<Thing>) invoker.get(Thing.class);
       single.subscribe(
-            (Thing t) -> {},
-            (Throwable t) -> {value.set(t); latch.countDown();});
+         (Thing t) -> {},
+         (Throwable t) -> {value.set(t); latch.countDown();});
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Throwable t = unwrap((Throwable) value.get(), ClientErrorException.class);

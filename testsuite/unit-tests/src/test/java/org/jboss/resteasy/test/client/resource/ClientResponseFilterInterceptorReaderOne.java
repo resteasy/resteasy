@@ -8,12 +8,12 @@ import java.io.IOException;
 
 @Priority(100)
 public class ClientResponseFilterInterceptorReaderOne implements ReaderInterceptor {
-    @Override
-    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        try {
-            return context.proceed();
-        } catch (IOException e) {
-            return "OK";
-        }
-    }
+   @Override
+   public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
+      try {
+         return context.proceed();
+      } catch (IOException e) {
+         return "OK";
+      }
+   }
 }

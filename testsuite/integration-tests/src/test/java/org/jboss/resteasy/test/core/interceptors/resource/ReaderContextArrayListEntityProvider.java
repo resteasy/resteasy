@@ -17,57 +17,57 @@ import java.util.ArrayList;
 
 @Provider
 public class ReaderContextArrayListEntityProvider implements
-        MessageBodyReader<ArrayList<String>>,
-        MessageBodyWriter<ArrayList<String>> {
+      MessageBodyReader<ArrayList<String>>,
+      MessageBodyWriter<ArrayList<String>> {
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType) {
-        return type == ArrayList.class;
-    }
+      return type == ArrayList.class;
+   }
 
-    @Override
-    public long getSize(ArrayList<String> t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType) {
-        int annlen = annotations.length > 0 ? annotations[0].annotationType()
-                .getName().length() : 0;
-        return t.iterator().next().length() + annlen
-                + mediaType.toString().length();
-    }
+   @Override
+   public long getSize(ArrayList<String> t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType) {
+      int annlen = annotations.length > 0 ? annotations[0].annotationType()
+            .getName().length() : 0;
+      return t.iterator().next().length() + annlen
+            + mediaType.toString().length();
+   }
 
-    @Override
-    public void writeTo(ArrayList<String> t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        String ann = "";
-        if (annotations.length > 0) {
-            ann = annotations[0].annotationType().getName();
-        }
-        entityStream.write((t.iterator().next() + ann + mediaType.toString())
-                .getBytes());
-    }
+   @Override
+   public void writeTo(ArrayList<String> t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders,
+                  OutputStream entityStream) throws IOException,
+         WebApplicationException {
+      String ann = "";
+      if (annotations.length > 0) {
+         ann = annotations[0].annotationType().getName();
+      }
+      entityStream.write((t.iterator().next() + ann + mediaType.toString())
+            .getBytes());
+   }
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType,
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-        return type == ArrayList.class;
-    }
+      return type == ArrayList.class;
+   }
 
-    @Override
-    public ArrayList<String> readFrom(Class<ArrayList<String>> type,
+   @Override
+   public ArrayList<String> readFrom(Class<ArrayList<String>> type,
                                       Type genericType, Annotation[] annotations, MediaType mediaType,
                                       MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        String text = TestUtil.readString(entityStream);
-        entityStream.close();
-        String ann = "";
-        if (annotations.length > 0) {
-            ann = annotations[0].annotationType().getName();
-        }
-        ArrayList<String> list = new ArrayList<String>();
-        list.add(text + ann + mediaType.toString());
-        return list;
-    }
+         throws IOException, WebApplicationException {
+      String text = TestUtil.readString(entityStream);
+      entityStream.close();
+      String ann = "";
+      if (annotations.length > 0) {
+         ann = annotations[0].annotationType().getName();
+      }
+      ArrayList<String> list = new ArrayList<String>();
+      list.add(text + ann + mediaType.toString());
+      return list;
+   }
 }

@@ -79,10 +79,10 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
             .addHttpListener(8080, "localhost"));
       server.deploy(new Application() {
          @Override
-        public Set<Class<?>> getClasses()
-        {
+         public Set<Class<?>> getClasses()
+         {
             return classes;
-        }
+         }
       }, super.getTestClass().getJavaClass().getSimpleName());
       try 
       {

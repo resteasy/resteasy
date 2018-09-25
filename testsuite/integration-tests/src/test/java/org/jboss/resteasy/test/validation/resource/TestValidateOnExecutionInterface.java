@@ -6,8 +6,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 public interface TestValidateOnExecutionInterface {
-    @POST
-    @Path("overrideInterface1")
-    @ValidateOnExecution(type = {ExecutableType.NONE})
-    void overrideInterface1(String s);
+   @POST
+   @Path("overrideInterface1")
+   @ValidateOnExecution(type = {ExecutableType.NONE})
+   void overrideInterface1(String s);
 }

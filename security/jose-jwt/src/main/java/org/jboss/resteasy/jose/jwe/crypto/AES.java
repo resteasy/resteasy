@@ -22,58 +22,58 @@ class AES
 {
 
 
-	/**
-	 * Generates an AES key of the specified length.
-	 *
-	 * @param keyBitLength The key length, in bits.
-	 *
-	 * @return The AES key.
-	 *
-	 * @throws RuntimeException If an AES key couldn't be generated.
-	 */
-	public static SecretKey generateKey(final int keyBitLength) 
-		throws RuntimeException {
+   /**
+    * Generates an AES key of the specified length.
+    *
+    * @param keyBitLength The key length, in bits.
+    *
+    * @return The AES key.
+    *
+    * @throws RuntimeException If an AES key couldn't be generated.
+    */
+   public static SecretKey generateKey(final int keyBitLength)
+      throws RuntimeException {
 
-		KeyGenerator keygen;
+      KeyGenerator keygen;
 
-		try {
-			keygen = KeyGenerator.getInstance("AES", new BouncyCastleProvider());
+      try {
+         keygen = KeyGenerator.getInstance("AES", new BouncyCastleProvider());
 
-		} catch (NoSuchAlgorithmException e) {
+      } catch (NoSuchAlgorithmException e) {
 
-			throw new RuntimeException(e.getMessage(), e);
-		}
+         throw new RuntimeException(e.getMessage(), e);
+      }
 
-		keygen.init(keyBitLength);
-		return keygen.generateKey();
-	}
-
-
-	/**
-	 * Creates a new AES cipher.
-	 *
-	 * @param secretKey     The AES key. Must not be {@code null}.
-	 * @param forEncryption If {@code true} creates an AES encryption
-	 *                      cipher, else creates an AES decryption 
-	 *                      cipher.
-	 *
-	 * @return The AES cipher.
-	 */
-	public static AESEngine createCipher(final SecretKey secretKey,
-		                             final boolean forEncryption) {
-
-		AESEngine cipher = new AESEngine();
-
-		CipherParameters cipherParams = new KeyParameter(secretKey.getEncoded());
-
-		cipher.init(forEncryption, cipherParams);
-
-		return cipher;
-	}
+      keygen.init(keyBitLength);
+      return keygen.generateKey();
+   }
 
 
-	/**
-	 * Prevents public instantiation.
-	 */
-	private AES() { }
+   /**
+    * Creates a new AES cipher.
+    *
+    * @param secretKey     The AES key. Must not be {@code null}.
+    * @param forEncryption If {@code true} creates an AES encryption
+    *                      cipher, else creates an AES decryption
+    *                      cipher.
+    *
+    * @return The AES cipher.
+    */
+   public static AESEngine createCipher(final SecretKey secretKey,
+                                   final boolean forEncryption) {
+
+      AESEngine cipher = new AESEngine();
+
+      CipherParameters cipherParams = new KeyParameter(secretKey.getEncoded());
+
+      cipher.init(forEncryption, cipherParams);
+
+      return cipher;
+   }
+
+
+   /**
+    * Prevents public instantiation.
+    */
+   private AES() { }
 }

@@ -8,26 +8,26 @@ import javax.ws.rs.core.Response;
 
 @Path("/")
 public class ValidationExceptionResourceWithOther {
-    @PathParam("s")
-    @ValidationExceptionOtherConstraint
-    String s;
+   @PathParam("s")
+   @ValidationExceptionOtherConstraint
+   String s;
 
-    @POST
-    @Path("parameter/{s}")
-    public Response testParameter(@ValidationExceptionOtherConstraint String s) {
-        return Response.ok().build();
-    }
+   @POST
+   @Path("parameter/{s}")
+   public Response testParameter(@ValidationExceptionOtherConstraint String s) {
+      return Response.ok().build();
+   }
 
-    @POST
-    @Path("return/{s}")
-    @ValidationExceptionOtherConstraint
-    public String testReturnValue() {
-        return "abc";
-    }
+   @POST
+   @Path("return/{s}")
+   @ValidationExceptionOtherConstraint
+   public String testReturnValue() {
+      return "abc";
+   }
 
-    @GET
-    @Path("execution/{s}")
-    public void testExecution() {
-        throw new ValidationExceptionOtherValidationException(new ValidationExceptionOtherValidationException2(new ValidationExceptionOtherValidationException3()));
-    }
+   @GET
+   @Path("execution/{s}")
+   public void testExecution() {
+      throw new ValidationExceptionOtherValidationException(new ValidationExceptionOtherValidationException2(new ValidationExceptionOtherValidationException3()));
+   }
 }

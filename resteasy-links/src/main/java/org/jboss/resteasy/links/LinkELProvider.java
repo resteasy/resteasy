@@ -16,9 +16,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LinkELProvider {
-	/**
-	 * The class for the custom ELProvider that will set up the EL context for your
-	 * resource discovery.
-	 */
-	Class<? extends ELProvider> value();
+   /**
+    * The class for the custom ELProvider that will set up the EL context for your
+    * resource discovery.
+    */
+   Class<? extends ELProvider> value();
 }

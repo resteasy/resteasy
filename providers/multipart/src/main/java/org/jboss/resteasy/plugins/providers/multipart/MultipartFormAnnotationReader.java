@@ -33,9 +33,7 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
 @Consumes("multipart/form-data")
 public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
 {
-   protected
-   @Context
-   Providers workers;
+   protected @Context Providers workers;
 
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
@@ -49,7 +47,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
    public Object readFrom(Class<Object> type, Type genericType,
                           Annotation[] annotations, MediaType mediaType,
                           MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-           throws IOException, WebApplicationException
+         throws IOException, WebApplicationException
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null)
@@ -92,7 +90,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
          {
             FormParam param = method.getAnnotation(FormParam.class);
             List<InputPart> list = input.getFormDataMap()
-                    .get(param.value());
+               .get(param.value());
             if (list == null || list.isEmpty())
                continue;
             InputPart part = list.get(0);
@@ -104,17 +102,16 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             Class<?> type1 = method.getParameterTypes()[0];
             Object data;
             if (InputPart.class.equals(type1)) {
-                hasInputStream = true;
-                data = part;
+               hasInputStream = true;
+               data = part;
             }
             else
             {
-                if (InputStream.class.equals(type1))
-                {
-                   hasInputStream = true;
-                }
-                data = part.getBody(type1,
-                        method.getGenericParameterTypes()[0]);
+               if (InputStream.class.equals(type1))
+               {
+                  hasInputStream = true;
+               }
+               data = part.getBody(type1, method.getGenericParameterTypes()[0]);
             }
             try
             {
@@ -138,7 +135,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
    }
 
    protected boolean setFields(Class<?> type, MultipartFormDataInputImpl input,
-                            Object obj) throws IOException
+                     Object obj) throws IOException
    {
       boolean hasInputStream = false;
       for (Field field : type.getDeclaredFields())
@@ -148,7 +145,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
             AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
             FormParam param = field.getAnnotation(FormParam.class);
             List<InputPart> list = input.getFormDataMap()
-                    .get(param.value());
+               .get(param.value());
             if (list == null || list.isEmpty())
                continue;
             InputPart part = list.get(0);
@@ -159,17 +156,17 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
                continue;
             Object data;
             if (InputPart.class.equals(field.getType())) {
-                hasInputStream = true;
-                data = part;
+               hasInputStream = true;
+               data = part;
             }
             else
             {
-                if (InputStream.class.equals(field.getType()))
-                {
-                    hasInputStream = true;
-                }
-                data = part.getBody(field.getType(), field
-                        .getGenericType());
+               if (InputStream.class.equals(field.getType()))
+               {
+                  hasInputStream = true;
+               }
+               data = part.getBody(field.getType(), field
+                           .getGenericType());
             }
             try
             {

@@ -12,14 +12,14 @@ import java.io.StringWriter;
  */
 class ConsoleErrorHandler extends DefaultServiceLocator.ErrorHandler {
 
-    protected static final Logger logger = LogManager.getLogger(ConsoleErrorHandler.class.getName());
+   protected static final Logger logger = LogManager.getLogger(ConsoleErrorHandler.class.getName());
 
-    @Override
-    public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
-        logger.debug(String.format("Could not create type: %s, impl: %s", type, impl));
+   @Override
+   public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
+      logger.debug(String.format("Could not create type: %s, impl: %s", type, impl));
 
-        StringWriter errors = new StringWriter();
-        exception.printStackTrace(new PrintWriter(errors));
-        logger.debug(errors.toString());
-    }
+      StringWriter errors = new StringWriter();
+      exception.printStackTrace(new PrintWriter(errors));
+      logger.debug(errors.toString());
+   }
 }

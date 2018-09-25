@@ -12,11 +12,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Constraint(validatedBy = CDIValidationCoreSumValidator.class)
 public @interface CDIValidationCoreSumConstraint {
-    String message() default "{org.jboss.resteasy.ejb.validation.SumConstraint}";
+   String message() default "{org.jboss.resteasy.ejb.validation.SumConstraint}";
 
-    Class<?>[] groups() default {};
+   Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+   Class<? extends Payload>[] payload() default {};
 
-    int min() default 0;
+   int min() default 0;
 }

@@ -8,15 +8,15 @@ import javax.ws.rs.core.Response;
 
 @Path("error")
 public class ResourceMatchingErrorResource {
-    @GET
-    @Produces("text/*")
-    public String test() {
-        return getClass().getSimpleName();
-    }
+   @GET
+   @Produces("text/*")
+   public String test() {
+      return getClass().getSimpleName();
+   }
 
-    @POST
-    @Produces("text/*")
-    public Response response(String msg) {
-        return Response.ok(msg).build();
-    }
+   @POST
+   @Produces("text/*")
+   public Response response(String msg) {
+      return Response.ok(msg).build();
+   }
 }

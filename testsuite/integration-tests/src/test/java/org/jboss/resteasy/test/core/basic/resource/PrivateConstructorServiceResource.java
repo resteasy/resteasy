@@ -8,17 +8,17 @@ import javax.ws.rs.core.Context;
 
 @Path("/test")
 public class PrivateConstructorServiceResource {
-    PrivateConstructorServiceResource() {
+   PrivateConstructorServiceResource() {
 
-    }
+   }
 
-    public PrivateConstructorServiceResource(@Context final javax.servlet.ServletContext context, @Context final HttpServletRequest request) {
+   public PrivateConstructorServiceResource(@Context final javax.servlet.ServletContext context, @Context final HttpServletRequest request) {
 
-    }
+   }
 
-    @GET
-    @Produces("text/plain")
-    public String get() {
-        return "hello";
-    }
+   @GET
+   @Produces("text/plain")
+   public String get() {
+      return "hello";
+   }
 }

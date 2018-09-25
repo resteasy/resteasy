@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IDType", propOrder = {
-        "id"
+      "id"
 })
 public class IDType {
 
@@ -53,4 +53,3 @@ public class IDType {
    }
 
 }
-

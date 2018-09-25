@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LinkResources {
-	/**
-	 * The list of {@link LinkResource} that apply on this method
-	 */
-	LinkResource[] value();
+   /**
+    * The list of {@link LinkResource} that apply on this method
+    */
+   LinkResource[] value();
 }

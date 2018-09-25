@@ -54,67 +54,67 @@ public class TestLinkIds
       dispatcher = null;
    }
 
-	private static String url;
-	private static IDServiceTest client;
-	private static CloseableHttpClient httpClient;
-	
-	@SuppressWarnings("deprecation")
-    @After
-	public void after(){
-		// TJWS does not support chunk encodings well so I need to kill kept
-		// alive connections
-		httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
-	}
-	
-	@Test
-	public void testResourceId() throws Exception
-	{
-		IdBook book = client.getResourceIdBook("foo");
-		checkBook(book, "/resource-id/book/foo");
-	}
+   private static String url;
+   private static IDServiceTest client;
+   private static CloseableHttpClient httpClient;
 
-	@Test
-	public void testResourceIds() throws Exception
-	{
-		IdBook book = client.getResourceIdsBook("foo", "bar");
-		checkBook(book, "/resource-ids/book/foo/bar");
-	}
+   @SuppressWarnings("deprecation")
+   @After
+   public void after(){
+      // TJWS does not support chunk encodings well so I need to kill kept
+      // alive connections
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+   }
 
-	@Test
-	public void testResourceIdMethod() throws Exception
-	{
-		IdBook book = client.getResourceIdMethodBook("foo");
-		checkBook(book, "/resource-id-method/book/foo");
-	}
+   @Test
+   public void testResourceId() throws Exception
+   {
+      IdBook book = client.getResourceIdBook("foo");
+      checkBook(book, "/resource-id/book/foo");
+   }
 
-	@Test
-	public void testResourceIdsMethod() throws Exception
-	{
-		IdBook book = client.getResourceIdsMethodBook("foo", "bar");
-		checkBook(book, "/resource-ids-method/book/foo/bar");
-	}
+   @Test
+   public void testResourceIds() throws Exception
+   {
+      IdBook book = client.getResourceIdsBook("foo", "bar");
+      checkBook(book, "/resource-ids/book/foo/bar");
+   }
 
-	@Test
-	public void testXmlId() throws Exception
-	{
-		IdBook book = client.getXmlIdBook("foo");
-		checkBook(book, "/xml-id/book/foo");
-	}
+   @Test
+   public void testResourceIdMethod() throws Exception
+   {
+      IdBook book = client.getResourceIdMethodBook("foo");
+      checkBook(book, "/resource-id-method/book/foo");
+   }
 
-	@Test
-	public void testJpaId() throws Exception
-	{
-		IdBook book = client.getJpaIdBook("foo");
-		checkBook(book, "/jpa-id/book/foo");
-	}
+   @Test
+   public void testResourceIdsMethod() throws Exception
+   {
+      IdBook book = client.getResourceIdsMethodBook("foo", "bar");
+      checkBook(book, "/resource-ids-method/book/foo/bar");
+   }
 
-	private void checkBook(IdBook book, String relativeUrl) {
-		Assert.assertNotNull(book);
-		RESTServiceDiscovery links = book.getRest();
-		Assert.assertNotNull(links);
-		Assert.assertEquals(1, links.size());
-		AtomLink link = links.get(0);
-		Assert.assertEquals("self", link.getRel());
-		Assert.assertEquals(url + relativeUrl, link.getHref());
-	}
+   @Test
+   public void testXmlId() throws Exception
+   {
+      IdBook book = client.getXmlIdBook("foo");
+      checkBook(book, "/xml-id/book/foo");
+   }
+
+   @Test
+   public void testJpaId() throws Exception
+   {
+      IdBook book = client.getJpaIdBook("foo");
+      checkBook(book, "/jpa-id/book/foo");
+   }
+
+   private void checkBook(IdBook book, String relativeUrl) {
+      Assert.assertNotNull(book);
+      RESTServiceDiscovery links = book.getRest();
+      Assert.assertNotNull(links);
+      Assert.assertEquals(1, links.size());
+      AtomLink link = links.get(0);
+      Assert.assertEquals("self", link.getRel());
+      Assert.assertEquals(url + relativeUrl, link.getHref());
+   }
 }

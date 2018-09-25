@@ -88,4 +88,3 @@ public class Cat {
               CUSTOM_TO_STRING_FORMAT, name, sort, color, domesticated, transientVar);
    }
 }
-

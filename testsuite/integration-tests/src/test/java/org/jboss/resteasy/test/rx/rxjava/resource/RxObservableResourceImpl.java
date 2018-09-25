@@ -58,7 +58,7 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> getBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
 
    @PUT
@@ -94,8 +94,8 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> putBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
 
    @POST
@@ -131,8 +131,8 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> postBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
    
    @DELETE
@@ -164,7 +164,7 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> deleteBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @HEAD
@@ -204,7 +204,7 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> optionsBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @TRACE
@@ -236,7 +236,7 @@ public class RxObservableResourceImpl {
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Stream
    public Observable<byte[]> traceBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @GET
@@ -304,19 +304,19 @@ public class RxObservableResourceImpl {
    
    @SuppressWarnings("deprecation")
    static Observable<byte[]> buildObservableBytes(int n) {
-       return Observable.create(t -> {
-          ExecutorService executor = Executors.newSingleThreadExecutor();
-          executor.submit(new Runnable() {
+      return Observable.create(t -> {
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(new Runnable() {
 
-             @Override
-             public void run() {
-                for (int i = 0; i < n; i++)
-                {
-                    t.onNext(Bytes.BYTES);
-                }
-                t.onCompleted();
-             }
-          });
-       });
+            @Override
+            public void run() {
+               for (int i = 0; i < n; i++)
+               {
+                  t.onNext(Bytes.BYTES);
+               }
+               t.onCompleted();
+            }
+         });
+      });
    }
 }

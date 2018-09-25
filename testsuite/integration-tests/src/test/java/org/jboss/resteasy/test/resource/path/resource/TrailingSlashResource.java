@@ -9,12 +9,12 @@ import javax.ws.rs.core.UriInfo;
 
 @Path("test")
 public class TrailingSlashResource {
-    @Context
-    private UriInfo uriInfo;
+   @Context
+   private UriInfo uriInfo;
 
-    @GET
-    @Produces("text/plain")
-    public Response test() {
-        return Response.ok(uriInfo.getPath()).build();
-    }
+   @GET
+   @Produces("text/plain")
+   public Response test() {
+      return Response.ok(uriInfo.getPath()).build();
+   }
 }

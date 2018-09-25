@@ -48,153 +48,153 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class UriParamAsPrimitiveTest {
-    public static final String ERROR_CODE = "Wrong parameter";
+   public static final String ERROR_CODE = "Wrong parameter";
 
-    private static UriParamAsPrimitiveResourceUriBooleanInterface resourceUriBoolean;
-    private static UriParamAsPrimitiveResourceUriByteInterface resourceUriByte;
-    private static ResteasyClient client;
+   private static UriParamAsPrimitiveResourceUriBooleanInterface resourceUriBoolean;
+   private static UriParamAsPrimitiveResourceUriByteInterface resourceUriByte;
+   private static ResteasyClient client;
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = (ResteasyClient)ClientBuilder.newClient();
-        resourceUriBoolean = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriBooleanInterface.class, client.target(generateBaseUrl())).build();
-        resourceUriByte = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriByteInterface.class, client.target(generateBaseUrl())).build();
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = (ResteasyClient)ClientBuilder.newClient();
+      resourceUriBoolean = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriBooleanInterface.class, client.target(generateBaseUrl())).build();
+      resourceUriByte = ProxyBuilder.builder(UriParamAsPrimitiveResourceUriByteInterface.class, client.target(generateBaseUrl())).build();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() throws Exception {
-        WebArchive war = TestUtil.prepareArchive(UriParamAsPrimitiveTest.class.getSimpleName());
-        war.addClass(UriParamAsPrimitiveResourceUriBooleanInterface.class);
-        war.addClass(UriParamAsPrimitiveResourceUriByteInterface.class);
-        war.addClass(UriParamAsPrimitiveTest.class);
-        return TestUtil.finishContainerPrepare(war, null,
-                UriParamAsPrimitiveResourceUriBoolean.class,
-                UriParamAsPrimitiveResourceUriByte.class,
-                UriParamAsPrimitiveResourceUriShort.class,
-                UriParamAsPrimitiveResourceUriInt.class,
-                UriParamAsPrimitiveResourceUriLong.class,
-                UriParamAsPrimitiveResourceUriFloat.class,
-                UriParamAsPrimitiveResourceUriDouble.class,
-                UriParamAsPrimitiveResourceUriChar.class,
-                UriParamAsPrimitiveResourceUriBooleanWrapper.class,
-                UriParamAsPrimitiveResourceUriByteWrapper.class,
-                UriParamAsPrimitiveResourceUriShortWrapper.class,
-                UriParamAsPrimitiveResourceUriIntWrapper.class,
-                UriParamAsPrimitiveResourceUriLongWrapper.class,
-                UriParamAsPrimitiveResourceUriFloatWrapper.class,
-                UriParamAsPrimitiveResourceUriDoubleWrapper.class,
-                UriParamAsPrimitiveResourceUriCharWrapper.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() throws Exception {
+      WebArchive war = TestUtil.prepareArchive(UriParamAsPrimitiveTest.class.getSimpleName());
+      war.addClass(UriParamAsPrimitiveResourceUriBooleanInterface.class);
+      war.addClass(UriParamAsPrimitiveResourceUriByteInterface.class);
+      war.addClass(UriParamAsPrimitiveTest.class);
+      return TestUtil.finishContainerPrepare(war, null,
+            UriParamAsPrimitiveResourceUriBoolean.class,
+            UriParamAsPrimitiveResourceUriByte.class,
+            UriParamAsPrimitiveResourceUriShort.class,
+            UriParamAsPrimitiveResourceUriInt.class,
+            UriParamAsPrimitiveResourceUriLong.class,
+            UriParamAsPrimitiveResourceUriFloat.class,
+            UriParamAsPrimitiveResourceUriDouble.class,
+            UriParamAsPrimitiveResourceUriChar.class,
+            UriParamAsPrimitiveResourceUriBooleanWrapper.class,
+            UriParamAsPrimitiveResourceUriByteWrapper.class,
+            UriParamAsPrimitiveResourceUriShortWrapper.class,
+            UriParamAsPrimitiveResourceUriIntWrapper.class,
+            UriParamAsPrimitiveResourceUriLongWrapper.class,
+            UriParamAsPrimitiveResourceUriFloatWrapper.class,
+            UriParamAsPrimitiveResourceUriDoubleWrapper.class,
+            UriParamAsPrimitiveResourceUriCharWrapper.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, UriParamAsPrimitiveTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, UriParamAsPrimitiveTest.class.getSimpleName());
+   }
 
-    private static String generateBaseUrl() {
-        return PortProviderUtil.generateBaseUrl(UriParamAsPrimitiveTest.class.getSimpleName());
-    }
+   private static String generateBaseUrl() {
+      return PortProviderUtil.generateBaseUrl(UriParamAsPrimitiveTest.class.getSimpleName());
+   }
 
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    void basicTest(String type, String value) {
-        {
-            Invocation.Builder request = client.target(generateURL("/" + type + "/" + value)).request();
-            try {
-                Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                response.close();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+   void basicTest(String type, String value) {
+      {
+         Invocation.Builder request = client.target(generateURL("/" + type + "/" + value)).request();
+         try {
+            Response response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.close();
+         } catch (Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
 
-        {
-            Invocation.Builder request = client.target(generateURL("/" + type + "/wrapper/" + value)).request();
-            try {
-                Response response = request.get();
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                response.close();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+      {
+         Invocation.Builder request = client.target(generateURL("/" + type + "/wrapper/" + value)).request();
+         try {
+            Response response = request.get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.close();
+         } catch (Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
+   }
 
-    /**
-     * @tpTestDetails Test boolean primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetBoolean() {
-        basicTest("boolean", "true");
-        resourceUriBoolean.doGet(true);
-    }
+   /**
+    * @tpTestDetails Test boolean primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetBoolean() {
+      basicTest("boolean", "true");
+      resourceUriBoolean.doGet(true);
+   }
 
-    /**
-     * @tpTestDetails Test byte primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetByte() {
-        basicTest("byte", "127");
-        resourceUriByte.doGet((byte) 127);
-    }
+   /**
+    * @tpTestDetails Test byte primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetByte() {
+      basicTest("byte", "127");
+      resourceUriByte.doGet((byte) 127);
+   }
 
-    /**
-     * @tpTestDetails Test short primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetShort() {
-        basicTest("short", "32767");
-    }
+   /**
+    * @tpTestDetails Test short primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetShort() {
+      basicTest("short", "32767");
+   }
 
-    /**
-     * @tpTestDetails Test int primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetInt() {
-        basicTest("int", "2147483647");
-    }
+   /**
+    * @tpTestDetails Test int primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetInt() {
+      basicTest("int", "2147483647");
+   }
 
-    /**
-     * @tpTestDetails Test long primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetLong() {
-        basicTest("long", "9223372036854775807");
-    }
+   /**
+    * @tpTestDetails Test long primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetLong() {
+      basicTest("long", "9223372036854775807");
+   }
 
-    /**
-     * @tpTestDetails Test float primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetFloat() {
-        basicTest("float", "3.14159265");
-    }
+   /**
+    * @tpTestDetails Test float primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetFloat() {
+      basicTest("float", "3.14159265");
+   }
 
-    /**
-     * @tpTestDetails Test double primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetDouble() {
-        basicTest("double", "3.14159265358979");
-    }
-    
-    /**
-     * @tpTestDetails Test char primitive object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetChar() {
-        basicTest("char", "a");
-    }
+   /**
+    * @tpTestDetails Test double primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetDouble() {
+      basicTest("double", "3.14159265358979");
+   }
+   
+   /**
+    * @tpTestDetails Test char primitive object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetChar() {
+      basicTest("char", "a");
+   }
 }

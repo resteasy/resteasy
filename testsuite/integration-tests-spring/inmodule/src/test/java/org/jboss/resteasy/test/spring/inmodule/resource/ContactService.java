@@ -15,17 +15,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class ContactService {
-    private Map<String, Contact> contactMap = new ConcurrentHashMap<String, Contact>();
+   private Map<String, Contact> contactMap = new ConcurrentHashMap<String, Contact>();
 
-    public void save(Contact contact) {
-        contactMap.put(contact.getLastName(), contact);
-    }
+   public void save(Contact contact) {
+      contactMap.put(contact.getLastName(), contact);
+   }
 
-    public Contact getContact(String lastName) {
-        return contactMap.get(lastName);
-    }
+   public Contact getContact(String lastName) {
+      return contactMap.get(lastName);
+   }
 
-    public Contacts getAll() {
-        return new Contacts(contactMap.values());
-    }
+   public Contacts getAll() {
+      return new Contacts(contactMap.values());
+   }
 }

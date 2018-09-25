@@ -30,38 +30,38 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class QualityFactorTest {
 
-    static ResteasyClient client;
-    private static Logger logger = Logger.getLogger(QualityFactorTest.class.getName());
+   static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(QualityFactorTest.class.getName());
 
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(QualityFactorTest.class.getSimpleName());
-        war.addClass(JaxbCollectionTest.class);
-        return TestUtil.finishContainerPrepare(war, null, QualityFactorResource.class, QualityFactorThing.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(QualityFactorTest.class.getSimpleName());
+      war.addClass(JaxbCollectionTest.class);
+      return TestUtil.finishContainerPrepare(war, null, QualityFactorResource.class, QualityFactorThing.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, QualityFactorTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, QualityFactorTest.class.getSimpleName());
+   }
 
-    @Test
-    public void testHeader() throws Exception {
-        Response response = client.target(generateURL("/test")).request()
-                .accept("application/xml; q=0.5", "application/json; q=0.8").get();
-        String result = response.readEntity(String.class);
-        logger.info(result);
-        Assert.assertTrue("The format of the response doesn't reflect the quality factor", result.startsWith("{"));
+   @Test
+   public void testHeader() throws Exception {
+      Response response = client.target(generateURL("/test")).request()
+            .accept("application/xml; q=0.5", "application/json; q=0.8").get();
+      String result = response.readEntity(String.class);
+      logger.info(result);
+      Assert.assertTrue("The format of the response doesn't reflect the quality factor", result.startsWith("{"));
 
-    }
+   }
 }

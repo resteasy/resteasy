@@ -5,17 +5,17 @@ package org.jboss.resteasy.spi.metadata;
  */
 public interface ResourceClass
 {
-  String getPath();
+   String getPath();
 
-  Class<?> getClazz();
+   Class<?> getClazz();
 
-  ResourceConstructor getConstructor();
+   ResourceConstructor getConstructor();
 
-  FieldParameter[] getFields();
+   FieldParameter[] getFields();
 
-  SetterParameter[] getSetters();
+   SetterParameter[] getSetters();
 
-  ResourceMethod[] getResourceMethods();
+   ResourceMethod[] getResourceMethods();
 
-  ResourceLocator[] getResourceLocators();
+   ResourceLocator[] getResourceLocators();
 }

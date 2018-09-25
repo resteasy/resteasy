@@ -8,8 +8,8 @@ import java.io.IOException;
 
 @Priority(200)
 public class ClientResponseFilterInterceptorReaderTwo implements ReaderInterceptor {
-    @Override
-    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        throw new IOException("should be caught");
-    }
+   @Override
+   public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
+      throw new IOException("should be caught");
+   }
 }

@@ -81,10 +81,10 @@ public class SseEventSinkTest
          results.add(event.readData(String.class));
          latch.countDown();
       }, ex -> {
-         errors.incrementAndGet();
-         logger.error(ex.getMessage(), ex);
-         throw new RuntimeException(ex);
-      });
+            errors.incrementAndGet();
+            logger.error(ex.getMessage(), ex);
+            throw new RuntimeException(ex);
+         });
       eventSource.open();
 
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);

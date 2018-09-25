@@ -262,10 +262,10 @@ public class ParameterParser
     * @return a map of name/value pairs
     */
    public Map<String, String> parse(
-           final char[] chars,
-           int offset,
-           int length,
-           char separator)
+         final char[] chars,
+         int offset,
+         int length,
+         char separator)
    {
 
       if (chars == null)
@@ -281,14 +281,13 @@ public class ParameterParser
       String paramValue = null;
       while (hasChar())
       {
-         paramName = parseToken(new char[]{
-                 '=', separator});
+         paramName = parseToken(new char[]{'=', separator});
          paramValue = null;
          if (hasChar() && (chars[pos] == '='))
          {
             pos++; // skip '='
             paramValue = parseQuotedToken(new char[]{
-                    separator});
+               separator});
          }
          if (hasChar() && (chars[pos] == separator))
          {
@@ -319,12 +318,12 @@ public class ParameterParser
     * @return updated parameters string
     */
    public String setAttribute(
-           final char[] chars,
-           int offset,
-           int length,
-           char separator,
-           String name,
-           String value)
+         final char[] chars,
+         int offset,
+         int length,
+         char separator,
+         String name,
+         String value)
    {
 
       this.chars = chars;
@@ -340,8 +339,7 @@ public class ParameterParser
 
       while (hasChar())
       {
-         paramName = parseToken(new char[]{
-                 '=', separator});
+         paramName = parseToken(new char[]{'=', separator});
          paramValue = null;
          int index = -1;
          if (paramName.equals(name))
@@ -352,7 +350,7 @@ public class ParameterParser
          {
             pos++; // skip '='
             paramValue = parseQuotedToken(new char[]{
-                    separator});
+               separator});
          }
          if (paramName.equals(name))
          {

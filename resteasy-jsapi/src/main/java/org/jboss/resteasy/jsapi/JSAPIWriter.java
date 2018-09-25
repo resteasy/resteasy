@@ -174,7 +174,7 @@ public class JSAPIWriter
    }
 
    private void copyResource(String name, PrintWriter writer)
-           throws IOException
+         throws IOException
    {
       Reader reader = new InputStreamReader(getClass()
               .getResourceAsStream(name));
@@ -309,7 +309,7 @@ public class JSAPIWriter
          if (matcher.start() > i)
          {
             writer.println(" uri += '"
-                    + replacedCurlyURI.substring(i, matcher.start()) + "';");
+               + replacedCurlyURI.substring(i, matcher.start()) + "';");
          }
          String name = matcher.group(1);
          writer.println(" uri += REST.Encoding.encodePathSegment(params." + name + ");");

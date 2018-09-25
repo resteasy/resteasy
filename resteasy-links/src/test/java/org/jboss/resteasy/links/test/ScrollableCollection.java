@@ -19,89 +19,89 @@ import java.util.Map;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScrollableCollection implements ResourceFacade<Comment> {
-	@ResourceID
-	private String id;
-	@XmlAttribute
-	private int start;
-	@XmlAttribute
-	private int limit;
-	@XmlAttribute
-	private int totalRecords;
-	@XmlTransient
-	private String query;
-	@XmlElement
-	private List<Comment> comments = new ArrayList<Comment>();
-	@XmlElement
-	private RESTServiceDiscovery rest;
+   @ResourceID
+   private String id;
+   @XmlAttribute
+   private int start;
+   @XmlAttribute
+   private int limit;
+   @XmlAttribute
+   private int totalRecords;
+   @XmlTransient
+   private String query;
+   @XmlElement
+   private List<Comment> comments = new ArrayList<Comment>();
+   @XmlElement
+   private RESTServiceDiscovery rest;
 
-	public ScrollableCollection() {}
-	
-	public ScrollableCollection(String id, int start, int limit, int totalRecords,
-			List<Comment> comments, String query) {
-		this.id = id;
-		this.start = start;
-		this.limit = limit;
-		this.totalRecords = totalRecords;
-		this.comments.addAll(comments);
-		this.setQuery(query);
-	}
+   public ScrollableCollection() {}
 
-	public Class<Comment> facadeFor() {
-		return Comment.class;
-	}
+   public ScrollableCollection(String id, int start, int limit, int totalRecords,
+         List<Comment> comments, String query) {
+      this.id = id;
+      this.start = start;
+      this.limit = limit;
+      this.totalRecords = totalRecords;
+      this.comments.addAll(comments);
+      this.setQuery(query);
+   }
 
-	public Map<String, ? extends Object> pathParameters() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("id", id);
-		return map;
-	}
+   public Class<Comment> facadeFor() {
+      return Comment.class;
+   }
 
-	public int getStart() {
-		return start;
-	}
+   public Map<String, ? extends Object> pathParameters() {
+      HashMap<String, String> map = new HashMap<String, String>();
+      map.put("id", id);
+      return map;
+   }
 
-	public void setStart(int start) {
-		this.start = start;
-	}
+   public int getStart() {
+      return start;
+   }
 
-	public int getLimit() {
-		return limit;
-	}
+   public void setStart(int start) {
+      this.start = start;
+   }
 
-	public void setLimit(int limit) {
-		this.limit = limit;
-	}
+   public int getLimit() {
+      return limit;
+   }
 
-	public int getTotalRecords() {
-		return totalRecords;
-	}
+   public void setLimit(int limit) {
+      this.limit = limit;
+   }
 
-	public void setTotalRecords(int totalRecords) {
-		this.totalRecords = totalRecords;
-	}
+   public int getTotalRecords() {
+      return totalRecords;
+   }
 
-	public RESTServiceDiscovery getRest() {
-		return rest;
-	}
+   public void setTotalRecords(int totalRecords) {
+      this.totalRecords = totalRecords;
+   }
 
-	public void setRest(RESTServiceDiscovery rest) {
-		this.rest = rest;
-	}
+   public RESTServiceDiscovery getRest() {
+      return rest;
+   }
 
-	public List<Comment> getComments() {
-		return comments;
-	}
+   public void setRest(RESTServiceDiscovery rest) {
+      this.rest = rest;
+   }
 
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-	}
+   public List<Comment> getComments() {
+      return comments;
+   }
 
-	public String getQuery() {
-		return query;
-	}
+   public void setComments(List<Comment> comments) {
+      this.comments = comments;
+   }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+   public String getQuery() {
+      return query;
+   }
+
+   public void setQuery(String query) {
+      this.query = query;
+   }
 
 }

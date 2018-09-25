@@ -23,26 +23,26 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private static final QName _FavoriteMovie_QNAME = new QName("", "favoriteMovie");
+   private static final QName _FavoriteMovie_QNAME = new QName("", "favoriteMovie");
 
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: generated
-     */
-    public ObjectFactory() {
-    }
+   /**
+    * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: generated
+    */
+   public ObjectFactory() {
+   }
 
-    /**
-     * Create an instance of {@link FavoriteMovieXmlType }
-     */
-    public FavoriteMovieXmlType createFavoriteMovieXmlType() {
-        return new FavoriteMovieXmlType();
-    }
+   /**
+    * Create an instance of {@link FavoriteMovieXmlType }
+    */
+   public FavoriteMovieXmlType createFavoriteMovieXmlType() {
+      return new FavoriteMovieXmlType();
+   }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FavoriteMovieXmlType }{@code >}}
-     */
-    @XmlElementDecl(namespace = "", name = "favoriteMovie")
-    public JAXBElement<FavoriteMovieXmlType> createFavoriteMovie(FavoriteMovieXmlType value) {
-        return new JAXBElement<FavoriteMovieXmlType>(_FavoriteMovie_QNAME, FavoriteMovieXmlType.class, null, value);
-    }
+   /**
+    * Create an instance of {@link JAXBElement }{@code <}{@link FavoriteMovieXmlType }{@code >}}
+    */
+   @XmlElementDecl(namespace = "", name = "favoriteMovie")
+   public JAXBElement<FavoriteMovieXmlType> createFavoriteMovie(FavoriteMovieXmlType value) {
+      return new JAXBElement<FavoriteMovieXmlType>(_FavoriteMovie_QNAME, FavoriteMovieXmlType.class, null, value);
+   }
 }

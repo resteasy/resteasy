@@ -38,14 +38,14 @@ public class ClientErrorTest
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
-       war.addClass(PortProviderUtil.class);
-       war.addClass(TestUtil.class);
-       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+      WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, ClientErrorTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ClientErrorTest.class.getSimpleName());
    }
 
    @BeforeClass
