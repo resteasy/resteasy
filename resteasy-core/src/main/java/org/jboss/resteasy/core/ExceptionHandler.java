@@ -165,7 +165,15 @@ public class ExceptionHandler
 
       if (unwrappedException instanceof WebApplicationException) {
          WebApplicationException wae = (WebApplicationException) unwrappedException;
-         if (wae.getResponse() != null && wae.getResponse().getEntity() != null) return wae.getResponse();
+         if (wae.getResponse() != null) {
+            try {
+               if (wae.getResponse().getEntity() != null) return wae.getResponse();
+            }
+            catch(IllegalStateException ise) {
+               // ignore
+               // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
+            }
+         }
       }
 
       jaxrsResponse = executeExceptionMapper(unwrappedException, logger);
