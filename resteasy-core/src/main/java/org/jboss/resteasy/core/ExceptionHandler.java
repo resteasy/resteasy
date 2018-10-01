@@ -264,47 +264,69 @@ public class ExceptionHandler
       // See if there is an ExceptionMapper for the exact class of the exception instance being thrown
       if ((jaxrsResponse = executeExactExceptionMapper(e, logger)) != null) return jaxrsResponse;
 
-      // These are wrapper exceptions so they need to be processed first as they map e.getCause()
-      if (e instanceof ApplicationException) {
-         return handleApplicationException(request, (ApplicationException) e, logger);
-      } else if (e instanceof WriterException) {
-         return handleWriterException(request, (WriterException) e, logger);
-      } else if (e instanceof ReaderException) {
-         return handleReaderException(request, (ReaderException) e, logger);
-      }
-
-      /*
-       * 					If the response property of the exception does not
-       * 					contain an entity and an exception mapping provider
-       * 					(see section 4.4) is available for
-       * 					WebApplicationException an implementation MUST use the
-       * 					provider to create a new Response instance, otherwise
-       * 					the response property is used directly.
-       */
-      if (e instanceof WebApplicationException) {
-         WebApplicationException wae = (WebApplicationException) e;
-         if (wae.getResponse() != null && wae.getResponse().getEntity() != null) {
-            Response response =  wae.getResponse();
-            return response;
-         }
-      }
-
-      // First try and handle it with a mapper
+      try
       {
-         jaxrsResponse = executeExceptionMapper(e, logger);
-         if (jaxrsResponse != null) {
+         // These are wrapper exceptions so they need to be processed first as they map e.getCause()
+         if (e instanceof ApplicationException)
+         {
+            return handleApplicationException(request, (ApplicationException) e, logger);
+         } else if (e instanceof WriterException)
+         {
+            return handleWriterException(request, (WriterException) e, logger);
+         } else if (e instanceof ReaderException)
+         {
+            return handleReaderException(request, (ReaderException) e, logger);
+         }
+
+         /*
+          * 					If the response property of the exception does not
+          * 					contain an entity and an exception mapping provider
+          * 					(see section 4.4) is available for
+          * 					WebApplicationException an implementation MUST use the
+          * 					provider to create a new Response instance, otherwise
+          * 					the response property is used directly.
+          */
+         if (e instanceof WebApplicationException)
+         {
+            WebApplicationException wae = (WebApplicationException) e;
+            if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
+            {
+               Response response = wae.getResponse();
+               return response;
+            }
+         }
+
+         // First try and handle it with a user provided mapper for the exception class
+         {
+            jaxrsResponse = executeExceptionMapper(e, logger);
+            if (jaxrsResponse != null)
+            {
+               return jaxrsResponse;
+            }
+         }
+
+         // Otherwise do specific things
+         if (e instanceof WebApplicationException)
+         {
+            return handleWebApplicationException((WebApplicationException) e);
+         } else if (e instanceof Failure)
+         {
+            return handleFailure(request, (Failure) e);
+         }
+
+         LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
+         throw new UnhandledException(e);
+
+      } catch (UnhandledException une) {
+
+         // Allow user a chance to handle an unidentified error with their custom
+         // ExceptionMapper<UnhandledException>
+         jaxrsResponse = executeExceptionMapperForClass(une, UnhandledException.class, logger);
+         if (jaxrsResponse != null)
+         {
             return jaxrsResponse;
          }
+         throw une;
       }
-
-      // Otherwise do specific things
-      if (e instanceof WebApplicationException) {
-         return handleWebApplicationException((WebApplicationException) e);
-      } else if (e instanceof Failure) {
-         return handleFailure(request, (Failure) e);
-      }
-
-      LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
-      throw new UnhandledException(e);
    }
 }
