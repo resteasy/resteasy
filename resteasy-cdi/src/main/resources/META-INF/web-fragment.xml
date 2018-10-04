@@ -6,6 +6,7 @@
       http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
 	version="3.0">
 
+	<name>resteasy_cdi</name>
 	<context-param>
 		<param-name>resteasy.injector.factory</param-name>
 		<param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
