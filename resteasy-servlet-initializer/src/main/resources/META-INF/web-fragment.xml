@@ -6,4 +6,5 @@
       http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
               version="3.0">
     <name>resteasy_servlet_initializer</name>
+    <distributable/>
 </web-fragment>
