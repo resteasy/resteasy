@@ -23,7 +23,7 @@
         <version.com.google.inject.guice>4.1.0</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.com.sun.mail>1.5.6</version.com.sun.mail>
-        <version.com.sun.xml.bind.jaxb>2.3.0</version.com.sun.xml.bind.jaxb>
+        <version.org.glassfish.jaxb.jaxb>2.3.1</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.13</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
         <version.hamcrest>1.3</version.hamcrest>
@@ -221,14 +221,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${version.com.sun.xml.bind.jaxb}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.com.sun.xml.bind.jaxb}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.org.glassfish.jaxb.jaxb}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>
@@ -241,7 +236,7 @@
                 <version>1.0.1</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
-            one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
+            one. A newer is brought in by org.glassfish.jaxb -->
                     <exclusion>
                         <groupId>stax</groupId>
                         <artifactId>stax-api</artifactId>
@@ -316,7 +311,7 @@
                 <version>${version.org.codehaus.jettison}</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
-            one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
+            one. A newer is brought in by org.glassfish.jaxb -->
                     <exclusion>
                         <groupId>stax</groupId>
                         <artifactId>stax-api</artifactId>
