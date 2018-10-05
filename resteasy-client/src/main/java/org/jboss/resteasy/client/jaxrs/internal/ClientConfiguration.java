@@ -19,8 +19,10 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -119,12 +121,21 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       return providerFactory.getClientDynamicFeatures();
    }
+   
+   public ParamConverter getParamConverter(Class<?> clazz, Type genericType, Annotation[] annotations)
+   {
+      return providerFactory.getParamConverter(clazz, genericType, annotations);
+   }
 
    public String toString(Object object)
    {
       return providerFactory.toString(object, object.getClass(), null, null);
    }
 
+   public String toString(Object object, Type type, Annotation[] annotations)
+   {
+      return providerFactory.toString(object, object.getClass(), type, annotations);
+   }
 
 
 
@@ -294,5 +305,10 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    public boolean isReactive(Class<?> clazz)
    {
       return providerFactory.isReactive(clazz);
+   }
+   
+   public void addHeaderDelegate(Class<?> clazz, HeaderDelegate header)
+   {
+      providerFactory.addHeaderDelegate(clazz, header);
    }
 }

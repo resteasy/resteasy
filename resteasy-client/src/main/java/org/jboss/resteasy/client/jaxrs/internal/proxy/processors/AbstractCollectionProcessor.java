@@ -1,6 +1,12 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collection;
+
+import javax.ws.rs.ext.ParamConverter;
+
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -9,27 +15,57 @@ import java.util.Collection;
 public abstract class AbstractCollectionProcessor<T>
 {
    protected String paramName;
+   protected Type type;
+   protected Annotation[] annotations;
+   protected ClientConfiguration config;
 
    public AbstractCollectionProcessor(String paramName)
    {
       this.paramName = paramName;
    }
+   
+   public AbstractCollectionProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   {
+      this.paramName = paramName;
+      this.type = type;
+      this.annotations = annotations;
+      this.config = config;
+   }
 
    protected abstract T apply(T target, Object object);
 
+   @SuppressWarnings("unchecked")
    public T buildIt(T target, Object object)
    {
       if (object == null) return target;
       if (object instanceof Collection)
       {
-         for (Object obj : (Collection<?>) object)
+         if (annotations != null && type != null)
          {
-            target = apply(target, obj);
+            ParamConverter<Object> paramConverter = config.getParamConverter(object.getClass(), type, annotations);
+            if (paramConverter != null)
+            {
+               object = paramConverter.toString(object);
+               target = apply(target, object);
+            }
+            else
+            {
+               for (Object obj : (Collection<?>) object)
+               {
+                  target = apply(target, obj);
+               }
+            }
          }
       }
       else if (object.getClass().isArray())
       {
-         if (object.getClass().getComponentType().isPrimitive())
+         ParamConverter<Object> paramConverter = config.getParamConverter(object.getClass(), type, annotations);
+         if (paramConverter != null)
+         {
+            object = paramConverter.toString(object);
+            target = apply(target, object);
+         }
+         else if (object.getClass().getComponentType().isPrimitive())
          {
             Class<?> componentType = object.getClass().getComponentType();
             if (componentType.equals(boolean.class))

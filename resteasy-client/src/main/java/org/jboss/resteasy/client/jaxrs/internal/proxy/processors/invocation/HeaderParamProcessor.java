@@ -1,5 +1,9 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 
 /**
@@ -14,6 +18,11 @@ public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
       super(paramName);
    }
 
+   public HeaderParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   {
+      super(paramName, type, annotations, config);
+   }
+   
    @Override
    protected ClientInvocation apply(ClientInvocation invocation, Object object)
    {

@@ -30,6 +30,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -501,8 +502,8 @@ public class StringParameterInjector
           }
        }
        
-       // Else try to find a RuntimeDelegate.HeaderDelegate if any
-       if (paramType.equals(HeaderParam.class))
+       // Else try to find a RuntimeDelegate.HeaderDelegate if any    
+       if (HeaderParam.class.equals(paramType) || org.jboss.resteasy.annotations.jaxrs.HeaderParam.class.equals(paramType))
        {
           delegate = factory.getHeaderDelegate(baseType);
           if (delegate != null)
@@ -607,7 +608,7 @@ public class StringParameterInjector
 
    public String getParamSignature()
    {
-      return paramType.getName() + "(\"" + paramName + "\")";
+      return (paramType != null ? paramType.getName() : "") + "(\"" + paramName + "\")";
    }
 
    public Object extractValues(List<String> values)
@@ -745,6 +746,16 @@ public class StringParameterInjector
       return null;
    }
 
+   public ParamConverter<?> getParamConverter()
+   {
+      return paramConverter;
+   }
+   
+   public HeaderDelegate<?> getHeaderDelegate()
+   {
+      return delegate;
+   }
+   
    protected void throwProcessingException(String message, Throwable cause)
    {
       throw new BadRequestException(message, cause);

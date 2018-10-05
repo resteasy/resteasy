@@ -16,6 +16,7 @@ org.jboss.resteasy.plugins.providers.FileProvider
 org.jboss.resteasy.plugins.providers.FileRangeWriter
 org.jboss.resteasy.plugins.providers.StreamingOutputProvider
 org.jboss.resteasy.plugins.providers.IIOImageProvider
+org.jboss.resteasy.plugins.providers.MultiValuedParamConverterProvider
 org.jboss.resteasy.plugins.interceptors.CacheControlFeature
 org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFeature
 org.jboss.resteasy.plugins.interceptors.ServerContentEncodingAnnotationFeature

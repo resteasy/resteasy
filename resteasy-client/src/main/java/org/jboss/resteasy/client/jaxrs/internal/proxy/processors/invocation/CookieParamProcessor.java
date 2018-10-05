@@ -1,7 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.Cookie;
 
@@ -12,10 +16,19 @@ import javax.ws.rs.core.Cookie;
 public class CookieParamProcessor implements InvocationProcessor
 {
    private String cookieName;
+   protected Annotation[] annotations;
+   protected Type type;
 
    public CookieParamProcessor(String cookieName)
    {
       this.cookieName = cookieName;
+   }
+   
+   public CookieParamProcessor(String cookieName, Type type, Annotation[] annotations)
+   {
+      this.cookieName = cookieName;
+      this.annotations = annotations;
+      this.type = type;
    }
 
    public String getCookieName()
@@ -34,7 +47,9 @@ public class CookieParamProcessor implements InvocationProcessor
       }
       else
       {
-    	  invocation.getHeaders().cookie(new Cookie(cookieName, invocation.getClientConfiguration().toString(object)));
+         ClientConfiguration cc = invocation.getClientConfiguration();
+         String s = (annotations != null && type != null) ? cc.toString(object, type, annotations) : cc.toString(object);
+         invocation.getHeaders().cookie(new Cookie(cookieName, s));
       }
    }
 }
