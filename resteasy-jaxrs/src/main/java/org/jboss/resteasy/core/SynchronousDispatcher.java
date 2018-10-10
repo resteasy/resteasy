@@ -519,8 +519,8 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Throwable ex)
       {
-         onComplete.accept(ex);
          unhandledAsynchronousException(response, ex);
+         onComplete.accept(ex);
       }
    }
 
