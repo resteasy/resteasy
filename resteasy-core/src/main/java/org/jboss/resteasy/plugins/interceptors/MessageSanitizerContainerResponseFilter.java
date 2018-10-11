@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.Priority;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 
 /**
@@ -27,6 +31,13 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
 
+        ServletContext context = ResteasyContext.getContextData(ServletContext.class);
+        if (context != null) {
+            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER);
+            if (Boolean.valueOf(s)) {
+                return;
+            }
+        }
         if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
             Object entity = responseContext.getEntity();
             if (entity != null && entity instanceof String) {
@@ -77,6 +88,9 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
 
     private boolean containsHtmlText(ArrayList<Object> list) {
        for (Object o :list) {
+          if (o instanceof MediaType && MediaType.TEXT_HTML_TYPE.isCompatible((MediaType) o)) {
+             return true;
+          }
           if (o instanceof String) {
              String mediaType = (String) o;
              String[] partsType = mediaType.split("/");
