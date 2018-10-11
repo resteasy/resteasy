@@ -56,7 +56,7 @@ public class AsyncUnhandledExceptionTest {
     */
    @Test
    public void testGet() {
-      ResteasyClient client = new ResteasyClientBuilderImpl().build();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       Response response = client.target(generateURL("/thread")).request().get();
       Assert.assertEquals(500, response.getStatus());
    }
