@@ -47,8 +47,12 @@ public class AsyncUnhandledExceptionTest {
    public void testPost() {
 
       Client client = ClientBuilder.newClient();
-      Response response = client.target(generateURL("/listener")).request().post(Entity.entity("aaa", "text/plain"));
-      Assert.assertEquals(500, response.getStatus());
+      try {
+         Response response = client.target(generateURL("/listener")).request().post(Entity.entity("aaa", "text/plain"));
+         Assert.assertEquals(500, response.getStatus());
+      } finally {
+         client.close();
+      }
    }
    
    /**
@@ -58,7 +62,11 @@ public class AsyncUnhandledExceptionTest {
    @Test
    public void testGet() {
       Client client = ClientBuilder.newClient();
-      Response response = client.target(generateURL("/thread")).request().get();
-      Assert.assertEquals(500, response.getStatus());
+      try {
+         Response response = client.target(generateURL("/thread")).request().get();
+         Assert.assertEquals(500, response.getStatus());
+      } finally {
+         client.close();
+      }
    }
 }
