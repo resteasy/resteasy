@@ -717,6 +717,20 @@ public class MyApplication extends Application
                                 independent of the setting of this parameter.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.disable.html.sanitizer
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Normally, a response with media type "text/html" and a status of 400 will be processed
+                                so that the characters "/", "&lt;", "&gt;", "&amp;", """ (double quote), and "'" (single quote)
+                                are escaped to prevent an XSS attack. If this parameter is set to "true", escaping
+                                will not occur.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
