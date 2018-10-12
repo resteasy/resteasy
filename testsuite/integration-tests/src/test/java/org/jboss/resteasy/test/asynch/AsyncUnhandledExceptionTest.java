@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.asynch;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.AsyncUnhandledExceptionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -45,7 +45,8 @@ public class AsyncUnhandledExceptionTest {
     */
    @Test
    public void testPost() {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+
+      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/listener")).request().post(Entity.entity("aaa", "text/plain"));
       Assert.assertEquals(500, response.getStatus());
    }
@@ -56,7 +57,7 @@ public class AsyncUnhandledExceptionTest {
     */
    @Test
    public void testGet() {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/thread")).request().get();
       Assert.assertEquals(500, response.getStatus());
    }
