@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * This class is used to configure and initialize the core components of RESTEasy.
@@ -81,6 +82,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private ResteasyProviderFactory providerFactory;
    private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    private String paramMapping;
+   private Map<String, Object> properties = new TreeMap<String, Object>();
 
    public void start()
    {
@@ -986,5 +988,15 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    public void setInjectorFactory(InjectorFactory injectorFactory)
    {
       this.injectorFactory = injectorFactory;
+   }
+
+   @Override
+   public Object getProperty(String key) {
+      return properties.get(key);
+   }
+
+   @Override
+   public void setProperty(String key, Object value) {
+      properties.put(key, value);
    }
 }

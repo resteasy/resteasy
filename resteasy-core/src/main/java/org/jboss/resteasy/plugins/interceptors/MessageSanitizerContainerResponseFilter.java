@@ -9,9 +9,13 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
  * (RESTEASY-1485) Thwart select XSS attack by escaping special chars in
@@ -27,6 +31,15 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
    public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {
 
+      ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
+      if (deployment != null)
+      {
+         Boolean disable = (Boolean) deployment.getProperty(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER);
+         if (disable != null && disable)
+         {
+            return;
+         }
+      }
       if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
          Object entity = responseContext.getEntity();
          if (entity != null && entity instanceof String) {
@@ -77,6 +90,9 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
 
    private boolean containsHtmlText(ArrayList<Object> list) {
       for (Object o :list) {
+         if (o instanceof MediaType && MediaType.TEXT_HTML_TYPE.isCompatible((MediaType) o)) {
+            return true;
+         }
          if (o instanceof String) {
             String mediaType = (String) o;
             String[] partsType = mediaType.split("/");
