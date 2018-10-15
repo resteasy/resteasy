@@ -37,6 +37,7 @@ public interface ResteasyContextParameters
    String RESTEASY_GZIP_MAX_INPUT = "resteasy.gzip.max.input";
    String RESTEASY_SECURE_RANDOM_MAX_USE = "resteasy.secure.random.max.use";
    String RESTEASY_ADD_CHARSET = "resteasy.add.charset";
+   String RESTEASY_DISABLE_HTML_SANITIZER = "resteasy.disable.html.sanitizer";
    
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
