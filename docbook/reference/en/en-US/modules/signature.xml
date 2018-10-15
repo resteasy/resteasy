@@ -172,7 +172,7 @@
     <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;3.6.1.SP2&lt;/version&gt;
+            &lt;version&gt;3.6.1.SP3-SNAPSHOT&lt;/version&gt;
         &lt;/dependency&gt;
 
 </programlisting></para>

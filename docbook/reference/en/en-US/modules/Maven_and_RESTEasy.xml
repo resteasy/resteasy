@@ -6,7 +6,7 @@ JBoss's Maven Repository is at:
    </para>
    <para>
 
-      Here's the pom.xml fragment to use. RESTEasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.6.1.SP2 with the current RESTEasy version you want to use.
+      Here's the pom.xml fragment to use. RESTEasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.6.1.SP3-SNAPSHOT with the current RESTEasy version you want to use.
    </para>
 <programlisting>
 <![CDATA[
@@ -21,12 +21,12 @@ JBoss's Maven Repository is at:
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
 
    <!-- optional modules -->
@@ -35,50 +35,50 @@ JBoss's Maven Repository is at:
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxb-provider</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- multipart/form-data and multipart/mixed support -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-multipart-provider</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- RESTEasy Server Cache -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-cache-core</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- Ruby YAML support -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-yaml-provider</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- JAXB + Atom support -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-atom-provider</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- Spring integration -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-spring</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
    <!-- Guice integration -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-guice</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
 
    <!-- Asynchronous HTTP support with Servlet 3.0  -->
    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>async-http-servlet-3.0</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
    </dependency>
 
 </dependencies>
@@ -94,7 +94,7 @@ JBoss's Maven Repository is at:
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-bom</artifactId>
-                <version>3.6.1.SP2</version>
+                <version>3.6.1.SP3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

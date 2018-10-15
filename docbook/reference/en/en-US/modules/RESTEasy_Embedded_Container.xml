@@ -138,7 +138,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jdk-http</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -157,7 +157,7 @@ RESTEasy integrates with the TJWS Embeddable Servlet container.  It comes with t
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>tjws</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
   </dependency>
 
   <dependency>
@@ -246,7 +246,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-netty</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
 
@@ -273,7 +273,7 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-vertx</artifactId>
-      <version>3.6.1.SP2</version>
+      <version>3.6.1.SP3-SNAPSHOT</version>
   </dependency>
     ]]></programlisting>
 
