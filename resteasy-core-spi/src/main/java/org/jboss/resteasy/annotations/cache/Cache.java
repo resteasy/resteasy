@@ -29,4 +29,5 @@ public @interface Cache
 
    boolean isPrivate() default false;
 
+   boolean noCache() default false;
 }

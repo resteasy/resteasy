@@ -72,6 +72,7 @@ public class CacheControlFeature implements DynamicFeature
       cacheControl.setNoStore((methodCached.noStore()));
       cacheControl.setNoTransform((methodCached.noTransform()));
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
+      cacheControl.setNoCache(methodCached.noCache());
       return cacheControl;
    }
    

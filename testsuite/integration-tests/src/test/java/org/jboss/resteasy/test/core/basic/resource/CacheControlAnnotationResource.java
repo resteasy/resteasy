@@ -22,4 +22,10 @@ public class CacheControlAnnotationResource {
       return "nocache";
    }
 
+   @GET
+   @Cache(maxAge = 0, sMaxAge = 0, mustRevalidate = true, noCache = true, noStore = true, isPrivate = true)
+   @Path("composite")
+   public String getCompositeDirectives() {
+      return "compositeDirectives";
+   }
 }

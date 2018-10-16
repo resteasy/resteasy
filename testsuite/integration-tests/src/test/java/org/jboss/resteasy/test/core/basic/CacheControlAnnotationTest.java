@@ -88,4 +88,24 @@ public class CacheControlAnnotationTest {
       response.close();
    }
 
+   /**
+    * @tpTestDetails Test for no-cache settings mixed with other directives
+    * @tpSince RESTEasy 4.0.0
+    */
+   @Test
+   public void testResourceCompositeNoCache() {
+      WebTarget base = client.target(generateURL("/composite"));
+      Response response = base.request().get();
+
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      CacheControl cc = CacheControl.valueOf(response.getHeaderString("cache-control"));
+      Assert.assertTrue("There must be no-store", cc.isNoStore());
+      Assert.assertTrue("There must be must-revalidate", cc.isMustRevalidate());
+      Assert.assertTrue("Cache must be private", cc.isPrivate());
+      Assert.assertEquals("Wrong age of cache", 0, cc.getMaxAge());
+      Assert.assertEquals("Wrong age of shared cache", 0, cc.getSMaxAge());
+      Assert.assertTrue("There must be no-cache", cc.isNoCache());
+      response.close();
+   }
+   
 }
