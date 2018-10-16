@@ -4,42 +4,41 @@ import javax.ejb.Remote;
 
 @Remote
 public interface ReverseInjectionEJBHolderRemote {
-    boolean testScopes();
+   boolean testScopes();
 
-    void setup();
+   void setup();
 
-    boolean test();
+   boolean test();
 
-    void sleSetup();
+   void sleSetup();
 
-    boolean sleTest();
+   boolean sleTest();
 
-    void sfdeSetup();
+   void sfdeSetup();
 
-    boolean sfdeTest();
+   boolean sfdeTest();
 
-    void sfreSetup();
+   void sfreSetup();
 
-    boolean sfreTest();
+   boolean sfreTest();
 
-    void sfaeSetup();
+   void sfaeSetup();
 
-    boolean sfaeTest();
+   boolean sfaeTest();
 
-    void sliSetup();
+   void sliSetup();
 
-    boolean sliTest();
+   boolean sliTest();
 
-    void sfdiSetup();
+   void sfdiSetup();
 
-    boolean sfdiTest();
+   boolean sfdiTest();
 
-    void sfriSetup();
+   void sfriSetup();
 
-    boolean sfriTest();
+   boolean sfriTest();
 
-    void sfaiSetup();
+   void sfaiSetup();
 
-    boolean sfaiTest();
+   boolean sfaiTest();
 }
-

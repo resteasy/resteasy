@@ -36,7 +36,7 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          Node secondNode = nodes.next();
          
          if (secondNode.getKind() == ElementKind.PARAMETER ||
-             secondNode.getKind() == ElementKind.CROSS_PARAMETER)
+            secondNode.getKind() == ElementKind.CROSS_PARAMETER)
          {
             return ConstraintType.Type.PARAMETER;
          }
@@ -71,9 +71,9 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
                String getterName = "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                Method m = getMethod(v.getLeafBean().getClass(), getterName);
                if (m.getReturnType().equals(boolean.class))
-                {
+               {
                   return ConstraintType.Type.PROPERTY;
-                }
+               }
                else
                {
                   return ConstraintType.Type.FIELD;

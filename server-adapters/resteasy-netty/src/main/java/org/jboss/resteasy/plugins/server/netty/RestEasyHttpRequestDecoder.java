@@ -25,66 +25,66 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 public class RestEasyHttpRequestDecoder extends OneToOneDecoder 
 {
 
-    private final SynchronousDispatcher dispatcher;
-    private final String servletMappingPrefix;
-    private final String proto;
-    private final boolean isKeepAlive;
+   private final SynchronousDispatcher dispatcher;
+   private final String servletMappingPrefix;
+   private final String proto;
+   private final boolean isKeepAlive;
     
-    public enum Protocol 
-    {
-        HTTPS,
-        HTTP
-    }
+   public enum Protocol 
+   {
+      HTTPS,
+      HTTP
+   }
     
-    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive) 
-    {
-        this.dispatcher = dispatcher;
-        this.servletMappingPrefix = servletMappingPrefix;
-        if (protocol == Protocol.HTTP) 
-        {
-            proto = "http";
-        } 
-        else 
-        {
-            proto = "https";
-        }
-        this.isKeepAlive = isKeepAlive;
-    }
+   public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive) 
+   {
+      this.dispatcher = dispatcher;
+      this.servletMappingPrefix = servletMappingPrefix;
+      if (protocol == Protocol.HTTP) 
+      {
+         proto = "http";
+      } 
+      else 
+      {
+         proto = "https";
+      }
+      this.isKeepAlive = isKeepAlive;
+   }
     
-    @Override
-    protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
-    {
-        if (!(msg instanceof org.jboss.netty.handler.codec.http.HttpRequest)) 
-        {
-            return msg;
-        }
+   @Override
+   protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
+   {
+      if (!(msg instanceof org.jboss.netty.handler.codec.http.HttpRequest)) 
+      {
+         return msg;
+      }
         
-        org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
-        boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request) & isKeepAlive;
+      org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
+      boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request) & isKeepAlive;
 
-        NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive, request.getMethod());
+      NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive, request.getMethod());
 
-        ResteasyHttpHeaders headers = null;
-        ResteasyUriInfo uriInfo = null;
-        try
-        {
-           headers = NettyUtil.extractHttpHeaders(request);
+      ResteasyHttpHeaders headers = null;
+      ResteasyUriInfo uriInfo = null;
+      try
+      {
+         headers = NettyUtil.extractHttpHeaders(request);
 
-           uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
-           HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
-           ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
-           nettyRequest.setInputStream(is);
-           return nettyRequest;
-        }
-        catch (Exception e)
-        {
-           response.sendError(400);
-           // made it warn so that people can filter this.
-           LogMessages.LOGGER.warn(Messages.MESSAGES.failedToParseRequest(), e);
+         uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
+         HttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().getName(), dispatcher, response, org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected(request) );
+         ChannelBufferInputStream is = new ChannelBufferInputStream(request.getContent());
+         nettyRequest.setInputStream(is);
+         return nettyRequest;
+      }
+      catch (Exception e)
+      {
+         response.sendError(400);
+         // made it warn so that people can filter this.
+         LogMessages.LOGGER.warn(Messages.MESSAGES.failedToParseRequest(), e);
            
-           return null;
-        }
+         return null;
+      }
 
-    }
+   }
 
 }

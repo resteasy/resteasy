@@ -115,12 +115,12 @@ public class ExceptionHandler
       Throwable unwrappedException = e.getCause();
 
       /*
-       * 					If the response property of the exception does not
-       * 					contain an entity and an exception mapping provider
-       * 					(see section 4.4) is available for
-       * 					WebApplicationException an implementation MUST use the
-       * 					provider to create a new Response instance, otherwise
-       * 					the response property is used directly.
+       *                If the response property of the exception does not
+       *                contain an entity and an exception mapping provider
+       *                (see section 4.4) is available for
+       *                WebApplicationException an implementation MUST use the
+       *                provider to create a new Response instance, otherwise
+       *                the response property is used directly.
        */
 
       if (unwrappedException instanceof WebApplicationException) {
@@ -229,12 +229,12 @@ public class ExceptionHandler
       }
 
       /*
-       * 					If the response property of the exception does not
-       * 					contain an entity and an exception mapping provider
-       * 					(see section 4.4) is available for
-       * 					WebApplicationException an implementation MUST use the
-       * 					provider to create a new Response instance, otherwise
-       * 					the response property is used directly.
+       *                If the response property of the exception does not
+       *                contain an entity and an exception mapping provider
+       *                (see section 4.4) is available for
+       *                WebApplicationException an implementation MUST use the
+       *                provider to create a new Response instance, otherwise
+       *                the response property is used directly.
        */
       if (e instanceof WebApplicationException) {
          WebApplicationException wae = (WebApplicationException) e;

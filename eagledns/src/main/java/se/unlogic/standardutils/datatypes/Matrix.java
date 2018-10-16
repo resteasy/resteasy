@@ -12,42 +12,42 @@ import java.util.List;
 
 
 public class Matrix<CellType> {
-	
-	private CellType[][] matrix;
-	
-	@SuppressWarnings("unchecked")
-	public Matrix(int rows, int cols){
-		this.matrix = (CellType[][])(new Object[rows][cols]);
-	}
-	
-	public List<CellType> getRow(int rowPos){
-		return Arrays.asList(this.matrix[rowPos]);
-	}
-	
-	public List<CellType> getColumn(int columnPos){
-		
-		ArrayList<CellType> columnCells = new ArrayList<CellType>(this.getColumnCount());
-		
-		for(CellType[] row : this.matrix){
-			columnCells.add(row[columnPos]);
-		}
-		
-		return columnCells;
-	}
-	
-	public CellType getCell(int rowPos , int colPos){
-		return this.matrix[rowPos][colPos];
-	}
-	
-	public void setCell(int rowPos , int colPos, CellType cell){
-		this.matrix[rowPos][colPos] = cell;
-	}
-	
-	public int getRowCount(){
-		return this.matrix.length;
-	}
-	
-	public int getColumnCount(){
-		return this.matrix[0].length;
-	}
+
+   private CellType[][] matrix;
+
+   @SuppressWarnings("unchecked")
+   public Matrix(int rows, int cols){
+      this.matrix = (CellType[][])(new Object[rows][cols]);
+   }
+
+   public List<CellType> getRow(int rowPos){
+      return Arrays.asList(this.matrix[rowPos]);
+   }
+
+   public List<CellType> getColumn(int columnPos){
+
+      ArrayList<CellType> columnCells = new ArrayList<CellType>(this.getColumnCount());
+
+      for(CellType[] row : this.matrix){
+         columnCells.add(row[columnPos]);
+      }
+
+      return columnCells;
+   }
+
+   public CellType getCell(int rowPos , int colPos){
+      return this.matrix[rowPos][colPos];
+   }
+
+   public void setCell(int rowPos , int colPos, CellType cell){
+      this.matrix[rowPos][colPos] = cell;
+   }
+
+   public int getRowCount(){
+      return this.matrix.length;
+   }
+
+   public int getColumnCount(){
+      return this.matrix[0].length;
+   }
 }

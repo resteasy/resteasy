@@ -7,10 +7,10 @@ import javax.ws.rs.core.MediaType;
 
 @Path("")
 public class ExternalParameterEntityResource {
-    @POST
-    @Path("test")
-    @Consumes(MediaType.APPLICATION_XML)
-    public String post(ExternalParameterEntityWrapper wrapper) {
-        return wrapper.getName();
-    }
+   @POST
+   @Path("test")
+   @Consumes(MediaType.APPLICATION_XML)
+   public String post(ExternalParameterEntityWrapper wrapper) {
+      return wrapper.getName();
+   }
 }

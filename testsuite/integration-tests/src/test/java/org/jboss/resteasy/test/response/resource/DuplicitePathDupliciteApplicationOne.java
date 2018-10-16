@@ -7,10 +7,10 @@ import java.util.Set;
 
 @ApplicationPath("a")
 public class DuplicitePathDupliciteApplicationOne extends Application {
-    @Override
-    public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> set = new HashSet<Class<?>>();
-        set.add(DuplicitePathDupliciteResourceOne.class);
-        return set;
-    }
+   @Override
+   public Set<Class<?>> getClasses() {
+      HashSet<Class<?>> set = new HashSet<Class<?>>();
+      set.add(DuplicitePathDupliciteResourceOne.class);
+      return set;
+   }
 }

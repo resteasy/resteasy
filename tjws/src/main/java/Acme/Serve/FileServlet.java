@@ -86,7 +86,7 @@ public class FileServlet extends HttpServlet
 
    private static final boolean logenabled = false;
 
-//	 true;
+//    true;
 
    private Method canExecute, getFreeSpace;
 
@@ -164,7 +164,7 @@ public class FileServlet extends HttpServlet
    {
       boolean headOnly;
       if (req.getMethod().equalsIgnoreCase("get") || req.getAttribute("javax.servlet.forward.request_uri") != null
-              || req.getAttribute("javax.servlet.include.request_uri") != null)
+            || req.getAttribute("javax.servlet.include.request_uri") != null)
          headOnly = false;
       else if (req.getMethod().equalsIgnoreCase("head"))
          headOnly = true;
@@ -180,11 +180,11 @@ public class FileServlet extends HttpServlet
    }
 
    private void dispatchPathname(HttpServletRequest req, HttpServletResponse res, boolean headOnly, String path)
-           throws IOException
+         throws IOException
    {
       log("path trans: " + req.getPathTranslated());
       String filename = req.getPathTranslated() != null ? req.getPathTranslated().replace('/', File.separatorChar)
-              : "";
+            : "";
       File file = new File(filename);
       log("showing '" + filename + "' for path " + path);
       if (file.exists())
@@ -220,7 +220,7 @@ public class FileServlet extends HttpServlet
    }
 
    private void serveFile(HttpServletRequest req, HttpServletResponse res, boolean headOnly, String path, File file)
-           throws IOException
+         throws IOException
    {
       log("getting " + file);
       if (logenabled)
@@ -463,8 +463,8 @@ public class FileServlet extends HttpServlet
             String aFileDirsuf = (aFile.isDirectory() ? "/" : "");
             String aFileSuf = (aFile.isDirectory() ? "/" : "");
             p.println(aFileType + aFileRead + aFileWrite + aFileExe + "  " + aFileSize + "  " + aFileDate + "  "
-                    + "<A HREF=\"" + URLEncoder.encode(names[i], charSet) /* 1.4 */
-                    + aFileDirsuf + "\">" + names[i] + aFileSuf + "</A>");
+               + "<A HREF=\"" + URLEncoder.encode(names[i], charSet) /* 1.4 */
+               + aFileDirsuf + "\">" + names[i] + aFileSuf + "</A>");
          }
          if (total != 0)
             total += 3;
@@ -487,7 +487,7 @@ public class FileServlet extends HttpServlet
     * @throws IOException in redirection
     */
    private boolean redirectDirectory(HttpServletRequest req, HttpServletResponse res, String path, File file)
-           throws IOException
+         throws IOException
    {
       int pl = path.length();
       if (pl > 0 && path.charAt(pl - 1) != '/')

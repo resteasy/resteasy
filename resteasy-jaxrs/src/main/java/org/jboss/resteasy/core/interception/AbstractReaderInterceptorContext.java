@@ -52,7 +52,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       {
          MessageBodyReader reader = getReader();
          if (reader!=null)
-             LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+            LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
          return readFrom(reader);
       }
       LogMessages.LOGGER.debugf("ReaderInterceptor: %s", interceptors[index].getClass().getName());

@@ -8,29 +8,29 @@ import java.rmi.server.RMISocketFactory;
 
 public class TimeoutRMISocketFactory extends RMISocketFactory{
 
-	protected int readTimeout;
-	protected int connectionTimeout;
-	
-	public TimeoutRMISocketFactory(int readTimeout, int connectionTimeout) {
+   protected int readTimeout;
+   protected int connectionTimeout;
 
-		super();
-		this.readTimeout = readTimeout;
-		this.connectionTimeout = connectionTimeout;
-	}	
-	
-	@Override
-	public Socket createSocket(String host, int port) throws IOException {
+   public TimeoutRMISocketFactory(int readTimeout, int connectionTimeout) {
 
-		Socket socket = new Socket();
-		socket.setSoTimeout(readTimeout);
-		socket.setSoLinger(false, 0);
-		socket.connect(new InetSocketAddress(host, port), connectionTimeout);
-		return socket;
-	}
+      super();
+      this.readTimeout = readTimeout;
+      this.connectionTimeout = connectionTimeout;
+   }
 
-	@Override
-	public ServerSocket createServerSocket(int port) throws IOException {
+   @Override
+   public Socket createSocket(String host, int port) throws IOException {
 
-		return new ServerSocket(port);
-	}
+      Socket socket = new Socket();
+      socket.setSoTimeout(readTimeout);
+      socket.setSoLinger(false, 0);
+      socket.connect(new InetSocketAddress(host, port), connectionTimeout);
+      return socket;
+   }
+
+   @Override
+   public ServerSocket createServerSocket(int port) throws IOException {
+
+      return new ServerSocket(port);
+   }
 }

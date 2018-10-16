@@ -120,8 +120,8 @@ public class InternalDispatcherTest
       @Path("/basic")
       public String getBasic()
       {
-          String item = uriInfo.getAbsolutePath().toString();
-          uriStack.push(item);
+         String item = uriInfo.getAbsolutePath().toString();
+         uriStack.push(item);
          return basic;
       }
 
@@ -239,9 +239,9 @@ public class InternalDispatcherTest
          finally
          {
             Assert
-                    .assertEquals(count, MessageBodyParameterInjector.bodyCount());
+               .assertEquals(count, MessageBodyParameterInjector.bodyCount());
             Assert.assertEquals(count + 1, ResteasyProviderFactory
-                    .getContextDataLevelCount());
+               .getContextDataLevelCount());
          }
          return ResteasyProviderFactory.getContextDataLevelCount();
       }
@@ -257,7 +257,7 @@ public class InternalDispatcherTest
 
    @Before
    public void setup() {
-       forwardingResource.uriStack.clear();
+      forwardingResource.uriStack.clear();
    }
 
    @AfterClass
@@ -304,24 +304,24 @@ public class InternalDispatcherTest
 
       @Test
    public void testUriInfoBasic() {
-       String baseUrl = generateBaseUrl();
-       Client client = ProxyFactory.create(Client.class, baseUrl);
+      String baseUrl = generateBaseUrl();
+      Client client = ProxyFactory.create(Client.class, baseUrl);
 
-       client.getBasic();
-       Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
-       Assert.assertTrue(forwardingResource.uriStack.isEmpty());
+      client.getBasic();
+      Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
+      Assert.assertTrue(forwardingResource.uriStack.isEmpty());
 
    }
 
    @Test
    public void testUriInfoForwardBasic() {
       String baseUrl = generateBaseUrl();
-       Client client = ProxyFactory.create(Client.class, baseUrl);
+      Client client = ProxyFactory.create(Client.class, baseUrl);
 
-       client.getForwardBasic();
-       Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
-       Assert.assertEquals(baseUrl + "/forward/basic", forwardingResource.uriStack.pop());
-       Assert.assertTrue(forwardingResource.uriStack.isEmpty());
+      client.getForwardBasic();
+      Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
+      Assert.assertEquals(baseUrl + "/forward/basic", forwardingResource.uriStack.pop());
+      Assert.assertTrue(forwardingResource.uriStack.isEmpty());
    }
 
    @Test

@@ -52,8 +52,8 @@ public class VerificationResults
    public String toString()
    {
       return "VerificationResults{" +
-              "verified=" + verified +
-              ", results=" + results +
-              '}';
+            "verified=" + verified +
+            ", results=" + results +
+            '}';
    }
 }

@@ -15,185 +15,185 @@ import java.util.List;
 
 public class RelationQuery {
 
-	private List<Field> relations;
-	private List<Field> excludedRelations;
+   private List<Field> relations;
+   private List<Field> excludedRelations;
 
-	private boolean disableAutoRelations;
-	
-	public RelationQuery() {}
+   private boolean disableAutoRelations;
 
-	public RelationQuery(List<Field> relations) {
+   public RelationQuery() {}
 
-		this.relations = relations;
-	}
+   public RelationQuery(List<Field> relations) {
 
-	public RelationQuery(Field... relations) {
+      this.relations = relations;
+   }
 
-		this.addRelations(relations);
-	}
+   public RelationQuery(Field... relations) {
 
-	public RelationQuery(RelationQuery relationQuery) {
+      this.addRelations(relations);
+   }
 
-		this.addRelations(relationQuery);
-	}
+   public RelationQuery(RelationQuery relationQuery) {
 
-	public List<Field> getRelations() {
+      this.addRelations(relationQuery);
+   }
 
-		return relations;
-	}
+   public List<Field> getRelations() {
 
-	public void setRelations(List<Field> relations) {
+      return relations;
+   }
 
-		this.relations = relations;
-	}
+   public void setRelations(List<Field> relations) {
 
-	public void addRelation(Field relation){
+      this.relations = relations;
+   }
 
-		if(this.relations == null){
+   public void addRelation(Field relation){
 
-			this.relations = new ArrayList<Field>();
-		}
+      if(this.relations == null){
 
-		this.relations.add(relation);
-	}
+         this.relations = new ArrayList<Field>();
+      }
 
-	public void addRelations(Field... relations){
+      this.relations.add(relation);
+   }
 
-		if(this.relations == null){
+   public void addRelations(Field... relations){
 
-			this.relations = new ArrayList<Field>();
-		}
+      if(this.relations == null){
 
-		this.relations.addAll(Arrays.asList(relations));
-	}
+         this.relations = new ArrayList<Field>();
+      }
 
-	public static boolean hasRelations(RelationQuery query){
+      this.relations.addAll(Arrays.asList(relations));
+   }
 
-		if(query == null || query.getRelations() == null || query.getRelations().isEmpty()){
-			return false;
-		}
+   public static boolean hasRelations(RelationQuery query){
 
-		return true;
-	}
+      if(query == null || query.getRelations() == null || query.getRelations().isEmpty()){
+         return false;
+      }
 
-	public boolean hasRelations(){
+      return true;
+   }
 
-		return hasRelations(this);
-	}
+   public boolean hasRelations(){
 
-	public void addRelations(RelationQuery relationQuery) {
+      return hasRelations(this);
+   }
 
-		if(hasRelations(relationQuery)){
+   public void addRelations(RelationQuery relationQuery) {
 
-			this.addRelations(relationQuery.getRelations());
-		}
-	}
+      if(hasRelations(relationQuery)){
 
-	public void addRelations(List<Field> relations){
+         this.addRelations(relationQuery.getRelations());
+      }
+   }
 
-		if(this.relations == null){
+   public void addRelations(List<Field> relations){
 
-			this.relations = relations;
+      if(this.relations == null){
 
-		}else{
+         this.relations = relations;
 
-			this.relations.addAll(relations);
-		}
-	}
+      }else{
 
-	public List<Field> getExcludedRelations() {
+         this.relations.addAll(relations);
+      }
+   }
 
-		return excludedRelations;
-	}
+   public List<Field> getExcludedRelations() {
 
-	public void setExcludedRelations(List<Field> excludedRelations) {
+      return excludedRelations;
+   }
 
-		this.excludedRelations = excludedRelations;
-	}
+   public void setExcludedRelations(List<Field> excludedRelations) {
 
-	public void addExcludedRelation(Field relation){
+      this.excludedRelations = excludedRelations;
+   }
 
-		if(this.excludedRelations == null){
+   public void addExcludedRelation(Field relation){
 
-			this.excludedRelations = new ArrayList<Field>();
-		}
+      if(this.excludedRelations == null){
 
-		this.excludedRelations.add(relation);
-	}
+         this.excludedRelations = new ArrayList<Field>();
+      }
 
-	public void addExcludedRelations(Field... excludedRelations){
+      this.excludedRelations.add(relation);
+   }
 
-		if(this.excludedRelations == null){
+   public void addExcludedRelations(Field... excludedRelations){
 
-			this.excludedRelations = new ArrayList<Field>();
-		}
+      if(this.excludedRelations == null){
 
-		this.excludedRelations.addAll(Arrays.asList(excludedRelations));
-	}
+         this.excludedRelations = new ArrayList<Field>();
+      }
 
-	public static boolean hasExcludedRelations(RelationQuery query){
+      this.excludedRelations.addAll(Arrays.asList(excludedRelations));
+   }
 
-		if(query == null || query.getExcludedRelations() == null || query.getExcludedRelations().isEmpty()){
-			return false;
-		}
+   public static boolean hasExcludedRelations(RelationQuery query){
 
-		return true;
-	}
+      if(query == null || query.getExcludedRelations() == null || query.getExcludedRelations().isEmpty()){
+         return false;
+      }
 
-	public boolean hasExcludedRelations(){
+      return true;
+   }
 
-		return hasExcludedRelations(this);
-	}
+   public boolean hasExcludedRelations(){
 
-	public void addExcludedRelations(RelationQuery relationQuery) {
+      return hasExcludedRelations(this);
+   }
 
-		if(hasExcludedRelations(relationQuery)){
+   public void addExcludedRelations(RelationQuery relationQuery) {
 
-			this.addExcludedRelations(relationQuery.getExcludedRelations());
-		}
-	}
+      if(hasExcludedRelations(relationQuery)){
 
-	public void addExcludedRelations(List<Field> excludedRelations){
+         this.addExcludedRelations(relationQuery.getExcludedRelations());
+      }
+   }
 
-		if(this.excludedRelations == null){
+   public void addExcludedRelations(List<Field> excludedRelations){
 
-			this.excludedRelations = excludedRelations;
+      if(this.excludedRelations == null){
 
-		}else{
+         this.excludedRelations = excludedRelations;
 
-			this.excludedRelations.addAll(excludedRelations);
-		}
-	}
+      }else{
 
-	public boolean containsRelation(Field field) {
+         this.excludedRelations.addAll(excludedRelations);
+      }
+   }
 
-		if(this.relations != null){
+   public boolean containsRelation(Field field) {
 
-			return this.relations.contains(field);
-		}
+      if(this.relations != null){
 
-		return false;
-	}
+         return this.relations.contains(field);
+      }
 
-	public boolean containsExcludedRelation(Field field) {
+      return false;
+   }
 
-		if(this.excludedRelations != null){
+   public boolean containsExcludedRelation(Field field) {
 
-			return this.excludedRelations.contains(field);
-		}
+      if(this.excludedRelations != null){
 
-		return false;
-	}
+         return this.excludedRelations.contains(field);
+      }
 
-	
-	public boolean isDisableAutoRelations() {
-	
-		return disableAutoRelations;
-	}
+      return false;
+   }
 
-	
-	public void disableAutoRelations(boolean disableAutoRelations) {
-	
-		this.disableAutoRelations = disableAutoRelations;
-	}
+
+   public boolean isDisableAutoRelations() {
+
+      return disableAutoRelations;
+   }
+
+
+   public void disableAutoRelations(boolean disableAutoRelations) {
+
+      this.disableAutoRelations = disableAutoRelations;
+   }
 }

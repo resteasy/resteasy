@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class JavaConfigBeanConfiguration {
-    @Bean
-    public JavaConfigService service() {
-        return new JavaConfigService();
-    }
+   @Bean
+   public JavaConfigService service() {
+      return new JavaConfigService();
+   }
 
-    @Bean
-    public JavaConfigResource resource() {
-        return new JavaConfigResource();
-    }
+   @Bean
+   public JavaConfigResource resource() {
+      return new JavaConfigResource();
+   }
 }

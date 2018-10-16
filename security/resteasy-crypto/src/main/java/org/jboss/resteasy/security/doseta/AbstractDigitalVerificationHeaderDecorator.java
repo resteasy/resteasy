@@ -45,11 +45,11 @@ public class AbstractDigitalVerificationHeaderDecorator
       verification.setIgnoreExpiration(v.ignoreExpiration());
       After staleAfter = v.stale();
       if (staleAfter.seconds() > 0
-              || staleAfter.minutes() > 0
-              || staleAfter.hours() > 0
-              || staleAfter.days() > 0
-              || staleAfter.months() > 0
-              || staleAfter.years() > 0)
+            || staleAfter.minutes() > 0
+            || staleAfter.hours() > 0
+            || staleAfter.days() > 0
+            || staleAfter.months() > 0
+            || staleAfter.years() > 0)
       {
          verification.setStaleCheck(true);
          verification.setStaleSeconds(staleAfter.seconds());

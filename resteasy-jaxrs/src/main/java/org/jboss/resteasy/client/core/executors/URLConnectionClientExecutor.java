@@ -107,12 +107,12 @@ public class URLConnectionClientExecutor implements ClientExecutor
    }
 
    private MultivaluedMap<String, String> getHeaders(
-           final HttpURLConnection connection)
+         final HttpURLConnection connection)
    {
       MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
 
       for (Entry<String, List<String>> header : connection.getHeaderFields()
-              .entrySet())
+            .entrySet())
       {
          if (header.getKey() != null)
             for (String value : header.getValue())

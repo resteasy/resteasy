@@ -55,7 +55,7 @@ public class InheritanceTest extends BaseResourceTest
    public static class ChildResource1 implements ParentResource1
    {
       static String html_content =
-              "<html>" + "<head><title>JAX-RS Test</title></head>" +
+            "<html>" + "<head><title>JAX-RS Test</title></head>" +
                       "<body>Second</body></html>";
 
       @GET

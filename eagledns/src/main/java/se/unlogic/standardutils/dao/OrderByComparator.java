@@ -13,19 +13,19 @@ import java.util.Comparator;
 
 public class OrderByComparator implements Comparator<OrderBy> {
 
-	public int compare(OrderBy o1, OrderBy o2) {
+   public int compare(OrderBy o1, OrderBy o2) {
 
-		if (o1.priority() < o2.priority()) {
-			
-			return 1;
-			
-		} else if (o1.priority() == o2.priority()) {
-			
-			return 0;
-			
-		} else {
-			
-			return -1;
-		}
-	}
+      if (o1.priority() < o2.priority()) {
+
+         return 1;
+
+      } else if (o1.priority() == o2.priority()) {
+
+         return 0;
+
+      } else {
+
+         return -1;
+      }
+   }
 }

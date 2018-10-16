@@ -43,7 +43,7 @@ public class GrantTest extends SkeletonTestBase
 
       Form form = new Form();
       form.param(RequiredCredentialRepresentation.PASSWORD, "userpassword")
-          .param("client_id", "wburke");
+         .param("client_id", "wburke");
       LOG.info(realmInfo.getGrantUrl());
       Response response = client.target(realmInfo.getGrantUrl()).request().post(Entity.form(form));
       if (response.getStatus() != 200)

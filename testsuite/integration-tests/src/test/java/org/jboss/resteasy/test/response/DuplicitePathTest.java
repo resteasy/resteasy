@@ -43,174 +43,174 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 @RunWith(Arquillian.class)
 @RunAsClient
 public class DuplicitePathTest {
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
-    }
+   private static int getWarningCount() {
+      return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
+   }
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, DuplicitePathTest.class.getSimpleName() + ".war");
-        war.addClass(DuplicitePathDupliciteApplicationOne.class);
-        war.addClass(DuplicitePathDupliciteApplicationTwo.class);
-        war.addClass(DuplicitePathDupliciteResourceOne.class);
-        war.addClass(DuplicitePathDupliciteResourceTwo.class);
-        war.addClass(DuplicitePathMethodResource.class);
-        war.addClass(DuplicitePathNoDupliciteApplication.class);
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, DuplicitePathTest.class.getSimpleName() + ".war");
+      war.addClass(DuplicitePathDupliciteApplicationOne.class);
+      war.addClass(DuplicitePathDupliciteApplicationTwo.class);
+      war.addClass(DuplicitePathDupliciteResourceOne.class);
+      war.addClass(DuplicitePathDupliciteResourceTwo.class);
+      war.addClass(DuplicitePathMethodResource.class);
+      war.addClass(DuplicitePathNoDupliciteApplication.class);
+      return war;
+   }
 
-    @BeforeClass
-    public static void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @BeforeClass
+   public static void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-        client = null;
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, DuplicitePathTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, DuplicitePathTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was logged, if client makes request to path,
-     * that is handled by two methods in two end-point in two application classes
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1445] FIXME
-    public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/a/b/c"));
-        Response response = null;
-        try {
-            response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            String strResponse = response.readEntity(String.class);
-            Assert.assertThat("Wrong body of response", strResponse,
-                    either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
-                            .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
-                            1, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was logged, if client makes request to path,
+    * that is handled by two methods in two end-point in two application classes
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1445] FIXME
+   public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/a/b/c"));
+      Response response = null;
+      try {
+         response = base.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String strResponse = response.readEntity(String.class);
+         Assert.assertThat("Wrong body of response", strResponse,
+               either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
+                     .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
+                     1, getWarningCount() - initWarningsCount);
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was logged, if client makes request to path,
-     * that is handled by two methods in two end-point in two application classes
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testDuplicationMoreAccepts() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/f/g/i"));
-        Response response = null;
-        try {
-            response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            String strResponse = response.readEntity(String.class);
-            Assert.assertThat("Wrong body of response", strResponse,
-                    is(DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
-                            0, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was logged, if client makes request to path,
+    * that is handled by two methods in two end-point in two application classes
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testDuplicationMoreAccepts() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/f/g/i"));
+      Response response = null;
+      try {
+         response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String strResponse = response.readEntity(String.class);
+         Assert.assertThat("Wrong body of response", strResponse,
+               is(DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
+                     0, getWarningCount() - initWarningsCount);
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was logged, if client makes request to path,
-     * that is handled by two methods in two end-point in two application classes
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testDuplicationMoretypes() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/f/g/j"));
-        Response response = null;
-        try {
-            response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            String strResponse = response.readEntity(String.class);
-            Assert.assertThat("Wrong body of response", strResponse,
-                    is(DuplicitePathMethodResource.DUPLICITE_TYPE_GET));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
-                            0, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was logged, if client makes request to path,
+    * that is handled by two methods in two end-point in two application classes
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testDuplicationMoretypes() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/f/g/j"));
+      Response response = null;
+      try {
+         response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String strResponse = response.readEntity(String.class);
+         Assert.assertThat("Wrong body of response", strResponse,
+               is(DuplicitePathMethodResource.DUPLICITE_TYPE_GET));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
+                     0, getWarningCount() - initWarningsCount);
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was logged, if client makes request to path,
-     * that is handled by two methods in two end-point in one application classes
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testDuplicationOneAppTwoResourcesWithSamePath() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/f/b/c"));
-        Response response = null;
-        try {
-            response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            String strResponse = response.readEntity(String.class);
-            Assert.assertThat("Wrong body of response", strResponse,
-                    either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
-                            .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals("Wrong count of warnings in server log", 1, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was logged, if client makes request to path,
+    * that is handled by two methods in two end-point in one application classes
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testDuplicationOneAppTwoResourcesWithSamePath() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/f/b/c"));
+      Response response = null;
+      try {
+         response = base.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         String strResponse = response.readEntity(String.class);
+         Assert.assertThat("Wrong body of response", strResponse,
+               either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
+                     .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals("Wrong count of warnings in server log", 1, getWarningCount() - initWarningsCount);
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was logged, if client makes request to path, that is handled by two methods
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testDuplicationPathInMethod() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/f/g/h"));
-        Response response = null;
-        try {
-            response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertThat("Wrong body of response", response.readEntity(String.class),
-                    either(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_1))
-                            .or(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_2)));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals("Wrong count of warnings in server log", 1, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was logged, if client makes request to path, that is handled by two methods
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testDuplicationPathInMethod() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/f/g/h"));
+      Response response = null;
+      try {
+         response = base.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertThat("Wrong body of response", response.readEntity(String.class),
+               either(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_1))
+                     .or(is(DuplicitePathMethodResource.DUPLICITE_RESPONSE_2)));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals("Wrong count of warnings in server log", 1, getWarningCount() - initWarningsCount);
+   }
 
-    /**
-     * @tpTestDetails Check that warning message was not logged, if client makes request to path, that is handled by one method (correct behaviour)
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    public void testNoDuplicationPathInMethod() throws Exception {
-        int initWarningsCount = getWarningCount();
-        WebTarget base = client.target(generateURL("/f/g/i"));
-        Response response = null;
-        try {
-            response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("Wrong body of response", DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE, response.readEntity(String.class));
-        } finally {
-            response.close();
-        }
-        Assert.assertEquals("Wrong count of warnings in server log", 0, getWarningCount() - initWarningsCount);
-    }
+   /**
+    * @tpTestDetails Check that warning message was not logged, if client makes request to path, that is handled by one method (correct behaviour)
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   public void testNoDuplicationPathInMethod() throws Exception {
+      int initWarningsCount = getWarningCount();
+      WebTarget base = client.target(generateURL("/f/g/i"));
+      Response response = null;
+      try {
+         response = base.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("Wrong body of response", DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE, response.readEntity(String.class));
+      } finally {
+         response.close();
+      }
+      Assert.assertEquals("Wrong count of warnings in server log", 0, getWarningCount() - initWarningsCount);
+   }
 }

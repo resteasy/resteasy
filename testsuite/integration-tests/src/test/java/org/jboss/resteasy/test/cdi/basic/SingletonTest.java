@@ -34,46 +34,46 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SingletonTest {
-    static Client client;
-    protected static final Logger logger = LogManager.getLogger(SingletonTest.class.getName());
+   static Client client;
+   protected static final Logger logger = LogManager.getLogger(SingletonTest.class.getName());
 
-    @BeforeClass
-    public static void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(SingletonTest.class.getSimpleName());
-        war.addClasses(SingletonLocalIF.class, SingletonSubResource.class,
-                SingletonTestBean.class);
-        return TestUtil.finishContainerPrepare(war, null, SingletonRootResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(SingletonTest.class.getSimpleName());
+      war.addClasses(SingletonLocalIF.class, SingletonSubResource.class,
+            SingletonTestBean.class);
+      return TestUtil.finishContainerPrepare(war, null, SingletonRootResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SingletonTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, SingletonTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Three requests for singleton bean
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSingleton() throws Exception {
-        WebTarget base = client.target(generateURL("/root"));
-        String value = base.path("sub").request().get(String.class);
-        Assert.assertEquals("Wrong content of response", "hello", value);
-        value = base.path("injected").request().get(String.class);
-        Assert.assertEquals("Wrong content of response", "true", value);
-        value = base.path("intfsub").request().get(String.class);
-        logger.info(value);
-        Response response = base.path("exception").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
-    }
+   /**
+    * @tpTestDetails Three requests for singleton bean
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSingleton() throws Exception {
+      WebTarget base = client.target(generateURL("/root"));
+      String value = base.path("sub").request().get(String.class);
+      Assert.assertEquals("Wrong content of response", "hello", value);
+      value = base.path("injected").request().get(String.class);
+      Assert.assertEquals("Wrong content of response", "true", value);
+      value = base.path("intfsub").request().get(String.class);
+      logger.info(value);
+      Response response = base.path("exception").request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_CREATED, response.getStatus());
+   }
 
 }

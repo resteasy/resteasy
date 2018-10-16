@@ -7,10 +7,10 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Produces("text/plain")
 public class ContextResolver5 implements ContextResolver<String> {
-    public String getContext(Class<?> type) {
-        if (type.equals(float.class)) {
-            return "5";
-        }
-        return null;
-    }
+   public String getContext(Class<?> type) {
+      if (type.equals(float.class)) {
+         return "5";
+      }
+      return null;
+   }
 }

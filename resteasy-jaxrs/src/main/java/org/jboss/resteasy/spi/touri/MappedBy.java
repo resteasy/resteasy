@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  * MappedBy(Resource=FooResource.class, method="getFoo")
  * public class Foo
  * {
- * 	private int id;
- * 	// getters and setters
+ *    private int id;
+ *    // getters and setters
  * }
  *
  * {@literal @}Path("/foo")public class FooResource {

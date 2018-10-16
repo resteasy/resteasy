@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Path("/set")
 public interface HeaderParamsAsPrimitivesSetProxy {
-    @GET
-    @Produces("application/boolean")
-    String doGetBoolean(@HeaderParam("header") Set<String> v);
+   @GET
+   @Produces("application/boolean")
+   String doGetBoolean(@HeaderParam("header") Set<String> v);
 }

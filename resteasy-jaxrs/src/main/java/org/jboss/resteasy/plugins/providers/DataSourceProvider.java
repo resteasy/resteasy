@@ -105,22 +105,22 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          byte[] buffer = new byte[4096];
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
-             tempFile = File.createTempFile("resteasy-provider-datasource", null);
-             Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
-             if (cleanables != null)
-             {
-                cleanables.addCleanable(new TempFileCleanable(tempFile));
-             }
-             FileOutputStream fos = new FileOutputStream(tempFile);
-             fos.write(buffer, 0, count);
-             try
-             {
-                ProviderHelper.writeTo(in, fos);
-             }
-             finally
-             {
-                fos.close();
-             }
+            tempFile = File.createTempFile("resteasy-provider-datasource", null);
+            Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+            if (cleanables != null)
+            {
+               cleanables.addCleanable(new TempFileCleanable(tempFile));
+            }
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            fos.write(buffer, 0, count);
+            try
+            {
+               ProviderHelper.writeTo(in, fos);
+            }
+            finally
+            {
+               fos.close();
+            }
          }
       }
 

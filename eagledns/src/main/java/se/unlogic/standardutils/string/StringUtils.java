@@ -31,289 +31,289 @@ import java.util.UUID;
 
 public class StringUtils {
 
-	private static Properties LATIN1_ESCAPE_CHARACTERS = null;
-
-	static {
-		LATIN1_ESCAPE_CHARACTERS = new Properties();
-
-		InputStream inputStream = StringUtils.class.getResourceAsStream("latin-1-escaped-character-set.properties");
-
-		try {
-			LATIN1_ESCAPE_CHARACTERS.load(inputStream);
-		} catch (InvalidPropertiesFormatException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			StreamUtils.closeStream(inputStream);
-		}
-	}
-
-	/**
-	 * Unescapes escaped HTML characters
-	 * 
-	 * Based on a fixed set of escaped HTML characters from the latin-1 set
-	 * 
-	 * @param sequence
-	 *            - the secuence of characters to unescape characters in
-	 * @return - a sequenced without escaped HTML characters
-	 */
-	public static String unEscapeHTML(String sequence) {
+   private static Properties LATIN1_ESCAPE_CHARACTERS = null;
+
+   static {
+      LATIN1_ESCAPE_CHARACTERS = new Properties();
+
+      InputStream inputStream = StringUtils.class.getResourceAsStream("latin-1-escaped-character-set.properties");
+
+      try {
+         LATIN1_ESCAPE_CHARACTERS.load(inputStream);
+      } catch (InvalidPropertiesFormatException e) {
+         throw new RuntimeException(e);
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      } finally {
+         StreamUtils.closeStream(inputStream);
+      }
+   }
+
+   /**
+    * Unescapes escaped HTML characters
+    *
+    * Based on a fixed set of escaped HTML characters from the latin-1 set
+    *
+    * @param sequence
+    *            - the secuence of characters to unescape characters in
+    * @return - a sequenced without escaped HTML characters
+    */
+   public static String unEscapeHTML(String sequence) {
 
-		return replaceCharacters(sequence, LATIN1_ESCAPE_CHARACTERS);
-	}
+      return replaceCharacters(sequence, LATIN1_ESCAPE_CHARACTERS);
+   }
 
-	/**
-	 * Replaces characters in a character sequence
-	 * 
-	 * @param sequence
-	 *            - the secuence of characters to replace characters in
-	 * @param characterSet
-	 *            - a set of key=value character mappings, e.g. &num;=#. Occurences of key, e.g. "&num;" will be replaced by value, e.g. "#"
-	 * 
-	 * @return - a sequenced with replaced characters
-	 */
-	public static String replaceCharacters(String sequence, Properties characterSet) {
+   /**
+    * Replaces characters in a character sequence
+    *
+    * @param sequence
+    *            - the secuence of characters to replace characters in
+    * @param characterSet
+    *            - a set of key=value character mappings, e.g. &num;=#. Occurences of key, e.g. "&num;" will be replaced by value, e.g. "#"
+    *
+    * @return - a sequenced with replaced characters
+    */
+   public static String replaceCharacters(String sequence, Properties characterSet) {
 
-		if (characterSet == null) {
-			characterSet = LATIN1_ESCAPE_CHARACTERS;
-		}
+      if (characterSet == null) {
+         characterSet = LATIN1_ESCAPE_CHARACTERS;
+      }
 
-		for (Entry<Object, Object> entry : characterSet.entrySet()) {
-			sequence = sequence.replaceAll(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
-		}
+      for (Entry<Object, Object> entry : characterSet.entrySet()) {
+         sequence = sequence.replaceAll(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+      }
 
-		return sequence;
-	}
-
-	public static String removeHTMLTags(String sequence) {
-
-		return sequence.replaceAll("\\<.*?>", "");
-	}
-
-	public static String parseUTF8(String encodedString)  {
-
-		return new String(encodedString.getBytes(), StandardCharsets.UTF_8);
-	}
-
-	//TODO move
-	public static boolean isValidUUID(String uuidstring) {
-
-		try {
-			UUID.fromString(uuidstring);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
-
-	//TODO move
-	public static boolean isValidURL(String urlstring) {
-
-		try {
-			new URL(urlstring);
-			return true;
-		} catch (MalformedURLException e) {
-			return false;
-		}
-	}
-
-	public static String toQuotedCommaSeparatedString(List<? extends Object> list) {
-
-		String arrayString = Arrays.deepToString(list.toArray());
-		arrayString = arrayString.substring(1, arrayString.length() - 1);
-		arrayString = "\"" + arrayString.replaceAll(", ", "\", \"") + "\"";
-		return arrayString;
-	}
-
-	public static String toQuotedCommaSeparatedString(Object[] array) {
-
-		String arrayString = Arrays.deepToString(array);
-		arrayString = arrayString.substring(1, arrayString.length() - 1);
-		arrayString = "\"" + arrayString.replaceAll(", ", "\", \"") + "\"";
-		return arrayString;
-	}
+      return sequence;
+   }
+
+   public static String removeHTMLTags(String sequence) {
+
+      return sequence.replaceAll("\\<.*?>", "");
+   }
+
+   public static String parseUTF8(String encodedString)  {
+
+      return new String(encodedString.getBytes(), StandardCharsets.UTF_8);
+   }
+
+   //TODO move
+   public static boolean isValidUUID(String uuidstring) {
+
+      try {
+         UUID.fromString(uuidstring);
+         return true;
+      } catch (IllegalArgumentException e) {
+         return false;
+      }
+   }
+
+   //TODO move
+   public static boolean isValidURL(String urlstring) {
+
+      try {
+         new URL(urlstring);
+         return true;
+      } catch (MalformedURLException e) {
+         return false;
+      }
+   }
+
+   public static String toQuotedCommaSeparatedString(List<? extends Object> list) {
+
+      String arrayString = Arrays.deepToString(list.toArray());
+      arrayString = arrayString.substring(1, arrayString.length() - 1);
+      arrayString = "\"" + arrayString.replaceAll(", ", "\", \"") + "\"";
+      return arrayString;
+   }
+
+   public static String toQuotedCommaSeparatedString(Object[] array) {
+
+      String arrayString = Arrays.deepToString(array);
+      arrayString = arrayString.substring(1, arrayString.length() - 1);
+      arrayString = "\"" + arrayString.replaceAll(", ", "\", \"") + "\"";
+      return arrayString;
+   }
 
-	public static String toCommaSeparatedString(Collection<? extends Object> list) {
+   public static String toCommaSeparatedString(Collection<? extends Object> list) {
 
-		String arrayString = Arrays.deepToString(list.toArray());
-		return arrayString.substring(1, arrayString.length() - 1);
-	}
+      String arrayString = Arrays.deepToString(list.toArray());
+      return arrayString.substring(1, arrayString.length() - 1);
+   }
 
-	public static String toCommaSeparatedString(Object[] array) {
+   public static String toCommaSeparatedString(Object[] array) {
 
-		String arrayString = Arrays.deepToString(array);
-		return arrayString.substring(1, arrayString.length() - 1);
-	}
+      String arrayString = Arrays.deepToString(array);
+      return arrayString.substring(1, arrayString.length() - 1);
+   }
 
-	public static String toCommaSeparatedString(List<? extends Object> list, Field field) throws IllegalArgumentException, IllegalAccessException {
+   public static String toCommaSeparatedString(List<? extends Object> list, Field field) throws IllegalArgumentException, IllegalAccessException {
 
-		ReflectionUtils.fixFieldAccess(field);
+      ReflectionUtils.fixFieldAccess(field);
 
-		StringBuilder arrayString = new StringBuilder();
+      StringBuilder arrayString = new StringBuilder();
 
-		for (int i = 0; i < list.size(); i++) {
+      for (int i = 0; i < list.size(); i++) {
 
-			Object value = field.get(list.get(i));
+         Object value = field.get(list.get(i));
 
-			arrayString.append(value + ",");
+         arrayString.append(value + ",");
 
-		}
+      }
 
-		return arrayString.substring(0, arrayString.length() - 1);
+      return arrayString.substring(0, arrayString.length() - 1);
 
-	}
+   }
 
-	public static String readFileAsString(String filePath) throws java.io.IOException {
+   public static String readFileAsString(String filePath) throws java.io.IOException {
 
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(filePath));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			fileData.append(buf, 0, numRead);
-		}
-		reader.close();
-		return fileData.toString();
-	}
+      StringBuffer fileData = new StringBuffer(1000);
+      BufferedReader reader = new BufferedReader(new FileReader(filePath));
+      char[] buf = new char[1024];
+      int numRead = 0;
+      while ((numRead = reader.read(buf)) != -1) {
+         fileData.append(buf, 0, numRead);
+      }
+      reader.close();
+      return fileData.toString();
+   }
 
-	public static String readFileAsString(File file) throws java.io.IOException {
+   public static String readFileAsString(File file) throws java.io.IOException {
 
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			fileData.append(buf, 0, numRead);
-		}
-		reader.close();
-		return fileData.toString();
-	}
+      StringBuffer fileData = new StringBuffer(1000);
+      BufferedReader reader = new BufferedReader(new FileReader(file));
+      char[] buf = new char[1024];
+      int numRead = 0;
+      while ((numRead = reader.read(buf)) != -1) {
+         fileData.append(buf, 0, numRead);
+      }
+      reader.close();
+      return fileData.toString();
+   }
 
-	public static String readStreamAsString(InputStream inputStream) throws java.io.IOException {
+   public static String readStreamAsString(InputStream inputStream) throws java.io.IOException {
 
-		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			fileData.append(buf, 0, numRead);
-		}
-		reader.close();
-		return fileData.toString();
-	}
+      StringBuilder fileData = new StringBuilder(1000);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+      char[] buf = new char[1024];
+      int numRead = 0;
+      while ((numRead = reader.read(buf)) != -1) {
+         fileData.append(buf, 0, numRead);
+      }
+      reader.close();
+      return fileData.toString();
+   }
 
-	public static boolean isEmpty(String string) {
+   public static boolean isEmpty(String string) {
 
-		if (string == null) {
-			return true;
-		} else if (string.trim().length() == 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+      if (string == null) {
+         return true;
+      } else if (string.trim().length() == 0) {
+         return true;
+      } else {
+         return false;
+      }
+   }
 
-	public static String substring(String string, int maxChars, String suffix) {
+   public static String substring(String string, int maxChars, String suffix) {
 
-		if (string.length() > maxChars) {
-			return string.substring(0, maxChars - 1) + suffix;
-		}
+      if (string.length() > maxChars) {
+         return string.substring(0, maxChars - 1) + suffix;
+      }
 
-		return string;
-	}
+      return string;
+   }
 
-	public static String toLogFormat(String string, int maxLength) {
+   public static String toLogFormat(String string, int maxLength) {
 
-		if (string != null) {
+      if (string != null) {
 
-			String returnString = substring(string, maxLength, "...");
+         String returnString = substring(string, maxLength, "...");
 
-			return returnString.replace("\n", " ").replace("\r", " ").replace("\t", " ");
-		}
+         return returnString.replace("\n", " ").replace("\r", " ").replace("\t", " ");
+      }
 
-		return string;
-	}
+      return string;
+   }
 
-	public static String toSentenceCase(String string) {
+   public static String toSentenceCase(String string) {
 
-		return string.substring(0, 1).toUpperCase() + string.toLowerCase().substring(1);
-	}
+      return string.substring(0, 1).toUpperCase() + string.toLowerCase().substring(1);
+   }
 
-	public static String toFirstLetterUppercase(String string) {
+   public static String toFirstLetterUppercase(String string) {
 
-		return string.substring(0, 1).toUpperCase() + string.substring(1);
-	}
+      return string.substring(0, 1).toUpperCase() + string.substring(1);
+   }
 
-	public static String toFirstLetterLowercase(String string) {
+   public static String toFirstLetterLowercase(String string) {
 
-		return string.substring(0, 1).toLowerCase() + string.substring(1);
-	}	
-	
-	public static String repeatString(String string, int repetitionCount) {
+      return string.substring(0, 1).toLowerCase() + string.substring(1);
+   }
 
-		StringBuilder stringBuilder = new StringBuilder();
+   public static String repeatString(String string, int repetitionCount) {
 
-		repeatString(string, repetitionCount, stringBuilder);
-		
-		return stringBuilder.toString();
-	}
+      StringBuilder stringBuilder = new StringBuilder();
 
-	public static void repeatString(String string, int repetitionCount, StringBuilder stringBuilder) {
+      repeatString(string, repetitionCount, stringBuilder);
 
-		if (repetitionCount >= 1) {
+      return stringBuilder.toString();
+   }
 
-			for (int i = 1; i <= repetitionCount; i++) {
+   public static void repeatString(String string, int repetitionCount, StringBuilder stringBuilder) {
 
-				stringBuilder.append(string);
-			}
-		}
-	}
-	
-	/**
-	 *  Takes a string and splits it on linebreaks (\n) and also removes any linebreak (\n) and carriage return (\r) characters from the string segments
-	 * 
-	 * @param string the string to be split
-	 * @return String array containing the split segments of the string
-	 */
-	public static ArrayList<String> splitOnLineBreak(String string, boolean removeDuplicates){
-		
-		if(!StringUtils.isEmpty(string)){
+      if (repetitionCount >= 1) {
 
-			ArrayList<String> stringList = new ArrayList<String>();
+         for (int i = 1; i <= repetitionCount; i++) {
 
-			String[] lines = string.split("\n");
+            stringBuilder.append(string);
+         }
+      }
+   }
 
-			for(String line : lines){
+   /**
+    *  Takes a string and splits it on linebreaks (\n) and also removes any linebreak (\n) and carriage return (\r) characters from the string segments
+    *
+    * @param string the string to be split
+    * @return String array containing the split segments of the string
+    */
+   public static ArrayList<String> splitOnLineBreak(String string, boolean removeDuplicates){
 
-				line = line.replace("\n", "");
-				line = line.replace("\r", "");
+      if(!StringUtils.isEmpty(string)){
 
-				if(!StringUtils.isEmpty(line) && (!removeDuplicates || !stringList.contains(line))){
+         ArrayList<String> stringList = new ArrayList<String>();
 
-					stringList.add(line);
-				}
-			}
+         String[] lines = string.split("\n");
 
-			if(!stringList.isEmpty()){
+         for(String line : lines){
 
-				return stringList;
-			}
-		}
+            line = line.replace("\n", "");
+            line = line.replace("\r", "");
 
-		return null;
-	}
-	
-	public static int countOccurrences(String string, String snippet) {
-        
-		int count = 0;
-        int index = 0;
-        
-        while ((index = string.indexOf(snippet, index)) != -1) {
-             ++index;
-             ++count;
-        }
-        
-        return count;
-   }	
+            if(!StringUtils.isEmpty(line) && (!removeDuplicates || !stringList.contains(line))){
+
+               stringList.add(line);
+            }
+         }
+
+         if(!stringList.isEmpty()){
+
+            return stringList;
+         }
+      }
+
+      return null;
+   }
+
+   public static int countOccurrences(String string, String snippet) {
+      
+      int count = 0;
+      int index = 0;
+      
+      while ((index = string.indexOf(snippet, index)) != -1) {
+         ++index;
+         ++count;
+      }
+      
+      return count;
+   }
 }

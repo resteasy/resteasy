@@ -135,7 +135,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     */
    public int getResponseBufferSize()
    {
-       return responseBufferSize;
+      return responseBufferSize;
    }
 
    /**
@@ -146,7 +146,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     */
    public void setResponseBufferSize(int responseBufferSize)
    {
-       this.responseBufferSize = responseBufferSize;
+      this.responseBufferSize = responseBufferSize;
    }
 
    public HttpClient getHttpClient()
@@ -165,7 +165,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    }
 
    public static CaseInsensitiveMap<String> extractHeaders(
-           HttpResponse response)
+         HttpResponse response)
    {
       final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
 
@@ -439,7 +439,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    private DeferredFileOutputStream writeRequestBodyToOutputStream(final ClientRequest request) throws IOException
    {
       DeferredFileOutputStream memoryManagedOutStream =
-              new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
+            new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
                       getTempfilePrefix(), ".tmp", this.fileUploadTempFileDir);
       request.writeRequestBody(request.getHeadersAsObjects(), memoryManagedOutStream);
       memoryManagedOutStream.close();

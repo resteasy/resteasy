@@ -12,20 +12,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 public class ClientProviderStringEntityProviderReader implements MessageBodyReader<String> {
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType,
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-        return type == String.class;
-    }
+      return type == String.class;
+   }
 
-    @Override
-    public String readFrom(Class<String> type,
+   @Override
+   public String readFrom(Class<String> type,
                            Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        String text = ClientProviderTest.readFromStream(entityStream);
-        entityStream.close();
-        String result = "Application defined provider reader: " + text;
-        return result;
-    }
+         throws IOException, WebApplicationException {
+      String text = ClientProviderTest.readFromStream(entityStream);
+      entityStream.close();
+      String result = "Application defined provider reader: " + text;
+      return result;
+   }
 }

@@ -75,8 +75,8 @@ public class ClientExceptionInterceptorTest extends BaseResourceTest
    }
 
    /*
-     * Test utility classes
-     */
+    * Test utility classes
+    */
    @Path("/test")
    public static class TestResource
    {

@@ -147,15 +147,15 @@ public class ResteasyHttpHeaders implements HttpHeaders
       String accepts = getHeaderString(ACCEPT);
       List<MediaType> list = new ArrayList<MediaType>();
       if (accepts == null){
-          list.add(MediaType.WILDCARD_TYPE);
+         list.add(MediaType.WILDCARD_TYPE);
       }else{
-          StringTokenizer tokenizer = new StringTokenizer(accepts, ",");
-          while (tokenizer.hasMoreElements())
-          {
+         StringTokenizer tokenizer = new StringTokenizer(accepts, ",");
+         while (tokenizer.hasMoreElements())
+         {
             String item = tokenizer.nextToken().trim();
             list.add(MediaType.valueOf(item));
-          }
-          MediaTypeHelper.sortByWeight(list);
+         }
+         MediaTypeHelper.sortByWeight(list);
       }
       return Collections.unmodifiableList(list);
    }

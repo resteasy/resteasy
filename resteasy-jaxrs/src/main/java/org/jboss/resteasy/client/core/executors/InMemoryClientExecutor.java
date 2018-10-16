@@ -74,7 +74,7 @@ public class InMemoryClientExecutor implements ClientExecutor
    public ClientResponse execute(ClientRequest request) throws Exception
    {
       MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getHttpMethod(), new URI(request.getUri()),
-              baseUri);
+            baseUri);
       final MockHttpResponse mockResponse = new MockHttpResponse();
       mockHttpRequest.setAsynchronousContext(new SynchronousExecutionContext((SynchronousDispatcher)dispatcher, mockHttpRequest, mockResponse));
       loadHttpMethod(request, mockHttpRequest);

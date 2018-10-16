@@ -284,7 +284,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          JaxbMap map = new JaxbMap(entryName, keyName, namespaceURI);
 
          @SuppressWarnings("unchecked")
-		 Map<Object, Object> targetMap = (Map) target;
+      Map<Object, Object> targetMap = (Map) target;
          for (Map.Entry mapEntry : targetMap.entrySet())
          {
             Object value = mapEntry.getValue();

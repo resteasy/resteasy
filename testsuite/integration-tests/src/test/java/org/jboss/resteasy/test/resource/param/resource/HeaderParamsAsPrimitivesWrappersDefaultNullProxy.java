@@ -6,35 +6,35 @@ import javax.ws.rs.Produces;
 
 @Path("/wrappers/default/null")
 public interface HeaderParamsAsPrimitivesWrappersDefaultNullProxy {
-    @GET
-    @Produces("application/boolean")
-    String doGetBoolean();
+   @GET
+   @Produces("application/boolean")
+   String doGetBoolean();
 
-    @GET
-    @Produces("application/byte")
-    String doGetByte();
+   @GET
+   @Produces("application/byte")
+   String doGetByte();
 
-    @GET
-    @Produces("application/short")
-    String doGetShort();
+   @GET
+   @Produces("application/short")
+   String doGetShort();
 
-    @GET
-    @Produces("application/int")
-    String doGetInt();
+   @GET
+   @Produces("application/int")
+   String doGetInt();
 
-    @GET
-    @Produces("application/long")
-    String doGetLong();
+   @GET
+   @Produces("application/long")
+   String doGetLong();
 
-    @GET
-    @Produces("application/float")
-    String doGetFloat();
+   @GET
+   @Produces("application/float")
+   String doGetFloat();
 
-    @GET
-    @Produces("application/double")
-    String doGetDouble();
+   @GET
+   @Produces("application/double")
+   String doGetDouble();
     
-    @GET
-    @Produces("application/char")
-    String doGetChar();
+   @GET
+   @Produces("application/char")
+   String doGetChar();
 }

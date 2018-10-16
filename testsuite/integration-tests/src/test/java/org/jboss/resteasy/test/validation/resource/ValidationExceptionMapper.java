@@ -16,13 +16,13 @@ import org.jboss.resteasy.api.validation.Validation;
  */
 public abstract class ValidationExceptionMapper<T extends ValidationException> implements ExceptionMapper<T> {
 
-	@Override
-	public Response toResponse(T validationException) {
-		ResponseBuilder builder = Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(getClass().getName() + ":" + validationException.getMessage());
-		builder.type(MediaType.TEXT_PLAIN);
-		builder.header(Validation.VALIDATION_HEADER, "true");
-		return builder.build();
-	}
+   @Override
+   public Response toResponse(T validationException) {
+      ResponseBuilder builder = Response.status(Status.INTERNAL_SERVER_ERROR)
+            .entity(getClass().getName() + ":" + validationException.getMessage());
+      builder.type(MediaType.TEXT_PLAIN);
+      builder.header(Validation.VALIDATION_HEADER, "true");
+      return builder.build();
+   }
 
 }

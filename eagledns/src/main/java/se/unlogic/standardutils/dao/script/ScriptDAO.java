@@ -13,8 +13,8 @@ import java.sql.SQLException;
 
 public interface ScriptDAO {
 
-	void executeScript(InputStream inputStream) throws SQLException, IOException;
-	
-	void executeScript(String script) throws SQLException;
+   void executeScript(InputStream inputStream) throws SQLException, IOException;
+
+   void executeScript(String script) throws SQLException;
 
 }

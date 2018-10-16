@@ -29,44 +29,44 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class SuspendAnnotationTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JaxrsAsyncTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, LegacySuspendResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JaxrsAsyncTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, LegacySuspendResource.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JaxrsAsyncTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JaxrsAsyncTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Server is able to answer in requested time.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPositive() throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = client.target(generateURL("")).request().get();
+   /**
+    * @tpTestDetails Server is able to answer in requested time.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPositive() throws Exception {
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("")).request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "hello", response.readEntity(String.class));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "hello", response.readEntity(String.class));
 
-        response.close();
-        client.close();
-    }
+      response.close();
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Server is not able to answer in requested time.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testTimeout() throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = client.target(generateURL("/timeout")).request().get();
+   /**
+    * @tpTestDetails Server is not able to answer in requested time.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testTimeout() throws Exception {
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/timeout")).request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_SERVICE_UNAVAILABLE, response.getStatus());
 
-        response.close();
-        client.close();
-    }
+      response.close();
+      client.close();
+   }
 }

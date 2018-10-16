@@ -32,7 +32,7 @@ public class SseCORSFilterTest
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/filter/web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new RuntimePermission("modifyThread")
+            new RuntimePermission("modifyThread")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class,
             CORSFilter.class, ExecutorServletContextListener.class);

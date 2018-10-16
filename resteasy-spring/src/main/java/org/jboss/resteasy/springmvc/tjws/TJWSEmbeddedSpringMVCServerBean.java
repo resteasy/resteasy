@@ -5,10 +5,10 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
-* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
-* @version $Revision: 1 $
-* 
-*/
+ * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+ * @version $Revision: 1 $
+ *
+ */
 @Deprecated
 public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
       DisposableBean, FactoryBean<TJWSEmbeddedSpringMVCServer>

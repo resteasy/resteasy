@@ -69,7 +69,7 @@ public class ClientRequestFactory
       else
          this.providerFactory = providerFactory;
       if (executor == null)
-    	  this.executor = new ApacheHttpClient4Executor();
+         this.executor = new ApacheHttpClient4Executor();
       else
          this.executor = executor;
       this.base = base;
@@ -83,9 +83,9 @@ public class ClientRequestFactory
       this.applyDefaultInterceptors = other.applyDefaultInterceptors;
       this.followRedirects = other.followRedirects;
       other.prefixInterceptors
-              .copyClientInterceptorsTo(this.prefixInterceptors);
+            .copyClientInterceptorsTo(this.prefixInterceptors);
       other.suffixInterceptors
-              .copyClientInterceptorsTo(this.suffixInterceptors);
+            .copyClientInterceptorsTo(this.suffixInterceptors);
    }
 
    public URI getBase()
@@ -142,7 +142,7 @@ public class ClientRequestFactory
    public ClientRequest createRequest(String uriTemplate)
    {
       ClientRequest clientRequest = new ClientRequest(new ResteasyUriBuilder()
-              .uriTemplate(uriTemplate), executor, providerFactory);
+            .uriTemplate(uriTemplate), executor, providerFactory);
       if (applyDefaultInterceptors)
       {
          ClientInvokerInterceptorFactory.applyDefaultInterceptors(
@@ -157,16 +157,16 @@ public class ClientRequestFactory
    }
 
    public <T> T getRelative(String uriTemplate, Class<T> type, Object... params)
-           throws Exception
+         throws Exception
    {
       return get(base.toString() + uriTemplate, type, params);
    }
 
    public <T> T get(String uriTemplate, Class<T> type, Object... params)
-           throws Exception
+         throws Exception
    {
       return createRequest(uriTemplate).followRedirects(true).pathParameters(
-              params).get(type).getEntity();
+            params).get(type).getEntity();
    }
 
    public <T> T createProxy(Class<T> clazz)

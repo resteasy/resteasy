@@ -11,11 +11,11 @@ import javax.ws.rs.Produces;
 @Produces("application/xml")
 public interface JaxbXmlRootElementClient {
 
-    @GET
-    @Path("/{name}")
-    Parent getParent(@PathParam("name") String name);
+   @GET
+   @Path("/{name}")
+   Parent getParent(@PathParam("name") String name);
 
-    @POST
-    Parent postParent(Parent parent);
+   @POST
+   Parent postParent(Parent parent);
 
 }

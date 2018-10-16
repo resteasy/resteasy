@@ -46,82 +46,82 @@ import java.util.logging.LoggingPermission;
 @RunAsClient
 public class ParameterSubResTest {
 
-    static Client client;
+   static Client client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ParameterSubResTest.class.getSimpleName());
-        war.addClass(MultiInterfaceResLocatorResource.class);
-        war.addClass(MultiInterfaceResLocatorSubresource.class);
-        war.addClass(ParameterSubResConcreteSubImpl.class);
-        war.addClass(ParameterSubResDoubleInterface.class);
-        war.addClass(ParameterSubResGenericInterface.class);
-        war.addClass(ParameterSubResInternalInterface.class);
-        war.addClass(ParameterSubResRoot.class);
-        war.addClass(ParameterSubResClassSub.class);
-        war.addClass(ApplicationScopeObject.class);
-        war.addClass(RequestScopedObject.class);
-        war.addClass(ParameterSubResSub.class);
-        war.addClass(ParameterSubResSubImpl.class);
-        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new LoggingPermission("control", "")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, ParameterSubResRootImpl.class, ParameterSubResGenericSub.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ParameterSubResTest.class.getSimpleName());
+      war.addClass(MultiInterfaceResLocatorResource.class);
+      war.addClass(MultiInterfaceResLocatorSubresource.class);
+      war.addClass(ParameterSubResConcreteSubImpl.class);
+      war.addClass(ParameterSubResDoubleInterface.class);
+      war.addClass(ParameterSubResGenericInterface.class);
+      war.addClass(ParameterSubResInternalInterface.class);
+      war.addClass(ParameterSubResRoot.class);
+      war.addClass(ParameterSubResClassSub.class);
+      war.addClass(ApplicationScopeObject.class);
+      war.addClass(RequestScopedObject.class);
+      war.addClass(ParameterSubResSub.class);
+      war.addClass(ParameterSubResSubImpl.class);
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new LoggingPermission("control", "")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, ParameterSubResRootImpl.class, ParameterSubResGenericSub.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ParameterSubResTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ParameterSubResTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Check types of parameter.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testParametized() throws Exception {
-        Types.findParameterizedTypes(ParameterSubResConcreteSubImpl.class, ParameterSubResInternalInterface.class);
-    }
+   /**
+    * @tpTestDetails Check types of parameter.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testParametized() throws Exception {
+      Types.findParameterizedTypes(ParameterSubResConcreteSubImpl.class, ParameterSubResInternalInterface.class);
+   }
 
-    /**
-     * @tpTestDetails Check sub resources.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSubResource() throws Exception {
-        Response response = client.target(generateURL("/path/sub/fred")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "Boo! - fred", response.readEntity(String.class));
-    }
+   /**
+    * @tpTestDetails Check sub resources.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSubResource() throws Exception {
+      Response response = client.target(generateURL("/path/sub/fred")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "Boo! - fred", response.readEntity(String.class));
+   }
 
-    
-    @Test
-    public void testReturnSubResourceAsClass() throws Exception {
-        Response response = client.target(generateURL("/path/subclass")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "resourceCounter:1,appscope:1,requestScope:1", response.readEntity(String.class));
-        response = client.target(generateURL("/path/subclass")).request().get();
-        Assert.assertEquals("Wrong response", "resourceCounter:2,appscope:2,requestScope:1", response.readEntity(String.class));
-    }
-    
-    /**
-     * @tpTestDetails Check root resource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRoot() throws Exception {
-        Response response = client.target(generateURL("/generic/sub")).queryParam("foo", "42.0").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "42.0", response.readEntity(String.class));
-    }
+   
+   @Test
+   public void testReturnSubResourceAsClass() throws Exception {
+      Response response = client.target(generateURL("/path/subclass")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong response", "resourceCounter:1,appscope:1,requestScope:1", response.readEntity(String.class));
+      response = client.target(generateURL("/path/subclass")).request().get();
+      Assert.assertEquals("Wrong response", "resourceCounter:2,appscope:2,requestScope:1", response.readEntity(String.class));
+   }
+   
+   /**
+    * @tpTestDetails Check root resource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRoot() throws Exception {
+      Response response = client.target(generateURL("/generic/sub")).queryParam("foo", "42.0").request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "42.0", response.readEntity(String.class));
+   }
 }

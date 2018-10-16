@@ -46,90 +46,90 @@ import java.util.Hashtable;
 @RunAsClient
 public class TwoSecurityDomainsTest {
 
-    private static ResteasyClient authorizedClient;
-    private static final String SECURITY_DOMAIN_DEPLOYMENT_1 = "jaxrsSecDomain";
-    private static final String SECURITY_DOMAIN_DEPLOYMENT_2 = "jaxrsSecDomain2";
-    private static final String WRONG_RESPONSE = "Wrong response content.";
+   private static ResteasyClient authorizedClient;
+   private static final String SECURITY_DOMAIN_DEPLOYMENT_1 = "jaxrsSecDomain";
+   private static final String SECURITY_DOMAIN_DEPLOYMENT_2 = "jaxrsSecDomain2";
+   private static final String WRONG_RESPONSE = "Wrong response content.";
 
-    @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_1")
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1);
+   @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_1")
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1);
 
-        Hashtable<String, String> contextParams = new Hashtable<String, String>();
-        contextParams.put("resteasy.role.based.security", "true");
+      Hashtable<String, String> contextParams = new Hashtable<String, String>();
+      contextParams.put("resteasy.role.based.security", "true");
 
-        war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
-                .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
+      war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
+            .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
 
-        return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
-    }
+      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
+   }
 
-    @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_2")
-    public static Archive<?> deploy2() {
-        WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2);
+   @Deployment(name= "SECURITY_DOMAIN_DEPLOYMENT_2")
+   public static Archive<?> deploy2() {
+      WebArchive war = TestUtil.prepareArchive(TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2);
 
-        Hashtable<String, String> contextParams = new Hashtable<String, String>();
-        contextParams.put("resteasy.role.based.security", "true");
+      Hashtable<String, String> contextParams = new Hashtable<String, String>();
+      contextParams.put("resteasy.role.based.security", "true");
 
-        war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web2.xml", "/jboss-web.xml")
-                .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
+      war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web2.xml", "/jboss-web.xml")
+            .addAsWebInfResource(TwoSecurityDomainsTest.class.getPackage(), "web.xml", "/web.xml");
 
-        return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
-    }
+      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
+   }
 
-    @BeforeClass
-    public static void init() {
-        // authorizedClient
-        {
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
-            CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-            ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
-            authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
-        }
-    }
+   @BeforeClass
+   public static void init() {
+      // authorizedClient
+      {
+         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
+         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+         credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+         CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+         ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+         authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+      }
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        authorizedClient.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      authorizedClient.close();
+   }
 
-    /**
-     * @tpTestDetails Client using correct authorization credentials sends GET request to the first and then second deployment
-     * @tpSince RESTEasy 3.0.21
-     */
-    @Test
-    public void testOneClientTwoDeploymentsTwoSecurityDomains() throws Exception {
-        Response response = authorizedClient.target(PortProviderUtil.generateURL("/secured", TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
+   /**
+    * @tpTestDetails Client using correct authorization credentials sends GET request to the first and then second deployment
+    * @tpSince RESTEasy 3.0.21
+    */
+   @Test
+   public void testOneClientTwoDeploymentsTwoSecurityDomains() throws Exception {
+      Response response = authorizedClient.target(PortProviderUtil.generateURL("/secured", TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1)).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
 
-        response = authorizedClient.target(PortProviderUtil.generateURL("/secured", TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
-    }
+      response = authorizedClient.target(PortProviderUtil.generateURL("/secured", TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2)).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
+   }
 
-    static class SecurityDomainSetup1 extends AbstractUsersRolesSecurityDomainSetup {
+   static class SecurityDomainSetup1 extends AbstractUsersRolesSecurityDomainSetup {
 
-        @Override
-        public void setConfigurationPath() throws URISyntaxException {
-            Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
-            Path parent = filepath.getParent();
-            createPropertiesFiles(new File(parent.toUri()));
-            setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_1);
-            setSubsystem("picketBox");
-        }
-    }
+      @Override
+      public void setConfigurationPath() throws URISyntaxException {
+         Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
+         Path parent = filepath.getParent();
+         createPropertiesFiles(new File(parent.toUri()));
+         setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_1);
+         setSubsystem("picketBox");
+      }
+   }
 
-    static class SecurityDomainSetup2 extends AbstractUsersRolesSecurityDomainSetup {
+   static class SecurityDomainSetup2 extends AbstractUsersRolesSecurityDomainSetup {
 
-        @Override
-        public void setConfigurationPath() throws URISyntaxException {
-            Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
-            Path parent = filepath.getParent();
-            createPropertiesFiles(new File(parent.toUri()));
-            setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_2);
-        }
-    }
+      @Override
+      public void setConfigurationPath() throws URISyntaxException {
+         Path filepath= Paths.get(TwoSecurityDomainsTest.class.getResource("users.properties").toURI());
+         Path parent = filepath.getParent();
+         createPropertiesFiles(new File(parent.toUri()));
+         setSecurityDomainName(SECURITY_DOMAIN_DEPLOYMENT_2);
+      }
+   }
 }

@@ -19,50 +19,50 @@ import java.util.Set;
 
 public class MimeUtils {
 
-	private static String UnknownMimeType = "application/x-unknown";
-	private static Properties MimeTypes = new Properties();;
+   private static String UnknownMimeType = "application/x-unknown";
+   private static Properties MimeTypes = new Properties();;
 
-	static{
-		try {
-			MimeTypes.load(MimeUtils.class.getResourceAsStream("mimetypes.properties"));
-		} catch (IOException e) {}
-	}
+   static{
+      try {
+         MimeTypes.load(MimeUtils.class.getResourceAsStream("mimetypes.properties"));
+      } catch (IOException e) {}
+   }
 
-	public static String getMimeType(File file){
-		return getMimeType(file.getName());
-	}
+   public static String getMimeType(File file){
+      return getMimeType(file.getName());
+   }
 
-	public static String getMimeType(String filename){
+   public static String getMimeType(String filename){
 
-		String fileExtension = FileUtils.getFileExtension(filename);
+      String fileExtension = FileUtils.getFileExtension(filename);
 
-		if(fileExtension == null){
-			return UnknownMimeType;
-		}else{
-			return MimeTypes.getProperty(fileExtension.toLowerCase(),UnknownMimeType);
-		}
-	}
+      if(fileExtension == null){
+         return UnknownMimeType;
+      }else{
+         return MimeTypes.getProperty(fileExtension.toLowerCase(),UnknownMimeType);
+      }
+   }
 
-	public static int getMimeTypeCount(){
-		return MimeTypes.size();
-	}
+   public static int getMimeTypeCount(){
+      return MimeTypes.size();
+   }
 
-	public static Set<Entry<Object, Object>> getMimeTypes(){
-		return MimeTypes.entrySet();
-	}
+   public static Set<Entry<Object, Object>> getMimeTypes(){
+      return MimeTypes.entrySet();
+   }
 
-	public static void loadMimeTypes(InputStream inputStream) throws IOException{
-		MimeTypes.clear();
-		MimeTypes.load(inputStream);
-	}
+   public static void loadMimeTypes(InputStream inputStream) throws IOException{
+      MimeTypes.clear();
+      MimeTypes.load(inputStream);
+   }
 
-	/* JDK 1.6 only!
-	public void loadMimeTypes(Reader reader) throws IOException {
-		MimeTypes.load(reader);
-	}
-	*/
+   /* JDK 1.6 only!
+   public void loadMimeTypes(Reader reader) throws IOException {
+      MimeTypes.load(reader);
+   }
+    */
 
-	public void loadMimeTypesFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {
-		MimeTypes.loadFromXML(in);
-	}
+   public void loadMimeTypesFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {
+      MimeTypes.loadFromXML(in);
+   }
 }

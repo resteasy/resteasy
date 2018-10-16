@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/short/{arg}")
 public class UriParamAsPrimitiveResourceUriShort {
-    @GET
-    public String doGet(@PathParam("arg") short v) {
-        Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 32767 == v);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") short v) {
+      Assert.assertTrue(UriParamAsPrimitiveTest.ERROR_CODE, 32767 == v);
+      return "content";
+   }
 }

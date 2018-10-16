@@ -64,7 +64,7 @@ public class ValidationWithCDITest
          .addClasses(AsyncRootResource.class, AsyncRootResourceImpl.class)
          .addClasses(AsyncSubResource.class, AsyncSubResourceImpl.class)
          .addClasses(AsyncValidResource.class)
-              .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
       LOG.info(war.toString(true));
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);

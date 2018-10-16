@@ -30,335 +30,335 @@ import java.util.List;
 
 public class SimplifiedOneToManyRelation<LocalType, RemoteType> implements OneToManyRelation<LocalType, RemoteType> {
 
-	private final AnnotatedDAO<LocalType> localDAO;
-	private final Field field;
+   private final AnnotatedDAO<LocalType> localDAO;
+   private final Field field;
 
-	private String selectSQL;
-	private String insertSQL;
-	private String deleteSQL;
+   private String selectSQL;
+   private String insertSQL;
+   private String deleteSQL;
 
-	private boolean preserveListOrder;
-	private String indexColumnName;
-	
-	private QueryParameterPopulator<RemoteType> queryParameterPopulator;
-	private Method preparedStatementMethod;
+   private boolean preserveListOrder;
+   private String indexColumnName;
 
-	private BeanResultSetPopulator<RemoteType> beanResultSetPopulator;
+   private QueryParameterPopulator<RemoteType> queryParameterPopulator;
+   private Method preparedStatementMethod;
 
-	private Field keyField;
-	private Column<LocalType, ?> keyColumn;
+   private BeanResultSetPopulator<RemoteType> beanResultSetPopulator;
 
-	private final String remoteTableName;
-	private String remoteKeyColumnName;
-	private final String remoteValueColumnName;
-	private Order order;
+   private Field keyField;
+   private Column<LocalType, ?> keyColumn;
 
-	private boolean initialized;
+   private final String remoteTableName;
+   private String remoteKeyColumnName;
+   private final String remoteValueColumnName;
+   private Order order;
 
-	@SuppressWarnings("unchecked")
-	public SimplifiedOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAO<LocalType> localDAO, List<? extends BeanStringPopulator<?>> typePopulators, List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
+   private boolean initialized;
 
-		super();
-		this.localDAO = localDAO;
-		this.field = field;
+   @SuppressWarnings("unchecked")
+   public SimplifiedOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAO<LocalType> localDAO, List<? extends BeanStringPopulator<?>> typePopulators, List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
 
-		SimplifiedRelation simplifiedRelation = field.getAnnotation(SimplifiedRelation.class);
+      super();
+      this.localDAO = localDAO;
+      this.field = field;
 
-		remoteKeyColumnName = simplifiedRelation.remoteKeyColumnName();
-		remoteValueColumnName = simplifiedRelation.remoteValueColumnName();
-		order = simplifiedRelation.order();
+      SimplifiedRelation simplifiedRelation = field.getAnnotation(SimplifiedRelation.class);
 
-		if(simplifiedRelation.addTablePrefix()){
-			
-			if(simplifiedRelation.deplurifyTablePrefix() && localDAO.getTableName().endsWith("s")){
-				
-				remoteTableName = localDAO.getTableName().substring(0, localDAO.getTableName().length()-1) + simplifiedRelation.table();
-				
-			}else{
-				
-				remoteTableName = localDAO.getTableName() + simplifiedRelation.table();
-			}
-		}else{
-			
-			remoteTableName = simplifiedRelation.table();
-		}
-		
-		if (!StringUtils.isEmpty(simplifiedRelation.keyField())) {
+      remoteKeyColumnName = simplifiedRelation.remoteKeyColumnName();
+      remoteValueColumnName = simplifiedRelation.remoteValueColumnName();
+      order = simplifiedRelation.order();
 
-			try {
-				keyField = ReflectionUtils.getField(beanClass, simplifiedRelation.keyField());
+      if(simplifiedRelation.addTablePrefix()){
 
-				if (keyField == null) {
+         if(simplifiedRelation.deplurifyTablePrefix() && localDAO.getTableName().endsWith("s")){
 
-					throw new RuntimeException("Unable to find field " + simplifiedRelation.keyField() + " in " + beanClass.getClass());
-				}
+            remoteTableName = localDAO.getTableName().substring(0, localDAO.getTableName().length()-1) + simplifiedRelation.table();
 
-			} catch (SecurityException e) {
+         }else{
 
-				throw new RuntimeException(e);
+            remoteTableName = localDAO.getTableName() + simplifiedRelation.table();
+         }
+      }else{
 
-			}
+         remoteTableName = simplifiedRelation.table();
+      }
 
-		} else {
+      if (!StringUtils.isEmpty(simplifiedRelation.keyField())) {
 
-			List<Field> fields = ReflectionUtils.getFields(beanClass);
+         try {
+            keyField = ReflectionUtils.getField(beanClass, simplifiedRelation.keyField());
 
-			for (Field localBeanField : fields) {
+            if (keyField == null) {
 
-				if (localBeanField.isAnnotationPresent(DAOManaged.class) && localBeanField.isAnnotationPresent(Key.class)) {
+               throw new RuntimeException("Unable to find field " + simplifiedRelation.keyField() + " in " + beanClass.getClass());
+            }
 
-					if (this.keyField == null) {
+         } catch (SecurityException e) {
 
-						keyField = localBeanField;
+            throw new RuntimeException(e);
 
-					} else {
+         }
 
-						throw new RuntimeException("Multiple fields marked with @Key annotation found in class " + beanClass + " therefore keyField has to set on the @SimplifiedRelation annotation of field " + field.getName());
-					}
-				}
-			}
-		}
+      } else {
 
-		if (queryParameterPopulators != null) {
+         List<Field> fields = ReflectionUtils.getFields(beanClass);
 
-			for (QueryParameterPopulator<?> queryParameterPopulator : queryParameterPopulators) {
+         for (Field localBeanField : fields) {
 
-				if (queryParameterPopulator.getType().equals(remoteClass)) {
+            if (localBeanField.isAnnotationPresent(DAOManaged.class) && localBeanField.isAnnotationPresent(Key.class)) {
 
-					this.queryParameterPopulator = (QueryParameterPopulator<RemoteType>) queryParameterPopulator;
-				}
-			}
-		}
+               if (this.keyField == null) {
 
-		if (this.queryParameterPopulator == null) {
+                  keyField = localBeanField;
 
-			preparedStatementMethod = PreparedStatementQueryMethods.getQueryMethod(remoteClass);
+               } else {
 
-			if (preparedStatementMethod == null) {
+                  throw new RuntimeException("Multiple fields marked with @Key annotation found in class " + beanClass + " therefore keyField has to set on the @SimplifiedRelation annotation of field " + field.getName());
+               }
+            }
+         }
+      }
 
-				throw new RuntimeException("Unable to to find a query parameter populator or prepared statement method matching " + remoteClass + " of @SimplfiedRelation and @OneToMany annotated field " + field.getName() + " in " + beanClass);
-			}
-		}
+      if (queryParameterPopulators != null) {
 
-		if (typePopulators != null) {
+         for (QueryParameterPopulator<?> queryParameterPopulator : queryParameterPopulators) {
 
-			for (BeanStringPopulator<?> typePopulator : typePopulators) {
+            if (queryParameterPopulator.getType().equals(remoteClass)) {
 
-				if (typePopulator.getType().equals(remoteClass)) {
+               this.queryParameterPopulator = (QueryParameterPopulator<RemoteType>) queryParameterPopulator;
+            }
+         }
+      }
 
-					beanResultSetPopulator = new TypeBasedResultSetPopulator<RemoteType>((BeanStringPopulator<RemoteType>) typePopulator, remoteValueColumnName);
-				}
-			}
-		}
+      if (this.queryParameterPopulator == null) {
 
-		if (beanResultSetPopulator == null) {
+         preparedStatementMethod = PreparedStatementQueryMethods.getQueryMethod(remoteClass);
 
-			Method resultSetMethod = ResultSetMethods.getColumnNameMethod(remoteClass);
+         if (preparedStatementMethod == null) {
 
-			if (resultSetMethod != null) {
+            throw new RuntimeException("Unable to to find a query parameter populator or prepared statement method matching " + remoteClass + " of @SimplfiedRelation and @OneToMany annotated field " + field.getName() + " in " + beanClass);
+         }
+      }
 
-				beanResultSetPopulator = new MethodBasedResultSetPopulator<RemoteType>(resultSetMethod, remoteValueColumnName);
+      if (typePopulators != null) {
 
-			} else {
+         for (BeanStringPopulator<?> typePopulator : typePopulators) {
 
-				throw new RuntimeException("Unable to to find a type populator or resultset method matching " + remoteClass + " of @SimplfiedRelation and @OneToMany annotated field " + field.getName() + " in " + beanClass);
-			}
-		}
-		
-		if(simplifiedRelation.preserveListOrder()){
-			
-			if(StringUtils.isEmpty(simplifiedRelation.indexColumn())){
-				
-				throw new RuntimeException("Preserve list order enabled but no index column specified for @SimplifiedRelation annotated field " + field.getName() + " in " + beanClass);
-			}
-			
-			preserveListOrder = true;
-			indexColumnName = simplifiedRelation.indexColumn();
-		}
-	}
+            if (typePopulator.getType().equals(remoteClass)) {
 
-	private void init() {
+               beanResultSetPopulator = new TypeBasedResultSetPopulator<RemoteType>((BeanStringPopulator<RemoteType>) typePopulator, remoteValueColumnName);
+            }
+         }
+      }
 
-		this.keyColumn = localDAO.getColumn(keyField);
+      if (beanResultSetPopulator == null) {
 
-		if (StringUtils.isEmpty(remoteKeyColumnName)) {
+         Method resultSetMethod = ResultSetMethods.getColumnNameMethod(remoteClass);
 
-			remoteKeyColumnName = keyColumn.getColumnName();
-		}
+         if (resultSetMethod != null) {
 
-		this.deleteSQL = "DELETE FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + "=?";
+            beanResultSetPopulator = new MethodBasedResultSetPopulator<RemoteType>(resultSetMethod, remoteValueColumnName);
 
-		if(preserveListOrder){
-			
-			this.selectSQL = "SELECT * FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + " = ? ORDER BY " + indexColumnName + " " + order;
-			this.insertSQL = "INSERT INTO " + remoteTableName + "(" + remoteKeyColumnName + "," + remoteValueColumnName + "," + indexColumnName + ") VALUES (?,?,?)";
-			
-		}else{
-			
-			this.selectSQL = "SELECT * FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + " = ? ORDER BY " + remoteValueColumnName + " " + order;
-			this.insertSQL = "INSERT INTO " + remoteTableName + "(" + remoteKeyColumnName + "," + remoteValueColumnName + ") VALUES (?,?)";
-		}
-		
-		this.initialized = true;
-	}
+         } else {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see se.unlogic.utils.dao.OneToManyRelation#setValue(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	public void getRemoteValue(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+            throw new RuntimeException("Unable to to find a type populator or resultset method matching " + remoteClass + " of @SimplfiedRelation and @OneToMany annotated field " + field.getName() + " in " + beanClass);
+         }
+      }
 
-		if (!initialized) {
-			init();
-		}
+      if(simplifiedRelation.preserveListOrder()){
 
-		try {
-			ArrayListQuery<RemoteType> query = new ArrayListQuery<RemoteType>(connection, false, selectSQL, beanResultSetPopulator);
+         if(StringUtils.isEmpty(simplifiedRelation.indexColumn())){
 
-			setKey(query, bean);
+            throw new RuntimeException("Preserve list order enabled but no index column specified for @SimplifiedRelation annotated field " + field.getName() + " in " + beanClass);
+         }
 
-			ArrayList<RemoteType> list = query.executeQuery();
+         preserveListOrder = true;
+         indexColumnName = simplifiedRelation.indexColumn();
+      }
+   }
 
-			if (list != null) {
+   private void init() {
 
-				CollectionUtils.removeNullValues(list);
-			}
+      this.keyColumn = localDAO.getColumn(keyField);
 
-			field.set(bean, list);
+      if (StringUtils.isEmpty(remoteKeyColumnName)) {
 
-		} catch (IllegalArgumentException e) {
+         remoteKeyColumnName = keyColumn.getColumnName();
+      }
 
-			throw new RuntimeException(e);
+      this.deleteSQL = "DELETE FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + "=?";
 
-		} catch (IllegalAccessException e) {
+      if(preserveListOrder){
 
-			throw new RuntimeException(e);
-		}
-	}
+         this.selectSQL = "SELECT * FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + " = ? ORDER BY " + indexColumnName + " " + order;
+         this.insertSQL = "INSERT INTO " + remoteTableName + "(" + remoteKeyColumnName + "," + remoteValueColumnName + "," + indexColumnName + ") VALUES (?,?,?)";
 
-	private void setKey(PreparedStatementQuery query, LocalType bean) throws SQLException {
+      }else{
 
-		if (keyColumn.getQueryParameterPopulator() != null) {
+         this.selectSQL = "SELECT * FROM " + remoteTableName + " WHERE " + remoteKeyColumnName + " = ? ORDER BY " + remoteValueColumnName + " " + order;
+         this.insertSQL = "INSERT INTO " + remoteTableName + "(" + remoteKeyColumnName + "," + remoteValueColumnName + ") VALUES (?,?)";
+      }
 
-			keyColumn.getQueryParameterPopulator().populate(query, 1, bean);
+      this.initialized = true;
+   }
 
-		} else {
+   /*
+    * (non-Javadoc)
+    *
+    * @see se.unlogic.utils.dao.OneToManyRelation#setValue(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   public void getRemoteValue(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			try {
-				keyColumn.getQueryMethod().invoke(query, 1, keyColumn.getBeanValue(bean));
+      if (!initialized) {
+         init();
+      }
 
-			} catch (IllegalArgumentException e) {
+      try {
+         ArrayListQuery<RemoteType> query = new ArrayListQuery<RemoteType>(connection, false, selectSQL, beanResultSetPopulator);
 
-				throw new RuntimeException(e);
+         setKey(query, bean);
 
-			} catch (IllegalAccessException e) {
+         ArrayList<RemoteType> list = query.executeQuery();
 
-				throw new RuntimeException(e);
+         if (list != null) {
 
-			} catch (InvocationTargetException e) {
+            CollectionUtils.removeNullValues(list);
+         }
 
-				throw new RuntimeException(e);
-			}
-		}
-	}
+         field.set(bean, list);
 
-	private void setValue(RemoteType value, UpdateQuery query) throws SQLException {
+      } catch (IllegalArgumentException e) {
 
-		if (queryParameterPopulator != null) {
+         throw new RuntimeException(e);
 
-			queryParameterPopulator.populate(query, 2, value);
+      } catch (IllegalAccessException e) {
 
-		} else {
+         throw new RuntimeException(e);
+      }
+   }
 
-			try {
-				preparedStatementMethod.invoke(query, 2, value);
+   private void setKey(PreparedStatementQuery query, LocalType bean) throws SQLException {
 
-			} catch (IllegalArgumentException e) {
+      if (keyColumn.getQueryParameterPopulator() != null) {
 
-				throw new RuntimeException(e);
+         keyColumn.getQueryParameterPopulator().populate(query, 1, bean);
 
-			} catch (IllegalAccessException e) {
+      } else {
 
-				throw new RuntimeException(e);
+         try {
+            keyColumn.getQueryMethod().invoke(query, 1, keyColumn.getBeanValue(bean));
 
-			} catch (InvocationTargetException e) {
+         } catch (IllegalArgumentException e) {
 
-				throw new RuntimeException(e);
-			}
-		}
+            throw new RuntimeException(e);
 
-	}
+         } catch (IllegalAccessException e) {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see se.unlogic.utils.dao.OneToManyRelation#add(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	@SuppressWarnings("unchecked")
-	public void add(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+            throw new RuntimeException(e);
 
-		if (!initialized) {
-			init();
-		}
+         } catch (InvocationTargetException e) {
 
-		try {
-			List<RemoteType> values = (List<RemoteType>) field.get(bean);
+            throw new RuntimeException(e);
+         }
+      }
+   }
 
-			if (values != null) {
+   private void setValue(RemoteType value, UpdateQuery query) throws SQLException {
 
-				int listIndex = 0;
-				
-				for (RemoteType value : values) {
+      if (queryParameterPopulator != null) {
 
-					UpdateQuery query = new UpdateQuery(connection, false, insertSQL);
+         queryParameterPopulator.populate(query, 2, value);
 
-					setKey(query, bean);
+      } else {
 
-					setValue(value, query);
+         try {
+            preparedStatementMethod.invoke(query, 2, value);
 
-					if(preserveListOrder){
-						
-						query.setInt(3, listIndex);
-						listIndex++;
-					}
-					
-					query.executeUpdate();
-				}
-			}
+         } catch (IllegalArgumentException e) {
 
-		} catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
 
-			throw new RuntimeException(e);
+         } catch (IllegalAccessException e) {
 
-		} catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
 
-			throw new RuntimeException(e);
-		}
-	}
+         } catch (InvocationTargetException e) {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see se.unlogic.utils.dao.OneToManyRelation#update(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	public void update(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+            throw new RuntimeException(e);
+         }
+      }
 
-		if (!initialized) {
-			init();
-		}
+   }
 
-		UpdateQuery query = new UpdateQuery(connection, false, deleteSQL);
+   /*
+    * (non-Javadoc)
+    *
+    * @see se.unlogic.utils.dao.OneToManyRelation#add(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   @SuppressWarnings("unchecked")
+   public void add(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-		setKey(query, bean);
+      if (!initialized) {
+         init();
+      }
 
-		query.executeUpdate();
+      try {
+         List<RemoteType> values = (List<RemoteType>) field.get(bean);
 
-		this.add(bean, connection, relationQuery);
-	}
+         if (values != null) {
 
-	public static <LT, RT> OneToManyRelation<LT, RT> getGenericInstance(Class<LT> beanClass, Class<RT> remoteClass, Field field, AnnotatedDAO<LT> localDAO, List<? extends BeanStringPopulator<?>> typePopulators, List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
+            int listIndex = 0;
 
-		return new SimplifiedOneToManyRelation<LT, RT>(beanClass, remoteClass, field, localDAO, typePopulators, queryParameterPopulators);
-	}
+            for (RemoteType value : values) {
+
+               UpdateQuery query = new UpdateQuery(connection, false, insertSQL);
+
+               setKey(query, bean);
+
+               setValue(value, query);
+
+               if(preserveListOrder){
+
+                  query.setInt(3, listIndex);
+                  listIndex++;
+               }
+
+               query.executeUpdate();
+            }
+         }
+
+      } catch (IllegalArgumentException e) {
+
+         throw new RuntimeException(e);
+
+      } catch (IllegalAccessException e) {
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   /*
+    * (non-Javadoc)
+    *
+    * @see se.unlogic.utils.dao.OneToManyRelation#update(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   public void update(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+
+      if (!initialized) {
+         init();
+      }
+
+      UpdateQuery query = new UpdateQuery(connection, false, deleteSQL);
+
+      setKey(query, bean);
+
+      query.executeUpdate();
+
+      this.add(bean, connection, relationQuery);
+   }
+
+   public static <LT, RT> OneToManyRelation<LT, RT> getGenericInstance(Class<LT> beanClass, Class<RT> remoteClass, Field field, AnnotatedDAO<LT> localDAO, List<? extends BeanStringPopulator<?>> typePopulators, List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
+
+      return new SimplifiedOneToManyRelation<LT, RT>(beanClass, remoteClass, field, localDAO, typePopulators, queryParameterPopulators);
+   }
 }

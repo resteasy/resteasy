@@ -332,10 +332,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       try
       {
-          if (this.streamFactory.getInputStream().markSupported())
-          {
-             this.streamFactory.getInputStream().reset();
-          }
+         if (this.streamFactory.getInputStream().markSupported())
+         {
+            this.streamFactory.getInputStream().reset();
+         }
       }
       catch (IOException e)
       {
@@ -372,7 +372,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          return this.annotations;
       }
       return (this.returnType == type && this.genericReturnType == genericType) ? this.annotations
-              : null;
+            : null;
    }
 
    @Override

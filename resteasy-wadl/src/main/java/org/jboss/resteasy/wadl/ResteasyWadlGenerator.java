@@ -9,10 +9,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class ResteasyWadlGenerator {
 
-    public static ResteasyWadlServiceRegistry generateServiceRegistry(ResteasyDeployment deployment) {
-        ResourceMethodRegistry registry = (ResourceMethodRegistry) deployment.getRegistry();
-        ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
-        ResteasyWadlServiceRegistry service = new ResteasyWadlServiceRegistry(null, registry, providerFactory, null);
-        return service;
-    }
+   public static ResteasyWadlServiceRegistry generateServiceRegistry(ResteasyDeployment deployment) {
+      ResourceMethodRegistry registry = (ResourceMethodRegistry) deployment.getRegistry();
+      ResteasyProviderFactory providerFactory = deployment.getProviderFactory();
+      ResteasyWadlServiceRegistry service = new ResteasyWadlServiceRegistry(null, registry, providerFactory, null);
+      return service;
+   }
 }

@@ -85,7 +85,6 @@ public class Cat {
    @Override
    public String toString() {
       return String.format("Cat - %s {name='%s', sort='%s', color='%s', domesticated=%s, transientVar=%s}",
-              CUSTOM_TO_STRING_FORMAT, name, sort, color, domesticated, transientVar);
+            CUSTOM_TO_STRING_FORMAT, name, sort, color, domesticated, transientVar);
    }
 }
-

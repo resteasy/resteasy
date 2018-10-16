@@ -52,2172 +52,2172 @@ import java.util.TreeMap;
 
 public class AnnotatedDAO<T> {
 
-	private static final OrderByComparator ORDER_BY_COMPARATOR = new OrderByComparator();
+   private static final OrderByComparator ORDER_BY_COMPARATOR = new OrderByComparator();
 
-	protected final AnnotatedResultSetPopulator<T> populator;
-	protected final DataSource dataSource;
-	protected final Class<T> beanClass;
+   protected final AnnotatedResultSetPopulator<T> populator;
+   protected final DataSource dataSource;
+   protected final Class<T> beanClass;
 
-	protected final List<QueryParameterPopulator<?>> queryParameterPopulators;
-	protected final List<BeanStringPopulator<?>> beanStringPopulators;
+   protected final List<QueryParameterPopulator<?>> queryParameterPopulators;
+   protected final List<BeanStringPopulator<?>> beanStringPopulators;
 
-	protected final ArrayList<Column<T, ?>> simpleKeys = new ArrayList<Column<T, ?>>();
-	protected final ArrayList<Column<T, ?>> simpleColumns = new ArrayList<Column<T, ?>>();
-	protected final HashMap<Field, Column<T, ?>> columnMap = new HashMap<Field, Column<T, ?>>();
+   protected final ArrayList<Column<T, ?>> simpleKeys = new ArrayList<Column<T, ?>>();
+   protected final ArrayList<Column<T, ?>> simpleColumns = new ArrayList<Column<T, ?>>();
+   protected final HashMap<Field, Column<T, ?>> columnMap = new HashMap<Field, Column<T, ?>>();
 
-	protected final ArrayList<ColumnKeyCollector<T>> columnKeyCollectors = new ArrayList<ColumnKeyCollector<T>>();
+   protected final ArrayList<ColumnKeyCollector<T>> columnKeyCollectors = new ArrayList<ColumnKeyCollector<T>>();
 
-	protected final HashMap<Field, ManyToOneRelation<T, ?, ?>> manyToOneRelations = new HashMap<Field, ManyToOneRelation<T, ?, ?>>();
-	protected final HashMap<Field, ManyToOneRelation<T, ?, ?>> manyToOneRelationKeys = new HashMap<Field, ManyToOneRelation<T, ?, ?>>();
-	protected final HashMap<Field, OneToManyRelation<T, ?>> oneToManyRelations = new HashMap<Field, OneToManyRelation<T, ?>>();
-	protected final HashMap<Field, ManyToManyRelation<T, ?>> manyToManyRelations = new HashMap<Field, ManyToManyRelation<T, ?>>();
+   protected final HashMap<Field, ManyToOneRelation<T, ?, ?>> manyToOneRelations = new HashMap<Field, ManyToOneRelation<T, ?, ?>>();
+   protected final HashMap<Field, ManyToOneRelation<T, ?, ?>> manyToOneRelationKeys = new HashMap<Field, ManyToOneRelation<T, ?, ?>>();
+   protected final HashMap<Field, OneToManyRelation<T, ?>> oneToManyRelations = new HashMap<Field, OneToManyRelation<T, ?>>();
+   protected final HashMap<Field, ManyToManyRelation<T, ?>> manyToManyRelations = new HashMap<Field, ManyToManyRelation<T, ?>>();
 
-	protected final TreeMap<OrderBy, Column<T, ?>> columnOrderMap = new TreeMap<OrderBy, Column<T, ?>>(ORDER_BY_COMPARATOR);
+   protected final TreeMap<OrderBy, Column<T, ?>> columnOrderMap = new TreeMap<OrderBy, Column<T, ?>>(ORDER_BY_COMPARATOR);
 
-	protected final ArrayList<Field> autoAddRelations = new ArrayList<Field>();
-	protected final ArrayList<Field> autoGetRelations = new ArrayList<Field>();
-	protected final ArrayList<Field> autoUpdateRelations = new ArrayList<Field>();
+   protected final ArrayList<Field> autoAddRelations = new ArrayList<Field>();
+   protected final ArrayList<Field> autoGetRelations = new ArrayList<Field>();
+   protected final ArrayList<Field> autoUpdateRelations = new ArrayList<Field>();
 
-	protected String tableName;
+   protected String tableName;
 
-	protected String insertSQL;
-	protected String updateSQL;
-	protected String deleteSQL;
-	protected String checkIfExistsSQL;
-	protected String deleteByFieldSQL;
-	protected String getSQL;
-	protected String defaultSortingCriteria;
+   protected String insertSQL;
+   protected String updateSQL;
+   protected String deleteSQL;
+   protected String checkIfExistsSQL;
+   protected String deleteByFieldSQL;
+   protected String getSQL;
+   protected String defaultSortingCriteria;
 
-	public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory) {
+   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory) {
 
-		this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass), null, null);
-	}
+      this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass), null, null);
+   }
 
-	public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator, QueryParameterPopulator<?>... queryParameterPopulators) {
+   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator, QueryParameterPopulator<?>... queryParameterPopulators) {
 
-		this(dataSource, beanClass, daoFactory, populator, Arrays.asList(queryParameterPopulators), null);
-	}
+      this(dataSource, beanClass, daoFactory, populator, Arrays.asList(queryParameterPopulators), null);
+   }
 
-	public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
+   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
 
-		this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass, typePopulators), queryParameterPopulators, typePopulators);
-	}
+      this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass, typePopulators), queryParameterPopulators, typePopulators);
+   }
 
-	public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator,
-			List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
+   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator,
+         List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
 
-		super();
-		this.populator = populator;
-		this.dataSource = dataSource;
-		this.beanClass = beanClass;
+      super();
+      this.populator = populator;
+      this.dataSource = dataSource;
+      this.beanClass = beanClass;
 
-		if (queryParameterPopulators != null) {
+      if (queryParameterPopulators != null) {
 
-			this.queryParameterPopulators = new ArrayList<QueryParameterPopulator<?>>(queryParameterPopulators);
+         this.queryParameterPopulators = new ArrayList<QueryParameterPopulator<?>>(queryParameterPopulators);
 
-		} else {
+      } else {
 
-			this.queryParameterPopulators = null;
-		}
+         this.queryParameterPopulators = null;
+      }
 
-		if (typePopulators != null) {
+      if (typePopulators != null) {
 
-			this.beanStringPopulators = new ArrayList<BeanStringPopulator<?>>(typePopulators);
+         this.beanStringPopulators = new ArrayList<BeanStringPopulator<?>>(typePopulators);
 
-		} else {
+      } else {
 
-			this.beanStringPopulators = null;
-		}
+         this.beanStringPopulators = null;
+      }
 
-		Table table = beanClass.getAnnotation(Table.class);
+      Table table = beanClass.getAnnotation(Table.class);
 
-		if (table == null) {
+      if (table == null) {
 
-			throw new RuntimeException("No @Table annotation found in  " + beanClass);
-		} else {
-			tableName = table.name();
-		}
+         throw new RuntimeException("No @Table annotation found in  " + beanClass);
+      } else {
+         tableName = table.name();
+      }
 
-		this.tableName = table.name();
+      this.tableName = table.name();
 
-		List<Field> fields = ReflectionUtils.getFields(beanClass);
+      List<Field> fields = ReflectionUtils.getFields(beanClass);
 
-		int generatedKeyColumnIndex = 1;
+      int generatedKeyColumnIndex = 1;
 
-		for (Field field : fields) {
+      for (Field field : fields) {
 
-			DAOManaged daoManaged = field.getAnnotation(DAOManaged.class);
-			OrderBy orderBy = field.getAnnotation(OrderBy.class);
+         DAOManaged daoManaged = field.getAnnotation(DAOManaged.class);
+         OrderBy orderBy = field.getAnnotation(OrderBy.class);
 
-			if (daoManaged != null) {
+         if (daoManaged != null) {
 
-				ReflectionUtils.fixFieldAccess(field);
+            ReflectionUtils.fixFieldAccess(field);
 
-				if (field.isAnnotationPresent(OneToOne.class)) {
+            if (field.isAnnotationPresent(OneToOne.class)) {
 
-					this.checkAutoGeneration(daoManaged);
+               this.checkAutoGeneration(daoManaged);
 
-					// TODO Relation use this class pk, no extra field
-					// TODO check auto fields
-					throw new RuntimeException("OneToOne relations are not implemented yet!");
+               // TODO Relation use this class pk, no extra field
+               // TODO check auto fields
+               throw new RuntimeException("OneToOne relations are not implemented yet!");
 
-				} else if (field.isAnnotationPresent(OneToMany.class)) {
+            } else if (field.isAnnotationPresent(OneToMany.class)) {
 
-					OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+               OneToMany oneToMany = field.getAnnotation(OneToMany.class);
 
-					this.checkOrderByAnnotation(field, orderBy);
+               this.checkOrderByAnnotation(field, orderBy);
 
-					if (field.getType() != List.class) {
+               if (field.getType() != List.class) {
 
-						throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass + " is of unsupported type "
-								+ field.getType() + ". Fields annotated as @OneToMany have to be a genericly typed " + List.class, field, OneToMany.class,
-								beanClass);
-					}
+                  throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass + " is of unsupported type "
+                        + field.getType() + ". Fields annotated as @OneToMany have to be a genericly typed " + List.class, field, OneToMany.class,
+                        beanClass);
+               }
 
-					if (ReflectionUtils.getGenericlyTypeCount(field) != 1) {
+               if (ReflectionUtils.getGenericlyTypeCount(field) != 1) {
 
-						throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass
-								+ " is genericly typed. Fields annotated as @OneToMany have to be a genericly typed " + List.class, field, OneToMany.class,
-								beanClass);
-					}
+                  throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass
+                        + " is genericly typed. Fields annotated as @OneToMany have to be a genericly typed " + List.class, field, OneToMany.class,
+                        beanClass);
+               }
 
-					// This is a bit ugly but still necessary until someone else
-					// comes up with something smarter...
-					Class<?> remoteClass = (Class<?>) ReflectionUtils.getGenericType(field);
+               // This is a bit ugly but still necessary until someone else
+               // comes up with something smarter...
+               Class<?> remoteClass = (Class<?>) ReflectionUtils.getGenericType(field);
 
-					SimplifiedRelation simplifiedRelation = field.getAnnotation(SimplifiedRelation.class);
+               SimplifiedRelation simplifiedRelation = field.getAnnotation(SimplifiedRelation.class);
 
-					if (simplifiedRelation != null) {
+               if (simplifiedRelation != null) {
 
-						this.oneToManyRelations.put(field, SimplifiedOneToManyRelation.getGenericInstance(beanClass, remoteClass, field, this, typePopulators, queryParameterPopulators));
+                  this.oneToManyRelations.put(field, SimplifiedOneToManyRelation.getGenericInstance(beanClass, remoteClass, field, this, typePopulators, queryParameterPopulators));
 
-					} else {
+               } else {
 
-						// Use this class pks, no extra field
-						this.oneToManyRelations.put(field, DefaultOneToManyRelation.getGenericInstance(beanClass, remoteClass, field, daoFactory, daoManaged));
-					}
+                  // Use this class pks, no extra field
+                  this.oneToManyRelations.put(field, DefaultOneToManyRelation.getGenericInstance(beanClass, remoteClass, field, daoFactory, daoManaged));
+               }
 
-					if (oneToMany.autoAdd()) {
-						this.autoAddRelations.add(field);
-					}
+               if (oneToMany.autoAdd()) {
+                  this.autoAddRelations.add(field);
+               }
 
-					if (oneToMany.autoUpdate()) {
-						this.autoUpdateRelations.add(field);
-					}
+               if (oneToMany.autoUpdate()) {
+                  this.autoUpdateRelations.add(field);
+               }
 
-					if (oneToMany.autoGet()) {
-						this.autoGetRelations.add(field);
-					}
+               if (oneToMany.autoGet()) {
+                  this.autoGetRelations.add(field);
+               }
 
-				} else if (field.isAnnotationPresent(ManyToOne.class)) {
+            } else if (field.isAnnotationPresent(ManyToOne.class)) {
 
-					this.checkAutoGeneration(daoManaged);
+               this.checkAutoGeneration(daoManaged);
 
-					ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+               ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
 
-					List<Field> remoteClassFields = ReflectionUtils.getFields(field.getType());
+               List<Field> remoteClassFields = ReflectionUtils.getFields(field.getType());
 
-					Field matchingRemoteField = null;
+               Field matchingRemoteField = null;
 
-					if (remoteClassFields != null) {
+               if (remoteClassFields != null) {
 
-						for (Field remoteField : remoteClassFields) {
+                  for (Field remoteField : remoteClassFields) {
 
-							if (remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(OneToMany.class)
-									&& remoteField.getType() == List.class && ReflectionUtils.isGenericlyTyped(remoteField)
-									&& ((Class<?>) ReflectionUtils.getGenericType(remoteField) == this.beanClass)) {
+                     if (remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(OneToMany.class)
+                           && remoteField.getType() == List.class && ReflectionUtils.isGenericlyTyped(remoteField)
+                           && ((Class<?>) ReflectionUtils.getGenericType(remoteField) == this.beanClass)) {
 
-								matchingRemoteField = remoteField;
+                        matchingRemoteField = remoteField;
 
-								break;
-							}
-						}
-					}
+                        break;
+                     }
+                  }
+               }
 
-					if (matchingRemoteField == null) {
+               if (matchingRemoteField == null) {
 
-						throw new RuntimeException("No corresponding @OneToMany annotated field found in  " + field.getType()
-								+ " matching @ManyToOne relation of field " + field.getName() + " in  " + beanClass + "!");
-					}
+                  throw new RuntimeException("No corresponding @OneToMany annotated field found in  " + field.getType()
+                        + " matching @ManyToOne relation of field " + field.getName() + " in  " + beanClass + "!");
+               }
 
-					Field remoteKeyField = null;
+               Field remoteKeyField = null;
 
-					if (!StringUtils.isEmpty(manyToOne.remoteKeyField())) {
+               if (!StringUtils.isEmpty(manyToOne.remoteKeyField())) {
 
-						remoteKeyField = ReflectionUtils.getField(field.getType(), manyToOne.remoteKeyField());
+                  remoteKeyField = ReflectionUtils.getField(field.getType(), manyToOne.remoteKeyField());
 
-						//TODO Check if the remote key field is @DAOPopluate annotated
-						if (remoteKeyField == null) {
+                  //TODO Check if the remote key field is @DAOPopluate annotated
+                  if (remoteKeyField == null) {
 
-							throw new RuntimeException("Unable to find @Key annotated field " + manyToOne.remoteKeyField() + " in " + field.getType() + " specified for @ManyToOne annotated field "
-									+ field.getName() + " in " + beanClass);
-						}
+                     throw new RuntimeException("Unable to find @Key annotated field " + manyToOne.remoteKeyField() + " in " + field.getType() + " specified for @ManyToOne annotated field "
+                           + field.getName() + " in " + beanClass);
+                  }
 
-					} else {
+               } else {
 
-						for (Field remoteField : remoteClassFields) {
+                  for (Field remoteField : remoteClassFields) {
 
-							if (remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(Key.class)) {
+                     if (remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(Key.class)) {
 
-								if (remoteKeyField != null) {
+                        if (remoteKeyField != null) {
 
-									throw new RuntimeException("Found multiple @Key annotated fields in " + field.getType() + ", therefore the remoteKeyField property needs to be specified for the @ManyToOne annotated field "
-											+ field.getName() + " in " + beanClass);
-								}
+                           throw new RuntimeException("Found multiple @Key annotated fields in " + field.getType() + ", therefore the remoteKeyField property needs to be specified for the @ManyToOne annotated field "
+                                 + field.getName() + " in " + beanClass);
+                        }
 
-								remoteKeyField = remoteField;
-							}
-						}
+                        remoteKeyField = remoteField;
+                     }
+                  }
 
-						if (remoteKeyField == null) {
+                  if (remoteKeyField == null) {
 
-							throw new RuntimeException("Unable to find @Key annotated field in " + field.getType() + " while parsing @ManyToOne annotated field "
-									+ field.getName() + " in " + beanClass);
-						}
-					}
+                     throw new RuntimeException("Unable to find @Key annotated field in " + field.getType() + " while parsing @ManyToOne annotated field "
+                           + field.getName() + " in " + beanClass);
+                  }
+               }
 
-					DefaultManyToOneRelation<T, ?, ?> relation = null;
+               DefaultManyToOneRelation<T, ?, ?> relation = null;
 
-					if (field.isAnnotationPresent(Key.class)) {
+               if (field.isAnnotationPresent(Key.class)) {
 
-						relation = DefaultManyToOneRelation.getGenericInstance(beanClass, field.getType(), remoteKeyField.getType(), field, remoteKeyField, daoManaged, daoFactory);
+                  relation = DefaultManyToOneRelation.getGenericInstance(beanClass, field.getType(), remoteKeyField.getType(), field, remoteKeyField, daoManaged, daoFactory);
 
-						manyToOneRelationKeys.put(field, relation);
+                  manyToOneRelationKeys.put(field, relation);
 
-					} else {
+               } else {
 
-						relation = DefaultManyToOneRelation.getGenericInstance(beanClass, field.getType(), remoteKeyField.getType(), field, remoteKeyField, daoManaged, daoFactory);
+                  relation = DefaultManyToOneRelation.getGenericInstance(beanClass, field.getType(), remoteKeyField.getType(), field, remoteKeyField, daoManaged, daoFactory);
 
-						this.manyToOneRelations.put(field, relation);
-					}
+                  this.manyToOneRelations.put(field, relation);
+               }
 
-					this.columnMap.put(field, relation);
+               this.columnMap.put(field, relation);
 
-					if (orderBy != null) {
-						this.columnOrderMap.put(orderBy, relation);
-					}
+               if (orderBy != null) {
+                  this.columnOrderMap.put(orderBy, relation);
+               }
 
-					if (manyToOne.autoAdd()) {
-						this.autoAddRelations.add(field);
-					}
+               if (manyToOne.autoAdd()) {
+                  this.autoAddRelations.add(field);
+               }
 
-					if (manyToOne.autoUpdate()) {
-						this.autoUpdateRelations.add(field);
-					}
+               if (manyToOne.autoUpdate()) {
+                  this.autoUpdateRelations.add(field);
+               }
 
-					if (manyToOne.autoGet()) {
-						this.autoGetRelations.add(field);
-					}
+               if (manyToOne.autoGet()) {
+                  this.autoGetRelations.add(field);
+               }
 
-				} else if (field.isAnnotationPresent(ManyToMany.class)) {
+            } else if (field.isAnnotationPresent(ManyToMany.class)) {
 
-					this.checkAutoGeneration(daoManaged);
+               this.checkAutoGeneration(daoManaged);
 
-					this.checkOrderByAnnotation(field, orderBy);
+               this.checkOrderByAnnotation(field, orderBy);
 
-					if (field.getType() != List.class) {
+               if (field.getType() != List.class) {
 
-						throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass + " is of unsupported type "
-								+ field.getType() + ". Fields annotated as @ManyToMany have to be a genericly typed " + List.class, field, ManyToMany.class,
-								beanClass);
-					}
+                  throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass + " is of unsupported type "
+                        + field.getType() + ". Fields annotated as @ManyToMany have to be a genericly typed " + List.class, field, ManyToMany.class,
+                        beanClass);
+               }
 
-					if (ReflectionUtils.getGenericlyTypeCount(field) != 1) {
+               if (ReflectionUtils.getGenericlyTypeCount(field) != 1) {
 
-						throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass
-								+ " is genericly typed. Fields annotated as @ManyToMany have to be a genericly typed " + List.class, field, ManyToMany.class,
-								beanClass);
-					}
+                  throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in  " + beanClass
+                        + " is genericly typed. Fields annotated as @ManyToMany have to be a genericly typed " + List.class, field, ManyToMany.class,
+                        beanClass);
+               }
 
-					// This is a bit ugly but still necessary until someone else
-					// comes up with something smarter...
-					Class<?> remoteClass = (Class<?>) ReflectionUtils.getGenericType(field);
+               // This is a bit ugly but still necessary until someone else
+               // comes up with something smarter...
+               Class<?> remoteClass = (Class<?>) ReflectionUtils.getGenericType(field);
 
-					this.manyToManyRelations.put(field, DefaultManyToManyRelation.getGenericInstance(beanClass, remoteClass, field, daoFactory, daoManaged));
+               this.manyToManyRelations.put(field, DefaultManyToManyRelation.getGenericInstance(beanClass, remoteClass, field, daoFactory, daoManaged));
 
-					ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+               ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
 
-					if (manyToMany.autoAdd()) {
-						this.autoAddRelations.add(field);
-					}
+               if (manyToMany.autoAdd()) {
+                  this.autoAddRelations.add(field);
+               }
 
-					if (manyToMany.autoUpdate()) {
-						this.autoUpdateRelations.add(field);
-					}
+               if (manyToMany.autoUpdate()) {
+                  this.autoUpdateRelations.add(field);
+               }
 
-					if (manyToMany.autoGet()) {
-						this.autoGetRelations.add(field);
-					}
+               if (manyToMany.autoGet()) {
+                  this.autoGetRelations.add(field);
+               }
 
-				} else {
+            } else {
 
-					QueryParameterPopulator<?> queryPopulator = this.getQueryParameterPopulator(field.getType());
+               QueryParameterPopulator<?> queryPopulator = this.getQueryParameterPopulator(field.getType());
 
-					Method method = null;
+               Method method = null;
 
-					if (queryPopulator == null) {
+               if (queryPopulator == null) {
 
-						method = PreparedStatementQueryMethods.getQueryMethod(field.getType());
+                  method = PreparedStatementQueryMethods.getQueryMethod(field.getType());
 
-						if (method == null && field.getType().isEnum()) {
+                  if (method == null && field.getType().isEnum()) {
 
-							queryPopulator = EnumPopulator.getInstanceFromField(field);
-						}
+                     queryPopulator = EnumPopulator.getInstanceFromField(field);
+                  }
 
-						if (method == null && queryPopulator == null) {
+                  if (method == null && queryPopulator == null) {
 
-							throw new RuntimeException("No query method or query parameter populator found for @DAOManaged annotate field " + field.getName() + " in  " + beanClass);
-						}
-					}
+                     throw new RuntimeException("No query method or query parameter populator found for @DAOManaged annotate field " + field.getName() + " in  " + beanClass);
+                  }
+               }
 
-					String columnName = daoManaged.columnName();
+               String columnName = daoManaged.columnName();
 
-					if (StringUtils.isEmpty(columnName)) {
+               if (StringUtils.isEmpty(columnName)) {
 
-						columnName = field.getName();
-					}
+                  columnName = field.getName();
+               }
 
-					SimpleColumn<T, ?> simpleColumn = null;
+               SimpleColumn<T, ?> simpleColumn = null;
 
-					Key primaryKey = field.getAnnotation(Key.class);
+               Key primaryKey = field.getAnnotation(Key.class);
 
-					if (primaryKey != null) {
+               if (primaryKey != null) {
 
-						simpleColumn = SimpleColumn.getGenericInstance(beanClass, field.getType(), field, method, queryPopulator, columnName, daoManaged
-								.autoGenerated());
+                  simpleColumn = SimpleColumn.getGenericInstance(beanClass, field.getType(), field, method, queryPopulator, columnName, daoManaged
+                        .autoGenerated());
 
-						this.simpleKeys.add(simpleColumn);
+                  this.simpleKeys.add(simpleColumn);
 
-					} else {
+               } else {
 
-						simpleColumn = SimpleColumn.getGenericInstance(beanClass, field.getType(), field, method, queryPopulator, columnName, daoManaged
-								.autoGenerated());
+                  simpleColumn = SimpleColumn.getGenericInstance(beanClass, field.getType(), field, method, queryPopulator, columnName, daoManaged
+                        .autoGenerated());
 
-						this.simpleColumns.add(simpleColumn);
-					}
+                  this.simpleColumns.add(simpleColumn);
+               }
 
-					this.columnMap.put(field, simpleColumn);
+               this.columnMap.put(field, simpleColumn);
 
-					if (daoManaged.autoGenerated()) {
+               if (daoManaged.autoGenerated()) {
 
-						if (daoManaged.autGenerationColumnIndex() != 0) {
+                  if (daoManaged.autGenerationColumnIndex() != 0) {
 
-							this.columnKeyCollectors.add(new ColumnKeyCollector<T>(field, populator, daoManaged.autGenerationColumnIndex()));
+                     this.columnKeyCollectors.add(new ColumnKeyCollector<T>(field, populator, daoManaged.autGenerationColumnIndex()));
 
-						} else {
+                  } else {
 
-							this.columnKeyCollectors.add(new ColumnKeyCollector<T>(field, populator, generatedKeyColumnIndex));
+                     this.columnKeyCollectors.add(new ColumnKeyCollector<T>(field, populator, generatedKeyColumnIndex));
 
-							generatedKeyColumnIndex++;
-						}
-					}
+                     generatedKeyColumnIndex++;
+                  }
+               }
 
-					if (orderBy != null) {
-						this.columnOrderMap.put(orderBy, simpleColumn);
-					}
-				}
-			}
-		}
+               if (orderBy != null) {
+                  this.columnOrderMap.put(orderBy, simpleColumn);
+               }
+            }
+         }
+      }
 
-		if (this.simpleKeys.isEmpty() && this.manyToOneRelationKeys.isEmpty()) {
+      if (this.simpleKeys.isEmpty() && this.manyToOneRelationKeys.isEmpty()) {
 
-			throw new RuntimeException("No @Key annotated field found in  " + beanClass + "!");
-		}
+         throw new RuntimeException("No @Key annotated field found in  " + beanClass + "!");
+      }
 
-		// Genearate SQL statements
-		this.generateInsertSQL();
-		this.generateUpdateSQL();
-		this.generateDeleteSQL();
-		this.generateCheckIfExistsSQL();
-		this.generateDeleteByFieldSQL();
-		this.generateGetSQL();
-		this.generateDefaultSortingCriteria();
-	}
+      // Genearate SQL statements
+      this.generateInsertSQL();
+      this.generateUpdateSQL();
+      this.generateDeleteSQL();
+      this.generateCheckIfExistsSQL();
+      this.generateDeleteByFieldSQL();
+      this.generateGetSQL();
+      this.generateDefaultSortingCriteria();
+   }
 
-	public DataSource getDataSource() {
-		return dataSource;
-	}
-	
-	private void checkAutoGeneration(DAOManaged daoManaged) {
+   public DataSource getDataSource() {
+      return dataSource;
+   }
 
-		if (daoManaged.autoGenerated()) {
+   private void checkAutoGeneration(DAOManaged daoManaged) {
 
-			throw new RuntimeException("Fields with relations cannot be auto generated!");
-		}
-	}
+      if (daoManaged.autoGenerated()) {
 
-	@SuppressWarnings("unchecked")
-	public <QPT> QueryParameterPopulator<QPT> getQueryParameterPopulator(Class<QPT> type) {
+         throw new RuntimeException("Fields with relations cannot be auto generated!");
+      }
+   }
 
-		if (queryParameterPopulators != null) {
+   @SuppressWarnings("unchecked")
+   public <QPT> QueryParameterPopulator<QPT> getQueryParameterPopulator(Class<QPT> type) {
 
-			for (QueryParameterPopulator<?> queryParameterPopulator : queryParameterPopulators) {
+      if (queryParameterPopulators != null) {
 
-				if (type.equals(queryParameterPopulator.getType())) {
+         for (QueryParameterPopulator<?> queryParameterPopulator : queryParameterPopulators) {
 
-					return (QueryParameterPopulator<QPT>) queryParameterPopulator;
-				}
-			}
-		}
+            if (type.equals(queryParameterPopulator.getType())) {
 
-		for (QueryParameterPopulator<?> queryParameterPopulator : QueryParameterPopulatorRegistery.getQueryParameterPopulators()) {
+               return (QueryParameterPopulator<QPT>) queryParameterPopulator;
+            }
+         }
+      }
 
-			if (type.equals(queryParameterPopulator.getType())) {
+      for (QueryParameterPopulator<?> queryParameterPopulator : QueryParameterPopulatorRegistery.getQueryParameterPopulators()) {
 
-				return (QueryParameterPopulator<QPT>) queryParameterPopulator;
-			}
-		}
+         if (type.equals(queryParameterPopulator.getType())) {
 
-		return null;
-	}
+            return (QueryParameterPopulator<QPT>) queryParameterPopulator;
+         }
+      }
 
-	private void checkOrderByAnnotation(Field field, OrderBy orderBy) {
+      return null;
+   }
 
-		if (orderBy != null) {
+   private void checkOrderByAnnotation(Field field, OrderBy orderBy) {
 
-			throw new RuntimeException("Invalid @OrderBy annotation on field " + field.getName() + " in " + this.beanClass + ", the @OrderBy annotation is not allowed on @OneToMany and @ManyToMany annotated fields.");
-		}
-	}
+      if (orderBy != null) {
 
-	private void generateDefaultSortingCriteria() {
+         throw new RuntimeException("Invalid @OrderBy annotation on field " + field.getName() + " in " + this.beanClass + ", the @OrderBy annotation is not allowed on @OneToMany and @ManyToMany annotated fields.");
+      }
+   }
 
-		if (!this.columnOrderMap.isEmpty()) {
+   private void generateDefaultSortingCriteria() {
 
-			StringBuilder stringBuilder = new StringBuilder(" ORDER BY ");
+      if (!this.columnOrderMap.isEmpty()) {
 
-			boolean first = true;
+         StringBuilder stringBuilder = new StringBuilder(" ORDER BY ");
 
-			for (Entry<OrderBy, Column<T, ?>> entry : this.columnOrderMap.entrySet()) {
+         boolean first = true;
 
-				if (first) {
+         for (Entry<OrderBy, Column<T, ?>> entry : this.columnOrderMap.entrySet()) {
 
-					first = false;
+            if (first) {
 
-				} else {
+               first = false;
 
-					stringBuilder.append(", ");
-				}
+            } else {
 
-				stringBuilder.append(entry.getValue().getColumnName() + " " + entry.getKey().order().toString());
-			}
+               stringBuilder.append(", ");
+            }
 
-			this.defaultSortingCriteria = stringBuilder.toString();
+            stringBuilder.append(entry.getValue().getColumnName() + " " + entry.getKey().order().toString());
+         }
 
-		} else {
+         this.defaultSortingCriteria = stringBuilder.toString();
 
-			this.defaultSortingCriteria = "";
-		}
-	}
+      } else {
 
-	protected void generateInsertSQL() {
+         this.defaultSortingCriteria = "";
+      }
+   }
 
-		StringBuilder stringBuilder = new StringBuilder();
+   protected void generateInsertSQL() {
 
-		stringBuilder.append("INSERT INTO " + this.tableName + "(");
+      StringBuilder stringBuilder = new StringBuilder();
 
-		boolean first = true;
+      stringBuilder.append("INSERT INTO " + this.tableName + "(");
 
-		for (Column<T, ?> column : this.columnMap.values()) {
+      boolean first = true;
 
-			if (first) {
+      for (Column<T, ?> column : this.columnMap.values()) {
 
-				first = false;
+         if (first) {
 
-			} else {
+            first = false;
 
-				stringBuilder.append(", ");
-			}
+         } else {
 
-			stringBuilder.append(column.getColumnName());
-		}
+            stringBuilder.append(", ");
+         }
 
-		stringBuilder.append(") VALUES (");
+         stringBuilder.append(column.getColumnName());
+      }
 
-		first = true;
+      stringBuilder.append(") VALUES (");
 
-		for (@SuppressWarnings("unused")
-				Column<T, ?> column : this.columnMap.values()) {
+      first = true;
 
-			if (first) {
+      for (@SuppressWarnings("unused")
+            Column<T, ?> column : this.columnMap.values()) {
 
-				first = false;
+         if (first) {
 
-			} else {
+            first = false;
 
-				stringBuilder.append(", ");
-			}
+         } else {
 
-			stringBuilder.append("?");
-		}
+            stringBuilder.append(", ");
+         }
 
-		stringBuilder.append(")");
+         stringBuilder.append("?");
+      }
 
-		this.insertSQL = stringBuilder.toString();
-	}
+      stringBuilder.append(")");
 
-	protected void generateUpdateSQL() {
+      this.insertSQL = stringBuilder.toString();
+   }
 
-		StringBuilder stringBuilder = new StringBuilder();
+   protected void generateUpdateSQL() {
 
-		stringBuilder.append("UPDATE " + this.tableName + " SET ");
+      StringBuilder stringBuilder = new StringBuilder();
 
-		boolean first = true;
+      stringBuilder.append("UPDATE " + this.tableName + " SET ");
 
-		for (Column<T, ?> column : this.columnMap.values()) {
+      boolean first = true;
 
-			if (first) {
+      for (Column<T, ?> column : this.columnMap.values()) {
 
-				first = false;
+         if (first) {
 
-			} else {
+            first = false;
 
-				stringBuilder.append(", ");
-			}
+         } else {
 
-			stringBuilder.append(column.getColumnName() + " = ?");
-		}
+            stringBuilder.append(", ");
+         }
 
-		stringBuilder.append(" WHERE ");
+         stringBuilder.append(column.getColumnName() + " = ?");
+      }
 
-		this.appendPrimaryKeyWhereStatement(stringBuilder);
+      stringBuilder.append(" WHERE ");
 
-		this.updateSQL = stringBuilder.toString();
-	}
+      this.appendPrimaryKeyWhereStatement(stringBuilder);
 
-	protected void generateCheckIfExistsSQL() {
+      this.updateSQL = stringBuilder.toString();
+   }
 
-		StringBuilder stringBuilder = new StringBuilder("SELECT 1 FROM " + tableName + " WHERE ");
+   protected void generateCheckIfExistsSQL() {
 
-		this.appendPrimaryKeyWhereStatement(stringBuilder);
+      StringBuilder stringBuilder = new StringBuilder("SELECT 1 FROM " + tableName + " WHERE ");
 
-		this.checkIfExistsSQL = stringBuilder.toString();
-	}
+      this.appendPrimaryKeyWhereStatement(stringBuilder);
 
-	private void appendPrimaryKeyWhereStatement(StringBuilder stringBuilder) {
+      this.checkIfExistsSQL = stringBuilder.toString();
+   }
 
-		boolean first = true;
+   private void appendPrimaryKeyWhereStatement(StringBuilder stringBuilder) {
 
-		for (Column<T, ?> column : this.simpleKeys) {
+      boolean first = true;
 
-			if (first) {
+      for (Column<T, ?> column : this.simpleKeys) {
 
-				first = false;
+         if (first) {
 
-			} else {
+            first = false;
 
-				stringBuilder.append(" AND ");
-			}
+         } else {
 
-			stringBuilder.append(column.getColumnName() + " = ?");
-		}
+            stringBuilder.append(" AND ");
+         }
 
-		for (Column<T, ?> column : this.manyToOneRelationKeys.values()) {
+         stringBuilder.append(column.getColumnName() + " = ?");
+      }
 
-			if (first) {
+      for (Column<T, ?> column : this.manyToOneRelationKeys.values()) {
 
-				first = false;
+         if (first) {
 
-			} else {
+            first = false;
 
-				stringBuilder.append(" AND ");
-			}
+         } else {
 
-			stringBuilder.append(column.getColumnName() + " = ?");
-		}
-	}
+            stringBuilder.append(" AND ");
+         }
 
-	protected void generateDeleteSQL() {
+         stringBuilder.append(column.getColumnName() + " = ?");
+      }
+   }
 
-		StringBuilder stringBuilder = new StringBuilder();
+   protected void generateDeleteSQL() {
 
-		stringBuilder.append("DELETE FROM ");
-		stringBuilder.append(tableName);
-		stringBuilder.append(" WHERE ");
+      StringBuilder stringBuilder = new StringBuilder();
 
-		this.appendPrimaryKeyWhereStatement(stringBuilder);
+      stringBuilder.append("DELETE FROM ");
+      stringBuilder.append(tableName);
+      stringBuilder.append(" WHERE ");
 
-		this.deleteSQL = stringBuilder.toString();
-	}
+      this.appendPrimaryKeyWhereStatement(stringBuilder);
 
-	protected void generateDeleteByFieldSQL() {
+      this.deleteSQL = stringBuilder.toString();
+   }
 
-		this.deleteByFieldSQL = "DELETE FROM " + tableName;
-	}
+   protected void generateDeleteByFieldSQL() {
 
-	protected void generateGetSQL() {
+      this.deleteByFieldSQL = "DELETE FROM " + tableName;
+   }
 
-		this.getSQL = "SELECT * FROM " + tableName;
-	}
+   protected void generateGetSQL() {
 
-	public TransactionHandler createTransaction() throws SQLException {
+      this.getSQL = "SELECT * FROM " + tableName;
+   }
 
-		return new TransactionHandler(dataSource);
-	}
+   public TransactionHandler createTransaction() throws SQLException {
 
-	public void add(T bean) throws SQLException {
+      return new TransactionHandler(dataSource);
+   }
 
-		TransactionHandler transactionHandler = null;
+   public void add(T bean) throws SQLException {
 
-		try {
+      TransactionHandler transactionHandler = null;
 
-			transactionHandler = new TransactionHandler(dataSource);
+      try {
 
-			this.add(bean, transactionHandler.getConnection(), null);
+         transactionHandler = new TransactionHandler(dataSource);
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         this.add(bean, transactionHandler.getConnection(), null);
 
-	public void add(T bean, RelationQuery relationQuery) throws SQLException {
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-		TransactionHandler transactionHandler = null;
+   public void add(T bean, RelationQuery relationQuery) throws SQLException {
 
-		try {
+      TransactionHandler transactionHandler = null;
 
-			transactionHandler = new TransactionHandler(dataSource);
+      try {
 
-			this.add(bean, transactionHandler.getConnection(), relationQuery);
+         transactionHandler = new TransactionHandler(dataSource);
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         this.add(bean, transactionHandler.getConnection(), relationQuery);
 
-	public void addAll(Collection<T> beans, RelationQuery relationQuery) throws SQLException {
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-		TransactionHandler transactionHandler = null;
+   public void addAll(Collection<T> beans, RelationQuery relationQuery) throws SQLException {
 
-		try {
+      TransactionHandler transactionHandler = null;
 
-			transactionHandler = new TransactionHandler(dataSource);
+      try {
 
-			this.addAll(beans, transactionHandler.getConnection(), relationQuery);
+         transactionHandler = new TransactionHandler(dataSource);
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         this.addAll(beans, transactionHandler.getConnection(), relationQuery);
 
-	public void add(T bean, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-		this.add(bean, transactionHandler.getConnection(), relationQuery);
-	}
+   public void add(T bean, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
 
-	public void addAll(List<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
+      this.add(bean, transactionHandler.getConnection(), relationQuery);
+   }
 
-		this.addAll(beans, transactionHandler.getConnection(), relationQuery);
-	}
+   public void addAll(List<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
 
-	public void addAll(Collection<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
+      this.addAll(beans, transactionHandler.getConnection(), relationQuery);
+   }
 
-		for (T bean : beans) {
+   public void addAll(Collection<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			this.add(bean, connection, relationQuery);
-		}
-	}
+      for (T bean : beans) {
 
-	public void add(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         this.add(bean, connection, relationQuery);
+      }
+   }
 
-		this.preAddRelations(bean, connection, relationQuery);
+   public void add(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-		UpdateQuery query = null;
+      this.preAddRelations(bean, connection, relationQuery);
 
-		try {
+      UpdateQuery query = null;
 
-			query = new UpdateQuery(connection, false, this.insertSQL);
+      try {
 
-			IntegerCounter integerCounter = new IntegerCounter();
+         query = new UpdateQuery(connection, false, this.insertSQL);
 
-			setQueryValues(bean, query, integerCounter, this.columnMap.values());
+         IntegerCounter integerCounter = new IntegerCounter();
 
-			this.executeUpdateQuery(query, bean);
+         setQueryValues(bean, query, integerCounter, this.columnMap.values());
 
-			this.addRelations(bean, connection, relationQuery);
+         this.executeUpdateQuery(query, bean);
 
-		} finally {
+         this.addRelations(bean, connection, relationQuery);
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+      } finally {
 
-	private void executeUpdateQuery(UpdateQuery query, T bean) throws SQLException {
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-		if (!this.columnKeyCollectors.isEmpty()) {
+   private void executeUpdateQuery(UpdateQuery query, T bean) throws SQLException {
 
-			query.executeUpdate(new ColumnKeyCollectorWrapper<T>(this.columnKeyCollectors, bean));
+      if (!this.columnKeyCollectors.isEmpty()) {
 
-		} else {
+         query.executeUpdate(new ColumnKeyCollectorWrapper<T>(this.columnKeyCollectors, bean));
 
-			query.executeUpdate();
-		}
-	}
+      } else {
 
-	private void preAddRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         query.executeUpdate();
+      }
+   }
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+   private void preAddRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			for (Field relation : relationQuery.getRelations()) {
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-				preAddRelation(bean, connection, relationQuery, relation);
-			}
-		}
+         for (Field relation : relationQuery.getRelations()) {
 
-		if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
+            preAddRelation(bean, connection, relationQuery, relation);
+         }
+      }
 
-			for (Field relation : autoAddRelations) {
+      if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
 
-				if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
+         for (Field relation : autoAddRelations) {
 
-					preAddRelation(bean, connection, relationQuery, relation);
-				}
-			}
-		}
-	}
+            if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
 
-	private void preAddRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
+               preAddRelation(bean, connection, relationQuery, relation);
+            }
+         }
+      }
+   }
 
-		ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
+   private void preAddRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
 
-		if (manyToOneRelation != null) {
+      ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
 
-			manyToOneRelation.add(bean, connection, relationQuery);
-			return;
-		}
+      if (manyToOneRelation != null) {
 
-		manyToOneRelation = this.manyToOneRelationKeys.get(relation);
+         manyToOneRelation.add(bean, connection, relationQuery);
+         return;
+      }
 
-		if (manyToOneRelation != null) {
+      manyToOneRelation = this.manyToOneRelationKeys.get(relation);
 
-			manyToOneRelation.add(bean, connection, relationQuery);
-		}
-	}
+      if (manyToOneRelation != null) {
 
-	private void addRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         manyToOneRelation.add(bean, connection, relationQuery);
+      }
+   }
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+   private void addRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			for (Field relation : relationQuery.getRelations()) {
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-				addRelation(bean, connection, relationQuery, relation);
-			}
-		}
+         for (Field relation : relationQuery.getRelations()) {
 
-		if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
-			for (Field relation : autoAddRelations) {
+            addRelation(bean, connection, relationQuery, relation);
+         }
+      }
 
-				if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
+      if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
+         for (Field relation : autoAddRelations) {
 
-					addRelation(bean, connection, relationQuery, relation);
-				}
-			}
-		}
+            if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
 
-	}
+               addRelation(bean, connection, relationQuery, relation);
+            }
+         }
+      }
 
-	private void addRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
+   }
 
-		OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
+   private void addRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
 
-		if (oneToManyRelation != null) {
+      OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
 
-			oneToManyRelation.add(bean, connection, relationQuery);
-			return;
-		}
+      if (oneToManyRelation != null) {
 
-		ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
+         oneToManyRelation.add(bean, connection, relationQuery);
+         return;
+      }
 
-		if (manyToManyRelation != null) {
+      ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
 
-			manyToManyRelation.add(bean, connection, relationQuery);
-		}
-	}
+      if (manyToManyRelation != null) {
 
-	private void preUpdateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         manyToManyRelation.add(bean, connection, relationQuery);
+      }
+   }
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+   private void preUpdateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			for (Field relation : relationQuery.getRelations()) {
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-				preUpdateRelation(bean, connection, relationQuery, relation);
-			}
-		}
+         for (Field relation : relationQuery.getRelations()) {
 
-		if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
+            preUpdateRelation(bean, connection, relationQuery, relation);
+         }
+      }
 
-			for (Field relation : autoUpdateRelations) {
+      if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
 
-				if (relationQuery == null || (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation)))) {
+         for (Field relation : autoUpdateRelations) {
 
-					preUpdateRelation(bean, connection, relationQuery, relation);
-				}
-			}
-		}
-	}
+            if (relationQuery == null || (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation)))) {
 
-	private void preUpdateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
+               preUpdateRelation(bean, connection, relationQuery, relation);
+            }
+         }
+      }
+   }
 
-		ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
+   private void preUpdateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
 
-		if (manyToOneRelation != null) {
+      ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
 
-			manyToOneRelation.update(bean, connection, relationQuery);
-			return;
-		}
+      if (manyToOneRelation != null) {
 
-		manyToOneRelation = this.manyToOneRelationKeys.get(relation);
+         manyToOneRelation.update(bean, connection, relationQuery);
+         return;
+      }
 
-		if (manyToOneRelation != null) {
+      manyToOneRelation = this.manyToOneRelationKeys.get(relation);
 
-			manyToOneRelation.update(bean, connection, relationQuery);
-		}
-	}
+      if (manyToOneRelation != null) {
 
-	private void updateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         manyToOneRelation.update(bean, connection, relationQuery);
+      }
+   }
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+   private void updateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			for (Field relation : relationQuery.getRelations()) {
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-				updateRelation(bean, connection, relationQuery, relation);
-			}
-		}
+         for (Field relation : relationQuery.getRelations()) {
 
-		if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
+            updateRelation(bean, connection, relationQuery, relation);
+         }
+      }
 
-			for (Field relation : autoUpdateRelations) {
+      if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
 
-				if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
+         for (Field relation : autoUpdateRelations) {
 
-					updateRelation(bean, connection, relationQuery, relation);
-				}
-			}
-		}
-	}
+            if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
 
-	private void updateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
+               updateRelation(bean, connection, relationQuery, relation);
+            }
+         }
+      }
+   }
 
-		OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
+   private void updateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
 
-		if (oneToManyRelation != null) {
+      OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
 
-			oneToManyRelation.update(bean, connection, relationQuery);
-			return;
-		}
+      if (oneToManyRelation != null) {
 
-		ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
+         oneToManyRelation.update(bean, connection, relationQuery);
+         return;
+      }
 
-		if (manyToManyRelation != null) {
+      ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
 
-			manyToManyRelation.update(bean, connection, relationQuery);
-		}
-	}
+      if (manyToManyRelation != null) {
 
-	private void setQueryValues(T bean, PreparedStatementQuery query, IntegerCounter integerCounter, Collection<? extends Column<T, ?>> columns) throws SQLException {
+         manyToManyRelation.update(bean, connection, relationQuery);
+      }
+   }
 
-		for (Column<T, ?> column : columns) {
+   private void setQueryValues(T bean, PreparedStatementQuery query, IntegerCounter integerCounter, Collection<? extends Column<T, ?>> columns) throws SQLException {
 
-			if (column.getQueryParameterPopulator() != null) {
+      for (Column<T, ?> column : columns) {
 
-				column.getQueryParameterPopulator().populate(query, integerCounter.increment(), column.getBeanValue(bean));
+         if (column.getQueryParameterPopulator() != null) {
 
-			} else {
+            column.getQueryParameterPopulator().populate(query, integerCounter.increment(), column.getBeanValue(bean));
 
-				try {
-					column.getQueryMethod().invoke(query, integerCounter.increment(), column.getBeanValue(bean));
+         } else {
 
-				} catch (IllegalArgumentException e) {
+            try {
+               column.getQueryMethod().invoke(query, integerCounter.increment(), column.getBeanValue(bean));
 
-					throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
 
-				} catch (IllegalAccessException e) {
+               throw new RuntimeException(e);
 
-					throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
 
-				} catch (InvocationTargetException e) {
+               throw new RuntimeException(e);
 
-					throw new RuntimeException(e);
-				}
-			}
-		}
-	}
+            } catch (InvocationTargetException e) {
 
-	private void setQueryValues(List<T> beans, PreparedStatementQuery query, IntegerCounter integerCounter, Collection<? extends Column<T, ?>> columns, Field excludedField) throws SQLException {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+   }
 
-		for (Column<T, ?> column : columns) {
+   private void setQueryValues(List<T> beans, PreparedStatementQuery query, IntegerCounter integerCounter, Collection<? extends Column<T, ?>> columns, Field excludedField) throws SQLException {
 
-			if(column.getBeanField().equals(excludedField)) {
-				continue;
-			}
+      for (Column<T, ?> column : columns) {
 
-			for (T bean : beans) {
+         if(column.getBeanField().equals(excludedField)) {
+            continue;
+         }
 
-				if (column.getQueryParameterPopulator() != null) {
+         for (T bean : beans) {
 
-					column.getQueryParameterPopulator().populate(query, integerCounter.increment(), column.getBeanValue(bean));
+            if (column.getQueryParameterPopulator() != null) {
 
-				} else {
+               column.getQueryParameterPopulator().populate(query, integerCounter.increment(), column.getBeanValue(bean));
 
-					try {
-						column.getQueryMethod().invoke(query, integerCounter.increment(), column.getBeanValue(bean));
+            } else {
 
-					} catch (IllegalArgumentException e) {
+               try {
+                  column.getQueryMethod().invoke(query, integerCounter.increment(), column.getBeanValue(bean));
 
-						throw new RuntimeException(e);
+               } catch (IllegalArgumentException e) {
 
-					} catch (IllegalAccessException e) {
+                  throw new RuntimeException(e);
 
-						throw new RuntimeException(e);
+               } catch (IllegalAccessException e) {
 
-					} catch (InvocationTargetException e) {
+                  throw new RuntimeException(e);
 
-						throw new RuntimeException(e);
-					}
-				}
-			}
-		}
-	}
+               } catch (InvocationTargetException e) {
 
-	public void addOrUpdateAll(Collection<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
-		this.addOrUpdateAll(beans, transactionHandler.getConnection(), relationQuery);
-	}
-	
-	public void addOrUpdateAll(Collection<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
+                  throw new RuntimeException(e);
+               }
+            }
+         }
+      }
+   }
 
-		for (T bean : beans) {
-			this.addOrUpdate(bean, connection, relationQuery);
-		}
-	}
+   public void addOrUpdateAll(Collection<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
+      this.addOrUpdateAll(beans, transactionHandler.getConnection(), relationQuery);
+   }
 
-	public void addOrUpdate(T bean, RelationQuery relationQuery) throws SQLException {
+   public void addOrUpdateAll(Collection<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-		TransactionHandler transactionHandler = null;
+      for (T bean : beans) {
+         this.addOrUpdate(bean, connection, relationQuery);
+      }
+   }
 
-		try {
+   public void addOrUpdate(T bean, RelationQuery relationQuery) throws SQLException {
 
-			transactionHandler = new TransactionHandler(dataSource);
+      TransactionHandler transactionHandler = null;
 
-			this.addOrUpdate(bean, transactionHandler.getConnection(), relationQuery);
+      try {
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         transactionHandler = new TransactionHandler(dataSource);
 
-	public void addOrUpdate(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+         this.addOrUpdate(bean, transactionHandler.getConnection(), relationQuery);
 
-		if (!isNewBean(bean, connection)) {
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-			this.update(bean, connection, relationQuery);
+   public void addOrUpdate(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-		} else {
+      if (!isNewBean(bean, connection)) {
 
-			this.add(bean, connection, relationQuery);
-		}
-	}
+         this.update(bean, connection, relationQuery);
 
-	public boolean isNewBean(T bean, Connection connection) throws SQLException {
+      } else {
 
-		if(!hasKeysSet(bean)){
+         this.add(bean, connection, relationQuery);
+      }
+   }
 
-			return true;
-		}
+   public boolean isNewBean(T bean, Connection connection) throws SQLException {
 
-		//Unable to determine if beans is new or not so far, do db query to check
-		return !beanExists(bean, connection);
-	}
+      if(!hasKeysSet(bean)){
 
-	public boolean hasKeysSet(T bean) throws SQLException {
+         return true;
+      }
 
-		for (Column<T, ?> column : this.simpleKeys) {
+      //Unable to determine if beans is new or not so far, do db query to check
+      return !beanExists(bean, connection);
+   }
 
-			if (column.getBeanValue(bean) == null) {
+   public boolean hasKeysSet(T bean) throws SQLException {
 
-				//Key not set, presume new bean
-				return false;
-			}
-		}
+      for (Column<T, ?> column : this.simpleKeys) {
 
-		for (Column<T, ?> column : this.manyToOneRelationKeys.values()) {
+         if (column.getBeanValue(bean) == null) {
 
-			if (column.getBeanValue(bean) == null) {
+            //Key not set, presume new bean
+            return false;
+         }
+      }
 
-				//Key not set, presume new bean
-				return false;
-			}
-		}
+      for (Column<T, ?> column : this.manyToOneRelationKeys.values()) {
 
-		return true;
-	}
+         if (column.getBeanValue(bean) == null) {
 
-	public boolean beanExists(T bean) throws SQLException {
+            //Key not set, presume new bean
+            return false;
+         }
+      }
 
-		Connection connection = null;
+      return true;
+   }
 
-		try {
+   public boolean beanExists(T bean) throws SQLException {
 
-			connection = this.dataSource.getConnection();
+      Connection connection = null;
 
-			return beanExists(bean, connection);
+      try {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         connection = this.dataSource.getConnection();
 
-	public boolean beanExists(T bean, TransactionHandler transactionHandler) throws SQLException {
+         return beanExists(bean, connection);
 
-		return beanExists(bean, transactionHandler.getConnection());
-	}
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-	public boolean beanExists(T bean, Connection connection) throws SQLException {
+   public boolean beanExists(T bean, TransactionHandler transactionHandler) throws SQLException {
 
-		BooleanQuery query = null;
+      return beanExists(bean, transactionHandler.getConnection());
+   }
 
-		try {
+   public boolean beanExists(T bean, Connection connection) throws SQLException {
 
-			query = new BooleanQuery(connection, false, this.checkIfExistsSQL);
+      BooleanQuery query = null;
 
-			IntegerCounter integerCounter = new IntegerCounter();
+      try {
 
-			// Keys from SimpleColumns for where statement
-			this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
+         query = new BooleanQuery(connection, false, this.checkIfExistsSQL);
 
-			// Keys from many to one relations for where statement
-			this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
+         IntegerCounter integerCounter = new IntegerCounter();
 
-			return query.executeQuery();
+         // Keys from SimpleColumns for where statement
+         this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
 
-		} finally {
+         // Keys from many to one relations for where statement
+         this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
 
-			BooleanQuery.autoCloseQuery(query);
-		}
-	}
+         return query.executeQuery();
 
-	public void update(T bean) throws SQLException {
+      } finally {
 
-		TransactionHandler transactionHandler = null;
+         BooleanQuery.autoCloseQuery(query);
+      }
+   }
 
-		try {
+   public void update(T bean) throws SQLException {
 
-			transactionHandler = new TransactionHandler(dataSource);
+      TransactionHandler transactionHandler = null;
 
-			this.update(bean, transactionHandler.getConnection(), null);
+      try {
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         transactionHandler = new TransactionHandler(dataSource);
 
-	public void update(T bean, RelationQuery relationQuery) throws SQLException {
+         this.update(bean, transactionHandler.getConnection(), null);
 
-		TransactionHandler transactionHandler = null;
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-		try {
+   public void update(T bean, RelationQuery relationQuery) throws SQLException {
 
-			transactionHandler = new TransactionHandler(dataSource);
+      TransactionHandler transactionHandler = null;
 
-			this.update(bean, transactionHandler.getConnection(), relationQuery);
+      try {
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         transactionHandler = new TransactionHandler(dataSource);
 
-	public void update(T bean, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
+         this.update(bean, transactionHandler.getConnection(), relationQuery);
 
-		this.update(bean, transactionHandler.getConnection(), relationQuery);
-	}
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-	public Integer update(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+   public void update(T bean, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
 
-		UpdateQuery query = null;
+      this.update(bean, transactionHandler.getConnection(), relationQuery);
+   }
 
-		try {
+   public Integer update(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			this.preUpdateRelations(bean, connection, relationQuery);
+      UpdateQuery query = null;
 
-			query = new UpdateQuery(connection, false, this.updateSQL);
+      try {
 
-			IntegerCounter integerCounter = new IntegerCounter();
+         this.preUpdateRelations(bean, connection, relationQuery);
 
-			// All fields
-			this.setQueryValues(bean, query, integerCounter, this.columnMap.values());
+         query = new UpdateQuery(connection, false, this.updateSQL);
 
-			// Keys from SimpleColumns for where statement
-			this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
+         IntegerCounter integerCounter = new IntegerCounter();
 
-			// Keys from many to one relations for where statement
-			this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
+         // All fields
+         this.setQueryValues(bean, query, integerCounter, this.columnMap.values());
 
-			query.executeUpdate();
+         // Keys from SimpleColumns for where statement
+         this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
 
-		} finally {
+         // Keys from many to one relations for where statement
+         this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
 
-			UpdateQuery.autoCloseQuery(query);
-		}
+         query.executeUpdate();
 
-		this.updateRelations(bean, connection, relationQuery);
+      } finally {
 
-		return query.getAffectedRows();
-	}
+         UpdateQuery.autoCloseQuery(query);
+      }
 
-	public void update(List<T> beans, RelationQuery relationQuery) throws SQLException {
+      this.updateRelations(bean, connection, relationQuery);
 
-		TransactionHandler transactionHandler = null;
+      return query.getAffectedRows();
+   }
 
-		try {
+   public void update(List<T> beans, RelationQuery relationQuery) throws SQLException {
 
-			transactionHandler = new TransactionHandler(dataSource);
+      TransactionHandler transactionHandler = null;
 
-			this.update(beans, transactionHandler.getConnection(), relationQuery);
+      try {
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+         transactionHandler = new TransactionHandler(dataSource);
 
-	public void update(List<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
+         this.update(beans, transactionHandler.getConnection(), relationQuery);
 
-		this.update(beans, transactionHandler.getConnection(), relationQuery);
-	}	
-	
-	public void update(List<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
-		
-		for(T bean : beans){
-			
-			update(bean, connection, relationQuery);
-		}
-	}
-	
-	public void update(LowLevelQuery<T> lowLevelQuery) throws SQLException {
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-		Connection connection = null;
+   public void update(List<T> beans, TransactionHandler transactionHandler, RelationQuery relationQuery) throws SQLException {
 
-		try {
+      this.update(beans, transactionHandler.getConnection(), relationQuery);
+   }
 
-			connection = this.dataSource.getConnection();
+   public void update(List<T> beans, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-			this.update(lowLevelQuery, connection);
+      for(T bean : beans){
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         update(bean, connection, relationQuery);
+      }
+   }
 
-	public void update(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public void update(LowLevelQuery<T> lowLevelQuery) throws SQLException {
 
-		this.update(lowLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public void update(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		UpdateQuery query = null;
+         connection = this.dataSource.getConnection();
 
-		try {
+         this.update(lowLevelQuery, connection);
 
-			query = new UpdateQuery(connection, false, lowLevelQuery.getSql());
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
+   public void update(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			if (lowLevelQuery.getGeneratedKeyCollectors() != null) {
+      this.update(lowLevelQuery, transactionHandler.getConnection());
+   }
 
-				query.executeUpdate(lowLevelQuery.getGeneratedKeyCollectors());
+   public void update(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
 
-			} else {
+      UpdateQuery query = null;
 
-				query.executeUpdate();
-			}
+      try {
 
-		} finally {
+         query = new UpdateQuery(connection, false, lowLevelQuery.getSql());
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
 
-	public T get(LowLevelQuery<T> lowLevelQuery) throws SQLException {
+         if (lowLevelQuery.getGeneratedKeyCollectors() != null) {
 
-		Connection connection = null;
+            query.executeUpdate(lowLevelQuery.getGeneratedKeyCollectors());
 
-		try {
+         } else {
 
-			connection = this.dataSource.getConnection();
+            query.executeUpdate();
+         }
 
-			return this.get(lowLevelQuery, connection);
+      } finally {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-	public T get(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public T get(LowLevelQuery<T> lowLevelQuery) throws SQLException {
 
-		return this.get(lowLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public T get(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		BeanResultSetPopulator<T> populator = this.getPopulator(connection, lowLevelQuery);
+         connection = this.dataSource.getConnection();
 
-		ObjectQuery<T> query = null;
+         return this.get(lowLevelQuery, connection);
 
-		try {
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			query = new ObjectQuery<T>(connection, false, lowLevelQuery.getSql(), populator);
+   public T get(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
+      return this.get(lowLevelQuery, transactionHandler.getConnection());
+   }
 
-			T bean = query.executeQuery();
+   public T get(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
 
-			if (bean != null && (RelationQuery.hasRelations(lowLevelQuery) || !autoGetRelations.isEmpty())) {
+      BeanResultSetPopulator<T> populator = this.getPopulator(connection, lowLevelQuery);
 
-				this.populateRelations(bean, connection, lowLevelQuery);
-			}
+      ObjectQuery<T> query = null;
 
-			return bean;
+      try {
 
-		} finally {
+         query = new ObjectQuery<T>(connection, false, lowLevelQuery.getSql(), populator);
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
 
+         T bean = query.executeQuery();
 
+         if (bean != null && (RelationQuery.hasRelations(lowLevelQuery) || !autoGetRelations.isEmpty())) {
 
+            this.populateRelations(bean, connection, lowLevelQuery);
+         }
 
+         return bean;
 
+      } finally {
 
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
 
 
-	public boolean getBoolean(LowLevelQuery<T> lowLevelQuery) throws SQLException {
 
-		Connection connection = null;
 
-		try {
 
-			connection = this.dataSource.getConnection();
 
-			return this.getBoolean(lowLevelQuery, connection);
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
 
-	public boolean getBoolean(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public boolean getBoolean(LowLevelQuery<T> lowLevelQuery) throws SQLException {
 
-		return this.getBoolean(lowLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public boolean getBoolean(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		BooleanQuery query = null;
+         connection = this.dataSource.getConnection();
 
-		try {
+         return this.getBoolean(lowLevelQuery, connection);
 
-			query = new BooleanQuery(connection, false, lowLevelQuery.getSql());
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
+   public boolean getBoolean(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			return query.executeQuery();
+      return this.getBoolean(lowLevelQuery, transactionHandler.getConnection());
+   }
 
-		} finally {
+   public boolean getBoolean(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+      BooleanQuery query = null;
 
+      try {
 
+         query = new BooleanQuery(connection, false, lowLevelQuery.getSql());
 
+         this.setCustomQueryParameters(query, lowLevelQuery.getParameters());
 
-	public T get(HighLevelQuery<T> highLevelQuery) throws SQLException {
+         return query.executeQuery();
 
-		Connection connection = null;
+      } finally {
 
-		try {
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-			connection = this.dataSource.getConnection();
 
-			return this.get(highLevelQuery, connection);
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
 
-	public T get(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public T get(HighLevelQuery<T> highLevelQuery) throws SQLException {
 
-		return this.get(highLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public T get(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		BeanResultSetPopulator<T> populator = this.getPopulator(connection, highLevelQuery);
+         connection = this.dataSource.getConnection();
 
-		ObjectQuery<T> query = null;
+         return this.get(highLevelQuery, connection);
 
-		try {
-			query = new ObjectQuery<T>(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true), populator);
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			if (highLevelQuery.getParameters() != null) {
+   public T get(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-				setQueryParameters(query, highLevelQuery, 1);
-			}
+      return this.get(highLevelQuery, transactionHandler.getConnection());
+   }
 
-			T bean = query.executeQuery();
+   public T get(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
 
-			if (bean != null && (RelationQuery.hasRelations(highLevelQuery) || !autoGetRelations.isEmpty())) {
+      BeanResultSetPopulator<T> populator = this.getPopulator(connection, highLevelQuery);
 
-				this.populateRelations(bean, connection, highLevelQuery);
-			}
+      ObjectQuery<T> query = null;
 
-			return bean;
+      try {
+         query = new ObjectQuery<T>(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true), populator);
 
-		} finally {
+         if (highLevelQuery.getParameters() != null) {
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+            setQueryParameters(query, highLevelQuery, 1);
+         }
 
-	public boolean getBoolean(HighLevelQuery<T> highLevelQuery) throws SQLException {
+         T bean = query.executeQuery();
 
-		Connection connection = null;
+         if (bean != null && (RelationQuery.hasRelations(highLevelQuery) || !autoGetRelations.isEmpty())) {
 
-		try {
+            this.populateRelations(bean, connection, highLevelQuery);
+         }
 
-			connection = this.dataSource.getConnection();
+         return bean;
 
-			return this.getBoolean(highLevelQuery, connection);
+      } finally {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-	public boolean getBoolean(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public boolean getBoolean(HighLevelQuery<T> highLevelQuery) throws SQLException {
 
-		return this.getBoolean(highLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public boolean getBoolean(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		BooleanQuery query = null;
+         connection = this.dataSource.getConnection();
 
-		try {
-			query = new BooleanQuery(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true));
+         return this.getBoolean(highLevelQuery, connection);
 
-			if (highLevelQuery.getParameters() != null) {
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-				setQueryParameters(query, highLevelQuery, 1);
-			}
+   public boolean getBoolean(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			return query.executeQuery();
+      return this.getBoolean(highLevelQuery, transactionHandler.getConnection());
+   }
 
-		} finally {
+   public boolean getBoolean(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+      BooleanQuery query = null;
 
-	private String getCriterias(HighLevelQuery<T> highLevelQuery, boolean orderBy) {
+      try {
+         query = new BooleanQuery(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true));
 
-		if (highLevelQuery == null) {
+         if (highLevelQuery.getParameters() != null) {
 
-			if (orderBy) {
+            setQueryParameters(query, highLevelQuery, 1);
+         }
 
-				return this.defaultSortingCriteria;
+         return query.executeQuery();
 
-			} else {
+      } finally {
 
-				return "";
-			}
-		}
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-		StringBuilder stringBuilder = new StringBuilder();
+   private String getCriterias(HighLevelQuery<T> highLevelQuery, boolean orderBy) {
 
-		if (highLevelQuery.getParameters() != null) {
+      if (highLevelQuery == null) {
 
-			boolean first = true;
+         if (orderBy) {
 
-			for (QueryParameter<T, ?> queryParameter : highLevelQuery.getParameters()) {
+            return this.defaultSortingCriteria;
 
-				if (first) {
+         } else {
 
-					stringBuilder.append(" WHERE ");
+            return "";
+         }
+      }
 
-					first = false;
+      StringBuilder stringBuilder = new StringBuilder();
 
-				} else {
+      if (highLevelQuery.getParameters() != null) {
 
-					stringBuilder.append(" AND ");
-				}
+         boolean first = true;
 
-				stringBuilder.append(queryParameter.getColumn().getColumnName() + " " + queryParameter.getOperator());
+         for (QueryParameter<T, ?> queryParameter : highLevelQuery.getParameters()) {
 
-				if (queryParameter.hasValues()) {
+            if (first) {
 
-					if (queryParameter.hasMultipleValues()) {
+               stringBuilder.append(" WHERE ");
 
-						//stringBuilder.append(queryParameter.getOperator() + " " + queryParameter.getColumn().getColumnName());
+               first = false;
 
-						stringBuilder.append(" (?");
+            } else {
 
-						if (queryParameter.getValues().size() > 1) {
+               stringBuilder.append(" AND ");
+            }
 
-							StringUtils.repeatString(",?", queryParameter.getValues().size() - 1, stringBuilder);
-						}
+            stringBuilder.append(queryParameter.getColumn().getColumnName() + " " + queryParameter.getOperator());
 
-						stringBuilder.append(")");
+            if (queryParameter.hasValues()) {
 
-					} else {
+               if (queryParameter.hasMultipleValues()) {
 
-						stringBuilder.append(" ?");
-					}
-				}
-			}
-		}
+                  //stringBuilder.append(queryParameter.getOperator() + " " + queryParameter.getColumn().getColumnName());
 
-		if (orderBy && highLevelQuery.getOrderByCriterias() != null) {
+                  stringBuilder.append(" (?");
 
-			boolean first = true;
+                  if (queryParameter.getValues().size() > 1) {
 
-			for (OrderByCriteria<T> criteria : highLevelQuery.getOrderByCriterias()) {
+                     StringUtils.repeatString(",?", queryParameter.getValues().size() - 1, stringBuilder);
+                  }
 
-				if (first) {
+                  stringBuilder.append(")");
 
-					stringBuilder.append(" ORDER BY " + criteria.getColumn().getColumnName() + " " + criteria.getOrder().toString());
+               } else {
 
-					first = false;
+                  stringBuilder.append(" ?");
+               }
+            }
+         }
+      }
 
-				} else {
+      if (orderBy && highLevelQuery.getOrderByCriterias() != null) {
 
-					stringBuilder.append(", " + criteria.getColumn().getColumnName() + " " + criteria.getOrder().toString());
-				}
-			}
+         boolean first = true;
 
-		} else {
+         for (OrderByCriteria<T> criteria : highLevelQuery.getOrderByCriterias()) {
 
-			stringBuilder.append(this.defaultSortingCriteria);
-		}
+            if (first) {
 
-		return stringBuilder.toString();
-	}
+               stringBuilder.append(" ORDER BY " + criteria.getColumn().getColumnName() + " " + criteria.getOrder().toString());
 
-	@SuppressWarnings("unchecked")
-	private <ColumnType> Column<T, ? super ColumnType> getColumn(Field field, Class<ColumnType> paramClass) {
+               first = false;
 
-		Column<T, ?> column = this.columnMap.get(field);
+            } else {
 
-		if (column == null) {
+               stringBuilder.append(", " + criteria.getColumn().getColumnName() + " " + criteria.getOrder().toString());
+            }
+         }
 
-			throw new RuntimeException("Field " + field + " not found in  " + this.beanClass + "!");
+      } else {
 
-		} else if (!column.getParamType().isAssignableFrom(paramClass)) {
+         stringBuilder.append(this.defaultSortingCriteria);
+      }
 
-			throw new RuntimeException(" " + paramClass + " is not compatible with type " + column.getParamType() + " of field " + field + " in  "
-					+ this.beanClass + "!");
-		}
+      return stringBuilder.toString();
+   }
 
-		return (Column<T, ColumnType>) column;
-	}
+   @SuppressWarnings("unchecked")
+   private <ColumnType> Column<T, ? super ColumnType> getColumn(Field field, Class<ColumnType> paramClass) {
 
-	protected BeanResultSetPopulator<T> getPopulator(Connection connection, LowLevelQuery<T> query) {
+      Column<T, ?> column = this.columnMap.get(field);
 
-		BeanResultSetPopulator<T> populator = getPopulator(connection, (RelationQuery)query);
+      if (column == null) {
 
-		if(query.hasChainedBeanResultSetPopulators()){
+         throw new RuntimeException("Field " + field + " not found in  " + this.beanClass + "!");
 
-			return new BeanChainPopulator<T>(query.getChainedResultSetPopulators(), populator);
-		}
+      } else if (!column.getParamType().isAssignableFrom(paramClass)) {
 
-		return populator;
-	}
+         throw new RuntimeException(" " + paramClass + " is not compatible with type " + column.getParamType() + " of field " + field + " in  "
+               + this.beanClass + "!");
+      }
 
-	protected BeanResultSetPopulator<T> getPopulator(Connection connection, RelationQuery relationQuery) {
+      return (Column<T, ColumnType>) column;
+   }
 
-		ArrayList<ManyToOneRelation<T, ?, ?>> manyToOneRelations = null;
+   protected BeanResultSetPopulator<T> getPopulator(Connection connection, LowLevelQuery<T> query) {
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+      BeanResultSetPopulator<T> populator = getPopulator(connection, (RelationQuery)query);
 
-			for (Field relation : relationQuery.getRelations()) {
+      if(query.hasChainedBeanResultSetPopulators()){
 
-				ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
+         return new BeanChainPopulator<T>(query.getChainedResultSetPopulators(), populator);
+      }
 
-				if (manyToOneRelation == null) {
+      return populator;
+   }
 
-					manyToOneRelation = this.manyToOneRelationKeys.get(relation);
-				}
+   protected BeanResultSetPopulator<T> getPopulator(Connection connection, RelationQuery relationQuery) {
 
-				if (manyToOneRelation != null) {
+      ArrayList<ManyToOneRelation<T, ?, ?>> manyToOneRelations = null;
 
-					if (manyToOneRelations == null) {
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-						manyToOneRelations = new ArrayList<ManyToOneRelation<T, ?, ?>>();
-					}
+         for (Field relation : relationQuery.getRelations()) {
 
-					manyToOneRelations.add(manyToOneRelation);
-				}
-			}
-		}
+            ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
 
-		if((!autoGetRelations.isEmpty() && (relationQuery == null || !relationQuery.isDisableAutoRelations()))){
+            if (manyToOneRelation == null) {
 
-			for (Field relation : autoGetRelations) {
+               manyToOneRelation = this.manyToOneRelationKeys.get(relation);
+            }
 
-				ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
+            if (manyToOneRelation != null) {
 
-				if (manyToOneRelation == null) {
+               if (manyToOneRelations == null) {
 
-					manyToOneRelation = this.manyToOneRelationKeys.get(relation);
-				}
+                  manyToOneRelations = new ArrayList<ManyToOneRelation<T, ?, ?>>();
+               }
 
-				if (manyToOneRelation != null) {
+               manyToOneRelations.add(manyToOneRelation);
+            }
+         }
+      }
 
-					if (manyToOneRelations == null) {
+      if((!autoGetRelations.isEmpty() && (relationQuery == null || !relationQuery.isDisableAutoRelations()))){
 
-						manyToOneRelations = new ArrayList<ManyToOneRelation<T, ?, ?>>();
-					}
+         for (Field relation : autoGetRelations) {
 
-					manyToOneRelations.add(manyToOneRelation);
-				}
-			}
-		}
+            ManyToOneRelation<T, ?, ?> manyToOneRelation = this.manyToOneRelations.get(relation);
 
-		if (manyToOneRelations != null) {
+            if (manyToOneRelation == null) {
 
-			return new BeanRelationPopulator<T>(this.populator, manyToOneRelations, connection, relationQuery);
-		}
+               manyToOneRelation = this.manyToOneRelationKeys.get(relation);
+            }
 
-		return this.populator;
-	}
+            if (manyToOneRelation != null) {
 
-	protected void populateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
+               if (manyToOneRelations == null) {
 
-		if (RelationQuery.hasRelations(relationQuery)) {
+                  manyToOneRelations = new ArrayList<ManyToOneRelation<T, ?, ?>>();
+               }
 
-			for (Field relation : relationQuery.getRelations()) {
+               manyToOneRelations.add(manyToOneRelation);
+            }
+         }
+      }
 
-				populateRelation(bean, connection, relationQuery, relation);
-			}
-		}
+      if (manyToOneRelations != null) {
 
-		if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
+         return new BeanRelationPopulator<T>(this.populator, manyToOneRelations, connection, relationQuery);
+      }
 
-			for (Field relation : autoGetRelations) {
+      return this.populator;
+   }
 
-				if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
+   protected void populateRelations(T bean, Connection connection, RelationQuery relationQuery) throws SQLException {
 
-					populateRelation(bean, connection, relationQuery, relation);
-				}
-			}
-		}
-	}
+      if (RelationQuery.hasRelations(relationQuery)) {
 
-	protected void populateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
+         for (Field relation : relationQuery.getRelations()) {
 
-		OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
+            populateRelation(bean, connection, relationQuery, relation);
+         }
+      }
 
-		if (oneToManyRelation != null) {
+      if (relationQuery == null || !relationQuery.isDisableAutoRelations()) {
 
-			oneToManyRelation.getRemoteValue(bean, connection, relationQuery);
-			return;
-		}
+         for (Field relation : autoGetRelations) {
 
-		ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
+            if (relationQuery == null || (!relationQuery.containsRelation(relation) && !relationQuery.containsExcludedRelation(relation))) {
 
-		if (manyToManyRelation != null) {
+               populateRelation(bean, connection, relationQuery, relation);
+            }
+         }
+      }
+   }
 
-			manyToManyRelation.getRemoteValue(bean, connection, relationQuery);
-		}
-	}
+   protected void populateRelation(T bean, Connection connection, RelationQuery relationQuery, Field relation) throws SQLException {
 
-	public List<T> getAll(LowLevelQuery<T> lowLevelQuery) throws SQLException {
+      OneToManyRelation<T, ?> oneToManyRelation = this.oneToManyRelations.get(relation);
 
-		Connection connection = null;
+      if (oneToManyRelation != null) {
 
-		try {
+         oneToManyRelation.getRemoteValue(bean, connection, relationQuery);
+         return;
+      }
 
-			connection = this.dataSource.getConnection();
+      ManyToManyRelation<T, ?> manyToManyRelation = this.manyToManyRelations.get(relation);
 
-			return this.getAll(lowLevelQuery, connection);
+      if (manyToManyRelation != null) {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         manyToManyRelation.getRemoteValue(bean, connection, relationQuery);
+      }
+   }
 
-	public List<T> getAll(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public List<T> getAll(LowLevelQuery<T> lowLevelQuery) throws SQLException {
 
-		return this.getAll(lowLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public List<T> getAll(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
+      try {
 
-		BeanResultSetPopulator<T> populator = this.getPopulator(connection, lowLevelQuery);
+         connection = this.dataSource.getConnection();
 
-		ArrayListQuery<T> query = null;
+         return this.getAll(lowLevelQuery, connection);
 
-		try {
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			query = new ArrayListQuery<T>(connection, false, lowLevelQuery.getSql(), populator);
+   public List<T> getAll(LowLevelQuery<T> lowLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			setCustomQueryParameters(query, lowLevelQuery.getParameters());
+      return this.getAll(lowLevelQuery, transactionHandler.getConnection());
+   }
 
-			ArrayList<T> beans = query.executeQuery();
+   public List<T> getAll(LowLevelQuery<T> lowLevelQuery, Connection connection) throws SQLException {
 
-			if (beans != null && (RelationQuery.hasRelations(lowLevelQuery) || !autoGetRelations.isEmpty())) {
+      BeanResultSetPopulator<T> populator = this.getPopulator(connection, lowLevelQuery);
 
-				for (T bean : beans) {
+      ArrayListQuery<T> query = null;
 
-					this.populateRelations(bean, connection, lowLevelQuery);
-				}
-			}
+      try {
 
-			return beans;
+         query = new ArrayListQuery<T>(connection, false, lowLevelQuery.getSql(), populator);
 
-		} finally {
+         setCustomQueryParameters(query, lowLevelQuery.getParameters());
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         ArrayList<T> beans = query.executeQuery();
 
-	private void setCustomQueryParameters(PreparedStatementQuery query, List<?> parameters) {
+         if (beans != null && (RelationQuery.hasRelations(lowLevelQuery) || !autoGetRelations.isEmpty())) {
 
-		if (parameters != null) {
+            for (T bean : beans) {
 
-			int i = 1;
+               this.populateRelations(bean, connection, lowLevelQuery);
+            }
+         }
 
-			for (Object object : parameters) {
+         return beans;
 
-				Method queryMethod;
+      } finally {
 
-				if (object == null) {
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-					queryMethod = PreparedStatementQueryMethods.getObjectQueryMethod();
+   private void setCustomQueryParameters(PreparedStatementQuery query, List<?> parameters) {
 
-				} else if(object.getClass().isEnum()){
+      if (parameters != null) {
 
-					object = object.toString();
+         int i = 1;
 
-					queryMethod = PreparedStatementQueryMethods.getQueryMethod(String.class);
+         for (Object object : parameters) {
 
-				}else {
+            Method queryMethod;
 
-					queryMethod = PreparedStatementQueryMethods.getQueryMethod(object.getClass());
-				}
+            if (object == null) {
 
-				if (queryMethod == null) {
-					throw new RuntimeException("Unable to find suitable prepared statement query method for parameter " + object.getClass());
-				}
+               queryMethod = PreparedStatementQueryMethods.getObjectQueryMethod();
 
-				try {
-					queryMethod.invoke(query, i++, object);
+            } else if(object.getClass().isEnum()){
 
-				} catch (IllegalArgumentException e) {
+               object = object.toString();
 
-					throw new RuntimeException(e);
+               queryMethod = PreparedStatementQueryMethods.getQueryMethod(String.class);
 
-				} catch (IllegalAccessException e) {
+            }else {
 
-					throw new RuntimeException(e);
+               queryMethod = PreparedStatementQueryMethods.getQueryMethod(object.getClass());
+            }
 
-				} catch (InvocationTargetException e) {
+            if (queryMethod == null) {
+               throw new RuntimeException("Unable to find suitable prepared statement query method for parameter " + object.getClass());
+            }
 
-					throw new RuntimeException(e);
-				}
-			}
-		}
-	}
+            try {
+               queryMethod.invoke(query, i++, object);
 
-	protected List<T> getAll(String sql, CustomQueryParameter<?> queryParameter, Connection connection,
-			RelationQuery relationQuery) throws SQLException {
+            } catch (IllegalArgumentException e) {
 
-		BeanResultSetPopulator<T> populator = this.getPopulator(connection, relationQuery);
+               throw new RuntimeException(e);
 
-		ArrayListQuery<T> query = null;
+            } catch (IllegalAccessException e) {
 
-		try {
+               throw new RuntimeException(e);
 
-			query = new ArrayListQuery<T>(connection, false, sql, populator);
+            } catch (InvocationTargetException e) {
 
-			if (queryParameter.getQueryParameterPopulator() != null) {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+   }
 
-				queryParameter.getQueryParameterPopulator().populate(query, 1, queryParameter.getParamValue());
+   protected List<T> getAll(String sql, CustomQueryParameter<?> queryParameter, Connection connection,
+         RelationQuery relationQuery) throws SQLException {
 
-			} else {
+      BeanResultSetPopulator<T> populator = this.getPopulator(connection, relationQuery);
 
-				try {
-					queryParameter.getQueryMethod().invoke(query, 1, queryParameter.getParamValue());
+      ArrayListQuery<T> query = null;
 
-				} catch (IllegalArgumentException e) {
+      try {
 
-					throw new RuntimeException(e);
+         query = new ArrayListQuery<T>(connection, false, sql, populator);
 
-				} catch (IllegalAccessException e) {
+         if (queryParameter.getQueryParameterPopulator() != null) {
 
-					throw new RuntimeException(e);
+            queryParameter.getQueryParameterPopulator().populate(query, 1, queryParameter.getParamValue());
 
-				} catch (InvocationTargetException e) {
+         } else {
 
-					throw new RuntimeException(e);
-				}
-			}
+            try {
+               queryParameter.getQueryMethod().invoke(query, 1, queryParameter.getParamValue());
 
-			ArrayList<T> beans = query.executeQuery();
+            } catch (IllegalArgumentException e) {
 
-			if (beans != null && (RelationQuery.hasRelations(relationQuery) || !autoGetRelations.isEmpty())) {
+               throw new RuntimeException(e);
 
-				for (T bean : beans) {
+            } catch (IllegalAccessException e) {
 
-					this.populateRelations(bean, connection, relationQuery);
-				}
-			}
+               throw new RuntimeException(e);
 
-			return beans;
+            } catch (InvocationTargetException e) {
 
-		} finally {
+               throw new RuntimeException(e);
+            }
+         }
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         ArrayList<T> beans = query.executeQuery();
 
-	public List<T> getAll(HighLevelQuery<T> highLevelQuery) throws SQLException {
+         if (beans != null && (RelationQuery.hasRelations(relationQuery) || !autoGetRelations.isEmpty())) {
 
-		Connection connection = null;
+            for (T bean : beans) {
 
-		try {
+               this.populateRelations(bean, connection, relationQuery);
+            }
+         }
 
-			connection = this.dataSource.getConnection();
+         return beans;
 
-			return this.getAll(highLevelQuery, connection);
+      } finally {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-	public List<T> getAll(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public List<T> getAll(HighLevelQuery<T> highLevelQuery) throws SQLException {
 
-		return this.getAll(highLevelQuery, transactionHandler.getConnection());
-	}
+      Connection connection = null;
 
-	public List<T> getAll(HighLevelQuery<T> highLevelQuery, Connection connection)
-	throws SQLException {
+      try {
 
-		BeanResultSetPopulator<T> populator = this.getPopulator(connection, highLevelQuery);
+         connection = this.dataSource.getConnection();
 
-		ArrayListQuery<T> query = null;
+         return this.getAll(highLevelQuery, connection);
 
-		try {
-			query = new ArrayListQuery<T>(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true), populator);
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			setQueryParameters(query, highLevelQuery, 1);
+   public List<T> getAll(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			ArrayList<T> beans = query.executeQuery();
+      return this.getAll(highLevelQuery, transactionHandler.getConnection());
+   }
 
-			if (beans != null && (RelationQuery.hasRelations(highLevelQuery) || !autoGetRelations.isEmpty())) {
+   public List<T> getAll(HighLevelQuery<T> highLevelQuery, Connection connection)
+      throws SQLException {
 
-				for (T bean : beans) {
+      BeanResultSetPopulator<T> populator = this.getPopulator(connection, highLevelQuery);
 
-					this.populateRelations(bean, connection, highLevelQuery);
-				}
-			}
+      ArrayListQuery<T> query = null;
 
-			return beans;
+      try {
+         query = new ArrayListQuery<T>(connection, false, this.getSQL + this.getCriterias(highLevelQuery, true), populator);
 
-		} finally {
+         setQueryParameters(query, highLevelQuery, 1);
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         ArrayList<T> beans = query.executeQuery();
 
-	public List<T> getAll() throws SQLException {
+         if (beans != null && (RelationQuery.hasRelations(highLevelQuery) || !autoGetRelations.isEmpty())) {
 
-		return this.getAll((HighLevelQuery<T>) null);
-	}
+            for (T bean : beans) {
 
-	public void delete(T bean) throws SQLException {
+               this.populateRelations(bean, connection, highLevelQuery);
+            }
+         }
 
-		TransactionHandler transactionHandler = null;
+         return beans;
 
-		try {
+      } finally {
 
-			transactionHandler = new TransactionHandler(dataSource);
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-			this.delete(bean, transactionHandler);
+   public List<T> getAll() throws SQLException {
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+      return this.getAll((HighLevelQuery<T>) null);
+   }
 
-	public void delete(T bean, TransactionHandler transactionHandler) throws SQLException {
+   public void delete(T bean) throws SQLException {
 
-		this.delete(bean, transactionHandler.getConnection());
-	}
+      TransactionHandler transactionHandler = null;
 
-	public void delete(T bean, Connection connection) throws SQLException {
+      try {
 
-		UpdateQuery query = null;
+         transactionHandler = new TransactionHandler(dataSource);
 
-		try {
+         this.delete(bean, transactionHandler);
 
-			query = new UpdateQuery(connection, false, this.deleteSQL);
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-			IntegerCounter integerCounter = new IntegerCounter();
+   public void delete(T bean, TransactionHandler transactionHandler) throws SQLException {
 
-			// Keys from SimpleColumns for where statement
-			this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
+      this.delete(bean, transactionHandler.getConnection());
+   }
 
-			// Keys from many to one relations for where statement
-			this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
+   public void delete(T bean, Connection connection) throws SQLException {
 
-			query.executeUpdate();
+      UpdateQuery query = null;
 
-		} finally {
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+      try {
 
-	public void delete(List<T> beans) throws SQLException {
+         query = new UpdateQuery(connection, false, this.deleteSQL);
 
-		TransactionHandler transactionHandler = null;
+         IntegerCounter integerCounter = new IntegerCounter();
 
-		try {
+         // Keys from SimpleColumns for where statement
+         this.setQueryValues(bean, query, integerCounter, this.simpleKeys);
 
-			transactionHandler = new TransactionHandler(dataSource);
+         // Keys from many to one relations for where statement
+         this.setQueryValues(bean, query, integerCounter, this.manyToOneRelationKeys.values());
 
-			this.delete(beans, transactionHandler);
+         query.executeUpdate();
 
-			transactionHandler.commit();
-		} finally {
-			TransactionHandler.autoClose(transactionHandler);
-		}
-	}
+      } finally {
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-	public void delete(List<T> beans, TransactionHandler transactionHandler) throws SQLException {
+   public void delete(List<T> beans) throws SQLException {
 
-		this.delete(beans, transactionHandler.getConnection());
-	}
+      TransactionHandler transactionHandler = null;
 
-	public void delete(List<T> beans, Connection connection) throws SQLException {
-		
-		for(T bean : beans){
-			
-			delete(bean, connection);
-		}
-	}
-	
-	public Integer delete(HighLevelQuery<T> highLevelQuery) throws SQLException {
+      try {
 
-		Connection connection = null;
+         transactionHandler = new TransactionHandler(dataSource);
 
-		try {
+         this.delete(beans, transactionHandler);
 
-			connection = this.dataSource.getConnection();
+         transactionHandler.commit();
+      } finally {
+         TransactionHandler.autoClose(transactionHandler);
+      }
+   }
 
-			return this.delete(highLevelQuery, connection);
+   public void delete(List<T> beans, TransactionHandler transactionHandler) throws SQLException {
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+      this.delete(beans, transactionHandler.getConnection());
+   }
 
-	public Integer delete(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+   public void delete(List<T> beans, Connection connection) throws SQLException {
 
-		return this.delete(highLevelQuery, transactionHandler.getConnection());
-	}
+      for(T bean : beans){
 
-	public Integer delete(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
+         delete(bean, connection);
+      }
+   }
 
-		UpdateQuery query = null;
+   public Integer delete(HighLevelQuery<T> highLevelQuery) throws SQLException {
 
-		try {
-			query = new UpdateQuery(connection, false, this.deleteByFieldSQL + this.getCriterias(highLevelQuery, false));
+      Connection connection = null;
 
-			setQueryParameters(query, highLevelQuery, 1);
+      try {
 
-			query.executeUpdate();
+         connection = this.dataSource.getConnection();
 
-			return query.getAffectedRows();
+         return this.delete(highLevelQuery, connection);
 
-		} finally {
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+   public Integer delete(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-	public boolean deleteWhereNotIn(List<T> beans, TransactionHandler transactionHandler, Field excludedField, QueryParameter<T, ?>... queryParameters) throws SQLException {
-		return this.deleteWhereNotIn(beans, transactionHandler.getConnection(), excludedField, queryParameters);
-	}
-		
-	public boolean deleteWhereNotIn(List<T> beans, Connection connection, Field excludedField, QueryParameter<T, ?>... queryParameters)
-	throws SQLException {
+      return this.delete(highLevelQuery, transactionHandler.getConnection());
+   }
 
-		// Generate SQL
-		StringBuilder stringBuilder = new StringBuilder();
+   public Integer delete(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
 
-		stringBuilder.append("DELETE FROM ");
-		stringBuilder.append(tableName);
-		stringBuilder.append(" WHERE");
+      UpdateQuery query = null;
 
-		//Filter away any beans that don't have their keys set
-		ArrayList<T> filteredBeans = new ArrayList<T>(beans);
+      try {
+         query = new UpdateQuery(connection, false, this.deleteByFieldSQL + this.getCriterias(highLevelQuery, false));
 
-		Iterator<T> iterator = filteredBeans.iterator();
+         setQueryParameters(query, highLevelQuery, 1);
 
-		while(iterator.hasNext()){
+         query.executeUpdate();
 
-			if(!hasKeysSet(iterator.next())){
+         return query.getAffectedRows();
 
-				iterator.remove();
-			}
-		}
+      } finally {
 
-		if(filteredBeans.isEmpty()){
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-			//No beans left, abort
-			return false;
-		}
+   public boolean deleteWhereNotIn(List<T> beans, TransactionHandler transactionHandler, Field excludedField, QueryParameter<T, ?>... queryParameters) throws SQLException {
+      return this.deleteWhereNotIn(beans, transactionHandler.getConnection(), excludedField, queryParameters);
+   }
 
-		int beanCount = filteredBeans.size();
+   public boolean deleteWhereNotIn(List<T> beans, Connection connection, Field excludedField, QueryParameter<T, ?>... queryParameters)
+      throws SQLException {
 
-		BooleanSignal signal = new BooleanSignal();
+      // Generate SQL
+      StringBuilder stringBuilder = new StringBuilder();
 
-		this.generateColumWhereNotInSQL(this.simpleKeys, excludedField, stringBuilder, beanCount, signal);
-		this.generateColumWhereNotInSQL(this.manyToOneRelationKeys.values(), excludedField, stringBuilder, beanCount, signal);
+      stringBuilder.append("DELETE FROM ");
+      stringBuilder.append(tableName);
+      stringBuilder.append(" WHERE");
 
-		if (queryParameters != null) {
+      //Filter away any beans that don't have their keys set
+      ArrayList<T> filteredBeans = new ArrayList<T>(beans);
 
-			for (QueryParameter<T, ?> queryParameter : queryParameters) {
+      Iterator<T> iterator = filteredBeans.iterator();
 
-				stringBuilder.append(" AND " + queryParameter.getColumn().getColumnName() + " " + queryParameter.getOperator() + " ?");
-			}
-		}
+      while(iterator.hasNext()){
 
-		UpdateQuery query = null;
+         if(!hasKeysSet(iterator.next())){
 
-		try {
+            iterator.remove();
+         }
+      }
 
-			query = new UpdateQuery(connection, false, stringBuilder.toString());
+      if(filteredBeans.isEmpty()){
 
-			IntegerCounter integerCounter = new IntegerCounter();
+         //No beans left, abort
+         return false;
+      }
 
-			// Keys values from SimpleColumns for where not in statement
-			this.setQueryValues(filteredBeans, query, integerCounter, this.simpleKeys, excludedField);
+      int beanCount = filteredBeans.size();
 
-			// Keys values from many to one relations for where not in statement
-			this.setQueryValues(filteredBeans, query, integerCounter, this.manyToOneRelationKeys.values(), excludedField);
+      BooleanSignal signal = new BooleanSignal();
 
-			if (queryParameters != null) {
+      this.generateColumWhereNotInSQL(this.simpleKeys, excludedField, stringBuilder, beanCount, signal);
+      this.generateColumWhereNotInSQL(this.manyToOneRelationKeys.values(), excludedField, stringBuilder, beanCount, signal);
 
-				// Set query param values
-				this.setQueryParameters(query, new HighLevelQuery<T>(queryParameters), integerCounter.increment());
-			}
+      if (queryParameters != null) {
 
-			query.executeUpdate();
+         for (QueryParameter<T, ?> queryParameter : queryParameters) {
 
-		} finally {
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
+            stringBuilder.append(" AND " + queryParameter.getColumn().getColumnName() + " " + queryParameter.getOperator() + " ?");
+         }
+      }
 
-		return true;
-	}
+      UpdateQuery query = null;
 
-	public Integer getCount(HighLevelQuery<T> highLevelQuery) throws SQLException {
+      try {
 
-		Connection connection = null;
+         query = new UpdateQuery(connection, false, stringBuilder.toString());
 
-		try {
+         IntegerCounter integerCounter = new IntegerCounter();
 
-			connection = this.dataSource.getConnection();
+         // Keys values from SimpleColumns for where not in statement
+         this.setQueryValues(filteredBeans, query, integerCounter, this.simpleKeys, excludedField);
 
-			return getCount(highLevelQuery, connection);
+         // Keys values from many to one relations for where not in statement
+         this.setQueryValues(filteredBeans, query, integerCounter, this.manyToOneRelationKeys.values(), excludedField);
 
-		} finally {
-			DBUtils.closeConnection(connection);
-		}
-	}
+         if (queryParameters != null) {
 
-	public Integer getCount(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
+            // Set query param values
+            this.setQueryParameters(query, new HighLevelQuery<T>(queryParameters), integerCounter.increment());
+         }
 
-		return getCount(highLevelQuery, transactionHandler.getConnection());
-	}
+         query.executeUpdate();
 
-	public Integer getCount(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
+      } finally {
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
 
-		ObjectQuery<Integer> query = null;
+      return true;
+   }
 
-		try{
-			query = new ObjectQuery<Integer>(connection, false, "SELECT COUNT(*) FROM " + tableName + this.getCriterias(highLevelQuery, false), IntegerPopulator.getPopulator());
+   public Integer getCount(HighLevelQuery<T> highLevelQuery) throws SQLException {
 
-			if (highLevelQuery != null && highLevelQuery.getParameters() != null) {
+      Connection connection = null;
 
-				setQueryParameters(query, highLevelQuery, 1);
-			}
+      try {
 
-			return query.executeQuery();
+         connection = this.dataSource.getConnection();
 
-		}finally{
-			PreparedStatementQuery.autoCloseQuery(query);
-		}
-	}
+         return getCount(highLevelQuery, connection);
 
-	private void generateColumWhereNotInSQL(Collection<? extends Column<T, ?>> keyColumns, Field excludedField, StringBuilder stringBuilder, int beanCount, BooleanSignal signal) {
+      } finally {
+         DBUtils.closeConnection(connection);
+      }
+   }
 
-		for (Column<T, ?> column : keyColumns) {
+   public Integer getCount(HighLevelQuery<T> highLevelQuery, TransactionHandler transactionHandler) throws SQLException {
 
-			if(column.getBeanField().equals(excludedField)) {
-				continue;
-			}
+      return getCount(highLevelQuery, transactionHandler.getConnection());
+   }
 
-			if (signal.isSignal()) {
+   public Integer getCount(HighLevelQuery<T> highLevelQuery, Connection connection) throws SQLException {
 
-				stringBuilder.append(" AND");
+      ObjectQuery<Integer> query = null;
 
-			} else {
+      try{
+         query = new ObjectQuery<Integer>(connection, false, "SELECT COUNT(*) FROM " + tableName + this.getCriterias(highLevelQuery, false), IntegerPopulator.getPopulator());
 
-				signal.setSignal(true);
-			}
+         if (highLevelQuery != null && highLevelQuery.getParameters() != null) {
 
-			stringBuilder.append(" ");
-			stringBuilder.append(column.getColumnName());
-			stringBuilder.append(" NOT IN (");
+            setQueryParameters(query, highLevelQuery, 1);
+         }
 
-			this.addQuestionMarks(beanCount, stringBuilder);
+         return query.executeQuery();
 
-			stringBuilder.append(")");
-		}
+      }finally{
+         PreparedStatementQuery.autoCloseQuery(query);
+      }
+   }
 
-	}
+   private void generateColumWhereNotInSQL(Collection<? extends Column<T, ?>> keyColumns, Field excludedField, StringBuilder stringBuilder, int beanCount, BooleanSignal signal) {
 
-	private void addQuestionMarks(int size, StringBuilder stringBuilder) {
+      for (Column<T, ?> column : keyColumns) {
 
-		stringBuilder.append("?");
+         if(column.getBeanField().equals(excludedField)) {
+            continue;
+         }
 
-		if (size > 1) {
+         if (signal.isSignal()) {
 
-			for (int i = 2; i <= size; i++) {
+            stringBuilder.append(" AND");
 
-				stringBuilder.append(",?");
-			}
-		}
-	}
+         } else {
 
-	public <ParamType> QueryParameterFactory<T, ParamType> getParamFactory(Field field, Class<ParamType> paramClass) {
+            signal.setSignal(true);
+         }
 
-		return new QueryParameterFactory<T, ParamType>(this.getColumn(field, paramClass));
-	}
+         stringBuilder.append(" ");
+         stringBuilder.append(column.getColumnName());
+         stringBuilder.append(" NOT IN (");
 
-	public <ParamType> QueryParameterFactory<T, ParamType> getParamFactory(String fieldName, Class<ParamType> paramClass) {
+         this.addQuestionMarks(beanCount, stringBuilder);
 
-		Field field = ReflectionUtils.getField(beanClass, fieldName);
+         stringBuilder.append(")");
+      }
 
-		if (field == null) {
-			throw new RuntimeException("Field " + fieldName + " not found in  " + this.beanClass + "!");
-		}
+   }
 
-		return new QueryParameterFactory<T, ParamType>(this.getColumn(field, paramClass));
-	}
+   private void addQuestionMarks(int size, StringBuilder stringBuilder) {
 
-	public OrderByCriteria<T> getOrderByCriteria(Field field, Order order) {
+      stringBuilder.append("?");
 
-		Column<T, ?> column = this.columnMap.get(field);
+      if (size > 1) {
 
-		if (column == null) {
-			throw new RuntimeException("No @DAOManaged annotated field with name " + field.getName() + " not found in  " + this.beanClass + "!");
-		}
+         for (int i = 2; i <= size; i++) {
 
-		return new OrderByCriteria<T>(order, column);
-	}
+            stringBuilder.append(",?");
+         }
+      }
+   }
 
-	public OrderByCriteria<T> getOrderByCriteria(String fieldName, Order order) {
+   public <ParamType> QueryParameterFactory<T, ParamType> getParamFactory(Field field, Class<ParamType> paramClass) {
 
-		Field field = ReflectionUtils.getField(beanClass, fieldName);
+      return new QueryParameterFactory<T, ParamType>(this.getColumn(field, paramClass));
+   }
 
-		if (field == null) {
-			throw new RuntimeException("Field " + fieldName + " not found in  " + this.beanClass + "!");
-		}
+   public <ParamType> QueryParameterFactory<T, ParamType> getParamFactory(String fieldName, Class<ParamType> paramClass) {
 
-		return this.getOrderByCriteria(field, order);
-	}
+      Field field = ReflectionUtils.getField(beanClass, fieldName);
 
-	public String getTableName() {
+      if (field == null) {
+         throw new RuntimeException("Field " + fieldName + " not found in  " + this.beanClass + "!");
+      }
 
-		return tableName;
-	}
+      return new QueryParameterFactory<T, ParamType>(this.getColumn(field, paramClass));
+   }
 
-	Column<T, ?> getColumn(Field field) {
+   public OrderByCriteria<T> getOrderByCriteria(Field field, Order order) {
 
-		return this.columnMap.get(field);
-	}
+      Column<T, ?> column = this.columnMap.get(field);
 
-	public void setQueryParameters(PreparedStatementQuery query, HighLevelQuery<T> highLevelQuery, final int startIndex) throws SQLException {
+      if (column == null) {
+         throw new RuntimeException("No @DAOManaged annotated field with name " + field.getName() + " not found in  " + this.beanClass + "!");
+      }
 
-		if (highLevelQuery != null && highLevelQuery.getParameters() != null) {
+      return new OrderByCriteria<T>(order, column);
+   }
 
-			int index = startIndex;
+   public OrderByCriteria<T> getOrderByCriteria(String fieldName, Order order) {
 
-			for (QueryParameter<?, ?> queryParameter : highLevelQuery.getParameters()) {
+      Field field = ReflectionUtils.getField(beanClass, fieldName);
 
-				if (queryParameter.hasValues()) {
+      if (field == null) {
+         throw new RuntimeException("Field " + fieldName + " not found in  " + this.beanClass + "!");
+      }
 
-					if (queryParameter.hasMultipleValues()) {
+      return this.getOrderByCriteria(field, order);
+   }
 
-						for (Object value : queryParameter.getValues()) {
+   public String getTableName() {
 
-							setQueryParameter(queryParameter, value, query, index++);
-						}
+      return tableName;
+   }
 
-					} else {
+   Column<T, ?> getColumn(Field field) {
 
-						setQueryParameter(queryParameter, queryParameter.getValue(), query, index++);
-					}
-				}
-			}
-		}
-	}
+      return this.columnMap.get(field);
+   }
 
-	private void setQueryParameter(QueryParameter<?, ?> queryParameter, Object value, PreparedStatementQuery query, int index) throws SQLException {
+   public void setQueryParameters(PreparedStatementQuery query, HighLevelQuery<T> highLevelQuery, final int startIndex) throws SQLException {
 
-		Column<?, ?> column = queryParameter.getColumn();
+      if (highLevelQuery != null && highLevelQuery.getParameters() != null) {
 
-		if (column.getQueryParameterPopulator() != null) {
+         int index = startIndex;
 
-			column.getQueryParameterPopulator().populate(query, index, column.getParamValue(value));
+         for (QueryParameter<?, ?> queryParameter : highLevelQuery.getParameters()) {
 
-		} else {
+            if (queryParameter.hasValues()) {
 
-			try {
-				column.getQueryMethod().invoke(query, index, column.getParamValue(value));
+               if (queryParameter.hasMultipleValues()) {
 
-			} catch (IllegalArgumentException e) {
+                  for (Object value : queryParameter.getValues()) {
 
-				throw new RuntimeException(e);
+                     setQueryParameter(queryParameter, value, query, index++);
+                  }
 
-			} catch (IllegalAccessException e) {
+               } else {
 
-				throw new RuntimeException(e);
+                  setQueryParameter(queryParameter, queryParameter.getValue(), query, index++);
+               }
+            }
+         }
+      }
+   }
 
-			} catch (InvocationTargetException e) {
+   private void setQueryParameter(QueryParameter<?, ?> queryParameter, Object value, PreparedStatementQuery query, int index) throws SQLException {
 
-				throw new RuntimeException(e);
-			}
-		}
-	}
+      Column<?, ?> column = queryParameter.getColumn();
 
-	
-	public Class<T> getBeanClass() {
-	
-		return beanClass;
-	}
+      if (column.getQueryParameterPopulator() != null) {
+
+         column.getQueryParameterPopulator().populate(query, index, column.getParamValue(value));
+
+      } else {
+
+         try {
+            column.getQueryMethod().invoke(query, index, column.getParamValue(value));
+
+         } catch (IllegalArgumentException e) {
+
+            throw new RuntimeException(e);
+
+         } catch (IllegalAccessException e) {
+
+            throw new RuntimeException(e);
+
+         } catch (InvocationTargetException e) {
+
+            throw new RuntimeException(e);
+         }
+      }
+   }
+
+
+   public Class<T> getBeanClass() {
+
+      return beanClass;
+   }
 }

@@ -249,7 +249,7 @@ public class SSLAcceptor implements Acceptor
             socket = sslSoc.createServerSocket(port);
          else
             socket = sslSoc.createServerSocket(port, BACKLOG, InetAddress.getByName((String) inProperties
-                    .get(ARG_IFADDRESS)));
+               .get(ARG_IFADDRESS)));
       else if (inProperties.get(ARG_IFADDRESS) == null)
          socket = sslSoc.createServerSocket(port, new Integer((String) inProperties.get(ARG_BACKLOG)).intValue());
       else

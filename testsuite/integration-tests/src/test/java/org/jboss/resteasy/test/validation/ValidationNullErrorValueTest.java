@@ -31,70 +31,70 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ValidationNullErrorValueTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    public static Archive<?> generateArchive(Class<?> clazz) {
-        WebArchive war = TestUtil.prepareArchive(clazz.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, clazz);
-    }
+   public static Archive<?> generateArchive(Class<?> clazz) {
+      WebArchive war = TestUtil.prepareArchive(clazz.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, clazz);
+   }
 
-    @BeforeClass
-    public static void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
-    }
+   @BeforeClass
+   public static void before() throws Exception {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    @Deployment(name = "ValidationNullErrorValueResourceWithNullFieldAndProperty")
-    public static Archive<?> createTestArchiveDefault() {
-        return generateArchive(ValidationNullErrorValueResourceWithNullFieldAndProperty.class);
-    }
+   @Deployment(name = "ValidationNullErrorValueResourceWithNullFieldAndProperty")
+   public static Archive<?> createTestArchiveDefault() {
+      return generateArchive(ValidationNullErrorValueResourceWithNullFieldAndProperty.class);
+   }
 
-    @Deployment(name = "ValidationNullErrorValueResourceWithNullParameterAndReturnValue")
-    public static Archive<?> createTestArchiveFalse() {
-        return generateArchive(ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class);
-    }
+   @Deployment(name = "ValidationNullErrorValueResourceWithNullParameterAndReturnValue")
+   public static Archive<?> createTestArchiveFalse() {
+      return generateArchive(ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class);
+   }
 
-    /**
-     * @tpTestDetails Test null field and property.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNullFieldAndProperty() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/get",
-                ValidationNullErrorValueResourceWithNullFieldAndProperty.class.getSimpleName())).request().accept(MediaType.APPLICATION_XML).get();
-        ViolationReport report = response.readEntity(ViolationReport.class);
-        TestUtil.countViolations(report, 1, 1, 0, 0, 0);
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test null field and property.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNullFieldAndProperty() throws Exception {
+      Response response = client.target(PortProviderUtil.generateURL("/get",
+            ValidationNullErrorValueResourceWithNullFieldAndProperty.class.getSimpleName())).request().accept(MediaType.APPLICATION_XML).get();
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      TestUtil.countViolations(report, 1, 1, 0, 0, 0);
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Test null return value
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNullParameterAndReturnValue() throws Exception {
-        {
-            // Null query parameter
-            Response response = client.target(PortProviderUtil.generateURL("/post",
-                    ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
-                    .accept(MediaType.APPLICATION_XML).post(Entity.text(new String()));
-            ViolationReport report = response.readEntity(ViolationReport.class);
-            TestUtil.countViolations(report, 0, 0, 0, 1, 0);
-            response.close();
-        }
+   /**
+    * @tpTestDetails Test null return value
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNullParameterAndReturnValue() throws Exception {
+      {
+         // Null query parameter
+         Response response = client.target(PortProviderUtil.generateURL("/post",
+               ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
+               .accept(MediaType.APPLICATION_XML).post(Entity.text(new String()));
+         ViolationReport report = response.readEntity(ViolationReport.class);
+         TestUtil.countViolations(report, 0, 0, 0, 1, 0);
+         response.close();
+      }
 
-        {
-            // Null return value
-            Response response = client.target(PortProviderUtil.generateURL("/get",
-                    ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
-                    .accept(MediaType.APPLICATION_XML).get();
-            ViolationReport report = response.readEntity(ViolationReport.class);
-            TestUtil.countViolations(report, 0, 0, 0, 0, 1);
-            response.close();
-        }
-    }
+      {
+         // Null return value
+         Response response = client.target(PortProviderUtil.generateURL("/get",
+               ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
+               .accept(MediaType.APPLICATION_XML).get();
+         ViolationReport report = response.readEntity(ViolationReport.class);
+         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
+         response.close();
+      }
+   }
 }

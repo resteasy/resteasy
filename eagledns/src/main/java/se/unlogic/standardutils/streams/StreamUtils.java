@@ -15,43 +15,43 @@ import java.io.OutputStream;
 
 public class StreamUtils {
 
-	public static byte[] toByteArray(InputStream inputStream) throws IOException{
+   public static byte[] toByteArray(InputStream inputStream) throws IOException{
 
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		transfer(inputStream, outputStream);
+      transfer(inputStream, outputStream);
 
-		return outputStream.toByteArray();
-	}
+      return outputStream.toByteArray();
+   }
 
-	public static void transfer(InputStream inputStream, OutputStream outputStream) throws IOException{
+   public static void transfer(InputStream inputStream, OutputStream outputStream) throws IOException{
 
-		byte[] buf = new byte[8192];
-		int count = 0;
+      byte[] buf = new byte[8192];
+      int count = 0;
 
-		while ((count = inputStream.read(buf)) >= 0) {
+      while ((count = inputStream.read(buf)) >= 0) {
 
-			outputStream.write(buf, 0, count);
-		}
-	}
+         outputStream.write(buf, 0, count);
+      }
+   }
 
-	public static void closeStream(InputStream stream){
+   public static void closeStream(InputStream stream){
 
-		if(stream != null){
+      if(stream != null){
 
-			try {
-				stream.close();
-			} catch (IOException e) {}
-		}
-	}
+         try {
+            stream.close();
+         } catch (IOException e) {}
+      }
+   }
 
-	public static void closeStream(OutputStream stream){
+   public static void closeStream(OutputStream stream){
 
-		if(stream != null){
+      if(stream != null){
 
-			try {
-				stream.close();
-			} catch (IOException e) {}
-		}
-	}
+         try {
+            stream.close();
+         } catch (IOException e) {}
+      }
+   }
 }

@@ -30,32 +30,32 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class EmptyInputStreamMultipartProviderTest {
 
-    protected final Logger logger = Logger.getLogger(EmptyInputStreamMultipartProviderTest.class.getName());
+   protected final Logger logger = Logger.getLogger(EmptyInputStreamMultipartProviderTest.class.getName());
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(EmptyInputStreamMultipartProviderTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, EmptyInputStreamMultipartProviderResource.class, EmptyInputStreamMultipartProviderMyBean.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(EmptyInputStreamMultipartProviderTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, EmptyInputStreamMultipartProviderResource.class, EmptyInputStreamMultipartProviderMyBean.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, EmptyInputStreamMultipartProviderTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, EmptyInputStreamMultipartProviderTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Resource returning POJO with empty InputStream field, the response is checked to contain the header
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void test() throws Exception {
-    	Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL("/rest/zba"));
-        Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String string = response.readEntity(String.class);
-        logger.info(string);
-        Assert.assertTrue("The response doesn't contain the expected header", string.indexOf("Content-Length") > -1);
-        client.close();
-    }
+   /**
+    * @tpTestDetails Resource returning POJO with empty InputStream field, the response is checked to contain the header
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void test() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/rest/zba"));
+      Response response = target.request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String string = response.readEntity(String.class);
+      logger.info(string);
+      Assert.assertTrue("The response doesn't contain the expected header", string.indexOf("Content-Length") > -1);
+      client.close();
+   }
 
 }

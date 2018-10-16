@@ -26,43 +26,43 @@ import static org.junit.Assert.assertTrue;
  */
 public class ContainerRequestContextTest {
 
-    private HttpRequest request;
-    protected static final Logger logger = LogManager.getLogger(ContainerRequestContextTest.class.getName());
+   private HttpRequest request;
+   protected static final Logger logger = LogManager.getLogger(ContainerRequestContextTest.class.getName());
 
-    @Before
-    public void before() throws URISyntaxException {
-        request = MockHttpRequest.create("GET", "http://foo.bar?foo=foo&bar=bar");
-    }
+   @Before
+   public void before() throws URISyntaxException {
+      request = MockHttpRequest.create("GET", "http://foo.bar?foo=foo&bar=bar");
+   }
 
-    /**
-     * @tpTestDetails Test that ContainerRequestContext setRequestUri clear previous query parameters
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    public void testQueryParamatersClear() throws URISyntaxException {
-        ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request, null, null);
+   /**
+    * @tpTestDetails Test that ContainerRequestContext setRequestUri clear previous query parameters
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   public void testQueryParamatersClear() throws URISyntaxException {
+      ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request, null, null);
 
-        logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
+      logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
 
-        assertEquals("Wrong count of parameters in getUriInfo response", 2, containerRequestContext.getUriInfo().getQueryParameters().size());
+      assertEquals("Wrong count of parameters in getUriInfo response", 2, containerRequestContext.getUriInfo().getQueryParameters().size());
 
-        MultivaluedMap<String, String> expected = new MultivaluedHashMap<>();
-        expected.put("foo", Collections.singletonList("foo"));
-        expected.put("bar", Collections.singletonList("bar"));
+      MultivaluedMap<String, String> expected = new MultivaluedHashMap<>();
+      expected.put("foo", Collections.singletonList("foo"));
+      expected.put("bar", Collections.singletonList("bar"));
 
-        assertEquals("Wrong parameter in getUriInfo response", expected, containerRequestContext.getUriInfo().getQueryParameters());
+      assertEquals("Wrong parameter in getUriInfo response", expected, containerRequestContext.getUriInfo().getQueryParameters());
 
-        containerRequestContext.setRequestUri(new URI("http://foo.bar"));
-        logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
+      containerRequestContext.setRequestUri(new URI("http://foo.bar"));
+      logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
 
-        assertTrue("Wrong count of parameters in getUriInfo response", containerRequestContext.getUriInfo().getQueryParameters().isEmpty());
+      assertTrue("Wrong count of parameters in getUriInfo response", containerRequestContext.getUriInfo().getQueryParameters().isEmpty());
 
-        containerRequestContext.setRequestUri(new URI("http://foo.bar?foo=foo"));
-        logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
+      containerRequestContext.setRequestUri(new URI("http://foo.bar?foo=foo"));
+      logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
 
-        expected = new MultivaluedHashMap<>();
-        expected.put("foo", Collections.singletonList("foo"));
+      expected = new MultivaluedHashMap<>();
+      expected.put("foo", Collections.singletonList("foo"));
 
-        assertEquals("Wrong parameter in getUriInfo response", expected, containerRequestContext.getUriInfo().getQueryParameters());
-    }
+      assertEquals("Wrong parameter in getUriInfo response", expected, containerRequestContext.getUriInfo().getQueryParameters());
+   }
 }

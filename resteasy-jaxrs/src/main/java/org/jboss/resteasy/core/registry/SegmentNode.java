@@ -319,7 +319,7 @@ public class SegmentNode
          {
             String name = entry.getKey();
             if ("q".equals(name)
-                    || "qs".equals(name)) continue;
+               || "qs".equals(name)) continue;
             params.put(name, entry.getValue());
          }
          Annotation[] annotations = match.expression.invoker.getMethod().getAnnotations();
@@ -454,7 +454,7 @@ public class SegmentNode
             
             if (httpMethod.equals("OPTIONS"))
             {
-              
+            
                ResponseBuilder resBuilder =  Response.ok(allowHeaderValue.toString(),  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue.toString());
                
                if (allowed.contains("PATCH"))

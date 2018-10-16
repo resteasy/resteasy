@@ -9,37 +9,37 @@ package se.unlogic.standardutils.numbers;
 
 public class LongCounter {
 
-	private Long value;
+   private Long value;
 
-	LongCounter(Long value) {
-		super();
-		this.value = value;
-	}
+   LongCounter(Long value) {
+      super();
+      this.value = value;
+   }
 
-	public LongCounter() {
-		super();
-		this.value = 0l;
-	}
+   public LongCounter() {
+      super();
+      this.value = 0l;
+   }
 
-	public Long getValue() {
-		return value;
-	}
+   public Long getValue() {
+      return value;
+   }
 
-	public synchronized void setValue(Long value) {
-		this.value = value;
-	}
+   public synchronized void setValue(Long value) {
+      this.value = value;
+   }
 
-	public synchronized Long increment(){
+   public synchronized Long increment(){
 
-		value++;
+      value++;
 
-		return value;
-	}
+      return value;
+   }
 
-	public synchronized Long decrement(){
+   public synchronized Long decrement(){
 
-		value--;
+      value--;
 
-		return value;
-	}
+      return value;
+   }
 }

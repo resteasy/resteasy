@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyIOException extends ResteasyClientException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyIOException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyIOException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyIOException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyIOException()
+   {
+   }
+
+   public ResteasyIOException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyIOException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyIOException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyIOException(Throwable cause)
+   {
+      super(cause);
+   }
 }

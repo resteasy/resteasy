@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 
 public interface CRUDEntityWebservice {
 
-    @POST
-    @Path("/")
-    UserEntity create(UserEntity entity);
+   @POST
+   @Path("/")
+   UserEntity create(UserEntity entity);
 }

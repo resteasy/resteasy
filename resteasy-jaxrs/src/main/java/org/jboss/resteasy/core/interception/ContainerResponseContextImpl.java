@@ -157,7 +157,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    @Override
    public Set<String> getAllowedMethods()
    {
-     return jaxrsResponse.getAllowedMethods();
+      return jaxrsResponse.getAllowedMethods();
    }
 
    @Override

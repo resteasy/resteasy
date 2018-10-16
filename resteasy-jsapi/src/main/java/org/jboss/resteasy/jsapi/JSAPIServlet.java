@@ -59,7 +59,7 @@ public class JSAPIServlet extends HttpServlet
 
    @Override
    protected void service(HttpServletRequest req, HttpServletResponse resp)
-           throws ServletException, IOException
+         throws ServletException, IOException
    {
       String pathInfo = req.getPathInfo();
       String uri = req.getRequestURL().toString();
@@ -69,11 +69,12 @@ public class JSAPIServlet extends HttpServlet
          LogMessages.LOGGER.debug(Messages.MESSAGES.serving(pathInfo));
          LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));
       }
-      if (this.services == null) try {
-         scanResources();
-      } catch (Exception e) {
-         resp.sendError(503, Messages.MESSAGES.thereAreNoResteasyDeployments()); // FIXME should return internal error
-      }
+      if (this.services == null)
+         try {
+            scanResources();
+         } catch (Exception e) {
+            resp.sendError(503, Messages.MESSAGES.thereAreNoResteasyDeployments()); // FIXME should return internal error
+         }
 
       if (this.services == null)
       {
@@ -99,7 +100,7 @@ public class JSAPIServlet extends HttpServlet
          {
             ResourceMethodRegistry registry = (ResourceMethodRegistry) entry.getValue().getRegistry();
             ResteasyProviderFactory providerFactory =
-                    (ResteasyProviderFactory) entry.getValue().getProviderFactory();
+               (ResteasyProviderFactory) entry.getValue().getProviderFactory();
             ServiceRegistry service = new ServiceRegistry(null, registry, providerFactory, null);
             services.put(entry.getKey(), service);
          }

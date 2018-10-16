@@ -5,7 +5,7 @@ import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import java.lang.annotation.Annotation;
 
 public class MappedByAnnotationResolver extends
-        AbstractURITemplateAnnotationResolver
+      AbstractURITemplateAnnotationResolver
 {
    protected Class<? extends Annotation> getAnnotationType()
    {

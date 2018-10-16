@@ -15,40 +15,40 @@ import javax.ws.rs.ext.Providers;
 
 @Path("super")
 public class InheritedContextService {
-    @Context
-    protected UriInfo uriInfo;
+   @Context
+   protected UriInfo uriInfo;
 
-    @Context
-    protected HttpHeaders httpHeaders;
+   @Context
+   protected HttpHeaders httpHeaders;
 
-    @Context
-    protected Request request;
+   @Context
+   protected Request request;
 
-    @Context
-    protected SecurityContext securityContext;
+   @Context
+   protected SecurityContext securityContext;
 
-    @Context
-    protected Providers providers;
+   @Context
+   protected Providers providers;
 
-    @Context
-    protected ResourceContext resourceContext;
+   @Context
+   protected ResourceContext resourceContext;
 
-    @Context
-    protected Configuration configuration;
+   @Context
+   protected Configuration configuration;
 
-    @Path("test/{level}")
-    @GET
-    public String test(@PathParam("level") String level) {
-        return Boolean.toString(level.equals("BaseService") && testContexts());
-    }
+   @Path("test/{level}")
+   @GET
+   public String test(@PathParam("level") String level) {
+      return Boolean.toString(level.equals("BaseService") && testContexts());
+   }
 
-    protected boolean testContexts() {
-        return uriInfo != null
-                && httpHeaders != null
-                && request != null
-                && securityContext != null
-                && providers != null
-                && resourceContext != null
-                && configuration != null;
-    }
+   protected boolean testContexts() {
+      return uriInfo != null
+            && httpHeaders != null
+            && request != null
+            && securityContext != null
+            && providers != null
+            && resourceContext != null
+            && configuration != null;
+   }
 }

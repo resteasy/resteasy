@@ -12,5 +12,5 @@ package se.unlogic.standardutils.dao;
 
 public interface AnnotatedDAOFactory {
 
-	<T> AnnotatedDAO<T> getDAO(Class<T> beanClass);
+   <T> AnnotatedDAO<T> getDAO(Class<T> beanClass);
 }

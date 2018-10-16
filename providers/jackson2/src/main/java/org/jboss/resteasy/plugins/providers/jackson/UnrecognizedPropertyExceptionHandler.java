@@ -16,12 +16,12 @@ import org.jboss.resteasy.util.HttpResponseCodes;
  */
 @Provider
 public class UnrecognizedPropertyExceptionHandler implements ExceptionMapper<UnrecognizedPropertyException> {
-    @Override
-    public Response toResponse(UnrecognizedPropertyException exception)
-    {
-        return Response.status(HttpResponseCodes.SC_BAD_REQUEST)
-            .type(MediaType.TEXT_HTML)
-            .entity(exception.getOriginalMessage())
-            .build();
-    }
+   @Override
+   public Response toResponse(UnrecognizedPropertyException exception)
+   {
+      return Response.status(HttpResponseCodes.SC_BAD_REQUEST)
+         .type(MediaType.TEXT_HTML)
+         .entity(exception.getOriginalMessage())
+         .build();
+   }
 }

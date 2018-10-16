@@ -10,4 +10,3 @@ public interface AsyncClientResponseProvider<T> {
 
    T fromCompletionStage(CompletionStage<?> completionStage);
 }
-

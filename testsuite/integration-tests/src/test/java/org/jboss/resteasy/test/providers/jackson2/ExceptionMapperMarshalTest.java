@@ -47,62 +47,62 @@ import java.util.PropertyPermission;
 @RunAsClient
 public class ExceptionMapperMarshalTest {
 
-    protected static final Logger logger = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class.getName());
-    static ResteasyClient client;
+   protected static final Logger logger = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
-        war.addClass(Jackson2Test.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new RuntimePermission("getProtectionDomain"),
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("resteasy.server.tracing.*", "read")
-        ), "permissions.xml");
-        Map<String, String> contextParam = new HashMap<>();
-        contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-        return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
-                MyEntity.class, ExceptionMapperIOExceptionMapper.class,
-                ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapperMarshalName.class, ExceptionMapperMarshalResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+      war.addClass(Jackson2Test.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new RuntimePermission("getProtectionDomain"),
+            new ReflectPermission("suppressAccessChecks"),
+            new PropertyPermission("resteasy.server.tracing.*", "read")
+      ), "permissions.xml");
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+      return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class, ExceptionMapperMarshalMyCustomException.class,
+            MyEntity.class, ExceptionMapperIOExceptionMapper.class,
+            ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapperMarshalName.class, ExceptionMapperMarshalResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests usage of custom ExceptionMapper producing json response
-     * @tpPassCrit The resource returns Success response
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomUsed() {
-        Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapper.class)[0];
-        Assert.assertEquals(ExceptionMapperMarshalMyCustomException.class, exceptionType);
+   /**
+    * @tpTestDetails Tests usage of custom ExceptionMapper producing json response
+    * @tpPassCrit The resource returns Success response
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomUsed() {
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ExceptionMapperMarshalMyCustomExceptionMapper.class, ExceptionMapper.class)[0];
+      Assert.assertEquals(ExceptionMapperMarshalMyCustomException.class, exceptionType);
 
-        Response response = client.target(generateURL("/resource/custom")).request().get();
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        List<ExceptionMapperMarshalErrorMessage> errors = response.readEntity(new GenericType<List<ExceptionMapperMarshalErrorMessage>>() {
-        });
-        Assert.assertEquals("The response has unexpected content", "error", errors.get(0).getError());
-    }
+      Response response = client.target(generateURL("/resource/custom")).request().get();
+      Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+      List<ExceptionMapperMarshalErrorMessage> errors = response.readEntity(new GenericType<List<ExceptionMapperMarshalErrorMessage>>() {
+      });
+      Assert.assertEquals("The response has unexpected content", "error", errors.get(0).getError());
+   }
     
-    @Test
-    public void testMyCustomUsed() {
-        Response response = client.target(generateURL("/resource/customME")).request().get();
-        String text = response.readEntity(String.class);
+   @Test
+   public void testMyCustomUsed() {
+      Response response = client.target(generateURL("/resource/customME")).request().get();
+      String text = response.readEntity(String.class);
 
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertTrue("Response does not contain UN_KNOWN_ERR", text.contains("UN_KNOWN_ERR"));
-    }
+      Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+      Assert.assertTrue("Response does not contain UN_KNOWN_ERR", text.contains("UN_KNOWN_ERR"));
+   }
 }

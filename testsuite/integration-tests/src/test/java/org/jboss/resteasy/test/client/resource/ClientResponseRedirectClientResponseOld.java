@@ -7,6 +7,6 @@ import javax.ws.rs.Path;
 
 @Path("/redirect")
 public interface ClientResponseRedirectClientResponseOld {
-    @GET
-    ClientResponse get();
+   @GET
+   ClientResponse get();
 }

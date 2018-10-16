@@ -17,49 +17,49 @@ import java.sql.SQLException;
 
 public class IntegerPopulator extends BaseStringPopulator<Integer> implements BeanResultSetPopulator<Integer>{
 
-	private static final IntegerPopulator POPULATOR = new IntegerPopulator();
+   private static final IntegerPopulator POPULATOR = new IntegerPopulator();
 
-	public static IntegerPopulator getPopulator(){
-		return POPULATOR;
-	}
+   public static IntegerPopulator getPopulator(){
+      return POPULATOR;
+   }
 
-	private int columnIndex = 1;
+   private int columnIndex = 1;
 
-	public IntegerPopulator() {
-		super();
-	}
+   public IntegerPopulator() {
+      super();
+   }
 
-	public IntegerPopulator(int columnIndex) {
-		super();
+   public IntegerPopulator(int columnIndex) {
+      super();
 
-		this.columnIndex = columnIndex;
-	}
+      this.columnIndex = columnIndex;
+   }
 
-	public IntegerPopulator(String populatorID, StringFormatValidator formatValidator) {
-		super(populatorID, formatValidator);
-	}
+   public IntegerPopulator(String populatorID, StringFormatValidator formatValidator) {
+      super(populatorID, formatValidator);
+   }
 
-	public IntegerPopulator(String populatorID) {
-		super(populatorID);
-	}
+   public IntegerPopulator(String populatorID) {
+      super(populatorID);
+   }
 
-	public Integer populate(ResultSet rs) throws SQLException {
-		return rs.getInt(columnIndex);
-	}
+   public Integer populate(ResultSet rs) throws SQLException {
+      return rs.getInt(columnIndex);
+   }
 
-	public Integer getValue(String value) {
+   public Integer getValue(String value) {
 
-		return Integer.valueOf(value);
-	}
+      return Integer.valueOf(value);
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
+   @Override
+   public boolean validateDefaultFormat(String value) {
 
-		return NumberUtils.isInt(value);
-	}
+      return NumberUtils.isInt(value);
+   }
 
-	public Class<? extends Integer> getType() {
+   public Class<? extends Integer> getType() {
 
-		return Integer.class;
-	}
+      return Integer.class;
+   }
 }

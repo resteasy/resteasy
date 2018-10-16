@@ -8,8 +8,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Produces(MediaType.TEXT_PLAIN)
 public class ProviderContextInjectionTextPlainEnumContextResolver implements ContextResolver<ProviderContextInjectionEnumProvider> {
-    @Override
-    public ProviderContextInjectionEnumProvider getContext(Class<?> type) {
-        return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.CTS : null;
-    }
+   @Override
+   public ProviderContextInjectionEnumProvider getContext(Class<?> type) {
+      return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.CTS : null;
+   }
 }

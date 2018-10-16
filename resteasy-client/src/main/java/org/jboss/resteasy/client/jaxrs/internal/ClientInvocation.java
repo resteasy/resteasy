@@ -516,8 +516,7 @@ public class ClientInvocation implements Invocation
       });
    }
 
-   @SuppressWarnings(
-   {"rawtypes", "unchecked"})
+   @SuppressWarnings({"rawtypes", "unchecked"})
    @Override
    public <T> Future<T> submit(final InvocationCallback<T> callback)
    {

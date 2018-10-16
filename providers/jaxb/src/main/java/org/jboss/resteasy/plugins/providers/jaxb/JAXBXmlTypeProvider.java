@@ -158,7 +158,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       LogMessages.LOGGER.debugf("Provider : %s,  Method : getJAXBContext", getClass().getName());
 
       ContextResolver<javax.xml.bind.JAXBContext> resolver = providers.getContextResolver(
-              javax.xml.bind.JAXBContext.class, mediaType);
+            javax.xml.bind.JAXBContext.class, mediaType);
 
       javax.xml.bind.JAXBContext finder = null;
       if (resolver != null)
@@ -275,7 +275,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          for (Method current : method)
          {
             if (current.getParameterTypes().length == 1 && current.getParameterTypes()[0].equals(type)
-                    && current.getName().startsWith("create"))
+               && current.getName().startsWith("create"))
             {
                Object result = current.invoke(factory, t);
                return JAXBElement.class.cast(result);

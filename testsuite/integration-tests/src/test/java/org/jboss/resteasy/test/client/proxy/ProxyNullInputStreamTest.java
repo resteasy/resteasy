@@ -32,7 +32,7 @@ public class ProxyNullInputStreamTest {
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(ProxyNullInputStreamTest.class.getSimpleName());
       war.addClasses(ProxyNullInputStreamResource.class,
-              ProxyNullInputStreamClientResponseFilter.class);
+            ProxyNullInputStreamClientResponseFilter.class);
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
@@ -45,8 +45,8 @@ public class ProxyNullInputStreamTest {
    public void testNullPointerEx () throws Exception {
       ResteasyClient client = new ResteasyClientBuilder().register(ProxyNullInputStreamClientResponseFilter.class).build();
       ProxyNullInputStreamResource pResource = client.target(generateURL("/test/user/mydb"))
-              .proxyBuilder(ProxyNullInputStreamResource.class)
-              .build();
+            .proxyBuilder(ProxyNullInputStreamResource.class)
+            .build();
       try
       {
          pResource.getUserHead("myDb");

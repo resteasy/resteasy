@@ -14,63 +14,63 @@ import java.util.List;
 
 public class TagReplacer {
 
-	private List<TagSource> tagSources;
+   private List<TagSource> tagSources;
 
-	public TagReplacer() {
-		
-		tagSources = new ArrayList<TagSource>();
-	}
+   public TagReplacer() {
 
-	public TagReplacer(List<TagSource> tagSources) {
-		super();
-		this.tagSources = new ArrayList<TagSource>(tagSources);
-	}
+      tagSources = new ArrayList<TagSource>();
+   }
 
-	public TagReplacer(TagSource... tagSources) {
-		super();
-		this.tagSources = new ArrayList<TagSource>(Arrays.asList(tagSources));
-	}
+   public TagReplacer(List<TagSource> tagSources) {
+      super();
+      this.tagSources = new ArrayList<TagSource>(tagSources);
+   }
 
-	public boolean addTagSource(TagSource o) {
+   public TagReplacer(TagSource... tagSources) {
+      super();
+      this.tagSources = new ArrayList<TagSource>(Arrays.asList(tagSources));
+   }
 
-		if(tagSources == null){
-			
-			tagSources = new ArrayList<TagSource>();
-		}
-		
-		return tagSources.add(o);
-	}
+   public boolean addTagSource(TagSource o) {
 
-	public boolean removeTagSource(TagSource o) {
+      if(tagSources == null){
 
-		if(tagSources == null){
-			
-			return false;
-		}
-		
-		return tagSources.remove(o);
-	}
+         tagSources = new ArrayList<TagSource>();
+      }
 
-	public String replace(String source){
+      return tagSources.add(o);
+   }
 
-		for(TagSource tagSource : tagSources){
+   public boolean removeTagSource(TagSource o) {
 
-			for(String tag : tagSource.getTags()){
+      if(tagSources == null){
 
-				if(source.contains(tag)){
+         return false;
+      }
 
-					String value = tagSource.getTagValue(tag);
+      return tagSources.remove(o);
+   }
 
-					if(value == null){
+   public String replace(String source){
 
-						value = "";
-					}
+      for(TagSource tagSource : tagSources){
 
-					source = source.replace(tag, value);
-				}
-			}
-		}
+         for(String tag : tagSource.getTags()){
 
-		return source;
-	}
+            if(source.contains(tag)){
+
+               String value = tagSource.getTagValue(tag);
+
+               if(value == null){
+
+                  value = "";
+               }
+
+               source = source.replace(tag, value);
+            }
+         }
+      }
+
+      return source;
+   }
 }

@@ -39,13 +39,13 @@ public class RSADecrypter
 {
 
    public static byte[] decrypt(final JWEHeader readOnlyJWEHeader,
-                                final String encodedHeader,
-                                final String encodedEncryptedKey,
-                                final String encodedIv,
-                                final String encodedCipherText,
-                                final String encodedAuthTag,
-                                final RSAPrivateKey privateKey
-                               )
+                        final String encodedHeader,
+                        final String encodedEncryptedKey,
+                        final String encodedIv,
+                        final String encodedCipherText,
+                        final String encodedAuthTag,
+                        final RSAPrivateKey privateKey
+   )
    {
 
       // Validate required JWE parts
@@ -140,4 +140,3 @@ public class RSADecrypter
       return DeflateHelper.applyDecompression(readOnlyJWEHeader.getCompressionAlgorithm(), plainText);
    }
 }
-

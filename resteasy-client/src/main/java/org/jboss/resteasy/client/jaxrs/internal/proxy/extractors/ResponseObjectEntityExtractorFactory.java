@@ -184,9 +184,9 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
 
    private ClientInvoker createClientInvoker(ClientContext context, URI uri, Method method) {
       ClientInvoker clientInvoker = new ClientInvoker((ResteasyWebTarget)(context.getInvocation().getClient().target(uri)),
-              method.getDeclaringClass(),
-              method,
-              new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null));
+            method.getDeclaringClass(),
+            method,
+            new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null));
 
       Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
       clientInvoker.setHttpMethod(httpMethods.iterator().next());

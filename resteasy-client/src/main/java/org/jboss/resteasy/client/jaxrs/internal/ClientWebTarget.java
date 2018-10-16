@@ -57,18 +57,18 @@ public class ClientWebTarget implements ResteasyWebTarget
     * Get a new UriBuilder explicitly using RESTEasy implementation
     * (instead of running UriBuilder.fromUri(uri) which relies on
     * current registered JAX-RS implementation)
-    * 
+    *
     * @param uri
     * @return
     */
    private static UriBuilder uriBuilderFromUri(URI uri)
    {
-       return new ResteasyUriBuilder().uri(uri);
+      return new ResteasyUriBuilder().uri(uri);
    }
    
    private static UriBuilder uriBuilderFromUri(String uri)
    {
-       return new ResteasyUriBuilder().uri(uri);
+      return new ResteasyUriBuilder().uri(uri);
    }
    
    @Override
@@ -312,9 +312,9 @@ public class ClientWebTarget implements ResteasyWebTarget
       String[] stringValues = toStringValues(values);
       ResteasyUriBuilder copy;
       if (uriBuilder instanceof ResteasyUriBuilder) {
-          copy = (ResteasyUriBuilder)uriBuilder.clone();
+         copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+         copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (String obj : stringValues)
       {
@@ -330,9 +330,9 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (parameters == null) throw new NullPointerException(Messages.MESSAGES.parametersWasNull());
       ResteasyUriBuilder copy;
       if (uriBuilder instanceof ResteasyUriBuilder) {
-          copy = (ResteasyUriBuilder)uriBuilder.clone();
+         copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+         copy = (ResteasyUriBuilder)ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {

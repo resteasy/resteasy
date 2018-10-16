@@ -78,7 +78,7 @@ public class RequestDispatcher
 
             ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
             ResteasyProviderFactory.pushContext(ChannelHandlerContext.class, ctx);
-             if (handleNotFound)
+            if (handleNotFound)
             {
                dispatcher.invoke(request, response);
             }

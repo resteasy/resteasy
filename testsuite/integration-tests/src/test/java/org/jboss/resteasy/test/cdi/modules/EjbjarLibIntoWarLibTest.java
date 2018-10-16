@@ -41,42 +41,42 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EjbjarLibIntoWarLibTest {
-    protected static final Logger log = LogManager.getLogger(EjbjarLibIntoWarLibTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(EjbjarLibIntoWarLibTest.class.getName());
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "ejb-jar.jar")
-                .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
-                .add(new FileAsset(new File("src/test/resources/org/jboss/resteasy/test/cdi/modules/ejb-jar.xml")), "META-INF/ejb-jar.xml")
-                .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
-        JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
-                .addClasses(EjbjarLibIntoWarLibTest.class, UtilityProducer.class)
-                .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
-                .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
-        WebArchive war = TestUtil.prepareArchive(EjbjarLibIntoWarLibTest.class.getSimpleName())
-                .addAsLibrary(toJar)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      JavaArchive fromJar = ShrinkWrap.create(JavaArchive.class, "ejb-jar.jar")
+            .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
+            .add(new FileAsset(new File("src/test/resources/org/jboss/resteasy/test/cdi/modules/ejb-jar.xml")), "META-INF/ejb-jar.xml")
+            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+      JavaArchive toJar = ShrinkWrap.create(JavaArchive.class, "to.jar")
+            .addClasses(EjbjarLibIntoWarLibTest.class, UtilityProducer.class)
+            .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
+            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+      WebArchive war = TestUtil.prepareArchive(EjbjarLibIntoWarLibTest.class.getSimpleName())
+            .addAsLibrary(toJar)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
-        EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .addAsLibrary(fromJar)
-                .addAsModule(war);
-        return ear;
-    }
+      EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
+            .addAsLibrary(fromJar)
+            .addAsModule(war);
+      return ear;
+   }
 
-    /**
-     * @tpTestDetails Test bean injection from jar lib to war in ear.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testModules() throws Exception {
-        log.info("starting testModules()");
+   /**
+    * @tpTestDetails Test bean injection from jar lib to war in ear.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testModules() throws Exception {
+      log.info("starting testModules()");
 
-        Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", EjbjarLibIntoWarLibTest.class.getSimpleName()));
-        Response response = base.request().get();
-        log.info("Status: " + response.getStatus());
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        client.close();
-    }
+      Client client = ClientBuilder.newClient();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", EjbjarLibIntoWarLibTest.class.getSimpleName()));
+      Response response = base.request().get();
+      log.info("Status: " + response.getStatus());
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      client.close();
+   }
 }

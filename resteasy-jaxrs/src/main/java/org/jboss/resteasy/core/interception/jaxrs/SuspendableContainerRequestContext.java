@@ -13,9 +13,9 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
    /**
     * Suspends the current request. This makes the current request asynchronous. No
     * further request filter is executed until this request is resumed.
-    * 
+    *
     * No reply is going to be sent to the client until this request is resumed either
-    * with {@link #resume()} or aborted with {@link #resume(Throwable)} or 
+    * with {@link #resume()} or aborted with {@link #resume(Throwable)} or
     * {@link #abortWith(javax.ws.rs.core.Response)}.
     */
    void suspend();
@@ -31,7 +31,7 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
     * filter threw this exception synchronously, which means exceptions may be mapped via
     * exception mappers, response filters will run and async response callbacks will be
     * called with this exception.
-    * 
+    *
     * @param t the exception to send back to the client, as mapped by the application.
     */
    void resume(Throwable t);

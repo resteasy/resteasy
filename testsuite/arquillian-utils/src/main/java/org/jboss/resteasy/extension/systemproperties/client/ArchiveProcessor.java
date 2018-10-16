@@ -41,54 +41,54 @@ import org.jboss.shrinkwrap.api.container.ResourceContainer;
  * @version $Revision: $
  */
 public class ArchiveProcessor implements ApplicationArchiveProcessor {
-	@Inject
-	private Instance<ArquillianDescriptor> descriptor;
+   @Inject
+   private Instance<ArquillianDescriptor> descriptor;
 
-	@Override
-	public void process(Archive<?> applicationArchive, TestClass testClass) {
-		String prefix = getPrefix();
-		if (prefix != null) {
-			if (applicationArchive instanceof ResourceContainer) {
-				ResourceContainer<?> container = (ResourceContainer<?>) applicationArchive;
-				container.addAsResource(new StringAsset(
-						toString(filterSystemProperties(prefix))),
-						SystemProperties.FILE_NAME);
-			}
-		}
-	}
+   @Override
+   public void process(Archive<?> applicationArchive, TestClass testClass) {
+      String prefix = getPrefix();
+      if (prefix != null) {
+         if (applicationArchive instanceof ResourceContainer) {
+            ResourceContainer<?> container = (ResourceContainer<?>) applicationArchive;
+            container.addAsResource(new StringAsset(
+                  toString(filterSystemProperties(prefix))),
+                  SystemProperties.FILE_NAME);
+         }
+      }
+   }
 
-	private String getPrefix() {
-		return getConfiguration().get(SystemProperties.CONFIG_PREFIX);
-	}
+   private String getPrefix() {
+      return getConfiguration().get(SystemProperties.CONFIG_PREFIX);
+   }
 
-	private Map<String, String> getConfiguration() {
-		for (ExtensionDef def : descriptor.get().getExtensions()) {
-			if (SystemProperties.EXTENSION_NAME.equalsIgnoreCase(def
-					.getExtensionName())) {
-				return def.getExtensionProperties();
-			}
-		}
-		return new HashMap<String, String>();
-	}
+   private Map<String, String> getConfiguration() {
+      for (ExtensionDef def : descriptor.get().getExtensions()) {
+         if (SystemProperties.EXTENSION_NAME.equalsIgnoreCase(def
+               .getExtensionName())) {
+            return def.getExtensionProperties();
+         }
+      }
+      return new HashMap<String, String>();
+   }
 
-	private Properties filterSystemProperties(String prefix) {
-		Properties filteredProps = new Properties();
-		Properties sysProps = System.getProperties();
-		for (Map.Entry<Object, Object> entry : sysProps.entrySet()) {
-			if (entry.getKey().toString().startsWith(prefix)) {
-				filteredProps.put(entry.getKey(), entry.getValue());
-			}
-		}
-		return filteredProps;
-	}
+   private Properties filterSystemProperties(String prefix) {
+      Properties filteredProps = new Properties();
+      Properties sysProps = System.getProperties();
+      for (Map.Entry<Object, Object> entry : sysProps.entrySet()) {
+         if (entry.getKey().toString().startsWith(prefix)) {
+            filteredProps.put(entry.getKey(), entry.getValue());
+         }
+      }
+      return filteredProps;
+   }
 
-	private String toString(Properties props) {
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			props.store(out, "Arquillian SystemProperties Extension");
-			return out.toString();
-		} catch (Exception e) {
-			throw new RuntimeException("Could not store properties", e);
-		}
-	}
+   private String toString(Properties props) {
+      try {
+         ByteArrayOutputStream out = new ByteArrayOutputStream();
+         props.store(out, "Arquillian SystemProperties Extension");
+         return out.toString();
+      } catch (Exception e) {
+         throw new RuntimeException("Could not store properties", e);
+      }
+   }
 }

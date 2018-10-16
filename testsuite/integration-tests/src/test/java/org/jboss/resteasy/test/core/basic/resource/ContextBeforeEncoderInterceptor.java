@@ -12,12 +12,12 @@ import java.io.IOException;
 @Precedence("BEFORE_ENCODER")
 @ServerInterceptor
 public class ContextBeforeEncoderInterceptor implements MessageBodyWriterInterceptor {
-    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException {
-        final String HEADER_ERROR_MESSAGE = "MessageBodyWriterContext in ContextBeforeEncoderInterceptor don't have correct headers";
-        Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("after-encoder"));
-        Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("encoder"));
-        Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("end"));
-        context.getHeaders().add("before-encoder", "true");
-        context.proceed();
-    }
+   public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException {
+      final String HEADER_ERROR_MESSAGE = "MessageBodyWriterContext in ContextBeforeEncoderInterceptor don't have correct headers";
+      Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("after-encoder"));
+      Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("encoder"));
+      Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("end"));
+      context.getHeaders().add("before-encoder", "true");
+      context.proceed();
+   }
 }

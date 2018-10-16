@@ -281,7 +281,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              timestamped = true)
+            timestamped = true)
       @Produces("text/plain")
       @Path("stamped")
       public String getStamp()
@@ -291,7 +291,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(seconds = 1))
+            expires = @After(seconds = 1))
       @Produces("text/plain")
       @Path("expires-short")
       public String getExpiresShort()
@@ -301,7 +301,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(minutes = 1))
+            expires = @After(minutes = 1))
       @Produces("text/plain")
       @Path("expires-minute")
       public String getExpiresMinute()
@@ -311,7 +311,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(hours = 1))
+            expires = @After(hours = 1))
       @Produces("text/plain")
       @Path("expires-hour")
       public String getExpiresHour()
@@ -321,7 +321,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(days = 1))
+            expires = @After(days = 1))
       @Produces("text/plain")
       @Path("expires-day")
       public String getExpiresDay()
@@ -331,7 +331,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(months = 1))
+            expires = @After(months = 1))
       @Produces("text/plain")
       @Path("expires-month")
       public String getExpiresMonth()
@@ -341,7 +341,7 @@ public class SigningTest
 
       @GET
       @Signed(selector = "test", domain = "samplezone.org",
-              expires = @After(years = 1))
+            expires = @After(years = 1))
       @Produces("text/plain")
       @Path("expires-year")
       public String getExpiresYear()
@@ -428,7 +428,7 @@ public class SigningTest
       contentSignature.setAttribute("code", "hello");
       contentSignature.setPrivateKey(keys.getPrivate());
       Response response = target.request().header(DKIMSignature.DKIM_SIGNATURE, contentSignature)
-              .post(Entity.text("hello world"));
+            .post(Entity.text("hello world"));
       Assert.assertEquals(204, response.getStatus());
       response.close();
 
@@ -445,7 +445,7 @@ public class SigningTest
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
       Response response = target.request().header(DKIMSignature.DKIM_SIGNATURE, contentSignature)
-              .post(Entity.text("hello world"));
+            .post(Entity.text("hello world"));
       Assert.assertEquals(204, response.getStatus());
       response.close();
    }
@@ -460,7 +460,7 @@ public class SigningTest
       contentSignature.setDomain("samplezone.org");
       contentSignature.setPrivateKey(badKey);
       Response response = target.request().header(DKIMSignature.DKIM_SIGNATURE, contentSignature)
-              .post(Entity.text("hello world"));
+            .post(Entity.text("hello world"));
       Assert.assertEquals(401, response.getStatus());
       response.close();
    }

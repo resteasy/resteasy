@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 /*
-* @author <a href="mailto:ema@redhat.com">Jim Ma</a>
-*/
+ * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
+ */
 @Provider
 @Priority(Integer.MAX_VALUE)
 public class PatchMethodFilter implements ContainerRequestFilter

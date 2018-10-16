@@ -29,9 +29,9 @@ public class CustomServerConstrainedFeature implements Feature {
 
    public static boolean wasInvoked() {
       return invoked;
-  }
+   }
 
-  public static void reset() {
+   public static void reset() {
       invoked = false;
-  }
+   }
 }

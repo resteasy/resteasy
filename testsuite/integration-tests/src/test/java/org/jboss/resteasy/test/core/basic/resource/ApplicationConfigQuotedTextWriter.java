@@ -14,18 +14,18 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("text/quoted")
 public class ApplicationConfigQuotedTextWriter implements MessageBodyWriter<String> {
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(String.class);
-    }
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return type.equals(String.class);
+   }
 
-    public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
+   public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return -1;
+   }
 
-    public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        s = String.format("\"%s\"", s);
-        entityStream.write(s.getBytes());
-    }
+   public void writeTo(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
+         WebApplicationException {
+      s = String.format("\"%s\"", s);
+      entityStream.write(s.getBytes());
+   }
 }

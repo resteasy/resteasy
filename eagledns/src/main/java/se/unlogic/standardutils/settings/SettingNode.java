@@ -11,30 +11,30 @@ import java.util.List;
 
 public interface SettingNode {
 
-	SettingNode getSetting(String expression);
-	
-	List<? extends SettingNode> getSettings(String expression);
-	
-	Integer getInteger(String expression);
-	
-	List<Integer> getIntegers(String expression);
-	
-	int getInt(String expression);
-	
-	Double getDouble(String expression);
-	
-	List<Double> getDoubles(String expression);
-	
-	Long getLong(String expression);
-	
-	List<Long> getLongs(String expression);
-	
-	String getString(String expression);
-	
-	List<String> getStrings(String expression);
-	
-	Boolean getBoolean(String expression);
-	
-	boolean getPrimitiveBoolean(String expression);
+   SettingNode getSetting(String expression);
+
+   List<? extends SettingNode> getSettings(String expression);
+
+   Integer getInteger(String expression);
+
+   List<Integer> getIntegers(String expression);
+
+   int getInt(String expression);
+
+   Double getDouble(String expression);
+
+   List<Double> getDoubles(String expression);
+
+   Long getLong(String expression);
+
+   List<Long> getLongs(String expression);
+
+   String getString(String expression);
+
+   List<String> getStrings(String expression);
+
+   Boolean getBoolean(String expression);
+
+   boolean getPrimitiveBoolean(String expression);
 
 }

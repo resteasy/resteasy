@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 @Target( { ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER,
-		ElementType.FIELD })
+      ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Decorator(processor = LinkDecorator.class, target = Marshaller.class)
 @Documented

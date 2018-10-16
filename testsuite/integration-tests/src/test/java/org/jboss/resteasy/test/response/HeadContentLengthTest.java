@@ -55,47 +55,47 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class HeadContentLengthTest {
 
-	static Client client;
+   static Client client;
 
-	@Deployment
-	public static Archive<?> deploy() throws Exception {
-		WebArchive war = TestUtil.prepareArchive(HeadContentLengthTest.class.getSimpleName());
-		return TestUtil.finishContainerPrepare(war, null, SimpleResource.class);
-	}
+   @Deployment
+   public static Archive<?> deploy() throws Exception {
+      WebArchive war = TestUtil.prepareArchive(HeadContentLengthTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, SimpleResource.class);
+   }
 
-	@BeforeClass
-	public static void init() {
-		client = ClientBuilder.newClient();
-	}
+   @BeforeClass
+   public static void init() {
+      client = ClientBuilder.newClient();
+   }
 
-	@AfterClass
-	public static void after() throws Exception {
-		client.close();
-	}
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-	private String generateURL(String path) {
-		return PortProviderUtil.generateURL(path, HeadContentLengthTest.class.getSimpleName());
-	}
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, HeadContentLengthTest.class.getSimpleName());
+   }
 
-	/**
-	 * @tpTestDetails HEAD requests always return non-null Content-Length
-	 * @tpSince RESTEasy 3.0.19
-	 */
-	@Test
-	@Category({NotForForwardCompatibility.class})
-	public void testHeadContentLength() {
-		Builder builder = client.target(generateURL("/simpleresource")).request();
-		builder.accept(MediaType.TEXT_PLAIN_TYPE);
+   /**
+    * @tpTestDetails HEAD requests always return non-null Content-Length
+    * @tpSince RESTEasy 3.0.19
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testHeadContentLength() {
+      Builder builder = client.target(generateURL("/simpleresource")).request();
+      builder.accept(MediaType.TEXT_PLAIN_TYPE);
 
-		Response getResponse = builder.get();
-		String responseBody = getResponse.readEntity(String.class);
-		Assert.assertEquals("The response body doesn't match the expected", "hello", responseBody);
-		int getResponseLength = getResponse.getLength();
-		Assert.assertEquals("The response length doesn't match the expected", 5, getResponseLength);
+      Response getResponse = builder.get();
+      String responseBody = getResponse.readEntity(String.class);
+      Assert.assertEquals("The response body doesn't match the expected", "hello", responseBody);
+      int getResponseLength = getResponse.getLength();
+      Assert.assertEquals("The response length doesn't match the expected", 5, getResponseLength);
 
-		Response headResponse = builder.head();
-		int headResponseLength = headResponse.getLength();
-		Assert.assertEquals("The response length from GET and HEAD request doesn't match" , getResponseLength, headResponseLength);
-	}
+      Response headResponse = builder.head();
+      int headResponseLength = headResponse.getLength();
+      Assert.assertEquals("The response length from GET and HEAD request doesn't match" , getResponseLength, headResponseLength);
+   }
 
 }

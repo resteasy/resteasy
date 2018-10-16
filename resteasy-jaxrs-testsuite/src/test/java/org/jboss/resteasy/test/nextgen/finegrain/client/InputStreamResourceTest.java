@@ -96,7 +96,7 @@ public class InputStreamResourceTest
       Assert.assertEquals("hello", client.getAsString());
       Response is = client.getAsInputStream();
       Assert.assertEquals("hello", new String(ReadFromStream.readFromStream(
-              1024, is.readEntity(InputStream.class))));
+            1024, is.readEntity(InputStream.class))));
       is.close();
       client.postString("new value");
       Assert.assertEquals("new value", client.getAsString());

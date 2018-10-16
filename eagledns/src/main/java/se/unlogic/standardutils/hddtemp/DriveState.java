@@ -10,8 +10,8 @@ package se.unlogic.standardutils.hddtemp;
 
 public enum DriveState {
 
-	OK,
-	SLEEPING,
-	ERROR,
-	UNKNOWN
+   OK,
+   SLEEPING,
+   ERROR,
+   UNKNOWN
 }

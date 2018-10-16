@@ -16,37 +16,37 @@ import java.sql.SQLException;
 
 public class BooleanQuery extends PreparedStatementQuery {
 
-	public BooleanQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
-		super(connection, closeConnectionOnExit, query);
-	}
+   public BooleanQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
+      super(connection, closeConnectionOnExit, query);
+   }
 
-	public BooleanQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
-		super(dataSource, closeConnectionOnExit, query);
-	}
+   public BooleanQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
+      super(dataSource, closeConnectionOnExit, query);
+   }
 
-	public boolean executeQuery() throws SQLException {
+   public boolean executeQuery() throws SQLException {
 
-		ResultSet rs = null;
+      ResultSet rs = null;
 
-		try {
-			rs = pstmt.executeQuery();
+      try {
+         rs = pstmt.executeQuery();
 
-			if (rs.next()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (SQLException sqle) {
-			throw sqle;
-		} finally {
-			DBUtils.closeResultSet(rs);
-			DBUtils.closePreparedStatement(pstmt);
+         if (rs.next()) {
+            return true;
+         } else {
+            return false;
+         }
+      } catch (SQLException sqle) {
+         throw sqle;
+      } finally {
+         DBUtils.closeResultSet(rs);
+         DBUtils.closePreparedStatement(pstmt);
 
-			if (this.closeConnectionOnExit) {
-				DBUtils.closeConnection(connection);
-			}
+         if (this.closeConnectionOnExit) {
+            DBUtils.closeConnection(connection);
+         }
 
-			this.closed = true;
-		}
-	}
+         this.closed = true;
+      }
+   }
 }

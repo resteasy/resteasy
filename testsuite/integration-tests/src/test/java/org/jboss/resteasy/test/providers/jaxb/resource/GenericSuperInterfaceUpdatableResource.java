@@ -9,10 +9,10 @@ import javax.ws.rs.core.MediaType;
 @Produces({MediaType.APPLICATION_XML})
 public interface GenericSuperInterfaceUpdatableResource<R extends GenericSuperInterfaceBaseResource> {
 
-    @GET
-    R get();
+   @GET
+   R get();
 
-    @PUT
-    @Consumes({MediaType.APPLICATION_XML})
-    R update(R resource);
+   @PUT
+   @Consumes({MediaType.APPLICATION_XML})
+   R update(R resource);
 }

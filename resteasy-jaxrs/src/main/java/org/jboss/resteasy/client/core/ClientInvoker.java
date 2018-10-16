@@ -50,7 +50,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
 
    public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
    {
-	   this(baseUri, declaring, method, new ProxyConfig(null, executor, providerFactory, extractorFactory, null, null, null));
+      this(baseUri, declaring, method, new ProxyConfig(null, executor, providerFactory, extractorFactory, null, null, null));
    }
    
    public ClientInvoker(URI baseUri, Class declaring, Method method, ProxyConfig config)

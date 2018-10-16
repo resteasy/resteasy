@@ -24,7 +24,7 @@ public abstract class ResteasyWebHandlerTemplate<T>
 
       T result = null;
       HttpResponse response = new HttpServletResponseWrapper(httpServletResponse,
-              factory);
+            factory);
 
       HttpServletRequest servletRequest = requestWrapper.getHttpServletRequest();
       try

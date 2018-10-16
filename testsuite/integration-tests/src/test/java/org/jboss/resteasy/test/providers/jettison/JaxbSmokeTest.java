@@ -40,84 +40,84 @@ import java.util.List;
 @RunAsClient
 public class JaxbSmokeTest {
 
-    private final Logger log = Logger.getLogger(JaxbSmokeTest.class.getName());
-    private static ResteasyClient client;
+   private final Logger log = Logger.getLogger(JaxbSmokeTest.class.getName());
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JaxbSmokeTest.class.getSimpleName());
-        war.addClass(Book.class);
-        return TestUtil.finishContainerPrepare(war, null, BookStoreResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JaxbSmokeTest.class.getSimpleName());
+      war.addClass(Book.class);
+      return TestUtil.finishContainerPrepare(war, null, BookStoreResource.class);
+   }
 
-    @Before
-    public void before() throws Exception {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void before() throws Exception {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JaxbSmokeTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JaxbSmokeTest.class.getSimpleName());
+   }
 
-    @Test
-    public void testNoDefaultsResource() {
+   @Test
+   public void testNoDefaultsResource() {
 
-        ResteasyWebTarget target = client.target(generateURL(""));
-        BookStoreClient bookStoreClient = target.proxy(BookStoreClient.class);
+      ResteasyWebTarget target = client.target(generateURL(""));
+      BookStoreClient bookStoreClient = target.proxy(BookStoreClient.class);
 
-        Book book = bookStoreClient.getBookByISBN("596529260");
-        Assert.assertNotNull(book);
-        Assert.assertEquals("RESTful Web Services", book.getTitle());
+      Book book = bookStoreClient.getBookByISBN("596529260");
+      Assert.assertNotNull(book);
+      Assert.assertEquals("RESTful Web Services", book.getTitle());
 
-        book = new Book("Bill Burke", "666", "EJB 3.0");
-        bookStoreClient.addBook(book);
-        book = new Book("Bill Burke", "3434", "JBoss Workbook");
-        bookStoreClient.addBookJson(book);
+      book = new Book("Bill Burke", "666", "EJB 3.0");
+      bookStoreClient.addBook(book);
+      book = new Book("Bill Burke", "3434", "JBoss Workbook");
+      bookStoreClient.addBookJson(book);
 
-        book = bookStoreClient.getBookByISBN("666");
-        Assert.assertEquals("Bill Burke", book.getAuthor());
-        Assert.assertEquals("EJB 3.0", book.getTitle());
+      book = bookStoreClient.getBookByISBN("666");
+      Assert.assertEquals("Bill Burke", book.getAuthor());
+      Assert.assertEquals("EJB 3.0", book.getTitle());
 
-        book = bookStoreClient.getBookByISBNJson("3434");
-        Assert.assertEquals("Bill Burke", book.getAuthor());
-        Assert.assertEquals("JBoss Workbook", book.getTitle());
+      book = bookStoreClient.getBookByISBNJson("3434");
+      Assert.assertEquals("Bill Burke", book.getAuthor());
+      Assert.assertEquals("JBoss Workbook", book.getTitle());
 
-    }
+   }
 
-    @XmlRootElement
-    public static class Library {
-        private String name;
-        private List<Book> books;
+   @XmlRootElement
+   public static class Library {
+      private String name;
+      private List<Book> books;
 
-        @XmlAttribute
-        public String getName() {
+      @XmlAttribute
+      public String getName() {
             return name;
-        }
+      }
 
-        public void setName(String name) {
+      public void setName(String name) {
             this.name = name;
-        }
+      }
 
-        @XmlElement(name = "registered-books")
-        public List<Book> getBooks() {
+      @XmlElement(name = "registered-books")
+      public List<Book> getBooks() {
             return books;
-        }
+      }
 
-        public void setBooks(List<Book> books) {
+      public void setBooks(List<Book> books) {
             this.books = books;
-        }
-    }
+      }
+   }
 
-    @Test
-    @Mapped(attributesAsElements = {"title"})
-    public void testJSON() throws Exception {
-        {
+   @Test
+   @Mapped(attributesAsElements = {"title"})
+   public void testJSON() throws Exception {
+      {
             Mapped mapped = JaxbSmokeTest.class.getMethod("testJSON").getAnnotation(Mapped.class);
             JettisonMappedContext context = new JettisonMappedContext(mapped, Book.class);
             StringWriter writer = new StringWriter();
@@ -128,21 +128,21 @@ public class JaxbSmokeTest {
 
             // test Mapped attributeAsElement
             Assert.assertTrue(!val.contains("@title"));
-        }
-        {
+      }
+      {
             BadgerContext context = new BadgerContext(Book.class);
             StringWriter writer = new StringWriter();
             context.createMarshaller().marshal(new Book("Bill Burke", "666", "EJB 3.0"), writer);
             log.info("Badger: " + writer.toString());
-        }
-        Library library = new Library();
-        List<Book> books = new ArrayList<>();
-        books.add(new Book("Bill Burke", "555", "JBoss Workbook"));
-        books.add(new Book("Bill Burke", "666", "EJB 3.0"));
-        library.setName("BPL");
-        library.setBooks(books);
+      }
+      Library library = new Library();
+      List<Book> books = new ArrayList<>();
+      books.add(new Book("Bill Burke", "555", "JBoss Workbook"));
+      books.add(new Book("Bill Burke", "666", "EJB 3.0"));
+      library.setName("BPL");
+      library.setBooks(books);
 
-        {
+      {
             BadgerContext context = new BadgerContext(Library.class);
             StringWriter writer = new StringWriter();
             context.createMarshaller().marshal(library, writer);
@@ -152,8 +152,8 @@ public class JaxbSmokeTest {
             Library lib = (Library) context.createUnmarshaller().unmarshal(new StringReader(s));
             Assert.assertEquals(lib.getName(), "BPL");
             Assert.assertEquals(lib.getBooks().size(), 2);
-        }
-        {
+      }
+      {
             JettisonMappedContext context = new JettisonMappedContext(Library.class);
             StringWriter writer = new StringWriter();
             context.createMarshaller().marshal(library, writer);
@@ -163,7 +163,7 @@ public class JaxbSmokeTest {
             Library lib = (Library) context.createUnmarshaller().unmarshal(new StringReader(s));
             Assert.assertEquals(lib.getName(), "BPL");
             Assert.assertEquals(lib.getBooks().size(), 2);
-        }
-    }
+      }
+   }
 
 }

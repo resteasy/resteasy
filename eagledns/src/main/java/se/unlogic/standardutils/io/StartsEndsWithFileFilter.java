@@ -13,23 +13,23 @@ import java.io.FileFilter;
 
 public class StartsEndsWithFileFilter implements FileFilter {
 
-	private String prefix;
-	private String suffix;
+   private String prefix;
+   private String suffix;
 
-	public StartsEndsWithFileFilter(String prefix, String suffix) {
+   public StartsEndsWithFileFilter(String prefix, String suffix) {
 
-		super();
-		this.prefix = prefix;
-		this.suffix = suffix;
-	}
+      super();
+      this.prefix = prefix;
+      this.suffix = suffix;
+   }
 
-	public boolean accept(File file) {
+   public boolean accept(File file) {
 
-		if(file.getName().startsWith(prefix) && file.getName().endsWith(suffix)){
+      if(file.getName().startsWith(prefix) && file.getName().endsWith(suffix)){
 
-			return true;
-		}
+         return true;
+      }
 
-		return false;
-	}
+      return false;
+   }
 }

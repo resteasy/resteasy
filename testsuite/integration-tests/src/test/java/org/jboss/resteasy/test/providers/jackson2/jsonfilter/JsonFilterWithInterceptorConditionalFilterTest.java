@@ -40,54 +40,54 @@ import javax.ws.rs.core.Response;
 @Category({NotForForwardCompatibility.class})
 public class JsonFilterWithInterceptorConditionalFilterTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
-        war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class);
-        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterModifierConditionalWriterInterceptor.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
+      war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterModifierConditionalWriterInterceptor.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Json field id is filtered out
-     * @tpSince RESTEasy 3.0.20.Final
-     */
-    @Test
-    @Category({ExpectedFailingOnWildFly13.class})
-    public void testJacksonConditionalStringPropertyFiltered() throws Exception {
-        WebTarget target = client.target(generateURL("/products/-1"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-    }
+   /**
+    * @tpTestDetails Json field id is filtered out
+    * @tpSince RESTEasy 3.0.20.Final
+    */
+   @Test
+   @Category({ExpectedFailingOnWildFly13.class})
+   public void testJacksonConditionalStringPropertyFiltered() throws Exception {
+      WebTarget target = client.target(generateURL("/products/-1"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("Conditional filter doesn't work", !response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+   }
 
-    /**
-     * @tpTestDetails Json field id is not filtered
-     * @tpSince RESTEasy 3.0.20.Final
-     */
-    @Test
-    public void testJacksonConditionalStringPropertyNotFiltered() throws Exception {
-        WebTarget target = client.target(generateURL("/products/333"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-    }
+   /**
+    * @tpTestDetails Json field id is not filtered
+    * @tpSince RESTEasy 3.0.20.Final
+    */
+   @Test
+   public void testJacksonConditionalStringPropertyNotFiltered() throws Exception {
+      WebTarget target = client.target(generateURL("/products/333"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("Conditional filter doesn't work", response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+   }
 }

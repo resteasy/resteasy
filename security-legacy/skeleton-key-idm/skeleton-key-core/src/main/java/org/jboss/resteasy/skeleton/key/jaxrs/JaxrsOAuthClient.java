@@ -27,14 +27,14 @@ public class JaxrsOAuthClient extends AbstractOAuthClient
       String state = getStateCode();
 
       URI url = UriBuilder.fromUri(authUrl)
-              .queryParam("client_id", clientId)
-              .queryParam("redirect_uri", redirectUri)
-              .queryParam("state", state)
-              .build();
+            .queryParam("client_id", clientId)
+            .queryParam("redirect_uri", redirectUri)
+            .queryParam("state", state)
+            .build();
       NewCookie cookie = new NewCookie(stateCookieName, state, uriInfo.getBaseUri().getPath(), null, null, -1, true);
       return Response.status(302)
-              .location(url)
-              .cookie(cookie).build();
+            .location(url)
+            .cookie(cookie).build();
    }
 
    public String getBearerToken(UriInfo uriInfo, HttpHeaders headers) throws BadRequestException, InternalServerErrorException

@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
-*
-* @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
-* @version $Revision: 1.1 $
-*
-* Copyright July 27, 2013
-*/
+ *
+ * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
+ * @version $Revision: 1.1 $
+ *
+ * Copyright July 27, 2013
+ */
 @XmlRootElement(name="violationReport")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ViolationReport

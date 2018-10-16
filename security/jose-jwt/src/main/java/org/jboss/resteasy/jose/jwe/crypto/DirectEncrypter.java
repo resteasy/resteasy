@@ -113,10 +113,10 @@ public class DirectEncrypter
       }
 
       StringBuilder builder = new StringBuilder(encodedJWEHeader)
-              .append('.')
-              .append('.').append(Base64Url.encode(iv))
-              .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
-              .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
+            .append('.')
+            .append('.').append(Base64Url.encode(iv))
+            .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
+            .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
 
       return builder.toString();
    }

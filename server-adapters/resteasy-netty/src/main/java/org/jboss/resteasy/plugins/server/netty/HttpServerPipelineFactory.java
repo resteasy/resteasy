@@ -40,11 +40,11 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
       if (executorThreadCount > 0) 
       {
-          this.executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
+         this.executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
       } 
       else 
       {
-          this.executionHandler = null;
+         this.executionHandler = null;
       }
       this.maxRequestSize = maxRequestSize;
       this.additionalChannelHandlers = additionalChannelHandlers;
@@ -76,7 +76,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    }
    
    protected Protocol getProtocol() {
-       return Protocol.HTTP;
+      return Protocol.HTTP;
    }
 }
 

@@ -30,90 +30,90 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunAsClient
 public class SseReconnectTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(SseReconnectTest.class.getSimpleName());
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(SseReconnectTest.class.getSimpleName());
          return TestUtil.finishContainerPrepare(war, null, SseReconnectResource.class);
-    }
+   }
 
-    private String generateURL(String path)
-    {
-        return PortProviderUtil.generateURL(path, SseReconnectTest.class.getSimpleName());
-    }
+   private String generateURL(String path)
+   {
+      return PortProviderUtil.generateURL(path, SseReconnectTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check SseEvent.getReconnectDelay() returns SseEvent.RECONNECT_NOT_SET,
-     * when OutboundSseEvent.reconnectDelay() is not set.
-     * @tpInfo RESTEASY-1680
-     * @tpSince RESTEasy 3.5.0
-     */
-    @Test
-    public void testReconnectDelayIsNotSet() throws Exception {
-        Client client = ClientBuilder.newClient();
-        try {
-            WebTarget baseTarget = client.target(generateURL("/reconnect/defaultReconnectDelay"));
-            try (Response response = baseTarget.request().get()) {
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                Assert.assertEquals(SseEvent.RECONNECT_NOT_SET, (long) response.readEntity(long.class));
-            }
-        } finally {
-            client.close();
-        }
-    }
+   /**
+    * @tpTestDetails Check SseEvent.getReconnectDelay() returns SseEvent.RECONNECT_NOT_SET,
+    * when OutboundSseEvent.reconnectDelay() is not set.
+    * @tpInfo RESTEASY-1680
+    * @tpSince RESTEasy 3.5.0
+    */
+   @Test
+   public void testReconnectDelayIsNotSet() throws Exception {
+      Client client = ClientBuilder.newClient();
+      try {
+         WebTarget baseTarget = client.target(generateURL("/reconnect/defaultReconnectDelay"));
+         try (Response response = baseTarget.request().get()) {
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assert.assertEquals(SseEvent.RECONNECT_NOT_SET, (long) response.readEntity(long.class));
+         }
+      } finally {
+         client.close();
+      }
+   }
 
-    /**
-     * @tpTestDetails *** Check SseEvent.getReconnectDelay() returns correct delay,
-     * when OutboundSseEvent.reconnectDelay() is set.
-     * @tpInfo RESTEASY-1680
-     * @tpSince RESTEasy 3.5.0
-     */
-    @Test
-    public void testReconnectDelayIsSet() throws Exception {
-        Client client = ClientBuilder.newClient();
-        try {
-            WebTarget baseTarget = client.target(generateURL("/reconnect/reconnectDelaySet"));
-            try (Response response = baseTarget.request().get()) {
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                Assert.assertEquals(1000L, (long) response.readEntity(long.class));
-            }
-        } finally {
-            client.close();
-        }
-    }
+   /**
+    * @tpTestDetails *** Check SseEvent.getReconnectDelay() returns correct delay,
+    * when OutboundSseEvent.reconnectDelay() is set.
+    * @tpInfo RESTEASY-1680
+    * @tpSince RESTEasy 3.5.0
+    */
+   @Test
+   public void testReconnectDelayIsSet() throws Exception {
+      Client client = ClientBuilder.newClient();
+      try {
+         WebTarget baseTarget = client.target(generateURL("/reconnect/reconnectDelaySet"));
+         try (Response response = baseTarget.request().get()) {
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assert.assertEquals(1000L, (long) response.readEntity(long.class));
+         }
+      } finally {
+         client.close();
+      }
+   }
 
-    /**
-     * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After" from the SSE endpoint. Check that SseEventSource
-     * retries after the specified period
-     * @tpInfo RESTEASY-1680
-     * @tpSince RESTEasy 3.5.0
-     */
-    @Test
-    public void testSseEndpointUnavailable() throws Exception {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicInteger errors = new AtomicInteger(0);
-        final List<String> results = new ArrayList<String>();
-        Client client = ClientBuilder.newBuilder().build();
-        try {
-            WebTarget target = client.target(generateURL("/reconnect/unavailable"));
-            SseEventSource msgEventSource = SseEventSource.target(target).build();
-            try (SseEventSource eventSource = msgEventSource) {
-                eventSource.register(event -> {
-                    results.add(event.readData(String.class));
-                    latch.countDown();
-                }, ex -> {
-                    errors.incrementAndGet();
-                    Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
-                });
-                eventSource.open();
+   /**
+    * @tpTestDetails SseEventSource receives HTTP 503 + "Retry-After" from the SSE endpoint. Check that SseEventSource
+    * retries after the specified period
+    * @tpInfo RESTEASY-1680
+    * @tpSince RESTEasy 3.5.0
+    */
+   @Test
+   public void testSseEndpointUnavailable() throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      final List<String> results = new ArrayList<String>();
+      Client client = ClientBuilder.newBuilder().build();
+      try {
+         WebTarget target = client.target(generateURL("/reconnect/unavailable"));
+         SseEventSource msgEventSource = SseEventSource.target(target).build();
+         try (SseEventSource eventSource = msgEventSource) {
+            eventSource.register(event -> {
+               results.add(event.readData(String.class));
+               latch.countDown();
+            }, ex -> {
+               errors.incrementAndGet();
+               Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+            });
+            eventSource.open();
 
-                boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertEquals(1, errors.get());
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            }
-            Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
-        } finally {
-            client.close();
-        }
-    }
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+            Assert.assertEquals(1, errors.get());
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+         }
+         Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+      } finally {
+         client.close();
+      }
+   }
 
 }

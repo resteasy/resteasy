@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyNoHttpResponseException extends ResteasyIOException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyNoHttpResponseException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyNoHttpResponseException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyNoHttpResponseException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyNoHttpResponseException()
+   {
+   }
+
+   public ResteasyNoHttpResponseException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyNoHttpResponseException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyNoHttpResponseException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyNoHttpResponseException(Throwable cause)
+   {
+      super(cause);
+   }
 }

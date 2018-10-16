@@ -21,141 +21,141 @@ import java.util.List;
 
 public class DBUtils {
 
-	public static boolean tableExists(DataSource dataSource, String tableName) throws SQLException {
+   public static boolean tableExists(DataSource dataSource, String tableName) throws SQLException {
 
-		Connection connection = null;
-		ResultSet rs = null;
+      Connection connection = null;
+      ResultSet rs = null;
 
-		try {
-			connection = dataSource.getConnection();
+      try {
+         connection = dataSource.getConnection();
 
-			DatabaseMetaData meta = connection.getMetaData();
+         DatabaseMetaData meta = connection.getMetaData();
 
-			rs = meta.getTables(null, null, tableName, null);
+         rs = meta.getTables(null, null, tableName, null);
 
-			if (rs.next()) {
-				return true;
-			}
-		} finally {
-			closeResultSet(rs);
-			closeConnection(connection);
-		}
+         if (rs.next()) {
+            return true;
+         }
+      } finally {
+         closeResultSet(rs);
+         closeConnection(connection);
+      }
 
-		return false;
-	}
+      return false;
+   }
 
-	public static ArrayList<String> listAllTables(Connection connection) throws SQLException {
+   public static ArrayList<String> listAllTables(Connection connection) throws SQLException {
 
-		ResultSet rs = null;
+      ResultSet rs = null;
 
-		try {
-			DatabaseMetaData meta = connection.getMetaData();
+      try {
+         DatabaseMetaData meta = connection.getMetaData();
 
-			rs = meta.getTables(null, null, null, null);
+         rs = meta.getTables(null, null, null, null);
 
-			ArrayList<String> tableList = new ArrayList<String>();
+         ArrayList<String> tableList = new ArrayList<String>();
 
-			while (rs.next()) {
+         while (rs.next()) {
 
-				tableList.add(rs.getString(3));
-			}
+            tableList.add(rs.getString(3));
+         }
 
-			return tableList;
+         return tableList;
 
-		} finally {
-			closeResultSet(rs);
-			closeConnection(connection);
-		}
-	}
+      } finally {
+         closeResultSet(rs);
+         closeConnection(connection);
+      }
+   }
 
-	public static DataSource getDataSource(String name) throws NamingException {
-		Context initContext = new InitialContext();
-		Context envContext = (Context) initContext.lookup("java:/comp/env");
-		return (DataSource) envContext.lookup(name);
-	}
+   public static DataSource getDataSource(String name) throws NamingException {
+      Context initContext = new InitialContext();
+      Context envContext = (Context) initContext.lookup("java:/comp/env");
+      return (DataSource) envContext.lookup(name);
+   }
 
-	public static boolean containsColumn(ResultSet rs, String columnName) {
-		try {
-			rs.findColumn(columnName);
-			return true;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
+   public static boolean containsColumn(ResultSet rs, String columnName) {
+      try {
+         rs.findColumn(columnName);
+         return true;
+      } catch (SQLException e) {
+         return false;
+      }
+   }
 
-	public static List<String> getTableColumns(Connection connection, String selectedTable) throws SQLException {
+   public static List<String> getTableColumns(Connection connection, String selectedTable) throws SQLException {
 
-		ResultSet rs = null;
+      ResultSet rs = null;
 
-		try {
-			DatabaseMetaData meta = connection.getMetaData();
+      try {
+         DatabaseMetaData meta = connection.getMetaData();
 
-			rs = meta.getColumns(null, null, selectedTable, null);
+         rs = meta.getColumns(null, null, selectedTable, null);
 
-			ArrayList<String> columnNames = new ArrayList<String>();
+         ArrayList<String> columnNames = new ArrayList<String>();
 
-			while (rs.next()) {
+         while (rs.next()) {
 
-				columnNames.add(rs.getString(4));
-			}
+            columnNames.add(rs.getString(4));
+         }
 
-			return columnNames;
+         return columnNames;
 
-		} finally {
-			closeResultSet(rs);
-			closeConnection(connection);
-		}
-	}
+      } finally {
+         closeResultSet(rs);
+         closeConnection(connection);
+      }
+   }
 
-	public static int getTableColumnCount(DataSource dataSource, String selectedTable) throws SQLException {
+   public static int getTableColumnCount(DataSource dataSource, String selectedTable) throws SQLException {
 
-		Connection connection = null;
-		ResultSet rs = null;
+      Connection connection = null;
+      ResultSet rs = null;
 
-		try {
+      try {
 
-			connection = dataSource.getConnection();
+         connection = dataSource.getConnection();
 
-			DatabaseMetaData meta = connection.getMetaData();
+         DatabaseMetaData meta = connection.getMetaData();
 
-			rs = meta.getColumns(null, null, selectedTable, null);
+         rs = meta.getColumns(null, null, selectedTable, null);
 
-			rs.last();
+         rs.last();
 
-			return rs.getRow();
+         return rs.getRow();
 
-		} finally {
-			closeResultSet(rs);
-			closeConnection(connection);
-		}
-	}
+      } finally {
+         closeResultSet(rs);
+         closeConnection(connection);
+      }
+   }
 
-	public static void closeConnection(Connection connection) {
-		try {
-			if (connection != null && !connection.isClosed()) {
-				connection.close();
-			}
-		} catch (SQLException e) {
-		}
-	}
+   public static void closeConnection(Connection connection) {
+      try {
+         if (connection != null && !connection.isClosed()) {
+            connection.close();
+         }
+      } catch (SQLException e) {
+      }
+   }
 
-	public static void closeResultSet(ResultSet rs) {
-		try {
-			if (rs != null) {
-				rs.close();
-			}
-		} catch (SQLException e) {
-		}
-	}
+   public static void closeResultSet(ResultSet rs) {
+      try {
+         if (rs != null) {
+            rs.close();
+         }
+      } catch (SQLException e) {
+      }
+   }
 
-	public static void closePreparedStatement(PreparedStatement pstmt) {
+   public static void closePreparedStatement(PreparedStatement pstmt) {
 
-		try {
-			if (pstmt != null) {
-				pstmt.close();
-			}
-		} catch (SQLException e) {
-		}
-	}
-	
+      try {
+         if (pstmt != null) {
+            pstmt.close();
+         }
+      } catch (SQLException e) {
+      }
+   }
+
 }

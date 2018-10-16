@@ -36,30 +36,30 @@ import org.junit.runner.RunWith;
 @Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class})
 public class JsonFilterWithInterceptrTest {
 
-    @Deployment(name = "default")
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptrTest.class.getSimpleName());
-        war.addClasses(Jackson2Product.class, ObjectFilterModifier.class);
-        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterWriteInterceptor.class);
-    }
+   @Deployment(name = "default")
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptrTest.class.getSimpleName());
+      war.addClasses(Jackson2Product.class, ObjectFilterModifier.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterWriteInterceptor.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JsonFilterWithInterceptrTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JsonFilterWithInterceptrTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Filters fields from json response entity using interceptor
-     * @tpSince RESTEasy  3.0.20.Final
-     */
-    @Test
-    public void testJacksonString() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/products/333"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-        client.close();
-    }
+   /**
+    * @tpTestDetails Filters fields from json response entity using interceptor
+    * @tpSince RESTEasy  3.0.20.Final
+    */
+   @Test
+   public void testJacksonString() throws Exception {
+      Client client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(generateURL("/products/333"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+      client.close();
+   }
 }

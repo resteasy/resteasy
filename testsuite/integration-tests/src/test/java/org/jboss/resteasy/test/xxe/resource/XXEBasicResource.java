@@ -11,23 +11,23 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class XXEBasicResource {
-    private static Logger logger = Logger.getLogger(XXEBasicResource.class);
-    @Consumes("application/xml")
-    @POST
-    public String doPost(Document doc) {
-        Node node = doc.getDocumentElement();
-        logger.info("name: " + node.getNodeName());
-        NodeList children = doc.getDocumentElement().getChildNodes();
+   private static Logger logger = Logger.getLogger(XXEBasicResource.class);
+   @Consumes("application/xml")
+   @POST
+   public String doPost(Document doc) {
+      Node node = doc.getDocumentElement();
+      logger.info("name: " + node.getNodeName());
+      NodeList children = doc.getDocumentElement().getChildNodes();
 
-        node = children.item(0);
-        logger.info("name: " + node.getNodeName());
-        children = node.getChildNodes();
+      node = children.item(0);
+      logger.info("name: " + node.getNodeName());
+      children = node.getChildNodes();
 
-        node = children.item(0);
-        logger.info("name: " + node.getNodeName());
-        children = node.getChildNodes();
+      node = children.item(0);
+      logger.info("name: " + node.getNodeName());
+      children = node.getChildNodes();
 
-        logger.info(node.getNodeValue());
-        return node.getNodeValue();
-    }
+      logger.info(node.getNodeValue());
+      return node.getNodeValue();
+   }
 }

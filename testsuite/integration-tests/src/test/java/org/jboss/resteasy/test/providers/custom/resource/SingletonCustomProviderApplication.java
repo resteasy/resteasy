@@ -21,55 +21,55 @@ import java.util.Set;
 @ApplicationPath("/")
 public class SingletonCustomProviderApplication extends Application {
 
-    public static Set<Class<?>> classes = new HashSet<Class<?>>();
-    public static Set<Object> singletons = new HashSet<Object>();
+   public static Set<Class<?>> classes = new HashSet<Class<?>>();
+   public static Set<Object> singletons = new HashSet<Object>();
 
-    /**
-     * @see Application#getClasses()
-     */
-    @Override
-    public Set<Class<?>> getClasses() {
-        if (classes.isEmpty()) {
-            classes.add(SingletonCustomProviderResource.class);
-        }
-        return classes;
-    }
+   /**
+    * @see Application#getClasses()
+    */
+   @Override
+   public Set<Class<?>> getClasses() {
+      if (classes.isEmpty()) {
+         classes.add(SingletonCustomProviderResource.class);
+      }
+      return classes;
+   }
 
-    /**
-     * @see Application#getSingletons()
-     */
-    @Override
-    public Set<Object> getSingletons() {
-        if (singletons.isEmpty()) {
-            singletons.add(new MessageBodyReader<SingletonCustomProviderObject>() {
-                public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediType) {
-                    return true;
-                }
+   /**
+    * @see Application#getSingletons()
+    */
+   @Override
+   public Set<Object> getSingletons() {
+      if (singletons.isEmpty()) {
+         singletons.add(new MessageBodyReader<SingletonCustomProviderObject>() {
+            public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediType) {
+               return true;
+            }
 
-                public SingletonCustomProviderObject readFrom(Class<SingletonCustomProviderObject> type, Type genericType, Annotation[] annotations,
+            public SingletonCustomProviderObject readFrom(Class<SingletonCustomProviderObject> type, Type genericType, Annotation[] annotations,
                                                               MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-                        throws IOException, WebApplicationException {
-                    throw new WebApplicationException(999); // deliberate crazy status
-                }
+                  throws IOException, WebApplicationException {
+               throw new WebApplicationException(999); // deliberate crazy status
+            }
 
-            });
-            singletons.add(new MessageBodyWriter<SingletonCustomProviderObject>() {
-                public long getSize(SingletonCustomProviderObject dummyObject, Class<?> type, Type genericType, Annotation[] annotations,
-                                    MediaType mediaType) {
-                    return -1;
-                }
+         });
+         singletons.add(new MessageBodyWriter<SingletonCustomProviderObject>() {
+            public long getSize(SingletonCustomProviderObject dummyObject, Class<?> type, Type genericType, Annotation[] annotations,
+                           MediaType mediaType) {
+               return -1;
+            }
 
-                public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-                    return true;
-                }
+            public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+               return true;
+            }
 
-                public void writeTo(SingletonCustomProviderObject t, Class<?> type, Type genericType, Annotation[] annotations,
-                                    MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-                        throws IOException, WebApplicationException {
-                    throw new WebApplicationException(999); // deliberate crazy status
-                }
-            });
-        }
-        return singletons;
-    }
+            public void writeTo(SingletonCustomProviderObject t, Class<?> type, Type genericType, Annotation[] annotations,
+                           MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+                  throws IOException, WebApplicationException {
+               throw new WebApplicationException(999); // deliberate crazy status
+            }
+         });
+      }
+      return singletons;
+   }
 }

@@ -389,8 +389,8 @@ public class Rx2ObservableTest {
       ObservableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.head();
       observable.subscribe(
-              (String s) -> value.set(s), // HEAD - no body
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (String s) -> value.set(s), // HEAD - no body
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

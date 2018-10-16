@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyCredentialsNotAvailableException extends ResteasyAuthenticationException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyCredentialsNotAvailableException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyCredentialsNotAvailableException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyCredentialsNotAvailableException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyCredentialsNotAvailableException()
+   {
+   }
+
+   public ResteasyCredentialsNotAvailableException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyCredentialsNotAvailableException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyCredentialsNotAvailableException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyCredentialsNotAvailableException(Throwable cause)
+   {
+      super(cause);
+   }
 }

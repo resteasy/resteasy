@@ -15,72 +15,72 @@ import java.util.Date;
 
 public class DateUtils {
 
-	public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-	public static final SimpleDateFormat YEAR_FORMATTER = new SimpleDateFormat("yyyy");
+   public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+   public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+   public static final SimpleDateFormat YEAR_FORMATTER = new SimpleDateFormat("yyyy");
 
-	public static boolean isValidDate(DateFormat sdf, String date) {
+   public static boolean isValidDate(DateFormat sdf, String date) {
 
-		try {
-			sdf.parse(date);
-		} catch (ParseException e) {
-			return false;
-		} catch (RuntimeException e) {
-			return false;
-		}
-		return true;
-	}
+      try {
+         sdf.parse(date);
+      } catch (ParseException e) {
+         return false;
+      } catch (RuntimeException e) {
+         return false;
+      }
+      return true;
+   }
 
-	public static Date getDate(DateFormat sdf, String date) {
+   public static Date getDate(DateFormat sdf, String date) {
 
-		try {
-			return sdf.parse(date);
-		} catch (ParseException e) {
-			return null;
-		} catch (RuntimeException e) {
-			return null;
-		}
-	}
+      try {
+         return sdf.parse(date);
+      } catch (ParseException e) {
+         return null;
+      } catch (RuntimeException e) {
+         return null;
+      }
+   }
 
-	public static long daysBetween(Date startDate, Date endDate) {
+   public static long daysBetween(Date startDate, Date endDate) {
 
-		Calendar start = Calendar.getInstance();
-		start.setTime(startDate);
+      Calendar start = Calendar.getInstance();
+      start.setTime(startDate);
 
-		Calendar end = Calendar.getInstance();
-		end.setTime(endDate);
+      Calendar end = Calendar.getInstance();
+      end.setTime(endDate);
 
-		return daysBetween(start, end);
-	}
+      return daysBetween(start, end);
+   }
 
-	public static long daysBetween(Calendar startDate, Calendar endDate) {
+   public static long daysBetween(Calendar startDate, Calendar endDate) {
 
-		startDate = (Calendar) startDate.clone();
+      startDate = (Calendar) startDate.clone();
 
-		long daysBetween = 0;
+      long daysBetween = 0;
 
-		while (startDate.get(Calendar.YEAR) < endDate.get(Calendar.YEAR)) {
+      while (startDate.get(Calendar.YEAR) < endDate.get(Calendar.YEAR)) {
 
-			if(startDate.get(Calendar.DAY_OF_YEAR) != 1){
+         if(startDate.get(Calendar.DAY_OF_YEAR) != 1){
 
-				int diff = startDate.getMaximum(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
+            int diff = startDate.getMaximum(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
 
-				diff++;
+            diff++;
 
-				startDate.add(Calendar.DAY_OF_YEAR, diff);
+            startDate.add(Calendar.DAY_OF_YEAR, diff);
 
-				daysBetween += diff;
+            daysBetween += diff;
 
-			}else{
+         }else{
 
-				daysBetween += startDate.getMaximum(Calendar.DAY_OF_YEAR);
+            daysBetween += startDate.getMaximum(Calendar.DAY_OF_YEAR);
 
-				startDate.add(Calendar.YEAR, 1);
-			}
-		}
+            startDate.add(Calendar.YEAR, 1);
+         }
+      }
 
-		daysBetween += endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
+      daysBetween += endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
 
-		return daysBetween;
-	}
+      return daysBetween;
+   }
 }

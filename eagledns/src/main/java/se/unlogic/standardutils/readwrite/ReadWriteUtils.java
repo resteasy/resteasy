@@ -14,36 +14,36 @@ import java.io.Writer;
 
 public class ReadWriteUtils {
 
-	public static void transfer(Reader reader, Writer writer) throws IOException {
+   public static void transfer(Reader reader, Writer writer) throws IOException {
 
 
-		char[] buf = new char[8192];
-		int count = 0;
+      char[] buf = new char[8192];
+      int count = 0;
 
-		while ((count = reader.read(buf)) >= 0) {
+      while ((count = reader.read(buf)) >= 0) {
 
-			writer.write(buf, 0, count);
-		}
-		writer.flush();
-	}
+         writer.write(buf, 0, count);
+      }
+      writer.flush();
+   }
 
-	public static void closeReader(Reader reader){
+   public static void closeReader(Reader reader){
 
-		if(reader != null){
+      if(reader != null){
 
-			try {
-				reader.close();
-			} catch (IOException e) {}
-		}
-	}
+         try {
+            reader.close();
+         } catch (IOException e) {}
+      }
+   }
 
-	public static void closeWriter(Writer writer){
+   public static void closeWriter(Writer writer){
 
-		if(writer != null){
+      if(writer != null){
 
-			try {
-				writer.close();
-			} catch (IOException e) {}
-		}
-	}
+         try {
+            writer.close();
+         } catch (IOException e) {}
+      }
+   }
 }

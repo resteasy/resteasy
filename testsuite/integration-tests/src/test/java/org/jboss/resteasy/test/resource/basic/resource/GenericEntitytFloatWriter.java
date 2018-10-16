@@ -19,33 +19,33 @@ import java.util.List;
 @Produces("*/*")
 public class GenericEntitytFloatWriter implements MessageBodyWriter<List<Float>> {
 
-    private static Logger logger = Logger.getLogger(GenericEntitytFloatWriter.class);
+   private static Logger logger = Logger.getLogger(GenericEntitytFloatWriter.class);
 
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        if (!List.class.isAssignableFrom(type)) {
-            return false;
-        }
-        if (!(genericType instanceof ParameterizedType)) {
-            return false;
-        }
-        ParameterizedType pt = (ParameterizedType) genericType;
-        boolean result = pt.getActualTypeArguments()[0].equals(Float.class);
-        logger.info("FloatWriter result!!!: " + result);
-        return result;
-    }
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      if (!List.class.isAssignableFrom(type)) {
+         return false;
+      }
+      if (!(genericType instanceof ParameterizedType)) {
+         return false;
+      }
+      ParameterizedType pt = (ParameterizedType) genericType;
+      boolean result = pt.getActualTypeArguments()[0].equals(Float.class);
+      logger.info("FloatWriter result!!!: " + result);
+      return result;
+   }
 
-    public long getSize(List<Float> floats, Class<?> type, Type genericType, Annotation[] annotations,
-                        MediaType mediaType) {
-        return -1;
-    }
+   public long getSize(List<Float> floats, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType) {
+      return -1;
+   }
 
-    public void writeTo(List<Float> floats, Class<?> type, Type genericType, Annotation[] annotations,
-                        MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException {
-        StringBuffer buf = new StringBuffer();
-        for (Float f : floats) {
-            buf.append(f.toString()).append("F ");
-        }
-        entityStream.write(buf.toString().getBytes());
-    }
+   public void writeTo(List<Float> floats, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+         throws IOException, WebApplicationException {
+      StringBuffer buf = new StringBuffer();
+      for (Float f : floats) {
+         buf.append(f.toString()).append("F ");
+      }
+      entityStream.write(buf.toString().getBytes());
+   }
 }

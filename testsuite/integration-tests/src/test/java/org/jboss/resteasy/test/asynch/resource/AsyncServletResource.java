@@ -18,46 +18,46 @@ import java.io.StringWriter;
  */
 @Path("/async")
 public class AsyncServletResource {
-    @GET
-    @Produces("text/plain")
-    public void get(@Suspend(2000) final AsynchronousResponse response) {
-        Thread t = new Thread() {
-            private Logger log = Logger.getLogger(AsyncServletResource.class);
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(100);
-                    Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
-                    response.setResponse(jaxrs);
-                } catch (Exception e) {
-                    StringWriter errors = new StringWriter();
-                    e.printStackTrace(new PrintWriter(errors));
-                    log.error(errors.toString());
-                }
+   @GET
+   @Produces("text/plain")
+   public void get(@Suspend(2000) final AsynchronousResponse response) {
+      Thread t = new Thread() {
+         private Logger log = Logger.getLogger(AsyncServletResource.class);
+         @Override
+         public void run() {
+            try {
+               Thread.sleep(100);
+               Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
+               response.setResponse(jaxrs);
+            } catch (Exception e) {
+               StringWriter errors = new StringWriter();
+               e.printStackTrace(new PrintWriter(errors));
+               log.error(errors.toString());
             }
-        };
-        t.start();
-    }
+         }
+      };
+      t.start();
+   }
 
-    @GET
-    @Path("timeout")
-    @Produces("text/plain")
-    public void timeout(@Suspend(10) final AsynchronousResponse response) {
-        Thread t = new Thread() {
-            private Logger log = Logger.getLogger(AsyncServletResource.class);
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(100000);
-                    Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
-                    response.setResponse(jaxrs);
-                } catch (Exception e) {
-                    StringWriter errors = new StringWriter();
-                    e.printStackTrace(new PrintWriter(errors));
-                    log.error(errors.toString());
-                }
+   @GET
+   @Path("timeout")
+   @Produces("text/plain")
+   public void timeout(@Suspend(10) final AsynchronousResponse response) {
+      Thread t = new Thread() {
+         private Logger log = Logger.getLogger(AsyncServletResource.class);
+         @Override
+         public void run() {
+            try {
+               Thread.sleep(100000);
+               Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
+               response.setResponse(jaxrs);
+            } catch (Exception e) {
+               StringWriter errors = new StringWriter();
+               e.printStackTrace(new PrintWriter(errors));
+               log.error(errors.toString());
             }
-        };
-        t.start();
-    }
+         }
+      };
+      t.start();
+   }
 }

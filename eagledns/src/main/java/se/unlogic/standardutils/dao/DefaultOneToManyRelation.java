@@ -19,181 +19,181 @@ import java.util.List;
 
 public class DefaultOneToManyRelation<LocalType,RemoteType> implements OneToManyRelation<LocalType, RemoteType> {
 
-	private final Field field;
-	private Field remoteField;
-	private final AnnotatedDAOFactory daoFactory;
-	private AnnotatedDAO<RemoteType> annotatedDAO;
-	private QueryParameterFactory<RemoteType, LocalType> queryParameterFactory;
-	private final Class<LocalType> beanClass;
-	private final Class<RemoteType> remoteClass;
-	private boolean initialized;
-	
-	public DefaultOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged) {
-		super();
-		this.beanClass = beanClass;
-		this.remoteClass = remoteClass;
-		this.field = field;
-		this.daoFactory = daoFactory;
-		
-		List<Field> fields = ReflectionUtils.getFields(remoteClass);
+   private final Field field;
+   private Field remoteField;
+   private final AnnotatedDAOFactory daoFactory;
+   private AnnotatedDAO<RemoteType> annotatedDAO;
+   private QueryParameterFactory<RemoteType, LocalType> queryParameterFactory;
+   private final Class<LocalType> beanClass;
+   private final Class<RemoteType> remoteClass;
+   private boolean initialized;
 
-		for(Field remoteField : fields){
+   public DefaultOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged) {
+      super();
+      this.beanClass = beanClass;
+      this.remoteClass = remoteClass;
+      this.field = field;
+      this.daoFactory = daoFactory;
 
-			if(remoteField.getType().equals(beanClass) && remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(ManyToOne.class)){
-								
-				this.remoteField = remoteField;
+      List<Field> fields = ReflectionUtils.getFields(remoteClass);
 
-				ReflectionUtils.fixFieldAccess(this.remoteField);
-				
-				break;
-			}
-		}
+      for(Field remoteField : fields){
 
-		if(this.remoteField == null){
+         if(remoteField.getType().equals(beanClass) && remoteField.isAnnotationPresent(DAOManaged.class) && remoteField.isAnnotationPresent(ManyToOne.class)){
 
-			throw new RuntimeException("Unable to to find corresponding @ManyToOne field in class " + remoteClass + " for @OneToMany annotated field " + field.getName() + " in " + beanClass);
-		}
-	}
+            this.remoteField = remoteField;
 
-	/* (non-Javadoc)
-	 * @see se.unlogic.utils.dao.OneToManyRelation#setValue(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	public void getRemoteValue(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
+            ReflectionUtils.fixFieldAccess(this.remoteField);
 
-		if(!initialized){
-			init();
-		}
+            break;
+         }
+      }
 
-		try {
-			HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
-			
-			query.addRelations(relationQuery);
-			
-			if(relationQuery != null){
-				query.disableAutoRelations(relationQuery.isDisableAutoRelations());
-			}
-			
-			query.addParameter(queryParameterFactory.getParameter(bean));
-			
-			field.set(bean, annotatedDAO.getAll(query, connection));
+      if(this.remoteField == null){
 
-		} catch (IllegalArgumentException e) {
+         throw new RuntimeException("Unable to to find corresponding @ManyToOne field in class " + remoteClass + " for @OneToMany annotated field " + field.getName() + " in " + beanClass);
+      }
+   }
 
-			throw new RuntimeException(e);
+   /* (non-Javadoc)
+    * @see se.unlogic.utils.dao.OneToManyRelation#setValue(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   public void getRemoteValue(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
 
-		} catch (IllegalAccessException e) {
+      if(!initialized){
+         init();
+      }
 
-			throw new RuntimeException(e);
-		}
-	}
+      try {
+         HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
 
-	/* (non-Javadoc)
-	 * @see se.unlogic.utils.dao.OneToManyRelation#add(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	@SuppressWarnings("unchecked")
-	public void add(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
-	
-		if(!initialized){
-			init();
-		}
-		
-		try {
-			List<RemoteType> remoteBeans = (List<RemoteType>) field.get(bean);
-			
-			if(remoteBeans != null){
-				
-				this.fixReferences(remoteBeans, bean);
-				
-				annotatedDAO.addAll(remoteBeans, connection, relationQuery);
-			}
+         query.addRelations(relationQuery);
 
-		} catch (IllegalArgumentException e) {
+         if(relationQuery != null){
+            query.disableAutoRelations(relationQuery.isDisableAutoRelations());
+         }
 
-			throw new RuntimeException(e);
+         query.addParameter(queryParameterFactory.getParameter(bean));
 
-		} catch (IllegalAccessException e) {
+         field.set(bean, annotatedDAO.getAll(query, connection));
 
-			throw new RuntimeException(e);
-		}
-	}	
-	
-	private void fixReferences(List<RemoteType> remoteBeans, LocalType bean) throws IllegalArgumentException, IllegalAccessException {
+      } catch (IllegalArgumentException e) {
 
-		for(RemoteType remoteBean : remoteBeans){
-			
-			remoteField.set(remoteBean, bean);
-		}
-	}
+         throw new RuntimeException(e);
 
-	/* (non-Javadoc)
-	 * @see se.unlogic.utils.dao.OneToManyRelation#update(LocalType, java.sql.Connection, java.lang.reflect.Field[])
-	 */
-	@SuppressWarnings("unchecked")
-	public void update(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
-	
-		if(!initialized){
-			init();
-		}
-		
-		try {
-			List<RemoteType> remoteBeans = (List<RemoteType>) field.get(bean);
-			
-			if(remoteBeans == null ||  remoteBeans.isEmpty()){
-				
-				HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
-				
-				query.addRelations(relationQuery);
-				
-				if(relationQuery != null){
-					query.disableAutoRelations(relationQuery.isDisableAutoRelations());	
-				}
-				
-				query.addParameter(queryParameterFactory.getParameter(bean));
-				
-				annotatedDAO.delete(query, connection);
-				
-			}else{
-				
-				this.fixReferences(remoteBeans, bean);
-				
-				//TODO exclude current parameter
-				
-				QueryParameter<RemoteType,LocalType> queryParameter = queryParameterFactory.getParameter(bean);
-				
-				if(!annotatedDAO.deleteWhereNotIn(remoteBeans, connection, this.remoteField, queryParameter)){
-					
-					HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
-					
-					query.addParameter(queryParameter);
-					
-					annotatedDAO.delete(query, connection);
-				}
-				
-				annotatedDAO.addOrUpdateAll(remoteBeans, connection, relationQuery);
-			}
+      } catch (IllegalAccessException e) {
 
-		} catch (IllegalArgumentException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-			throw new RuntimeException(e);
+   /* (non-Javadoc)
+    * @see se.unlogic.utils.dao.OneToManyRelation#add(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   @SuppressWarnings("unchecked")
+   public void add(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
 
-		} catch (IllegalAccessException e) {
+      if(!initialized){
+         init();
+      }
 
-			throw new RuntimeException(e);
-		}
-	}	
-	
-	private void init() {
+      try {
+         List<RemoteType> remoteBeans = (List<RemoteType>) field.get(bean);
 
-		if(annotatedDAO == null){
-			annotatedDAO = this.daoFactory.getDAO(remoteClass);
-			queryParameterFactory = annotatedDAO.getParamFactory(remoteField, beanClass);
-		}
-		
-		this.initialized = true;
-	}	
-	
-	public static <LT,RT> OneToManyRelation<LT, RT> getGenericInstance(Class<LT> beanClass, Class<RT> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged){
+         if(remoteBeans != null){
 
-		return new DefaultOneToManyRelation<LT,RT>(beanClass,remoteClass,field,daoFactory,daoManaged);
-	}
+            this.fixReferences(remoteBeans, bean);
+
+            annotatedDAO.addAll(remoteBeans, connection, relationQuery);
+         }
+
+      } catch (IllegalArgumentException e) {
+
+         throw new RuntimeException(e);
+
+      } catch (IllegalAccessException e) {
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   private void fixReferences(List<RemoteType> remoteBeans, LocalType bean) throws IllegalArgumentException, IllegalAccessException {
+
+      for(RemoteType remoteBean : remoteBeans){
+
+         remoteField.set(remoteBean, bean);
+      }
+   }
+
+   /* (non-Javadoc)
+    * @see se.unlogic.utils.dao.OneToManyRelation#update(LocalType, java.sql.Connection, java.lang.reflect.Field[])
+    */
+   @SuppressWarnings("unchecked")
+   public void update(LocalType bean, Connection connection, RelationQuery relationQuery) throws SQLException{
+
+      if(!initialized){
+         init();
+      }
+
+      try {
+         List<RemoteType> remoteBeans = (List<RemoteType>) field.get(bean);
+
+         if(remoteBeans == null ||  remoteBeans.isEmpty()){
+
+            HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
+
+            query.addRelations(relationQuery);
+
+            if(relationQuery != null){
+               query.disableAutoRelations(relationQuery.isDisableAutoRelations());
+            }
+
+            query.addParameter(queryParameterFactory.getParameter(bean));
+
+            annotatedDAO.delete(query, connection);
+
+         }else{
+
+            this.fixReferences(remoteBeans, bean);
+
+            //TODO exclude current parameter
+
+            QueryParameter<RemoteType,LocalType> queryParameter = queryParameterFactory.getParameter(bean);
+
+            if(!annotatedDAO.deleteWhereNotIn(remoteBeans, connection, this.remoteField, queryParameter)){
+
+               HighLevelQuery<RemoteType> query = new HighLevelQuery<RemoteType>();
+
+               query.addParameter(queryParameter);
+
+               annotatedDAO.delete(query, connection);
+            }
+
+            annotatedDAO.addOrUpdateAll(remoteBeans, connection, relationQuery);
+         }
+
+      } catch (IllegalArgumentException e) {
+
+         throw new RuntimeException(e);
+
+      } catch (IllegalAccessException e) {
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   private void init() {
+
+      if(annotatedDAO == null){
+         annotatedDAO = this.daoFactory.getDAO(remoteClass);
+         queryParameterFactory = annotatedDAO.getParamFactory(remoteField, beanClass);
+      }
+
+      this.initialized = true;
+   }
+
+   public static <LT,RT> OneToManyRelation<LT, RT> getGenericInstance(Class<LT> beanClass, Class<RT> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged){
+
+      return new DefaultOneToManyRelation<LT,RT>(beanClass,remoteClass,field,daoFactory,daoManaged);
+   }
 }

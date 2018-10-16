@@ -47,18 +47,18 @@ public class HomecontrolCustomJAXBContextTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(HomecontrolCustomJAXBContextTest.class.getSimpleName());
       war.addClasses(HomecontrolCustomJAXBContext.class,
-              HomecontrolApplication.class,
-              HomecontrolService.class,
-              HomecontrolJaxbProvider.class,
-              ObjectFactory.class,
-              ErrorDomainType.class,
-              BinaryType.class,
-              ErrorType.class,
-              Base64Binary.class,
-              RoleType.class,
-              UserType.class,
-              IDType.class,
-              ErrorMessageType.class
+            HomecontrolApplication.class,
+            HomecontrolService.class,
+            HomecontrolJaxbProvider.class,
+            ObjectFactory.class,
+            ErrorDomainType.class,
+            BinaryType.class,
+            ErrorType.class,
+            Base64Binary.class,
+            RoleType.class,
+            UserType.class,
+            IDType.class,
+            ErrorMessageType.class
       );
       war.addAsWebInfResource(HomecontrolCustomJAXBContextTest.class.getPackage(), "homecontrol/web.xml");
       return TestUtil.finishContainerPrepare(war, null, HomecontrolCustomJAXBContextTest.class);
@@ -87,8 +87,8 @@ public class HomecontrolCustomJAXBContextTest {
    public void testMarshallering() throws Exception {
 
       String xmlStr = "<user xmlns=\"http://creaity.de/homecontrol/rest/types/v1\"> <id>id</id>"
-              + " <credentials> <loginId>test</loginId> </credentials>"
-              + " <roles><role>USER</role></roles></user>";
+            + " <credentials> <loginId>test</loginId> </credentials>"
+            + " <roles><role>USER</role></roles></user>";
 
       ResteasyWebTarget target = client.target(generateURL("/service/users"));
       Response response = target.request().accept("application/xml").post(Entity.xml(xmlStr));

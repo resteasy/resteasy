@@ -30,49 +30,49 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SingletonCustomProviderTest {
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, SingletonCustomProviderTest.class.getSimpleName() + ".war");
-        war.addClasses(SingletonCustomProviderApplication.class, SingletonCustomProviderObject.class,
-                SingletonCustomProviderResource.class);
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, SingletonCustomProviderTest.class.getSimpleName() + ".war");
+      war.addClasses(SingletonCustomProviderApplication.class, SingletonCustomProviderObject.class,
+            SingletonCustomProviderResource.class);
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SingletonCustomProviderTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, SingletonCustomProviderTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Check post request
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMessageReaderThrowingWebApplicationException() throws Exception {
-        Response response = client.target(generateURL("/test")).request().post(Entity.entity("foo", "application/octet-stream"));
-        Assert.assertEquals("Wrong response status", 999, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails Check post request
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMessageReaderThrowingWebApplicationException() throws Exception {
+      Response response = client.target(generateURL("/test")).request().post(Entity.entity("foo", "application/octet-stream"));
+      Assert.assertEquals("Wrong response status", 999, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check get request
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMessageWriterThrowingWebApplicationException() throws Exception {
-        Response response = client.target(generateURL("/test")).request().get();
-        Assert.assertEquals("Wrong response status", 999, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails Check get request
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMessageWriterThrowingWebApplicationException() throws Exception {
+      Response response = client.target(generateURL("/test")).request().get();
+      Assert.assertEquals("Wrong response status", 999, response.getStatus());
+      response.close();
+   }
 }

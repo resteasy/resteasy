@@ -120,7 +120,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       {
          MessageBodyWriter writer = getWriter();
          if (writer!=null)
-             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
          writeTo(writer);
       }
       else

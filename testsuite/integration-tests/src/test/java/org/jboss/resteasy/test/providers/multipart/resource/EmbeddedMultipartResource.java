@@ -13,35 +13,35 @@ import java.io.IOException;
 
 @Path("")
 public class EmbeddedMultipartResource {
-    @Path("embedded")
-    @POST
-    @Consumes("multipart/mixed")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response post(MultipartInput input) throws Exception {
-        InputPart inputPart = input.getParts().iterator().next();
-        MultipartInput multipart = inputPart.getBody(MultipartInput.class, null);
-        inputPart = multipart.getParts().iterator().next();
-        EmbeddedMultipartCustomer customer = inputPart.getBody(EmbeddedMultipartCustomer.class, null);
-        return Response.ok(customer.getName()).build();
-    }
+   @Path("embedded")
+   @POST
+   @Consumes("multipart/mixed")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response post(MultipartInput input) throws Exception {
+      InputPart inputPart = input.getParts().iterator().next();
+      MultipartInput multipart = inputPart.getBody(MultipartInput.class, null);
+      inputPart = multipart.getParts().iterator().next();
+      EmbeddedMultipartCustomer customer = inputPart.getBody(EmbeddedMultipartCustomer.class, null);
+      return Response.ok(customer.getName()).build();
+   }
 
-    @Path("customer")
-    @POST
-    @Consumes("multipart/mixed")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response postCustomer(MultipartInput input) throws IOException {
-        InputPart part = input.getParts().iterator().next();
-        EmbeddedMultipartCustomer customer = part.getBody(EmbeddedMultipartCustomer.class, null);
-        return Response.ok(customer.getName()).build();
-    }
+   @Path("customer")
+   @POST
+   @Consumes("multipart/mixed")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response postCustomer(MultipartInput input) throws IOException {
+      InputPart part = input.getParts().iterator().next();
+      EmbeddedMultipartCustomer customer = part.getBody(EmbeddedMultipartCustomer.class, null);
+      return Response.ok(customer.getName()).build();
+   }
 
-    @Path("invalid")
-    @POST
-    @Consumes("multipart/mixed")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response postInvalid(MultipartInput input) throws IOException {
-        InputPart part = input.getParts().iterator().next();
-        Object o = part.getBody(EmbeddedMultipartResource.class, null);
-        return Response.ok(o).build();
-    }
+   @Path("invalid")
+   @POST
+   @Consumes("multipart/mixed")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response postInvalid(MultipartInput input) throws IOException {
+      InputPart part = input.getParts().iterator().next();
+      Object o = part.getBody(EmbeddedMultipartResource.class, null);
+      return Response.ok(o).build();
+   }
 }

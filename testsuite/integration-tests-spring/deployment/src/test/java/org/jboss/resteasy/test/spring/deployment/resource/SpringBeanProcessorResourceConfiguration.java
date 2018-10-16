@@ -7,24 +7,24 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class SpringBeanProcessorResourceConfiguration {
-    @Bean
-    public ResteasyRegistration singletonRegistration() {
-        return new ResteasyRegistration("/registered/singleton", "singletonCounter");
-    }
+   @Bean
+   public ResteasyRegistration singletonRegistration() {
+      return new ResteasyRegistration("/registered/singleton", "singletonCounter");
+   }
 
-    @Bean
-    public ResteasyRegistration prototypeRegistration() {
-        return new ResteasyRegistration("/registered/prototype", "prototypeCounter");
-    }
+   @Bean
+   public ResteasyRegistration prototypeRegistration() {
+      return new ResteasyRegistration("/registered/prototype", "prototypeCounter");
+   }
 
-    @Bean
-    SpringBeanProcessorCounter singletonCounter() {
-        return new SpringBeanProcessorCounter();
-    }
+   @Bean
+   SpringBeanProcessorCounter singletonCounter() {
+      return new SpringBeanProcessorCounter();
+   }
 
-    @Bean
-    @Scope("prototype")
-    public SpringBeanProcessorCounter prototypeCounter() {
-        return new SpringBeanProcessorCounter();
-    }
+   @Bean
+   @Scope("prototype")
+   public SpringBeanProcessorCounter prototypeCounter() {
+      return new SpringBeanProcessorCounter();
+   }
 }

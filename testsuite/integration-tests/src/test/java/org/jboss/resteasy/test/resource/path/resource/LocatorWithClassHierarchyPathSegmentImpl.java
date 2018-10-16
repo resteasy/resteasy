@@ -5,21 +5,21 @@ import javax.ws.rs.core.PathSegment;
 
 public class LocatorWithClassHierarchyPathSegmentImpl implements PathSegment {
 
-    public LocatorWithClassHierarchyPathSegmentImpl(final String id) {
-        super();
-        this.id = id;
-    }
+   public LocatorWithClassHierarchyPathSegmentImpl(final String id) {
+      super();
+      this.id = id;
+   }
 
-    private String id;
+   private String id;
 
-    @Override
-    public MultivaluedMap<String, String> getMatrixParameters() {
-        return null;
-    }
+   @Override
+   public MultivaluedMap<String, String> getMatrixParameters() {
+      return null;
+   }
 
-    @Override
-    public String getPath() {
-        return id;
-    }
+   @Override
+   public String getPath() {
+      return id;
+   }
 
 }

@@ -95,7 +95,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       }
       this.annotations = annotations;
       this.interceptors = factory
-              .getServerReaderInterceptorRegistry().postMatch(
+            .getServerReaderInterceptorRegistry().postMatch(
                       this.declaringClass, this.target);
 
       // this is for when an interceptor is added after the creation of the injector
@@ -105,14 +105,14 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
    public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
       this.interceptors = factory
-              .getServerReaderInterceptorRegistry().postMatch(
+            .getServerReaderInterceptorRegistry().postMatch(
                       declaringClass, target);
    }
 
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (mediaType.isWildcardType() || mediaType.isWildcardSubtype() ||
-         		  !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
+                 !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE)) return false;
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
 

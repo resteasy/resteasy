@@ -9,26 +9,26 @@ package se.unlogic.standardutils.arrays;
 
 public class ArrayUtils {
 
-	public static <T> T[] toArray(T... values) {
+   public static <T> T[] toArray(T... values) {
 
-		return values;
-	}
+      return values;
+   }
 
-	public static boolean isEmpty(Object[] array) {
+   public static boolean isEmpty(Object[] array) {
 
-		if(array == null || array.length == 0){
-			
-			return true;
-		}
-	
-		for(Object value : array){
-			
-			if(value != null){
-				
-				return false;
-			}
-		}
-		
-		return true;
-	}
+      if(array == null || array.length == 0){
+
+         return true;
+      }
+
+      for(Object value : array){
+
+         if(value != null){
+
+            return false;
+         }
+      }
+
+      return true;
+   }
 }

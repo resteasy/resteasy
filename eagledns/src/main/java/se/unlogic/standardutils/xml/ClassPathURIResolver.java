@@ -16,36 +16,36 @@ import java.net.URL;
 
 public class ClassPathURIResolver implements URIResolver {
 
-	private static final ClassPathURIResolver CLASS_PATH_URI_RESOLVER = new ClassPathURIResolver();
+   private static final ClassPathURIResolver CLASS_PATH_URI_RESOLVER = new ClassPathURIResolver();
 
-	public static ClassPathURIResolver getInstance(){
+   public static ClassPathURIResolver getInstance(){
 
-		return CLASS_PATH_URI_RESOLVER;
-	}
+      return CLASS_PATH_URI_RESOLVER;
+   }
 
-	public static final String PREFIX = "classpath://";
+   public static final String PREFIX = "classpath://";
 
-	public Source resolve(String href, String base) throws TransformerException {
+   public Source resolve(String href, String base) throws TransformerException {
 
-		if(href.startsWith(PREFIX) && href.length() > PREFIX.length()){
+      if(href.startsWith(PREFIX) && href.length() > PREFIX.length()){
 
-			URL url = getURL(href);
+         URL url = getURL(href);
 
-			if(url != null){
+         if(url != null){
 
-				return new StreamSource(url.toString());
-			}
-			
-			throw new TransformerException("Unable to resolve href " + href);
-		}
+            return new StreamSource(url.toString());
+         }
 
-		return null;
-	}
+         throw new TransformerException("Unable to resolve href " + href);
+      }
 
-	public static URL getURL(String href) {
+      return null;
+   }
 
-		String classPath = "/" + href.substring(PREFIX.length());
+   public static URL getURL(String href) {
 
-		return ClassPathURIResolver.class.getResource(classPath);
-	}
+      String classPath = "/" + href.substring(PREFIX.length());
+
+      return ClassPathURIResolver.class.getResource(classPath);
+   }
 }

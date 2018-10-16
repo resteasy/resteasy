@@ -163,7 +163,7 @@ public class Utils
    }
 
    public static Map parsePostData(long len, InputStream is, String encoding, String[] cachedStream)
-           throws IOException
+         throws IOException
    {
       // TODO: handle parsing data over 2 GB
       if (len > Integer.MAX_VALUE)
@@ -504,8 +504,8 @@ public class Utils
                ++p;
                for (i = string.length(); i >= s; --i)
                   if (match(pattern.substring(p), string.substring(i))) /*
-																														 * not quite right
-																														 */
+                                                                                           * not quite right
+                                                                                           */
                      return true;
                break;
             }
@@ -660,13 +660,13 @@ public class Utils
    }
 
    /*
-    public static Object[] copyOf(Object[] original, int from, int newLength) {
-       newLength = Math.min(original.length - from, newLength);
-       Object[] copy = new Object[newLength];
-       System.arraycopy(original, from, copy, 0, newLength);
-       return copy;
-    }
-     */
+   public static Object[] copyOf(Object[] original, int from, int newLength) {
+      newLength = Math.min(original.length - from, newLength);
+      Object[] copy = new Object[newLength];
+      System.arraycopy(original, from, copy, 0, newLength);
+      return copy;
+   }
+    */
    public static String canonicalizePath(String path)
    {
       if (path == null || path.length() == 0)
@@ -786,9 +786,9 @@ public class Utils
    }
 
    protected final static char BASE64ARRAY[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-           'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-           'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
-           '4', '5', '6', '7', '8', '9', '+', '/'};
+      'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+      'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
+      '4', '5', '6', '7', '8', '9', '+', '/'};
 
    /**
     * base 64 encoding, string converted to bytes using specified encoding
@@ -874,31 +874,31 @@ public class Utils
     * Translates a Base64 value to either its 6-bit reconstruction value or a negative number indicating some other meaning.
     */
    protected final static byte[] DECODABET = {-9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 0 - 8
-           -5, -5, // Whitespace: Tab and Linefeed
-           -9, -9, // Decimal 11 - 12
-           -5, // Whitespace: Carriage Return
-           -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 14 -
-           // 26
-           -9, -9, -9, -9, -9, // Decimal 27 - 31
-           -5, // Whitespace: Space
-           -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 33 - 42
-           62, // Plus sign at decimal 43
-           -9, -9, -9, // Decimal 44 - 46
-           63, // Slash at decimal 47
-           52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // Numbers zero through nine
-           -9, -9, -9, // Decimal 58 - 60
-           -1, // Equals sign at decimal 61
-           -9, -9, -9, // Decimal 62 - 64
-           0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Letters 'A'
-           // through 'N'
-           14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // Letters 'O'
-           // through 'Z'
-           -9, -9, -9, -9, -9, -9, // Decimal 91 - 96
-           26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, // Letters 'a'
-           // through 'm'
-           39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // Letters 'n'
-           // through 'z'
-           -9, -9, -9, -9 // Decimal 123 - 126
+      -5, -5, // Whitespace: Tab and Linefeed
+      -9, -9, // Decimal 11 - 12
+      -5, // Whitespace: Carriage Return
+      -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 14 -
+      // 26
+      -9, -9, -9, -9, -9, // Decimal 27 - 31
+      -5, // Whitespace: Space
+      -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 33 - 42
+      62, // Plus sign at decimal 43
+      -9, -9, -9, // Decimal 44 - 46
+      63, // Slash at decimal 47
+      52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // Numbers zero through nine
+      -9, -9, -9, // Decimal 58 - 60
+      -1, // Equals sign at decimal 61
+      -9, -9, -9, // Decimal 62 - 64
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Letters 'A'
+      // through 'N'
+      14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // Letters 'O'
+      // through 'Z'
+      -9, -9, -9, -9, -9, -9, // Decimal 91 - 96
+      26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, // Letters 'a'
+      // through 'm'
+      39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // Letters 'n'
+      // through 'z'
+      -9, -9, -9, -9 // Decimal 123 - 126
    };
 
    protected final static byte WHITE_SPACE_ENC = -5; // Indicates white space
@@ -996,9 +996,9 @@ public class Utils
             // | ( ( DECODABET[ source[ srcOffset + 2 ] ] << 24 ) >>> 18 )
             // | ( ( DECODABET[ source[ srcOffset + 3 ] ] << 24 ) >>> 24 );
             int outBuff = ((DECODABET[source[srcOffset]] & 0xFF) << 18)
-                    | ((DECODABET[source[srcOffset + 1]] & 0xFF) << 12)
-                    | ((DECODABET[source[srcOffset + 2]] & 0xFF) << 6)
-                    | ((DECODABET[source[srcOffset + 3]] & 0xFF));
+               | ((DECODABET[source[srcOffset + 1]] & 0xFF) << 12)
+               | ((DECODABET[source[srcOffset + 2]] & 0xFF) << 6)
+               | ((DECODABET[source[srcOffset + 3]] & 0xFF));
 
             destination[destOffset] = (byte) (outBuff >> 16);
             destination[destOffset + 1] = (byte) (outBuff >> 8);

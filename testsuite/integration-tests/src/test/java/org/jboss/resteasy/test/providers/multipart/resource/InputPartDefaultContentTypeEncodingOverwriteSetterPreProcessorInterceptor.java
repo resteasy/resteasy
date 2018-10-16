@@ -15,13 +15,13 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ServerInterceptor
 public class InputPartDefaultContentTypeEncodingOverwriteSetterPreProcessorInterceptor implements
-        PreProcessInterceptor {
+      PreProcessInterceptor {
 
-    public ServerResponse preProcess(HttpRequest request,
+   public ServerResponse preProcess(HttpRequest request,
                                      ResourceMethodInvoker method) throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
-                InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8);
-        return null;
-    }
+      request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
+            InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8);
+      return null;
+   }
 
 }

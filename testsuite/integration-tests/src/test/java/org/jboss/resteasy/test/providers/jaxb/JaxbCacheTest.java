@@ -31,81 +31,81 @@ import java.util.PropertyPermission;
 @RunWith(Arquillian.class)
 public class JaxbCacheTest {
 
-    static ResteasyClient client;
-    private static Logger logger = Logger.getLogger(JaxbCacheTest.class.getName());
+   static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(JaxbCacheTest.class.getName());
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
-        war.addClass(JaxbCacheTest.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new ReflectPermission("suppressAccessChecks"),
-            new RuntimePermission("accessDeclaredMembers"),
-            new PropertyPermission("*", "read")),
-            "permissions.xml");
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
+      war.addClass(JaxbCacheTest.class);
+      // Arquillian in the deployment
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+         new ReflectPermission("suppressAccessChecks"),
+         new RuntimePermission("accessDeclaredMembers"),
+         new PropertyPermission("*", "read")),
+         "permissions.xml");
 
-        return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
-    }
+      return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
+   }
 
-    /**
-     * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
-     * then gets calls findCachedContext() twice to get JAXBContext and ensures that the result is the same
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCache() throws Exception {
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        ResteasyProviderFactory.pushContext(Providers.class, factory);
-        {
-            ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
-            JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
-            JAXBContext ctx = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_XML_TYPE, null);
+   /**
+    * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
+    * then gets calls findCachedContext() twice to get JAXBContext and ensures that the result is the same
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCache() throws Exception {
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+      ResteasyProviderFactory.pushContext(Providers.class, factory);
+      {
+         ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
+         JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
+         JAXBContext ctx = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_XML_TYPE, null);
 
-            JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_XML_TYPE, null);
+         JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_XML_TYPE, null);
 
-            Assert.assertTrue(ctx == ctx2);
-        }
+         Assert.assertTrue(ctx == ctx2);
+      }
 
-        {
-            ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_ATOM_XML_TYPE);
-            JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
-            Assert.assertNotNull(finder);
-            JAXBContext ctx = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
+      {
+         ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_ATOM_XML_TYPE);
+         JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
+         Assert.assertNotNull(finder);
+         JAXBContext ctx = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
 
-            JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
+         JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
 
-            Assert.assertTrue(ctx == ctx2);
-        }
-    }
+         Assert.assertTrue(ctx == ctx2);
+      }
+   }
 
-    /**
-     * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
-     * thrn gets calls findCacheContext() twice to get JAXBContext and ensures that the result is the same
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCache2() throws Exception {
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        ResteasyProviderFactory.pushContext(Providers.class, factory);
-        {
-            ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
-            JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
-            JAXBContext ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
+   /**
+    * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
+    * thrn gets calls findCacheContext() twice to get JAXBContext and ensures that the result is the same
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCache2() throws Exception {
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+      ResteasyProviderFactory.pushContext(Providers.class, factory);
+      {
+         ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_XML_TYPE);
+         JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
+         JAXBContext ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
 
-            JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
+         JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
 
-            Assert.assertTrue(ctx == ctx2);
-        }
+         Assert.assertTrue(ctx == ctx2);
+      }
 
-        {
-            ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_ATOM_XML_TYPE);
-            JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
-            JAXBContext ctx = finder.findCacheContext(MediaType.APPLICATION_ATOM_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
+      {
+         ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class, MediaType.APPLICATION_ATOM_XML_TYPE);
+         JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
+         JAXBContext ctx = finder.findCacheContext(MediaType.APPLICATION_ATOM_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
 
-            JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_ATOM_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
+         JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_ATOM_XML_TYPE, null, JaxbCacheChild.class, JaxbCacheParent.class);
 
-            Assert.assertTrue(ctx == ctx2);
-        }
-    }
+         Assert.assertTrue(ctx == ctx2);
+      }
+   }
 }

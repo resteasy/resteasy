@@ -95,8 +95,8 @@ public class MapCache implements BrowserCache
    }
 
    public Entry put(String key, MediaType mediaType,
-                    MultivaluedMap<String, String> headers, byte[] cached, int expires,
-                    String etag, String lastModified)
+               MultivaluedMap<String, String> headers, byte[] cached, int expires,
+               String etag, String lastModified)
    {
       return put(new CacheEntry(key, headers, cached, expires, etag, lastModified, mediaType));
    }

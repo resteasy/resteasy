@@ -37,8 +37,8 @@ public class NoStreamRxTest
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(NoStreamRxTest.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write")
       ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxNoStreamResource.class);

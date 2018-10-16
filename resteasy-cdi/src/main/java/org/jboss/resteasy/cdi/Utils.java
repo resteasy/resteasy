@@ -58,7 +58,7 @@ public class Utils
     * Returns true if and only if the given class is a JAX-RS root resource or a
     * sub-resource. The class itself as well as its interfaces are scanned for
     * JAX-RS annotations.
-    * 
+    *
     * @param clazz class
     * @return true if the given class is JAX-RS resource or sub-resource
     */

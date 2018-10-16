@@ -12,23 +12,23 @@ import se.unlogic.standardutils.validation.ValidationError;
 import java.util.Collection;
 
 public class JsonUtils {
-	
-	private static final String CONTENT_TYPE = "application/json";
 
-	public static JsonNode encode(Collection<ValidationError> validationErrors) {
-		JsonArray jsonArray = new JsonArray();
-		JsonObject jsonObject;
-		for(ValidationError error : validationErrors) {
-			jsonObject = new JsonObject();
-			jsonObject.putField("field", new JsonLeaf(error.getFieldName()));
-			jsonObject.putField("errorType", new JsonLeaf(error.getValidationErrorType().toString()));
-			jsonObject.putField("messageKey", new JsonLeaf(error.getMessageKey()));
-			jsonArray.addNode(jsonObject);
-		}
-		return jsonArray;
-	}
+   private static final String CONTENT_TYPE = "application/json";
 
-	public static String getContentType() {
-		return CONTENT_TYPE;
-	}
+   public static JsonNode encode(Collection<ValidationError> validationErrors) {
+      JsonArray jsonArray = new JsonArray();
+      JsonObject jsonObject;
+      for(ValidationError error : validationErrors) {
+         jsonObject = new JsonObject();
+         jsonObject.putField("field", new JsonLeaf(error.getFieldName()));
+         jsonObject.putField("errorType", new JsonLeaf(error.getValidationErrorType().toString()));
+         jsonObject.putField("messageKey", new JsonLeaf(error.getMessageKey()));
+         jsonArray.addNode(jsonObject);
+      }
+      return jsonArray;
+   }
+
+   public static String getContentType() {
+      return CONTENT_TYPE;
+   }
 }

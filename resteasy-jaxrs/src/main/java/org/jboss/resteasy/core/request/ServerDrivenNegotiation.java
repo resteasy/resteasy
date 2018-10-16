@@ -347,8 +347,8 @@ public class ServerDrivenNegotiation
          if (availableValue == null && "charset".equals(name))
          {
             if (requestedCharacterSets != null
-                    && !requestedCharacterSets.containsKey(null)
-                    && !requestedCharacterSets.containsKey(value))
+               && !requestedCharacterSets.containsKey(null)
+               && !requestedCharacterSets.containsKey(value))
                return false;
          }
          else if (!value.equals(availableValue))

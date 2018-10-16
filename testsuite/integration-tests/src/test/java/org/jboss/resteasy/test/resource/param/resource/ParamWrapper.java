@@ -8,14 +8,14 @@ package org.jboss.resteasy.test.resource.param.resource;
  */
 public class ParamWrapper<E> {
 
-	private final E element;
+   private final E element;
 
-	public ParamWrapper(E element) {
-		this.element = element;
-	}
-	
-	public E getElement() {
-		return element;
-	}
+   public ParamWrapper(E element) {
+      this.element = element;
+   }
+
+   public E getElement() {
+      return element;
+   }
 
 }

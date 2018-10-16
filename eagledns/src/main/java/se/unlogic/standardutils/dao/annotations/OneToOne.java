@@ -18,8 +18,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface OneToOne {
 
-	String remoteColumn() default "";
-	boolean autoGet() default false;
-	boolean autoAdd() default false;
-	boolean autoUpdate() default false;
+   String remoteColumn() default "";
+   boolean autoGet() default false;
+   boolean autoAdd() default false;
+   boolean autoUpdate() default false;
 }

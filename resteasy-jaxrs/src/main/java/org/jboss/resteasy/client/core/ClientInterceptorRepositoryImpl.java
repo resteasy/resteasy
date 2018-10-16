@@ -26,9 +26,9 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
    {
       MessageBodyReader(ReaderInterceptor.class),
       MessageBodyWriter(
-           WriterInterceptor.class),
+         WriterInterceptor.class),
       ClientExecution(
-           ClientExecutionInterceptor.class);
+         ClientExecutionInterceptor.class);
 
       Class<?> clazz;
 
@@ -71,29 +71,29 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
    {
       LinkedList<T> interceptors = getInterceptors(type);
       return (T[]) interceptors.toArray((T[]) Array.newInstance(type,
-              interceptors.size()));
+            interceptors.size()));
    }
 
    protected void setReaderInterceptors(
-           ReaderInterceptor[] readerInterceptors)
+         ReaderInterceptor[] readerInterceptors)
    {
       setData(InterceptorType.MessageBodyReader, readerInterceptors);
    }
 
    protected void setWriterInterceptors(
-           WriterInterceptor[] writerInterceptors)
+         WriterInterceptor[] writerInterceptors)
    {
       setData(InterceptorType.MessageBodyWriter, writerInterceptors);
    }
 
    protected void setExecutionInterceptors(
-           ClientExecutionInterceptor[] executionInterceptors)
+         ClientExecutionInterceptor[] executionInterceptors)
    {
       setData(InterceptorType.ClientExecution, executionInterceptors);
    }
 
    protected void setExecutionInterceptors(
-           Collection<ClientExecutionInterceptor> executionInterceptorList)
+         Collection<ClientExecutionInterceptor> executionInterceptorList)
    {
       setData(InterceptorType.ClientExecution, executionInterceptorList);
    }
@@ -116,14 +116,14 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
    protected <T> LinkedList<T> getInterceptors(Class<T> clazz)
    {
       InterceptorType interceptorType = InterceptorType
-              .getInterceptorTypeFor(clazz);
+            .getInterceptorTypeFor(clazz);
       if (interceptorType == null)
          return null;
       return getInterceptors(interceptorType);
    }
 
    protected synchronized LinkedList getInterceptors(
-           InterceptorType interceptorType)
+         InterceptorType interceptorType)
    {
       LinkedList interceptors = interceptorLists.get(interceptorType);
       if (interceptors == null)
@@ -148,7 +148,7 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
    public void copyClientInterceptorsTo(ClientInterceptorRepositoryImpl copyTo)
    {
       for (Entry<InterceptorType, LinkedList<?>> entry : interceptorLists
-              .entrySet())
+            .entrySet())
       {
          LinkedList copyToInterceptors = copyTo.getInterceptors(entry.getKey());
          LinkedList copyFromInterceptors = this.getInterceptors(entry.getKey());
@@ -159,7 +159,7 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
    public void prefixClientInterceptorsTo(ClientInterceptorRepositoryImpl copyTo)
    {
       for (Entry<InterceptorType, LinkedList<?>> entry : interceptorLists
-              .entrySet())
+            .entrySet())
       {
          LinkedList copyToInterceptors = copyTo.getInterceptors(entry.getKey());
          LinkedList copyFromInterceptors = this.getInterceptors(entry.getKey());

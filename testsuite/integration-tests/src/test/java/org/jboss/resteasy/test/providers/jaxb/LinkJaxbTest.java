@@ -29,37 +29,37 @@ import javax.ws.rs.client.ClientBuilder;
 @RunAsClient
 public class LinkJaxbTest {
 
-    private static Logger logger = Logger.getLogger(LinkJaxbTest.class.getName());
-    static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(LinkJaxbTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(LinkJaxbTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, LinkJaxbCustomer.class, LinkJaxbResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(LinkJaxbTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, LinkJaxbCustomer.class, LinkJaxbResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, LinkJaxbTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, LinkJaxbTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for javax.ws.rs.core.Link class with Jaxb object
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomer() throws Exception {
-        Client client = ClientBuilder.newClient();
-        String str = client.target(generateURL("")).request().get(String.class);
-        logger.info(str);
-    }
+   /**
+    * @tpTestDetails Test for javax.ws.rs.core.Link class with Jaxb object
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomer() throws Exception {
+      Client client = ClientBuilder.newClient();
+      String str = client.target(generateURL("")).request().get(String.class);
+      logger.info(str);
+   }
 }

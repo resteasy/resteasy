@@ -28,41 +28,41 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class StringCharsetTest {
 
-    private final Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
-    static ResteasyClient client;
+   private final Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(StringCharsetTest.class.getSimpleName());
-        war.addClass(StreamResetTest.class);
-        return TestUtil.finishContainerPrepare(war, null, StringCharsetResource.class, StringCharsetRespond.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(StringCharsetTest.class.getSimpleName());
+      war.addClass(StreamResetTest.class);
+      return TestUtil.finishContainerPrepare(war, null, StringCharsetResource.class, StringCharsetRespond.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, StringCharsetTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, StringCharsetTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests jaxb with combination of request specified charset
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testIt() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/charset/test.xml"));
-        String response = target.request().header("Accept", "application/xml;charset=iso-8859-2").get(String.class);
-        logger.info(response);
-        Assert.assertTrue("Response doesn't contain expected characters",
-                response.contains("Test " + (char) 353 + (char) 273 + (char) 382 + (char) 269));
-    }
+   /**
+    * @tpTestDetails Tests jaxb with combination of request specified charset
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testIt() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/charset/test.xml"));
+      String response = target.request().header("Accept", "application/xml;charset=iso-8859-2").get(String.class);
+      logger.info(response);
+      Assert.assertTrue("Response doesn't contain expected characters",
+            response.contains("Test " + (char) 353 + (char) 273 + (char) 382 + (char) 269));
+   }
 }

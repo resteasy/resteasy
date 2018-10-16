@@ -58,33 +58,33 @@ public class ViolationsContainer<T> implements Serializable
 
    public void addViolations(Set<? extends ResteasyConstraintViolation> set)
    {
-    Iterator<? extends ResteasyConstraintViolation> it = set.iterator();
-    while (it.hasNext())
-    {
-       ResteasyConstraintViolation violation = it.next();
-       switch (violation.getConstraintType())
-       {
-          case FIELD:
-             fieldViolations.add(violation);
-             break;
+      Iterator<? extends ResteasyConstraintViolation> it = set.iterator();
+      while (it.hasNext())
+      {
+         ResteasyConstraintViolation violation = it.next();
+         switch (violation.getConstraintType())
+         {
+            case FIELD:
+               fieldViolations.add(violation);
+               break;
 
-          case PROPERTY:
-             propertyViolations.add(violation);
-             break;
+            case PROPERTY:
+               propertyViolations.add(violation);
+               break;
 
-          case CLASS:
-             classViolations.add(violation);
-             break;
+            case CLASS:
+               classViolations.add(violation);
+               break;
 
-          case PARAMETER:
-             parameterViolations.add(violation);
-             break;
+            case PARAMETER:
+               parameterViolations.add(violation);
+               break;
 
-          case RETURN_VALUE:
-             returnValueViolations.add(violation);
-             break;
-       }
-    }
+            case RETURN_VALUE:
+               returnValueViolations.add(violation);
+               break;
+         }
+      }
    }
    
    public void addFieldViolation(ResteasyConstraintViolation v)
@@ -140,10 +140,10 @@ public class ViolationsContainer<T> implements Serializable
    public int size()
    {
       return fieldViolations.size() +
-             propertyViolations.size() +
-             classViolations.size() + 
-             parameterViolations.size() +
-             returnValueViolations.size();
+            propertyViolations.size() +
+            classViolations.size() + 
+            parameterViolations.size() +
+            returnValueViolations.size();
    }
    
    public String toString()

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(
-        {ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER})
+      {ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER})
 public @interface JAXBConfig
 {
 

@@ -66,13 +66,13 @@ public class MockedProfilingTest
 
       MockHttpResponse response = new MockHttpResponse();
       MockHttpRequest request = MockHttpRequest.post("/test/create")
-              .header(HttpHeaders.CONTENT_LANGUAGE, "en")
-              .header(HttpHeaders.USER_AGENT, "mozilla")
-              .header("Custom-Header1", "mozilla")
-              .header("Custom-Header2", "mozilla")
-              .header("Custom-Header3", "mozilla")
-              .header("Custom-Header4", "mozilla")
-              .contentType(MediaType.TEXT_PLAIN);
+            .header(HttpHeaders.CONTENT_LANGUAGE, "en")
+            .header(HttpHeaders.USER_AGENT, "mozilla")
+            .header("Custom-Header1", "mozilla")
+            .header("Custom-Header2", "mozilla")
+            .header("Custom-Header3", "mozilla")
+            .header("Custom-Header4", "mozilla")
+            .contentType(MediaType.TEXT_PLAIN);
       ByteArrayInputStream stream = new ByteArrayInputStream("hello".getBytes());
       request.setInputStream(stream);
 

@@ -193,7 +193,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       if (object instanceof String)
          return (String) object;
       StringConverter converter = providerFactory.getStringConverter(object
-              .getClass());
+            .getClass());
       if (converter != null)
          return converter.toString(object);
       else
@@ -275,7 +275,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    public ClientRequest body(String contentType, Object data)
    {
       return body(MediaType.valueOf(contentType), data, data.getClass(), null,
-              null);
+            null);
    }
 
    public ClientRequest body(MediaType contentType, Object data)
@@ -287,7 +287,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
                              GenericType genericType)
    {
       return body(contentType, data, genericType.getType(), genericType
-              .getGenericType(), null);
+            .getGenericType(), null);
    }
 
    public ClientRequest body(MediaType contentType, Object data,
@@ -428,7 +428,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          if (getExecutionInterceptorList().isEmpty())
          {
             setExecutionInterceptors(providerFactory
-                    .getClientExecutionInterceptorRegistry().bindForList(null, null));
+               .getClientExecutionInterceptorRegistry().bindForList(null, null));
          }
 
          BaseClientResponse response = null;
@@ -439,7 +439,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          else
          {
             ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
-                    getExecutionInterceptorList(), executor, this);
+               getExecutionInterceptorList(), executor, this);
             response = (BaseClientResponse) ctx.proceed();
          }
          response.setAttributes(attributes);
@@ -455,7 +455,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public void writeRequestBody(MultivaluedMap<String, Object> headers,
-                                OutputStream outputStream) throws IOException
+                        OutputStream outputStream) throws IOException
    {
       if (body == null)
       {
@@ -467,8 +467,8 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          setWriterInterceptors(providerFactory.getClientWriterInterceptorRegistry().postMatch(null, null));
       }
       new ClientWriterInterceptorContext(getWriterInterceptors(), providerFactory, body,
-              bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
-              headers, outputStream, attributes).proceed();
+            bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
+            headers, outputStream, attributes).proceed();
    }
 
    public ClientResponse get() throws Exception
@@ -513,7 +513,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> get(Class<T> returnType, Type genericType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) get();
       response.setReturnType(returnType);
@@ -547,7 +547,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> put(Class<T> returnType, Type genericType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) put();
       response.setReturnType(returnType);
@@ -589,7 +589,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> post(Class<T> returnType, Type genericType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) post();
       response.setReturnType(returnType);
@@ -634,7 +634,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> delete(Class<T> returnType, Type genericType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) delete();
       response.setReturnType(returnType);
@@ -663,7 +663,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> options(Class<T> returnType, Type genericType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) options();
       response.setReturnType(returnType);
@@ -686,7 +686,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> httpMethod(String method, Class<T> returnType)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(returnType);
@@ -703,7 +703,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    }
 
    public <T> ClientResponse<T> httpMethod(String method, GenericType type)
-           throws Exception
+         throws Exception
    {
       BaseClientResponse response = (BaseClientResponse) httpMethod(method);
       response.setReturnType(type.getType());

@@ -29,28 +29,28 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class FilterTest {
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(FilterTest.class.getSimpleName())
-                .addClasses(FilterForwardServlet.class)
-                .addAsWebInfResource(ServletConfigTest.class.getPackage(), "FilterWeb.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, FilterResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(FilterTest.class.getSimpleName())
+            .addClasses(FilterForwardServlet.class)
+            .addAsWebInfResource(ServletConfigTest.class.getPackage(), "FilterWeb.xml", "web.xml");
+      return TestUtil.finishContainerPrepare(war, null, FilterResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, FilterTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, FilterTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for dynamic dispatching in servlet.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDispatchDynamic() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        Invocation.Builder request = client.target(generateURL("/test/dispatch/dynamic")).request();
-        Response response = request.get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", "forward", response.readEntity(String.class));
-    }
+   /**
+    * @tpTestDetails Test for dynamic dispatching in servlet.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDispatchDynamic() throws Exception {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      Invocation.Builder request = client.target(generateURL("/test/dispatch/dynamic")).request();
+      Response response = request.get();
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      assertEquals("Wrong content of response", "forward", response.readEntity(String.class));
+   }
 }

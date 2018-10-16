@@ -122,7 +122,7 @@ public class SelectorAcceptor implements Acceptor
       channel = ServerSocketChannel.open();
       channel.configureBlocking(false);
       int port = inProperties.get(Serve.ARG_PORT) != null ? ((Integer) inProperties.get(Serve.ARG_PORT)).intValue()
-              : Serve.DEF_PORT;
+            : Serve.DEF_PORT;
       InetSocketAddress isa = null;
       if (inProperties.get(Serve.ARG_BINDADDRESS) != null)
          try

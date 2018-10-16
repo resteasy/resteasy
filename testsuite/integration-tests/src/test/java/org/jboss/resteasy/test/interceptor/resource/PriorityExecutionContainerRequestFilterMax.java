@@ -9,9 +9,9 @@ import java.io.IOException;
 
 @Priority(Integer.MAX_VALUE)
 public class PriorityExecutionContainerRequestFilterMax implements ContainerRequestFilter {
-    @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
-        PriorityExecutionTest.logger.info(this);
-        PriorityExecutionTest.interceptors.add("PriorityExecutionContainerRequestFilterMax");
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext) throws IOException {
+      PriorityExecutionTest.logger.info(this);
+      PriorityExecutionTest.interceptors.add("PriorityExecutionContainerRequestFilterMax");
+   }
 }

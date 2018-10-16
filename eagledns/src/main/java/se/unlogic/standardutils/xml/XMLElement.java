@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD,ElementType.TYPE})
 public @interface XMLElement {
-	String name() default "";
-	boolean cdata() default false;
-	boolean skipChildParentElement() default false;
-	String childName() default "";
-	Class<? extends Stringyfier> valueFormatter() default DummyStringyfier.class;
+   String name() default "";
+   boolean cdata() default false;
+   boolean skipChildParentElement() default false;
+   String childName() default "";
+   Class<? extends Stringyfier> valueFormatter() default DummyStringyfier.class;
 }

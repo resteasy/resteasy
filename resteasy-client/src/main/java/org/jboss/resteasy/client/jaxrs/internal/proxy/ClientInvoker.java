@@ -110,7 +110,7 @@ public class ClientInvoker implements MethodInvoker
    public Object invoke(Object[] args)
    {
       return rxInvokerProvider != null ? invokeAsync(args) : invokeSync(args);
-    }
+   }
    
    protected Object invokeAsync(final Object[] args)
    {

@@ -3,25 +3,25 @@ package se.unlogic.standardutils.reflection;
 
 public class MethodNotFoundException extends Exception {
 
-	private static final long serialVersionUID = -8580739778092215878L;
+   private static final long serialVersionUID = -8580739778092215878L;
 
-	public MethodNotFoundException() {
+   public MethodNotFoundException() {
 
-		super();
-	}
+      super();
+   }
 
-	public MethodNotFoundException(String message, Throwable cause) {
+   public MethodNotFoundException(String message, Throwable cause) {
 
-		super(message, cause);
-	}
+      super(message, cause);
+   }
 
-	public MethodNotFoundException(String message) {
+   public MethodNotFoundException(String message) {
 
-		super(message);
-	}
+      super(message);
+   }
 
-	public MethodNotFoundException(Throwable cause) {
+   public MethodNotFoundException(Throwable cause) {
 
-		super(cause);
-	}
+      super(cause);
+   }
 }

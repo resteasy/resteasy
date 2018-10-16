@@ -36,168 +36,168 @@ import java.util.List;
 
 public class AnnotatedResultSetPopulator<T> implements BeanResultSetPopulator<T>{
 
-	protected Class<T> beanClass;
-	protected HashMap<Field,ResultSetField> resultSetFieldMap = new HashMap<Field,ResultSetField>();
+   protected Class<T> beanClass;
+   protected HashMap<Field,ResultSetField> resultSetFieldMap = new HashMap<Field,ResultSetField>();
 
-	public AnnotatedResultSetPopulator(Class<T> beanClass) throws UnsupportedFieldTypeException{
-		this(beanClass, (List<BeanStringPopulator<?>>)null);
-	}
+   public AnnotatedResultSetPopulator(Class<T> beanClass) throws UnsupportedFieldTypeException{
+      this(beanClass, (List<BeanStringPopulator<?>>)null);
+   }
 
-	public AnnotatedResultSetPopulator(Class<T> beanClass, BeanStringPopulator<?>... populators) throws UnsupportedFieldTypeException{
-		this(beanClass,Arrays.asList(populators));
-	}
+   public AnnotatedResultSetPopulator(Class<T> beanClass, BeanStringPopulator<?>... populators) throws UnsupportedFieldTypeException{
+      this(beanClass,Arrays.asList(populators));
+   }
 
-	@SuppressWarnings("unchecked")
-	public AnnotatedResultSetPopulator(Class<T> beanClass, List<? extends BeanStringPopulator<?>> populators) throws UnsupportedFieldTypeException{
+   @SuppressWarnings("unchecked")
+   public AnnotatedResultSetPopulator(Class<T> beanClass, List<? extends BeanStringPopulator<?>> populators) throws UnsupportedFieldTypeException{
 
-		this.beanClass = beanClass;
+      this.beanClass = beanClass;
 
-		//cache fields
-		List<Field> fields = ReflectionUtils.getFields(beanClass);
+      //cache fields
+      List<Field> fields = ReflectionUtils.getFields(beanClass);
 
-		for(Field field : fields){
+      for(Field field : fields){
 
-			DAOManaged annotation = field.getAnnotation(DAOManaged.class);
+         DAOManaged annotation = field.getAnnotation(DAOManaged.class);
 
-			if(annotation != null && (!field.isAnnotationPresent(OneToOne.class) && !field.isAnnotationPresent(OneToMany.class) && !field.isAnnotationPresent(ManyToOne.class) && !field.isAnnotationPresent(ManyToMany.class) )){
+         if(annotation != null && (!field.isAnnotationPresent(OneToOne.class) && !field.isAnnotationPresent(OneToMany.class) && !field.isAnnotationPresent(ManyToOne.class) && !field.isAnnotationPresent(ManyToMany.class) )){
 
-				if(Modifier.isFinal(field.getModifiers())){
+            if(Modifier.isFinal(field.getModifiers())){
 
-					throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in class " + beanClass + " is final!", field, annotation.getClass(), beanClass);
+               throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in class " + beanClass + " is final!", field, annotation.getClass(), beanClass);
 
-				}
+            }
 
-				Method resultSetColumnNameMethod = ResultSetMethods.getColumnNameMethod(field.getType());
+            Method resultSetColumnNameMethod = ResultSetMethods.getColumnNameMethod(field.getType());
 
-				BeanStringPopulator<?> typePopulator = null;
+            BeanStringPopulator<?> typePopulator = null;
 
-				if(resultSetColumnNameMethod == null){
+            if(resultSetColumnNameMethod == null){
 
-					if(populators != null){
-						typePopulator = this.getPopulator(populators, field, annotation);
-					}
-					
-					if(typePopulator == null){
-						
-						typePopulator = BeanStringPopulatorRegistery.getBeanStringPopulator(field.getType());
-					}
-					
-					if(typePopulator == null){
-						
-						if(field.getType().isEnum()){
+               if(populators != null){
+                  typePopulator = this.getPopulator(populators, field, annotation);
+               }
 
-							typePopulator = EnumPopulator.getInstanceFromField(field);
+               if(typePopulator == null){
 
-						}else if(List.class.isAssignableFrom(field.getType()) && ReflectionUtils.getGenericlyTypeCount(field) == 1 && ((Class<?>)ReflectionUtils.getGenericType(field)).isEnum()){
+                  typePopulator = BeanStringPopulatorRegistery.getBeanStringPopulator(field.getType());
+               }
 
-							typePopulator = EnumPopulator.getInstanceFromListField(field);
-						}	
-					}
+               if(typePopulator == null){
 
-					if(typePopulator == null){
-						throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in class " + beanClass + " is of unsupported type " + field.getType(), field, annotation.annotationType() , beanClass);
-					}
-				}
+                  if(field.getType().isEnum()){
 
-				ReflectionUtils.fixFieldAccess(field);
+                     typePopulator = EnumPopulator.getInstanceFromField(field);
 
-				Method resultSetColumnIndexMethod = ResultSetMethods.getColumnIndexMethod(field.getType());
+                  }else if(List.class.isAssignableFrom(field.getType()) && ReflectionUtils.getGenericlyTypeCount(field) == 1 && ((Class<?>)ReflectionUtils.getGenericType(field)).isEnum()){
 
-				if(!StringUtils.isEmpty(annotation.columnName())){
+                     typePopulator = EnumPopulator.getInstanceFromListField(field);
+                  }
+               }
 
-					this.resultSetFieldMap.put(field,new ResultSetField(field,resultSetColumnNameMethod,resultSetColumnIndexMethod,annotation.columnName(),typePopulator));
+               if(typePopulator == null){
+                  throw new UnsupportedFieldTypeException("The annotated field " + field.getName() + " in class " + beanClass + " is of unsupported type " + field.getType(), field, annotation.annotationType() , beanClass);
+               }
+            }
 
-				}else{
+            ReflectionUtils.fixFieldAccess(field);
 
-					this.resultSetFieldMap.put(field,new ResultSetField(field,resultSetColumnNameMethod,resultSetColumnIndexMethod,field.getName(),typePopulator));
-				}
-			}
-		}
+            Method resultSetColumnIndexMethod = ResultSetMethods.getColumnIndexMethod(field.getType());
 
-		if(this.resultSetFieldMap.isEmpty()){
-			throw new NoAnnotatedFieldsFoundException(beanClass,DAOManaged.class);
-		}
-	}
+            if(!StringUtils.isEmpty(annotation.columnName())){
 
-	private BeanStringPopulator<?> getPopulator(List<? extends BeanStringPopulator<?>> populators, Field field, DAOManaged annotation) {
+               this.resultSetFieldMap.put(field,new ResultSetField(field,resultSetColumnNameMethod,resultSetColumnIndexMethod,annotation.columnName(),typePopulator));
 
-		String populatorID = annotation.populatorID();
+            }else{
 
-		Object clazz = field.getType();
+               this.resultSetFieldMap.put(field,new ResultSetField(field,resultSetColumnNameMethod,resultSetColumnIndexMethod,field.getName(),typePopulator));
+            }
+         }
+      }
 
-		for(BeanStringPopulator<?> populator : populators){
+      if(this.resultSetFieldMap.isEmpty()){
+         throw new NoAnnotatedFieldsFoundException(beanClass,DAOManaged.class);
+      }
+   }
 
-			if(clazz.equals(populator.getType())){
+   private BeanStringPopulator<?> getPopulator(List<? extends BeanStringPopulator<?>> populators, Field field, DAOManaged annotation) {
 
-				if((StringUtils.isEmpty(populatorID) && populator.getPopulatorID() == null) || populatorID.equals(populator.getPopulatorID())){
+      String populatorID = annotation.populatorID();
 
-					return populator;
-				}
-			}
-		}
+      Object clazz = field.getType();
 
-		return null;
-	}
+      for(BeanStringPopulator<?> populator : populators){
 
-	public T populate(ResultSet rs) throws SQLException, BeanResultSetPopulationException {
+         if(clazz.equals(populator.getType())){
 
-		ResultSetField currentField = null;
+            if((StringUtils.isEmpty(populatorID) && populator.getPopulatorID() == null) || populatorID.equals(populator.getPopulatorID())){
 
-		try {
-			T bean = beanClass.newInstance();
+               return populator;
+            }
+         }
+      }
 
-			for(ResultSetField resultSetField : this.resultSetFieldMap.values()){
+      return null;
+   }
 
-				currentField = resultSetField;
+   public T populate(ResultSet rs) throws SQLException, BeanResultSetPopulationException {
 
-				if(currentField.getResultSetColumnNameMethod() != null){
+      ResultSetField currentField = null;
 
-					Object value = resultSetField.getResultSetColumnNameMethod().invoke(rs, resultSetField.getAlias());
+      try {
+         T bean = beanClass.newInstance();
 
-					if(rs.wasNull() && !resultSetField.getBeanField().getType().isPrimitive()){
+         for(ResultSetField resultSetField : this.resultSetFieldMap.values()){
 
-						resultSetField.getBeanField().set(bean, null);
+            currentField = resultSetField;
 
-					}else{
+            if(currentField.getResultSetColumnNameMethod() != null){
 
-						resultSetField.getBeanField().set(bean, value);
-					}
+               Object value = resultSetField.getResultSetColumnNameMethod().invoke(rs, resultSetField.getAlias());
 
-				}else{
+               if(rs.wasNull() && !resultSetField.getBeanField().getType().isPrimitive()){
 
-					String value = rs.getString(currentField.getAlias());
+                  resultSetField.getBeanField().set(bean, null);
 
-					if(value != null || currentField.getBeanStringPopulator().getType().isPrimitive()){
+               }else{
 
-						resultSetField.getBeanField().set(bean, currentField.getBeanStringPopulator().getValue(value));
-					}else{
-						resultSetField.getBeanField().set(bean, null);
-					}
-				}
-			}
+                  resultSetField.getBeanField().set(bean, value);
+               }
 
-			return bean;
+            }else{
 
-		} catch (InstantiationException e) {
+               String value = rs.getString(currentField.getAlias());
 
-			throw new BeanResultSetPopulationException(currentField,e);
+               if(value != null || currentField.getBeanStringPopulator().getType().isPrimitive()){
 
-		} catch (IllegalAccessException e) {
+                  resultSetField.getBeanField().set(bean, currentField.getBeanStringPopulator().getValue(value));
+               }else{
+                  resultSetField.getBeanField().set(bean, null);
+               }
+            }
+         }
 
-			throw new BeanResultSetPopulationException(currentField,e);
+         return bean;
 
-		} catch (IllegalArgumentException e) {
+      } catch (InstantiationException e) {
 
-			throw new BeanResultSetPopulationException(currentField,e);
+         throw new BeanResultSetPopulationException(currentField,e);
 
-		} catch (InvocationTargetException e) {
+      } catch (IllegalAccessException e) {
 
-			throw new BeanResultSetPopulationException(currentField,e);
-		}
-	}
+         throw new BeanResultSetPopulationException(currentField,e);
 
-	public ResultSetField getResultSetField(Field field){
+      } catch (IllegalArgumentException e) {
 
-		return this.resultSetFieldMap.get(field);
-	}
+         throw new BeanResultSetPopulationException(currentField,e);
+
+      } catch (InvocationTargetException e) {
+
+         throw new BeanResultSetPopulationException(currentField,e);
+      }
+   }
+
+   public ResultSetField getResultSetField(Field field){
+
+      return this.resultSetFieldMap.get(field);
+   }
 }

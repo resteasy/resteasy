@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class PreProcessorExceptionMapperPreProcessSecurityInterceptor implements PreProcessInterceptor {
-    public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
-        throw new PreProcessorExceptionMapperCandlepinUnauthorizedException();
-    }
+   public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
+      throw new PreProcessorExceptionMapperCandlepinUnauthorizedException();
+   }
 }

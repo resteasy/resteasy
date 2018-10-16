@@ -32,58 +32,58 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ResourceLocatorWithBaseNoExpressionTest {
-    private static final String ERROR_MSG = "Response contain wrong content";
-    static Client client;
+   private static final String ERROR_MSG = "Response contain wrong content";
+   static Client client;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
-        war.addClasses(ResourceLocatorWithBaseNoExpressionSubresource.class,
-                ResourceLocatorWithBaseNoExpressionSubresource2.class,
-                ResourceLocatorWithBaseNoExpressionSubresource3.class,
-                ResourceLocatorWithBaseNoExpressionSubresource3Interface.class);
-        return TestUtil.finishContainerPrepare(war, null, ResourceLocatorWithBaseNoExpressionResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
+      war.addClasses(ResourceLocatorWithBaseNoExpressionSubresource.class,
+            ResourceLocatorWithBaseNoExpressionSubresource2.class,
+            ResourceLocatorWithBaseNoExpressionSubresource3.class,
+            ResourceLocatorWithBaseNoExpressionSubresource3Interface.class);
+      return TestUtil.finishContainerPrepare(war, null, ResourceLocatorWithBaseNoExpressionResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResourceLocatorWithBaseNoExpressionTest.class.getSimpleName());
+   }
 
-    @AfterClass
-    public static void close() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void close() throws Exception {
+      client.close();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
+   @AfterClass
+   public static void after() throws Exception {
 
-    }
+   }
 
-    /**
-     * @tpTestDetails Test for root resource and for subresource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSubresource() throws Exception {
-        {
+   /**
+    * @tpTestDetails Test for root resource and for subresource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSubresource() throws Exception {
+      {
             Response response = client.target(generateURL("/a1/base/1/resources")).request().get();
             Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             Assert.assertEquals(ERROR_MSG, ResourceLocatorWithBaseNoExpressionSubresource.class.getName(),
-                    response.readEntity(String.class));
+               response.readEntity(String.class));
             response.close();
-        }
-        {
+      }
+      {
             Response response = client.target(generateURL("/a1/base/1/resources/subresource2/stuff/2/bar")).request().get();
             Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             Assert.assertEquals(ERROR_MSG, ResourceLocatorWithBaseNoExpressionSubresource2.class.getName() + "-2",
-                    response.readEntity(String.class));
+               response.readEntity(String.class));
             response.close();
-        }
-    }
+      }
+   }
 
 }

@@ -21,316 +21,316 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPoolTaskGroupHandler<T extends TaskGroup> implements TaskGroupHandler<T,SimpleExecutionController<T>>, Runnable{
 
-	protected final ReentrantLock taskGroupRemoveLock = new ReentrantLock();
-	protected final Condition taskGroupRemoveCondition = taskGroupRemoveLock.newCondition(); 
-	
-	protected final ReentrantLock taskGroupAddLock = new ReentrantLock();
-	protected final Condition taskGroupAddCondition = taskGroupAddLock.newCondition(); 
-	
-	protected final CopyOnWriteArrayList<SimpleExecutionController<T>> taskGroupList = new CopyOnWriteArrayList<SimpleExecutionController<T>>();
-	
-	protected int taskGroupIndex = 0;
-	
-	protected Status status = Status.RUNNING;
-	
-	protected final ArrayList<Thread> threads = new ArrayList<Thread>();
+   protected final ReentrantLock taskGroupRemoveLock = new ReentrantLock();
+   protected final Condition taskGroupRemoveCondition = taskGroupRemoveLock.newCondition();
 
-	private final static Logger logger = Logger.getLogger(ThreadPoolTaskGroupHandler.class);
-	
-	public ThreadPoolTaskGroupHandler(int poolSize, boolean daemon){
-		
-		while(threads.size() < poolSize){
-			
-			Thread thread = new Thread(this, "TaskGroupHandler thread " + (threads.size() + 1));
-			thread.setDaemon(daemon);
-			
-			threads.add(thread);
-			
-			thread.start();
-		}
-	}
+   protected final ReentrantLock taskGroupAddLock = new ReentrantLock();
+   protected final Condition taskGroupAddCondition = taskGroupAddLock.newCondition();
 
-	public void run() {
-		
-		Runnable task = null;
-		
-		while(true){
-		
-			while(!taskGroupList.isEmpty() && status != Status.SHUTDOWN){
-				
-				SimpleExecutionController<T> executionController;
-				
-				try {
-					executionController = this.taskGroupList.get(this.getIndex());
-					
-				} catch (IndexOutOfBoundsException e) {
+   protected final CopyOnWriteArrayList<SimpleExecutionController<T>> taskGroupList = new CopyOnWriteArrayList<SimpleExecutionController<T>>();
 
-					continue;
-				}
-				
-				task = executionController.getTaskQueue().poll();
-				
-				if(task == null){
-					
-					taskGroupRemoveLock.lock();
-					
-					try{
-											
-						if(executionController.getInitialTaskCount() == executionController.getCompletedTaskCount() && this.taskGroupList.contains(executionController)){
-							
-							this.taskGroupList.remove(executionController);
-							this.taskGroupRemoveCondition.signalAll();
-							executionController.executionComplete();	
+   protected int taskGroupIndex = 0;
 
-						}else{
-						
-							break;
-						}
-									
-					}finally{
-					
-						taskGroupRemoveLock.unlock();
-					}				
-					
-				}else{
-					
-					try{
-						task.run();
-					
-					}catch(Throwable e){
-						
-						logger.error(e.getMessage(), e);
-						
-					}finally{
-						
-						executionController.incrementCompletedTaskCount();
-					}
-				}
-			}			
-						
-			taskGroupAddLock.lock();
-						
-			try{
-				if(status == Status.TERMINATING){
-					
-					//Last thread sets shutdown status
-					if(getLiveThreads() == 1){
-						
-						status = Status.SHUTDOWN;
-					}
-					
-					return;
-				}				
-				
-				if(this.isEmpty()){
-					
-					taskGroupAddCondition.await();
-				}
-				
-			} catch (InterruptedException e) {
-				
-			}finally{
-				taskGroupAddLock.unlock();
-			}
-		}
-	}
+   protected Status status = Status.RUNNING;
 
-	public boolean isEmpty() {
+   protected final ArrayList<Thread> threads = new ArrayList<Thread>();
 
-		if(this.taskGroupList.isEmpty()){
-			return true;
-		}
-		
-		for(SimpleExecutionController<T> controller : this.taskGroupList){
-			
-			if(!controller.getTaskQueue().isEmpty()){
-				
-				return false;
-			}
-		}	
-		
-		return true;
-	}
+   private final static Logger logger = Logger.getLogger(ThreadPoolTaskGroupHandler.class);
 
-	public int getLiveThreads(){
-		
-		int activeThreadCount = 0;
-		
-		for(Thread thread : threads){
-			
-			if(thread.isAlive()){
-				
-				activeThreadCount++;
-			}
-		}
-		
-		return activeThreadCount;
-	}
-	
-	protected synchronized int getIndex() {
+   public ThreadPoolTaskGroupHandler(int poolSize, boolean daemon){
 
-		taskGroupIndex++;
-		
-		if(taskGroupIndex >= taskGroupList.size()){
-			
-			taskGroupIndex = 0;
-		}
-		
-		return taskGroupIndex;
-	}
-	
-	void remove(SimpleExecutionController<T> executionController){
-		
-		taskGroupRemoveLock.lock();
-		
-		try{
-						
-			this.taskGroupList.remove(executionController);	
-			this.taskGroupRemoveCondition.signalAll();
-			
-		}finally{
-		
-			taskGroupRemoveLock.unlock();
-		}					
-	}
-	
-	void add(SimpleExecutionController<T> executionController){
-		
-		taskGroupAddLock.lock();
-		
-		try{
-		
-			if(status == Status.RUNNING){
-			
-				this.taskGroupList.add(executionController);
-				taskGroupAddCondition.signalAll();
-				
-			}else{
-				
-				throw new RejectedExecutionException("TaskGroupHandler status " + status);
-			}
-			
-		}finally{
-			
-			taskGroupAddLock.unlock();
-		}
-	}
+      while(threads.size() < poolSize){
 
-	public void abortAllTaskGroups() {
+         Thread thread = new Thread(this, "TaskGroupHandler thread " + (threads.size() + 1));
+         thread.setDaemon(daemon);
 
-		taskGroupRemoveLock.lock();
-		
-		try{
-	
-			while(!this.taskGroupList.isEmpty()){
-				
-				for(SimpleExecutionController<T> executionController : taskGroupList){
-					
-					executionController.abort();
-				}
-			}
-			
-		}finally{
-		
-			taskGroupRemoveLock.unlock();
-		}
-		
-	}
+         threads.add(thread);
 
-	public SimpleExecutionController<T> execute(T taskGroup) throws RejectedExecutionException{
+         thread.start();
+      }
+   }
 
-		if(status == Status.RUNNING){
-			
-			return new SimpleExecutionController<T>(taskGroup, this);
-			
-		}else{
-			
-			throw new RejectedExecutionException("TaskGroupHandler status " + status);
-		}	
-	}
+   public void run() {
 
-	public int getTaskGroupCount() {
+      Runnable task = null;
 
-		return this.taskGroupList.size();
-	}
+      while(true){
 
-	public List<SimpleExecutionController<T>> getTaskGroups() {
+         while(!taskGroupList.isEmpty() && status != Status.SHUTDOWN){
 
-		return new ArrayList<SimpleExecutionController<T>>(this.taskGroupList);
-	}
+            SimpleExecutionController<T> executionController;
 
-	public int getTotalTaskCount() {
+            try {
+               executionController = this.taskGroupList.get(this.getIndex());
 
-		int taskCount = 0;
+            } catch (IndexOutOfBoundsException e) {
 
-		for(SimpleExecutionController<T> executionController : taskGroupList){
-			
-			taskCount += executionController.getTaskQueue().size();
-		}
-		
-		return taskCount;
-	}
+               continue;
+            }
 
-	public Status getStatus(){
-		
-		return this.status;
-	}
-	
-	public void awaitTermination() throws InterruptedException {
+            task = executionController.getTaskQueue().poll();
 
-		taskGroupRemoveLock.lock();
-		
-		try{
-	
-			while(!this.taskGroupList.isEmpty()){
-				
-				taskGroupRemoveCondition.await();
-			}
-			
-		}finally{
-		
-			taskGroupRemoveLock.unlock();
-		}
-	}		
-	
-	public void awaitTermination(long timeout) throws InterruptedException {
+            if(task == null){
 
-		taskGroupRemoveLock.lock();
-		
-		try{
-	
-			while(!this.taskGroupList.isEmpty()){
-				
-				taskGroupRemoveCondition.await(timeout,TimeUnit.MILLISECONDS);
-			}
-			
-		}finally{
-		
-			taskGroupRemoveLock.unlock();
-		}
-	}	
-	
-	public void shutdown() {
+               taskGroupRemoveLock.lock();
 
-		taskGroupAddLock.lock();
-		
-		try{
-	
-			if(this.status == Status.RUNNING){
-				
-				this.status = Status.TERMINATING;
-				this.taskGroupAddCondition.signalAll();
-			}	
-			
-		}finally{
-		
-			taskGroupAddLock.unlock();
-		}
-	}	
-	
-	public void shutdownNow() {
-		
-		this.shutdown();
-		this.abortAllTaskGroups();
-	}	
+               try{
+
+                  if(executionController.getInitialTaskCount() == executionController.getCompletedTaskCount() && this.taskGroupList.contains(executionController)){
+
+                     this.taskGroupList.remove(executionController);
+                     this.taskGroupRemoveCondition.signalAll();
+                     executionController.executionComplete();
+
+                  }else{
+
+                     break;
+                  }
+
+               }finally{
+
+                  taskGroupRemoveLock.unlock();
+               }
+
+            }else{
+
+               try{
+                  task.run();
+
+               }catch(Throwable e){
+
+                  logger.error(e.getMessage(), e);
+
+               }finally{
+
+                  executionController.incrementCompletedTaskCount();
+               }
+            }
+         }
+
+         taskGroupAddLock.lock();
+
+         try{
+            if(status == Status.TERMINATING){
+
+               //Last thread sets shutdown status
+               if(getLiveThreads() == 1){
+
+                  status = Status.SHUTDOWN;
+               }
+
+               return;
+            }
+
+            if(this.isEmpty()){
+
+               taskGroupAddCondition.await();
+            }
+
+         } catch (InterruptedException e) {
+
+         }finally{
+            taskGroupAddLock.unlock();
+         }
+      }
+   }
+
+   public boolean isEmpty() {
+
+      if(this.taskGroupList.isEmpty()){
+         return true;
+      }
+
+      for(SimpleExecutionController<T> controller : this.taskGroupList){
+
+         if(!controller.getTaskQueue().isEmpty()){
+
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   public int getLiveThreads(){
+
+      int activeThreadCount = 0;
+
+      for(Thread thread : threads){
+
+         if(thread.isAlive()){
+
+            activeThreadCount++;
+         }
+      }
+
+      return activeThreadCount;
+   }
+
+   protected synchronized int getIndex() {
+
+      taskGroupIndex++;
+
+      if(taskGroupIndex >= taskGroupList.size()){
+
+         taskGroupIndex = 0;
+      }
+
+      return taskGroupIndex;
+   }
+
+   void remove(SimpleExecutionController<T> executionController){
+
+      taskGroupRemoveLock.lock();
+
+      try{
+
+         this.taskGroupList.remove(executionController);
+         this.taskGroupRemoveCondition.signalAll();
+
+      }finally{
+
+         taskGroupRemoveLock.unlock();
+      }
+   }
+
+   void add(SimpleExecutionController<T> executionController){
+
+      taskGroupAddLock.lock();
+
+      try{
+
+         if(status == Status.RUNNING){
+
+            this.taskGroupList.add(executionController);
+            taskGroupAddCondition.signalAll();
+
+         }else{
+
+            throw new RejectedExecutionException("TaskGroupHandler status " + status);
+         }
+
+      }finally{
+
+         taskGroupAddLock.unlock();
+      }
+   }
+
+   public void abortAllTaskGroups() {
+
+      taskGroupRemoveLock.lock();
+
+      try{
+
+         while(!this.taskGroupList.isEmpty()){
+
+            for(SimpleExecutionController<T> executionController : taskGroupList){
+
+               executionController.abort();
+            }
+         }
+
+      }finally{
+
+         taskGroupRemoveLock.unlock();
+      }
+
+   }
+
+   public SimpleExecutionController<T> execute(T taskGroup) throws RejectedExecutionException{
+
+      if(status == Status.RUNNING){
+
+         return new SimpleExecutionController<T>(taskGroup, this);
+
+      }else{
+
+         throw new RejectedExecutionException("TaskGroupHandler status " + status);
+      }
+   }
+
+   public int getTaskGroupCount() {
+
+      return this.taskGroupList.size();
+   }
+
+   public List<SimpleExecutionController<T>> getTaskGroups() {
+
+      return new ArrayList<SimpleExecutionController<T>>(this.taskGroupList);
+   }
+
+   public int getTotalTaskCount() {
+
+      int taskCount = 0;
+
+      for(SimpleExecutionController<T> executionController : taskGroupList){
+
+         taskCount += executionController.getTaskQueue().size();
+      }
+
+      return taskCount;
+   }
+
+   public Status getStatus(){
+
+      return this.status;
+   }
+
+   public void awaitTermination() throws InterruptedException {
+
+      taskGroupRemoveLock.lock();
+
+      try{
+
+         while(!this.taskGroupList.isEmpty()){
+
+            taskGroupRemoveCondition.await();
+         }
+
+      }finally{
+
+         taskGroupRemoveLock.unlock();
+      }
+   }
+
+   public void awaitTermination(long timeout) throws InterruptedException {
+
+      taskGroupRemoveLock.lock();
+
+      try{
+
+         while(!this.taskGroupList.isEmpty()){
+
+            taskGroupRemoveCondition.await(timeout,TimeUnit.MILLISECONDS);
+         }
+
+      }finally{
+
+         taskGroupRemoveLock.unlock();
+      }
+   }
+
+   public void shutdown() {
+
+      taskGroupAddLock.lock();
+
+      try{
+
+         if(this.status == Status.RUNNING){
+
+            this.status = Status.TERMINATING;
+            this.taskGroupAddCondition.signalAll();
+         }
+
+      }finally{
+
+         taskGroupAddLock.unlock();
+      }
+   }
+
+   public void shutdownNow() {
+
+      this.shutdown();
+      this.abortAllTaskGroups();
+   }
 }

@@ -64,14 +64,14 @@ public class UndertowJaxrsServer
       String prefix = null;
       if (!mapping.equals("/*")) prefix = mapping.substring(0, mapping.length() - 2);
       ServletInfo resteasyServlet = servlet("ResteasyServlet", HttpServlet30Dispatcher.class)
-              .setAsyncSupported(true)
-              .setLoadOnStartup(1)
-              .addMapping(mapping);
+            .setAsyncSupported(true)
+            .setLoadOnStartup(1)
+            .addMapping(mapping);
       if (prefix != null) resteasyServlet.addInitParam("resteasy.servlet.mapping.prefix", prefix);
 
       return  new DeploymentInfo()
-              .addServletContextAttribute(ResteasyDeployment.class.getName(), deployment)
-              .addServlet(
+            .addServletContextAttribute(ResteasyDeployment.class.getName(), deployment)
+            .addServlet(
                       resteasyServlet
                          );
    }
@@ -123,10 +123,10 @@ public class UndertowJaxrsServer
    
    /**
     * Maps a path prefix to a resource handler to allow serving resources other than the JAX-RS endpoints.
-    * For example, this can be used for serving static resources like web pages or API documentation that might 
-    * be deployed with the REST application server. 
-    * 
-    * @param path 
+    * For example, this can be used for serving static resources like web pages or API documentation that might
+    * be deployed with the REST application server.
+    *
+    * @param path
     * @param handler
     */
    public void addResourcePrefixPath(String path, ResourceHandler handler) 
@@ -285,9 +285,9 @@ public class UndertowJaxrsServer
    public UndertowJaxrsServer start()
    {
       server = Undertow.builder()
-              .addHttpListener(PortProvider.getPort(), "localhost")
-              .setHandler(root)
-              .build();
+            .addHttpListener(PortProvider.getPort(), "localhost")
+            .setHandler(root)
+            .build();
       server.start();
       return this;
    }

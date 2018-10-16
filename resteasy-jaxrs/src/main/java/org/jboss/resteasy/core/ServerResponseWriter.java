@@ -47,9 +47,9 @@ public class ServerResponseWriter
 {
    @FunctionalInterface
    public interface RunnableWithIOException {
-	   void run() throws IOException;
+      void run() throws IOException;
    }
-	
+
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
@@ -150,7 +150,7 @@ public class ServerResponseWriter
          jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
       }
    }
-     
+      
    public static MediaType getResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       MediaType mt = null;
@@ -183,7 +183,7 @@ public class ServerResponseWriter
 
    private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, 
          ResteasyProviderFactory providerFactory, 
-		   ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
+         ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
 
@@ -200,7 +200,7 @@ public class ServerResponseWriter
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
          ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
-        		 requestContext, responseFilters, onComplete, continuation);
+            requestContext, responseFilters, onComplete, continuation);
          // filter calls the continuation
          responseContext.filter();
       }
@@ -470,7 +470,7 @@ public class ServerResponseWriter
          }
       }
       if (jaxrsResponse.getMetadata() != null
-              && jaxrsResponse.getMetadata().size() > 0)
+            && jaxrsResponse.getMetadata().size() > 0)
       {
          response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
       }

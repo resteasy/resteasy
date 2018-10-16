@@ -5,42 +5,42 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Contact {
-    private String firstName, lastName;
+   private String firstName, lastName;
 
-    public Contact() {
-    }
+   public Contact() {
+   }
 
-    public Contact(final String firstName, final String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+   public Contact(final String firstName, final String lastName) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+   }
 
-    public String getFirstName() {
-        return firstName;
-    }
+   public String getFirstName() {
+      return firstName;
+   }
 
-    @FormParam("firstName")
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+   @FormParam("firstName")
+   public void setFirstName(String firstName) {
+      this.firstName = firstName;
+   }
 
-    public String getLastName() {
-        return lastName;
-    }
+   public String getLastName() {
+      return lastName;
+   }
 
-    @FormParam("lastName")
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+   @FormParam("lastName")
+   public void setLastName(String lastName) {
+      this.lastName = lastName;
+   }
 
-    public boolean equals(Object other) {
-        // normal checks apply here...
-        Contact otherContact = (Contact) other;
-        return otherContact.firstName.equals(this.firstName)
-                && otherContact.lastName.equals(this.lastName);
-    }
+   public boolean equals(Object other) {
+      // normal checks apply here...
+      Contact otherContact = (Contact) other;
+      return otherContact.firstName.equals(this.firstName)
+            && otherContact.lastName.equals(this.lastName);
+   }
 
-    public int hashCode() {
-        return firstName.hashCode() ^ lastName.hashCode();
-    }
+   public int hashCode() {
+      return firstName.hashCode() ^ lastName.hashCode();
+   }
 }

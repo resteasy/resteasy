@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyTunnelRefusedException extends ResteasyProtocolException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyTunnelRefusedException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyTunnelRefusedException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyTunnelRefusedException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyTunnelRefusedException()
+   {
+   }
+
+   public ResteasyTunnelRefusedException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyTunnelRefusedException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyTunnelRefusedException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyTunnelRefusedException(Throwable cause)
+   {
+      super(cause);
+   }
 }

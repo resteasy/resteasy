@@ -72,7 +72,7 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
    }
 
    public JAXBContext findProvidedJAXBContext(Class<?> type, MediaType mediaType)
-           throws JAXBException
+         throws JAXBException
    {
       JAXBContext jaxb = null;
       ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
@@ -155,24 +155,24 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       return createContextObject(parameterAnnotations, contextPath.toString());
    }
 
-	@Override
-	public JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
- {
-		Set<Class<?>> classes1 = Collections.emptySet();
-		if (classes != null && classes.length != 0) {
-			classes1 = new HashSet<Class<?>>();
-			for (Class<?> type : classes) {
-				if (type == null)
-					continue;
-				classes1.add(type);
-               Class<?> factory = findDefaultObjectFactoryClass(type);
-               if (factory != null)
-                  classes1.add(factory);
-            }
-		}
-		Class<?>[] classArray = classes1.toArray(new Class[classes1.size()]);
-		return createContextObject(parameterAnnotations, classArray);
-	}
+   @Override
+   public JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
+   {
+      Set<Class<?>> classes1 = Collections.emptySet();
+      if (classes != null && classes.length != 0) {
+         classes1 = new HashSet<Class<?>>();
+         for (Class<?> type : classes) {
+            if (type == null)
+               continue;
+            classes1.add(type);
+            Class<?> factory = findDefaultObjectFactoryClass(type);
+            if (factory != null)
+               classes1.add(factory);
+         }
+      }
+      Class<?>[] classArray = classes1.toArray(new Class[classes1.size()]);
+      return createContextObject(parameterAnnotations, classArray);
+   }
 
    public JAXBContextFinder getContext(Class<?> type)
    {

@@ -55,7 +55,7 @@ public class ResteasyTrailingSlashTest
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/test/"))
 // String val = client.target(TestPortProvider.generateURL("/test"))
-              .request().get(String.class);
+            .request().get(String.class);
       assertEquals("hello world", val);
       client.close();
    }

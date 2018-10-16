@@ -26,13 +26,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface SimplifiedRelation {
-	String keyField() default "";
-	String table();
-	String remoteKeyColumnName() default "";
-	String remoteValueColumnName();
-	Order order() default Order.ASC;
-	boolean addTablePrefix() default false;
-	boolean deplurifyTablePrefix() default false;
-	boolean preserveListOrder() default false;
-	String indexColumn() default "";
+   String keyField() default "";
+   String table();
+   String remoteKeyColumnName() default "";
+   String remoteValueColumnName();
+   Order order() default Order.ASC;
+   boolean addTablePrefix() default false;
+   boolean deplurifyTablePrefix() default false;
+   boolean preserveListOrder() default false;
+   String indexColumn() default "";
 }

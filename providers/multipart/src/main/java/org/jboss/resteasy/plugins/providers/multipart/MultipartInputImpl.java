@@ -194,14 +194,14 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       this.contentType = contentType;
       this.workers = workers;
       HttpRequest httpRequest = ResteasyProviderFactory
-              .getContextData(HttpRequest.class);
+            .getContextData(HttpRequest.class);
       if (httpRequest != null)
       {
          String defaultContentType = (String) httpRequest
                  .getAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY);
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
-                    .valueOf(defaultContentType);
+               .valueOf(defaultContentType);
          this.defaultPartCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
          if (defaultPartCharset != null)
          {
@@ -237,16 +237,16 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    }
 
    protected InputStream addHeaderToHeadlessStream(InputStream is)
-           throws UnsupportedEncodingException
+         throws UnsupportedEncodingException
    {
       return new SequenceInputStream(createHeaderInputStream(), is);
    }
 
    protected InputStream createHeaderInputStream()
-           throws UnsupportedEncodingException
+         throws UnsupportedEncodingException
    {
       String header = HttpHeaders.CONTENT_TYPE + ": " + contentType
-              + "\r\n\r\n";
+            + "\r\n\r\n";
       return new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8));
    }
 
@@ -317,7 +317,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
       @SuppressWarnings("unchecked")
       public <T> T getBody(Class<T> type, Type genericType)
-              throws IOException
+            throws IOException
       {
          if (MultipartInput.class.equals(type))
          {
@@ -410,29 +410,29 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    public static void main(String[] args) throws Exception
    {
       String input = "URLSTR: file:/Users/billburke/jboss/resteasy-jaxrs/resteasy-jaxrs/src/test/test-data/data.txt\r\n"
-              + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
-              + "Content-Disposition: form-data; name=\"part1\"\r\n"
-              + "Content-Type: text/plain; charset=US-ASCII\r\n"
-              + "Content-Transfer-Encoding: 8bit\r\n"
-              + "\r\n"
-              + "This is Value 1\r\n"
-              + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
-              + "Content-Disposition: form-data; name=\"part2\"\r\n"
-              + "Content-Type: text/plain; charset=US-ASCII\r\n"
-              + "Content-Transfer-Encoding: 8bit\r\n"
-              + "\r\n"
-              + "This is Value 2\r\n"
-              + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
-              + "Content-Disposition: form-data; name=\"data.txt\"; filename=\"data.txt\"\r\n"
-              + "Content-Type: application/octet-stream; charset=ISO-8859-1\r\n"
-              + "Content-Transfer-Encoding: binary\r\n"
-              + "\r\n"
-              + "hello world\r\n" + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3--";
+            + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+            + "Content-Disposition: form-data; name=\"part1\"\r\n"
+            + "Content-Type: text/plain; charset=US-ASCII\r\n"
+            + "Content-Transfer-Encoding: 8bit\r\n"
+            + "\r\n"
+            + "This is Value 1\r\n"
+            + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+            + "Content-Disposition: form-data; name=\"part2\"\r\n"
+            + "Content-Type: text/plain; charset=US-ASCII\r\n"
+            + "Content-Transfer-Encoding: 8bit\r\n"
+            + "\r\n"
+            + "This is Value 2\r\n"
+            + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3\r\n"
+            + "Content-Disposition: form-data; name=\"data.txt\"; filename=\"data.txt\"\r\n"
+            + "Content-Type: application/octet-stream; charset=ISO-8859-1\r\n"
+            + "Content-Transfer-Encoding: binary\r\n"
+            + "\r\n"
+            + "hello world\r\n" + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3--";
       ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes());
       Map<String, String> parameters = new LinkedHashMap<String, String>();
       parameters.put("boundary", "B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3");
       MediaType contentType = new MediaType("multipart", "form-data",
-              parameters);
+            parameters);
       MultipartInputImpl multipart = new MultipartInputImpl(contentType, null);
       multipart.parse(bais);
 

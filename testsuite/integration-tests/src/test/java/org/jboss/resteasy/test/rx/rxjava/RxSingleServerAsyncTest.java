@@ -68,7 +68,7 @@ public class RxSingleServerAsyncTest {
       war.addClass(TestException.class);
       // rx.plugins.RxJavaPlugins calles System.getProperties
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read,write")
+            new PropertyPermission("*", "read,write")
       ),"permissions.xml");
       TestUtilRxJava.addRxJavaLibraries(war);
       return TestUtil.finishContainerPrepare(war, null, RxSingleResourceImpl.class, TestExceptionMapper.class);

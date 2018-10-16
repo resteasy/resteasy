@@ -12,18 +12,18 @@ import java.util.Locale;
 
 @Path("/complex")
 public class VariantComplexResource {
-    @GET
-    public Response doGet(@Context Request req) {
-        List<Variant> vs = Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add()
-                .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
-                        MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(
-                        MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
+   @GET
+   public Response doGet(@Context Request req) {
+      List<Variant> vs = Variant.VariantListBuilder.newInstance().mediaTypes(MediaType.valueOf("image/jpeg")).add()
+            .mediaTypes(MediaType.valueOf("application/xml")).languages(new Locale("en", "us")).add().mediaTypes(
+                  MediaType.valueOf("text/xml")).languages(new Locale("en")).add().mediaTypes(
+                  MediaType.valueOf("text/xml")).languages(new Locale("en", "us")).add().build();
 
-        Variant v = req.selectVariant(vs);
-        if (v == null) {
-            return Response.notAcceptable(vs).build();
-        } else {
-            return Response.ok("GET", v).build();
-        }
-    }
+      Variant v = req.selectVariant(vs);
+      if (v == null) {
+         return Response.notAcceptable(vs).build();
+      } else {
+         return Response.ok("GET", v).build();
+      }
+   }
 }

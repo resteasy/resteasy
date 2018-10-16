@@ -8,8 +8,8 @@ import javax.ws.rs.ext.Provider;
 // reverse order
 public class ResponseContainerResponseFilter extends ResponseContainerTemplateFilter {
 
-    public void hasEntity() {
-        boolean has = responseContext.hasEntity();
-        setEntity(String.valueOf(has));
-    }
+   public void hasEntity() {
+      boolean has = responseContext.hasEntity();
+      setEntity(String.valueOf(has));
+   }
 }

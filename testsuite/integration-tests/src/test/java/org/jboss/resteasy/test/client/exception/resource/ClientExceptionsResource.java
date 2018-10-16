@@ -12,47 +12,47 @@ import javax.ws.rs.core.Response;
 
 @Path("/")
 public class ClientExceptionsResource {
-    @POST
-    @Path("post")
-    public Response post(ClientExceptionsData data) {
-        return Response.ok().entity(data).build();
-    }
+   @POST
+   @Path("post")
+   public Response post(ClientExceptionsData data) {
+      return Response.ok().entity(data).build();
+   }
 
-    @GET
-    @Path("get")
-    public String get() {
-        return "OK";
-    }
+   @GET
+   @Path("get")
+   public String get() {
+      return "OK";
+   }
 
-    @Path("data")
-    @GET
-    public Response getData(@Context HttpHeaders headers) {
-        Response response = Response.ok()
-                .type(headers.getAcceptableMediaTypes().get(0))
-                .entity(new ClientExceptionsData("test", "test"))
-                .build();
-        return response;
-    }
+   @Path("data")
+   @GET
+   public Response getData(@Context HttpHeaders headers) {
+      Response response = Response.ok()
+            .type(headers.getAcceptableMediaTypes().get(0))
+            .entity(new ClientExceptionsData("test", "test"))
+            .build();
+      return response;
+   }
 
-    @Path("senddata")
-    @POST
-    public ClientExceptionsData postandget(ClientExceptionsData data) {
-        return data;
-    }
+   @Path("senddata")
+   @POST
+   public ClientExceptionsData postandget(ClientExceptionsData data) {
+      return data;
+   }
 
-    @Path("empty")
-    @GET
-    public Response getEmpty(@Context HttpHeaders headers) {
-        Response response = Response.ok()
-                .type(headers.getAcceptableMediaTypes().get(0))
-                .header(HttpHeaders.CONTENT_LENGTH, 0)
-                .build();
-        return response;
-    }
+   @Path("empty")
+   @GET
+   public Response getEmpty(@Context HttpHeaders headers) {
+      Response response = Response.ok()
+            .type(headers.getAcceptableMediaTypes().get(0))
+            .header(HttpHeaders.CONTENT_LENGTH, 0)
+            .build();
+      return response;
+   }
 
-    @GET
-    @Path("error")
-    public Response error() {
-        throw new WebApplicationException(HttpResponseCodes.SC_FORBIDDEN);
-    }
+   @GET
+   @Path("error")
+   public Response error() {
+      throw new WebApplicationException(HttpResponseCodes.SC_FORBIDDEN);
+   }
 }

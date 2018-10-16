@@ -14,14 +14,14 @@ import java.lang.reflect.Type;
 
 @Provider
 public class DefaultNumberWriterCustom extends DefaultNumberWriter {
-    public static volatile boolean used;
-    private static Logger logger = Logger.getLogger(DefaultNumberWriterCustom.class);
+   public static volatile boolean used;
+   private static Logger logger = Logger.getLogger(DefaultNumberWriterCustom.class);
 
-    @Override
-    public void writeTo(Number n, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        logger.info("DefaultNumberWriterCustom.writeTo()");
-        used = true;
-        super.writeTo(n, type, genericType, annotations, mediaType, httpHeaders, entityStream);
-    }
+   @Override
+   public void writeTo(Number n, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+      logger.info("DefaultNumberWriterCustom.writeTo()");
+      used = true;
+      super.writeTo(n, type, genericType, annotations, mediaType, httpHeaders, entityStream);
+   }
 }

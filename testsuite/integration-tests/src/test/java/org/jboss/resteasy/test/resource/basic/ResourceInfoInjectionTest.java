@@ -33,54 +33,54 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ResourceInfoInjectionTest {
-    protected static Client client;
+   protected static Client client;
 
-    @BeforeClass
-    public static void init() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void init() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void close() {
-        client.close();
-    }
+   @AfterClass
+   public static void close() {
+      client.close();
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResourceInfoInjectionTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResourceInfoInjectionTest.class.getSimpleName());
+   }
 
-    @Deployment
-    public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(ResourceInfoInjectionTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, ResourceInfoInjectionFilter.class,
-                ResourceInfoInjectionResource.class);
-    }
+   @Deployment
+   public static Archive<?> deployUriInfoSimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(ResourceInfoInjectionTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, ResourceInfoInjectionFilter.class,
+            ResourceInfoInjectionResource.class);
+   }
 
-    /**
-     * @tpTestDetails Check for injecting ResourceInfo object in ContainerResponseFilter
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testNotFound() throws Exception {
-        WebTarget target = client.target(generateURL("/bogus"));
-        Response response = target.request().get();
-        String entity = response.readEntity(String.class);
-        Assert.assertEquals("ResponseFilter was probably not applied to response", HttpResponseCodes.SC_NOT_FOUND * 2, response.getStatus());
-        Assert.assertEquals("Wrong body of response", "", entity);
-    }
+   /**
+    * @tpTestDetails Check for injecting ResourceInfo object in ContainerResponseFilter
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testNotFound() throws Exception {
+      WebTarget target = client.target(generateURL("/bogus"));
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals("ResponseFilter was probably not applied to response", HttpResponseCodes.SC_NOT_FOUND * 2, response.getStatus());
+      Assert.assertEquals("Wrong body of response", "", entity);
+   }
 
-    /**
-     * @tpTestDetails Check for injecting ResourceInfo object in end-point
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void testAsync() throws Exception {
-        WebTarget target = client.target(generateURL("/async"));
-        Response response = target.request().post(Entity.entity("hello", "text/plain"));
-        String val = response.readEntity(String.class);
-        Assert.assertEquals("OK status is expected", HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong body of response", "async", val);
-    }
+   /**
+    * @tpTestDetails Check for injecting ResourceInfo object in end-point
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void testAsync() throws Exception {
+      WebTarget target = client.target(generateURL("/async"));
+      Response response = target.request().post(Entity.entity("hello", "text/plain"));
+      String val = response.readEntity(String.class);
+      Assert.assertEquals("OK status is expected", HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong body of response", "async", val);
+   }
 }

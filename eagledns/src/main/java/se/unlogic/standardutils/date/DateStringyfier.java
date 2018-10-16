@@ -7,9 +7,9 @@ import java.sql.Date;
 
 public class DateStringyfier implements Stringyfier {
 
-	public String format(Object bean) {
+   public String format(Object bean) {
 
-		return DateUtils.DATE_FORMATTER.format((Date)bean);
-	}
+      return DateUtils.DATE_FORMATTER.format((Date)bean);
+   }
 
 }

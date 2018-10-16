@@ -6,9 +6,9 @@ import javax.ws.rs.PathParam;
 
 @Path("users")
 public class ResourceMatchingMultipleUserResource {
-    @GET
-    @Path("{userID}")
-    public String getUser(@PathParam("userID") String userID) {
-        return "users/{id} " + userID;
-    }
+   @GET
+   @Path("{userID}")
+   public String getUser(@PathParam("userID") String userID) {
+      return "users/{id} " + userID;
+   }
 }

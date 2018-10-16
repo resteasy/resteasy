@@ -9,25 +9,25 @@ import javax.ws.rs.core.Response;
 @Path("/test")
 public class BadContenTypeTestResource {
 
-    @GET
-    public Response get() {
-        BadContentTypeTestBean bean = new BadContentTypeTestBean();
-        bean.setName("myname");
-        return Response.ok(bean).build();
-    }
+   @GET
+   public Response get() {
+      BadContentTypeTestBean bean = new BadContentTypeTestBean();
+      bean.setName("myname");
+      return Response.ok(bean).build();
+   }
 
-    @GET
-    @Produces("text/html")
-    @Path("foo")
-    public Response getMissingMBW() {
-        BadContentTypeTestBean bean = new BadContentTypeTestBean();
-        bean.setName("myname");
-        return Response.ok(bean).build();
-    }
+   @GET
+   @Produces("text/html")
+   @Path("foo")
+   public Response getMissingMBW() {
+      BadContentTypeTestBean bean = new BadContentTypeTestBean();
+      bean.setName("myname");
+      return Response.ok(bean).build();
+   }
 
-    @POST
-    public void post(BadContentTypeTestBean bean) {
+   @POST
+   public void post(BadContentTypeTestBean bean) {
 
-    }
+   }
 
 }

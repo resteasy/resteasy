@@ -14,45 +14,45 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ValidationException extends Exception {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1221745166857804542L;
-	private final List<ValidationError> errors;
+   /**
+    *
+    */
+   private static final long serialVersionUID = -1221745166857804542L;
+   private final List<ValidationError> errors;
 
-	public ValidationException(List<ValidationError> errors) {
-		super();
+   public ValidationException(List<ValidationError> errors) {
+      super();
 
-		if (errors == null) {
-			throw new NullPointerException();
-		}
+      if (errors == null) {
+         throw new NullPointerException();
+      }
 
-		this.errors = errors;
-	}
+      this.errors = errors;
+   }
 
-	public ValidationException(ValidationError... errors) {
-		super();
+   public ValidationException(ValidationError... errors) {
+      super();
 
-		if (errors == null) {
-			throw new NullPointerException();
-		}
+      if (errors == null) {
+         throw new NullPointerException();
+      }
 
-		this.errors = Arrays.asList(errors);
-	}
+      this.errors = Arrays.asList(errors);
+   }
 
-	public List<ValidationError> getErrors() {
-		return errors;
-	}
+   public List<ValidationError> getErrors() {
+      return errors;
+   }
 
-	public final Element toXML(Document doc) {
-		Element validationException = doc.createElement("validationException");
+   public final Element toXML(Document doc) {
+      Element validationException = doc.createElement("validationException");
 
-		for (ValidationError validationError : errors) {
-			if (validationError != null) {
-				validationException.appendChild(validationError.toXML(doc));
-			}
-		}
+      for (ValidationError validationError : errors) {
+         if (validationError != null) {
+            validationException.appendChild(validationError.toXML(doc));
+         }
+      }
 
-		return validationException;
-	}
+      return validationException;
+   }
 }

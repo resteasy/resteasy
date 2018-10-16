@@ -15,103 +15,103 @@ import java.util.TreeMap;
 
 public class StrictTreeMap<Key, Value> implements StrictMap<Key, Value> {
 
-	protected final TreeMap<Key, Value> treeMap;
+   protected final TreeMap<Key, Value> treeMap;
 
-	public StrictTreeMap (Comparator<Key> comparator){
-		
-		treeMap = new TreeMap<Key, Value>(comparator);
-	}
-	
-	public Value put(Key key, Value value) throws KeyAlreadyCachedException {
-		if (this.treeMap.containsKey(key)) {
-			throw new KeyAlreadyCachedException(key);
-		} else {
-			return treeMap.put(key, value);
-		}
-	}
+   public StrictTreeMap (Comparator<Key> comparator){
 
-	public Value update(Key key, Value value) throws KeyNotCachedException {
-		if (this.treeMap.containsKey(key)) {
-			treeMap.remove(key);
-			return treeMap.put(key, value);
-		} else {
-			throw new KeyNotCachedException(key);
-		}
-	}
+      treeMap = new TreeMap<Key, Value>(comparator);
+   }
 
-	public Value remove(Object key) throws KeyNotCachedException {
-		if (treeMap.containsKey(key)) {
-			return treeMap.remove(key);
-		} else {
-			throw new KeyNotCachedException(key);
-		}
-	}
+   public Value put(Key key, Value value) throws KeyAlreadyCachedException {
+      if (this.treeMap.containsKey(key)) {
+         throw new KeyAlreadyCachedException(key);
+      } else {
+         return treeMap.put(key, value);
+      }
+   }
 
-	public void clear() {
-		treeMap.clear();
-	}
+   public Value update(Key key, Value value) throws KeyNotCachedException {
+      if (this.treeMap.containsKey(key)) {
+         treeMap.remove(key);
+         return treeMap.put(key, value);
+      } else {
+         throw new KeyNotCachedException(key);
+      }
+   }
 
-	@Override
-	public Object clone() {
-		return treeMap.clone();
-	}
+   public Value remove(Object key) throws KeyNotCachedException {
+      if (treeMap.containsKey(key)) {
+         return treeMap.remove(key);
+      } else {
+         throw new KeyNotCachedException(key);
+      }
+   }
 
-	public boolean containsKey(Object key) {
-		return treeMap.containsKey(key);
-	}
+   public void clear() {
+      treeMap.clear();
+   }
 
-	public boolean containsValue(Object value) {
-		return treeMap.containsValue(value);
-	}
+   @Override
+   public Object clone() {
+      return treeMap.clone();
+   }
 
-	public Set<Entry<Key, Value>> entrySet() {
-		return treeMap.entrySet();
-	}
+   public boolean containsKey(Object key) {
+      return treeMap.containsKey(key);
+   }
 
-	@Override
-	public boolean equals(Object o) {
-		return treeMap.equals(o);
-	}
+   public boolean containsValue(Object value) {
+      return treeMap.containsValue(value);
+   }
 
-	public Value get(Object key) {
-		return treeMap.get(key);
-	}
+   public Set<Entry<Key, Value>> entrySet() {
+      return treeMap.entrySet();
+   }
 
-	@Override
-	public int hashCode() {
-		return treeMap.hashCode();
-	}
+   @Override
+   public boolean equals(Object o) {
+      return treeMap.equals(o);
+   }
 
-	public boolean isEmpty() {
-		return treeMap.isEmpty();
-	}
+   public Value get(Object key) {
+      return treeMap.get(key);
+   }
 
-	public Set<Key> keySet() {
-		return treeMap.keySet();
-	}
+   @Override
+   public int hashCode() {
+      return treeMap.hashCode();
+   }
 
-	public int size() {
-		return treeMap.size();
-	}
+   public boolean isEmpty() {
+      return treeMap.isEmpty();
+   }
 
-	@Override
-	public String toString() {
-		return treeMap.toString();
-	}
+   public Set<Key> keySet() {
+      return treeMap.keySet();
+   }
 
-	public Collection<Value> values() {
-		return treeMap.values();
-	}
+   public int size() {
+      return treeMap.size();
+   }
 
-	public void putAll(Map<? extends Key, ? extends Value> map)  throws KeyAlreadyCachedException{
+   @Override
+   public String toString() {
+      return treeMap.toString();
+   }
 
-		for (Entry<? extends Key, ? extends Value> entry : map.entrySet()) {
+   public Collection<Value> values() {
+      return treeMap.values();
+   }
 
-			if (this.treeMap.containsKey(entry.getKey())) {
-				throw new KeyAlreadyCachedException(entry.getKey());
-			}
-		}
+   public void putAll(Map<? extends Key, ? extends Value> map)  throws KeyAlreadyCachedException{
 
-		this.treeMap.putAll(map);
-	}
+      for (Entry<? extends Key, ? extends Value> entry : map.entrySet()) {
+
+         if (this.treeMap.containsKey(entry.getKey())) {
+            throw new KeyAlreadyCachedException(entry.getKey());
+         }
+      }
+
+      this.treeMap.putAll(map);
+   }
 }

@@ -29,11 +29,11 @@ public class MethodExpression extends Expression
       MethodExpression me = (MethodExpression)expression;
       if (this.invoker instanceof ResourceMethodInvoker && me.invoker instanceof ResourceLocatorInvoker)
       {
-        return -1;
+         return -1;
       }
       if (this.invoker instanceof ResourceLocatorInvoker && me.invoker instanceof ResourceMethodInvoker)
       {
-        return 1;
+         return 1;
       }
       return 0;
    }

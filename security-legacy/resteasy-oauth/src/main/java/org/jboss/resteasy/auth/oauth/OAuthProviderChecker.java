@@ -10,73 +10,73 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthProviderChecker implements OAuthProvider {
-	
-	private OAuthProvider provider;
 
-	public OAuthProviderChecker(OAuthProvider provider) {
-		this.provider = provider;
-	}
+   private OAuthProvider provider;
 
-	private <T> T checkNull(T arg) {
-		if(arg == null)
-		   throw new RuntimeException(Messages.MESSAGES.oAuthProviderShouldNotReturnNull());
-		return arg;
-	}
-	
-	public OAuthConsumer registerConsumer(String consumerKey, String displayName, String connectURI) 
-	    throws OAuthException {
-        return checkNull(provider.registerConsumer(consumerKey, displayName, connectURI));
-    }
+   public OAuthProviderChecker(OAuthProvider provider) {
+      this.provider = provider;
+   }
 
-	public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {
-		return checkNull(provider.getConsumer(consumerKey));
-	}
+   private <T> T checkNull(T arg) {
+      if(arg == null)
+         throw new RuntimeException(Messages.MESSAGES.oAuthProviderShouldNotReturnNull());
+      return arg;
+   }
 
-	public String getRealm() {
-		return checkNull(provider.getRealm());
-	}
+   public OAuthConsumer registerConsumer(String consumerKey, String displayName, String connectURI)
+      throws OAuthException {
+      return checkNull(provider.registerConsumer(consumerKey, displayName, connectURI));
+   }
 
-	public OAuthRequestToken getRequestToken(String consumerKey, String requestKey)
-			throws OAuthException {
-		return checkNull(provider.getRequestToken(consumerKey, requestKey));
-	}
+   public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {
+      return checkNull(provider.getConsumer(consumerKey));
+   }
 
-	public OAuthToken getAccessToken(String consumerKey, String accessKey)
-	throws OAuthException {
-		return checkNull(provider.getAccessToken(consumerKey, accessKey));
-	}
+   public String getRealm() {
+      return checkNull(provider.getRealm());
+   }
 
-	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
-		provider.checkTimestamp(token, timestamp);
-	}
+   public OAuthRequestToken getRequestToken(String consumerKey, String requestKey)
+         throws OAuthException {
+      return checkNull(provider.getRequestToken(consumerKey, requestKey));
+   }
 
-	public OAuthToken makeAccessToken(String consumerKey,
-			String requestKey, String verifier) throws OAuthException {
-		return checkNull(provider.makeAccessToken(consumerKey, requestKey, verifier));
-	}
+   public OAuthToken getAccessToken(String consumerKey, String accessKey)
+      throws OAuthException {
+      return checkNull(provider.getAccessToken(consumerKey, accessKey));
+   }
 
-	public OAuthToken makeRequestToken(String consumerKey, String callback, 
-	                                   String[] scopes, String[] permissions)
-			throws OAuthException {
-		return checkNull(provider.makeRequestToken(consumerKey, callback, scopes, permissions));
-	}
+   public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
+      provider.checkTimestamp(token, timestamp);
+   }
 
-	public String authoriseRequestToken(String consumerKey, String requestKey)
-			throws OAuthException {
-		return checkNull(provider.authoriseRequestToken(consumerKey, requestKey));
-	}
+   public OAuthToken makeAccessToken(String consumerKey,
+         String requestKey, String verifier) throws OAuthException {
+      return checkNull(provider.makeAccessToken(consumerKey, requestKey, verifier));
+   }
 
-    public void registerConsumerScopes(String consumerKey, String[] scopes)
-            throws OAuthException {
-        provider.registerConsumerScopes(consumerKey, scopes);
-    }
+   public OAuthToken makeRequestToken(String consumerKey, String callback,
+                                      String[] scopes, String[] permissions)
+         throws OAuthException {
+      return checkNull(provider.makeRequestToken(consumerKey, callback, scopes, permissions));
+   }
+
+   public String authoriseRequestToken(String consumerKey, String requestKey)
+         throws OAuthException {
+      return checkNull(provider.authoriseRequestToken(consumerKey, requestKey));
+   }
+
+   public void registerConsumerScopes(String consumerKey, String[] scopes)
+         throws OAuthException {
+      provider.registerConsumerScopes(consumerKey, scopes);
+   }
     
-    public void registerConsumerPermissions(String consumerKey, String[] permissions)
-        throws OAuthException {
-        provider.registerConsumerPermissions(consumerKey, permissions);
-    }
+   public void registerConsumerPermissions(String consumerKey, String[] permissions)
+      throws OAuthException {
+      provider.registerConsumerPermissions(consumerKey, permissions);
+   }
 
-    public Set<String> convertPermissionsToRoles(String[] permissions) {
-        return provider.convertPermissionsToRoles(permissions);
-    }
+   public Set<String> convertPermissionsToRoles(String[] permissions) {
+      return provider.convertPermissionsToRoles(permissions);
+   }
 }

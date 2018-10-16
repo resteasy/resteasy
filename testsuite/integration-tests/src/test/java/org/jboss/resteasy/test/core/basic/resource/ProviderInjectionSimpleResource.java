@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 
 @Path("/test")
 public interface ProviderInjectionSimpleResource {
-    @GET
-    @Produces("text/plain")
-    String foo();
+   @GET
+   @Produces("text/plain")
+   String foo();
 }

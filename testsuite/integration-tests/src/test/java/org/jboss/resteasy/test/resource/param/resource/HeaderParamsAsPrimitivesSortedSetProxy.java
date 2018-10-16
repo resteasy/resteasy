@@ -8,7 +8,7 @@ import java.util.SortedSet;
 
 @Path("/sortedset")
 public interface HeaderParamsAsPrimitivesSortedSetProxy {
-    @GET
-    @Produces("application/boolean")
-    String doGetBoolean(@HeaderParam("header") SortedSet<String> v);
+   @GET
+   @Produces("application/boolean")
+   String doGetBoolean(@HeaderParam("header") SortedSet<String> v);
 }

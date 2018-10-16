@@ -16,4 +16,3 @@ public class TestApplication extends Application {
       return classes;
    }
 }
-

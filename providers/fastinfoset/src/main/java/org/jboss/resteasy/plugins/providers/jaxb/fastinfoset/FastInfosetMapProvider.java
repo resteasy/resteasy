@@ -14,8 +14,8 @@ import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
 @Produces({"application/fastinfoset", "application/*+fastinfoset"})
 public class FastInfosetMapProvider extends MapProvider {
 
-  @Override
-  protected boolean needsSecurity() {
-    return false;
-  }
+   @Override
+   protected boolean needsSecurity() {
+      return false;
+   }
 }

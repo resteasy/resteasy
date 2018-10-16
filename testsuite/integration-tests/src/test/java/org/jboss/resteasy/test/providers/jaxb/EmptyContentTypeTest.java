@@ -30,46 +30,46 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class EmptyContentTypeTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(EmptyContentTypeTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, EmptyContentTypeResource.class, EmptyContentTypeFoo.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(EmptyContentTypeTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, EmptyContentTypeResource.class, EmptyContentTypeFoo.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, EmptyContentTypeTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, EmptyContentTypeTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for the resource with two post methods, one consumes xml content type the other consumes empty
-     * content type
-     * @tpInfo RESTEASY-518
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testEmptyContentType() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/test"));
-        EmptyContentTypeFoo foo = new EmptyContentTypeFoo();
-        foo.setName("Bill");
-        Response response = target.request().post(Entity.entity(foo, "application/xml"));
-        Assert.assertEquals("The response from the server doesn't match the expected one",
-                response.readEntity(String.class), "Bill");
+   /**
+    * @tpTestDetails Test for the resource with two post methods, one consumes xml content type the other consumes empty
+    * content type
+    * @tpInfo RESTEASY-518
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testEmptyContentType() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/test"));
+      EmptyContentTypeFoo foo = new EmptyContentTypeFoo();
+      foo.setName("Bill");
+      Response response = target.request().post(Entity.entity(foo, "application/xml"));
+      Assert.assertEquals("The response from the server doesn't match the expected one",
+            response.readEntity(String.class), "Bill");
 
-        Response response2 = target.request().post(null);
-        Assert.assertEquals("The response from the server doesn't match the expected one",
-                response2.readEntity(String.class), "NULL");
-    }
+      Response response2 = target.request().post(null);
+      Assert.assertEquals("The response from the server doesn't match the expected one",
+            response2.readEntity(String.class), "NULL");
+   }
 
 }

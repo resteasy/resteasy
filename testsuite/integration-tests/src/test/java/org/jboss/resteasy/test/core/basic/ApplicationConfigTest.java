@@ -34,72 +34,72 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ApplicationConfigTest {
 
-    static Client client;
+   static Client client;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, ApplicationConfigTest.class.getSimpleName() + ".war");
-        war.addClasses(ApplicationConfig.class, ApplicationConfigInjectionResource.class, ApplicationConfigInterface.class,
-                ApplicationConfigQuotedTextWriter.class, ApplicationConfigResource.class,
-                ApplicationConfigService.class);
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, ApplicationConfigTest.class.getSimpleName() + ".war");
+      war.addClasses(ApplicationConfig.class, ApplicationConfigInjectionResource.class, ApplicationConfigInterface.class,
+            ApplicationConfigQuotedTextWriter.class, ApplicationConfigResource.class,
+            ApplicationConfigService.class);
+      return war;
+   }
 
-    @BeforeClass
-    public static void init() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void init() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ApplicationConfigTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ApplicationConfigTest.class.getSimpleName());
+   }
 
-    private void basicTest(String uri, String body) {
-        Response response = client.target(uri).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-    }
+   private void basicTest(String uri, String body) {
+      Response response = client.target(uri).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Test base resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testIt() {
-        basicTest(generateURL("/my"), "\"hello\"");
-        basicTest(generateURL("/myinterface"), "hello");
-    }
+   /**
+    * @tpTestDetails Test base resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testIt() {
+      basicTest(generateURL("/my"), "\"hello\"");
+      basicTest(generateURL("/myinterface"), "hello");
+   }
 
-    /**
-     * @tpTestDetails Injection test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testFieldInjection() {
-        basicTest(generateURL("/injection/field"), "true");
-    }
+   /**
+    * @tpTestDetails Injection test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testFieldInjection() {
+      basicTest(generateURL("/injection/field"), "true");
+   }
 
-    /**
-     * @tpTestDetails Setter injection test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSetterInjection() {
-        basicTest(generateURL("/injection/setter"), "true");
-    }
+   /**
+    * @tpTestDetails Setter injection test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSetterInjection() {
+      basicTest(generateURL("/injection/setter"), "true");
+   }
 
-    /**
-     * @tpTestDetails Setter injection test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testConstructorInjection() {
-        basicTest(generateURL("/injection/constructor"), "true");
-    }
+   /**
+    * @tpTestDetails Setter injection test
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testConstructorInjection() {
+      basicTest(generateURL("/injection/constructor"), "true");
+   }
 
 }

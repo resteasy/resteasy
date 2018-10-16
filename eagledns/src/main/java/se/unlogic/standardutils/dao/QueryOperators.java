@@ -9,21 +9,21 @@ package se.unlogic.standardutils.dao;
 
 public enum QueryOperators {
 
-	EQUALS("="),
-	NOT_EQUALS("!="),
-	BIGGER_THAN(">"),
-	SMALLER_THAN("<"),
-	BIGGER_THAN_OR_EUALS("<="),
-	SMALLER_THAN_OR_EUALS(">="),
-	LIKE("LIKE");
+   EQUALS("="),
+   NOT_EQUALS("!="),
+   BIGGER_THAN(">"),
+   SMALLER_THAN("<"),
+   BIGGER_THAN_OR_EUALS("<="),
+   SMALLER_THAN_OR_EUALS(">="),
+   LIKE("LIKE");
 
-	private String value;
+   private String value;
 
-	QueryOperators (String value){
-		this.value = value;
-	}
+   QueryOperators (String value){
+      this.value = value;
+   }
 
-	public String getOperator(){
-		return value;
-	}
+   public String getOperator(){
+      return value;
+   }
 }

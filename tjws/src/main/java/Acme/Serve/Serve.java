@@ -355,7 +355,7 @@ public class Serve implements ServletContext, Serializable
       keepAliveHdrParams = "timeout=" + timeoutKeepAliveSec + ", max=" + maxAliveConnUse;
 
       expiredIn = arguments.get(ARG_SESSION_TIMEOUT) != null ? ((Integer) arguments.get(ARG_SESSION_TIMEOUT))
-              .intValue() : DEF_SESSION_TIMEOUT;
+            .intValue() : DEF_SESSION_TIMEOUT;
       srandom = new SecureRandom((arguments.get(ARG_SESSION_SEED) == null ? "TJWS" + new Date() : (String) arguments.get(ARG_SESSION_SEED)).getBytes());
       try
       {
@@ -646,8 +646,8 @@ public class Serve implements ServletContext, Serializable
       if (workPath == null)
          workPath = ".";
       return new File(workPath, hostName + '-'
-              + (arguments.get(ARG_PORT) == null ? String.valueOf(DEF_PORT) : arguments.get(ARG_PORT))
-              + "-session.obj");
+            + (arguments.get(ARG_PORT) == null ? String.valueOf(DEF_PORT) : arguments.get(ARG_PORT))
+            + "-session.obj");
    }
 
    // Run the server. Returns only on errors.
@@ -1209,7 +1209,7 @@ public class Serve implements ServletContext, Serializable
    public String getServerInfo()
    {
       return Serve.Identification.serverName + " " + Serve.Identification.serverVersion + " ("
-              + Serve.Identification.serverUrl + ")";
+            + Serve.Identification.serverUrl + ")";
    }
 
    // / Returns the value of the named attribute of the network service, or
@@ -1439,7 +1439,7 @@ public class Serve implements ServletContext, Serializable
       }
 
       public void forward(ServletRequest _request, ServletResponse _response) throws ServletException,
-              java.io.IOException
+            java.io.IOException
       {
          _request.removeAttribute("javax.servlet.forward.request_uri"); // reset in case of nested
          _response.reset();
@@ -1496,7 +1496,7 @@ public class Serve implements ServletContext, Serializable
       }
 
       public void include(ServletRequest _request, ServletResponse _response) throws ServletException,
-              java.io.IOException
+            java.io.IOException
       {
          _request.removeAttribute("javax.servlet.include.request_uri"); // reset in case of nested
          ((Serve.ServeConnection) _response).setInInclude(true);
@@ -1842,10 +1842,10 @@ public class Serve implements ServletContext, Serializable
       private final SimpleDateFormat expdatefmt = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss 'GMT'", Locale.US); // used for cookie
 
       private final SimpleDateFormat rfc850DateFmt = new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss 'GMT'",
-              Locale.US); // rfc850-date
+            Locale.US); // rfc850-date
 
       private final SimpleDateFormat headerdateformat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'",
-              Locale.US); // rfc1123-date
+            Locale.US); // rfc1123-date
 
       private final SimpleDateFormat asciiDateFmt = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy", Locale.US); // ASCII date, used in headers
 
@@ -1857,8 +1857,8 @@ public class Serve implements ServletContext, Serializable
       }
 
       /*
-         * protected void finalize() throws Throwable { serve.log("Connection collected"); super.finalize(); }
-         */
+       * protected void finalize() throws Throwable { serve.log("Connection collected"); super.finalize(); }
+       */
 
       // / Constructor.
 
@@ -2261,7 +2261,7 @@ public class Serve implements ServletContext, Serializable
          if (encoding != null)
          {
             if ((encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("compressed"))
-                    && null != serve.gzipInStreamConstr && ((ServeInputStream) in).compressed(true))
+               && null != serve.gzipInStreamConstr && ((ServeInputStream) in).compressed(true))
             {
             }
             else
@@ -2270,7 +2270,7 @@ public class Serve implements ServletContext, Serializable
                return;
             }
          }
-         */
+       */
          if (assureHeaders() && socket.getKeepAlive() == false)
             socket.setKeepAlive(true);
          // TODO new SimpleRequestDispatcher(reqUriPathUn).forward((ServletRequest) this, (ServletResponse) this);
@@ -2389,7 +2389,7 @@ public class Serve implements ServletContext, Serializable
          if (credentials != null)
          {
             credentials = Acme.Utils.base64Decode(credentials.substring(credentials.indexOf(' ') + 1),
-                    getCharacterEncoding());
+               getCharacterEncoding());
             int i = credentials.indexOf(':');
             String user = credentials.substring(0, i);
             String password = credentials.substring(i + 1);
@@ -3961,9 +3961,9 @@ public class Serve implements ServletContext, Serializable
          {
             resHeaderNames.put(header, value);
             //if (header.equals(CONTENTTYPE)) {
-            //	String enc = extractEncodingFromContentType(value);
-            //	if (enc != null)
-            //		setCharacterEncoding(enc);
+            //   String enc = extractEncodingFromContentType(value);
+            //   if (enc != null)
+            //      setCharacterEncoding(enc);
             //}
          }
       }
@@ -5491,7 +5491,7 @@ public class Serve implements ServletContext, Serializable
             // if (lazyRestore)
             // result.put(aname, s.substring(cp+1));
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(Utils.decode64(s
-                    .substring(cp + 1))));
+               .substring(cp + 1))));
             Throwable restoreError;
             try
             {
@@ -5596,7 +5596,7 @@ public class Serve implements ServletContext, Serializable
       }
 
       static HttpSessionContextImpl restore(BufferedReader br, int inactiveInterval, ServletContext servletContext)
-              throws IOException
+            throws IOException
       {
          HttpSessionContextImpl result = new HttpSessionContextImpl();
          AcmeSession session;

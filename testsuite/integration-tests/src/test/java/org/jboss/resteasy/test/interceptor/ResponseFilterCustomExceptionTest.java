@@ -29,40 +29,40 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ResponseFilterCustomExceptionTest {
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResponseFilterCustomExceptionTest.class.getSimpleName());
-        war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addClasses(CustomException.class);
-        return TestUtil.finishContainerPrepare(war, null, ThrowCustomExceptionResponseFilter.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ResponseFilterCustomExceptionTest.class.getSimpleName());
+      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      war.addClasses(CustomException.class);
+      return TestUtil.finishContainerPrepare(war, null, ThrowCustomExceptionResponseFilter.class);
+   }
 
-    static Client client;
+   static Client client;
 
-    @Before
-    public void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @Before
+   public void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @After
-    public void cleanup() {
-        client.close();
-    }
+   @After
+   public void cleanup() {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResponseFilterCustomExceptionTest.class.getSimpleName());
-    }
-    /**
-     * @tpTestDetails Use ClientResponseFilter
-     * @tpSince RESTEasy 3.0.21
-     */
-    @Test
-    public void testThrowCustomException() throws Exception {
-        try {
-            client.register(ThrowCustomExceptionResponseFilter.class);
-            client.target(generateURL("/testCustomException")).request().post(Entity.text("testCustomException"));
-        } catch (ProcessingException pe) {
-            Assert.assertEquals(CustomException.class, pe.getCause().getClass());
-        }
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResponseFilterCustomExceptionTest.class.getSimpleName());
+   }
+   /**
+    * @tpTestDetails Use ClientResponseFilter
+    * @tpSince RESTEasy 3.0.21
+    */
+   @Test
+   public void testThrowCustomException() throws Exception {
+      try {
+         client.register(ThrowCustomExceptionResponseFilter.class);
+         client.target(generateURL("/testCustomException")).request().post(Entity.text("testCustomException"));
+      } catch (ProcessingException pe) {
+         Assert.assertEquals(CustomException.class, pe.getCause().getClass());
+      }
+   }
 }

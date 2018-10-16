@@ -30,26 +30,26 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class CovariantReturnSubresourceLocatorsTest {
 
-    @Deployment
-    public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(CovariantReturnSubresourceLocatorsTest.class.getSimpleName());
-        war.addClasses(CovariantReturnSubresourceLocatorsRootProxy.class, CovariantReturnSubresourceLocatorsSubProxy.class);
-        return TestUtil.finishContainerPrepare(war, null, CovariantReturnSubresourceLocatorsSubProxyRootImpl.class,
-                CovariantReturnSubresourceLocatorsSubProxySubImpl.class);
-    }
+   @Deployment
+   public static Archive<?> deployUriInfoSimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(CovariantReturnSubresourceLocatorsTest.class.getSimpleName());
+      war.addClasses(CovariantReturnSubresourceLocatorsRootProxy.class, CovariantReturnSubresourceLocatorsSubProxy.class);
+      return TestUtil.finishContainerPrepare(war, null, CovariantReturnSubresourceLocatorsSubProxyRootImpl.class,
+            CovariantReturnSubresourceLocatorsSubProxySubImpl.class);
+   }
 
-    /**
-     * @tpTestDetails Test basic path
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void basicTest() {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        Response response = client.target(PortProviderUtil.generateURL("/path/sub/xyz",
-                CovariantReturnSubresourceLocatorsTest.class.getSimpleName())).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "Boo! - xyz", response.readEntity(String.class));
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Test basic path
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void basicTest() {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      Response response = client.target(PortProviderUtil.generateURL("/path/sub/xyz",
+            CovariantReturnSubresourceLocatorsTest.class.getSimpleName())).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "Boo! - xyz", response.readEntity(String.class));
+      response.close();
+      client.close();
+   }
 }

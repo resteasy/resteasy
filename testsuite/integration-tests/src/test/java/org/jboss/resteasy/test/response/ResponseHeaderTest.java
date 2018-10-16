@@ -33,15 +33,15 @@ import java.util.List;
 @RunAsClient
 public class ResponseHeaderTest {
 
-    public static final Logger LOG = Logger.getLogger(ResponseHeaderTest.class);
+   public static final Logger LOG = Logger.getLogger(ResponseHeaderTest.class);
 
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(ResponseHeaderTest.class.getSimpleName());
       war.addClass(ResponseHeaderExceptionMapperRuntimeException.class);
       return TestUtil.finishContainerPrepare(war, null,
-              ResponseHeaderExceptionMapper.class,
-              ResponseHeaderResource.class);
+            ResponseHeaderExceptionMapper.class,
+            ResponseHeaderResource.class);
    }
 
 
@@ -54,7 +54,7 @@ public class ResponseHeaderTest {
    public void testMapperWithResteasyClient() throws Exception {
       ResteasyClient client = new ResteasyClientBuilder().build();
       WebTarget base = client.target(PortProviderUtil.generateURL("/test",
-              ResponseHeaderTest.class.getSimpleName()));
+            ResponseHeaderTest.class.getSimpleName()));
       Response response = base.request().get();
       MultivaluedMap<String, Object> headers = response.getHeaders();
       Object obj = headers.get("Server");
@@ -62,8 +62,8 @@ public class ResponseHeaderTest {
       if (obj instanceof ArrayList) {
          List<Object> objs = (List<Object>)obj;
          if (objs.size() != 2) {
-             LOG.error(objs);
-             Assert.fail("2 array objects expected " + objs.size() + " were returned");
+            LOG.error(objs);
+            Assert.fail("2 array objects expected " + objs.size() + " were returned");
          }
 
          Assert.assertEquals("Wrong headers",

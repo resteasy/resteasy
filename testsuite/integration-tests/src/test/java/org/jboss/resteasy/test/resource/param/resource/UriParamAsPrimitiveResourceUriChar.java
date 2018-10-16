@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/char/{arg}")
 public class UriParamAsPrimitiveResourceUriChar {
-    @GET
-    public String doGet(@PathParam("arg") char v) {
-        Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 'a', v);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") char v) {
+      Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, 'a', v);
+      return "content";
+   }
 }

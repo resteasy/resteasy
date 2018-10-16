@@ -5,9 +5,9 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class ExceptionHandlingResource {
-    @Path("test")
-    @POST
-    public void post() throws Exception {
-        throw new Exception("test");
-    }
+   @Path("test")
+   @POST
+   public void post() throws Exception {
+      throw new Exception("test");
+   }
 }

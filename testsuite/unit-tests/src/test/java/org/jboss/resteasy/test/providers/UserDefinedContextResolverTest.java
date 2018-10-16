@@ -22,7 +22,7 @@ import org.junit.Test;
  */
 public class UserDefinedContextResolverTest {
 
-    private static final Logger LOG = Logger.getLogger(UserDefinedContextResolverTest.class);
+   private static final Logger LOG = Logger.getLogger(UserDefinedContextResolverTest.class);
 
    public static class TestException extends RuntimeException {
       private static final long serialVersionUID = 1L;

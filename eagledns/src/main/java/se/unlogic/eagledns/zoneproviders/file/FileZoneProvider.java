@@ -31,183 +31,183 @@ import java.util.Timer;
  */
 public class FileZoneProvider implements ZoneProvider, ZoneProviderUpdatable, Runnable {
 
-	private final Logger log = Logger.getLogger(this.getClass());
+   private final Logger log = Logger.getLogger(this.getClass());
 
-	private String name;
-	private String zoneFileDirectory;
+   private String name;
+   private String zoneFileDirectory;
 
-	private boolean autoReloadZones;
-	private Long pollingInterval;
+   private boolean autoReloadZones;
+   private Long pollingInterval;
 
-	private Map<String, Long> lastFileList = new HashMap<String, Long>();
+   private Map<String, Long> lastFileList = new HashMap<String, Long>();
 
-	private ZoneChangeCallback changeCallback;
+   private ZoneChangeCallback changeCallback;
 
-	private Timer watcher;
+   private Timer watcher;
 
-	public void init(String name) {
+   public void init(String name) {
 
-		this.name = name;
+      this.name = name;
 
-		if(autoReloadZones && pollingInterval != null){
+      if(autoReloadZones && pollingInterval != null){
 
-			watcher = new Timer(true);
-			watcher.schedule(new RunnableTimerTask(this), 5000, pollingInterval);
-		}
-	}
+         watcher = new Timer(true);
+         watcher.schedule(new RunnableTimerTask(this), 5000, pollingInterval);
+      }
+   }
 
-	public void run() {
+   public void run() {
 
-		if (changeCallback != null && hasDirectoryChanged()){
+      if (changeCallback != null && hasDirectoryChanged()){
 
-			log.info("Changes in directory " + zoneFileDirectory + " detected");
+         log.info("Changes in directory " + zoneFileDirectory + " detected");
 
-			changeCallback.zoneDataChanged();
-		}
-	}
+         changeCallback.zoneDataChanged();
+      }
+   }
 
-	private boolean hasDirectoryChanged() {
-		File folder = new File(this.zoneFileDirectory);
-		File[] files = folder.listFiles();
-		if (files.length != lastFileList.size()) {
-			return true;
-		}
-		for (File f : folder.listFiles()) {
-			if (!lastFileList.containsKey(f.getName())) {
-				return true;
-			}
-			if (f.lastModified() > lastFileList.get(f.getName())) {
-				return true;
-			}
-		}
+   private boolean hasDirectoryChanged() {
+      File folder = new File(this.zoneFileDirectory);
+      File[] files = folder.listFiles();
+      if (files.length != lastFileList.size()) {
+         return true;
+      }
+      for (File f : folder.listFiles()) {
+         if (!lastFileList.containsKey(f.getName())) {
+            return true;
+         }
+         if (f.lastModified() > lastFileList.get(f.getName())) {
+            return true;
+         }
+      }
 
-		return false;
-	}
+      return false;
+   }
 
 
-	/** Refresh our list of zone files for watching */
-	private void updateZoneFiles(File[] files) {
-		lastFileList = new HashMap<String, Long>();
-		for (File f : files) {
-			lastFileList.put(f.getName(), f.lastModified());
-		}
-	}
+   /** Refresh our list of zone files for watching */
+   private void updateZoneFiles(File[] files) {
+      lastFileList = new HashMap<String, Long>();
+      for (File f : files) {
+         lastFileList.put(f.getName(), f.lastModified());
+      }
+   }
 
-	public Collection<Zone> getPrimaryZones() {
+   public Collection<Zone> getPrimaryZones() {
 
-		File zoneDir = new File(this.zoneFileDirectory);
+      File zoneDir = new File(this.zoneFileDirectory);
 
-		if(!zoneDir.exists() || !zoneDir.isDirectory()){
+      if(!zoneDir.exists() || !zoneDir.isDirectory()){
 
-			log.error("Zone file directory specified for FileZoneProvider " + name + " does not exist!");
-			return null;
+         log.error("Zone file directory specified for FileZoneProvider " + name + " does not exist!");
+         return null;
 
-		}else if(!zoneDir.canRead()){
+      }else if(!zoneDir.canRead()){
 
-			log.error("Zone file directory specified for FileZoneProvider " + name + " is not readable!");
-			return null;
-		}
+         log.error("Zone file directory specified for FileZoneProvider " + name + " is not readable!");
+         return null;
+      }
 
-		File[] files = zoneDir.listFiles();
-		updateZoneFiles(files);
+      File[] files = zoneDir.listFiles();
+      updateZoneFiles(files);
 
-		if(files == null || files.length == 0){
+      if(files == null || files.length == 0){
 
-			log.info("No zone files found for FileZoneProvider " + name + " in directory " + zoneDir.getPath());
-			return null;
-		}
+         log.info("No zone files found for FileZoneProvider " + name + " in directory " + zoneDir.getPath());
+         return null;
+      }
 
-		ArrayList<Zone> zones = new ArrayList<Zone>(files.length);
+      ArrayList<Zone> zones = new ArrayList<Zone>(files.length);
 
-		for(File zoneFile : files){
+      for(File zoneFile : files){
 
-			if(!zoneFile.canRead()){
-				log.error("FileZoneProvider " + name + " unable to access zone file " + zoneFile );
-				continue;
-			}
+         if(!zoneFile.canRead()){
+            log.error("FileZoneProvider " + name + " unable to access zone file " + zoneFile );
+            continue;
+         }
 
-			Name origin;
-			try {
+         Name origin;
+         try {
 
-				origin = Name.fromString(zoneFile.getName(), Name.root);
-				Zone zone = new Zone(origin, zoneFile.getPath());
+            origin = Name.fromString(zoneFile.getName(), Name.root);
+            Zone zone = new Zone(origin, zoneFile.getPath());
 
-				log.debug("FileZoneProvider " + name + " successfully parsed zone file " + zoneFile.getName());
+            log.debug("FileZoneProvider " + name + " successfully parsed zone file " + zoneFile.getName());
 
-				zones.add(zone);
+            zones.add(zone);
 
-			} catch (TextParseException e) {
+         } catch (TextParseException e) {
 
-				log.error("FileZoneProvider " + name + " unable to parse zone file " + zoneFile.getName(),e);
+            log.error("FileZoneProvider " + name + " unable to parse zone file " + zoneFile.getName(),e);
 
-			} catch (IOException e) {
+         } catch (IOException e) {
 
-				log.error("Unable to parse zone file " + zoneFile + " in FileZoneProvider " + name,e);
-			}
-		}
+            log.error("Unable to parse zone file " + zoneFile + " in FileZoneProvider " + name,e);
+         }
+      }
 
-		if(!zones.isEmpty()){
+      if(!zones.isEmpty()){
 
-			return zones;
-		}
+         return zones;
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public void unload() {
+   public void unload() {
 
-	}
+   }
 
 
-	public String getZoneFileDirectory() {
-		return zoneFileDirectory;
-	}
+   public String getZoneFileDirectory() {
+      return zoneFileDirectory;
+   }
 
 
-	public void setZoneFileDirectory(String zoneFileDirectory) {
+   public void setZoneFileDirectory(String zoneFileDirectory) {
 
-		this.zoneFileDirectory = zoneFileDirectory;
+      this.zoneFileDirectory = zoneFileDirectory;
 
-		log.debug("zoneFileDirectory set to " + zoneFileDirectory);
-	}
+      log.debug("zoneFileDirectory set to " + zoneFileDirectory);
+   }
 
-	public Collection<SecondaryZone> getSecondaryZones() {
+   public Collection<SecondaryZone> getSecondaryZones() {
 
-		//Not supported
-		return null;
-	}
+      //Not supported
+      return null;
+   }
 
-	public void zoneUpdated(SecondaryZone secondaryZone) {
+   public void zoneUpdated(SecondaryZone secondaryZone) {
 
-		//Not supported
-	}
+      //Not supported
+   }
 
-	public void zoneChecked(SecondaryZone secondaryZone) {
+   public void zoneChecked(SecondaryZone secondaryZone) {
 
-		//Not supported
-	}
+      //Not supported
+   }
 
-	public void setChangeListener(ZoneChangeCallback ev) {
-		this.changeCallback = ev;
-	}
+   public void setChangeListener(ZoneChangeCallback ev) {
+      this.changeCallback = ev;
+   }
 
 
-	public void setAutoReloadZones(String autoReloadZones) {
-		this.autoReloadZones = Boolean.parseBoolean(autoReloadZones);
-	}
+   public void setAutoReloadZones(String autoReloadZones) {
+      this.autoReloadZones = Boolean.parseBoolean(autoReloadZones);
+   }
 
 
-	public void setPollingInterval(String pollingInterval) {
+   public void setPollingInterval(String pollingInterval) {
 
-		Long value = NumberUtils.toLong(pollingInterval);
+      Long value = NumberUtils.toLong(pollingInterval);
 
-		if(value != null && value > 0){
+      if(value != null && value > 0){
 
-			this.pollingInterval = value;
+         this.pollingInterval = value;
 
-		}else{
+      }else{
 
-			log.warn("Invalid polling interval specified: " + pollingInterval);
-		}
-	}
+         log.warn("Invalid polling interval specified: " + pollingInterval);
+      }
+   }
 }

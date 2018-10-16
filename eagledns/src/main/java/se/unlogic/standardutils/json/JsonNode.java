@@ -19,8 +19,8 @@ import java.io.Serializable;
  */
 public interface JsonNode extends Serializable {
 
-	String toJson();
-	
-	String toJson(StringBuilder stringBuilder);
-	
+   String toJson();
+
+   String toJson(StringBuilder stringBuilder);
+
 }

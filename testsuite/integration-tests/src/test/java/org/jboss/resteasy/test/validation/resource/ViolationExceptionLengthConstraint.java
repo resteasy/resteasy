@@ -15,11 +15,11 @@ import javax.validation.Payload;
 @Target({TYPE})
 @Retention(RUNTIME)
 public @interface ViolationExceptionLengthConstraint {
-    String message() default "Concatenation of s and t must have length > {value}";
+   String message() default "Concatenation of s and t must have length > {value}";
 
-    Class<?>[] groups() default {};
+   Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+   Class<? extends Payload>[] payload() default {};
 
-    int value();
+   int value();
 }

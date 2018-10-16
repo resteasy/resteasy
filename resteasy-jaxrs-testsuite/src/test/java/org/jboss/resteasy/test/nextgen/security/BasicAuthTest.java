@@ -168,9 +168,9 @@ public class BasicAuthTest
    {
       SimpleSecurityDomain domain = new SimpleSecurityDomain();
       String[] roles =
-              {"admin"};
+            {"admin"};
       String[] basic =
-              {"user"};
+            {"user"};
       domain.addUser("bill", "password", roles);
       domain.addUser("mo", "password", basic);
       dispatcher = EmbeddedContainer.start("", domain).getDispatcher();

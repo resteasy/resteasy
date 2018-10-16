@@ -67,7 +67,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    
    /**
     * New constructor
-    * 
+    *
     * @param constraintViolations set of constraint violations
     * @param accept list of accept media types
     */
@@ -80,7 +80,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    
    /**
     * New constructor
-    * 
+    *
     * @param container violation container
     */
    public ResteasyViolationException(SimpleViolationsContainer container)
@@ -91,7 +91,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    
    /**
     * New constructor
-    * 
+    *
     * @param container violation container
     * @param accept list of accept media types
     */

@@ -91,8 +91,8 @@ public class JaxrsOAuthBearerTest extends SkeletonTestBase
    {
       String uri = generateURL("/Application/user.txt");
       Form loginform = new Form()
-              .param("client_id", "wburke")
-              .param("Password", "userpassword");
+            .param("client_id", "wburke")
+            .param("Password", "userpassword");
       AccessTokenResponse res = client.target(realmInfo.getGrantUrl()).request().post(Entity.form(loginform), AccessTokenResponse.class);
       String token = res.getToken();
       String txt = client.target(uri).request().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get(String.class);

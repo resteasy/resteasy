@@ -5,8 +5,8 @@ import javax.ws.rs.Path;
 
 @Path("test")
 public class PriorityExecutionResource {
-    @GET
-    public String get() {
-        return "test";
-    }
+   @GET
+   public String get() {
+      return "test";
+   }
 }

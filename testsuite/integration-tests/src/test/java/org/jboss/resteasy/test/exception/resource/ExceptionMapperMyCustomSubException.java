@@ -5,6 +5,6 @@ public class ExceptionMapperMyCustomSubException extends ExceptionMapperMyCustom
    private static final long serialVersionUID = 1L;
 
    public ExceptionMapperMyCustomSubException(final String message) {
-        super(message);
-    }
+      super(message);
+   }
 }

@@ -3,23 +3,23 @@ package se.unlogic.standardutils.populators;
 
 public class DummyPopulator implements BeanStringPopulator<Object> {
 
-	public boolean validateFormat(String value) {
+   public boolean validateFormat(String value) {
 
-		return false;
-	}
+      return false;
+   }
 
-	public Object getValue(String value) {
+   public Object getValue(String value) {
 
-		return null;
-	}
+      return null;
+   }
 
-	public Class<Object> getType() {
+   public Class<Object> getType() {
 
-		return null;
-	}
+      return null;
+   }
 
-	public String getPopulatorID() {
+   public String getPopulatorID() {
 
-		return null;
-	}
+      return null;
+   }
 }

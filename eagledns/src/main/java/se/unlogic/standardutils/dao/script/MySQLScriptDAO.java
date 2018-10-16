@@ -19,62 +19,62 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MySQLScriptDAO implements ScriptDAO {
-	
-	protected final DataSource dataSource;
 
-	public MySQLScriptDAO(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+   protected final DataSource dataSource;
 
-	public void executeScript(InputStream inputStream) throws SQLException, IOException {
+   public MySQLScriptDAO(DataSource dataSource) {
+      this.dataSource = dataSource;
+   }
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		
-		StringBuilder sb = new StringBuilder();
+   public void executeScript(InputStream inputStream) throws SQLException, IOException {
 
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-        } catch (IOException e) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+      StringBuilder sb = new StringBuilder();
+
+      String line = null;
+      try {
+         while ((line = reader.readLine()) != null) {
+            sb.append(line + "\n");
+         }
+      } catch (IOException e) {
+         throw e;
+      } finally {
+         try {
+            reader.close();
+            inputStream.close();
+         } catch (IOException e) {
             throw e;
-        } finally {
-            try {
-            	reader.close();
-            	inputStream.close();
-            } catch (IOException e) {
-                throw e;
-            }
-        }
-        
-        this.executeScript(sb.toString());
+         }
+      }
+      
+      this.executeScript(sb.toString());
 
-	}
-	
-	public void executeScript(String script) throws SQLException {
+   }
 
-		TransactionHandler transactionHandler = null;
-		UpdateQuery updateQuery;
+   public void executeScript(String script) throws SQLException {
 
-		ScriptUtility scriptUtility = new MySQLScriptUtility();
-		List<String> statements = scriptUtility.getStatements(script);
-		
-		try {
-			
-			transactionHandler = new TransactionHandler(this.dataSource);
+      TransactionHandler transactionHandler = null;
+      UpdateQuery updateQuery;
 
-			for(String query : statements) {
-				updateQuery = transactionHandler.getUpdateQuery(query.toString());
-				updateQuery.executeUpdate();
-			}
-			
-			transactionHandler.commit();
+      ScriptUtility scriptUtility = new MySQLScriptUtility();
+      List<String> statements = scriptUtility.getStatements(script);
 
-		} finally {
+      try {
 
-			TransactionHandler.autoClose(transactionHandler);
-		
-		}
-	}
+         transactionHandler = new TransactionHandler(this.dataSource);
+
+         for(String query : statements) {
+            updateQuery = transactionHandler.getUpdateQuery(query.toString());
+            updateQuery.executeUpdate();
+         }
+
+         transactionHandler.commit();
+
+      } finally {
+
+         TransactionHandler.autoClose(transactionHandler);
+
+      }
+   }
 }

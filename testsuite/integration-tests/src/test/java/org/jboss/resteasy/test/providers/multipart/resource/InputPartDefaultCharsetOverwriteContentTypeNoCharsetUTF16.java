@@ -15,8 +15,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ServerInterceptor
 public class InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16 implements PreProcessInterceptor {
-    public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, InputPartDefaultCharsetOverwriteTest.TEXT_HTTP_WITH_CHARSET_UTF_16);
-        return null;
-    }
+   public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
+      request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, InputPartDefaultCharsetOverwriteTest.TEXT_HTTP_WITH_CHARSET_UTF_16);
+      return null;
+   }
 }

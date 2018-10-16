@@ -32,7 +32,7 @@ public class ResteasyRequestWrapper
    }
 
    public ResteasyRequestWrapper(HttpServletRequest request, String httpMethod, String prefix)
-           throws ServletException, IOException
+         throws ServletException, IOException
    {
       this.httpServletRequest = request;
       ResteasyHttpHeaders headers = ServletUtil.extractHttpHeaders(request);
@@ -48,7 +48,7 @@ public class ResteasyRequestWrapper
       // invocations. Suggest Core RESTEasy refactoring to change the
       // async invocation
       httpRequest = new HttpServletInputMessage(request, null, null, null, headers, uriInfo, httpMethod
-              .toUpperCase(), null);
+            .toUpperCase(), null);
    }
 
    public HttpServletRequest getHttpServletRequest()

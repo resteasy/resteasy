@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyRedirectException extends ResteasyNonRepeatableRequestException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyRedirectException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyRedirectException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyRedirectException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyRedirectException()
+   {
+   }
+
+   public ResteasyRedirectException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyRedirectException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyRedirectException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyRedirectException(Throwable cause)
+   {
+      super(cause);
+   }
 }

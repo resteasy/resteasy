@@ -14,53 +14,53 @@ import java.lang.reflect.Method;
 @ApplicationScoped // Weld uses a proxy
 public class CDILocatorResource {
 
-    private static Logger logger = Logger.getLogger(CDILocatorResource.class);
+   private static Logger logger = Logger.getLogger(CDILocatorResource.class);
 
-    @Inject
-    FooResource fooResource;
+   @Inject
+   FooResource fooResource;
 
-    @GET
-    public String get(@QueryParam("foo") java.util.List<Foo> foos) {
-        // Bug: It's not a List<Foo>, it's a List<String>
-        for (Foo foo : foos) {
+   @GET
+   public String get(@QueryParam("foo") java.util.List<Foo> foos) {
+      // Bug: It's not a List<Foo>, it's a List<String>
+      for (Foo foo : foos) {
             return "OK";
-        }
-        return null;
+      }
+      return null;
 
-    }
+   }
 
 
-    @Path("lookup")
-    public FooResource lookup() throws Exception {
-        logger.infov("classname: {0}", fooResource.getClass().getName());
-        for (Method m : fooResource.getClass().getMethods()) {
+   @Path("lookup")
+   public FooResource lookup() throws Exception {
+      logger.infov("classname: {0}", fooResource.getClass().getName());
+      for (Method m : fooResource.getClass().getMethods()) {
             if (m.getName().equals("get")) {
-                logger.info(m);
-                logger.info("@GET? " + m.isAnnotationPresent(GET.class));
+            logger.info(m);
+            logger.info("@GET? " + m.isAnnotationPresent(GET.class));
             }
-        }
-        return fooResource;
-    }
+      }
+      return fooResource;
+   }
 
-    @ApplicationScoped // Weld uses a proxy
-    public static class FooResource {
+   @ApplicationScoped // Weld uses a proxy
+   public static class FooResource {
 
-        @GET
-        public String get(@QueryParam("foo") java.util.List<Foo> foos) {
+      @GET
+      public String get(@QueryParam("foo") java.util.List<Foo> foos) {
             // Bug: It's not a List<Foo>, it's a List<String>
             for (Foo foo : foos) {
-                return "OK";
+            return "OK";
             }
             return null;
-        }
+      }
 
-    }
+   }
 
-    public static class Foo {
-        String value;
+   public static class Foo {
+      String value;
 
-        public Foo(final String value) {
+      public Foo(final String value) {
             this.value = value;
-        }
-    }
+      }
+   }
 }

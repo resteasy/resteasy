@@ -33,130 +33,130 @@ import java.util.List;
  */
 public class LowLevelQuery<T> extends RelationQuery {
 
-	private String sql;
-	private List<Object> parameters;
-	private List<GeneratedKeyCollector> generatedKeyCollectors;
-	private List<ChainedResultSetPopulator<T>> chainedResultSetPopulators;
+   private String sql;
+   private List<Object> parameters;
+   private List<GeneratedKeyCollector> generatedKeyCollectors;
+   private List<ChainedResultSetPopulator<T>> chainedResultSetPopulators;
 
-	public String getSql() {
+   public String getSql() {
 
-		return sql;
-	}
+      return sql;
+   }
 
-	public void setSql(String sql) {
+   public void setSql(String sql) {
 
-		this.sql = sql;
-	}
+      this.sql = sql;
+   }
 
-	public List<Object> getParameters() {
+   public List<Object> getParameters() {
 
-		return parameters;
-	}
+      return parameters;
+   }
 
-	public void setParameters(List<Object> parameters) {
+   public void setParameters(List<Object> parameters) {
 
-		this.parameters = parameters;
-	}
+      this.parameters = parameters;
+   }
 
-	public void addParameter(Object parameter) {
+   public void addParameter(Object parameter) {
 
-		checkParameterList();
+      checkParameterList();
 
-		this.parameters.add(parameter);
-	}
+      this.parameters.add(parameter);
+   }
 
-	public void addParameters(Object... parameters) {
+   public void addParameters(Object... parameters) {
 
-		checkParameterList();
+      checkParameterList();
 
-		this.parameters.addAll(Arrays.asList(parameters));
-	}
+      this.parameters.addAll(Arrays.asList(parameters));
+   }
 
-	public void addParameters(List<?> parameters) {
+   public void addParameters(List<?> parameters) {
 
-		checkParameterList();
+      checkParameterList();
 
-		this.parameters.addAll(parameters);
-	}
+      this.parameters.addAll(parameters);
+   }
 
-	private void checkParameterList() {
+   private void checkParameterList() {
 
-		if (this.parameters == null) {
+      if (this.parameters == null) {
 
-			this.parameters = new ArrayList<Object>();
-		}
-	}
+         this.parameters = new ArrayList<Object>();
+      }
+   }
 
-	public void addGeneratedKeyCollector(GeneratedKeyCollector keyCollector) {
+   public void addGeneratedKeyCollector(GeneratedKeyCollector keyCollector) {
 
-		checkGeneratedKeyCollectorList();
+      checkGeneratedKeyCollectorList();
 
-		this.generatedKeyCollectors.add(keyCollector);
-	}
+      this.generatedKeyCollectors.add(keyCollector);
+   }
 
-	public void addGeneratedKeyCollector(List<GeneratedKeyCollector> keyCollectors) {
+   public void addGeneratedKeyCollector(List<GeneratedKeyCollector> keyCollectors) {
 
-		checkGeneratedKeyCollectorList();
+      checkGeneratedKeyCollectorList();
 
-		this.generatedKeyCollectors.addAll(keyCollectors);
-	}
+      this.generatedKeyCollectors.addAll(keyCollectors);
+   }
 
-	public void addGeneratedKeyCollector(GeneratedKeyCollector... keyCollectors) {
+   public void addGeneratedKeyCollector(GeneratedKeyCollector... keyCollectors) {
 
-		checkGeneratedKeyCollectorList();
+      checkGeneratedKeyCollectorList();
 
-		this.generatedKeyCollectors.addAll(Arrays.asList(keyCollectors));
-	}
+      this.generatedKeyCollectors.addAll(Arrays.asList(keyCollectors));
+   }
 
-	private void checkGeneratedKeyCollectorList() {
+   private void checkGeneratedKeyCollectorList() {
 
-		if (this.generatedKeyCollectors == null) {
+      if (this.generatedKeyCollectors == null) {
 
-			this.generatedKeyCollectors = new ArrayList<GeneratedKeyCollector>();
-		}
-	}
+         this.generatedKeyCollectors = new ArrayList<GeneratedKeyCollector>();
+      }
+   }
 
-	public List<GeneratedKeyCollector> getGeneratedKeyCollectors() {
+   public List<GeneratedKeyCollector> getGeneratedKeyCollectors() {
 
-		return generatedKeyCollectors;
-	}
+      return generatedKeyCollectors;
+   }
 
-	public void addChainedResultSetPopulator(ChainedResultSetPopulator<T> chainedPopulator) {
+   public void addChainedResultSetPopulator(ChainedResultSetPopulator<T> chainedPopulator) {
 
-		checkChainedResultSetPopulatorList();
+      checkChainedResultSetPopulatorList();
 
-		this.chainedResultSetPopulators.add(chainedPopulator);
-	}
+      this.chainedResultSetPopulators.add(chainedPopulator);
+   }
 
-	public void addChainedResultSetPopulator(List<ChainedResultSetPopulator<T>> chainedPopulators) {
+   public void addChainedResultSetPopulator(List<ChainedResultSetPopulator<T>> chainedPopulators) {
 
-		checkChainedResultSetPopulatorList();
+      checkChainedResultSetPopulatorList();
 
-		this.chainedResultSetPopulators.addAll(chainedPopulators);
-	}
+      this.chainedResultSetPopulators.addAll(chainedPopulators);
+   }
 
-	public void addChainedResultSetPopulator(ChainedResultSetPopulator<T>... chainedPopulators) {
+   public void addChainedResultSetPopulator(ChainedResultSetPopulator<T>... chainedPopulators) {
 
-		checkChainedResultSetPopulatorList();
+      checkChainedResultSetPopulatorList();
 
-		this.chainedResultSetPopulators.addAll(Arrays.asList(chainedPopulators));
-	}
+      this.chainedResultSetPopulators.addAll(Arrays.asList(chainedPopulators));
+   }
 
-	private void checkChainedResultSetPopulatorList() {
+   private void checkChainedResultSetPopulatorList() {
 
-		if (this.chainedResultSetPopulators == null) {
+      if (this.chainedResultSetPopulators == null) {
 
-			this.chainedResultSetPopulators = new ArrayList<ChainedResultSetPopulator<T>>();
-		}
-	}
+         this.chainedResultSetPopulators = new ArrayList<ChainedResultSetPopulator<T>>();
+      }
+   }
 
-	public List<ChainedResultSetPopulator<T>> getChainedResultSetPopulators() {
+   public List<ChainedResultSetPopulator<T>> getChainedResultSetPopulators() {
 
-		return chainedResultSetPopulators;
-	}
-	
-	public boolean hasChainedBeanResultSetPopulators(){
-		
-		return this.chainedResultSetPopulators != null && !this.chainedResultSetPopulators.isEmpty();
-	}
+      return chainedResultSetPopulators;
+   }
+
+   public boolean hasChainedBeanResultSetPopulators(){
+
+      return this.chainedResultSetPopulators != null && !this.chainedResultSetPopulators.isEmpty();
+   }
 }

@@ -35,33 +35,33 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ParamStyle {
 
-    @XmlEnumValue("plain")
-    PLAIN("plain"),
-    @XmlEnumValue("query")
-    QUERY("query"),
-    @XmlEnumValue("matrix")
-    MATRIX("matrix"),
-    @XmlEnumValue("header")
-    HEADER("header"),
-    @XmlEnumValue("template")
-    TEMPLATE("template");
-    private final String value;
+   @XmlEnumValue("plain")
+   PLAIN("plain"),
+   @XmlEnumValue("query")
+   QUERY("query"),
+   @XmlEnumValue("matrix")
+   MATRIX("matrix"),
+   @XmlEnumValue("header")
+   HEADER("header"),
+   @XmlEnumValue("template")
+   TEMPLATE("template");
+   private final String value;
 
-    ParamStyle(String v) {
-        value = v;
-    }
+   ParamStyle(String v) {
+      value = v;
+   }
 
-    public String value() {
-        return value;
-    }
+   public String value() {
+      return value;
+   }
 
-    public static ParamStyle fromValue(String v) {
-        for (ParamStyle c: ParamStyle.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+   public static ParamStyle fromValue(String v) {
+      for (ParamStyle c: ParamStyle.values()) {
+         if (c.value.equals(v)) {
+            return c;
+         }
+      }
+      throw new IllegalArgumentException(v);
+   }
 
 }

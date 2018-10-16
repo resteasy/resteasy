@@ -13,40 +13,40 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 
 public class CustomValueInjectorInjectorFactoryImpl extends InjectorFactoryImpl {
-    @Override
-    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
+   @Override
+   public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
                                                   Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
-        final CustomValueInjectorHello hello = FindAnnotation.findAnnotation(annotations, CustomValueInjectorHello.class);
-        if (hello == null) {
-            return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
-        } else {
-            return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return hello.value();
-                }
+      final CustomValueInjectorHello hello = FindAnnotation.findAnnotation(annotations, CustomValueInjectorHello.class);
+      if (hello == null) {
+         return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
+      } else {
+         return new ValueInjector() {
+            public Object inject(HttpRequest request, HttpResponse response) {
+               return hello.value();
+            }
 
-                public Object inject() {
-                    return hello.value();
-                }
-            };
-        }
-    }
+            public Object inject() {
+               return hello.value();
+            }
+         };
+      }
+   }
 
-    @Override
-    public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory) {
-        final CustomValueInjectorHello hello = FindAnnotation.findAnnotation(parameter.getAnnotations(), CustomValueInjectorHello.class);
-        if (hello == null) {
-            return super.createParameterExtractor(parameter, providerFactory);
-        } else {
-            return new ValueInjector() {
-                public Object inject(HttpRequest request, HttpResponse response) {
-                    return hello.value();
-                }
+   @Override
+   public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory) {
+      final CustomValueInjectorHello hello = FindAnnotation.findAnnotation(parameter.getAnnotations(), CustomValueInjectorHello.class);
+      if (hello == null) {
+         return super.createParameterExtractor(parameter, providerFactory);
+      } else {
+         return new ValueInjector() {
+            public Object inject(HttpRequest request, HttpResponse response) {
+               return hello.value();
+            }
 
-                public Object inject() {
-                    return hello.value();
-                }
-            };
-        }
-    }
+            public Object inject() {
+               return hello.value();
+            }
+         };
+      }
+   }
 }

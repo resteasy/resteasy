@@ -24,7 +24,7 @@ public class LinkImpl extends Link
    protected final Map<String, String> map;
 
    protected static final RuntimeDelegate.HeaderDelegate<Link> delegate =
-           RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
+         RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
 
    public static Link valueOf(String value)
    {
@@ -35,8 +35,8 @@ public class LinkImpl extends Link
    {
       this.uri = uri;
       this.map = map.isEmpty() ? Collections.<String, String> emptyMap() : Collections
-        .unmodifiableMap(new HashMap<String, String>(map));
-    }
+      .unmodifiableMap(new HashMap<String, String>(map));
+   }
 
    @Override
    public URI getUri() {

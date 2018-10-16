@@ -14,36 +14,36 @@ import java.sql.SQLException;
 
 public class CharacterPopulator extends BaseStringPopulator<Character> implements BeanResultSetPopulator<Character>, BeanStringPopulator<Character> {
 
-	public CharacterPopulator() {
+   public CharacterPopulator() {
 
-		super();
-	}
+      super();
+   }
 
-	private static final CharacterPopulator POPULATOR = new CharacterPopulator();
+   private static final CharacterPopulator POPULATOR = new CharacterPopulator();
 
-	public Character populate(ResultSet rs) throws SQLException {
+   public Character populate(ResultSet rs) throws SQLException {
 
-		return rs.getString(1).charAt(0);
-	}
+      return rs.getString(1).charAt(0);
+   }
 
-	public static CharacterPopulator getPopulator() {
+   public static CharacterPopulator getPopulator() {
 
-		return POPULATOR;
-	}
+      return POPULATOR;
+   }
 
-	public Character getValue(String value) {
+   public Character getValue(String value) {
 
-		return value.charAt(0);
-	}
+      return value.charAt(0);
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
+   @Override
+   public boolean validateDefaultFormat(String value) {
 
-		return true;
-	}
+      return true;
+   }
 
-	public Class<? extends Character> getType() {
+   public Class<? extends Character> getType() {
 
-		return Character.class;
-	}
+      return Character.class;
+   }
 }

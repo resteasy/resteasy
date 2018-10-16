@@ -14,15 +14,15 @@ import javax.ws.rs.core.Response;
 @Produces({"application/xml"})
 public interface XmlJaxbProvidersOrderClient {
 
-    @GET
-    @Path("/{orderId}")
-    Order getOrderById(@PathParam("orderId") String orderId);
+   @GET
+   @Path("/{orderId}")
+   Order getOrderById(@PathParam("orderId") String orderId);
 
-    @POST
-    Response createOrder(Ordertype order);
+   @POST
+   Response createOrder(Ordertype order);
 
-    @PUT
-    @Path("/{orderId}")
-    Order updateOrder(Order order, @PathParam("orderId") String orderId);
+   @PUT
+   @Path("/{orderId}")
+   Order updateOrder(Order order, @PathParam("orderId") String orderId);
 
 }

@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyMethodNotSupportedException extends ResteasyHttpException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyMethodNotSupportedException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyMethodNotSupportedException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyMethodNotSupportedException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyMethodNotSupportedException()
+   {
+   }
+
+   public ResteasyMethodNotSupportedException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyMethodNotSupportedException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyMethodNotSupportedException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyMethodNotSupportedException(Throwable cause)
+   {
+      super(cause);
+   }
 }

@@ -12,10 +12,10 @@ public class NoMessageBodyWriterFoundFailure extends LoggableFailure
    public NoMessageBodyWriterFoundFailure(Class type, MediaType contentType)
    {
       super(
-              String
+            String
                       .format(
                               "Could not find MessageBodyWriter for response object of type: %s of media type: %s",
                               type.getName(), contentType.toString()),
-              HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
+            HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
    }
 }

@@ -6,9 +6,9 @@ import javax.ws.rs.QueryParam;
 
 @Path("/")
 public class QueryParamWithMultipleEqualsResource {
-    @Path("test")
-    @GET
-    public String test(@QueryParam("foo") String incoming) {
-        return incoming;
-    }
+   @Path("test")
+   @GET
+   public String test(@QueryParam("foo") String incoming) {
+      return incoming;
+   }
 }

@@ -16,40 +16,40 @@ import java.io.File;
 
 public class CachedXSLTFile extends CachedXSLTBase{
 
-	private File file;
-	private URIResolver uriResolver;
+   private File file;
+   private URIResolver uriResolver;
 
-	public void reloadStyleSheet() throws TransformerConfigurationException{
-		this.cacheStyleSheet(file);
-	}
+   public void reloadStyleSheet() throws TransformerConfigurationException{
+      this.cacheStyleSheet(file);
+   }
 
-	public CachedXSLTFile(File f) throws TransformerConfigurationException{
-		this.file = f;
-		this.cacheStyleSheet(f);
-	}
+   public CachedXSLTFile(File f) throws TransformerConfigurationException{
+      this.file = f;
+      this.cacheStyleSheet(f);
+   }
 
-	public CachedXSLTFile(File file, URIResolver uriResolver) throws TransformerConfigurationException {
+   public CachedXSLTFile(File file, URIResolver uriResolver) throws TransformerConfigurationException {
 
-		this.file =  file;
-		this.uriResolver = uriResolver;
-		this.cacheStyleSheet(file);
-	}
+      this.file =  file;
+      this.uriResolver = uriResolver;
+      this.cacheStyleSheet(file);
+   }
 
-	private void cacheStyleSheet(File f) throws TransformerConfigurationException{
-		Source xsltSource = new StreamSource(f);
-		TransformerFactory transFact = TransformerFactory.newInstance();
+   private void cacheStyleSheet(File f) throws TransformerConfigurationException{
+      Source xsltSource = new StreamSource(f);
+      TransformerFactory transFact = TransformerFactory.newInstance();
 
-		if(uriResolver != null){
-			transFact.setURIResolver(uriResolver);
-		}
+      if(uriResolver != null){
+         transFact.setURIResolver(uriResolver);
+      }
 
-		this.templates = transFact.newTemplates(xsltSource);
-		this.file = f;
-	}
+      this.templates = transFact.newTemplates(xsltSource);
+      this.file = f;
+   }
 
-	@Override
-	public String toString() {
+   @Override
+   public String toString() {
 
-		return "CachedXSLTFile: " + file;
-	}
+      return "CachedXSLTFile: " + file;
+   }
 }

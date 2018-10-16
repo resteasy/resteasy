@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.client.proxy.resource;
 
 public class NullEntityProxyGreeter {
-    String greeting;
+   String greeting;
 
-    public void setGreeting(String greeting) {
-        this.greeting = greeting;
-    }
+   public void setGreeting(String greeting) {
+      this.greeting = greeting;
+   }
 
-    public String getGreeting() {
-        return greeting;
-    }
+   public String getGreeting() {
+      return greeting;
+   }
 }

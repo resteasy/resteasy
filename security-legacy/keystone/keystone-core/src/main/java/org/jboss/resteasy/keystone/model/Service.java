@@ -7,70 +7,70 @@ import java.io.Serializable;
 @JsonRootName("OS-KSADM:service")
 public class Service implements Serializable {
 
-	private String id;
-	
-	private String type;
-	
-	private String name;
-	
-	private String description;
+   private String id;
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
+   private String type;
 
-	/**
-	 * @return the type
-	 */
-	public String getType() {
-		return type;
-	}
+   private String name;
 
-	/**
-	 * @param type the type to set
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
+   private String description;
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+   /**
+    * @return the id
+    */
+   public String getId() {
+      return id;
+   }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * @return the type
+    */
+   public String getType() {
+      return type;
+   }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+   /**
+    * @param type the type to set
+    */
+   public void setType(String type) {
+      this.type = type;
+   }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+   /**
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Service [id=" + id + ", type=" + type + ", name=" + name
-				+ ", description=" + description + "]";
-	}
-	
+   /**
+    * @param name the name to set
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   /**
+    * @return the description
+    */
+   public String getDescription() {
+      return description;
+   }
+
+   /**
+    * @param description the description to set
+    */
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Service [id=" + id + ", type=" + type + ", name=" + name
+            + ", description=" + description + "]";
+   }
+
 }

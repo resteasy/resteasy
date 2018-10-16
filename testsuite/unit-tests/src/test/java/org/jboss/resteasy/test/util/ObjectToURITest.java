@@ -16,40 +16,40 @@ import org.junit.Test;
  * @tpSince RESTEasy 3.0.16
  */
 public class ObjectToURITest {
-    private static final String ERROR_MSG = "Wrong conversion to URI";
+   private static final String ERROR_MSG = "Wrong conversion to URI";
 
-    /**
-     * @tpTestDetails Check default resolvers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDefaultResolvers() {
-        ObjectToURI instance = ObjectToURI.getInstance();
-        Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURITemplateObject(123)));
-        Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(new ObjectToURIableObject()));
-        Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURIMappedByObject(123)));
-    }
+   /**
+    * @tpTestDetails Check default resolvers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDefaultResolvers() {
+      ObjectToURI instance = ObjectToURI.getInstance();
+      Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURITemplateObject(123)));
+      Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(new ObjectToURIableObject()));
+      Assert.assertEquals(ERROR_MSG, "/foo/123", instance.resolveURI(new ObjectToURIMappedByObject(123)));
+   }
 
-    /**
-     * @tpTestDetails Check custom resolvers.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomResolver() {
-        ObjectToURI instance = ObjectToURI.getInstance();
-        ObjectToURICustomURIableObject custom = new ObjectToURICustomURIableObject();
-        Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(custom));
+   /**
+    * @tpTestDetails Check custom resolvers.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomResolver() {
+      ObjectToURI instance = ObjectToURI.getInstance();
+      ObjectToURICustomURIableObject custom = new ObjectToURICustomURIableObject();
+      Assert.assertEquals(ERROR_MSG, "/my-url", instance.resolveURI(custom));
 
-        instance.registerURIResolver(new URIResolver() {
+      instance.registerURIResolver(new URIResolver() {
             public boolean handles(Class<?> type) {
-                return type == ObjectToURICustomURIableObject.class;
+            return type == ObjectToURICustomURIableObject.class;
             }
 
             public String resolveURI(Object object) {
-                return "/some-other-uri";
+            return "/some-other-uri";
             }
-        });
+      });
 
-        Assert.assertEquals(ERROR_MSG, "/some-other-uri", instance.resolveURI(custom));
-    }
+      Assert.assertEquals(ERROR_MSG, "/some-other-uri", instance.resolveURI(custom));
+   }
 }

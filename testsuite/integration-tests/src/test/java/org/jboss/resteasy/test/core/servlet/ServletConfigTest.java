@@ -32,64 +32,64 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ServletConfigTest {
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, ServletConfigTest.class.getSimpleName() + ".war");
-        war.addAsWebInfResource(ServletConfigTest.class.getPackage(), "ServletConfigWeb.xml", "web.xml");
-        war.addClasses(ServletConfigException.class, ServletConfigExceptionMapper.class,
-                ServletConfigApplication.class, ServletConfigResource.class);
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, ServletConfigTest.class.getSimpleName() + ".war");
+      war.addAsWebInfResource(ServletConfigTest.class.getPackage(), "ServletConfigWeb.xml", "web.xml");
+      war.addClasses(ServletConfigException.class, ServletConfigExceptionMapper.class,
+            ServletConfigApplication.class, ServletConfigResource.class);
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ServletConfigTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ServletConfigTest.class.getSimpleName());
+   }
 
-    @Before
-    public void setup() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void setup() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Regression test for RESTEASY-381
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCount() throws Exception {
-        String count = client.target(generateURL("/my/application/count")).request().get(String.class);
-        Assert.assertEquals("Wrong count of RESTEasy application", "1", count);
-    }
+   /**
+    * @tpTestDetails Regression test for RESTEASY-381
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCount() throws Exception {
+      String count = client.target(generateURL("/my/application/count")).request().get(String.class);
+      Assert.assertEquals("Wrong count of RESTEasy application", "1", count);
+   }
 
-    /**
-     * @tpTestDetails Regression test for RESTEASY-518
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNullJaxb() throws Exception {
-        Response response = client.target(generateURL("/my/null")).request().header("Content-Type", "application/xml").post(Entity.text(""));
-        Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails Regression test for RESTEASY-518
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNullJaxb() throws Exception {
+      Response response = client.target(generateURL("/my/null")).request().header("Content-Type", "application/xml").post(Entity.text(""));
+      Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Regression test for RESTEASY-582
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testBadMediaTypeNoSubtype() throws Exception {
-        Response response = client.target(generateURL("/my/application/count")).request().accept("text").get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        response.close();
+   /**
+    * @tpTestDetails Regression test for RESTEASY-582
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testBadMediaTypeNoSubtype() throws Exception {
+      Response response = client.target(generateURL("/my/application/count")).request().accept("text").get();
+      Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      response.close();
 
-        response = client.target(generateURL("/my/application/count")).request().accept("text/plain; q=bad").get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        response.close();
-    }
+      response = client.target(generateURL("/my/application/count")).request().accept("text/plain; q=bad").get();
+      Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      response.close();
+   }
 }

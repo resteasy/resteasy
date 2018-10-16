@@ -40,10 +40,10 @@ public class RedirectTest extends ClientTestBase
       WebArchive war = TestUtil.prepareArchive(RedirectTest.class.getSimpleName());
       war.addClasses(PortProviderUtil.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("ipv6", "read"),
-              new RuntimePermission("getenv.RESTEASY_PORT"),
-              new PropertyPermission("org.jboss.resteasy.port", "read"),
-              new PropertyPermission("node", "read")
+            new PropertyPermission("ipv6", "read"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new PropertyPermission("node", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, RedirectResource.class);
    }

@@ -68,7 +68,7 @@ public final class IIOImageProviderHelper
     * @throws IOException if I/O error occurred
     */
    public static IIOImage readImage(InputStream in, ImageReader reader, int imageIndex)
-           throws IOException
+         throws IOException
    {
       ImageInputStream iis = ImageIO.createImageInputStream(in);
       reader.setInput(iis, false);
@@ -117,7 +117,7 @@ public final class IIOImageProviderHelper
                                  ImageWriter writer,
                                  OutputStream out,
                                  IIOImage image)
-           throws IOException
+         throws IOException
    {
       ImageWriteParam param;
       if (mediaType.equals(MediaType.valueOf("image/jpeg")))
@@ -134,7 +134,7 @@ public final class IIOImageProviderHelper
       * maximum
       */
       ImageWriterParams writerParams =
-              FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
+            FindAnnotation.findAnnotation(annotations, ImageWriterParams.class);
       if (writerParams != null)
       {
          if (param.canWriteCompressed())

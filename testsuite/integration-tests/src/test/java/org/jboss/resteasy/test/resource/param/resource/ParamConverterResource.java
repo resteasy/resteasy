@@ -11,13 +11,13 @@ import javax.ws.rs.QueryParam;
 
 @Path("/")
 public class ParamConverterResource {
-    @Path("{pojo}")
-    @PUT
-    public void put(@QueryParam("pojo") ParamConverterPOJO q, @PathParam("pojo") ParamConverterPOJO pp, @MatrixParam("pojo") ParamConverterPOJO mp,
-                    @HeaderParam("pojo") ParamConverterPOJO hp) {
-        Assert.assertEquals(q.getName(), "pojo");
-        Assert.assertEquals(pp.getName(), "pojo");
-        Assert.assertEquals(mp.getName(), "pojo");
-        Assert.assertEquals(hp.getName(), "pojo");
-    }
+   @Path("{pojo}")
+   @PUT
+   public void put(@QueryParam("pojo") ParamConverterPOJO q, @PathParam("pojo") ParamConverterPOJO pp, @MatrixParam("pojo") ParamConverterPOJO mp,
+               @HeaderParam("pojo") ParamConverterPOJO hp) {
+      Assert.assertEquals(q.getName(), "pojo");
+      Assert.assertEquals(pp.getName(), "pojo");
+      Assert.assertEquals(mp.getName(), "pojo");
+      Assert.assertEquals(hp.getName(), "pojo");
+   }
 }

@@ -23,182 +23,182 @@ import java.util.concurrent.locks.ReentrantLock;
 @XMLElement(name="ExecutionController")
 public class SimpleExecutionController<T extends TaskGroup> implements ExecutionController<T>, Elementable{
 
-	private final ReentrantLock globalLock = new ReentrantLock();
-	private Condition finishedCondition = globalLock.newCondition();
+   private final ReentrantLock globalLock = new ReentrantLock();
+   private Condition finishedCondition = globalLock.newCondition();
 
-	private T taskGroup;
-	
-	private BlockingQueue<? extends Runnable> taskQueue;
-	private ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler;
+   private T taskGroup;
 
-	@XMLAttribute
-	private boolean started;
-	
-	@XMLAttribute
-	private boolean aborted;
-	
-	@XMLAttribute
-	private int initialTaskCount;
-	
-	@XMLAttribute
-	private AtomicInteger completedTaskCount = new AtomicInteger();
-	
-	public SimpleExecutionController(T taskGroup, ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler) {
+   private BlockingQueue<? extends Runnable> taskQueue;
+   private ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler;
 
-		super();
-		this.taskGroup = taskGroup;
-		this.taskQueue = taskGroup.getTasks();
-		this.threadPoolTaskHandler = threadPoolTaskHandler;
-		initialTaskCount = taskQueue.size();
-	}	
-	
-	public void abort() {
+   @XMLAttribute
+   private boolean started;
 
-		globalLock.lock();
-		
-		try{
-			
-			if(this.threadPoolTaskHandler != null){
-				
-				if(started){
-					threadPoolTaskHandler.remove(this);
-				}
-				
-				this.aborted = true;
-				
-				this.executionComplete();
-			}
-			
-		}finally{
-			
-			globalLock.unlock();
-		}
-	}
+   @XMLAttribute
+   private boolean aborted;
 
-	public void awaitExecution(long timeout) throws InterruptedException {
+   @XMLAttribute
+   private int initialTaskCount;
 
-		globalLock.lock();
-		
-		try{
-			
-			if(finishedCondition != null){
-				
-				finishedCondition.await(timeout, TimeUnit.MILLISECONDS);
-			}
-			
-		}finally{
-			
-			globalLock.unlock();
-		}
+   @XMLAttribute
+   private AtomicInteger completedTaskCount = new AtomicInteger();
 
-	}
+   public SimpleExecutionController(T taskGroup, ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler) {
 
-	public void awaitExecution() throws InterruptedException {
+      super();
+      this.taskGroup = taskGroup;
+      this.taskQueue = taskGroup.getTasks();
+      this.threadPoolTaskHandler = threadPoolTaskHandler;
+      initialTaskCount = taskQueue.size();
+   }
 
-		globalLock.lock();
-		
-		try{
-			
-			if(finishedCondition != null){
-				
-				finishedCondition.await();
-			}
-			
-		}finally{
-			
-			globalLock.unlock();
-		}
+   public void abort() {
 
-	}	
-	
-	void executionComplete(){
-				
-		globalLock.lock();
-		
-		try{
-			
-			if(finishedCondition != null){
-				
-				finishedCondition.signalAll();
-				
-				threadPoolTaskHandler = null;
-				finishedCondition = null;
-			}			
-						
-		}finally{
-			
-			globalLock.unlock();
-		}		
-	}
-	
-	public int getRemainingTaskCount() {
+      globalLock.lock();
 
-		return taskQueue.size();
-	}
+      try{
 
-	
-	BlockingQueue<? extends Runnable> getTaskQueue() {
-	
-		return taskQueue;
-	}
+         if(this.threadPoolTaskHandler != null){
 
-	public void start() {
+            if(started){
+               threadPoolTaskHandler.remove(this);
+            }
 
-		globalLock.lock();
-		
-		try{
-			if(!started && !aborted){
-				
-				this.threadPoolTaskHandler.add(this);
-				this.started = true;
-			}
-			
-		}finally{
-			
-			globalLock.unlock();
-		}
-	}
+            this.aborted = true;
 
-	
-	public int getInitialTaskCount() {
-	
-		return initialTaskCount;
-	}
+            this.executionComplete();
+         }
 
-	
-	public int getCompletedTaskCount() {
-	
-		return completedTaskCount.get();
-	}
-	
-	void incrementCompletedTaskCount(){
-		
-		this.completedTaskCount.incrementAndGet();
-	}
-	
-	public boolean isStarted(){
-		
-		return started;
-	}
-	
-	public boolean isAborted(){
-		
-		return aborted;
-	}
-	
-	public boolean isFinished(){
-		
-		return started && !aborted && this.threadPoolTaskHandler == null;
-	}
+      }finally{
 
-	
-	public T getTaskGroup() {
-	
-		return taskGroup;
-	}
+         globalLock.unlock();
+      }
+   }
 
-	public Element toXML(Document doc) {
+   public void awaitExecution(long timeout) throws InterruptedException {
 
-		return XMLGenerator.toXML(this, doc);
-	}
+      globalLock.lock();
+
+      try{
+
+         if(finishedCondition != null){
+
+            finishedCondition.await(timeout, TimeUnit.MILLISECONDS);
+         }
+
+      }finally{
+
+         globalLock.unlock();
+      }
+
+   }
+
+   public void awaitExecution() throws InterruptedException {
+
+      globalLock.lock();
+
+      try{
+
+         if(finishedCondition != null){
+
+            finishedCondition.await();
+         }
+
+      }finally{
+
+         globalLock.unlock();
+      }
+
+   }
+
+   void executionComplete(){
+
+      globalLock.lock();
+
+      try{
+
+         if(finishedCondition != null){
+
+            finishedCondition.signalAll();
+
+            threadPoolTaskHandler = null;
+            finishedCondition = null;
+         }
+
+      }finally{
+
+         globalLock.unlock();
+      }
+   }
+
+   public int getRemainingTaskCount() {
+
+      return taskQueue.size();
+   }
+
+
+   BlockingQueue<? extends Runnable> getTaskQueue() {
+
+      return taskQueue;
+   }
+
+   public void start() {
+
+      globalLock.lock();
+
+      try{
+         if(!started && !aborted){
+
+            this.threadPoolTaskHandler.add(this);
+            this.started = true;
+         }
+
+      }finally{
+
+         globalLock.unlock();
+      }
+   }
+
+
+   public int getInitialTaskCount() {
+
+      return initialTaskCount;
+   }
+
+
+   public int getCompletedTaskCount() {
+
+      return completedTaskCount.get();
+   }
+
+   void incrementCompletedTaskCount(){
+
+      this.completedTaskCount.incrementAndGet();
+   }
+
+   public boolean isStarted(){
+
+      return started;
+   }
+
+   public boolean isAborted(){
+
+      return aborted;
+   }
+
+   public boolean isFinished(){
+
+      return started && !aborted && this.threadPoolTaskHandler == null;
+   }
+
+
+   public T getTaskGroup() {
+
+      return taskGroup;
+   }
+
+   public Element toXML(Document doc) {
+
+      return XMLGenerator.toXML(this, doc);
+   }
 }

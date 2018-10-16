@@ -12,31 +12,31 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class FloatPopulator extends BaseStringPopulator<Float> implements BeanStringPopulator<Float> {
 
-	public FloatPopulator() {
-		super();
-	}
+   public FloatPopulator() {
+      super();
+   }
 
-	public FloatPopulator(String populatorID, StringFormatValidator formatValidator) {
-		super(populatorID, formatValidator);
-	}
+   public FloatPopulator(String populatorID, StringFormatValidator formatValidator) {
+      super(populatorID, formatValidator);
+   }
 
-	public FloatPopulator(String populatorID) {
-		super(populatorID);
-	}
+   public FloatPopulator(String populatorID) {
+      super(populatorID);
+   }
 
-	public Float getValue(String value) {
+   public Float getValue(String value) {
 
-		return Float.valueOf(value);
-	}
+      return Float.valueOf(value);
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
+   @Override
+   public boolean validateDefaultFormat(String value) {
 
-		return NumberUtils.isFloat(value);
-	}
+      return NumberUtils.isFloat(value);
+   }
 
-	public Class<? extends Float> getType() {
+   public Class<? extends Float> getType() {
 
-		return Float.class;
-	}
+      return Float.class;
+   }
 }

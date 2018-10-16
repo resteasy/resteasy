@@ -14,23 +14,23 @@ import java.util.LinkedList;
 @Priority(100)
 public class ReaderContextFirstWriterInterceptor implements WriterInterceptor {
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context)
-            throws IOException, WebApplicationException {
-        MultivaluedMap<String, Object> headers = context.getHeaders();
-        String header = (String) headers.getFirst(ReaderContextResource.HEADERNAME);
-        if (header != null && header.equals(getClass().getName())) {
-            context.setAnnotations(ReaderContextResource.class.getAnnotations());
-            context.setEntity(toList(getClass().getName()));
-            context.setMediaType(MediaType.TEXT_HTML_TYPE);
-            context.setType(LinkedList.class);
-        }
-        context.proceed();
-    }
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context)
+         throws IOException, WebApplicationException {
+      MultivaluedMap<String, Object> headers = context.getHeaders();
+      String header = (String) headers.getFirst(ReaderContextResource.HEADERNAME);
+      if (header != null && header.equals(getClass().getName())) {
+         context.setAnnotations(ReaderContextResource.class.getAnnotations());
+         context.setEntity(toList(getClass().getName()));
+         context.setMediaType(MediaType.TEXT_HTML_TYPE);
+         context.setType(LinkedList.class);
+      }
+      context.proceed();
+   }
 
-    private static <T> LinkedList<T> toList(T o) {
-        LinkedList<T> list = new LinkedList<T>();
-        list.add(o);
-        return list;
-    }
+   private static <T> LinkedList<T> toList(T o) {
+      LinkedList<T> list = new LinkedList<T>();
+      list.add(o);
+      return list;
+   }
 }

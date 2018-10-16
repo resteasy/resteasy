@@ -26,7 +26,7 @@ public class ResourceMetadata
       return realm;
    }
 
-  /**
+   /**
     * keystore that contains service's private key and certificate.
     * Used when making invocations on remote HTTPS endpoints that require client-cert authentication
     *

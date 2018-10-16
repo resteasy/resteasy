@@ -6,5 +6,5 @@ import java.rmi.RemoteException;
 
 public interface EagleLogin extends Remote{
 
-	EagleManager login(String password) throws RemoteException;
+   EagleManager login(String password) throws RemoteException;
 }

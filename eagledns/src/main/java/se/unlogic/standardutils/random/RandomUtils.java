@@ -11,38 +11,38 @@ import java.util.Random;
 
 public class RandomUtils {
 
-	private static final Random RANDOM = new Random();
+   private static final Random RANDOM = new Random();
 
-	public static String getRandomString(int minLength, int maxLength){
+   public static String getRandomString(int minLength, int maxLength){
 
-		int length;
+      int length;
 
-		if(minLength == maxLength){
+      if(minLength == maxLength){
 
-			length = minLength;
+         length = minLength;
 
-		}else{
+      }else{
 
-			length = RANDOM.nextInt(maxLength - minLength) + minLength;
-		}
+         length = RANDOM.nextInt(maxLength - minLength) + minLength;
+      }
 
-		char[] randomString = new char[length];
+      char[] randomString = new char[length];
 
-		for (int x = 0; x < length; x++) {
-			int randDecimalAsciiVal = RANDOM.nextInt(25) + 97;
-			randomString[x] = (char) randDecimalAsciiVal;
-		}
+      for (int x = 0; x < length; x++) {
+         int randDecimalAsciiVal = RANDOM.nextInt(25) + 97;
+         randomString[x] = (char) randDecimalAsciiVal;
+      }
 
-		return new String(randomString);
-	}
+      return new String(randomString);
+   }
 
-	public static int getRandomInt(int min, int max) {
+   public static int getRandomInt(int min, int max) {
 
-		return RANDOM.nextInt(max) + min;
-	}
+      return RANDOM.nextInt(max) + min;
+   }
 
-	public static boolean getRandomBoolean() {
+   public static boolean getRandomBoolean() {
 
-		return getRandomInt(0, 2) == 1;
-	}
+      return getRandomInt(0, 2) == 1;
+   }
 }

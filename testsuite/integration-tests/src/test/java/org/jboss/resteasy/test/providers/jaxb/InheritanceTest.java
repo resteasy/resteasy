@@ -33,40 +33,40 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class InheritanceTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, InheritanceAnimal.class, InheritanceCat.class, InheritanceDog.class,
-                InheritanceZoo.class, InheritanceResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(InheritanceTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, InheritanceAnimal.class, InheritanceCat.class, InheritanceDog.class,
+            InheritanceZoo.class, InheritanceResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests Jaxb object with inheritance structure
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInheritance() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/zoo"));
-        Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        InheritanceZoo zoo = response.readEntity(InheritanceZoo.class);
-        Assert.assertEquals("The number of animals in the zoo doesn't match the expected count", 2, zoo.getAnimals().size());
-    }
+   /**
+    * @tpTestDetails Tests Jaxb object with inheritance structure
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInheritance() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/zoo"));
+      Response response = target.request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      InheritanceZoo zoo = response.readEntity(InheritanceZoo.class);
+      Assert.assertEquals("The number of animals in the zoo doesn't match the expected count", 2, zoo.getAnimals().size());
+   }
 
 }

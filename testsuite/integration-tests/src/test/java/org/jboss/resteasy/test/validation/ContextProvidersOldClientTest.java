@@ -32,43 +32,43 @@ import java.lang.reflect.Type;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ContextProvidersOldClientTest extends ContextProvidersTestBase {
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ContextProvidersOldClientTest.class.getSimpleName())
-                .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class)
-                .addClass(ContextProvidersTestBase.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ContextProvidersOldClientTest.class.getSimpleName())
+            .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class)
+            .addClass(ContextProvidersTestBase.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
-        return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
-    }
+      return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ContextProvidersOldClientTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ContextProvidersOldClientTest.class.getSimpleName());
+   }
 
-    @Override
-    <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
-        ClientRequest request = new ClientRequest(generateURL(path));
-        ClientResponse<T> response = request.get(clazz);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        T entity = response.getEntity(clazz, null, annotations);
-        return entity;
-    }
+   @Override
+   <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
+      ClientRequest request = new ClientRequest(generateURL(path));
+      ClientResponse<T> response = request.get(clazz);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      T entity = response.getEntity(clazz, null, annotations);
+      return entity;
+   }
 
-    @Override
-    <S, T> T post(String path, S payload, MediaType mediaType,
+   @Override
+   <S, T> T post(String path, S payload, MediaType mediaType,
                   Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
-        ClientRequest request = new ClientRequest(generateURL(path));
-        request.body(mediaType, payload, payload.getClass(), null, annotations);
-        ClientResponse response = request.post();
-        T entity;
-        if (genericReturnType != null) {
-            entity = (T) response.getEntity(returnType, genericReturnType);
-        } else {
-            entity = (T) response.getEntity(returnType);
-        }
+      ClientRequest request = new ClientRequest(generateURL(path));
+      request.body(mediaType, payload, payload.getClass(), null, annotations);
+      ClientResponse response = request.post();
+      T entity;
+      if (genericReturnType != null) {
+         entity = (T) response.getEntity(returnType, genericReturnType);
+      } else {
+         entity = (T) response.getEntity(returnType);
+      }
 
-        return entity;
-    }
+      return entity;
+   }
 
 }

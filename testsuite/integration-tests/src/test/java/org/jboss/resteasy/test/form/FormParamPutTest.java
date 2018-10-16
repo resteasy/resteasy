@@ -29,30 +29,30 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class FormParamPutTest {
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(FormParamPutTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, FormParamPutResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(FormParamPutTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, FormParamPutResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, FormParamPutTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, FormParamPutTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test with query param and without query param
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void test1() throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget put = client.target(generateURL("/test/42?foo=xyz"));
+   /**
+    * @tpTestDetails Test with query param and without query param
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void test1() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget put = client.target(generateURL("/test/42?foo=xyz"));
 
-        Form form = new Form().param("formParam", "Weinan Li");
-        Response response = put.request().put(Entity.form(form));
-        response.close();
+      Form form = new Form().param("formParam", "Weinan Li");
+      Response response = put.request().put(Entity.form(form));
+      response.close();
 
-        WebTarget get = client.target(generateURL("/test"));
-        assertEquals("Weinan Li", get.request().get().readEntity(String.class));
-    }
+      WebTarget get = client.target(generateURL("/test"));
+      assertEquals("Weinan Li", get.request().get().readEntity(String.class));
+   }
 }

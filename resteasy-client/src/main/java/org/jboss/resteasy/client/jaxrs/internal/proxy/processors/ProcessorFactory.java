@@ -39,13 +39,13 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 public class ProcessorFactory
 {
 
-	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration)
-	{
-		return createProcessors(declaringClass, method, configuration, null);
-	}
-	
-	public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
-	{
+   public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration)
+   {
+      return createProcessors(declaringClass, method, configuration, null);
+   }
+
+   public static Object[] createProcessors(Class declaringClass, Method method, ClientConfiguration configuration, MediaType defaultConsumes)
+   {
       Object[] params = new Object[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -53,7 +53,7 @@ public class ProcessorFactory
          Annotation[] annotations = method.getParameterAnnotations()[i];
          Type genericType = method.getGenericParameterTypes()[i];
          if (TypeVariable.class.isInstance(genericType) && declaringClass.isInterface() && !declaringClass.equals(method.getDeclaringClass())) {
-        	 genericType = getTypeArgument((TypeVariable)genericType, declaringClass, method.getDeclaringClass());
+            genericType = getTypeArgument((TypeVariable)genericType, declaringClass, method.getDeclaringClass());
          }
          AccessibleObject target = method;
          params[i] = ProcessorFactory.createProcessor(declaringClass, configuration, type, annotations, genericType, target, defaultConsumes, false);
@@ -61,18 +61,18 @@ public class ProcessorFactory
       return params;
    }
 
-	   public static Object createProcessor(Class<?> declaring,
+   public static Object createProcessor(Class<?> declaring,
                                                ClientConfiguration configuration, Class<?> type,
                                                Annotation[] annotations, Type genericType, AccessibleObject target,
                                                boolean ignoreBody)
-	   {
-		   return createProcessor(declaring, configuration, type, annotations, genericType, target, null, ignoreBody);
-	   }
-	   
-	   public static Object createProcessor(Class<?> declaring,
-                                               ClientConfiguration configuration, Class<?> type,
-                                               Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
-                                               boolean ignoreBody)
+   {
+      return createProcessor(declaring, configuration, type, annotations, genericType, target, null, ignoreBody);
+   }
+
+   public static Object createProcessor(Class<?> declaring,
+                                            ClientConfiguration configuration, Class<?> type,
+                                            Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
+                                            boolean ignoreBody)
    {
       Object processor = null;
 
@@ -85,49 +85,49 @@ public class ProcessorFactory
       // Form form;
 
       boolean isEncoded = FindAnnotation.findAnnotation(annotations,
-              Encoded.class) != null;
+            Encoded.class) != null;
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
          processor = new QueryParamProcessor(query.value());
       }
       else if ((header = FindAnnotation.findAnnotation(annotations,
-              HeaderParam.class)) != null)
+            HeaderParam.class)) != null)
       {
          processor = new HeaderParamProcessor(header.value());
       }
       else if ((cookie = FindAnnotation.findAnnotation(annotations,
-              CookieParam.class)) != null)
+            CookieParam.class)) != null)
       {
          processor = new CookieParamProcessor(cookie.value());
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations,
-              PathParam.class)) != null)
+            PathParam.class)) != null)
       {
          processor = new PathParamProcessor(uriParam.value(), isEncoded);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations,
-              MatrixParam.class)) != null)
+            MatrixParam.class)) != null)
       {
          processor = new MatrixParamProcessor(matrix.value());
       }
       else if ((formParam = FindAnnotation.findAnnotation(annotations,
-              FormParam.class)) != null)
+            FormParam.class)) != null)
       {
          processor = new FormParamProcessor(formParam.value());
       }
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
-              Form.class)) != null)
+            Form.class)) != null)
       {
          processor = new FormProcessor(type, configuration);
       }
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
-              BeanParam.class)) != null)
+            BeanParam.class)) != null)
       {
          processor = new FormProcessor(type, configuration);
       }
       else if ((FindAnnotation.findAnnotation(annotations,
-              Context.class)) != null)
+            Context.class)) != null)
       {
          processor = null;
       }
@@ -144,7 +144,7 @@ public class ProcessorFactory
       {
          MediaType mediaType = MediaTypeHelper.getConsumes(declaring, target);
          if(mediaType == null)
-        	 mediaType = defaultConsumes;
+            mediaType = defaultConsumes;
          if (mediaType == null)
          {
             throw new RuntimeException(Messages.MESSAGES.mustDefineConsumesType());

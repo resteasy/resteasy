@@ -19,44 +19,43 @@ import java.lang.reflect.Type;
 @Provider
 @Consumes(Constants.MEDIA_TYPE_TEST_XML)
 public class CDIInjectionBookReader implements MessageBodyReader<CDIInjectionBook> {
-    private static MessageBodyReader<CDIInjectionBook> delegate;
+   private static MessageBodyReader<CDIInjectionBook> delegate;
 
-    private static Logger log = Logger.getLogger(CDIInjectionBookReader.class);
+   private static Logger log = Logger.getLogger(CDIInjectionBookReader.class);
 
-    @Inject
-    private CDIInjectionDependentScoped dependent;
-    @Inject
-    private CDIInjectionStatefulEJB stateful;
+   @Inject
+   private CDIInjectionDependentScoped dependent;
+   @Inject
+   private CDIInjectionStatefulEJB stateful;
 
-    static {
-        log.info("In BookReader static {}");
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        delegate = factory.getMessageBodyReader(CDIInjectionBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
-        log.info("In BookReader static {}");
-    }
+   static {
+      log.info("In BookReader static {}");
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+      delegate = factory.getMessageBodyReader(CDIInjectionBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
+      log.info("In BookReader static {}");
+   }
 
-    public CDIInjectionBookReader() {
-        log.info("entered BookReader()");
-    }
+   public CDIInjectionBookReader() {
+      log.info("entered BookReader()");
+   }
 
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return CDIInjectionBook.class.equals(type);
-    }
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return CDIInjectionBook.class.equals(type);
+   }
 
-    public CDIInjectionBook readFrom(Class<CDIInjectionBook> type, Type genericType,
+   public CDIInjectionBook readFrom(Class<CDIInjectionBook> type, Type genericType,
                          Annotation[] annotations, MediaType mediaType,
                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        log.info("entering BookReader.readFrom()");
-        return CDIInjectionBook.class.cast(delegate.readFrom(CDIInjectionBook.class, genericType, annotations, mediaType, httpHeaders, entityStream));
-    }
+         throws IOException, WebApplicationException {
+      log.info("entering BookReader.readFrom()");
+      return CDIInjectionBook.class.cast(delegate.readFrom(CDIInjectionBook.class, genericType, annotations, mediaType, httpHeaders, entityStream));
+   }
 
-    public CDIInjectionDependentScoped getDependent() {
-        return dependent;
-    }
+   public CDIInjectionDependentScoped getDependent() {
+      return dependent;
+   }
 
-    public CDIInjectionStatefulEJB getStateful() {
-        return stateful;
-    }
+   public CDIInjectionStatefulEJB getStateful() {
+      return stateful;
+   }
 }
-

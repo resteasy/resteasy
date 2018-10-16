@@ -55,7 +55,7 @@ public class SseTest
       war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html", "index.html");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new RuntimePermission("modifyThread")
+            new RuntimePermission("modifyThread")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class,
             AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
@@ -498,7 +498,7 @@ public class SseTest
       {
          logger.info("Thread sleep interruped", e);
       }
-     
+      
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
       //test for [Resteasy-1863]:SseEventSourceImpl should not close Client instance
       results.clear();
@@ -530,7 +530,7 @@ public class SseTest
       try (SseEventSource source = sourceImpl)
       {
          source.register(event -> {
-           logger.info(event);
+         logger.info(event);
          }, ex -> {
             logger.error("Error:", ex);
             errors.incrementAndGet();

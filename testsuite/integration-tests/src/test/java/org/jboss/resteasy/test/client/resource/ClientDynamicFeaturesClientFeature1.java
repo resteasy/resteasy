@@ -8,7 +8,7 @@ import javax.ws.rs.core.FeatureContext;
 
 @ConstrainedTo(RuntimeType.CLIENT)
 public class ClientDynamicFeaturesClientFeature1 implements DynamicFeature {
-    @Override
-    public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-    }
+   @Override
+   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+   }
 }

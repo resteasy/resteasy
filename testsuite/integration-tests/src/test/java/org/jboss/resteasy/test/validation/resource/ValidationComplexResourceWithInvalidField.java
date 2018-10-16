@@ -6,10 +6,10 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class ValidationComplexResourceWithInvalidField {
-    @Size(min = 2, max = 4)
-    private String s = "abcde";
+   @Size(min = 2, max = 4)
+   private String s = "abcde";
 
-    @POST
-    public void post() {
-    }
+   @POST
+   public void post() {
+   }
 }

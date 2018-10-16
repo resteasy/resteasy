@@ -27,13 +27,13 @@ import java.lang.reflect.Type;
 public class ClientMarshallerFactory
 {
 
-	public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
-	{
-		return createMarshallers(declaringClass, method, providerFactory, null);
-	}
-	
-	public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory, MediaType defaultConsumes)
-	{
+   public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory)
+   {
+      return createMarshallers(declaringClass, method, providerFactory, null);
+   }
+
+   public static Marshaller[] createMarshallers(Class declaringClass, Method method, ResteasyProviderFactory providerFactory, MediaType defaultConsumes)
+   {
       Marshaller[] params = new Marshaller[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {
@@ -46,18 +46,18 @@ public class ClientMarshallerFactory
       return params;
    }
 
-	   public static Marshaller createMarshaller(Class<?> declaring,
-               ResteasyProviderFactory providerFactory, Class<?> type,
-               Annotation[] annotations, Type genericType, AccessibleObject target,
-               boolean ignoreBody)
-	   {
-		   return createMarshaller(declaring, providerFactory, type, annotations, genericType, target, null, ignoreBody);
-	   }
-	   
-	   public static Marshaller createMarshaller(Class<?> declaring,
-               ResteasyProviderFactory providerFactory, Class<?> type,
-               Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
-               boolean ignoreBody)
+   public static Marshaller createMarshaller(Class<?> declaring,
+            ResteasyProviderFactory providerFactory, Class<?> type,
+            Annotation[] annotations, Type genericType, AccessibleObject target,
+            boolean ignoreBody)
+   {
+      return createMarshaller(declaring, providerFactory, type, annotations, genericType, target, null, ignoreBody);
+   }
+
+   public static Marshaller createMarshaller(Class<?> declaring,
+                        ResteasyProviderFactory providerFactory, Class<?> type,
+                        Annotation[] annotations, Type genericType, AccessibleObject target, MediaType defaultConsumes,
+                        boolean ignoreBody)
    {
       Marshaller marshaller = null;
 
@@ -70,50 +70,50 @@ public class ClientMarshallerFactory
       // Form form;
 
       boolean isEncoded = FindAnnotation.findAnnotation(annotations,
-              Encoded.class) != null;
+            Encoded.class) != null;
 
       if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null)
       {
          marshaller = new QueryParamMarshaller(query.value());
       }
       else if ((header = FindAnnotation.findAnnotation(annotations,
-              HeaderParam.class)) != null)
+            HeaderParam.class)) != null)
       {
          marshaller = new HeaderParamMarshaller(header.value());
       }
       else if ((cookie = FindAnnotation.findAnnotation(annotations,
-              CookieParam.class)) != null)
+            CookieParam.class)) != null)
       {
          marshaller = new CookieParamMarshaller(cookie.value());
       }
       else if ((uriParam = FindAnnotation.findAnnotation(annotations,
-              PathParam.class)) != null)
+            PathParam.class)) != null)
       {
          marshaller = new PathParamMarshaller(uriParam.value(), isEncoded,
                  providerFactory);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations,
-              MatrixParam.class)) != null)
+            MatrixParam.class)) != null)
       {
          marshaller = new MatrixParamMarshaller(matrix.value());
       }
       else if ((formParam = FindAnnotation.findAnnotation(annotations,
-              FormParam.class)) != null)
+            FormParam.class)) != null)
       {
          marshaller = new FormParamMarshaller(formParam.value());
       }
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
-              Form.class)) != null)
+            Form.class)) != null)
       {
          marshaller = new FormMarshaller(type, providerFactory);
       }
       else if ((/* form = */FindAnnotation.findAnnotation(annotations,
-              BeanParam.class)) != null)
+            BeanParam.class)) != null)
       {
          marshaller = new FormMarshaller(type, providerFactory);
       }
       else if ((FindAnnotation.findAnnotation(annotations,
-              Context.class)) != null)
+            Context.class)) != null)
       {
          marshaller = new NOOPMarshaller();
       }
@@ -129,8 +129,7 @@ public class ClientMarshallerFactory
       else if (!ignoreBody)
       {
          MediaType mediaType = MediaTypeHelper.getConsumes(declaring, target);
-         if(mediaType == null)
-        	 mediaType = defaultConsumes;
+         if(mediaType == null) mediaType = defaultConsumes;
          if (mediaType == null)
          {
             throw new RuntimeException(Messages.MESSAGES.mustDefineConsumes());

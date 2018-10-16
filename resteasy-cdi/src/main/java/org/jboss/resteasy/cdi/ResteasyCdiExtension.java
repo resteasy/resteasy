@@ -71,7 +71,7 @@ public class ResteasyCdiExtension implements Extension
 
    /**
     * Obtain BeanManager reference for future use.
-    * 
+    *
     * @param event event
     * @param beanManager bean manager
     */
@@ -90,19 +90,19 @@ public class ResteasyCdiExtension implements Extension
     */
    public <T> void observeResources(@WithAnnotations({Path.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
+      setBeanManager(beanManager);
+      AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-       if(!annotatedType.getJavaClass().isInterface()
+      if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
                && GetRestful.isRootResource(annotatedType.getJavaClass())
                && !annotatedType.isAnnotationPresent(Decorator.class))
-       {
-           LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsResource(annotatedType.getJavaClass().getCanonicalName()));
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
-           this.resources.add(annotatedType.getJavaClass());
-       }
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsResource(annotatedType.getJavaClass().getCanonicalName()));
+         event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
+         this.resources.add(annotatedType.getJavaClass());
+      }
    }
 
    /**
@@ -114,18 +114,18 @@ public class ResteasyCdiExtension implements Extension
     */
    public <T> void observeProviders(@WithAnnotations({Provider.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
+      setBeanManager(beanManager);
+      AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-       if(!annotatedType.getJavaClass().isInterface()
+      if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
                && annotatedType.isAnnotationPresent(Provider.class))
-       {
-           LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
-           this.providers.add(annotatedType.getJavaClass());
-       }
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
+         event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
+         this.providers.add(annotatedType.getJavaClass());
+      }
    }
 
    /**
@@ -137,14 +137,14 @@ public class ResteasyCdiExtension implements Extension
     */
    public <T extends Application> void observeApplications(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
+      setBeanManager(beanManager);
+      AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-       if(!isSessionBean(annotatedType))
-       {
-           LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanApplication(annotatedType.getJavaClass().getCanonicalName()));
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
-       }
+      if(!isSessionBean(annotatedType))
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanApplication(annotatedType.getJavaClass().getCanonicalName()));
+         event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
+      }
    }
 
    protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
@@ -164,7 +164,7 @@ public class ResteasyCdiExtension implements Extension
    /**
     * Wrap InjectionTarget of JAX-RS components within JaxrsInjectionTarget
     * which takes care of JAX-RS property injection.
-    * 
+    *
     * @param <T> type
     * @param event event
     */
@@ -192,10 +192,10 @@ public class ResteasyCdiExtension implements Extension
     * interface) map for Session beans with local interfaces. This map is
     * necessary since RESTEasy identifies a bean class as JAX-RS components
     * while CDI requires a local interface to be used for lookup.
-    * 
+    *
     * @param <T> type
     * @param event event
-    * 
+    *
     */
    public <T> void observeSessionBeans(@Observes ProcessSessionBean<T> event)
    {
@@ -232,33 +232,33 @@ public class ResteasyCdiExtension implements Extension
 
    private boolean isSessionBean(AnnotatedType<?> annotatedType)
    {
-       for (Annotation annotation : annotatedType.getAnnotations())
-       {
-          Class<?> annotationType = annotation.annotationType();
-          if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
-          {
-             LogMessages.LOGGER.debug(Messages.MESSAGES.beanIsSLSBOrSingleton(annotatedType.getJavaClass()));
-             return true; // Do not modify scopes of SLSBs and Singletons
-          }
-       }
-       return false;
+      for (Annotation annotation : annotatedType.getAnnotations())
+      {
+         Class<?> annotationType = annotation.annotationType();
+         if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
+         {
+            LogMessages.LOGGER.debug(Messages.MESSAGES.beanIsSLSBOrSingleton(annotatedType.getJavaClass()));
+            return true; // Do not modify scopes of SLSBs and Singletons
+         }
+      }
+      return false;
    }
 
    private void setBeanManager(BeanManager beanManager)
    {
-       if (this.beanManager == null) {
-           // this may happen if Solder Config receives BBD first
-           this.beanManager = beanManager;
-       }
+      if (this.beanManager == null) {
+         // this may happen if Solder Config receives BBD first
+         this.beanManager = beanManager;
+      }
    }
 
    public List<Class> getProviders()
    {
-       return providers;
+      return providers;
    }
 
    public List<Class> getResources()
    {
-       return resources;
+      return resources;
    }
 }

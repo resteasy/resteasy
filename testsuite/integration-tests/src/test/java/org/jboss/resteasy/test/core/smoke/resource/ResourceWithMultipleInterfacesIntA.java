@@ -6,8 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 public interface ResourceWithMultipleInterfacesIntA {
-    @GET
-    @Path("foo")
-    @Produces("text/plain")
-    String getFoo();
+   @GET
+   @Path("foo")
+   @Produces("text/plain")
+   String getFoo();
 }

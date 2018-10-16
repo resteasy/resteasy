@@ -67,21 +67,21 @@ public class AbstractValidatorContextResolver
 
    BootstrapConfiguration getConfig()
    {
-       BootstrapConfiguration tmpConfig = bootstrapConfiguration;
-       if (tmpConfig == null)
-       {
-          synchronized (RD_LOCK)
-          {
-             tmpConfig = bootstrapConfiguration;
-             if (tmpConfig == null)
-             {
-                 config = Validation.byDefaultProvider().configure();
-                 bootstrapConfiguration = tmpConfig = config.getBootstrapConfiguration();
+      BootstrapConfiguration tmpConfig = bootstrapConfiguration;
+      if (tmpConfig == null)
+      {
+         synchronized (RD_LOCK)
+         {
+            tmpConfig = bootstrapConfiguration;
+            if (tmpConfig == null)
+            {
+               config = Validation.byDefaultProvider().configure();
+               bootstrapConfiguration = tmpConfig = config.getBootstrapConfiguration();
 
-             }
-          }
-       }
-       return tmpConfig;
+            }
+         }
+      }
+      return tmpConfig;
    }
 
    public GeneralValidatorCDI getContext(Class<?> type) {

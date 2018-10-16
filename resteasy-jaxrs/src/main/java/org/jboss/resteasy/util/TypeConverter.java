@@ -207,12 +207,12 @@ public final class TypeConverter
    public static Boolean getBooleanValue(final String source)
    {
       if ("Y".equalsIgnoreCase(source) || "T".equalsIgnoreCase(source)
-              || "Yes".equalsIgnoreCase(source) || "1".equalsIgnoreCase(source))
+            || "Yes".equalsIgnoreCase(source) || "1".equalsIgnoreCase(source))
       {
          return Boolean.TRUE;
       }
       else if ("N".equals(source) || "F".equals(source) || "No".equals(source)
-              || "0".equalsIgnoreCase(source))
+            || "0".equalsIgnoreCase(source))
       {
          return Boolean.FALSE;
       }
@@ -228,7 +228,7 @@ public final class TypeConverter
     */
    @SuppressWarnings("unchecked")
    public static <T> T getTypeViaValueOfMethod(final String source, final Class<T> targetType)
-           throws NoSuchMethodException
+         throws NoSuchMethodException
    {
       Class<?> actualTarget = targetType;
       /*
@@ -276,7 +276,7 @@ public final class TypeConverter
     * @return object instance of type T
     * @throws IllegalArgumentException if not suitable constructor was found
     * @throws InstantiationException if the underlying constructor represents an abstract class
-    * @throws IllegalAccessException if the underlying constructor is not accessible 
+    * @throws IllegalAccessException if the underlying constructor is not accessible
     * @throws InvocationTargetException if the underlying constructor throws exception
     */
    private static <T> T getTypeViaStringConstructor(String source, Class<T> targetType)

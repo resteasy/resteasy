@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 
 @Path("resource")
 public class PathParamMissingDefaultValueResource {
-	
+
    @BeanParam
    PathParamMissingDefaultValueBeanParamEntity beanParam;
 

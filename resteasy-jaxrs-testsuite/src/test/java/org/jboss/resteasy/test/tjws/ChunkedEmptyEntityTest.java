@@ -71,33 +71,33 @@ public class ChunkedEmptyEntityTest
    
    void _run_test(String method, String path, String status) throws Exception
    {
-	   // Solicit a reply with response code 204.
-	   Socket s = new Socket("localhost", 8081);
-	   OutputStream os = s.getOutputStream();
-	   writeString(os, method + " " + path + " HTTP/1.1");
-	   writeString(os, "Content-Length: 11");
-	   writeString(os, "Content-Type: text/plain");
-	   writeString(os, "Host: localhost:8081");
-	   writeString(os, "");
-	   os.write("hello world".getBytes());
-	   os.flush();
-	   
-	   // Verify response code is correct and that the message 
-	   // 1. has no "transfer-encoding" header, and
-	   // 2. consists of status line and headers but no chunks.
-	   InputStream is = s.getInputStream();
-	   String line = readLine(is);
-	   LOG.info("<<" + line);
-	   assertTrue(line.contains(status));
-	   line = readLine(is);
-	   while (line != null && is.available() > 0)
-	   {
-		   LOG.info("<<" + line);
-		   int i = line.indexOf(':');
-		   assertTrue(i > 0);
-		   assertFalse("transfer-encoding".equalsIgnoreCase(line.substring(0, i)));
-		   line = readLine(is);
-	   }
+      // Solicit a reply with response code 204.
+      Socket s = new Socket("localhost", 8081);
+      OutputStream os = s.getOutputStream();
+      writeString(os, method + " " + path + " HTTP/1.1");
+      writeString(os, "Content-Length: 11");
+      writeString(os, "Content-Type: text/plain");
+      writeString(os, "Host: localhost:8081");
+      writeString(os, "");
+      os.write("hello world".getBytes());
+      os.flush();
+
+      // Verify response code is correct and that the message
+      // 1. has no "transfer-encoding" header, and
+      // 2. consists of status line and headers but no chunks.
+      InputStream is = s.getInputStream();
+      String line = readLine(is);
+      LOG.info("<<" + line);
+      assertTrue(line.contains(status));
+      line = readLine(is);
+      while (line != null && is.available() > 0)
+      {
+         LOG.info("<<" + line);
+         int i = line.indexOf(':');
+         assertTrue(i > 0);
+         assertFalse("transfer-encoding".equalsIgnoreCase(line.substring(0, i)));
+         line = readLine(is);
+      }
    }
 
    private void writeString(OutputStream os, String s) throws IOException 
@@ -111,7 +111,7 @@ public class ChunkedEmptyEntityTest
     */
    private String readLine(InputStream in) throws IOException
    {
-	  int maxLen = 1024;
+      int maxLen = 1024;
       StringBuffer buf = new StringBuffer(Math.min(1024, maxLen));
 
       int c;

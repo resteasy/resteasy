@@ -6,9 +6,9 @@ import javax.ws.rs.Path;;
 @Path("resource")
 public class JaxbElementResource {
 
-    @POST
-    @Path("standardwriter")
-    public String bytearraywriter(String value) {
-        return value;
-    }
+   @POST
+   @Path("standardwriter")
+   public String bytearraywriter(String value) {
+      return value;
+   }
 }

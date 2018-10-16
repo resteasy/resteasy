@@ -97,10 +97,10 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
             keyStore = ((SecurityDomain) domain).getKeyStore();
          }
          else
-         if (domain instanceof JSSESecurityDomain)
-         {
-            keyStore = ((JSSESecurityDomain) domain).getKeyStore();
-         }
+            if (domain instanceof JSSESecurityDomain)
+            {
+               keyStore = ((JSSESecurityDomain) domain).getKeyStore();
+            }
       }
       if (keyStore == null) throw new LoginException(Messages.MESSAGES.noTrustStoreFound());
       X509Certificate certificate = null;

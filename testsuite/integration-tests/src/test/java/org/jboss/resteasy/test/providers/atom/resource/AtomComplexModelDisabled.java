@@ -25,15 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomComplexModelDisabled {
 
-    @XmlElement
-    private boolean value;
+   @XmlElement
+   private boolean value;
 
-    public boolean getValue() {
-        return value;
-    }
+   public boolean getValue() {
+      return value;
+   }
 
-    public void setValue(boolean disabled) {
-        value = disabled;
-    }
+   public void setValue(boolean disabled) {
+      value = disabled;
+   }
 
 }

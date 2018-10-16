@@ -266,9 +266,9 @@ public class DKIMSignature
     * @param days number of days
     * @param months number of months
     * @param years number of years
-    * 
+    *
     * @return true if stale or timestamp attribute is not set
-    * 
+    *
     */
    public boolean isStale(int seconds, int minutes, int hours, int days, int months, int years)
    {

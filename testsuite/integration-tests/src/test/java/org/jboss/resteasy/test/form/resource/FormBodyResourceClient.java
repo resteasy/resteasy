@@ -7,8 +7,8 @@ import javax.ws.rs.Produces;
 
 @Path("body")
 public  interface FormBodyResourceClient {
-    @PUT
-    @Consumes("text/plain")
-    @Produces("text/plain")
-    String put(String value);
+   @PUT
+   @Consumes("text/plain")
+   @Produces("text/plain")
+   String put(String value);
 }

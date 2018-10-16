@@ -21,66 +21,66 @@ import java.util.List;
  */
 public class JsonArray implements JsonNode {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1497880281195635145L;
-	private final List<JsonNode> nodes = new ArrayList<JsonNode>();
-	
-	public String toJson() {
-		return this.toJson(new StringBuilder());
-	}
-	
-	public String toJson(StringBuilder stringBuilder) {
-		stringBuilder.append("[");
-		Iterator<JsonNode> iterator = nodes.iterator();
-		JsonNode node;
-		while(iterator.hasNext()) {
-			node = iterator.next();
-			node.toJson(stringBuilder);
-			if(iterator.hasNext()) {
-				stringBuilder.append(",");
-			}
-		}
-		stringBuilder.append("]");
-		return stringBuilder.toString();
-	}
+   /**
+    *
+    */
+   private static final long serialVersionUID = 1497880281195635145L;
+   private final List<JsonNode> nodes = new ArrayList<JsonNode>();
 
-	public void addNode(JsonNode node) {
-		this.nodes.add(node);
-	}
-	
-	public void addNode(String value) {
-		this.nodes.add(new JsonLeaf(value));
-	}
-	
-	public void removeNode(JsonNode node) {
-		this.nodes.remove(node);
-	}
+   public String toJson() {
+      return this.toJson(new StringBuilder());
+   }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
-		return result;
-	}
+   public String toJson(StringBuilder stringBuilder) {
+      stringBuilder.append("[");
+      Iterator<JsonNode> iterator = nodes.iterator();
+      JsonNode node;
+      while(iterator.hasNext()) {
+         node = iterator.next();
+         node.toJson(stringBuilder);
+         if(iterator.hasNext()) {
+            stringBuilder.append(",");
+         }
+      }
+      stringBuilder.append("]");
+      return stringBuilder.toString();
+   }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		JsonArray other = (JsonArray) obj;
-		if (nodes == null) {
-			if (other.nodes != null)
-				return false;
-		} else if (!nodes.equals(other.nodes))
-			return false;
-		return true;
-	}
+   public void addNode(JsonNode node) {
+      this.nodes.add(node);
+   }
+
+   public void addNode(String value) {
+      this.nodes.add(new JsonLeaf(value));
+   }
+
+   public void removeNode(JsonNode node) {
+      this.nodes.remove(node);
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      JsonArray other = (JsonArray) obj;
+      if (nodes == null) {
+         if (other.nodes != null)
+            return false;
+      } else if (!nodes.equals(other.nodes))
+         return false;
+      return true;
+   }
 
 }

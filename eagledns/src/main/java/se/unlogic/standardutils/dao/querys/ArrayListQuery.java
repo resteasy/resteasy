@@ -19,52 +19,52 @@ import java.util.ArrayList;
 
 public class ArrayListQuery<ReturnType> extends PopulatedQuery<ReturnType> {
 
-	public ArrayListQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
-		super(connection, closeConnectionOnExit, query, bp);
-	}
+   public ArrayListQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+      super(connection, closeConnectionOnExit, query, bp);
+   }
 
-	public ArrayListQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
-		super(dataSource, closeConnectionOnExit, query, bp);
-	}
+   public ArrayListQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+      super(dataSource, closeConnectionOnExit, query, bp);
+   }
 
-	public ArrayList<ReturnType> executeQuery() throws SQLException {
+   public ArrayList<ReturnType> executeQuery() throws SQLException {
 
-		ResultSet rs = null;
-		ArrayList<ReturnType> returnTypeList = null;
+      ResultSet rs = null;
+      ArrayList<ReturnType> returnTypeList = null;
 
-		try {
-			// Send query to database and store results.
-			rs = pstmt.executeQuery();
+      try {
+         // Send query to database and store results.
+         rs = pstmt.executeQuery();
 
-			if (rs.next()) {
-				rs.last();
-				returnTypeList = new ArrayList<ReturnType>(rs.getRow());
-				rs.beforeFirst();
+         if (rs.next()) {
+            rs.last();
+            returnTypeList = new ArrayList<ReturnType>(rs.getRow());
+            rs.beforeFirst();
 
-				while (rs.next()) {
-					returnTypeList.add(beanPopulator.populate(rs));
-				}
-			}
+            while (rs.next()) {
+               returnTypeList.add(beanPopulator.populate(rs));
+            }
+         }
 
-			return returnTypeList;
+         return returnTypeList;
 
-		} catch (SQLException sqle) {
-			throw sqle;
-		} finally {
-			DBUtils.closeResultSet(rs);
-			DBUtils.closePreparedStatement(pstmt);
+      } catch (SQLException sqle) {
+         throw sqle;
+      } finally {
+         DBUtils.closeResultSet(rs);
+         DBUtils.closePreparedStatement(pstmt);
 
-			if (this.closeConnectionOnExit) {
-				DBUtils.closeConnection(connection);
-			}
+         if (this.closeConnectionOnExit) {
+            DBUtils.closeConnection(connection);
+         }
 
-			this.closed = true;
-		}
-	}
+         this.closed = true;
+      }
+   }
 
-	@Override
-	protected PreparedStatement getPreparedStatement(String query) throws SQLException {
+   @Override
+   protected PreparedStatement getPreparedStatement(String query) throws SQLException {
 
-		return connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-	}
+      return connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+   }
 }

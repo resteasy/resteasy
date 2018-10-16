@@ -40,33 +40,33 @@ import javax.ws.rs.core.Response;
 @Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class})
 public class JsonFilterSuperClassTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
-        war.addClasses(JsonFilterParent.class, JsonFilterChild.class, PersonType.class, ObjectFilterModifier.class,
-                ObjectWriterModifierFilter.class);
-        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JsonFilterSuperClassTest.class.getSimpleName());
+      war.addClasses(JsonFilterParent.class, JsonFilterChild.class, PersonType.class, ObjectFilterModifier.class,
+            ObjectWriterModifierFilter.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+      war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
+      return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JsonFilterSuperClassTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JsonFilterSuperClassTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Json string in the response is correctly filtered
-     * @tpSince RESTEasy 3.1.0
-     */
-    @Test
-    public void testJacksonStringInSuperClass() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/superclass/333"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-        client.close();
-    }
+   /**
+    * @tpTestDetails Json string in the response is correctly filtered
+    * @tpSince RESTEasy 3.1.0
+    */
+   @Test
+   public void testJacksonStringInSuperClass() throws Exception {
+      Client client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(generateURL("/superclass/333"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertTrue("Filter doesn't work", !response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+      client.close();
+   }
 }

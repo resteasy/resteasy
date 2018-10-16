@@ -207,7 +207,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 
       MediaType mediaType = MediaType.valueOf(contentType);
       final BrowserCache.Entry entry = cache.put(request.getUri().toString(), mediaType,
-              response.getHeaders(), cached, expires, etag, lastModified);
+            response.getHeaders(), cached, expires, etag, lastModified);
 
       response.setEntityStream(new ByteArrayInputStream(cached));
    }

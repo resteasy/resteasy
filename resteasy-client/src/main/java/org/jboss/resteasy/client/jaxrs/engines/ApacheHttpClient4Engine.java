@@ -158,7 +158,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
     * attributes in it. It is hence recommended to override the HttpClient
     * <pre>execute(HttpUriRequest request, HttpContext context)</pre> method to perform a deep
     * copy of the context before executing the request.
-    * 
+    *
     * @param httpClient     The http client
     * @param httpContext    The context to be used for executing requests
     */
@@ -272,11 +272,11 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    public HttpHost getDefaultProxy()
    {
-	   return (HttpHost) httpClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
+      return (HttpHost) httpClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
    }
 
    public static CaseInsensitiveMap<String> extractHeaders(
-           HttpResponse response)
+         HttpResponse response)
    {
       final CaseInsensitiveMap<String> headers = new CaseInsensitiveMap<String>();
 
@@ -495,7 +495,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
       else
       {
-        setRedirectNotRequired(request,httpMethod);
+         setRedirectNotRequired(request,httpMethod);
       }
 
       if (request.getEntity() != null)
@@ -660,7 +660,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    private DeferredFileOutputStream writeRequestBodyToOutputStream(final ClientInvocation request) throws IOException
    {
       DeferredFileOutputStream memoryManagedOutStream =
-              new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
+            new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
                       getTempfilePrefix(), ".tmp", this.fileUploadTempFileDir);
       request.getDelegatingOutputStream().setDelegate(memoryManagedOutStream);
       request.writeRequestBody(request.getEntityStream());

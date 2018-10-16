@@ -17,7 +17,7 @@ public class ResponseHeaderExceptionMapper implements ExceptionMapper<ResponseHe
       hList.add("AndOtherStuff");
 
       Response response = Response.status(Response.Status.PRECONDITION_FAILED)
-              .entity("My custom headers test").build();
+            .entity("My custom headers test").build();
       MultivaluedMap<String, Object> headerMap = response.getHeaders();
       headerMap.put("Server", hList);
 

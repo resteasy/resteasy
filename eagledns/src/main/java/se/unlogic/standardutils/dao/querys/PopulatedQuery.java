@@ -15,19 +15,19 @@ import java.sql.SQLException;
 
 public abstract class PopulatedQuery<ReturnType> extends PreparedStatementQuery {
 
-	protected BeanResultSetPopulator<? extends ReturnType> beanPopulator;
+   protected BeanResultSetPopulator<? extends ReturnType> beanPopulator;
 
-	public PopulatedQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends ReturnType> bp) throws SQLException {
-		super(connection, closeConnectionOnExit, query);
-		this.beanPopulator = bp;
-	}
+   public PopulatedQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends ReturnType> bp) throws SQLException {
+      super(connection, closeConnectionOnExit, query);
+      this.beanPopulator = bp;
+   }
 
-	public PopulatedQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends ReturnType> bp) throws SQLException {
-		super(dataSource, closeConnectionOnExit, query);
-		this.beanPopulator = bp;
-	}
+   public PopulatedQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends ReturnType> bp) throws SQLException {
+      super(dataSource, closeConnectionOnExit, query);
+      this.beanPopulator = bp;
+   }
 
-	public BeanResultSetPopulator<? extends ReturnType> getBeanPopulator() {
-		return beanPopulator;
-	}
+   public BeanResultSetPopulator<? extends ReturnType> getBeanPopulator() {
+      return beanPopulator;
+   }
 }

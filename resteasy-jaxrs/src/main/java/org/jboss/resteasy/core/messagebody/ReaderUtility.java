@@ -33,26 +33,26 @@ public abstract class ReaderUtility
    private ReaderInterceptor[] interceptors;
 
    public static <T> T read(Class<T> type, String contentType, String buffer)
-           throws IOException
+         throws IOException
    {
       return read(type, contentType, buffer.getBytes());
    }
 
    public static <T> T read(Class<T> type, String contentType, byte[] buffer)
-           throws IOException
+         throws IOException
    {
       return read(type, MediaType.valueOf(contentType),
-              new ByteArrayInputStream(buffer));
+            new ByteArrayInputStream(buffer));
    }
 
    public static <T> T read(Class<T> type, MediaType mediaType, byte[] buffer)
-           throws IOException
+         throws IOException
    {
       return read(type, mediaType, new ByteArrayInputStream(buffer));
    }
 
    public static <T> T read(Class<T> type, MediaType mt, InputStream is)
-           throws IOException
+         throws IOException
    {
       return new ReaderUtility()
       {
@@ -78,14 +78,14 @@ public abstract class ReaderUtility
    }
 
    public <T> T doRead(Class<T> type, MediaType mediaType, InputStream is)
-           throws IOException
+         throws IOException
    {
       return doRead(type, type, mediaType, null, null, is);
    }
 
    public <T> T doRead(Class<T> type, Type genericType, MediaType mediaType,
                        MultivaluedMap<String, String> requestHeaders, InputStream is)
-           throws IOException
+         throws IOException
    {
       return doRead(type, genericType, mediaType, null, requestHeaders, is);
    }
@@ -94,13 +94,13 @@ public abstract class ReaderUtility
                         Annotation[] annotations, MediaType mediaType) throws IOException
    {
       return doRead(type, genericType, mediaType, annotations, request
-              .getHttpHeaders().getRequestHeaders(), request.getInputStream());
+            .getHttpHeaders().getRequestHeaders(), request.getInputStream());
    }
 
    public <T> T doRead(Class<T> type, Type genericType, MediaType mediaType,
                        Annotation[] annotations,
                        MultivaluedMap<String, String> requestHeaders, InputStream inputStream)
-           throws IOException
+         throws IOException
    {
       try
       {

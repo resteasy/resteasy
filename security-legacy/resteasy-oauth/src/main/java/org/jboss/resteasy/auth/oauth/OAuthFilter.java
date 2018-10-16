@@ -27,82 +27,82 @@ import java.net.HttpURLConnection;
  */
 public class OAuthFilter implements Filter {
 
-	public static final String OAUTH_AUTH_METHOD = "OAuth";
+   public static final String OAUTH_AUTH_METHOD = "OAuth";
 
-	private OAuthProvider provider;
-	private OAuthValidator validator;
+   private OAuthProvider provider;
+   private OAuthValidator validator;
 
-	public void init(FilterConfig config) throws ServletException {
-	   LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthFilter());
-		ServletContext context = config.getServletContext();
-		provider = OAuthUtils.getOAuthProvider(context);
-		validator = OAuthUtils.getValidator(context, provider);
-	}
+   public void init(FilterConfig config) throws ServletException {
+      LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthFilter());
+      ServletContext context = config.getServletContext();
+      provider = OAuthUtils.getOAuthProvider(context);
+      validator = OAuthUtils.getValidator(context, provider);
+   }
 
-	public void destroy() {
-	}
+   public void destroy() {
+   }
 
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain filterChain) throws IOException, ServletException {
-		_doFilter((HttpServletRequest)request, (HttpServletResponse)response, filterChain);
-	}
-	
-	protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
-			FilterChain filterChain) throws IOException, ServletException {
-	    
-	   LogMessages.LOGGER.debug(Messages.MESSAGES.filteringMethod(request.getMethod(), request.getRequestURL().toString()));
+   public void doFilter(ServletRequest request, ServletResponse response,
+         FilterChain filterChain) throws IOException, ServletException {
+      _doFilter((HttpServletRequest)request, (HttpServletResponse)response, filterChain);
+   }
 
-		OAuthMessage message = OAuthUtils.readMessage(request);
-        try{
+   protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
+         FilterChain filterChain) throws IOException, ServletException {
 
-            message.requireParameters(OAuth.OAUTH_CONSUMER_KEY,
-                    OAuth.OAUTH_SIGNATURE_METHOD,
-                    OAuth.OAUTH_SIGNATURE,
-                    OAuth.OAUTH_TIMESTAMP,
-                    OAuth.OAUTH_NONCE);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.filteringMethod(request.getMethod(), request.getRequestURL().toString()));
 
-            String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
-            org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
-        
-            OAuthToken accessToken = null;
-            String accessTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
-            
-            if (accessTokenString != null) { 
-                accessToken = provider.getAccessToken(consumer.getKey(), accessTokenString);
-                OAuthUtils.validateRequestWithAccessToken(
+      OAuthMessage message = OAuthUtils.readMessage(request);
+      try{
+
+         message.requireParameters(OAuth.OAUTH_CONSUMER_KEY,
+            OAuth.OAUTH_SIGNATURE_METHOD,
+            OAuth.OAUTH_SIGNATURE,
+            OAuth.OAUTH_TIMESTAMP,
+            OAuth.OAUTH_NONCE);
+
+         String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+         org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = provider.getConsumer(consumerKey);
+
+         OAuthToken accessToken = null;
+         String accessTokenString = message.getParameter(OAuth.OAUTH_TOKEN);
+
+         if (accessTokenString != null) {
+            accessToken = provider.getAccessToken(consumer.getKey(), accessTokenString);
+            OAuthUtils.validateRequestWithAccessToken(
                         request, message, accessToken, validator, consumer);
-            } else {
-                OAuthUtils.validateRequestWithoutAccessToken(
-                        request, message, validator, consumer);
-            }
-            
-            request = createSecurityContext(request, consumer, accessToken);
-            
-            // let the request through with the new credentials
-            LogMessages.LOGGER.debug(Messages.MESSAGES.doFilter());
-            filterChain.doFilter(request, response);
-            
-        } catch (OAuthException x) {
-            OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), x.getHttpCode(), provider);
-        } catch (OAuthProblemException x) {
-            OAuthUtils.makeErrorResponse(response, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
-        } catch (Exception x) {
-            OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
-        }
-		
-	}
+         } else {
+            OAuthUtils.validateRequestWithoutAccessToken(
+                     request, message, validator, consumer);
+         }
 
-	protected OAuthProvider getProvider() {
-	    return provider;
-	}
-	
-	
-	protected HttpServletRequest createSecurityContext(HttpServletRequest request, 
-	                                                   org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
-	                                                   OAuthToken accessToken) 
-	{
-	    return request;
-	}
-	
-	
+         request = createSecurityContext(request, consumer, accessToken);
+
+         // let the request through with the new credentials
+         LogMessages.LOGGER.debug(Messages.MESSAGES.doFilter());
+         filterChain.doFilter(request, response);
+            
+      } catch (OAuthException x) {
+         OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), x.getHttpCode(), provider);
+      } catch (OAuthProblemException x) {
+         OAuthUtils.makeErrorResponse(response, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
+      } catch (Exception x) {
+         OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+      }
+
+   }
+
+   protected OAuthProvider getProvider() {
+      return provider;
+   }
+
+
+   protected HttpServletRequest createSecurityContext(HttpServletRequest request,
+                                                      org.jboss.resteasy.auth.oauth.OAuthConsumer consumer,
+                                                      OAuthToken accessToken)
+   {
+      return request;
+   }
+
+
 }

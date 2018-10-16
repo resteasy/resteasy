@@ -298,7 +298,7 @@ public class TokenTest
       ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA1withRSA").setProvider("BC").build(priv);
 
       signGen.addSignerInfoGenerator(
-              new JcaSignerInfoGeneratorBuilder(
+            new JcaSignerInfoGeneratorBuilder(
                       new JcaDigestCalculatorProviderBuilder().setProvider("BC").build())
                       .build(sha1Signer, storecert));
 

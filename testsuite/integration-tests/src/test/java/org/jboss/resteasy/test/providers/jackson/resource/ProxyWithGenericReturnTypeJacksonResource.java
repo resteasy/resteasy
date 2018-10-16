@@ -6,13 +6,13 @@ import java.lang.reflect.Proxy;
 
 @Path("/")
 public class ProxyWithGenericReturnTypeJacksonResource {
-    @Produces("text/plain")
-    @Path("test")
-    public ProxyWithGenericReturnTypeJacksonSubResourceSubIntf resourceLocator() {
-        Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class[]{ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class},
-                new ProxyWithGenericReturnTypeJacksonInvocationHandler());
+   @Produces("text/plain")
+   @Path("test")
+   public ProxyWithGenericReturnTypeJacksonSubResourceSubIntf resourceLocator() {
+      Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+            new Class[]{ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class},
+            new ProxyWithGenericReturnTypeJacksonInvocationHandler());
 
-        return ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class.cast(proxy);
-    }
+      return ProxyWithGenericReturnTypeJacksonSubResourceSubIntf.class.cast(proxy);
+   }
 }

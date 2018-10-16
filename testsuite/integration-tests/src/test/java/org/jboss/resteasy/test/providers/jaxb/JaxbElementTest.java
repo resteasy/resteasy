@@ -34,43 +34,43 @@ import javax.xml.namespace.QName;
 @RunAsClient
 public class JaxbElementTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JaxbElementTest.class.getSimpleName());
-        war.addClass(JaxbCollectionTest.class);
-        return TestUtil.finishContainerPrepare(war, null, JaxbElementEntityMessageReader.class, JaxbElementEntityMessageWriter.class,
-                JaxbElementResource.class, JaxbElementReadableWritableEntity.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JaxbElementTest.class.getSimpleName());
+      war.addClass(JaxbCollectionTest.class);
+      return TestUtil.finishContainerPrepare(war, null, JaxbElementEntityMessageReader.class, JaxbElementEntityMessageWriter.class,
+            JaxbElementResource.class, JaxbElementReadableWritableEntity.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JaxbElementTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JaxbElementTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Creates entity type JAXBElement and sends it to the server, user defined Writer and Reader implementing
-     * custom type is used
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testWriter() {
-        JAXBElement<String> element = new JAXBElement<String>(new QName(""),
-                String.class, JaxbElementResource.class.getName());
-        Response response = client.target(generateURL("/resource/standardwriter")).request().post(Entity.xml(element));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails Creates entity type JAXBElement and sends it to the server, user defined Writer and Reader implementing
+    * custom type is used
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testWriter() {
+      JAXBElement<String> element = new JAXBElement<String>(new QName(""),
+            String.class, JaxbElementResource.class.getName());
+      Response response = client.target(generateURL("/resource/standardwriter")).request().post(Entity.xml(element));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+   }
 
 
 }

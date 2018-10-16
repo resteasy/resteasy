@@ -6,9 +6,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 public interface GenericProxyBase<T> {
-    @POST
-    @Path("/hello")
-    @Produces("text/plain")
-    @Consumes("text/plain")
-    String sayHi(T in);
+   @POST
+   @Path("/hello")
+   @Produces("text/plain")
+   @Consumes("text/plain")
+   String sayHi(T in);
 }

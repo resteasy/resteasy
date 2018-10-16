@@ -16,65 +16,65 @@ import se.unlogic.standardutils.xml.XMLGenerator;
 @XMLElement
 public class Drive implements Elementable{
 
-	@XMLElement
-	private Integer temp;
-	
-	@XMLElement
-	private String type;
-	
-	@XMLElement
-	private String device;
-	
-	@XMLElement
-	private DriveState driveState;
-	
-	public Drive(Integer temp, String type, String device)
-	{
-		this.temp = temp;
-		this.device = device;
-		this.type = type;
-	}
-	
-	public Drive(){}
-	
-	public Integer getTemp() {
-		return temp;
-	}
-	public void setTemp(Integer temp) {
-		this.temp = temp;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getDevice() {
-		return device;
-	}
-	public void setDevice(String device) {
-		this.device = device;	}
+   @XMLElement
+   private Integer temp;
 
-	@Override
-	public String toString() {
+   @XMLElement
+   private String type;
 
-		return device + " " + temp + "-" + "(" + type + ")";
-	}
+   @XMLElement
+   private String device;
 
-	public Element toXML(Document doc) {
-		
-		return XMLGenerator.toXML(this, doc);
-	}
+   @XMLElement
+   private DriveState driveState;
 
-	
-	public DriveState getDriveState() {
-	
-		return driveState;
-	}
+   public Drive(Integer temp, String type, String device)
+   {
+      this.temp = temp;
+      this.device = device;
+      this.type = type;
+   }
 
-	
-	public void setDriveState(DriveState driveState) {
-	
-		this.driveState = driveState;
-	}
+   public Drive(){}
+
+   public Integer getTemp() {
+      return temp;
+   }
+   public void setTemp(Integer temp) {
+      this.temp = temp;
+   }
+   public String getType() {
+      return type;
+   }
+   public void setType(String type) {
+      this.type = type;
+   }
+   public String getDevice() {
+      return device;
+   }
+   public void setDevice(String device) {
+      this.device = device;   }
+
+   @Override
+   public String toString() {
+
+      return device + " " + temp + "-" + "(" + type + ")";
+   }
+
+   public Element toXML(Document doc) {
+
+      return XMLGenerator.toXML(this, doc);
+   }
+
+
+   public DriveState getDriveState() {
+
+      return driveState;
+   }
+
+
+   public void setDriveState(DriveState driveState) {
+
+      this.driveState = driveState;
+   }
 }

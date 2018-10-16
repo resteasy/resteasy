@@ -5,14 +5,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ProxyJaxbCredit {
-    private String name;
+   private String name;
 
-    @XmlElement
-    public String getName() {
-        return name;
-    }
+   @XmlElement
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 }

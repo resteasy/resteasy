@@ -114,12 +114,12 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
          Thread.currentThread().setContextClassLoader(old);
       }
       ResteasyClient client = new ResteasyClientBuilder()
-              .providerFactory(providerFactory)
-              .connectionPoolSize(size)
-              .hostnameVerification(policy)
-              .trustStore(resourceMetadata.getTruststore())
-              .keyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
-              .build();
+            .providerFactory(providerFactory)
+            .connectionPoolSize(size)
+            .hostnameVerification(policy)
+            .trustStore(resourceMetadata.getTruststore())
+            .keyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
+            .build();
       realmConfiguration.setClient(client);
       realmConfiguration.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));
       realmConfiguration.setCodeUrl(client.target(tokenUrl));

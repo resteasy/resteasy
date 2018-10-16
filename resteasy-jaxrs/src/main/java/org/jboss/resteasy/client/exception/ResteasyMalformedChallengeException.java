@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyMalformedChallengeException extends ResteasyProtocolException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyMalformedChallengeException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyMalformedChallengeException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyMalformedChallengeException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyMalformedChallengeException()
+   {
+   }
+
+   public ResteasyMalformedChallengeException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyMalformedChallengeException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyMalformedChallengeException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyMalformedChallengeException(Throwable cause)
+   {
+      super(cause);
+   }
 }

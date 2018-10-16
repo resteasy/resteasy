@@ -28,37 +28,37 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ResourceWithMultipleInterfacesTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment(name = "LocatingResource")
-    public static Archive<?> deployLocatingResource() {
-        WebArchive war = TestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
-        war.addClass(ResourceWithMultipleInterfacesIntA.class);
-        war.addClass(ResourceWithMultipleInterfacesEmpty.class);
-        return TestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
-    }
+   @Deployment(name = "LocatingResource")
+   public static Archive<?> deployLocatingResource() {
+      WebArchive war = TestUtil.prepareArchive(ResourceWithMultipleInterfacesTest.class.getSimpleName());
+      war.addClass(ResourceWithMultipleInterfacesIntA.class);
+      war.addClass(ResourceWithMultipleInterfacesEmpty.class);
+      return TestUtil.finishContainerPrepare(war, null, ResourceWithMultipleInterfacesRootResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResourceWithMultipleInterfacesTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResourceWithMultipleInterfacesTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Check result from resource with multiple interfaces.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNoDefaultsResource() throws Exception {
-        ResourceWithMultipleInterfacesIntA proxy = client.target(generateURL("/")).proxyBuilder(ResourceWithMultipleInterfacesIntA.class).build();
-        Assert.assertEquals("Wrong client answer.", "FOO", proxy.getFoo());
-    }
+   /**
+    * @tpTestDetails Check result from resource with multiple interfaces.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNoDefaultsResource() throws Exception {
+      ResourceWithMultipleInterfacesIntA proxy = client.target(generateURL("/")).proxyBuilder(ResourceWithMultipleInterfacesIntA.class).build();
+      Assert.assertEquals("Wrong client answer.", "FOO", proxy.getFoo());
+   }
 }

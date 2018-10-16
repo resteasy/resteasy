@@ -5,8 +5,8 @@ import javax.ws.rs.Path;
 
 @Path("/scanned")
 public class SpringBeanProcessorScannedResource {
-    @GET
-    public String callGet() {
-        return "Hello";
-    }
+   @GET
+   public String callGet() {
+      return "Hello";
+   }
 }

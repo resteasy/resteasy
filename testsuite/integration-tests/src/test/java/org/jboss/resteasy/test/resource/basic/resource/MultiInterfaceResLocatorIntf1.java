@@ -6,8 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 public interface MultiInterfaceResLocatorIntf1 {
-    @GET
-    @Produces("text/plain")
-    @Path("hello1")
-    String resourceMethod1();
+   @GET
+   @Produces("text/plain")
+   @Path("hello1")
+   String resourceMethod1();
 }

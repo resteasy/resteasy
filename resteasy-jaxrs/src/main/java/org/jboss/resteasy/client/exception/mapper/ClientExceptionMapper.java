@@ -6,7 +6,4 @@ package org.jboss.resteasy.client.exception.mapper;
  *
  * Copyright Jul 28, 2012
  */
-public interface ClientExceptionMapper<E extends Throwable>
-{
-      RuntimeException toException(E exception);
-}
+public interface ClientExceptionMapper<E extends Throwable> { RuntimeException toException(E exception);}

@@ -18,113 +18,113 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
-    private final static String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
+   private final static String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
-    public Object fromString(String newCookie) throws IllegalArgumentException {
-        if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
-        String cookieName = null;
-        String cookieValue = null;
-        String comment = null;
-        String domain = null;
-        int maxAge = NewCookie.DEFAULT_MAX_AGE;
-        String path = null;
-        boolean secure = false;
-        int version = NewCookie.DEFAULT_VERSION;
-        boolean httpOnly = false;
-        Date expiry = null;
+   public Object fromString(String newCookie) throws IllegalArgumentException {
+      if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
+      String cookieName = null;
+      String cookieValue = null;
+      String comment = null;
+      String domain = null;
+      int maxAge = NewCookie.DEFAULT_MAX_AGE;
+      String path = null;
+      boolean secure = false;
+      int version = NewCookie.DEFAULT_VERSION;
+      boolean httpOnly = false;
+      Date expiry = null;
 
-        ParameterParser parser = new ParameterParser();
-        Map<String, String> map = parser.parse(newCookie, ';');
+      ParameterParser parser = new ParameterParser();
+      Map<String, String> map = parser.parse(newCookie, ';');
 
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String name = entry.getKey();
-            String value = entry.getValue();
-            if (name.equalsIgnoreCase("Comment"))
-                comment = value;
-            else if (name.equalsIgnoreCase("Domain"))
-                domain = value;
-            else if (name.equalsIgnoreCase("Max-Age"))
-                maxAge = Integer.parseInt(value);
-            else if (name.equalsIgnoreCase("Path"))
-                path = value;
-            else if (name.equalsIgnoreCase("Secure"))
-                secure = true;
-            else if (name.equalsIgnoreCase("Version"))
-                version = Integer.parseInt(value);
-            else if (name.equalsIgnoreCase("HttpOnly"))
-                httpOnly = true;
-            else if (name.equalsIgnoreCase("Expires")) {
-                try
-                {
-                    expiry = new SimpleDateFormat(OLD_COOKIE_PATTERN, Locale.US).parse(value);
-                }
-                catch (ParseException e)
-                {
-                }
-            } else {
-                cookieName = name;
-                cookieValue = value;
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+         String name = entry.getKey();
+         String value = entry.getValue();
+         if (name.equalsIgnoreCase("Comment"))
+            comment = value;
+         else if (name.equalsIgnoreCase("Domain"))
+            domain = value;
+         else if (name.equalsIgnoreCase("Max-Age"))
+            maxAge = Integer.parseInt(value);
+         else if (name.equalsIgnoreCase("Path"))
+            path = value;
+         else if (name.equalsIgnoreCase("Secure"))
+            secure = true;
+         else if (name.equalsIgnoreCase("Version"))
+            version = Integer.parseInt(value);
+         else if (name.equalsIgnoreCase("HttpOnly"))
+            httpOnly = true;
+         else if (name.equalsIgnoreCase("Expires")) {
+            try
+            {
+               expiry = new SimpleDateFormat(OLD_COOKIE_PATTERN, Locale.US).parse(value);
             }
+            catch (ParseException e)
+            {
+            }
+         } else {
+            cookieName = name;
+            cookieValue = value;
+         }
 
-        }
+      }
 
-        if (cookieValue == null)
-        {
-           cookieValue = "";
-        }
-        
-        return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
+      if (cookieValue == null)
+      {
+         cookieValue = "";
+      }
+      
+      return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
 
-    }
+   }
 
-    protected void quote(StringBuilder b, String value) {
+   protected void quote(StringBuilder b, String value) {
 
-        if (MediaTypeHeaderDelegate.quoted(value)) {
-            b.append('"');
-            b.append(value);
-            b.append('"');
-        } else {
-            b.append(value);
-        }
-    }
+      if (MediaTypeHeaderDelegate.quoted(value)) {
+         b.append('"');
+         b.append(value);
+         b.append('"');
+      } else {
+         b.append(value);
+      }
+   }
 
-    public String toString(Object value) {
-       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
-        NewCookie cookie = (NewCookie) value;
-        StringBuilder b = new StringBuilder();
+   public String toString(Object value) {
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+      NewCookie cookie = (NewCookie) value;
+      StringBuilder b = new StringBuilder();
 
-        b.append(cookie.getName()).append('=');
-        
-        if (cookie.getValue() != null) {
-           quote(b, cookie.getValue());
-        }
+      b.append(cookie.getName()).append('=');
+      
+      if (cookie.getValue() != null) {
+         quote(b, cookie.getValue());
+      }
 
-        b.append(";").append("Version=").append(cookie.getVersion());
+      b.append(";").append("Version=").append(cookie.getVersion());
 
-        if (cookie.getComment() != null) {
-            b.append(";Comment=");
-            quote(b, cookie.getComment());
-        }
-        if (cookie.getDomain() != null) {
-            b.append(";Domain=");
-            quote(b, cookie.getDomain());
-        }
-        if (cookie.getPath() != null) {
-            b.append(";Path=");
-            b.append(cookie.getPath());
-        }
-        if (cookie.getMaxAge() != -1) {
-            b.append(";Max-Age=");
-            b.append(cookie.getMaxAge());
-        }
-        if (cookie.getExpiry() != null) {
-            b.append(";Expires=");
-            b.append(DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
-        }
-        if (cookie.isSecure())
-            b.append(";Secure");
-        if (cookie.isHttpOnly())
-            b.append(";HttpOnly");
-        return b.toString();
-    }
+      if (cookie.getComment() != null) {
+         b.append(";Comment=");
+         quote(b, cookie.getComment());
+      }
+      if (cookie.getDomain() != null) {
+         b.append(";Domain=");
+         quote(b, cookie.getDomain());
+      }
+      if (cookie.getPath() != null) {
+         b.append(";Path=");
+         b.append(cookie.getPath());
+      }
+      if (cookie.getMaxAge() != -1) {
+         b.append(";Max-Age=");
+         b.append(cookie.getMaxAge());
+      }
+      if (cookie.getExpiry() != null) {
+         b.append(";Expires=");
+         b.append(DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
+      }
+      if (cookie.isSecure())
+         b.append(";Secure");
+      if (cookie.isHttpOnly())
+         b.append(";HttpOnly");
+      return b.toString();
+   }
 }

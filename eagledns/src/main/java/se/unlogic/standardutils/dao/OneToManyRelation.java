@@ -12,10 +12,10 @@ import java.sql.SQLException;
 
 public interface OneToManyRelation<LocalType, RemoteType> {
 
-	void getRemoteValue(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
+   void getRemoteValue(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
 
-	void add(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
+   void add(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
 
-	void update(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
+   void update(LocalType bean, Connection connection, RelationQuery relations) throws SQLException;
 
 }

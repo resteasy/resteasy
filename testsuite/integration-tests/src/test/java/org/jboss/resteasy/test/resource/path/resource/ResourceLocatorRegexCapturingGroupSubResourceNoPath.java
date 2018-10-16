@@ -10,15 +10,14 @@ import javax.ws.rs.core.Response;
  */
 @Produces("text/plain")
 public class ResourceLocatorRegexCapturingGroupSubResourceNoPath {
-    private String name;
+   private String name;
 
-    public ResourceLocatorRegexCapturingGroupSubResourceNoPath(String name) {
-        this.name = name;
-    }
+   public ResourceLocatorRegexCapturingGroupSubResourceNoPath(String name) {
+      this.name = name;
+   }
 
-    @GET
-    public Response get() {
-        return Response.ok(name +" success").build();
-    }
+   @GET
+   public Response get() {
+      return Response.ok(name +" success").build();
+   }
 }
-

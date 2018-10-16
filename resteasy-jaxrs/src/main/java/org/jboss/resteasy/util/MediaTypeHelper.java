@@ -38,7 +38,7 @@ public class MediaTypeHelper
 
    public static MediaType getProduces(Class declaring, Method method)
    {
-	   return getProduces(declaring, method, null);
+      return getProduces(declaring, method, null);
    }
 
    @SuppressWarnings(value = "unchecked")

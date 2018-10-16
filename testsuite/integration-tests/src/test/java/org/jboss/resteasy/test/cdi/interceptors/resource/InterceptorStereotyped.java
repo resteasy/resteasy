@@ -5,10 +5,10 @@ import java.util.logging.Logger;
 
 @InterceptorClassMethodInterceptorStereotype
 public class InterceptorStereotyped {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    public void test() {
-        log.info("Stereotyped.test()");
-    }
+   public void test() {
+      log.info("Stereotyped.test()");
+   }
 }

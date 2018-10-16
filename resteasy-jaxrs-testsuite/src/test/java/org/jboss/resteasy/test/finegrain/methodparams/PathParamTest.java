@@ -63,9 +63,9 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/{id}/{id1}/{id2}/{id3}")
       public Response quard(@PathParam("id") double id,
-                            @PathParam("id1") boolean id1,
-                            @PathParam("id2") byte id2,
-                            @PathParam("id3") PathSegment id3)
+                     @PathParam("id1") boolean id1,
+                     @PathParam("id2") byte id2,
+                     @PathParam("id3") PathSegment id3)
       {
          return Response.ok("quard=" + id + id1 + id2 + id3.getPath()).build();
       }
@@ -73,10 +73,10 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/{id}/{id1}/{id2}/{id3}/{id4}")
       public Response penta(@PathParam("id") long id,
-                            @PathParam("id1") String id1,
-                            @PathParam("id2") short id2,
-                            @PathParam("id3") boolean id3,
-                            @PathParam("id4") PathSegment id4)
+                     @PathParam("id1") String id1,
+                     @PathParam("id2") short id2,
+                     @PathParam("id3") boolean id3,
+                     @PathParam("id4") PathSegment id4)
       {
          return Response.ok("penta=" + id + id1 + id2 + id3 + id4.getPath()).
                  build();
@@ -110,7 +110,7 @@ public class PathParamTest extends BaseResourceTest
          for (Object key : keys)
          {
             sb.append(";" + key.toString() + "=" +
-                    matrix.getFirst(key.toString()));
+               matrix.getFirst(key.toString()));
 
          }
          return Response.ok(sb.toString()).build();
@@ -238,8 +238,8 @@ public class PathParamTest extends BaseResourceTest
       @Path("/pathsegments/{model : .+}/year/{year}")
       @Produces("text/plain")
       public String getFromMultipleSegments(@PathParam("make") String make,
-                                            @PathParam("model") List<PathSegment> car,
-                                            @PathParam("year") String year)
+                                 @PathParam("model") List<PathSegment> car,
+                                 @PathParam("year") String year)
       {
          String output = "A " + year + " " + make;
          for (PathSegment segment : car)
@@ -265,8 +265,8 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/concat/{model: \\D+}{year: \\d+}")
       @Produces("text/plain")
-		public String getConcatenatedSegment(@Context UriInfo info,
-				@PathParam("model") String model, @PathParam("year") String year)      {
+      public String getConcatenatedSegment(@Context UriInfo info,
+            @PathParam("model") String model, @PathParam("year") String year)      {
          String make = info.getPathParameters().getFirst("make");
          String color = info.getQueryParameters().get("color").get(0);
          return "A " + color + " " + year + " " + make + " " + model;
@@ -275,8 +275,8 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/concat2/{model: \\$\\D+}{year: \\d+}")
       @Produces("text/plain")
-		public String getConcatenated2Segment(@Context UriInfo info,
-				@PathParam("model") String model, @PathParam("year") String year)      {
+      public String getConcatenated2Segment(@Context UriInfo info,
+            @PathParam("model") String model, @PathParam("year") String year)      {
          String make = info.getPathParameters().getFirst("make");
          String color = info.getQueryParameters().get("color").get(0);
          return "A " + color + " " + year + " " + make + " " + model;
@@ -285,8 +285,8 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/concat3/{model: [\\$]glk}")
       @Produces("text/plain")
-		public String getConcatenated3Segment(@Context UriInfo info,
-				@PathParam("model") String model)      {
+      public String getConcatenated3Segment(@Context UriInfo info,
+            @PathParam("model") String model)      {
          String make = info.getPathParameters().getFirst("make");
          String color = info.getQueryParameters().get("color").get(0);
          return "A " + color + " " + make + " " + model;
@@ -295,8 +295,8 @@ public class PathParamTest extends BaseResourceTest
       @GET
       @Path("/group/{model: [^/()]+?}{ignore: (?:\\(\\))?}")
       @Produces("text/plain")
-		public String getGroupSegment(@Context UriInfo info,
-				@PathParam("model") String model)      {
+      public String getGroupSegment(@Context UriInfo info,
+            @PathParam("model") String model)      {
          String make = info.getPathParameters().getFirst("make");
          String color = info.getQueryParameters().get("color").get(0);
          return "A " + color + " " + make + " " + model;

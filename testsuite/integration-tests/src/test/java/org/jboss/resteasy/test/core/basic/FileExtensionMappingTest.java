@@ -35,26 +35,26 @@ public class FileExtensionMappingTest
 
    @BeforeClass
    public static void setup() {
-       client = ClientBuilder.newClient();
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void close() {
-       client.close();
+      client.close();
    }
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
-       war.addClass(FileExtensionMappingApplication.class);
-       war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
-       Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
-       LOG.info(archive.toString(true));
-       return archive;
+      WebArchive war = TestUtil.prepareArchive(FileExtensionMappingTest.class.getSimpleName());
+      war.addClass(FileExtensionMappingApplication.class);
+      war.addAsWebInfResource(FileExtensionMappingTest.class.getPackage(), "FileExtensionMapping.xml", "web.xml");
+      Archive<?> archive = TestUtil.finishContainerPrepare(war, null, FileExtensionMappingResource.class);
+      LOG.info(archive.toString(true));
+      return archive;
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, FileExtensionMappingTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, FileExtensionMappingTest.class.getSimpleName());
    }
    
    /**

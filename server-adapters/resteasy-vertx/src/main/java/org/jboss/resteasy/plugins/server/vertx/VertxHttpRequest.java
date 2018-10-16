@@ -314,7 +314,7 @@ public class VertxHttpRequest extends BaseHttpRequest
                done = true;
                cancelled = true;
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                     t -> vertxFlush());
+                  t -> vertxFlush());
             }
          }
 
@@ -340,7 +340,7 @@ public class VertxHttpRequest extends BaseHttpRequest
                done = true;
                cancelled = true;
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                     t -> vertxFlush());
+                  t -> vertxFlush());
             }
          }
 

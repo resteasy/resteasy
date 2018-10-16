@@ -13,15 +13,15 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  * HttpContext.getAttributes() data is available within Providers and Resources by injecting a ResteasyConfiguration interface
  *
  * <pre>
-     HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
-     contextBuilder = new HttpContextBuilder();
-     contextBuilder.getDeployment().getActualResourceClasses().add(SimpleResource.class);
-     HttpContext context = contextBuilder.bind(httpServer);
-     context.getAttributes().put("some.config.info", "42");
-     httpServer.start();
+      HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
+      contextBuilder = new HttpContextBuilder();
+      contextBuilder.getDeployment().getActualResourceClasses().add(SimpleResource.class);
+      HttpContext context = contextBuilder.bind(httpServer);
+      context.getAttributes().put("some.config.info", "42");
+      httpServer.start();
 
-     contextBuilder.cleanup();
-     httpServer.stop(0);
+      contextBuilder.cleanup();
+      httpServer.stop(0);
    </pre>
  * Create your HttpServer the way you want then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy
  * and bind it to an HttpContext.  The HttpContext attributes are available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration

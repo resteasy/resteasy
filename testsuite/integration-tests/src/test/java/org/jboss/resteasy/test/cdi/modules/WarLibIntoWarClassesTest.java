@@ -38,34 +38,34 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class WarLibIntoWarClassesTest {
-    protected static final Logger log = LogManager.getLogger(WarLibIntoWarClassesTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(WarLibIntoWarClassesTest.class.getName());
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar")
-                .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
-                .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
-        WebArchive war = TestUtil.prepareArchive(WarLibIntoWarClassesTest.class.getSimpleName())
-                .addClasses(UtilityProducer.class)
-                .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
-                .addAsLibrary(jar)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar")
+            .addClasses(CDIModulesInjectableBinder.class, CDIModulesInjectableIntf.class, CDIModulesInjectable.class)
+            .add(EmptyAsset.INSTANCE, "META-INF/beans.xml");
+      WebArchive war = TestUtil.prepareArchive(WarLibIntoWarClassesTest.class.getSimpleName())
+            .addClasses(UtilityProducer.class)
+            .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
+            .addAsLibrary(jar)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      return war;
+   }
 
-    /**
-     * @tpTestDetails Test bean injection in lib of war.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testModules() throws Exception {
-        log.info("starting testModules()");
-        Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", WarLibIntoWarClassesTest.class.getSimpleName()));
-        Response response = base.request().get();
-        log.info("Status: " + response.getStatus());
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Test bean injection in lib of war.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testModules() throws Exception {
+      log.info("starting testModules()");
+      Client client = ClientBuilder.newClient();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/modules/test/", WarLibIntoWarClassesTest.class.getSimpleName()));
+      Response response = base.request().get();
+      log.info("Status: " + response.getStatus());
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      client.close();
+   }
 }

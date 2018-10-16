@@ -39,7 +39,7 @@ public class TestResource
                Thread.sleep(10000);
                Response jaxrs = Response.ok("test").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
-                LOG.info("TestResource: async thread finished");
+               LOG.info("TestResource: async thread finished");
             }
             catch (Exception e)
             {
@@ -65,7 +65,7 @@ public class TestResource
                Thread.sleep(35000); // Jetty async timeout defaults to 30000.
                Response jaxrs = Response.ok("test").type(MediaType.TEXT_PLAIN).build();
                response.setResponse(jaxrs);
-                LOG.info("TestResource: async thread finished");
+               LOG.info("TestResource: async thread finished");
             }
             catch (Exception e)
             {

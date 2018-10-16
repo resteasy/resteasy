@@ -65,7 +65,7 @@ public class CatalinaSecurityContextHelper
       List<String> rolesAsStringList = new ArrayList<String>();
       rolesAsStringList.addAll(roleSet);
       return  new JBossGenericPrincipal(realm, userPrincipal.getName(), null, rolesAsStringList,
-              userPrincipal, null, credentials, null, subject);
+            userPrincipal, null, credentials, null, subject);
 
    }
    /**

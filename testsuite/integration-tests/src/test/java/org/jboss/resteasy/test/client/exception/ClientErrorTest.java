@@ -38,32 +38,32 @@ public class ClientErrorTest
 
    @Deployment(name = "war1", order = 1)
    public static Archive<?> deployJaxrs20() {
-       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_0");
-       war.addClass(PortProviderUtil.class);
-       war.addClass(TestUtil.class);
-       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_0_web.xml");
-       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+      WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_0");
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_0_web.xml");
+      return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
    
    @Deployment(name = "war2", order = 2)
    public static Archive<?> deployJaxrs21() {
-       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_1");
-       war.addClass(PortProviderUtil.class);
-       war.addClass(TestUtil.class);
-       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_1_web.xml");
-       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+      WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_1");
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_1_web.xml");
+      return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
    
    @Deployment(name = "war3", order = 3)
    public static Archive<?> deployDefault() {
-       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
-       war.addClass(PortProviderUtil.class);
-       war.addClass(TestUtil.class);
-       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
+      WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
+      war.addClass(PortProviderUtil.class);
+      war.addClass(TestUtil.class);
+      return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, ClientErrorTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ClientErrorTest.class.getSimpleName());
    }
 
    @BeforeClass

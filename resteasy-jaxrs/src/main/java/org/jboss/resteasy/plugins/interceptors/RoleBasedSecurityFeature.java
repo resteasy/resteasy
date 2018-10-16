@@ -35,12 +35,12 @@ public class RoleBasedSecurityFeature implements DynamicFeature
       }
 
       denyAll = (declaring.isAnnotationPresent(DenyAll.class)
-              && method.isAnnotationPresent(RolesAllowed.class) == false
-              && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
+            && method.isAnnotationPresent(RolesAllowed.class) == false
+            && method.isAnnotationPresent(PermitAll.class) == false) || method.isAnnotationPresent(DenyAll.class);
 
       permitAll = (declaring.isAnnotationPresent(PermitAll.class) == true
-              && method.isAnnotationPresent(RolesAllowed.class) == false
-              && method.isAnnotationPresent(DenyAll.class) == false) || method.isAnnotationPresent(PermitAll.class);
+            && method.isAnnotationPresent(RolesAllowed.class) == false
+            && method.isAnnotationPresent(DenyAll.class) == false) || method.isAnnotationPresent(PermitAll.class);
 
       if (rolesAllowed != null || denyAll || permitAll)
       {

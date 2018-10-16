@@ -135,12 +135,12 @@ public class RESTEasyParamBasicCustomValuesResource
    @POST
    @Path("a/{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}")
    public Response post(
-           @CookieParam("cookieParam3") String cookieParam3Updated,
-           @FormParam("formParam3") String formParam3Updated,
-           @HeaderParam("headerParam3") String headerParam3Updated,
-           @MatrixParam("matrixParam3") String matrixParam3Updated,
-           @PathParam("pathParam3") String pathParam3Updated,
-           @QueryParam("queryParam3") String queryParam3Updated)
+         @CookieParam("cookieParam3") String cookieParam3Updated,
+         @FormParam("formParam3") String formParam3Updated,
+         @HeaderParam("headerParam3") String headerParam3Updated,
+         @MatrixParam("matrixParam3") String matrixParam3Updated,
+         @PathParam("pathParam3") String pathParam3Updated,
+         @QueryParam("queryParam3") String queryParam3Updated)
    {
 
       StringBuilder details = new StringBuilder();
@@ -177,49 +177,49 @@ public class RESTEasyParamBasicCustomValuesResource
       logger.info(details);
 
       if(!"cookieParam0".equals(cookieParam0Updated)
-              || !"cookieParam1".equals(cookieParam1Updated)
-              || !"cookieParam2".equals(cookieParam2Updated)
-              || !"cookieParam3".equals(cookieParam3Updated)) {
+            || !"cookieParam1".equals(cookieParam1Updated)
+            || !"cookieParam2".equals(cookieParam2Updated)
+            || !"cookieParam3".equals(cookieParam3Updated)) {
          logger.error("cookie error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"formParam0".equals(formParam0Updated)
-              || !"formParam1".equals(formParam1Updated)
-              || !"formParam2".equals(formParam2Updated)
-              || !"formParam3".equals(formParam3Updated)) {
+            || !"formParam1".equals(formParam1Updated)
+            || !"formParam2".equals(formParam2Updated)
+            || !"formParam3".equals(formParam3Updated)) {
          logger.error("form error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"headerParam0".equals(headerParam0Updated)
-              || !"headerParam1".equals(headerParam1Updated)
-              || !"headerParam2".equals(headerParam2Updated)
-              || !"headerParam3".equals(headerParam3Updated)) {
+            || !"headerParam1".equals(headerParam1Updated)
+            || !"headerParam2".equals(headerParam2Updated)
+            || !"headerParam3".equals(headerParam3Updated)) {
          logger.error("header error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"matrixParam0".equals(matrixParam0Updated)
-              || !"matrixParam1".equals(matrixParam1Updated)
-              || !"matrixParam2".equals(matrixParam2Updated)
-              || !"matrixParam3".equals(matrixParam3Updated)) {
+            || !"matrixParam1".equals(matrixParam1Updated)
+            || !"matrixParam2".equals(matrixParam2Updated)
+            || !"matrixParam3".equals(matrixParam3Updated)) {
          logger.error("matrix error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"pathParam0".equals(pathParam0Updated)
-              || !"pathParam1".equals(pathParam1Updated)
-              || !"pathParam2".equals(pathParam2Updated)
-              || !"pathParam3".equals(pathParam3Updated)) {
+            || !"pathParam1".equals(pathParam1Updated)
+            || !"pathParam2".equals(pathParam2Updated)
+            || !"pathParam3".equals(pathParam3Updated)) {
          logger.error("path error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"queryParam0".equals(queryParam0Updated)
-              || !"queryParam1".equals(queryParam1Updated)
-              || !"queryParam2".equals(queryParam2Updated)
-              || !"queryParam3".equals(queryParam3Updated)) {
+            || !"queryParam1".equals(queryParam1Updated)
+            || !"queryParam2".equals(queryParam2Updated)
+            || !"queryParam3".equals(queryParam3Updated)) {
          logger.error("query error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }

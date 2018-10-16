@@ -52,7 +52,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    }
 
    public static long methodHash(Method method)
-           throws Exception
+         throws Exception
    {
       Class[] parameterTypes = method.getParameterTypes();
       StringBuilder methodDesc = new StringBuilder(method.getName()).append("(");
@@ -65,7 +65,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    }
 
    public static long createHash(String methodDesc)
-           throws Exception
+         throws Exception
    {
       long hash = 0;
       ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream(512);

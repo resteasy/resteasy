@@ -40,32 +40,32 @@ public class AbortMessageTest {
 
    @BeforeClass
    public static void setup() {
-       client = ClientBuilder.newClient();
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void close() {
-       client.close();
+      client.close();
    }
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
-       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+      WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
                new LoggingPermission("control", ""),
                new RuntimePermission("accessDeclaredMembers")
-       ), "permissions.xml");
-       return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, AbortMessageTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, AbortMessageTest.class.getSimpleName());
    }
 
-    /**
-     * @tpTestDetails Send response with "Aborted"
-     * @tpSince RESTEasy 3.0.20.Final
-     */
+   /**
+    * @tpTestDetails Send response with "Aborted"
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
    public void testAbort() throws UnsupportedEncodingException {
       WebTarget target = client.target(generateURL("/showproblem"));

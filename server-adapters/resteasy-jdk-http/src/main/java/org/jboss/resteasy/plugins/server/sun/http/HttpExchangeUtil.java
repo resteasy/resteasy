@@ -30,7 +30,7 @@ public class HttpExchangeUtil
    {
       String host = exchange.getLocalAddress().getHostName();
       if (exchange.getLocalAddress().getPort() != 80
-              && exchange.getLocalAddress().getPort() != 443)
+            && exchange.getLocalAddress().getPort() != 443)
       {
          host += ":" + exchange.getLocalAddress().getPort();
       }

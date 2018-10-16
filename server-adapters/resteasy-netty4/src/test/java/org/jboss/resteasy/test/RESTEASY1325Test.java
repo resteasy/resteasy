@@ -38,7 +38,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 public class RESTEASY1325Test
 {
-    private static final Logger LOG = Logger.getLogger(RESTEASY1325Test.class);
+   private static final Logger LOG = Logger.getLogger(RESTEASY1325Test.class);
    static String BASE_URI = generateURL("");
 
    static final int IDLE_TIMEOUT = 10;
@@ -80,19 +80,19 @@ public class RESTEASY1325Test
 
    }
 
-    /**
-     * Test case
-     * @throws InterruptedException
-     * @throws MalformedURLException
-     */
+   /**
+    * Test case
+    * @throws InterruptedException
+    * @throws MalformedURLException
+    */
    private void callAndIdle() throws InterruptedException, MalformedURLException {
 
          EventLoopGroup group = new NioEventLoopGroup();
          try {
             Bootstrap b = new Bootstrap();
             b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<Channel>() {
+               .channel(NioSocketChannel.class)
+               .handler(new ChannelInitializer<Channel>() {
                        @Override
                        protected void initChannel(Channel ch) throws Exception {
                           ch.pipeline().addLast(new HttpClientCodec());
@@ -100,12 +100,12 @@ public class RESTEASY1325Test
                           ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
                              @Override
                              protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
-                                LOG.info("HTTP response from resteasy: "+msg);
+                        LOG.info("HTTP response from resteasy: "+msg);
                                  Assert.assertEquals(HttpResponseStatus.OK, msg.getStatus());
                              }
                           });
                        }
-                    });
+               });
 
             // first request;
             URL url = new URL(BASE_URI+"/test");
@@ -114,7 +114,7 @@ public class RESTEASY1325Test
 
             // Prepare the HTTP request.
             HttpRequest request = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
+               HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
             request.headers().set(HttpHeaderNames.HOST, url.getHost());
             request.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
             // Send the HTTP request.
@@ -128,13 +128,13 @@ public class RESTEASY1325Test
          }
    }
 
-    @Path("/")
-    public static class Resource {
-        @GET
-        @Path("/test")
-        @Produces(MediaType.TEXT_PLAIN)
-        public String get() {
+   @Path("/")
+   public static class Resource {
+      @GET
+      @Path("/test")
+      @Produces(MediaType.TEXT_PLAIN)
+      public String get() {
             return "hello world";
-        }
-    }
+      }
+   }
 }

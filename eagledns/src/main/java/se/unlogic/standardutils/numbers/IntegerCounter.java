@@ -9,37 +9,37 @@ package se.unlogic.standardutils.numbers;
 
 public class IntegerCounter {
 
-	private Integer value;
+   private Integer value;
 
-	IntegerCounter(Integer value) {
-		super();
-		this.value = value;
-	}
+   IntegerCounter(Integer value) {
+      super();
+      this.value = value;
+   }
 
-	public IntegerCounter() {
-		super();
-		this.value = 0;
-	}
+   public IntegerCounter() {
+      super();
+      this.value = 0;
+   }
 
-	public Integer getValue() {
-		return value;
-	}
+   public Integer getValue() {
+      return value;
+   }
 
-	public synchronized void setValue(Integer value) {
-		this.value = value;
-	}
+   public synchronized void setValue(Integer value) {
+      this.value = value;
+   }
 
-	public synchronized Integer increment(){
+   public synchronized Integer increment(){
 
-		value++;
+      value++;
 
-		return value;
-	}
+      return value;
+   }
 
-	public synchronized Integer decrement(){
+   public synchronized Integer decrement(){
 
-		value--;
+      value--;
 
-		return value;
-	}
+      return value;
+   }
 }

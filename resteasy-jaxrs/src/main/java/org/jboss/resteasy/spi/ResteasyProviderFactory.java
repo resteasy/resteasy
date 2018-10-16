@@ -187,9 +187,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          return template;
       }
 
-       public T getObj() {
-           return obj;
-       }
+      public T getObj() {
+         return obj;
+      }
    }
 
    protected static class ExtSortedKey<T> extends SortedKey<T>
@@ -494,13 +494,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addAsyncClientResponseProvider(Class<? extends AsyncClientResponseProvider> providerClass)
    {
-       AsyncClientResponseProvider provider = createProviderInstance(providerClass);
-       addAsyncClientResponseProvider(provider, providerClass);
+      AsyncClientResponseProvider provider = createProviderInstance(providerClass);
+      addAsyncClientResponseProvider(provider, providerClass);
    }
    
    protected void addAsyncClientResponseProvider(AsyncClientResponseProvider provider)
    {
-       addAsyncClientResponseProvider(provider, provider.getClass());
+      addAsyncClientResponseProvider(provider, provider.getClass());
    }
    
    protected void addAsyncClientResponseProvider(AsyncClientResponseProvider provider, Class providerClass)
@@ -515,8 +515,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> asyncClass = Types.getRawType(asyncType);
       if (asyncClientResponseProviders == null)
       {
-          asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
-          asyncClientResponseProviders.putAll(parent.getAsyncClientResponseProviders());
+         asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
+         asyncClientResponseProviders.putAll(parent.getAsyncClientResponseProviders());
       }
       asyncClientResponseProviders.put(asyncClass, provider);
    }
@@ -1221,7 +1221,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
       MessageBodyReader<T> reader = resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
       if (reader!=null)
-          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
       return reader;
    }
 
@@ -1313,7 +1313,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, providerClass, priority, isBuiltin);
       SortedKey<ExceptionMapper> registeredExceptionMapper;
       if ((registeredExceptionMapper = sortedExceptionMappers.get(exceptionClass)) != null
-          && (candidateExceptionMapper.compareTo(registeredExceptionMapper) > 0)) {
+         && (candidateExceptionMapper.compareTo(registeredExceptionMapper) > 0)) {
          return;
       }
       sortedExceptionMappers.put(exceptionClass, candidateExceptionMapper);
@@ -1382,13 +1382,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addAsyncResponseProvider(Class<? extends AsyncResponseProvider> providerClass)
    {
-       AsyncResponseProvider provider = createProviderInstance(providerClass);
-       addAsyncResponseProvider(provider, providerClass);
+      AsyncResponseProvider provider = createProviderInstance(providerClass);
+      addAsyncResponseProvider(provider, providerClass);
    }
 
    protected void addAsyncResponseProvider(AsyncResponseProvider provider)
    {
-       addAsyncResponseProvider(provider, provider.getClass());
+      addAsyncResponseProvider(provider, provider.getClass());
    }
 
    protected void addAsyncResponseProvider(AsyncResponseProvider provider, Class providerClass)
@@ -1404,21 +1404,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> asyncClass = Types.getRawType(asyncType);
       if (asyncResponseProviders == null)
       {
-          asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
-          asyncResponseProviders.putAll(parent.getAsyncResponseProviders());
+         asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
+         asyncResponseProviders.putAll(parent.getAsyncResponseProviders());
       }
       asyncResponseProviders.put(asyncClass, provider);
    }
 
    protected void addAsyncStreamProvider(Class<? extends AsyncStreamProvider> providerClass)
    {
-       AsyncStreamProvider provider = createProviderInstance(providerClass);
-       addAsyncStreamProvider(provider, providerClass);
+      AsyncStreamProvider provider = createProviderInstance(providerClass);
+      addAsyncStreamProvider(provider, providerClass);
    }
 
    protected void addAsyncStreamProvider(AsyncStreamProvider provider)
    {
-       addAsyncStreamProvider(provider, provider.getClass());
+      addAsyncStreamProvider(provider, provider.getClass());
    }
 
    protected void addAsyncStreamProvider(AsyncStreamProvider provider, Class providerClass)
@@ -1434,8 +1434,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> asyncClass = Types.getRawType(asyncType);
       if (asyncStreamProviders == null)
       {
-          asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
-          asyncStreamProviders.putAll(parent.getAsyncStreamProviders());
+         asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
+         asyncStreamProviders.putAll(parent.getAsyncStreamProviders());
       }
       asyncStreamProviders.put(asyncClass, provider);
    }
@@ -1568,26 +1568,26 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 //         {
 //            rtn.add(list.get(i).obj);
 //         }
-    	  
-          // Fix for RESTEASY-1609.
-          // This is related to the fix in RESTEASY-1471, prior to which user ContextResolvers appeared
-          // to be built-in. The original loop may have been in response to that bug, so the reversal
-          // may not be necessary. In any case, this code will do the reversal but put user ContextResolvers
-          // at the beginning of the list.
-          for (int i = list.size() - 1; i >= 0; i--)
-          {
-             if (!list.get(i).isBuiltin)
-             {
-                rtn.add(list.get(i).obj);
-             }
-          }
-          for (int i = list.size() - 1; i >= 0; i--)
-          {
-             if (list.get(i).isBuiltin)
-             {
-                rtn.add(list.get(i).obj);
-             }
-          }
+
+         // Fix for RESTEASY-1609.
+         // This is related to the fix in RESTEASY-1471, prior to which user ContextResolvers appeared
+         // to be built-in. The original loop may have been in response to that bug, so the reversal
+         // may not be necessary. In any case, this code will do the reversal but put user ContextResolvers
+         // at the beginning of the list.
+         for (int i = list.size() - 1; i >= 0; i--)
+         {
+            if (!list.get(i).isBuiltin)
+            {
+               rtn.add(list.get(i).obj);
+            }
+         }
+         for (int i = list.size() - 1; i >= 0; i--)
+         {
+            if (list.get(i).isBuiltin)
+            {
+               rtn.add(list.get(i).obj);
+            }
+         }
       }
       else
       {
@@ -1649,7 +1649,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          return paramConverter.toString(object);
       }
       StringConverter converter = getStringConverter(object
-              .getClass());
+            .getClass());
       if (converter != null)
          return converter.toString(object);
       else
@@ -2686,7 +2686,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
       MessageBodyWriter<T> writer = resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
       if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
       return writer;
    }
 
@@ -2758,7 +2758,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * Create an instance of a class using provider allocation rules of the specification as well as the InjectorFactory
     * only does constructor injection.
     *
-    * @param clazz class 
+    * @param clazz class
     * @param <T> type
     * @return provider instance of type T
     */

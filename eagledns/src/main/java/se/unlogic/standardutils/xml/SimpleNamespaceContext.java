@@ -14,28 +14,28 @@ import java.util.Iterator;
 
 public class SimpleNamespaceContext implements NamespaceContext {
 
-	private String prefix;
-	private String URI;
+   private String prefix;
+   private String URI;
 
-	public SimpleNamespaceContext(String prefix, String URI) {
+   public SimpleNamespaceContext(String prefix, String URI) {
 
-		super();
-		this.prefix = prefix;
-		this.URI = URI;
-	}
+      super();
+      this.prefix = prefix;
+      this.URI = URI;
+   }
 
-	public String getNamespaceURI(String prefix) {
+   public String getNamespaceURI(String prefix) {
 
-		return URI;
-	}
+      return URI;
+   }
 
-	public String getPrefix(String namespaceURI) {
+   public String getPrefix(String namespaceURI) {
 
-		return prefix;
-	}
+      return prefix;
+   }
 
-	public Iterator<String> getPrefixes(String namespaceURI) {
+   public Iterator<String> getPrefixes(String namespaceURI) {
 
-		return Collections.singletonList(prefix).iterator();
-	}
+      return Collections.singletonList(prefix).iterator();
+   }
 }

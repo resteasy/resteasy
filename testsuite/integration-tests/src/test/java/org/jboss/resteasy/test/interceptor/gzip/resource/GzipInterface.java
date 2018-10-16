@@ -13,10 +13,10 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GzipInterface {
-	
-    @GET
-    @Path("/process")
-    @GZIP
-    String process(@QueryParam("name") String message);
+
+   @GET
+   @Path("/process")
+   @GZIP
+   String process(@QueryParam("name") String message);
 
 }

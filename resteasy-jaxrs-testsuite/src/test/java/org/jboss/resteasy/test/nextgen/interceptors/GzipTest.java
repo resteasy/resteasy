@@ -83,7 +83,7 @@ public class GzipTest extends BaseResourceTest
          String acceptEncoding = headers.getRequestHeaders().getFirst(HttpHeaders.ACCEPT_ENCODING);
          LOG.info(acceptEncoding);
          Assert.assertEquals("gzip, deflate", acceptEncoding);
-         */
+       */
          return Response.ok("HELLO WORLD").header("Content-Encoding", "gzip").build();
       }
 

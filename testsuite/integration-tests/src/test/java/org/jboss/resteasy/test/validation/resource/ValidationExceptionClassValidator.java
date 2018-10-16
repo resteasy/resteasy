@@ -4,12 +4,12 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class ValidationExceptionClassValidator implements ConstraintValidator<ValidationExceptionIncorrectConstraint, ValidationExceptionResourceWithIncorrectConstraint> {
-    int length;
+   int length;
 
-    public void initialize(ValidationExceptionIncorrectConstraint constraintAnnotation) {
-    }
+   public void initialize(ValidationExceptionIncorrectConstraint constraintAnnotation) {
+   }
 
-    public boolean isValid(ValidationExceptionResourceWithIncorrectConstraint value, ConstraintValidatorContext context) {
-        return true;
-    }
+   public boolean isValid(ValidationExceptionResourceWithIncorrectConstraint value, ConstraintValidatorContext context) {
+      return true;
+   }
 }

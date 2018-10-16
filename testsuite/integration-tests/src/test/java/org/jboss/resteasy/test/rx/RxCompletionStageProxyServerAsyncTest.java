@@ -58,7 +58,7 @@ public class RxCompletionStageProxyServerAsyncTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
+            + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, RxCompletionStageResourceImpl.class, TestExceptionMapper.class);
    }
 

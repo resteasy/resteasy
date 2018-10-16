@@ -19,27 +19,27 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 @MultipleWarSumConstraint(min = 9)
 public class MultipleWarResource {
-    @Min(3)
-    @PathParam("field")
-    protected int field;
+   @Min(3)
+   @PathParam("field")
+   protected int field;
 
-    private int property;
+   private int property;
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Max(0)
-    @Path("test/{field}/{property}/{param}")
-    public int test(@Min(7) @PathParam("param") int param) throws InterruptedException {
-        return param;
-    }
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   @Max(0)
+   @Path("test/{field}/{property}/{param}")
+   public int test(@Min(7) @PathParam("param") int param) throws InterruptedException {
+      return param;
+   }
 
-    @Min(5)
-    public int getProperty() {
-        return property;
-    }
+   @Min(5)
+   public int getProperty() {
+      return property;
+   }
 
-    @PathParam("property")
-    public void setProperty(int property) {
-        this.property = property;
-    }
+   @PathParam("property")
+   public void setProperty(int property) {
+      this.property = property;
+   }
 }

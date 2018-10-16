@@ -34,50 +34,50 @@ import java.util.List;
  */
 public class ProxyWithGenericReturnTypeJacksonTest
 {
-    private static final Logger LOG = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class);
+   private static final Logger LOG = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class);
    protected ResteasyDeployment deployment;
    
    @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
    @JsonSubTypes({
-           @JsonSubTypes.Type(value = Type1.class, name = "type1"),
-           @JsonSubTypes.Type(value = Type2.class, name = "type2")})
+         @JsonSubTypes.Type(value = Type1.class, name = "type1"),
+         @JsonSubTypes.Type(value = Type2.class, name = "type2")})
    public abstract static class AbstractParent {
-       
-       protected long id;
+      
+      protected long id;
    
-       public long getId() {
-           return id;
-       }
+      public long getId() {
+         return id;
+      }
    
-       public void setId(long id) {
-           this.id = id;
-       }
+      public void setId(long id) {
+         this.id = id;
+      }
    }
    
    public static class Type1 extends AbstractParent {
    
-       protected String name;
+      protected String name;
    
-       public String getName() {
-           return name;
-       }
+      public String getName() {
+         return name;
+      }
    
-       public void setName(String name) {
-           this.name = name;
-       }
+      public void setName(String name) {
+         this.name = name;
+      }
    }
    
    public static class Type2 extends AbstractParent {
    
-       protected String note;
+      protected String note;
    
-       public String getNote() {
-           return note;
-       }
+      public String getNote() {
+         return note;
+      }
    
-       public void setNote(String note) {
-           this.note = note;
-       }
+      public void setNote(String note) {
+         this.note = note;
+      }
    }
    
    public interface TestSubResourceIntf
@@ -107,24 +107,24 @@ public class ProxyWithGenericReturnTypeJacksonTest
          LOG.info("generic return type: " + method.getGenericReturnType());
          LOG.info("type of return type: " + method.getGenericReturnType().getClass());
          if ("resourceMethod".equals(method.getName())) {
-             List<AbstractParent> l = new ArrayList<AbstractParent>();
-             Type1 first = new Type1();
-             first.setId(1);
-             first.setName("MyName");
-             l.add(first);
-             
-             Type2 second = new Type2();
-             second.setId(2);
-             second.setNote("MyNote");
-             l.add(second);
-             return l;
+            List<AbstractParent> l = new ArrayList<AbstractParent>();
+            Type1 first = new Type1();
+            first.setId(1);
+            first.setName("MyName");
+            l.add(first);
+            
+            Type2 second = new Type2();
+            second.setId(2);
+            second.setNote("MyNote");
+            l.add(second);
+            return l;
          }
          
          if ("resourceMethodOne".equals(method.getName())) {
-             Type1 first = new Type1();
-             first.setId(1);
-             first.setName("MyName");
-             return first;
+            Type1 first = new Type1();
+            first.setId(1);
+            first.setName("MyName");
+            return first;
          }
          
          return null;
@@ -160,27 +160,27 @@ public class ProxyWithGenericReturnTypeJacksonTest
       deployment = null;
    }
 
-    @Test
-    public void test() throws Exception
-    {
-       ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target("http://localhost:8081/test/one/");
-        LOG.info("Sending request");
-        Response response = target.request().get();
-       String entity = response.readEntity(String.class);
-       LOG.info("Received response: " + entity);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-       response.close();
+   @Test
+   public void test() throws Exception
+   {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target("http://localhost:8081/test/one/");
+      LOG.info("Sending request");
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      LOG.info("Received response: " + entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertTrue("Type property is missing.", entity.contains("type"));
+      response.close();
 
-       target = client.target("http://localhost:8081/test/list/");
-        LOG.info("Sending request");
-        response = target.request().get();
-        entity = response.readEntity(String.class);
-       LOG.info("Received response: " + entity);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-       response.close();
-       client.close();
-    }
+      target = client.target("http://localhost:8081/test/list/");
+      LOG.info("Sending request");
+      response = target.request().get();
+      entity = response.readEntity(String.class);
+      LOG.info("Received response: " + entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertTrue("Type property is missing.", entity.contains("type"));
+      response.close();
+      client.close();
+   }
 }

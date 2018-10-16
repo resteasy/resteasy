@@ -13,9 +13,9 @@ import java.util.Comparator;
 public class CaseInsensitiveMap<V> extends MultivaluedTreeMap<String, V>
 {
    public static final Comparator<String> CASE_INSENSITIVE_ORDER
-           = new CaseInsensitiveComparator();
+         = new CaseInsensitiveComparator();
    private static class CaseInsensitiveComparator
-           implements Comparator<String>, java.io.Serializable {
+         implements Comparator<String>, java.io.Serializable {
 
       public int compare(String s1, String s2) {
          if (s1 == s2) return 0;
@@ -186,7 +186,7 @@ public class CaseInsensitiveMap<V> extends MultivaluedTreeMap<String, V>
          return keys.hashCode();
       }
 
-    }
+   }
 
    private static class EntrySetWrapper<V> implements Set<Entry<String, V>>
    {
@@ -567,6 +567,6 @@ public class CaseInsensitiveMap<V> extends MultivaluedTreeMap<String, V>
       }
       return true;
    }
-   */
+    */
 
 }

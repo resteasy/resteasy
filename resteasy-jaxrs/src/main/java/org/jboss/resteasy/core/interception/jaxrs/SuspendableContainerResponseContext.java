@@ -13,9 +13,9 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
    /**
     * Suspends the current response. This makes the current request asynchronous. No
     * further response filter is executed until this response is resumed.
-    * 
+    *
     * No reply is going to be sent to the client until this response is resumed either
-    * with {@link #resume()} or aborted with {@link #resume(Throwable)} or 
+    * with {@link #resume()} or aborted with {@link #resume(Throwable)} or
     * {@link org.jboss.resteasy.core.interception.ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
     */
    void suspend();
@@ -31,7 +31,7 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     * filter threw this exception synchronously, which means that the exception will not
     * be mapped by exception mappers, the response filters will stop running, and the
     * async response callbacks will be called with this exception.
-    * 
+    *
     * @param t the exception to send back to the client, as an internal server error.
     */
    void resume(Throwable t);

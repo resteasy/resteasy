@@ -114,38 +114,38 @@ public class ContextParameterInjector implements ValueInjector
       return createProxy();
    }
 
-    protected Object createProxy()
-    {
-        if (proxy != null)
-        {
-            try
-            {
-                return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        else
-        {
-           Class[] intfs = {type};
-           ClassLoader clazzLoader = null;
-           final SecurityManager sm = System.getSecurityManager();
-           if (sm == null)
-           {
-              clazzLoader = type.getClassLoader();
-           } else
-           {
+   protected Object createProxy()
+   {
+      if (proxy != null)
+      {
+         try
+         {
+            return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         Class[] intfs = {type};
+         ClassLoader clazzLoader = null;
+         final SecurityManager sm = System.getSecurityManager();
+         if (sm == null)
+         {
+            clazzLoader = type.getClassLoader();
+         } else
+         {
 
-              clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                 @Override
-                 public ClassLoader run() {
-                    return type.getClassLoader();
-                 }
-              });
-           }
-           return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
-        }
-    }
+            clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+               @Override
+               public ClassLoader run() {
+                  return type.getClassLoader();
+               }
+            });
+         }
+         return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
+      }
+   }
 }

@@ -33,13 +33,13 @@ public class ApplicationConfigWithInterceptorTest
    
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(ApplicationConfigWithInterceptorTest.class.getSimpleName());
-       war.addClasses(TestUtil.class, PortProviderUtil.class);
-       return TestUtil.finishContainerPrepare(war, null, ApplicationConfigWithInterceptorResource.class, AddHeaderContainerResponseFilter.class);
+      WebArchive war = TestUtil.prepareArchive(ApplicationConfigWithInterceptorTest.class.getSimpleName());
+      war.addClasses(TestUtil.class, PortProviderUtil.class);
+      return TestUtil.finishContainerPrepare(war, null, ApplicationConfigWithInterceptorResource.class, AddHeaderContainerResponseFilter.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, ApplicationConfigWithInterceptorTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ApplicationConfigWithInterceptorTest.class.getSimpleName());
    }
 
    @BeforeClass

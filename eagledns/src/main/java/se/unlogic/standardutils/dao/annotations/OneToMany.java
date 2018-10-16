@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface OneToMany {
 
-	boolean autoGet() default false;
-	boolean autoAdd() default false;
-	boolean autoUpdate() default false;
+   boolean autoGet() default false;
+   boolean autoAdd() default false;
+   boolean autoUpdate() default false;
 }

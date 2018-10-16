@@ -9,14 +9,14 @@ import java.util.logging.Logger;
 @InterceptorLifecycleBinding
 @Interceptor
 public class InterceptorPreDestroyInterceptor {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @PreDestroy
-    public void intercept(InvocationContext ctx) throws Exception {
-        log.info("*** Intercepting call in InterceptorPreDestroyInterceptor.intercept()");
-        InterceptorVisitList.add(this);
-        ctx.proceed();
-        log.info("*** Back from intercepting call in InterceptorPreDestroyInterceptor.intercept()");
-    }
+   @PreDestroy
+   public void intercept(InvocationContext ctx) throws Exception {
+      log.info("*** Intercepting call in InterceptorPreDestroyInterceptor.intercept()");
+      InterceptorVisitList.add(this);
+      ctx.proceed();
+      log.info("*** Back from intercepting call in InterceptorPreDestroyInterceptor.intercept()");
+   }
 }

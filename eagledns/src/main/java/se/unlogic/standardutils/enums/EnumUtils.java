@@ -12,71 +12,71 @@ import java.util.ArrayList;
 
 public class EnumUtils {
 
-	public static <Type extends Enum<Type>> boolean isEnum(Class<Type> e, String s) {
-		try {
-			Enum.valueOf(e, s);
-			return true;
-		} catch (IllegalArgumentException ex) {
-			return false;
-		} catch (NullPointerException ex) {
-			return false;
-		}
-	}
+   public static <Type extends Enum<Type>> boolean isEnum(Class<Type> e, String s) {
+      try {
+         Enum.valueOf(e, s);
+         return true;
+      } catch (IllegalArgumentException ex) {
+         return false;
+      } catch (NullPointerException ex) {
+         return false;
+      }
+   }
 
-	public static <Type extends Enum<Type>> Type toEnum(Class<Type> e, String s) {
-		try {
-			return Type.valueOf(e, s);
-		} catch (IllegalArgumentException ex) {
-			return null;
-		} catch (NullPointerException ex) {
-			return null;
-		}
-	}
+   public static <Type extends Enum<Type>> Type toEnum(Class<Type> e, String s) {
+      try {
+         return Type.valueOf(e, s);
+      } catch (IllegalArgumentException ex) {
+         return null;
+      } catch (NullPointerException ex) {
+         return null;
+      }
+   }
 
-	public static <Type extends Enum<Type>> ArrayList<Type> toEnum(Class<Type> e, String[] values) {
+   public static <Type extends Enum<Type>> ArrayList<Type> toEnum(Class<Type> e, String[] values) {
 
-		ArrayList<Type> enumValues = new ArrayList<Type>();
+      ArrayList<Type> enumValues = new ArrayList<Type>();
 
-		for (String value : values) {
+      for (String value : values) {
 
-			Type enumValue = toEnum(e, value);
+         Type enumValue = toEnum(e, value);
 
-			if (enumValue != null) {
-				enumValues.add(enumValue);
-			}
-		}
+         if (enumValue != null) {
+            enumValues.add(enumValue);
+         }
+      }
 
-		if (enumValues.isEmpty()) {
-			return null;
-		} else {
-			return enumValues;
-		}
-	}
+      if (enumValues.isEmpty()) {
+         return null;
+      } else {
+         return enumValues;
+      }
+   }
 
-	public static <Type extends Enum<Type>> Type toEnum(Type[] es, int ordinal) {
+   public static <Type extends Enum<Type>> Type toEnum(Type[] es, int ordinal) {
 
-		for (Type typeValue : es) {
+      for (Type typeValue : es) {
 
-			if (typeValue.ordinal() == ordinal) {
+         if (typeValue.ordinal() == ordinal) {
 
-				return typeValue;
-			}
-		}
+            return typeValue;
+         }
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public static Enum<?> getInstanceFromField(Field field) {
+   public static Enum<?> getInstanceFromField(Field field) {
 
-		Object[] enumValues = field.getType().getEnumConstants();
+      Object[] enumValues = field.getType().getEnumConstants();
 
-		return (Enum<?>) enumValues[0];
-	}
+      return (Enum<?>) enumValues[0];
+   }
 
-	public static Enum<?>[] getValuesFromField(Field field) {
+   public static Enum<?>[] getValuesFromField(Field field) {
 
-		Object[] enumValues = field.getType().getEnumConstants();
+      Object[] enumValues = field.getType().getEnumConstants();
 
-		return (Enum[]) enumValues;
-	}
+      return (Enum[]) enumValues;
+   }
 }

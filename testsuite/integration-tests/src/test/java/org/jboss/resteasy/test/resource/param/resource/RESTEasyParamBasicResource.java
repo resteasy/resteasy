@@ -136,12 +136,12 @@ public class RESTEasyParamBasicResource
    @POST
    @Path("a/{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}")
    public Response post(
-           @CookieParam String cookieParam3,
-           @FormParam String formParam3,
-           @HeaderParam String headerParam3,
-           @MatrixParam String matrixParam3,
-           @PathParam String pathParam3,
-           @QueryParam String queryParam3)
+         @CookieParam String cookieParam3,
+         @FormParam String formParam3,
+         @HeaderParam String headerParam3,
+         @MatrixParam String matrixParam3,
+         @PathParam String pathParam3,
+         @QueryParam String queryParam3)
    {
 
       StringBuilder details = new StringBuilder();
@@ -178,49 +178,49 @@ public class RESTEasyParamBasicResource
       logger.info(details);
 
       if(!"cookieParam0".equals(cookieParam0)
-              || !"cookieParam1".equals(cookieParam1)
-              || !"cookieParam2".equals(cookieParam2)
-              || !"cookieParam3".equals(cookieParam3)) {
+            || !"cookieParam1".equals(cookieParam1)
+            || !"cookieParam2".equals(cookieParam2)
+            || !"cookieParam3".equals(cookieParam3)) {
          logger.error("cookie error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"formParam0".equals(formParam0)
-              || !"formParam1".equals(formParam1)
-              || !"formParam2".equals(formParam2)
-              || !"formParam3".equals(formParam3)) {
+            || !"formParam1".equals(formParam1)
+            || !"formParam2".equals(formParam2)
+            || !"formParam3".equals(formParam3)) {
          logger.error("form error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"headerParam0".equals(headerParam0)
-              || !"headerParam1".equals(headerParam1)
-              || !"headerParam2".equals(headerParam2)
-              || !"headerParam3".equals(headerParam3)) {
+            || !"headerParam1".equals(headerParam1)
+            || !"headerParam2".equals(headerParam2)
+            || !"headerParam3".equals(headerParam3)) {
          logger.error("header error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"matrixParam0".equals(matrixParam0)
-              || !"matrixParam1".equals(matrixParam1)
-              || !"matrixParam2".equals(matrixParam2)
-              || !"matrixParam3".equals(matrixParam3)) {
+            || !"matrixParam1".equals(matrixParam1)
+            || !"matrixParam2".equals(matrixParam2)
+            || !"matrixParam3".equals(matrixParam3)) {
          logger.error("matrix error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"pathParam0".equals(pathParam0)
-              || !"pathParam1".equals(pathParam1)
-              || !"pathParam2".equals(pathParam2)
-              || !"pathParam3".equals(pathParam3)) {
+            || !"pathParam1".equals(pathParam1)
+            || !"pathParam2".equals(pathParam2)
+            || !"pathParam3".equals(pathParam3)) {
          logger.error("path error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"queryParam0".equals(queryParam0)
-              || !"queryParam1".equals(queryParam1)
-              || !"queryParam2".equals(queryParam2)
-              || !"queryParam3".equals(queryParam3)) {
+            || !"queryParam1".equals(queryParam1)
+            || !"queryParam2".equals(queryParam2)
+            || !"queryParam3".equals(queryParam3)) {
          logger.error("query error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
