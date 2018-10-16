@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyHttpRecoverableException extends ResteasyHttpException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyHttpRecoverableException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyHttpRecoverableException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyHttpRecoverableException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyHttpRecoverableException()
+   {
+   }
+
+   public ResteasyHttpRecoverableException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyHttpRecoverableException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyHttpRecoverableException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyHttpRecoverableException(Throwable cause)
+   {
+      super(cause);
+   }
 }

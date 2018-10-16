@@ -33,53 +33,53 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class GetterReturnValueNotValidatedTest {
-    protected final Logger logger = LogManager.getLogger(GetterReturnValueNotValidatedTest.class.getName());
-    ResteasyClient client;
+   protected final Logger logger = LogManager.getLogger(GetterReturnValueNotValidatedTest.class.getName());
+   ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(GetterReturnValueNotValidatedTest.class.getSimpleName())
-                .addClasses(GetterReturnValueValidatedResourceWithGetterViolation.class)
-                .addClasses(GetterReturnValueValidatedResourceResetCount.class)
-                .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(GetterReturnValueNotValidatedTest.class.getSimpleName())
+            .addClasses(GetterReturnValueValidatedResourceWithGetterViolation.class)
+            .addClasses(GetterReturnValueValidatedResourceResetCount.class)
+            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, GetterReturnValueNotValidatedTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, GetterReturnValueNotValidatedTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Validation of getter return value is not expected.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testReturnValues() throws Exception {
-        Response response = client.target(generateURL("/get")).request().get();
-        response.close();
+   /**
+    * @tpTestDetails Validation of getter return value is not expected.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testReturnValues() throws Exception {
+      Response response = client.target(generateURL("/get")).request().get();
+      response.close();
 
-        response = client.target(generateURL("/set")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-        response.close();
+      response = client.target(generateURL("/set")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      response.close();
 
-        // Valid native constraint
-        response = client.target(generateURL("/get")).request().get();
-        String entity = response.readEntity(String.class);
-        logger.info(String.format("Response: %s", entity.replace('\r', ' ').replace('\t', ' ').replace('\n', ' ')));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNull("Validation header was not excepted", header);
-        Assert.assertEquals("Wrong content of response", "a", entity);
-        response.close();
-    }
+      // Valid native constraint
+      response = client.target(generateURL("/get")).request().get();
+      String entity = response.readEntity(String.class);
+      logger.info(String.format("Response: %s", entity.replace('\r', ' ').replace('\t', ' ').replace('\n', ' ')));
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      String header = response.getHeaderString(Validation.VALIDATION_HEADER);
+      Assert.assertNull("Validation header was not excepted", header);
+      Assert.assertEquals("Wrong content of response", "a", entity);
+      response.close();
+   }
 }

@@ -50,52 +50,52 @@ import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
 @RunAsClient
 public class CDIResourceTest {
 
-    protected static final Logger logger = LogManager.getLogger(CDIResourceTest.class.getName());
+   protected static final Logger logger = LogManager.getLogger(CDIResourceTest.class.getName());
 
-    private static final String WAR_NAME = "RESTEASY-1082.war";
-    static final String toStr;
-    static final File exportFile;
+   private static final String WAR_NAME = "RESTEASY-1082.war";
+   static final String toStr;
+   static final File exportFile;
 
-    static {
-        toStr = new StringBuilder()
-                .append(TestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
-                .append("deployments").append(File.separator)
-                .append(WAR_NAME).toString();
-        exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);
-    }
+   static {
+      toStr = new StringBuilder()
+            .append(TestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
+            .append("deployments").append(File.separator)
+            .append(WAR_NAME).toString();
+      exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);
+   }
 
-    @Before
-    public void createArchive() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, WAR_NAME);
-        war.addClasses(FooResource.class,
-                TestApplication.class,
-                TestServlet.class);
-        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
-                "web-resteasy1082.xml", "web.xml");
+   @Before
+   public void createArchive() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, WAR_NAME);
+      war.addClasses(FooResource.class,
+            TestApplication.class,
+            TestServlet.class);
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
+            "web-resteasy1082.xml", "web.xml");
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new RuntimePermission("accessDeclaredMembers")
-        ), "permissions.xml");
-        //write file to disk
-        war.as(ZipExporter.class).exportTo(exportFile, true);
-    }
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new RuntimePermission("accessDeclaredMembers")
+      ), "permissions.xml");
+      //write file to disk
+      war.as(ZipExporter.class).exportTo(exportFile, true);
+   }
 
-    /**
-     * @tpTestDetails Redeploy deployment with RESTEasy and CDI beans. Check errors.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCDIResourceFromServlet() throws Exception {
-        Path from = FileSystems.getDefault().getPath(exportFile.getAbsolutePath());
-        Path to = FileSystems.getDefault().getPath(toStr).toAbsolutePath();
+   /**
+    * @tpTestDetails Redeploy deployment with RESTEasy and CDI beans. Check errors.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCDIResourceFromServlet() throws Exception {
+      Path from = FileSystems.getDefault().getPath(exportFile.getAbsolutePath());
+      Path to = FileSystems.getDefault().getPath(toStr).toAbsolutePath();
 
-        try {
+      try {
             // Delete existing RESTEASY-1082.war, if any.
             try {
-                Files.delete(to);
+            Files.delete(to);
             } catch (Exception e) {
-                // ok
+            // ok
             }
 
             // Deploy RESTEASY-1082.war
@@ -108,13 +108,13 @@ public class CDIResourceTest {
             HttpResponse response = client.execute(get);
             boolean succesInDeploy = false;
             for (int i = 0; i < 40; i++) {
-                get.releaseConnection();
-                response = client.execute(get);
-                if (response.getStatusLine().getStatusCode() != HttpResponseCodes.SC_NOT_FOUND) {
-                    succesInDeploy = true;
-                    break;
-                }
-                Thread.sleep(TimeoutUtil.adjust(500));
+            get.releaseConnection();
+            response = client.execute(get);
+            if (response.getStatusLine().getStatusCode() != HttpResponseCodes.SC_NOT_FOUND) {
+               succesInDeploy = true;
+               break;
+            }
+            Thread.sleep(TimeoutUtil.adjust(500));
             }
             Assert.assertTrue("Deployment was not deployed", succesInDeploy);
             logger.info("status: " + response.getStatusLine().getStatusCode());
@@ -131,32 +131,32 @@ public class CDIResourceTest {
             response = client.execute(get);
             succesInDeploy = false;
             for (int i = 0; i < 40; i++) {
-                get.releaseConnection();
-                response = client.execute(get);
-                if (response.getStatusLine().getStatusCode() != HttpResponseCodes.SC_NOT_FOUND) {
-                    succesInDeploy = true;
-                    break;
-                }
-                Thread.sleep(TimeoutUtil.adjust(500));
+            get.releaseConnection();
+            response = client.execute(get);
+            if (response.getStatusLine().getStatusCode() != HttpResponseCodes.SC_NOT_FOUND) {
+               succesInDeploy = true;
+               break;
+            }
+            Thread.sleep(TimeoutUtil.adjust(500));
             }
             Assert.assertTrue("Deployment was not deployed", succesInDeploy);
 
             logger.info("status: " + response.getStatusLine().getStatusCode());
             printResponse(response);
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
-        } finally {
+      } finally {
             Files.delete(to);
-        }
-    }
+      }
+   }
 
-    protected void printResponse(HttpResponse response) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        String line = reader.readLine();
-        logger.info("_____Response:_____");
-        while (line != null) {
+   protected void printResponse(HttpResponse response) throws IOException {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+      String line = reader.readLine();
+      logger.info("_____Response:_____");
+      while (line != null) {
             logger.info(line);
             line = reader.readLine();
-        }
-        logger.info("___________________");
-    }
+      }
+      logger.info("___________________");
+   }
 }

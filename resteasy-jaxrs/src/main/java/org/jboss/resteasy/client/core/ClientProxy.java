@@ -15,31 +15,31 @@ import java.util.Map;
  */
 public class ClientProxy implements InvocationHandler
 {
-	private Map<Method, MethodInvoker> methodMap;
-	private Class<?> clazz;
-	private final URI base;
-	private final ProxyConfig config;
+   private Map<Method, MethodInvoker> methodMap;
+   private Class<?> clazz;
+   private final URI base;
+   private final ProxyConfig config;
 
-	public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ProxyConfig config)
-	{
-		super();
-		this.methodMap = methodMap;
-		this.base = base;
-		this.config = config;
-	}
+   public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ProxyConfig config)
+   {
+      super();
+      this.methodMap = methodMap;
+      this.base = base;
+      this.config = config;
+   }
 
-	public Class<?> getClazz()
-	{
-		return clazz;
-	}
+   public Class<?> getClazz()
+   {
+      return clazz;
+   }
 
-	public void setClazz(Class<?> clazz)
-	{
-		this.clazz = clazz;
-	}
+   public void setClazz(Class<?> clazz)
+   {
+      this.clazz = clazz;
+   }
 
-	public Object invoke(Object o, Method method, Object[] args)
-           throws Throwable
+   public Object invoke(Object o, Method method, Object[] args)
+         throws Throwable
    {
       // equals and hashCode were added for cases where the proxy is added to
       // collections. The Spring transaction management, for example, adds
@@ -70,15 +70,15 @@ public class ClientProxy implements InvocationHandler
             ClientInvokerModifier modifier = (ClientInvokerModifier) args[0];
             for (MethodInvoker invoker : methodMap.values())
             {
-            	if(invoker instanceof ClientInvoker)
-               		modifier.modify((ClientInvoker)invoker);
+               if(invoker instanceof ClientInvoker)
+                     modifier.modify((ClientInvoker)invoker);
             }
 
             return null;
          }
          else if(method.getName().equals("as") && args.length == 1 && args[0] instanceof Class)
          {
-        	 return ProxyBuilder.createProxy((Class<?>)args[0], base, config);
+            return ProxyBuilder.createProxy((Class<?>)args[0], base, config);
          }
       }
 
@@ -89,27 +89,27 @@ public class ClientProxy implements InvocationHandler
       return clientInvoker.invoke(args);
    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj == null || !(obj instanceof ClientProxy))
-			return false;
-		ClientProxy other = (ClientProxy) obj;
-		if (other == this)
-			return true;
-		if (other.clazz != this.clazz)
-			return false;
-		return super.equals(obj);
-	}
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == null || !(obj instanceof ClientProxy))
+         return false;
+      ClientProxy other = (ClientProxy) obj;
+      if (other == this)
+         return true;
+      if (other.clazz != this.clazz)
+         return false;
+      return super.equals(obj);
+   }
 
-	@Override
-	public int hashCode()
-	{
-		return clazz.hashCode();
-	}
+   @Override
+   public int hashCode()
+   {
+      return clazz.hashCode();
+   }
 
-	public String toString()
-	{
-		return "Client Proxy for :" + clazz.getName();
-	}
+   public String toString()
+   {
+      return "Client Proxy for :" + clazz.getName();
+   }
 }

@@ -28,27 +28,27 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class PathParamMissingDefaultValueTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(PathParamMissingDefaultValueTest.class.getSimpleName());
-        war.addClass(PathParamMissingDefaultValueBeanParamEntity.class);
-        return TestUtil.finishContainerPrepare(war, null, PathParamMissingDefaultValueResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(PathParamMissingDefaultValueTest.class.getSimpleName());
+      war.addClass(PathParamMissingDefaultValueBeanParamEntity.class);
+      return TestUtil.finishContainerPrepare(war, null, PathParamMissingDefaultValueResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, PathParamMissingDefaultValueTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, PathParamMissingDefaultValueTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Missing @PathParam in BeanParam with no @DefaultValue should get java default value.
-     * @tpSince RESTEasy 3.5
-     */
-    @Test
-    public void testTrailingSlash() throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = client.target(generateURL("/resource/test/")).request().get();
-        assertEquals(200, response.getStatus());
-        assertEquals("Wrong response", "nullnullnullnullnullnull", response.readEntity(String.class));
-        client.close();
-    }
+   /**
+    * @tpTestDetails Missing @PathParam in BeanParam with no @DefaultValue should get java default value.
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void testTrailingSlash() throws Exception {
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/resource/test/")).request().get();
+      assertEquals(200, response.getStatus());
+      assertEquals("Wrong response", "nullnullnullnullnullnull", response.readEntity(String.class));
+      client.close();
+   }
 }

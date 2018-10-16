@@ -13,9 +13,9 @@ import javax.ws.rs.core.Response;
 
 @Path("/proxy")
 public interface RESTEasyParamBasicProxy {
-    @POST
-    @Path("a/{pathParam3}")
-    Response post(
+   @POST
+   @Path("a/{pathParam3}")
+   Response post(
             @CookieParam String cookieParam3,
             @FormParam String formParam3,
             @HeaderParam String headerParam3,

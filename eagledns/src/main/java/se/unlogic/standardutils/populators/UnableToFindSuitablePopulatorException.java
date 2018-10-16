@@ -3,21 +3,21 @@ package se.unlogic.standardutils.populators;
 
 public class UnableToFindSuitablePopulatorException extends Exception {
 
-	private static final long serialVersionUID = -214177380194928711L;
+   private static final long serialVersionUID = -214177380194928711L;
 
-	public UnableToFindSuitablePopulatorException(String message, Throwable cause) {
+   public UnableToFindSuitablePopulatorException(String message, Throwable cause) {
 
-		super(message, cause);
-	}
+      super(message, cause);
+   }
 
-	public UnableToFindSuitablePopulatorException(String message) {
+   public UnableToFindSuitablePopulatorException(String message) {
 
-		super(message);
-	}
+      super(message);
+   }
 
-	public UnableToFindSuitablePopulatorException(Throwable cause) {
+   public UnableToFindSuitablePopulatorException(Throwable cause) {
 
-		super(cause);
-	}
+      super(cause);
+   }
 
 }

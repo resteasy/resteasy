@@ -5,10 +5,10 @@ import javax.ejb.Stateless;
 
 @Stateless
 public class EjbExceptionUnwrapLocatingResourceBean implements EjbExceptionUnwrapLocatingResource {
-    @EJB
-    EjbExceptionUnwrapSimpleResource simple;
+   @EJB
+   EjbExceptionUnwrapSimpleResource simple;
 
-    public EjbExceptionUnwrapSimpleResource getLocating() {
-        return simple;
-    }
+   public EjbExceptionUnwrapSimpleResource getLocating() {
+      return simple;
+   }
 }

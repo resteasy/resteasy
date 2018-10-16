@@ -13,39 +13,39 @@ import java.io.FileFilter;
 
 public class EndsWithFileFilter extends javax.swing.filechooser.FileFilter implements FileFilter {
 
-	protected String suffix;
-	protected boolean allowFolders;
+   protected String suffix;
+   protected boolean allowFolders;
 
-	public EndsWithFileFilter(String suffix) {
-		super();
-		this.suffix = suffix;
-	}
+   public EndsWithFileFilter(String suffix) {
+      super();
+      this.suffix = suffix;
+   }
 
-	public EndsWithFileFilter(String suffix, boolean allowFolders) {
+   public EndsWithFileFilter(String suffix, boolean allowFolders) {
 
-		super();
-		this.suffix = suffix;
-		this.allowFolders = allowFolders;
-	}
+      super();
+      this.suffix = suffix;
+      this.allowFolders = allowFolders;
+   }
 
-	@Override
-	public boolean accept(File file) {
+   @Override
+   public boolean accept(File file) {
 
-		if(file.getName().endsWith(suffix)){
+      if(file.getName().endsWith(suffix)){
 
-			return true;
+         return true;
 
-		}else if(allowFolders && file.isDirectory()){
+      }else if(allowFolders && file.isDirectory()){
 
-			return true;
-		}
+         return true;
+      }
 
-		return false;
-	}
+      return false;
+   }
 
-	@Override
-	public String getDescription() {
+   @Override
+   public String getDescription() {
 
-		return suffix;
-	}
+      return suffix;
+   }
 }

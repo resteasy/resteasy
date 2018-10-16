@@ -9,18 +9,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 public class SubresourceValidationSubResource {
-    @Max(3)
-    private int y = 7;
+   @Max(3)
+   private int y = 7;
 
-    @Path("{id}")
-    @GET
-    public void get(@Max(7) @PathParam("id") Long id, @Valid @BeanParam SubresourceValidationQueryBeanParam queryParams) {
-    }
+   @Path("{id}")
+   @GET
+   public void get(@Max(7) @PathParam("id") Long id, @Valid @BeanParam SubresourceValidationQueryBeanParam queryParams) {
+   }
 
-    @Path("return/{s}")
-    @GET
-    @Size(max = 3)
-    public String getString(@PathParam("s") String s) {
-        return s;
-    }
+   @Path("return/{s}")
+   @GET
+   @Size(max = 3)
+   public String getString(@PathParam("s") String s) {
+      return s;
+   }
 }

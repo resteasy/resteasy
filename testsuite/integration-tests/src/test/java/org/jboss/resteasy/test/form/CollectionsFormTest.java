@@ -33,34 +33,34 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class CollectionsFormTest {
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
-        war.addClasses(CollectionsFormPerson.class, CollectionsFormTelephoneNumber.class,
-                CollectionsFormAddress.class);
-        return TestUtil.finishContainerPrepare(war, null, CollectionsFormResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
+      war.addClasses(CollectionsFormPerson.class, CollectionsFormTelephoneNumber.class,
+            CollectionsFormAddress.class);
+      return TestUtil.finishContainerPrepare(war, null, CollectionsFormResource.class);
+   }
 
-    /**
-     * @tpTestDetails Set all relevant parameters to form.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void shouldSupportCollectionsInForm() throws Exception {
-        javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
-        .param("telephoneNumbers[0].countryCode", "31")
-        .param("telephoneNumbers[0].number", "0612345678")
-        .param("telephoneNumbers[1].countryCode", "91")
-        .param("telephoneNumbers[1].number", "9717738723")
-        .param("address[INVOICE].street", "Main Street")
-        .param("address[INVOICE].houseNumber", "2")
-        .param("address[SHIPPING].street", "Square One")
-        .param("address[SHIPPING].houseNumber", "13");
+   /**
+    * @tpTestDetails Set all relevant parameters to form.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void shouldSupportCollectionsInForm() throws Exception {
+      javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
+      .param("telephoneNumbers[0].countryCode", "31")
+      .param("telephoneNumbers[0].number", "0612345678")
+      .param("telephoneNumbers[1].countryCode", "91")
+      .param("telephoneNumbers[1].number", "9717738723")
+      .param("address[INVOICE].street", "Main Street")
+      .param("address[INVOICE].houseNumber", "2")
+      .param("address[SHIPPING].street", "Square One")
+      .param("address[SHIPPING].houseNumber", "13");
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
-        Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
+      Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-    }
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+   }
 }

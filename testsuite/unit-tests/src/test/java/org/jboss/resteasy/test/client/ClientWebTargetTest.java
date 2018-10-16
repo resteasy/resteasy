@@ -16,30 +16,30 @@ import java.util.Collections;
  */
 public class ClientWebTargetTest {
 
-    /**
-     * @tpTestDetails Test for removing property from WebTarget.
-     * @tpSince RESTEasy 3.0.17
-     */
-    @Test
-    public void propertyNullTest() throws Exception {
-        String property = "property";
+   /**
+    * @tpTestDetails Test for removing property from WebTarget.
+    * @tpSince RESTEasy 3.0.17
+    */
+   @Test
+   public void propertyNullTest() throws Exception {
+      String property = "property";
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ClientWebTarget clientWebTarget = (ClientWebTarget) client.target("");
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ClientWebTarget clientWebTarget = (ClientWebTarget) client.target("");
 
-        Assert.assertTrue("Client properties should not be empty", client.getConfiguration().getProperties().isEmpty());
+      Assert.assertTrue("Client properties should not be empty", client.getConfiguration().getProperties().isEmpty());
 
-        clientWebTarget.property(property, property);
+      clientWebTarget.property(property, property);
 
-        Assert.assertEquals("Add of property faild", Collections.singletonMap(property, property), clientWebTarget.getConfiguration().getProperties());
+      Assert.assertEquals("Add of property faild", Collections.singletonMap(property, property), clientWebTarget.getConfiguration().getProperties());
 
-        try {
-            clientWebTarget.property(property, null);
-        } catch (NullPointerException ex) {
-            Assert.fail("Cannot remove property with null value.");
-        }
+      try {
+         clientWebTarget.property(property, null);
+      } catch (NullPointerException ex) {
+         Assert.fail("Cannot remove property with null value.");
+      }
 
-        Object value = clientWebTarget.getConfiguration().getProperty(property);
-        Assert.assertNull("Property from webTarget can not be removed", value);
-    }
+      Object value = clientWebTarget.getConfiguration().getProperty(property);
+      Assert.assertNull("Property from webTarget can not be removed", value);
+   }
 }

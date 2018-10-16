@@ -51,7 +51,7 @@ public class AsyncUnhandledExceptionTest {
    }
    
    /**
-   * @tpTestDetails Unhandled exception is thrown from a separate thread
+    * @tpTestDetails Unhandled exception is thrown from a separate thread
     * @tpSince RESTEasy 4.0.0
     */
    @Test

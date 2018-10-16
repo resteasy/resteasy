@@ -47,8 +47,8 @@ public class StreamRawObservableRxJava1Test {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(StreamRawObservableRxJava1Test.class.getSimpleName());
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write")
       ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null,

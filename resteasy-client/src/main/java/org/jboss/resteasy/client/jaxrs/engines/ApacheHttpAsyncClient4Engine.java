@@ -201,7 +201,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          public synchronized Throwable fillInStackTrace() {
             //do nothing and return
             return this;
-        }
+         }
       };
       
       private ClientConfiguration configuration;
@@ -653,7 +653,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       @Override
       public synchronized void releaseConnection() throws IOException
       {
-        releaseConnection(false);
+         releaseConnection(false);
       }
       
       @Override

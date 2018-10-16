@@ -9,9 +9,9 @@ package se.unlogic.eagledns;
  */
 public interface ZoneChangeCallback {
 
-	/**
-	 * Calling this method causes Eagle DNS to reload all it's zone from the registered zone providers
-	 */
-	void zoneDataChanged();
+   /**
+    * Calling this method causes Eagle DNS to reload all it's zone from the registered zone providers
+    */
+   void zoneDataChanged();
 
 }

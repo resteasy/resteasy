@@ -103,8 +103,8 @@ public class RxObservableTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write")
       ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxObservableResourceImpl.class, TestExceptionMapper.class);
@@ -399,8 +399,8 @@ public class RxObservableTest {
       ObservableRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(ObservableRxInvoker.class);
       Observable<String> observable = (Observable<String>) invoker.head();
       observable.subscribe(
-              (String s) -> value.set(s), // HEAD - no body
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (String s) -> value.set(s), // HEAD - no body
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

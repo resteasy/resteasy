@@ -15,33 +15,33 @@ import java.util.List;
 @Deprecated
 public interface GenericDAO<KeyType,BeanType> {
 
-	void add(BeanType bean) throws SQLException;
+   void add(BeanType bean) throws SQLException;
 
-	void add(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
+   void add(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
 
-	void add(BeanType bean, Connection connection) throws SQLException;
+   void add(BeanType bean, Connection connection) throws SQLException;
 
-	void update(BeanType bean) throws SQLException;
+   void update(BeanType bean) throws SQLException;
 
-	void update(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
+   void update(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
 
-	void update(BeanType bean, Connection connection) throws SQLException;
+   void update(BeanType bean, Connection connection) throws SQLException;
 
-	BeanType get(KeyType id, Field... relations) throws SQLException;
+   BeanType get(KeyType id, Field... relations) throws SQLException;
 
-	BeanType get(KeyType id, TransactionHandler transactionHandler, Field... relations) throws SQLException;
+   BeanType get(KeyType id, TransactionHandler transactionHandler, Field... relations) throws SQLException;
 
-	BeanType get(KeyType id, Connection connection, Field... relations) throws SQLException;
+   BeanType get(KeyType id, Connection connection, Field... relations) throws SQLException;
 
-	List<BeanType> getAll(Field... relations) throws SQLException;
+   List<BeanType> getAll(Field... relations) throws SQLException;
 
-	List<BeanType> getAll(TransactionHandler transactionHandler, Field... relations) throws SQLException;
+   List<BeanType> getAll(TransactionHandler transactionHandler, Field... relations) throws SQLException;
 
-	List<BeanType> getAll(Connection connection, Field... relations) throws SQLException;
+   List<BeanType> getAll(Connection connection, Field... relations) throws SQLException;
 
-	void delete(BeanType bean) throws SQLException;
+   void delete(BeanType bean) throws SQLException;
 
-	void delete(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
+   void delete(BeanType bean, TransactionHandler transactionHandler) throws SQLException;
 
-	void delete(BeanType bean, Connection connection) throws SQLException;
+   void delete(BeanType bean, Connection connection) throws SQLException;
 }

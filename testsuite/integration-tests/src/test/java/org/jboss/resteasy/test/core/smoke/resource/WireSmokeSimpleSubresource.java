@@ -10,33 +10,33 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 public class WireSmokeSimpleSubresource {
-    private static Logger logger = Logger.getLogger(WireSmokeSimpleSubresource.class);
+   private static Logger logger = Logger.getLogger(WireSmokeSimpleSubresource.class);
 
-    @SuppressWarnings("unused")
-    private String foo;
+   @SuppressWarnings("unused")
+   private String foo;
 
-    @Context
-    private UriInfo uriInfo;
+   @Context
+   private UriInfo uriInfo;
 
-    @GET
-    @Path("basic")
-    @Produces("text/plain")
-    public String getBasic() {
-        return "basic";
-    }
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   public String getBasic() {
+      return "basic";
+   }
 
-    @Path("subresource")
-    public WireSmokeSimpleSubresource getSubresource() {
-        logger.info("Subsubresource");
-        return new WireSmokeSimpleSubresource();
-    }
+   @Path("subresource")
+   public WireSmokeSimpleSubresource getSubresource() {
+      logger.info("Subsubresource");
+      return new WireSmokeSimpleSubresource();
+   }
 
-    @GET
-    @Path("testContextParam")
-    public void testContextParam() {
-        if (uriInfo != null) {
-            throw new IllegalStateException("uriInfo is supposed to be null");
-        }
-    }
+   @GET
+   @Path("testContextParam")
+   public void testContextParam() {
+      if (uriInfo != null) {
+         throw new IllegalStateException("uriInfo is supposed to be null");
+      }
+   }
 
 }

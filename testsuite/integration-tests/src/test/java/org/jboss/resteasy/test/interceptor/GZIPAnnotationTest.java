@@ -36,7 +36,7 @@ public class GZIPAnnotationTest {
 
    @BeforeClass
    public static void setup() {
-       client = ClientBuilder.newClient()
+      client = ClientBuilder.newClient()
                    .register(AcceptEncodingGZIPFilter.class)
                    .register(GZIPEncodingInterceptor.class)
                    .register(GZIPDecodingInterceptor.class);
@@ -44,19 +44,19 @@ public class GZIPAnnotationTest {
 
    @AfterClass
    public static void close() {
-       client.close();
+      client.close();
    }
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(GZIPAnnotationTest.class.getSimpleName());
-       war.addClass(GZIPAnnotationInterface.class);
-       war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
-       return TestUtil.finishContainerPrepare(war, null, GZIPAnnotationResource.class);
+      WebArchive war = TestUtil.prepareArchive(GZIPAnnotationTest.class.getSimpleName());
+      war.addClass(GZIPAnnotationInterface.class);
+      war.addAsManifestResource("org/jboss/resteasy/test/client/javax.ws.rs.ext.Providers", "services/javax.ws.rs.ext.Providers");
+      return TestUtil.finishContainerPrepare(war, null, GZIPAnnotationResource.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, GZIPAnnotationTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, GZIPAnnotationTest.class.getSimpleName());
    }
 
    /**

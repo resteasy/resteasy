@@ -20,211 +20,211 @@ import java.io.InputStream;
 
 public class ImageUtils {
 
-	public static final String JPG = "jpg";
-	public static final String GIF = "gif";
-	public static final String PNG = "png";
-	public static final String BMP = "bmp";
-	public static final String WBMP = "wbmp";
+   public static final String JPG = "jpg";
+   public static final String GIF = "gif";
+   public static final String PNG = "png";
+   public static final String BMP = "bmp";
+   public static final String WBMP = "wbmp";
 
-	public static BufferedImage getImageByResource(String url) {
+   public static BufferedImage getImageByResource(String url) {
 
-		try {
-			return ImageIO.read(ImageUtils.class.getResource(url));
-		} catch (Exception e) {
-			return null;
-		}
-	}
+      try {
+         return ImageIO.read(ImageUtils.class.getResource(url));
+      } catch (Exception e) {
+         return null;
+      }
+   }
 
-	public static BufferedImage getImage(String url) {
-		try {
-			return ImageIO.read(new File(url));
-		} catch (Exception e) {
-			return null;
-		}
-	}
+   public static BufferedImage getImage(String url) {
+      try {
+         return ImageIO.read(new File(url));
+      } catch (Exception e) {
+         return null;
+      }
+   }
 
-	public static boolean isReadable(String url) {
+   public static boolean isReadable(String url) {
 
-		File file = new File(url);
+      File file = new File(url);
 
-		if (file.exists() && file.canRead()) {
-			return true;
-		}
-		return false;
+      if (file.exists() && file.canRead()) {
+         return true;
+      }
+      return false;
 
-	}
+   }
 
-	public static BufferedImage getImage(InputStream inputStream) {
+   public static BufferedImage getImage(InputStream inputStream) {
 
-		try {
-			return ImageIO.read(inputStream);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+      try {
+         return ImageIO.read(inputStream);
+      } catch (Exception e) {
+         return null;
+      }
+   }
 
-	public static BufferedImage scaleImage(BufferedImage image, double xFactor, double yFactor) {
+   public static BufferedImage scaleImage(BufferedImage image, double xFactor, double yFactor) {
 
-		if (image != null) {
-			return scale(image, xFactor, yFactor);
-		}
-		return null;
+      if (image != null) {
+         return scale(image, xFactor, yFactor);
+      }
+      return null;
 
-	}
+   }
 
-	public static BufferedImage scaleImage(BufferedImage image, int maxHeight, int maxWidth, int quality, int imageType) {
-		
-		if (image.getWidth() > maxWidth && image.getHeight() > maxHeight) {
+   public static BufferedImage scaleImage(BufferedImage image, int maxHeight, int maxWidth, int quality, int imageType) {
 
-			double aspectRatio = (double) image.getWidth() / (double) image.getHeight();
+      if (image.getWidth() > maxWidth && image.getHeight() > maxHeight) {
 
-			if (aspectRatio >= 1) {
-				
-				return scaleImageByWidth(image, maxWidth, quality, imageType);
-				
-			} else {
-				
-				return scaleImageByHeight(image, maxHeight, quality, imageType);
-			}
+         double aspectRatio = (double) image.getWidth() / (double) image.getHeight();
 
-		} else if (image.getWidth() > maxWidth) {
-			
-			return scaleImageByWidth(image, maxWidth, quality, imageType);
-			
-		} else if (image.getHeight() > maxHeight) {
-			
-			return scaleImageByHeight(image, maxHeight, quality, imageType);
-			
-		} else if (image.getType() != imageType){	
-		
-			return scale(image, image.getHeight(), image.getWidth(), quality, imageType);
-			
-		} else {
-			
-			return image;
-		}
-	}
+         if (aspectRatio >= 1) {
 
-	public static BufferedImage scaleImageByWidth(BufferedImage image, int maxWidth, int quality, int imageType) {
+            return scaleImageByWidth(image, maxWidth, quality, imageType);
 
-		double scale;
+         } else {
 
-		if (image.getWidth() > image.getHeight()) {
-			scale = (double) maxWidth / (double) image.getWidth();
-		} else {
-			scale = (double) maxWidth / (double) image.getHeight();
-		}
+            return scaleImageByHeight(image, maxHeight, quality, imageType);
+         }
 
-		int scaledW = (int) (scale * image.getWidth());
-		int scaledH = (int) (scale * image.getHeight());
+      } else if (image.getWidth() > maxWidth) {
 
-		scaledW = checkSize(scaledW);
-		scaledH = checkSize(scaledH);
+         return scaleImageByWidth(image, maxWidth, quality, imageType);
 
-		return scale(image, scaledH, scaledW, quality, imageType);
-	}
+      } else if (image.getHeight() > maxHeight) {
 
-	private static int checkSize(int value) {
+         return scaleImageByHeight(image, maxHeight, quality, imageType);
 
-		if (value < 1) {
-			return 1;
-		} else {
-			return value;
-		}
-	}
+      } else if (image.getType() != imageType){
 
-	public static BufferedImage scaleImageByHeight(BufferedImage image, int maxHeight, int quality, int imageType) {
+         return scale(image, image.getHeight(), image.getWidth(), quality, imageType);
 
-		double scale;
+      } else {
 
-		if (image.getHeight() > image.getWidth()) {
-			scale = (double) maxHeight / (double) image.getHeight();
-		} else {
-			scale = (double) maxHeight / (double) image.getWidth();
-		}
+         return image;
+      }
+   }
 
-		int scaledW = (int) (scale * image.getWidth());
-		int scaledH = (int) (scale * image.getHeight());
+   public static BufferedImage scaleImageByWidth(BufferedImage image, int maxWidth, int quality, int imageType) {
 
-		scaledW = checkSize(scaledW);
-		scaledH = checkSize(scaledH);
+      double scale;
 
-		return scale(image, scaledH, scaledW, quality, imageType);
-	}
+      if (image.getWidth() > image.getHeight()) {
+         scale = (double) maxWidth / (double) image.getWidth();
+      } else {
+         scale = (double) maxWidth / (double) image.getHeight();
+      }
 
-	public static void writeImage(BufferedImage image, String url, String format) throws IOException, NullPointerException {
+      int scaledW = (int) (scale * image.getWidth());
+      int scaledH = (int) (scale * image.getHeight());
 
-		// write image to file
-		if (!url.endsWith("." + format)) {
-			url += "." + format;
-		}
+      scaledW = checkSize(scaledW);
+      scaledH = checkSize(scaledH);
 
-		File outputfile = new File(url);
-		if (image != null) {
-			ImageIO.write(image, format, outputfile);
-		}
+      return scale(image, scaledH, scaledW, quality, imageType);
+   }
 
-	}
+   private static int checkSize(int value) {
 
-	private static BufferedImage scale(BufferedImage image, double xFactor, double yFactor) {
+      if (value < 1) {
+         return 1;
+      } else {
+         return value;
+      }
+   }
 
-		// scale image based on factor x and y
-		AffineTransform scaleTransform = new AffineTransform();
-		scaleTransform.scale(xFactor, yFactor);
+   public static BufferedImage scaleImageByHeight(BufferedImage image, int maxHeight, int quality, int imageType) {
 
-		BufferedImage result = new BufferedImage((int) (image.getWidth() * xFactor), (int) (image.getHeight() * yFactor), BufferedImage.TYPE_INT_RGB);
+      double scale;
 
-		Graphics2D g2 = (Graphics2D) result.getGraphics();
+      if (image.getHeight() > image.getWidth()) {
+         scale = (double) maxHeight / (double) image.getHeight();
+      } else {
+         scale = (double) maxHeight / (double) image.getWidth();
+      }
 
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, result.getWidth(), result.getHeight());
-		
-		g2.drawImage(image, scaleTransform, null);
+      int scaledW = (int) (scale * image.getWidth());
+      int scaledH = (int) (scale * image.getHeight());
 
-		return result;
-	}
+      scaledW = checkSize(scaledW);
+      scaledH = checkSize(scaledH);
 
-	private static BufferedImage scale(BufferedImage image, int height, int width, int quality, int imageType) {
+      return scale(image, scaledH, scaledW, quality, imageType);
+   }
 
-		BufferedImage result = new BufferedImage(width, height, imageType);
+   public static void writeImage(BufferedImage image, String url, String format) throws IOException, NullPointerException {
 
-		Graphics2D g2 = (Graphics2D) result.getGraphics();
-		
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, width, height);
-		
-		Canvas canvas = new Canvas();
-		Image tImage = image.getScaledInstance(width, height, quality);
+      // write image to file
+      if (!url.endsWith("." + format)) {
+         url += "." + format;
+      }
 
-		g2.drawImage(tImage, 0, 0, canvas);
+      File outputfile = new File(url);
+      if (image != null) {
+         ImageIO.write(image, format, outputfile);
+      }
 
-		return result;
-	}
+   }
 
-	/*public static void scaleAndWriteImage(String inImgURL, String outImgURL, String format, double xFactor, double yFactor ) throws IOException{
+   private static BufferedImage scale(BufferedImage image, double xFactor, double yFactor) {
 
-		// scale and write the scaled image to file
-		BufferedImage image = getImage(inImgURL);
+      // scale image based on factor x and y
+      AffineTransform scaleTransform = new AffineTransform();
+      scaleTransform.scale(xFactor, yFactor);
 
-		// changed
-		final int MaxDim = 120;
-		int thumb_width = image.getWidth();
-		int thumb_height = image.getHeight();
-		int b = thumb_height > thumb_width ? thumb_height : image.getWidth();
-		double per = (b > MaxDim) ? (MaxDim * 1.0) / b : 1.0;
-		thumb_height = (int)(thumb_height * per);
-	    thumb_width = (int)(thumb_width * per);
-		////
+      BufferedImage result = new BufferedImage((int) (image.getWidth() * xFactor), (int) (image.getHeight() * yFactor), BufferedImage.TYPE_INT_RGB);
 
-		BufferedImage scImage = null;
-		if(image != null){
-			//scImage = scale(image, xFactor, yFactor);
-			scImage = scale(image, thumb_height, thumb_width);
-		}
-		else
-			throw new IOException();
-		writeImage(scImage, outImgURL, format);
+      Graphics2D g2 = (Graphics2D) result.getGraphics();
+
+      g2.setColor(Color.WHITE);
+      g2.fillRect(0, 0, result.getWidth(), result.getHeight());
+
+      g2.drawImage(image, scaleTransform, null);
+
+      return result;
+   }
+
+   private static BufferedImage scale(BufferedImage image, int height, int width, int quality, int imageType) {
+
+      BufferedImage result = new BufferedImage(width, height, imageType);
+
+      Graphics2D g2 = (Graphics2D) result.getGraphics();
+
+      g2.setColor(Color.WHITE);
+      g2.fillRect(0, 0, width, height);
+
+      Canvas canvas = new Canvas();
+      Image tImage = image.getScaledInstance(width, height, quality);
+
+      g2.drawImage(tImage, 0, 0, canvas);
+
+      return result;
+   }
+
+   /*public static void scaleAndWriteImage(String inImgURL, String outImgURL, String format, double xFactor, double yFactor ) throws IOException{
+
+      // scale and write the scaled image to file
+      BufferedImage image = getImage(inImgURL);
+
+      // changed
+      final int MaxDim = 120;
+      int thumb_width = image.getWidth();
+      int thumb_height = image.getHeight();
+      int b = thumb_height > thumb_width ? thumb_height : image.getWidth();
+      double per = (b > MaxDim) ? (MaxDim * 1.0) / b : 1.0;
+      thumb_height = (int)(thumb_height * per);
+      thumb_width = (int)(thumb_width * per);
+      ////
+
+      BufferedImage scImage = null;
+      if(image != null){
+         //scImage = scale(image, xFactor, yFactor);
+         scImage = scale(image, thumb_height, thumb_width);
+      }
+      else
+         throw new IOException();
+      writeImage(scImage, outImgURL, format);
 
 
-	}*/
+   }*/
 }

@@ -14,60 +14,60 @@ import java.util.List;
 
 public class QueryParameterFactory<Bean, Type> {
 
-	private Column<Bean,? super Type> column;
+   private Column<Bean,? super Type> column;
 
-	QueryParameterFactory(Column<Bean,? super Type> column) {
-		super();
-		this.column = column;
-	}
+   QueryParameterFactory(Column<Bean,? super Type> column) {
+      super();
+      this.column = column;
+   }
 
-	public QueryParameter<Bean,Type> getParameter(Type value){
+   public QueryParameter<Bean,Type> getParameter(Type value){
 
-		if(value == null){
-			
-			throw new RuntimeException("Value cannot be null, it will result in invalid SQL");
-		}
-		
-		return new QueryParameter<Bean, Type>(column, value);
-	}
+      if(value == null){
 
-	public QueryParameter<Bean,Type> getParameter(Type value, QueryOperators queryOperator){
+         throw new RuntimeException("Value cannot be null, it will result in invalid SQL");
+      }
 
-		if(value == null){
-			
-			throw new RuntimeException("Value cannot be null, it will result in invalid SQL");
-		}
-		
-		return new QueryParameter<Bean, Type>(column, value, queryOperator.getOperator());
-	}
-	
-	public QueryParameter<Bean,Type> getIsNullParameter(){
+      return new QueryParameter<Bean, Type>(column, value);
+   }
 
-		return new QueryParameter<Bean, Type>(column, "IS NULL");
-	}
-	
-	public QueryParameter<Bean,Type> getIsNotNullParameter(){
+   public QueryParameter<Bean,Type> getParameter(Type value, QueryOperators queryOperator){
 
-		return new QueryParameter<Bean, Type>(column, "IS NOT NULL");
-	}	
-	
-	public QueryParameter<Bean,Type> getWhereInParameter(Collection<Type> values){
+      if(value == null){
 
-		if(CollectionUtils.isEmpty(values)){
-			
-			throw new RuntimeException("Values cannot be null or empty, it will result in invalid SQL");
-		}
-		
-		return new QueryParameter<Bean, Type>(column, values, "IN");
-	}	
-	
-	public QueryParameter<Bean,Type> getWhereNotInParameter(List<Type> values){
+         throw new RuntimeException("Value cannot be null, it will result in invalid SQL");
+      }
 
-		if(CollectionUtils.isEmpty(values)){
-			
-			throw new RuntimeException("Values cannot be null or empty, it will result in invalid SQL");
-		}
-		
-		return new QueryParameter<Bean, Type>(column, values, "NOT IN");
-	}
+      return new QueryParameter<Bean, Type>(column, value, queryOperator.getOperator());
+   }
+
+   public QueryParameter<Bean,Type> getIsNullParameter(){
+
+      return new QueryParameter<Bean, Type>(column, "IS NULL");
+   }
+
+   public QueryParameter<Bean,Type> getIsNotNullParameter(){
+
+      return new QueryParameter<Bean, Type>(column, "IS NOT NULL");
+   }
+
+   public QueryParameter<Bean,Type> getWhereInParameter(Collection<Type> values){
+
+      if(CollectionUtils.isEmpty(values)){
+
+         throw new RuntimeException("Values cannot be null or empty, it will result in invalid SQL");
+      }
+
+      return new QueryParameter<Bean, Type>(column, values, "IN");
+   }
+
+   public QueryParameter<Bean,Type> getWhereNotInParameter(List<Type> values){
+
+      if(CollectionUtils.isEmpty(values)){
+
+         throw new RuntimeException("Values cannot be null or empty, it will result in invalid SQL");
+      }
+
+      return new QueryParameter<Bean, Type>(column, values, "NOT IN");
+   }
 }

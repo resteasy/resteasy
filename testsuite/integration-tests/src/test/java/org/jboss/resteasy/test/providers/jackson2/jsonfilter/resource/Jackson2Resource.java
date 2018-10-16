@@ -10,10 +10,10 @@ import javax.ws.rs.Produces;
  */
 @Path("/products")
 public class Jackson2Resource {
-    @GET
-    @Produces("application/json")
-    @Path("{id}")
-    public Jackson2Product getProduct(@PathParam("id") int id) {
-        return new Jackson2Product(id, "Iphone");
-    }
+   @GET
+   @Produces("application/json")
+   @Path("{id}")
+   public Jackson2Product getProduct(@PathParam("id") int id) {
+      return new Jackson2Product(id, "Iphone");
+   }
 }

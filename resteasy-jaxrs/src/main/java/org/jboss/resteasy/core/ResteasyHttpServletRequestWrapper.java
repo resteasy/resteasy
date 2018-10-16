@@ -195,12 +195,12 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
    }
 
    /**
-   *
-   * @deprecated      As of Version 2.1 of the Java Servlet
-   *            API, use {@link #isRequestedSessionIdFromURL}
-   *            instead.
-   *
-   */
+    *
+    * @deprecated      As of Version 2.1 of the Java Servlet
+    *            API, use {@link #isRequestedSessionIdFromURL}
+    *            instead.
+    *
+    */
    @Override
    public boolean isRequestedSessionIdFromUrl()
    {

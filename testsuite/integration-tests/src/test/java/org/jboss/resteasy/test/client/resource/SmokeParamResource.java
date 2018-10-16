@@ -11,17 +11,17 @@ import javax.ws.rs.QueryParam;
 @Path("/foo")
 public class SmokeParamResource {
 
-    @POST
-    @Produces("text/plain")
-    @Consumes("text/plain")
-    public String create(String cust) {
-        return cust;
-    }
+   @POST
+   @Produces("text/plain")
+   @Consumes("text/plain")
+   public String create(String cust) {
+      return cust;
+   }
 
-    @GET
-    @Produces("text/plain")
-    public String get(@HeaderParam("a") String a, @QueryParam("b") String b) {
-        return a + " " + b;
-    }
+   @GET
+   @Produces("text/plain")
+   public String get(@HeaderParam("a") String a, @QueryParam("b") String b) {
+      return a + " " + b;
+   }
 
 }

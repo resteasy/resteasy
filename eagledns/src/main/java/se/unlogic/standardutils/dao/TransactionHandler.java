@@ -23,187 +23,187 @@ import java.util.Map.Entry;
 
 public class TransactionHandler {
 
-	private final Connection connection;
-	private ArrayList<PreparedStatementQuery> queryList;
-	private boolean aborted;
-	private boolean commited;
+   private final Connection connection;
+   private ArrayList<PreparedStatementQuery> queryList;
+   private boolean aborted;
+   private boolean commited;
 
-	public TransactionHandler(DataSource dataSource) throws SQLException {
+   public TransactionHandler(DataSource dataSource) throws SQLException {
 
-		super();
-		this.connection = dataSource.getConnection();
-		connection.setAutoCommit(false);
-	}
+      super();
+      this.connection = dataSource.getConnection();
+      connection.setAutoCommit(false);
+   }
 
-	public TransactionHandler(Connection connection) throws SQLException {
+   public TransactionHandler(Connection connection) throws SQLException {
 
-		super();
-		this.connection = connection;
-		connection.setAutoCommit(false);
-	}
+      super();
+      this.connection = connection;
+      connection.setAutoCommit(false);
+   }
 
-	public UpdateQuery getUpdateQuery(String sqlExpression) throws SQLException {
+   public UpdateQuery getUpdateQuery(String sqlExpression) throws SQLException {
 
-		this.checkStatus();
+      this.checkStatus();
 
-		UpdateQuery query = new UpdateQuery(connection, false, sqlExpression);
+      UpdateQuery query = new UpdateQuery(connection, false, sqlExpression);
 
-		checkQueryList();
-		
-		this.queryList.add(query);
+      checkQueryList();
 
-		return query;
-	}
+      this.queryList.add(query);
 
-	private synchronized void checkQueryList() {
+      return query;
+   }
 
-		if(queryList == null){
-			
-			queryList = new ArrayList<PreparedStatementQuery>();
-		}
-		
-	}
+   private synchronized void checkQueryList() {
 
-	public BooleanQuery getBooleanQuery(String sql) throws SQLException {
+      if(queryList == null){
 
-		BooleanQuery query = new BooleanQuery(connection, false, sql);
-		
-		checkQueryList();
-		
-		this.queryList.add(query);
-		
-		return query;
-	}
+         queryList = new ArrayList<PreparedStatementQuery>();
+      }
 
-	public <T> ObjectQuery<T> getObjectQuery(String sql, BeanResultSetPopulator<T> populator) throws SQLException {
+   }
 
-		ObjectQuery<T> query = new ObjectQuery<T>(connection, false, sql, populator);
-		
-		checkQueryList();
-		
-		this.queryList.add(query);
-		
-		return query;
-	}
+   public BooleanQuery getBooleanQuery(String sql) throws SQLException {
 
-	public <T> ArrayListQuery<T> getArrayListQuery(String sql, BeanResultSetPopulator<T> populator) throws SQLException {
+      BooleanQuery query = new BooleanQuery(connection, false, sql);
 
-		ArrayListQuery<T> query = new ArrayListQuery<T>(connection, false, sql, populator);
-		
-		checkQueryList();
-		
-		this.queryList.add(query);
-		
-		return query;
-	}
+      checkQueryList();
 
-	public <K, V> HashMapQuery<K, V> getHashMapQuery(String sql, BeanResultSetPopulator<? extends Entry<K, V>> populator) throws SQLException {
+      this.queryList.add(query);
 
-		HashMapQuery<K, V> query = new HashMapQuery<K, V>(connection, false, sql, populator);
-		
-		checkQueryList();
-		
-		this.queryList.add(query);
-		
-		return query;
-	}
+      return query;
+   }
 
-	public synchronized void commit() throws SQLException {
+   public <T> ObjectQuery<T> getObjectQuery(String sql, BeanResultSetPopulator<T> populator) throws SQLException {
 
-		this.checkStatus();
+      ObjectQuery<T> query = new ObjectQuery<T>(connection, false, sql, populator);
 
-		try {
-			connection.commit();
-			this.commited = true;
-		} finally {
+      checkQueryList();
 
-			if (!this.commited) {
-				this.abort();
-			} else {
-				this.closeConnection();
-			}
-		}
-	}
+      this.queryList.add(query);
 
-	public synchronized int getQueryCount() {
+      return query;
+   }
 
-		if(queryList == null){
-			
-			return 0;
-		}
-		
-		return this.queryList.size();
-	}
+   public <T> ArrayListQuery<T> getArrayListQuery(String sql, BeanResultSetPopulator<T> populator) throws SQLException {
 
-	public synchronized void abort() {
+      ArrayListQuery<T> query = new ArrayListQuery<T>(connection, false, sql, populator);
 
-		this.checkStatus();
+      checkQueryList();
 
-		if(queryList != null){
-			for (PreparedStatementQuery query : queryList) {
-				query.abort();
-			}
-		}
-		
-		if (connection != null) {
-			try {
-				connection.rollback();
-			} catch (SQLException e) {}
-		}
+      this.queryList.add(query);
 
-		this.closeConnection();
-		this.aborted = true;
-	}
+      return query;
+   }
 
-	private void closeConnection() {
+   public <K, V> HashMapQuery<K, V> getHashMapQuery(String sql, BeanResultSetPopulator<? extends Entry<K, V>> populator) throws SQLException {
 
-		DBUtils.closeConnection(connection);
-	}
+      HashMapQuery<K, V> query = new HashMapQuery<K, V>(connection, false, sql, populator);
 
-	private void checkStatus() {
+      checkQueryList();
 
-		if (aborted) {
-			throw new TransactionAlreadyAbortedException();
-		} else if (commited) {
-			throw new TransactionAlreadyComittedException();
-		}
-	}
+      this.queryList.add(query);
 
-	@Override
-	protected void finalize() throws Throwable {
+      return query;
+   }
 
-		if (!commited && !aborted) {
-			this.abort();
-		}
+   public synchronized void commit() throws SQLException {
 
-		super.finalize();
-	}
+      this.checkStatus();
 
-	public boolean isClosed() {
+      try {
+         connection.commit();
+         this.commited = true;
+      } finally {
 
-		return commited || aborted;
-	}
+         if (!this.commited) {
+            this.abort();
+         } else {
+            this.closeConnection();
+         }
+      }
+   }
 
-	public static void autoClose(TransactionHandler transactionHandler) {
+   public synchronized int getQueryCount() {
 
-		if (transactionHandler != null && !transactionHandler.isClosed()) {
-			transactionHandler.abort();
-		}
-	}
+      if(queryList == null){
 
-	//Workaround for AnnotatedDAO, needs a better solution in the long run
-	Connection getConnection() {
+         return 0;
+      }
 
-		return connection;
-	}
+      return this.queryList.size();
+   }
 
-	public boolean isAborted() {
+   public synchronized void abort() {
 
-		return aborted;
-	}
+      this.checkStatus();
 
-	public boolean isCommited() {
+      if(queryList != null){
+         for (PreparedStatementQuery query : queryList) {
+            query.abort();
+         }
+      }
 
-		return commited;
-	}
+      if (connection != null) {
+         try {
+            connection.rollback();
+         } catch (SQLException e) {}
+      }
+
+      this.closeConnection();
+      this.aborted = true;
+   }
+
+   private void closeConnection() {
+
+      DBUtils.closeConnection(connection);
+   }
+
+   private void checkStatus() {
+
+      if (aborted) {
+         throw new TransactionAlreadyAbortedException();
+      } else if (commited) {
+         throw new TransactionAlreadyComittedException();
+      }
+   }
+
+   @Override
+   protected void finalize() throws Throwable {
+
+      if (!commited && !aborted) {
+         this.abort();
+      }
+
+      super.finalize();
+   }
+
+   public boolean isClosed() {
+
+      return commited || aborted;
+   }
+
+   public static void autoClose(TransactionHandler transactionHandler) {
+
+      if (transactionHandler != null && !transactionHandler.isClosed()) {
+         transactionHandler.abort();
+      }
+   }
+
+   //Workaround for AnnotatedDAO, needs a better solution in the long run
+   Connection getConnection() {
+
+      return connection;
+   }
+
+   public boolean isAborted() {
+
+      return aborted;
+   }
+
+   public boolean isCommited() {
+
+      return commited;
+   }
 }

@@ -14,5 +14,5 @@ import java.rmi.RemoteException;
 
 public interface PasswordLogin<T> extends Remote{
 
-	T login(String password) throws RemoteException;
+   T login(String password) throws RemoteException;
 }

@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyMalformedChunkCodingException extends ResteasyIOException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyMalformedChunkCodingException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyMalformedChunkCodingException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyMalformedChunkCodingException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyMalformedChunkCodingException()
+   {
+   }
+
+   public ResteasyMalformedChunkCodingException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyMalformedChunkCodingException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyMalformedChunkCodingException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyMalformedChunkCodingException(Throwable cause)
+   {
+      super(cause);
+   }
 }

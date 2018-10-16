@@ -9,27 +9,27 @@ import javax.ws.rs.Consumes;
 @Path("/products")
 public class JacksonResource {
 
-    @GET
-    @Produces("application/json")
-    @Path("{id}")
-    public JacksonProduct getProduct() {
-        return new JacksonProduct(333, "Iphone");
-    }
+   @GET
+   @Produces("application/json")
+   @Path("{id}")
+   public JacksonProduct getProduct() {
+      return new JacksonProduct(333, "Iphone");
+   }
 
-    @GET
-    @Produces("application/json")
-    public JacksonProduct[] getProducts() {
+   @GET
+   @Produces("application/json")
+   public JacksonProduct[] getProducts() {
 
-        JacksonProduct[] products = {new JacksonProduct(333, "Iphone"), new JacksonProduct(44, "macbook")};
-        return products;
-    }
+      JacksonProduct[] products = {new JacksonProduct(333, "Iphone"), new JacksonProduct(44, "macbook")};
+      return products;
+   }
 
-    @POST
-    @Produces("application/foo+json")
-    @Consumes("application/foo+json")
-    @Path("{id}")
-    public JacksonProduct post(JacksonProduct p) {
-        return p;
-    }
+   @POST
+   @Produces("application/foo+json")
+   @Consumes("application/foo+json")
+   @Path("{id}")
+   public JacksonProduct post(JacksonProduct p) {
+      return p;
+   }
 
 }

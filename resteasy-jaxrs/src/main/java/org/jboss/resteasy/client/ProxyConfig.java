@@ -16,58 +16,58 @@ import java.util.Map;
 @Deprecated
 public class ProxyConfig
 {
-	private final ClassLoader loader;
-	private final ClientExecutor executor;
-	private final ResteasyProviderFactory providerFactory;
-	private final EntityExtractorFactory extractorFactory;
-	private final Map<String, Object> requestAttributes;
-	private final MediaType serverConsumes;
-	private final MediaType serverProduces;
+   private final ClassLoader loader;
+   private final ClientExecutor executor;
+   private final ResteasyProviderFactory providerFactory;
+   private final EntityExtractorFactory extractorFactory;
+   private final Map<String, Object> requestAttributes;
+   private final MediaType serverConsumes;
+   private final MediaType serverProduces;
 
-	public ProxyConfig(ClassLoader loader, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes, MediaType serverConsumes, MediaType serverProduces)
-	{
-		super();
-		this.loader = loader;
-		this.executor = executor;
-		this.providerFactory = providerFactory;
-		this.extractorFactory = extractorFactory;
-		this.requestAttributes = requestAttributes;
-		this.serverConsumes = serverConsumes;
-		this.serverProduces = serverProduces;
-	}
+   public ProxyConfig(ClassLoader loader, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes, MediaType serverConsumes, MediaType serverProduces)
+   {
+      super();
+      this.loader = loader;
+      this.executor = executor;
+      this.providerFactory = providerFactory;
+      this.extractorFactory = extractorFactory;
+      this.requestAttributes = requestAttributes;
+      this.serverConsumes = serverConsumes;
+      this.serverProduces = serverProduces;
+   }
 
-	public ClassLoader getLoader()
-	{
-		return loader;
-	}
+   public ClassLoader getLoader()
+   {
+      return loader;
+   }
 
-	public ClientExecutor getExecutor()
-	{
-		return executor;
-	}
+   public ClientExecutor getExecutor()
+   {
+      return executor;
+   }
 
-	public ResteasyProviderFactory getProviderFactory()
-	{
-		return providerFactory;
-	}
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return providerFactory;
+   }
 
-	public EntityExtractorFactory getExtractorFactory()
-	{
-		return extractorFactory;
-	}
+   public EntityExtractorFactory getExtractorFactory()
+   {
+      return extractorFactory;
+   }
 
-	public Map<String, Object> getRequestAttributes()
-	{
-		return requestAttributes;
-	}
+   public Map<String, Object> getRequestAttributes()
+   {
+      return requestAttributes;
+   }
 
-	public MediaType getServerConsumes()
-	{
-		return serverConsumes;
-	}
+   public MediaType getServerConsumes()
+   {
+      return serverConsumes;
+   }
 
-	public MediaType getServerProduces()
-	{
-		return serverProduces;
-	}
+   public MediaType getServerProduces()
+   {
+      return serverProduces;
+   }
 }

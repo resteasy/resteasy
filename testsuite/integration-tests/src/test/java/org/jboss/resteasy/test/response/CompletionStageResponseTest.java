@@ -45,7 +45,7 @@ public class CompletionStageResponseTest {
       war.addClass(CompletionStageResponseTestClass.class);
       war.addClass(CompletionStageProxy.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2, org.reactivestreams\n"));
+            + "Dependencies: org.jboss.resteasy.resteasy-rxjava2, org.reactivestreams\n"));
       return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
@@ -130,7 +130,7 @@ public class CompletionStageResponseTest {
    }
 
    /**
-    * @tpTestDetails Resource method returns CompletionStage<Response>, where the Response 
+    * @tpTestDetails Resource method returns CompletionStage<Response>, where the Response
     * emtity is a CompletionStageResponseTestClass, and where
     * CompletionStageResponseTestClass is handled by CompletionStageResponseMessageBodyWriter,
     * which has annotation @Produces("abc/xyz").

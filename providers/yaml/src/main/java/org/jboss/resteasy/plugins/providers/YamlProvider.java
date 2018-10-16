@@ -39,75 +39,75 @@ import java.util.Set;
 @Deprecated
 public class YamlProvider extends AbstractEntityProvider<Object> {
 
-    // MessageBodyReader
+   // MessageBodyReader
 
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return true;
+   }
 
-    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
 
-        try {
-            LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
-            if (isValidInternalType(type)) {
-                return new Yaml().load(entityStream);
-            } else {
-                CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type.getClassLoader());
-                return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
-            }
-        } catch (Exception e) {
-            LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(e.getMessage()));
-            throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), e);
-        }
-    }
+      try {
+         LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
+         if (isValidInternalType(type)) {
+            return new Yaml().load(entityStream);
+         } else {
+            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type.getClassLoader());
+            return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
+         }
+      } catch (Exception e) {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(e.getMessage()));
+         throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), e);
+      }
+   }
 
-    // MessageBodyWriter
-    protected boolean isValidInternalType(Class type) {
-        if (List.class.isAssignableFrom(type)
-                || Set.class.isAssignableFrom(type)
-                || Map.class.isAssignableFrom(type)
-                || type.isArray()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+   // MessageBodyWriter
+   protected boolean isValidInternalType(Class type) {
+      if (List.class.isAssignableFrom(type)
+            || Set.class.isAssignableFrom(type)
+            || Map.class.isAssignableFrom(type)
+            || type.isArray()) {
+         return true;
+      } else {
+         return false;
+      }
+   }
 
-    protected boolean isValidType(Class type) {
-        if (isValidInternalType(type)) {
-            return true;
-        }
-        if (StreamingOutput.class.isAssignableFrom(type)) return false;
-        String className = type.getName();
-        if (className.startsWith("java.")) return false;
-        if (className.startsWith("javax.")) return false;
-        if (type.isPrimitive()) return false;
+   protected boolean isValidType(Class type) {
+      if (isValidInternalType(type)) {
+         return true;
+      }
+      if (StreamingOutput.class.isAssignableFrom(type)) return false;
+      String className = type.getName();
+      if (className.startsWith("java.")) return false;
+      if (className.startsWith("javax.")) return false;
+      if (type.isPrimitive()) return false;
 
-        return true;
-    }
+      return true;
+   }
 
 
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return isValidType(type);
-    }
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return isValidType(type);
+   }
 
-    public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
 
-        try {
-            LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-            entityStream.write(new Yaml().dump(t).getBytes());
+      try {
+         LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+         entityStream.write(new Yaml().dump(t).getBytes());
 
-        } catch (Exception e) {
+      } catch (Exception e) {
 
-            LogMessages.LOGGER.debug(Messages.MESSAGES.failedToEncodeYaml(t.toString()));
-            throw new WriterException(e);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToEncodeYaml(t.toString()));
+         throw new WriterException(e);
 
-        }
+      }
 
-    }
+   }
 
 }

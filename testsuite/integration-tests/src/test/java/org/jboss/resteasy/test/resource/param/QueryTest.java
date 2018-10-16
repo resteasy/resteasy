@@ -31,39 +31,39 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class QueryTest {
 
-    static Client client;
+   static Client client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(QueryTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, QueryResource.class, QuerySearchQuery.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(QueryTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, QueryResource.class, QuerySearchQuery.class);
+   }
 
-    @BeforeClass
-    public static void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void cleanup() {
-        client.close();
-    }
+   @AfterClass
+   public static void cleanup() {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, QueryTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, QueryTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Use resource with @Query annotation with the parameter of custom type which consist of @QueryParam fields.
-     * Resteasy correctly parses the uri to get all specified parameters
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testQueryParamPrefix() throws Exception {
-        WebTarget target = client.target(generateURL("/search?term=t1&order=ASC"));
-        Response response = target.request().get();
+   /**
+    * @tpTestDetails Use resource with @Query annotation with the parameter of custom type which consist of @QueryParam fields.
+    * Resteasy correctly parses the uri to get all specified parameters
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testQueryParamPrefix() throws Exception {
+      WebTarget target = client.target(generateURL("/search?term=t1&order=ASC"));
+      Response response = target.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("term: 't1', order: 'ASC', limit: 'null'", response.readEntity(String.class));
-    }
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("term: 't1', order: 'ASC', limit: 'null'", response.readEntity(String.class));
+   }
 }

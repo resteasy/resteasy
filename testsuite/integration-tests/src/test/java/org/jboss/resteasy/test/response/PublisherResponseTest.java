@@ -61,9 +61,9 @@ public class PublisherResponseTest {
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write"),
-              new RuntimePermission("modifyThread")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write"),
+            new RuntimePermission("modifyThread")
       ), "permissions.xml");
 
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
@@ -142,7 +142,7 @@ public class PublisherResponseTest {
     */
    @Test
    @Ignore// Doesn't currently work. The original version, now in PublisherResponseNoStreamTest, still works.
-          // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
+         // See RESTEASY-1906 "Allow representation of Exception in SSE stream"
    public void testTextErrorDeferred() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
@@ -226,20 +226,20 @@ public class PublisherResponseTest {
       CompletableFuture<Void> future = new CompletableFuture<Void>();
       SseEventSource source = SseEventSource.target(target).build();
       source.register(evt -> {
-        String data = evt.readData(String.class);
-        collector.add(data);
-        if(collector.size() >= 2) {
-           future.complete(null);
-        }
+      String data = evt.readData(String.class);
+      collector.add(data);
+      if(collector.size() >= 2) {
+         future.complete(null);
+      }
       }, 
-           t -> {
-              logger.error("Error:", t);
-              errors.add(t);  
-           }, 
-           () -> {
-              // bah, never called
-              future.complete(null);
-           });
+         t -> {
+            logger.error("Error:", t);
+            errors.add(t);  
+         }, 
+         () -> {
+            // bah, never called
+            future.complete(null);
+         });
       source.open();
       future.get();
       source.close();
@@ -272,7 +272,7 @@ public class PublisherResponseTest {
       flowable.subscribe(
             (String s) -> {list.add(s);
                           if(list.size() >= 2) latch.countDown();
-              },
+            },
             (Throwable t) -> logger.error("Error:", t),
             () -> latch.countDown());
       latch.await();

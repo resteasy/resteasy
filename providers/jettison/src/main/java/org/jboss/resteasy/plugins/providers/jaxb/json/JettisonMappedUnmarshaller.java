@@ -60,7 +60,7 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public Object unmarshal(File file)
-           throws JAXBException
+         throws JAXBException
    {
       try
       {
@@ -73,13 +73,13 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public Object unmarshal(InputStream inputStream)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshal(new InputStreamReader(inputStream));
    }
 
    public Object unmarshal(Reader reader)
-           throws JAXBException
+         throws JAXBException
    {
       MappedXMLStreamReader badger = null;
       badger = getXmlStreamReader(reader);
@@ -87,7 +87,7 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    protected MappedXMLStreamReader getXmlStreamReader(Reader reader)
-           throws JAXBException
+         throws JAXBException
    {
       MappedXMLStreamReader badger;
       char[] buffer = new char[100];
@@ -112,7 +112,7 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public Object unmarshal(URL url)
-           throws JAXBException
+         throws JAXBException
    {
       try
       {
@@ -125,25 +125,25 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public Object unmarshal(InputSource inputSource)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(inputSource);
    }
 
    public Object unmarshal(Node node)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(node);
    }
 
    public <T> JAXBElement<T> unmarshal(Node node, Class<T> tClass)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(node, tClass);
    }
 
    public Object unmarshal(Source source)
-           throws JAXBException
+         throws JAXBException
    {
       if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
@@ -152,7 +152,7 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
-           throws JAXBException
+         throws JAXBException
    {
       if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
@@ -161,25 +161,25 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
    }
 
    public Object unmarshal(XMLStreamReader xmlStreamReader)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(xmlStreamReader);
    }
 
    public <T> JAXBElement<T> unmarshal(XMLStreamReader xmlStreamReader, Class<T> tClass)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(xmlStreamReader, tClass);
    }
 
    public Object unmarshal(XMLEventReader xmlEventReader)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(xmlEventReader);
    }
 
    public <T> JAXBElement<T> unmarshal(XMLEventReader xmlEventReader, Class<T> tClass)
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.unmarshal(xmlEventReader, tClass);
    }
@@ -191,38 +191,38 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
 
    @SuppressWarnings("deprecation")
    public void setValidating(boolean b)
-           throws JAXBException
+         throws JAXBException
    {
       unmarshaller.setValidating(b);
    }
 
    @SuppressWarnings("deprecation")
    public boolean isValidating()
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.isValidating();
    }
 
    public void setEventHandler(ValidationEventHandler validationEventHandler)
-           throws JAXBException
+         throws JAXBException
    {
       unmarshaller.setEventHandler(validationEventHandler);
    }
 
    public ValidationEventHandler getEventHandler()
-           throws JAXBException
+         throws JAXBException
    {
       return unmarshaller.getEventHandler();
    }
 
    public void setProperty(String s, Object o)
-           throws PropertyException
+         throws PropertyException
    {
       unmarshaller.setProperty(s, o);
    }
 
    public Object getProperty(String s)
-           throws PropertyException
+         throws PropertyException
    {
       return unmarshaller.getProperty(s);
    }

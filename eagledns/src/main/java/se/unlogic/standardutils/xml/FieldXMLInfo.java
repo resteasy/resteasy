@@ -13,81 +13,81 @@ import java.lang.reflect.Field;
 
 public class FieldXMLInfo {
 
-	private final String name;
-	private final Field field;
-	private final FieldType fieldType;
-	private final boolean cdata;
-	private final boolean elementable;
-	private final boolean list;
-	private final boolean array;
-	private final boolean skipSubElement;
-	private final String childName;
-	private final Stringyfier valueFormatter;
+   private final String name;
+   private final Field field;
+   private final FieldType fieldType;
+   private final boolean cdata;
+   private final boolean elementable;
+   private final boolean list;
+   private final boolean array;
+   private final boolean skipSubElement;
+   private final String childName;
+   private final Stringyfier valueFormatter;
 
-	public FieldXMLInfo(String name, Field field, FieldType fieldType, boolean cdata, boolean elementable, boolean list, boolean array, String childName, boolean skipSubElement, Stringyfier valueFormatter) {
+   public FieldXMLInfo(String name, Field field, FieldType fieldType, boolean cdata, boolean elementable, boolean list, boolean array, String childName, boolean skipSubElement, Stringyfier valueFormatter) {
 
-		super();
-		this.name = name;
-		this.field = field;
-		this.fieldType = fieldType;
-		this.cdata = cdata;
-		this.elementable = elementable;
-		this.list = list;
-		this.array = array;
-		this.childName = childName;
-		this.valueFormatter = valueFormatter;
-		this.skipSubElement = skipSubElement;
-	}
+      super();
+      this.name = name;
+      this.field = field;
+      this.fieldType = fieldType;
+      this.cdata = cdata;
+      this.elementable = elementable;
+      this.list = list;
+      this.array = array;
+      this.childName = childName;
+      this.valueFormatter = valueFormatter;
+      this.skipSubElement = skipSubElement;
+   }
 
-	public String getName() {
+   public String getName() {
 
-		return name;
-	}
+      return name;
+   }
 
-	public Field getField() {
+   public Field getField() {
 
-		return field;
-	}
+      return field;
+   }
 
-	public FieldType getFieldType() {
+   public FieldType getFieldType() {
 
-		return fieldType;
-	}
+      return fieldType;
+   }
 
-	public boolean isCDATA() {
+   public boolean isCDATA() {
 
-		return cdata;
-	}
+      return cdata;
+   }
 
-	public boolean isList() {
+   public boolean isList() {
 
-		return list;
-	}
+      return list;
+   }
 
-	public boolean isElementable() {
+   public boolean isElementable() {
 
-		return elementable;
-	}
+      return elementable;
+   }
 
-	public String getChildName() {
+   public String getChildName() {
 
-		return childName;
-	}
+      return childName;
+   }
 
-	public Stringyfier getValueFormatter() {
+   public Stringyfier getValueFormatter() {
 
-		return valueFormatter;
-	}
+      return valueFormatter;
+   }
 
-	
-	public boolean skipSubElement() {
-	
-		return skipSubElement;
-	}
 
-	
-	public boolean isArray() {
-	
-		return array;
-	}
+   public boolean skipSubElement() {
+
+      return skipSubElement;
+   }
+
+
+   public boolean isArray() {
+
+      return array;
+   }
 }

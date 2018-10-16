@@ -14,29 +14,29 @@ import static io.undertow.servlet.Servlets.servlet;
  * Created by weli on 7/26/16.
  */
 public class WadlUndertowConnector {
-    public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application) {
-        ApplicationPath appPath = application.getAnnotation(ApplicationPath.class);
-        String path = "/";
-        if (appPath != null) path = appPath.value();
+   public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application) {
+      ApplicationPath appPath = application.getAnnotation(ApplicationPath.class);
+      String path = "/";
+      if (appPath != null) path = appPath.value();
 
-        return deployToServer(server, application, path);
-    }
+      return deployToServer(server, application, path);
+   }
 
-    public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application, String contextPath) {
-        ResteasyDeployment deployment = new ResteasyDeployment();
-        deployment.setApplicationClass(application.getName());
+   public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application, String contextPath) {
+      ResteasyDeployment deployment = new ResteasyDeployment();
+      deployment.setApplicationClass(application.getName());
 
-        DeploymentInfo di = server.undertowDeployment(deployment);
+      DeploymentInfo di = server.undertowDeployment(deployment);
 
-        ServletInfo resteasyWadlServlet = servlet("ResteasyWadlServlet", ResteasyWadlServlet.class)
-                .setAsyncSupported(false)
-                .setLoadOnStartup(1)
-                .addMapping("/application.xml");
-        di.addServlet(resteasyWadlServlet);
+      ServletInfo resteasyWadlServlet = servlet("ResteasyWadlServlet", ResteasyWadlServlet.class)
+            .setAsyncSupported(false)
+            .setLoadOnStartup(1)
+            .addMapping("/application.xml");
+      di.addServlet(resteasyWadlServlet);
 
-        di.setClassLoader(application.getClassLoader());
-        di.setContextPath(contextPath);
-        di.setDeploymentName("Resteasy" + contextPath);
-        return server.deploy(di);
-    }
+      di.setClassLoader(application.getClassLoader());
+      di.setContextPath(contextPath);
+      di.setDeploymentName("Resteasy" + contextPath);
+      return server.deploy(di);
+   }
 }

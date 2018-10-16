@@ -30,21 +30,21 @@ import java.util.zip.GZIPInputStream;
 @Priority(Priorities.ENTITY_CODER)
 public class GZIPDecodingInterceptor implements ReaderInterceptor
 {
-  private static final int DEFAULT_MAX_SIZE = 10000000;
-  private int maxSize;
-  
-  public GZIPDecodingInterceptor(int maxSize)
-  {
-     this.maxSize = maxSize;
-  }
-  
-  public GZIPDecodingInterceptor()
-  {
-     this.maxSize = -1;
-  }
+   private static final int DEFAULT_MAX_SIZE = 10000000;
+   private int maxSize;
    
-  public static class FinishableGZIPInputStream extends GZIPInputStream
-  {
+   public GZIPDecodingInterceptor(int maxSize)
+   {
+      this.maxSize = maxSize;
+   }
+   
+   public GZIPDecodingInterceptor()
+   {
+      this.maxSize = -1;
+   }
+   
+   public static class FinishableGZIPInputStream extends GZIPInputStream
+   {
       private int maxSize;
       private int count;
       private boolean server;

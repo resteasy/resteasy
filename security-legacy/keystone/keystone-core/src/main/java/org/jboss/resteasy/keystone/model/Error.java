@@ -7,40 +7,40 @@ import java.io.Serializable;
 @JsonRootName("error")
 public class Error implements Serializable {
 
-	private Integer code;
-	
-	private String title;
-	
-	private String message;
+   private Integer code;
 
-	/**
-	 * @return the code
-	 */
-	public Integer getCode() {
-		return code;
-	}
+   private String title;
 
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
-	}
+   private String message;
 
-	/**
-	 * @return the message
-	 */
-	public String getMessage() {
-		return message;
-	}
+   /**
+    * @return the code
+    */
+   public Integer getCode() {
+      return code;
+   }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Error [code=" + code + ", title=" + title + ", message="
-				+ message + "]";
-	}
-	
+   /**
+    * @return the title
+    */
+   public String getTitle() {
+      return title;
+   }
+
+   /**
+    * @return the message
+    */
+   public String getMessage() {
+      return message;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Error [code=" + code + ", title=" + title + ", message="
+            + message + "]";
+   }
+
 }

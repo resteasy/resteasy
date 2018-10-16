@@ -15,36 +15,36 @@ import java.net.URI;
 
 public class CachedXSLTURI extends CachedXSLTBase {
 
-	private URI uri;
-	private URIResolver uriResolver;
+   private URI uri;
+   private URIResolver uriResolver;
 
-	public CachedXSLTURI(URI uri) throws TransformerConfigurationException {
-		super();
-		this.uri = uri;
-		this.reloadStyleSheet();
-	}
+   public CachedXSLTURI(URI uri) throws TransformerConfigurationException {
+      super();
+      this.uri = uri;
+      this.reloadStyleSheet();
+   }
 
-	public CachedXSLTURI(URI uri, URIResolver uriResolver) throws TransformerConfigurationException {
+   public CachedXSLTURI(URI uri, URIResolver uriResolver) throws TransformerConfigurationException {
 
-		this.uri = uri;
-		this.uriResolver = uriResolver;
-		this.reloadStyleSheet();
-	}
+      this.uri = uri;
+      this.uriResolver = uriResolver;
+      this.reloadStyleSheet();
+   }
 
-	public void reloadStyleSheet() throws TransformerConfigurationException {
+   public void reloadStyleSheet() throws TransformerConfigurationException {
 
-		TransformerFactory transFact = TransformerFactory.newInstance();
+      TransformerFactory transFact = TransformerFactory.newInstance();
 
-		if(uriResolver != null){
-			transFact.setURIResolver(uriResolver);
-		}
+      if(uriResolver != null){
+         transFact.setURIResolver(uriResolver);
+      }
 
-		this.templates = transFact.newTemplates(new StreamSource(uri.toString()));
-	}
+      this.templates = transFact.newTemplates(new StreamSource(uri.toString()));
+   }
 
-	@Override
-	public String toString() {
+   @Override
+   public String toString() {
 
-		return "CachedXSLTURI: " + uri;
-	}
+      return "CachedXSLTURI: " + uri;
+   }
 }

@@ -42,82 +42,82 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class WeldSubdeploymentTest {
 
-    protected static final Logger logger = LogManager.getLogger(WeldSubdeploymentTest.class.getName());
+   protected static final Logger logger = LogManager.getLogger(WeldSubdeploymentTest.class.getName());
 
-    private static final String WAR_DEPLOYMENT_NAME = "simple";
+   private static final String WAR_DEPLOYMENT_NAME = "simple";
 
-    public static final String ERROR_MESSAGE = "JBEAP-4084 regression, injected EntityManagerFactory should not be null but is";
+   public static final String ERROR_MESSAGE = "JBEAP-4084 regression, injected EntityManagerFactory should not be null but is";
 
-    Client client;
+   Client client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "WeldSubdeploymentTest.ear");
-        WebArchive war = ShrinkWrap.create(WebArchive.class, String.format("%s.war", WAR_DEPLOYMENT_NAME));
-        war.addClasses(WeldSubdeploymentTest.class, WeldSubdeploymentCdiJpaInjectingBean.class, TestApplication.class);
-        war.addClasses(WeldSubdeploymentRequestResource.class, WeldSubdeploymentApplicationResource.class,
-                WeldSubdeploymentStatefulResource.class, WeldSubdeploymentStatelessResource.class);
-        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "util.jar");
-        jar.addAsManifestResource(WeldSubdeploymentTest.class.getPackage(), "persistence_subdeployment.xml", "persistence.xml");
-        war.addAsLibrary(jar);
-        ear.addAsModule(war);
-        return ear;
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "WeldSubdeploymentTest.ear");
+      WebArchive war = ShrinkWrap.create(WebArchive.class, String.format("%s.war", WAR_DEPLOYMENT_NAME));
+      war.addClasses(WeldSubdeploymentTest.class, WeldSubdeploymentCdiJpaInjectingBean.class, TestApplication.class);
+      war.addClasses(WeldSubdeploymentRequestResource.class, WeldSubdeploymentApplicationResource.class,
+            WeldSubdeploymentStatefulResource.class, WeldSubdeploymentStatelessResource.class);
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "util.jar");
+      jar.addAsManifestResource(WeldSubdeploymentTest.class.getPackage(), "persistence_subdeployment.xml", "persistence.xml");
+      war.addAsLibrary(jar);
+      ear.addAsModule(war);
+      return ear;
+   }
 
-    @Before
-    public void init() {
-        client = ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = ClientBuilder.newClient();
+   }
 
-    @After
-    public void close() {
-        client.close();
-    }
+   @After
+   public void close() {
+      client.close();
+   }
 
-    private void testEndPoint(String scope) {
-        String url = PortProviderUtil.generateURL(String.format("/%s", scope), WAR_DEPLOYMENT_NAME);
-        logger.info(String.format("Request to %s", url));
-        WebTarget base = client.target(url);
+   private void testEndPoint(String scope) {
+      String url = PortProviderUtil.generateURL(String.format("/%s", scope), WAR_DEPLOYMENT_NAME);
+      logger.info(String.format("Request to %s", url));
+      WebTarget base = client.target(url);
 
-        Response response = base.request().get();
-        assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
-        response.close();
-    }
+      Response response = base.request().get();
+      assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Test for bean with application scope
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAppcliationScope() throws Exception {
-        testEndPoint("application");
-    }
+   /**
+    * @tpTestDetails Test for bean with application scope
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testAppcliationScope() throws Exception {
+      testEndPoint("application");
+   }
 
-    /**
-     * @tpTestDetails Test for bean with request scope
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRequestScope() throws Exception {
-        testEndPoint("request");
-    }
+   /**
+    * @tpTestDetails Test for bean with request scope
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRequestScope() throws Exception {
+      testEndPoint("request");
+   }
 
-    /**
-     * @tpTestDetails Test for stateful bean
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testStateful() throws Exception {
-        testEndPoint("stateful");
-    }
+   /**
+    * @tpTestDetails Test for stateful bean
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testStateful() throws Exception {
+      testEndPoint("stateful");
+   }
 
-    /**
-     * @tpTestDetails Test for stateless bean
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testStateLess() throws Exception {
-        testEndPoint("stateless");
-    }
+   /**
+    * @tpTestDetails Test for stateless bean
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testStateLess() throws Exception {
+      testEndPoint("stateless");
+   }
 }

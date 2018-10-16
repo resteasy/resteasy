@@ -97,8 +97,8 @@ public class ResteasyView implements View
                   if (responseInvoker != null)
                   {
                      ServerResponseWriter.writeNomapResponse(responseInvoker, httpRequest, response, dispatcher.getProviderFactory(), t -> {
-                    	 if(t != null)
-                    		 dispatcher.writeException(httpRequest, response, t, t2 -> {});
+                        if(t != null)
+                           dispatcher.writeException(httpRequest, response, t, t2 -> {});
                      });
                   }
                }
@@ -136,7 +136,7 @@ public class ResteasyView implements View
    }
 
    private boolean isAcceptable(List<MediaType> acceptableMediaTypes,
-                                MediaType potentialContentType)
+                        MediaType potentialContentType)
    {
       boolean isAcceptable = false;
       for (MediaType acceptableMediaType : acceptableMediaTypes)

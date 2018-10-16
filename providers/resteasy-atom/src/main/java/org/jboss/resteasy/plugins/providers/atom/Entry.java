@@ -100,7 +100,7 @@ import java.util.List;
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder = {"titleElement", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
-        "rightsElement", "content", "summaryElement", "anyOther"})
+      "rightsElement", "content", "summaryElement", "anyOther"})
 public class Entry extends CommonAttributes
 {
    private List<Person> authors = new ArrayList<Person>();
@@ -153,20 +153,20 @@ public class Entry extends CommonAttributes
    @XmlElement(name = "title")
    public Text getTitleElement() 
    {
-     return title;     
+      return title;
    }
    
    public void setTitleElement(Text title) {
-     this.title = title;
+      this.title = title;
    }
    
    @XmlTransient
    public String getTitle()
    {
-     if (this.title == null) 
-     {
-       return null;
-     }
+      if (this.title == null)
+      {
+         return null;
+      }
       return title.getText();
    }
 
@@ -174,7 +174,7 @@ public class Entry extends CommonAttributes
    {
       if (this.title == null) 
       {
-        this.title = new Text();
+         this.title = new Text();
       }
       this.title.setText(title);
    }
@@ -255,20 +255,20 @@ public class Entry extends CommonAttributes
    
    @XmlTransient
    public String getRights() {
-     if (rights == null) 
-     {
-       return null;
-     }
-     return rights.getText();
+      if (rights == null)
+      {
+         return null;
+      }
+      return rights.getText();
    }
 
    public void setRights(String rights) 
    {
-     if (this.rights == null) 
-     {
-       this.rights = new Text();
-     }
-     this.rights.setText(rights);
+      if (this.rights == null)
+      {
+         this.rights = new Text();
+      }
+      this.rights.setText(rights);
    }
    
    @XmlElement
@@ -295,20 +295,20 @@ public class Entry extends CommonAttributes
 
    @XmlTransient
    public String getSummary() {
-     if (rights == null) 
-     {
-       return null;
-     }
-     return rights.getText();
+      if (rights == null)
+      {
+         return null;
+      }
+      return rights.getText();
    }
 
    public void setSummary(String summary) 
    {
-     if (this.summary == null) 
-     {
-       this.summary = new Text();
-     }
-     this.summary.setText(summary);
+      if (this.summary == null)
+      {
+         this.summary = new Text();
+      }
+      this.summary.setText(summary);
    }
    
    
@@ -326,7 +326,7 @@ public class Entry extends CommonAttributes
       {
          if (obj instanceof Element)
          {
-             anyOtherElement = (Element) obj;
+            anyOtherElement = (Element) obj;
             return anyOtherElement;
          }
       }
@@ -336,10 +336,10 @@ public class Entry extends CommonAttributes
    @XmlMixed
    @XmlAnyElement(lax = true)
    public List<Object> getAnyOther() {
-       if (anyOther == null) {
-           anyOther = new ArrayList<Object>();
-       }
-       return this.anyOther;
+      if (anyOther == null) {
+         anyOther = new ArrayList<Object>();
+      }
+      return this.anyOther;
    }
    /**
     * Extract the content as the provided JAXB annotated type.
@@ -354,48 +354,48 @@ public class Entry extends CommonAttributes
     * @return null if there is no XML content
     * @throws JAXBException jaxb exception
     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException {
-        JAXBContext ctx = null;
-        Class[] classes = {clazz};
-        if (otherPossibleClasses != null && otherPossibleClasses.length > 0) {
-            classes = new Class[1 + otherPossibleClasses.length];
-            classes[0] = clazz;
-            for (int i = 0; i < otherPossibleClasses.length; i++) classes[i + 1] = otherPossibleClasses[i];
-        }
-        if (finder != null) {
-            ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, classes);
-        } else {
-            ctx = JAXBContext.newInstance(classes);
-        }
+   @SuppressWarnings({ "unchecked", "rawtypes" })
+   public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException {
+      JAXBContext ctx = null;
+      Class[] classes = {clazz};
+      if (otherPossibleClasses != null && otherPossibleClasses.length > 0) {
+         classes = new Class[1 + otherPossibleClasses.length];
+         classes[0] = clazz;
+         for (int i = 0; i < otherPossibleClasses.length; i++) classes[i + 1] = otherPossibleClasses[i];
+      }
+      if (finder != null) {
+         ctx = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, classes);
+      } else {
+         ctx = JAXBContext.newInstance(classes);
+      }
  
-        Object obj = null;
+      Object obj = null;
  
-        if (getAnyOtherElement() != null) {
-            obj = ctx.createUnmarshaller().unmarshal(getAnyOtherElement());
-        } else {
-            if (getAnyOther().size() == 0) return null;
-            for (Object _obj : getAnyOther()) {
-                for (Class _clazz : classes) {
-                    if (_obj.getClass().equals(_clazz)) {
-                        obj = _obj;
-                        break;
-                    }
-                }
+      if (getAnyOtherElement() != null) {
+         obj = ctx.createUnmarshaller().unmarshal(getAnyOtherElement());
+      } else {
+         if (getAnyOther().size() == 0) return null;
+         for (Object _obj : getAnyOther()) {
+            for (Class _clazz : classes) {
+               if (_obj.getClass().equals(_clazz)) {
+                  obj = _obj;
+                  break;
+               }
             }
+         }
  
-            if (obj == null)
-                return null;
-        }
+         if (obj == null)
+            return null;
+      }
  
-        if (obj instanceof JAXBElement) {
-            anyOtherJaxbObject = ((JAXBElement) obj).getValue();
-            return (T) anyOtherJaxbObject;
-        } else {
-            anyOtherJaxbObject = obj;
-            return (T) obj;
-        }
-	}
+      if (obj instanceof JAXBElement) {
+         anyOtherJaxbObject = ((JAXBElement) obj).getValue();
+         return (T) anyOtherJaxbObject;
+      } else {
+         anyOtherJaxbObject = obj;
+         return (T) obj;
+      }
+   }
 
    
    /**
@@ -416,11 +416,11 @@ public class Entry extends CommonAttributes
       if (anyOtherJaxbObject != null && anyOther != null) anyOther.clear();
       if (!obj.getClass().isAnnotationPresent(XmlRootElement.class) && obj.getClass().isAnnotationPresent(XmlType.class))
       {
-          anyOther.add(JAXBXmlTypeProvider.wrapInJAXBElement(obj, obj.getClass()));
+         anyOther.add(JAXBXmlTypeProvider.wrapInJAXBElement(obj, obj.getClass()));
       }
       else
       {
-          anyOther.add(obj);
+         anyOther.add(obj);
       }
       anyOtherJaxbObject = obj;
    }

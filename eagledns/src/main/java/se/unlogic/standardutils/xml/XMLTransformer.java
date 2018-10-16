@@ -17,9 +17,9 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.Writer;
 
 public class XMLTransformer {
-	
-	public static void transformToWriter(Transformer transformer, Document doc, Writer writer, String encoding) throws TransformerException{
-		transformer.setOutputProperty(OutputKeys.ENCODING,encoding);
-		transformer.transform(new DOMSource(doc), new StreamResult(writer));
-	}	
+
+   public static void transformToWriter(Transformer transformer, Document doc, Writer writer, String encoding) throws TransformerException{
+      transformer.setOutputProperty(OutputKeys.ENCODING,encoding);
+      transformer.transform(new DOMSource(doc), new StreamResult(writer));
+   }
 }

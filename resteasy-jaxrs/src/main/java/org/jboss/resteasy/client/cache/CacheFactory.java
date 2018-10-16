@@ -60,9 +60,9 @@ public class CacheFactory
     * @param cache
     */
    public static void makeCacheable(
-           ClientInterceptorRepository interceptorRepository, BrowserCache cache)
+         ClientInterceptorRepository interceptorRepository, BrowserCache cache)
    {
       interceptorRepository.getExecutionInterceptorList().addFirst(
-              new CacheInterceptor(cache));
+            new CacheInterceptor(cache));
    }
 }

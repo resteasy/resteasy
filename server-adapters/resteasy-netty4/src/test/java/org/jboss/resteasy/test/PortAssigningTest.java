@@ -14,19 +14,19 @@ import org.junit.Test;
  */
 public class PortAssigningTest
 {
-    @Test
-    public void testZeroPort() throws Exception {
-        //given
-        NettyJaxrsServer server = new NettyJaxrsServer();
-        server.setPort(0);
+   @Test
+   public void testZeroPort() throws Exception {
+      //given
+      NettyJaxrsServer server = new NettyJaxrsServer();
+      server.setPort(0);
 
-        //when
-        server.start();
-        int ip = server.getPort();
-        server.stop();
+      //when
+      server.start();
+      int ip = server.getPort();
+      server.stop();
 
-        //then
-        Assert.assertTrue(ip != 0);
-    }
+      //then
+      Assert.assertTrue(ip != 0);
+   }
 
 }

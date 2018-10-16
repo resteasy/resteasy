@@ -3,31 +3,31 @@ package se.unlogic.standardutils.validation;
 
 public class StringLengthValidator implements StringFormatValidator {
 
-	protected final Integer maxLength;
-	protected final Integer minLength;
-	
-	public StringLengthValidator(Integer minLength, Integer maxLength) {
+   protected final Integer maxLength;
+   protected final Integer minLength;
 
-		super();
-		this.minLength = minLength;
-		this.maxLength = maxLength;
-	}
+   public StringLengthValidator(Integer minLength, Integer maxLength) {
 
-	public boolean validateFormat(String value) {
+      super();
+      this.minLength = minLength;
+      this.maxLength = maxLength;
+   }
 
-		if(value == null){
+   public boolean validateFormat(String value) {
 
-			return false;
+      if(value == null){
 
-		}else if(value.length() > maxLength){
+         return false;
 
-			return false;
+      }else if(value.length() > maxLength){
 
-		}else if(value.length() < minLength){
+         return false;
 
-			return false;
-		}
-		
-		return false;
-	}
+      }else if(value.length() < minLength){
+
+         return false;
+      }
+
+      return false;
+   }
 }

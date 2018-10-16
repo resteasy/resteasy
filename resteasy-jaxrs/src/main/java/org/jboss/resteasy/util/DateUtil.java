@@ -62,7 +62,7 @@ public class DateUtil
    public static final String PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy";
 
    private static final Collection DEFAULT_PATTERNS = Arrays.asList(
-           new String[]{PATTERN_ASCTIME, PATTERN_RFC1036, PATTERN_RFC1123});
+         new String[]{PATTERN_ASCTIME, PATTERN_RFC1036, PATTERN_RFC1123});
 
    private static final Date DEFAULT_TWO_DIGIT_YEAR_START;
 
@@ -98,7 +98,7 @@ public class DateUtil
     * @throws DateParseException if none of the dataFormats could parse the dateValue
     */
    public static Date parseDate(String dateValue, Collection dateFormats)
-           throws DateParseException
+         throws DateParseException
    {
       return parseDate(dateValue, dateFormats, null);
    }
@@ -116,9 +116,9 @@ public class DateUtil
     * @throws DateParseException if none of the dataFormats could parse the dateValue
     */
    public static Date parseDate(
-           String dateValue,
-           Collection dateFormats,
-           Date startDate
+         String dateValue,
+         Collection dateFormats,
+         Date startDate
    ) throws DateParseException
    {
 
@@ -137,9 +137,9 @@ public class DateUtil
       // trim single quotes around date if present
       // see issue #5279
       if (dateValue.length() > 1
-              && dateValue.startsWith("'")
-              && dateValue.endsWith("'")
-              )
+            && dateValue.startsWith("'")
+            && dateValue.endsWith("'")
+      )
       {
          dateValue = dateValue.substring(1, dateValue.length() - 1);
       }

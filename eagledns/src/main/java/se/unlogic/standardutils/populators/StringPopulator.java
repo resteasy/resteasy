@@ -14,30 +14,30 @@ import java.sql.SQLException;
 
 public class StringPopulator extends BaseStringPopulator<String> implements BeanResultSetPopulator<String>, BeanStringPopulator<String>{
 
-	public StringPopulator() {
-		super();
-	}
+   public StringPopulator() {
+      super();
+   }
 
-	private static final StringPopulator POPULATOR = new StringPopulator();
+   private static final StringPopulator POPULATOR = new StringPopulator();
 
-	public String populate(ResultSet rs) throws SQLException {
-		return rs.getString(1);
-	}
+   public String populate(ResultSet rs) throws SQLException {
+      return rs.getString(1);
+   }
 
-	public static StringPopulator getPopulator(){
-		return POPULATOR;
-	}
+   public static StringPopulator getPopulator(){
+      return POPULATOR;
+   }
 
-	public String getValue(String value) {
-		return value;
-	}
+   public String getValue(String value) {
+      return value;
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
-		return true;
-	}
+   @Override
+   public boolean validateDefaultFormat(String value) {
+      return true;
+   }
 
-	public Class<? extends String> getType() {
-		return String.class;
-	}
+   public Class<? extends String> getType() {
+      return String.class;
+   }
 }

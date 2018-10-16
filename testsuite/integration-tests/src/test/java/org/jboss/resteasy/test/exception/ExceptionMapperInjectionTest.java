@@ -35,72 +35,72 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ExceptionMapperInjectionTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ExceptionMapperInjectionTest.class.getSimpleName());
-        war.addClass(ExceptionMapperCustomRuntimeException.class);
-        war.addClass(ExceptionMapperInjectionException.class);
-        return TestUtil.finishContainerPrepare(war, null, ExceptionMapperInjectionCustomMapper.class,
-                ExceptionMapperInjectionCustomSimpleMapper.class, ExceptionMapperInjectionNotFoundMapper.class,
-                ExceptionMapperInjectionResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ExceptionMapperInjectionTest.class.getSimpleName());
+      war.addClass(ExceptionMapperCustomRuntimeException.class);
+      war.addClass(ExceptionMapperInjectionException.class);
+      return TestUtil.finishContainerPrepare(war, null, ExceptionMapperInjectionCustomMapper.class,
+            ExceptionMapperInjectionCustomSimpleMapper.class, ExceptionMapperInjectionNotFoundMapper.class,
+            ExceptionMapperInjectionResource.class);
+   }
 
-    @BeforeClass
-    public static void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @BeforeClass
+   public static void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    public String generateUrl(String path) {
-        return PortProviderUtil.generateURL(path, ExceptionMapperInjectionTest.class.getSimpleName());
-    }
+   public String generateUrl(String path) {
+      return PortProviderUtil.generateURL(path, ExceptionMapperInjectionTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check non-existent path
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNotFound() throws Exception {
-        WebTarget base = client.target(generateUrl("/test/nonexistent"));
-        Response response = base.request().get();
+   /**
+    * @tpTestDetails Check non-existent path
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNotFound() throws Exception {
+      WebTarget base = client.target(generateUrl("/test/nonexistent"));
+      Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED, response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED, response.getStatus());
 
-        response.close();
-    }
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check correct path
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMapper() throws Exception {
-        WebTarget base = client.target(generateUrl("/test"));
-        Response response = base.request().get();
+   /**
+    * @tpTestDetails Check correct path
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMapper() throws Exception {
+      WebTarget base = client.target(generateUrl("/test"));
+      Response response = base.request().get();
 
-        Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+      Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
 
-        response.close();
-    }
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check correct path, no content is excepted
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMapper2() throws Exception {
-        WebTarget base = client.target(generateUrl("/test/null"));
-        Response response = base.request().get();
+   /**
+    * @tpTestDetails Check correct path, no content is excepted
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMapper2() throws Exception {
+      WebTarget base = client.target(generateUrl("/test/null"));
+      Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
 
-        response.close();
-    }
+      response.close();
+   }
 
 }

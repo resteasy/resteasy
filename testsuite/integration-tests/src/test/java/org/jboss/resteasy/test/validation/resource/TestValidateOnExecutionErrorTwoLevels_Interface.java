@@ -8,16 +8,16 @@ import javax.ws.rs.Path;
 @Path("")
 @ValidateOnExecution(type = {ExecutableType.NONE})
 public class TestValidateOnExecutionErrorTwoLevels_Interface implements TestValidateOnExecutionSubInterface {
-    @POST
-    @Path("overrideInterface1")
-    @ValidateOnExecution(type = {ExecutableType.ALL})
-    @Override
-    public void overrideInterface1(String s) {
-    }
+   @POST
+   @Path("overrideInterface1")
+   @ValidateOnExecution(type = {ExecutableType.ALL})
+   @Override
+   public void overrideInterface1(String s) {
+   }
 
-    @POST
-    @Path("overrideInterface2")
-    @Override
-    public void overrideInterface2(String s) {
-    }
+   @POST
+   @Path("overrideInterface2")
+   @Override
+   public void overrideInterface2(String s) {
+   }
 }

@@ -17,47 +17,47 @@ import java.net.UnknownHostException;
 
 public class SocketUtils {
 
-	public static Socket getSocket(String host, int port, int timeout) throws IOException{
-		SocketAddress sockaddr = new InetSocketAddress(host, port);
-		Socket socket = new Socket();
-		socket.connect(sockaddr, timeout);
+   public static Socket getSocket(String host, int port, int timeout) throws IOException{
+      SocketAddress sockaddr = new InetSocketAddress(host, port);
+      Socket socket = new Socket();
+      socket.connect(sockaddr, timeout);
 
-		return socket;
-	}
+      return socket;
+   }
 
-	public static boolean isValidInetAddress(String address){
+   public static boolean isValidInetAddress(String address){
 
-		try {
+      try {
 
-			InetAddress.getByName(address);
+         InetAddress.getByName(address);
 
-			return true;
-			
-		} catch (UnknownHostException e) {
+         return true;
 
-			return false;
-		}
-	}
+      } catch (UnknownHostException e) {
 
-	public static boolean isPortAvailable(int port) {  
+         return false;
+      }
+   }
 
-		try {  
-			ServerSocket srv = new ServerSocket(port);  
-			srv.close();  
-			srv = null;
-			return true;  
-		} catch (IOException e) {  
-			return false;  
-		}  
-	}
+   public static boolean isPortAvailable(int port) {
 
-	public static void closeSocket(Socket socket) {
+      try {
+         ServerSocket srv = new ServerSocket(port);
+         srv.close();
+         srv = null;
+         return true;
+      } catch (IOException e) {
+         return false;
+      }
+   }
 
-		if(socket != null){
-			
-			try {
-				socket.close();
-			} catch (IOException e) {}
-		}
-	}  
+   public static void closeSocket(Socket socket) {
+
+      if(socket != null){
+
+         try {
+            socket.close();
+         } catch (IOException e) {}
+      }
+   }
 }

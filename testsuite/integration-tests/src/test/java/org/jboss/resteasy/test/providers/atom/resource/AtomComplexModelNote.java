@@ -25,15 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomComplexModelNote {
 
-    @XmlElement
-    private String value;
+   @XmlElement
+   private String value;
 
-    public String getValue() {
-        return value;
-    }
+   public String getValue() {
+      return value;
+   }
 
-    public void setValue(String note) {
-        value = note;
-    }
+   public void setValue(String note) {
+      value = note;
+   }
 
 }

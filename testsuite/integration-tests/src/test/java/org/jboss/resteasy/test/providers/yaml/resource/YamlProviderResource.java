@@ -14,43 +14,43 @@ import java.util.Map;
 public class YamlProviderResource {
 
 
-    public static YamlProviderObject createMyObject() {
+   public static YamlProviderObject createMyObject() {
 
-        YamlProviderObject obj = new YamlProviderObject();
+      YamlProviderObject obj = new YamlProviderObject();
 
-        obj.setSomeText("This is some sample text");
-        obj.setDate(new Date(123456789));
-        obj.getNested().setMoreText("This is some more sample text");
+      obj.setSomeText("This is some sample text");
+      obj.setDate(new Date(123456789));
+      obj.getNested().setMoreText("This is some more sample text");
 
-        Map<String, YamlProviderNestedObject> dataMap = new HashMap<String, YamlProviderNestedObject>();
-        YamlProviderNestedObject mno = new YamlProviderNestedObject();
-        mno.setMoreText("blah");
-        dataMap.put("fooBar", mno);
+      Map<String, YamlProviderNestedObject> dataMap = new HashMap<String, YamlProviderNestedObject>();
+      YamlProviderNestedObject mno = new YamlProviderNestedObject();
+      mno.setMoreText("blah");
+      dataMap.put("fooBar", mno);
 
-        obj.setData(dataMap);
+      obj.setData(dataMap);
 
-        return obj;
-    }
+      return obj;
+   }
 
-    @GET
-    @Produces("text/x-yaml")
-    public YamlProviderObject getMyObject() {
-        return createMyObject();
-    }
+   @GET
+   @Produces("text/x-yaml")
+   public YamlProviderObject getMyObject() {
+      return createMyObject();
+   }
 
 
-    @POST
-    @Consumes("text/x-yaml")
-    @Produces("text/x-yaml")
-    public YamlProviderObject setMyObject(YamlProviderObject obj) {
-        return obj;
-    }
+   @POST
+   @Consumes("text/x-yaml")
+   @Produces("text/x-yaml")
+   public YamlProviderObject setMyObject(YamlProviderObject obj) {
+      return obj;
+   }
 
-    @POST
-    @Path("/list")
-    @Consumes("text/x-yaml")
-    @Produces("text/plain")
-    public String populate(List<String> data) {
-       return data.toString();
-    }
+   @POST
+   @Path("/list")
+   @Consumes("text/x-yaml")
+   @Produces("text/plain")
+   public String populate(List<String> data) {
+      return data.toString();
+   }
 }

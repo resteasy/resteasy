@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyAuthenticationException extends ResteasyProtocolException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyAuthenticationException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyAuthenticationException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyAuthenticationException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyAuthenticationException()
+   {
+   }
+
+   public ResteasyAuthenticationException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyAuthenticationException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyAuthenticationException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyAuthenticationException(Throwable cause)
+   {
+      super(cause);
+   }
 }

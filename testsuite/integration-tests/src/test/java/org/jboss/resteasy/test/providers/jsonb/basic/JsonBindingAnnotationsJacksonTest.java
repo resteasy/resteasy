@@ -102,11 +102,11 @@ public class JsonBindingAnnotationsJacksonTest {
       WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/transient", WAR_WITH_JSONB));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
       Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+            new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat json = target.request().post(entity, Cat.class);
       logger.info("Request entity: " + entity);
       Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-              json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+            json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
    }
    /**
     * @tpTestDetails JSON-B is not used on both server and client
@@ -121,11 +121,11 @@ public class JsonBindingAnnotationsJacksonTest {
       WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/not/transient", WAR_WITHOUT_JSONB));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
       Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+            new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat json = target.request().post(entity, Cat.class);
       logger.info("Request entity: " + entity);
       Assert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
-              json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
+            json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
    }
 
    /**

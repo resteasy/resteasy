@@ -51,7 +51,7 @@ public class RSAVerifierTest
    }
 
    public static X509Certificate generateTestCertificate(String subject, String issuer, KeyPair pair) throws InvalidKeyException,
-           NoSuchProviderException, SignatureException
+         NoSuchProviderException, SignatureException
    {
 
       X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
@@ -87,8 +87,8 @@ public class RSAVerifierTest
 
       token = new SkeletonKeyToken();
       token.principal("CN=Client")
-              .audience("domain")
-              .addAccess("service").addRole("admin");
+            .audience("domain")
+            .addAccess("service").addRole("admin");
    }
 
    @Test
@@ -117,8 +117,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
       SkeletonKeyToken token =  RSATokenVerifier.verifyToken(encoded, metadata);
       Assert.assertTrue(token.getResourceAccess("service").getRoles().contains("admin"));
       Assert.assertEquals("CN=Client", token.getPrincipal());
@@ -132,8 +132,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       long start = System.currentTimeMillis();
       int count = 10000;
@@ -145,7 +145,7 @@ public class RSAVerifierTest
       long end = System.currentTimeMillis() - start;
       System.out.println("rate: " + ((double)end/(double)count));
    }
-   */
+    */
 
 
    @Test
@@ -155,8 +155,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(badPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(badPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try
@@ -176,8 +176,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try
@@ -186,7 +186,7 @@ public class RSAVerifierTest
       }
       catch (VerificationException ignored)
       {
-        throw ignored;
+      throw ignored;
       }
    }
 
@@ -197,8 +197,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try
@@ -219,8 +219,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try
@@ -240,8 +240,8 @@ public class RSAVerifierTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try
@@ -260,13 +260,13 @@ public class RSAVerifierTest
    {
       token = new SkeletonKeyToken();
       token.principal("CN=Client")
-              .audience("domain")
-              .addAccess("service").addRole("admin").verifyCaller(true);
+            .audience("domain")
+            .addAccess("service").addRole("admin").verifyCaller(true);
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(idpPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(idpPair.getPrivate());
 
       SkeletonKeyToken v = null;
       try

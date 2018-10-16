@@ -28,31 +28,31 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class CustomHttpClientEngineTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
-        war.addClass(ApacheHttpClient4Resource.class);
-        return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(CustomHttpClientEngineTest.class.getSimpleName());
+      war.addClass(ApacheHttpClient4Resource.class);
+      return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CustomHttpClientEngineTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CustomHttpClientEngineTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Create custom ClientHttpEngine and set it to the resteasy-client
-     * @tpSince RESTEasy 3.0.24
-     */
-    @Test
-    public void test() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
-        ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
-        ResteasyClient client = clientBuilder.httpEngine(engine).build();
-        Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
+   /**
+    * @tpTestDetails Create custom ClientHttpEngine and set it to the resteasy-client
+    * @tpSince RESTEasy 3.0.24
+    */
+   @Test
+   public void test() {
+      ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+      ClientHttpEngine engine = new CustomHttpClientEngineBuilder().resteasyClientBuilder(clientBuilder).build();
+      ResteasyClient client = clientBuilder.httpEngine(engine).build();
+      Assert.assertTrue(ApacheHttpClient43Engine.class.isInstance(client.httpEngine()));
 
-        ApacheHttpClient4Resource proxy = client.target(generateURL("")).proxy(ApacheHttpClient4Resource.class);
-        Assert.assertEquals("Unexpected response", "hello world", proxy.get());
+      ApacheHttpClient4Resource proxy = client.target(generateURL("")).proxy(ApacheHttpClient4Resource.class);
+      Assert.assertEquals("Unexpected response", "hello world", proxy.get());
 
-        client.close();
-    }
+      client.close();
+   }
 }

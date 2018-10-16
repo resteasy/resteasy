@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
 @Produces("*/*")
 @Consumes("*/*")
 public class FileProvider implements MessageBodyReader<File>,
-        MessageBodyWriter<File>
+      MessageBodyWriter<File>
 {
    private static final Logger LOG = Logger.getLogger(FileProvider.class);
 
@@ -57,7 +57,7 @@ public class FileProvider implements MessageBodyReader<File>,
    public File readFrom(Class<File> type, Type genericType,
                         Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-           throws IOException
+         throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       File downloadedFile = null;
@@ -67,7 +67,7 @@ public class FileProvider implements MessageBodyReader<File>,
          try
          {
             downloadedFile = File.createTempFile(PREFIX, SUFFIX, new File(
-                    _downloadDirectory));
+               _downloadDirectory));
          }
          catch (final IOException ex)
          {
@@ -92,7 +92,7 @@ public class FileProvider implements MessageBodyReader<File>,
       
       if (NoContent.isContentLengthZero(httpHeaders)) return downloadedFile;
       OutputStream output = new BufferedOutputStream(new FileOutputStream(
-              downloadedFile));
+            downloadedFile));
 
       try
       {
@@ -139,9 +139,9 @@ public class FileProvider implements MessageBodyReader<File>,
       int byteUnit = range.indexOf("bytes=");
       if ( byteUnit < 0)
       {
-    	  //must start with 'bytes'
-          writeIt(uploadFile, entityStream);
-          return;
+        //must start with 'bytes'
+         writeIt(uploadFile, entityStream);
+         return;
       }
       range = range.substring("bytes=".length());
       if (range.indexOf(',') > -1)

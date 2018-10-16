@@ -60,7 +60,7 @@ public class RxSingleProxyServerAsyncTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read,write")
+            new PropertyPermission("*", "read,write")
       ), "permissions.xml");
 
       TestUtilRxJava.addRxJavaLibraries(war);

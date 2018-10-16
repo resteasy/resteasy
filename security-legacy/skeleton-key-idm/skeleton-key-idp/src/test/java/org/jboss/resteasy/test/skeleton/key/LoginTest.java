@@ -37,8 +37,8 @@ public class LoginTest extends SkeletonTestBase
    {
       LOG.info(realmInfo.getAuthorizationUrl());
       WebTarget authUrl = client.target(realmInfo.getAuthorizationUrl())
-              .queryParam("client_id", "loginclient")
-              .queryParam("redirect_uri", "http://localhost:8081/loginclient/redirect");
+            .queryParam("client_id", "loginclient")
+            .queryParam("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
       String form = authUrl.request().get(String.class);
       LOG.info(form);
@@ -53,10 +53,10 @@ public class LoginTest extends SkeletonTestBase
       Assert.assertNotNull(loginUrl);
 
       Form loginform = new Form()
-              .param("username", "wburke")
-              .param("Password", "userpassword")
-              .param("client_id", "loginclient")
-              .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
+            .param("username", "wburke")
+            .param("Password", "userpassword")
+            .param("client_id", "loginclient")
+            .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
       LOG.info("LoginUrl: " + loginUrl);
       Response response = client.target(loginUrl).request().post(Entity.form(loginform));
@@ -76,9 +76,9 @@ public class LoginTest extends SkeletonTestBase
       Assert.assertNotNull(code);
       WebTarget codes = client.target(realmInfo.getCodeUrl());
       Form codeForm = new Form()
-              .param("code", code)
-              .param("client_id", "loginclient")
-              .param("Password", "clientpassword");
+            .param("code", code)
+            .param("client_id", "loginclient")
+            .param("Password", "clientpassword");
       Response res = codes.request().post(Entity.form(codeForm));
       if (res.getStatus() == 400)
       {
@@ -102,8 +102,8 @@ public class LoginTest extends SkeletonTestBase
    {
       LOG.info(realmInfo.getAuthorizationUrl());
       WebTarget authUrl = client.target(realmInfo.getAuthorizationUrl())
-              .queryParam("client_id", "oauthclient")
-              .queryParam("redirect_uri", "http://localhost:8081/oauthclient/redirect");
+            .queryParam("client_id", "oauthclient")
+            .queryParam("redirect_uri", "http://localhost:8081/oauthclient/redirect");
 
       String form = authUrl.request().get(String.class);
       LOG.info(form);
@@ -128,11 +128,11 @@ public class LoginTest extends SkeletonTestBase
 
 
       Form loginform = new Form()
-              .param("username", "wburke")
-              .param("Password", "userpassword")
-              .param("client_id", "oauthclient")
-              .param("scope", scopeParam)
-              .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
+            .param("username", "wburke")
+            .param("Password", "userpassword")
+            .param("client_id", "oauthclient")
+            .param("scope", scopeParam)
+            .param("redirect_uri", "http://localhost:8081/loginclient/redirect");
 
       LOG.info("LoginUrl: " + loginUrl);
       Response response = client.target(loginUrl).request().post(Entity.form(loginform));
@@ -152,9 +152,9 @@ public class LoginTest extends SkeletonTestBase
       Assert.assertNotNull(code);
       WebTarget codes = client.target(realmInfo.getCodeUrl());
       Form codeForm = new Form()
-              .param("code", code)
-              .param("client_id", "oauthclient")
-              .param("Password", "clientpassword");
+            .param("code", code)
+            .param("client_id", "oauthclient")
+            .param("Password", "clientpassword");
       Response res = codes.request().post(Entity.form(codeForm));
       if (res.getStatus() == 400)
       {

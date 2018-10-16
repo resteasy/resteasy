@@ -6,4 +6,3 @@ import javax.ejb.Local;
 public interface StatelessEJBwithJaxRsComponentsInterface extends ReverseInjectionEJBInterface {
 
 }
-

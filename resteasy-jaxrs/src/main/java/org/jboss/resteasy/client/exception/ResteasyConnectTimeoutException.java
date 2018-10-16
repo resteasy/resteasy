@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyConnectTimeoutException extends ResteasyIOException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyConnectTimeoutException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyConnectTimeoutException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyConnectTimeoutException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyConnectTimeoutException()
+   {
+   }
+
+   public ResteasyConnectTimeoutException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyConnectTimeoutException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyConnectTimeoutException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyConnectTimeoutException(Throwable cause)
+   {
+      super(cause);
+   }
 }

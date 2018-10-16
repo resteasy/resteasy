@@ -9,77 +9,77 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Project implements Serializable {
 
-	private String id;
-	
-	private String name;
-	
-	private String description;
-	
-	private Boolean enabled;
+   private String id;
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
+   private String name;
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
+   private String description;
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+   private Boolean enabled;
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * @return the id
+    */
+   public String getId() {
+      return id;
+   }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+   /**
+    * @param id the id to set
+    */
+   public void setId(String id) {
+      this.id = id;
+   }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+   /**
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
 
-	/**
-	 * @return the enabled
-	 */
-	public Boolean getEnabled() {
-		return enabled;
-	}
+   /**
+    * @param name the name to set
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
 
-	/**
-	 * @param enabled the enabled to set
-	 */
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
+   /**
+    * @return the description
+    */
+   public String getDescription() {
+      return description;
+   }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", description="
-				+ description + ", enabled=" + enabled + "]";
-	}
-	
+   /**
+    * @param description the description to set
+    */
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   /**
+    * @return the enabled
+    */
+   public Boolean getEnabled() {
+      return enabled;
+   }
+
+   /**
+    * @param enabled the enabled to set
+    */
+   public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Project [id=" + id + ", name=" + name + ", description="
+            + description + ", enabled=" + enabled + "]";
+   }
+
 }

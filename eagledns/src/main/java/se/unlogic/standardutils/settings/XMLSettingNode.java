@@ -26,251 +26,251 @@ import java.util.List;
 
 public class XMLSettingNode implements SettingNode {
 
-	private final Element element;
-	private final XPath xpath;
+   private final Element element;
+   private final XPath xpath;
 
 
-	public XMLSettingNode(String path) throws SAXException, IOException, ParserConfigurationException {
+   public XMLSettingNode(String path) throws SAXException, IOException, ParserConfigurationException {
 
-		Document doc = XMLUtils.parseXmlFile(path, false,false);
-		this.element = doc.getDocumentElement();
+      Document doc = XMLUtils.parseXmlFile(path, false,false);
+      this.element = doc.getDocumentElement();
 
-		this.xpath = XPathFactory.newInstance().newXPath();
+      this.xpath = XPathFactory.newInstance().newXPath();
 
-	}
+   }
 
-	public XMLSettingNode(Document doc) {
+   public XMLSettingNode(Document doc) {
 
-		this.element = doc.getDocumentElement();
+      this.element = doc.getDocumentElement();
 
-		this.xpath = XPathFactory.newInstance().newXPath();
-	}
+      this.xpath = XPathFactory.newInstance().newXPath();
+   }
 
-	public XMLSettingNode(Element element) {
+   public XMLSettingNode(Element element) {
 
-		this.element = element;
+      this.element = element;
 
-		this.xpath = XPathFactory.newInstance().newXPath();
+      this.xpath = XPathFactory.newInstance().newXPath();
 
-	}
+   }
 
-	public XMLSettingNode(File configurationFile) throws SAXException, IOException, ParserConfigurationException {
+   public XMLSettingNode(File configurationFile) throws SAXException, IOException, ParserConfigurationException {
 
-		Document doc = XMLUtils.parseXmlFile(configurationFile, false);
-		this.element = doc.getDocumentElement();
+      Document doc = XMLUtils.parseXmlFile(configurationFile, false);
+      this.element = doc.getDocumentElement();
 
-		this.xpath = XPathFactory.newInstance().newXPath();
-	}
+      this.xpath = XPathFactory.newInstance().newXPath();
+   }
 
-	public Boolean getBoolean(String expression) {
+   public Boolean getBoolean(String expression) {
 
-		return Boolean.valueOf(this.getString(expression));
+      return Boolean.valueOf(this.getString(expression));
 
-	}
+   }
 
-	public boolean getPrimitiveBoolean(String expression) {
+   public boolean getPrimitiveBoolean(String expression) {
 
-		return Boolean.parseBoolean(this.getString(expression));
+      return Boolean.parseBoolean(this.getString(expression));
 
-	}
+   }
 
-	public Double getDouble(String expression) {
+   public Double getDouble(String expression) {
 
-		String value = this.getString(expression);
+      String value = this.getString(expression);
 
-		if(value != null){
-			return NumberUtils.toDouble(value);
-		}
+      if(value != null){
+         return NumberUtils.toDouble(value);
+      }
 
-		return null;
+      return null;
 
-	}
+   }
 
-	public List<Double> getDoubles(String expression) {
+   public List<Double> getDoubles(String expression) {
 
-		NodeList nodes = this.getNodeList(expression);
+      NodeList nodes = this.getNodeList(expression);
 
-		List<Double> doubles = new ArrayList<Double>();
+      List<Double> doubles = new ArrayList<Double>();
 
-		for (int i = 0; i < nodes.getLength(); i++) {
+      for (int i = 0; i < nodes.getLength(); i++) {
 
-			String value = nodes.item(i).getTextContent();
+         String value = nodes.item(i).getTextContent();
 
-			if(value != null){
-				Double numberValue = NumberUtils.toDouble(value);
+         if(value != null){
+            Double numberValue = NumberUtils.toDouble(value);
 
-				if(numberValue != null){
-					doubles.add(numberValue);
-				}
-			}
-		}
+            if(numberValue != null){
+               doubles.add(numberValue);
+            }
+         }
+      }
 
-		return doubles;
+      return doubles;
 
-	}
+   }
 
-	public int getInt(String expression) {
+   public int getInt(String expression) {
 
-		String value = this.getString(expression);
+      String value = this.getString(expression);
 
-		if(value != null && NumberUtils.isInt(value)){
-			return NumberUtils.toInt(value);
-		}
+      if(value != null && NumberUtils.isInt(value)){
+         return NumberUtils.toInt(value);
+      }
 
-		return 0;
+      return 0;
 
-	}
+   }
 
-	public Integer getInteger(String expression) {
+   public Integer getInteger(String expression) {
 
-		String value = this.getString(expression);
+      String value = this.getString(expression);
 
-		if(value != null){
-			return NumberUtils.toInt(value);
-		}
+      if(value != null){
+         return NumberUtils.toInt(value);
+      }
 
-		return null;
+      return null;
 
-	}
+   }
 
-	public List<Integer> getIntegers(String expression) {
+   public List<Integer> getIntegers(String expression) {
 
-		NodeList nodes = this.getNodeList(expression);
+      NodeList nodes = this.getNodeList(expression);
 
-		List<Integer> integers = new ArrayList<Integer>();
+      List<Integer> integers = new ArrayList<Integer>();
 
-		for (int i = 0; i < nodes.getLength(); i++) {
+      for (int i = 0; i < nodes.getLength(); i++) {
 
-			String value = nodes.item(i).getTextContent();
+         String value = nodes.item(i).getTextContent();
 
-			if(value != null){
-				Integer numberValue = NumberUtils.toInt(value);
+         if(value != null){
+            Integer numberValue = NumberUtils.toInt(value);
 
-				if(numberValue != null){
-					integers.add(numberValue);
-				}
-			}
-		}
+            if(numberValue != null){
+               integers.add(numberValue);
+            }
+         }
+      }
 
-		return integers;
+      return integers;
 
-	}
+   }
 
-	public Long getLong(String expression) {
+   public Long getLong(String expression) {
 
-		String value = this.getString(expression);
+      String value = this.getString(expression);
 
-		if(value != null){
-			return NumberUtils.toLong(value);
-		}
+      if(value != null){
+         return NumberUtils.toLong(value);
+      }
 
-		return null;
+      return null;
 
-	}
+   }
 
-	public List<Long> getLongs(String expression) {
+   public List<Long> getLongs(String expression) {
 
-		NodeList nodes = this.getNodeList(expression);
+      NodeList nodes = this.getNodeList(expression);
 
-		List<Long> longs = new ArrayList<Long>();
+      List<Long> longs = new ArrayList<Long>();
 
-		for (int i = 0; i < nodes.getLength(); i++) {
+      for (int i = 0; i < nodes.getLength(); i++) {
 
-			String value = nodes.item(i).getTextContent();
+         String value = nodes.item(i).getTextContent();
 
-			if(value != null){
-				Long numberValue = NumberUtils.toLong(value);
+         if(value != null){
+            Long numberValue = NumberUtils.toLong(value);
 
-				if(numberValue != null){
-					longs.add(numberValue);
-				}
-			}
-		}
+            if(numberValue != null){
+               longs.add(numberValue);
+            }
+         }
+      }
 
-		return longs;
+      return longs;
 
-	}
+   }
 
-	public XMLSettingNode getSetting(String expression) {
+   public XMLSettingNode getSetting(String expression) {
 
-		Element element = this.getElement(expression);
+      Element element = this.getElement(expression);
 
-		if(element == null){
-			
-			return null;
-		}
-		
-		return new XMLSettingNode(element);
+      if(element == null){
 
-	}
+         return null;
+      }
 
-	public List<XMLSettingNode> getSettings(String expression) {
+      return new XMLSettingNode(element);
 
-		NodeList nodes = this.getNodeList(expression);
+   }
 
-		List<XMLSettingNode> settingNodes = new ArrayList<XMLSettingNode>();
+   public List<XMLSettingNode> getSettings(String expression) {
 
-		for(int i = 0; i < nodes.getLength(); i++){
+      NodeList nodes = this.getNodeList(expression);
 
-			settingNodes.add(new XMLSettingNode((Element)nodes.item(i)));
+      List<XMLSettingNode> settingNodes = new ArrayList<XMLSettingNode>();
 
-		}
+      for(int i = 0; i < nodes.getLength(); i++){
 
-		return settingNodes;
+         settingNodes.add(new XMLSettingNode((Element)nodes.item(i)));
 
-	}
+      }
 
-	public String getString(String expression) {
+      return settingNodes;
 
-		try {
-			return this.xpath.evaluate(expression, this.element);
-		} catch (XPathExpressionException e) {
-			return null;
-		}
+   }
 
-	}
+   public String getString(String expression) {
 
-	public List<String> getStrings(String expression) {
+      try {
+         return this.xpath.evaluate(expression, this.element);
+      } catch (XPathExpressionException e) {
+         return null;
+      }
 
-		NodeList nodes = this.getNodeList(expression);
+   }
 
-		if(nodes != null && nodes.getLength() > 0){
+   public List<String> getStrings(String expression) {
 
-			List<String> strings = new ArrayList<String>();
-			
-			for (int i = 0; i < nodes.getLength(); i++) {
+      NodeList nodes = this.getNodeList(expression);
 
-				strings.add(nodes.item(i).getTextContent());
+      if(nodes != null && nodes.getLength() > 0){
 
-			}
-			
-			return strings;
-		}
-		
-		return null;
-	}
+         List<String> strings = new ArrayList<String>();
 
-	private NodeList getNodeList(String expression){
+         for (int i = 0; i < nodes.getLength(); i++) {
 
-		try {
-			return (NodeList) this.xpath.evaluate(expression, this.element, XPathConstants.NODESET);
-		} catch(XPathExpressionException e) {
-			return null;
-		}
+            strings.add(nodes.item(i).getTextContent());
 
-	}
+         }
 
-	private Element getElement(String expression){
+         return strings;
+      }
 
-		try {
-			return (Element) this.xpath.evaluate(expression, this.element, XPathConstants.NODE);
-		} catch(XPathExpressionException e) {
-			return null;
-		}
-	}
+      return null;
+   }
 
-	public String getElementName(){
-		
-		return element.getTagName();
-	}
+   private NodeList getNodeList(String expression){
+
+      try {
+         return (NodeList) this.xpath.evaluate(expression, this.element, XPathConstants.NODESET);
+      } catch(XPathExpressionException e) {
+         return null;
+      }
+
+   }
+
+   private Element getElement(String expression){
+
+      try {
+         return (Element) this.xpath.evaluate(expression, this.element, XPathConstants.NODE);
+      } catch(XPathExpressionException e) {
+         return null;
+      }
+   }
+
+   public String getElementName(){
+
+      return element.getTagName();
+   }
 }

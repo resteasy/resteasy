@@ -15,17 +15,17 @@ import java.lang.reflect.Type;
 
 @Consumes("not/real")
 public class ProviderInjectionProviderReader implements MessageBodyReader {
-    @Context
-    public HttpHeaders headers;
+   @Context
+   public HttpHeaders headers;
 
-    @Context
-    public Providers workers;
+   @Context
+   public Providers workers;
 
-    public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return false;
-    }
+   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return false;
+   }
 
-    public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        return null;
-    }
+   public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+      return null;
+   }
 }

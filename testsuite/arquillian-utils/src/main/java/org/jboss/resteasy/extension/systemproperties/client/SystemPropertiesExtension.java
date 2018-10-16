@@ -29,11 +29,11 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
  * @version $Revision: $
  */
 public class SystemPropertiesExtension implements LoadableExtension {
-	@Override
-	public void register(ExtensionBuilder builder) {
-		builder.service(ApplicationArchiveProcessor.class,
-				ArchiveProcessor.class).service(AuxiliaryArchiveAppender.class,
-				ArchiveAppender.class);
-	}
+   @Override
+   public void register(ExtensionBuilder builder) {
+      builder.service(ApplicationArchiveProcessor.class,
+            ArchiveProcessor.class).service(AuxiliaryArchiveAppender.class,
+            ArchiveAppender.class);
+   }
 
 }

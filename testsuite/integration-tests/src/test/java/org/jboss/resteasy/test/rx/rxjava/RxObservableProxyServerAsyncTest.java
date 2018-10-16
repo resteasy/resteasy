@@ -83,8 +83,8 @@ public class RxObservableProxyServerAsyncTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write")
       ), "permissions.xml");
       TestUtilRxJava.addRxJavaLibraries(war);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"

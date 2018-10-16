@@ -89,7 +89,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
 
       public Object postProcessBeforeInitialization(Object bean, String beanName)
-              throws BeansException
+            throws BeansException
       {
          return bean;
       }
@@ -113,7 +113,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
        * @see SpringBeanProcessor#postProcessBeanFactory(ConfigurableListableBeanFactory)
        */
       public Object postProcessAfterInitialization(Object bean, String beanName)
-              throws BeansException
+            throws BeansException
       {
          if (providerNames.contains(beanName))
          {
@@ -255,11 +255,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
     * are created by Spring before any resources by having the resources
     * "depends-on" the @Providers.
     * </p>
-    * 
+    *
     * @param beanFactory bean factory
     */
    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-           throws BeansException
+         throws BeansException
    {
       beanFactory.registerResolvableDependency(Registry.class, getRegistry());
       beanFactory.registerResolvableDependency(ResteasyProviderFactory.class, getProviderFactory());
@@ -275,7 +275,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
          if ( (beanDef.getBeanClassName() != null || beanDef.getFactoryBeanName() != null)
                  && !beanDef.isAbstract())
-             processBean(beanFactory, dependsOnBeans, name, beanDef);
+            processBean(beanFactory, dependsOnBeans, name, beanDef);
       }
 
       dependsOnBeans.addAll(registrations);
@@ -343,11 +343,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
       if(value.getClass() == String.class)
       {
-          return (String) value;
+         return (String) value;
       }
       if(value instanceof BeanReference)
       {
-          return ((BeanReference)value).getBeanName();
+         return ((BeanReference)value).getBeanName();
       }
       throw new IllegalStateException(Messages.MESSAGES.resteasyRegistrationReferences());
    }
@@ -382,7 +382,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
     * @return bean class
     */
    private static Class<?> getBeanClass(String name, BeanDefinition beanDef,
-                                        ConfigurableListableBeanFactory beanFactory)
+                              ConfigurableListableBeanFactory beanFactory)
    {
       if (beanDef instanceof RootBeanDefinition)
       {
@@ -430,13 +430,13 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-          final Class<?> beanClass = getBeanClass(factoryClassName);
-          final Method[] methods = ReflectionUtils.getAllDeclaredMethods(beanClass);
-          for (Method method : methods) {
-              if (method.getName().equals(factoryMethodName)) {
-                  return method.getReturnType();
-              }
-          }
+         final Class<?> beanClass = getBeanClass(factoryClassName);
+         final Method[] methods = ReflectionUtils.getAllDeclaredMethods(beanClass);
+         for (Method method : methods) {
+            if (method.getName().equals(factoryMethodName)) {
+               return method.getReturnType();
+            }
+         }
 
          /*
             https://github.com/resteasy/Resteasy/issues/585
@@ -447,29 +447,29 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             Case in which this tends to happen:
 
             1. A bean (Bean A) exists which provides factoryMethods for retrieving 1 or more other beans (Bean B, Bean C, ...)
-                example: <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean"/>
+            example: <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean"/>
             2. Bean B is retrieved by telling Spring that the Factory-Bean is Bean A and that there is a method X to retrieve Bean B.
-                example: <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
+            example: <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
             3. When resteasy has to inject Bean B it tries to lookup method X on Bean A instead of Bean B using the above code.
 
             As a fix for this, we retrieve the return type for Bean A from the FactoryBean, which later on can be used to retrieve the other beans.
 
-         */
-          if (FactoryBean.class.isAssignableFrom(beanClass)) {
-              String defaultFactoryMethod = "getObject";
-              Class<?> returnType = null;
-              for (Method method : methods) {
-                  if (method.getName().equals(defaultFactoryMethod)) {
-                      returnType = method.getReturnType();
-                      if (returnType != Object.class) {
-                          break;
-                      }
+       */
+         if (FactoryBean.class.isAssignableFrom(beanClass)) {
+            String defaultFactoryMethod = "getObject";
+            Class<?> returnType = null;
+            for (Method method : methods) {
+               if (method.getName().equals(defaultFactoryMethod)) {
+                  returnType = method.getReturnType();
+                  if (returnType != Object.class) {
+                     break;
                   }
-              }
-              if (returnType != null) {
-                  return returnType;
-              }
-          }
+               }
+            }
+            if (returnType != null) {
+               return returnType;
+            }
+         }
       }
 
       throw new IllegalStateException(Messages.MESSAGES.couldNotFindTypeForBean(name));

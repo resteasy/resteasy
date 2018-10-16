@@ -64,8 +64,8 @@ public class RxObservableSSECompatibilityTest {
       WebArchive war = TestUtil.prepareArchive(RxObservableSSECompatibilityTest.class.getSimpleName());
       war.addClass(Thing.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read,write")
-              ),"permissions.xml");
+            new PropertyPermission("*", "read,write")
+            ),"permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxObservableSSECompatibilityResourceImpl.class);
    }

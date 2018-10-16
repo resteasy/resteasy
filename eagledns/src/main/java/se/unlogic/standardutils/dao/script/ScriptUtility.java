@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ScriptUtility {
 
-	List<String> getStatements(String script);
-	
+   List<String> getStatements(String script);
+
 }

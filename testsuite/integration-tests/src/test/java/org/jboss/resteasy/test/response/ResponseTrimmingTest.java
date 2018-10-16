@@ -29,90 +29,90 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ResponseTrimmingTest {
 
-    static Client client;
-    private static String original;
-    private static String trimmed;
-    private static final String DEFAULT = "war_default";
-    private static final String NO_JSON_B = "war_no_json_b";
+   static Client client;
+   private static String original;
+   private static String trimmed;
+   private static final String DEFAULT = "war_default";
+   private static final String NO_JSON_B = "war_no_json_b";
 
-    /**
-     * Prepare deployment with default configuration. JSON-B will be used.
-     */
-    @Deployment(name = DEFAULT)
-    public static Archive<?> deployDefault() {
-        WebArchive war = TestUtil.prepareArchive(DEFAULT);
-        return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
-    }
+   /**
+    * Prepare deployment with default configuration. JSON-B will be used.
+    */
+   @Deployment(name = DEFAULT)
+   public static Archive<?> deployDefault() {
+      WebArchive war = TestUtil.prepareArchive(DEFAULT);
+      return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
+   }
 
-    /**
-     * Prepare deployment with jboss-deployment-structure-no-json-b.xml. Jackson will be used.
-     */
-    @Deployment(name = NO_JSON_B)
-    public static Archive<?> deployNoJsonB() {
-        WebArchive war = TestUtil.prepareArchive(NO_JSON_B);
-        war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
-        return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
-    }
+   /**
+    * Prepare deployment with jboss-deployment-structure-no-json-b.xml. Jackson will be used.
+    */
+   @Deployment(name = NO_JSON_B)
+   public static Archive<?> deployNoJsonB() {
+      WebArchive war = TestUtil.prepareArchive(NO_JSON_B);
+      war.addAsManifestResource("jboss-deployment-structure-no-json-b.xml", "jboss-deployment-structure.xml");
+      return TestUtil.finishContainerPrepare(war, null, ResponseTrimmingResource.class);
+   }
 
-    /**
-     * Prepare string for tests and its trimmed version.
-     */
-    @BeforeClass
-    public static void init() {
-        client = new ResteasyClientBuilder().build();
+   /**
+    * Prepare string for tests and its trimmed version.
+    */
+   @BeforeClass
+   public static void init() {
+      client = new ResteasyClientBuilder().build();
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i <= 1024; i++) {
-            sb.append("A");
-        }
-        original = sb.toString();
+      StringBuilder sb = new StringBuilder();
+      for (int i = 1; i <= 1024; i++) {
+         sb.append("A");
+      }
+      original = sb.toString();
 
-        StringBuilder sb2 = new StringBuilder();
-        for (int i = 1; i <= 256; i++) {
-            sb2.append("A");
-        }
-        trimmed = sb2.toString();
-    }
+      StringBuilder sb2 = new StringBuilder();
+      for (int i = 1; i <= 256; i++) {
+         sb2.append("A");
+      }
+      trimmed = sb2.toString();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Test long error message trimming with JsonB
-     * @tpSince RESTEasy 3.6.1.Final
-     */
-    @Test
-    public void testDefault(){
-        test(DEFAULT);
-    }
+   /**
+    * @tpTestDetails Test long error message trimming with JsonB
+    * @tpSince RESTEasy 3.6.1.Final
+    */
+   @Test
+   public void testDefault(){
+      test(DEFAULT);
+   }
 
-    /**
-     * @tpTestDetails Test long error message trimming with Jackson
-     * @tpSince RESTEasy 3.6.1.Final
-     */
-    @Test
-    public void testNoJsonB(){
-        test(NO_JSON_B);
-    }
+   /**
+    * @tpTestDetails Test long error message trimming with Jackson
+    * @tpSince RESTEasy 3.6.1.Final
+    */
+   @Test
+   public void testNoJsonB(){
+      test(NO_JSON_B);
+   }
 
-    /**
-     * Send long string to the endpoint that expects int so error message is returned in response.
-     * Check that response does not contain full string and has reasonable length.
-     *
-     * @param deployment DEFAULT (use JSON-B) or NO_JSON_B (use Jackson)
-     */
-    private void test(String deployment) {
-        Response response = client.target(PortProviderUtil.generateURL("/json", deployment)).request().post(Entity.entity(original, "application/json"));
-        String responseText = response.readEntity(String.class);
+   /**
+    * Send long string to the endpoint that expects int so error message is returned in response.
+    * Check that response does not contain full string and has reasonable length.
+    *
+    * @param deployment DEFAULT (use JSON-B) or NO_JSON_B (use Jackson)
+    */
+   private void test(String deployment) {
+      Response response = client.target(PortProviderUtil.generateURL("/json", deployment)).request().post(Entity.entity(original, "application/json"));
+      String responseText = response.readEntity(String.class);
 
-        if (deployment.equals(NO_JSON_B)) {
-            Assert.assertTrue("Unrecognized token does not show", responseText.contains(trimmed));
-            Assert.assertFalse("Unrecognized token is not reasonably trimmed", responseText.contains(trimmed.concat("A")));
-        }
-        Assert.assertTrue("Response is longer than 550 characters", responseText.length() <= 550);
+      if (deployment.equals(NO_JSON_B)) {
+         Assert.assertTrue("Unrecognized token does not show", responseText.contains(trimmed));
+         Assert.assertFalse("Unrecognized token is not reasonably trimmed", responseText.contains(trimmed.concat("A")));
+      }
+      Assert.assertTrue("Response is longer than 550 characters", responseText.length() <= 550);
 
-        response.close();
-    }
+      response.close();
+   }
 }

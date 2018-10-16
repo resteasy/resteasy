@@ -28,23 +28,23 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class PrivateConstructorTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(PrivateConstructorTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, PrivateConstructorServiceResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(PrivateConstructorTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, PrivateConstructorServiceResource.class);
+   }
 
-    /**
-     * @tpTestDetails Exception should not be thrown  on WS with a non-public constructor
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMapper() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/test", PrivateConstructorTest.class.getSimpleName()));
-        Response response = base.request().get();
-        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Exception should not be thrown  on WS with a non-public constructor
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMapper() throws Exception {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/test", PrivateConstructorTest.class.getSimpleName()));
+      Response response = base.request().get();
+      Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+      response.close();
+      client.close();
+   }
 }

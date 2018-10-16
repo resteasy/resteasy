@@ -642,7 +642,7 @@ public class ResourceBuilder
                      LogMessages.LOGGER.mediaTypeLacksCharset(mt, method.getMethod().getName());
                   }
                }
-}
+            }
          }
          return this;
       }

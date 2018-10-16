@@ -86,11 +86,11 @@ public class User implements Serializable
    }
 
    /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", name=" + name + ", email=" + email
-				+ ", enabled=" + enabled + "]";
-	}
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "User [id=" + id + ", username=" + username + ", name=" + name + ", email=" + email
+            + ", enabled=" + enabled + "]";
+   }
 }

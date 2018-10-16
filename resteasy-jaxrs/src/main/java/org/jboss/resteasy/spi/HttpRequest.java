@@ -45,7 +45,7 @@ public interface HttpRequest
    /**
     * Updates the object returned by {@link #getUri()}.
     * @param baseUri base uri
-    * @param requestUri request uri 
+    * @param requestUri request uri
     */
    void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
    /**

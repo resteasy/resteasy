@@ -49,69 +49,69 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class EventsTest {
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(EventsTest.class.getSimpleName())
-                .addClass(PortProviderUtil.class)
-                .addClasses(Constants.class, UtilityProducer.class, Utilities.class)
-                .addClasses(EJBBook.class, EventsBookReader.class, EventsBookWriter.class)
-                .addClasses(EventsBookReaderInterceptor.class, EventsBookWriterInterceptor.class)
-                .addClasses(EventResource.class)
-                .addClasses(EventsRead.class, EventsReadIntercept.class)
-                .addClasses(EventsUnused.class, EventsWrite.class, EventsWriteIntercept.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(EventsTest.class.getSimpleName())
+            .addClass(PortProviderUtil.class)
+            .addClasses(Constants.class, UtilityProducer.class, Utilities.class)
+            .addClasses(EJBBook.class, EventsBookReader.class, EventsBookWriter.class)
+            .addClasses(EventsBookReaderInterceptor.class, EventsBookWriterInterceptor.class)
+            .addClasses(EventResource.class)
+            .addClasses(EventsRead.class, EventsReadIntercept.class)
+            .addClasses(EventsUnused.class, EventsWrite.class, EventsWriteIntercept.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, EventsTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, EventsTest.class.getSimpleName());
+   }
 
-    private ResteasyProviderFactory factory;
-    @Before
-    public void setup() {
-        // Create an instance and set it as the singleton to use
-        factory = ResteasyProviderFactory.newInstance();
-        ResteasyProviderFactory.setInstance(factory);
-        RegisterBuiltin.register(factory);
-    }
-    @After
-    public void cleanup() {
-        // Clear the singleton
-        ResteasyProviderFactory.clearInstanceIfEqual(factory);
-    }
+   private ResteasyProviderFactory factory;
+   @Before
+   public void setup() {
+      // Create an instance and set it as the singleton to use
+      factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory.setInstance(factory);
+      RegisterBuiltin.register(factory);
+   }
+   @After
+   public void cleanup() {
+      // Clear the singleton
+      ResteasyProviderFactory.clearInstanceIfEqual(factory);
+   }
 
-    /**
-     * @tpTestDetails Test creating object on resource and retrieving this object again.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testEvents() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Test creating object on resource and retrieving this object again.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testEvents() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        // Create book.
-        WebTarget base = client.target(generateURL("/create/"));
-        EJBBook book = new EJBBook("RESTEasy: the Sequel");
-        Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML_TYPE));
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        int id = response.readEntity(int.class);
-        assertEquals("Received wrong id of stored book", 0, id);
-        response.close();
+      // Create book.
+      WebTarget base = client.target(generateURL("/create/"));
+      EJBBook book = new EJBBook("RESTEasy: the Sequel");
+      Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML_TYPE));
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      int id = response.readEntity(int.class);
+      assertEquals("Received wrong id of stored book", 0, id);
+      response.close();
 
-        // Retrieve book.
-        WebTarget base2 = client.target(generateURL("/book/" + id));
-        Response response2 = base2.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
-        assertEquals(HttpResponseCodes.SC_OK, response2.getStatus());
-        EJBBook result = response2.readEntity(EJBBook.class);
-        assertEquals("Received wrong Book", book, result);
-        response2.close();
+      // Retrieve book.
+      WebTarget base2 = client.target(generateURL("/book/" + id));
+      Response response2 = base2.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
+      assertEquals(HttpResponseCodes.SC_OK, response2.getStatus());
+      EJBBook result = response2.readEntity(EJBBook.class);
+      assertEquals("Received wrong Book", book, result);
+      response2.close();
 
-        // test events
-        WebTarget base3 = client.target(generateURL("/test/"));
-        Response response3 = base3.request().post(Entity.text(new String()));
-        assertEquals(HttpResponseCodes.SC_OK, response3.getStatus());
-        response3.close();
+      // test events
+      WebTarget base3 = client.target(generateURL("/test/"));
+      Response response3 = base3.request().post(Entity.text(new String()));
+      assertEquals(HttpResponseCodes.SC_OK, response3.getStatus());
+      response3.close();
 
-        client.close();
-    }
+      client.close();
+   }
 }

@@ -7,9 +7,9 @@ import java.lang.reflect.Constructor;
  */
 public interface ResourceConstructor
 {
-  ResourceClass getResourceClass();
+   ResourceClass getResourceClass();
 
-  Constructor getConstructor();
+   Constructor getConstructor();
 
-  ConstructorParameter[] getParams();
+   ConstructorParameter[] getParams();
 }

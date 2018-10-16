@@ -172,11 +172,11 @@ public class ServletOAuthLogin
          url = secureUrl.build().toString();
       }
       return realmInfo.getAuthUrl().clone()
-              .queryParam("client_id", realmInfo.getClientId())
-              .queryParam("redirect_uri", url)
-              .queryParam("state", state)
-              .queryParam("login", "true")
-              .build().toString();
+            .queryParam("client_id", realmInfo.getClientId())
+            .queryParam("redirect_uri", url)
+            .queryParam("state", state)
+            .queryParam("login", "true")
+            .build().toString();
    }
 
    protected static final AtomicLong counter = new AtomicLong();
@@ -266,8 +266,8 @@ public class ServletOAuthLogin
       String redirectUri = stripOauthParametersFromRedirect();
       Form form = new Form();
       form.param("grant_type", "authorization_code")
-              .param("code", code)
-              .param("redirect_uri", redirectUri);
+            .param("code", code)
+            .param("redirect_uri", redirectUri);
 
       Response res = realmInfo.getCodeUrl().request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(form));
       AccessTokenResponse tokenResponse;
@@ -312,8 +312,8 @@ public class ServletOAuthLogin
    {
       StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
       UriBuilder builder = UriBuilder.fromUri(buf.toString())
-              .replaceQueryParam("code", null)
-              .replaceQueryParam("state", null);
+            .replaceQueryParam("code", null)
+            .replaceQueryParam("state", null);
       return builder.build().toString();
    }
 

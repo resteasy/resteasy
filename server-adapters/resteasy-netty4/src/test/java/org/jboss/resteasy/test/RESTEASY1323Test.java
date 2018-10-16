@@ -76,8 +76,8 @@ public class RESTEASY1323Test
          try {
             Bootstrap b = new Bootstrap();
             b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<Channel>() {
+               .channel(NioSocketChannel.class)
+               .handler(new ChannelInitializer<Channel>() {
                        @Override
                        protected void initChannel(Channel ch) throws Exception {
                           ch.pipeline().addLast(new HttpClientCodec());
@@ -85,12 +85,12 @@ public class RESTEASY1323Test
                           ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
                              @Override
                              protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) {
-                                responseLatch.countDown();
+                        responseLatch.countDown();
                              }
 
                           });
                        }
-                    });
+               });
 
             // first request;
             URL url = new URL(BASE_URI+"/jaxrs");
@@ -99,7 +99,7 @@ public class RESTEASY1323Test
 
             // Prepare the HTTP request.
             HttpRequest request = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
+               HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
             request.headers().set(HttpHeaderNames.HOST, url.getHost());
             request.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
 
@@ -111,7 +111,7 @@ public class RESTEASY1323Test
             // 2nd request
             URL url2 = new URL(BASE_URI+"/jaxrs/empty");
             HttpRequest request2 = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1, HttpMethod.GET, url2.getFile());
+               HttpVersion.HTTP_1_1, HttpMethod.GET, url2.getFile());
             request2.headers().set(HttpHeaderNames.HOST, url2.getHost());
             request2.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
             ch.writeAndFlush(request2);
@@ -140,8 +140,8 @@ public class RESTEASY1323Test
          b.group(group)
                  .channel(NioSocketChannel.class)
                  .handler(new ChannelInitializer<Channel>() {
-                    @Override
-                    protected void initChannel(Channel ch) throws Exception {
+               @Override
+               protected void initChannel(Channel ch) throws Exception {
                        ch.pipeline().addLast(new HttpClientCodec());
                        ch.pipeline().addLast(new HttpObjectAggregator(4096));
                        ch.pipeline().addLast(new SimpleChannelInboundHandler<FullHttpResponse>() {
@@ -152,7 +152,7 @@ public class RESTEASY1323Test
                           }
 
                        });
-                    }
+               }
                  });
 
          // first request;

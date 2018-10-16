@@ -27,11 +27,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD,ElementType.METHOD})
 public @interface WebPopulate {
 
-	String paramName() default "";
-	boolean required() default false;
-	long maxLength() default 0;
-	long minLength() default 0;
-	String populatorID() default "";
-	boolean trim() default true;
-	Class<? extends BeanStringPopulator<?>> populator() default DummyPopulator.class;
+   String paramName() default "";
+   boolean required() default false;
+   long maxLength() default 0;
+   long minLength() default 0;
+   String populatorID() default "";
+   boolean trim() default true;
+   Class<? extends BeanStringPopulator<?>> populator() default DummyPopulator.class;
 }

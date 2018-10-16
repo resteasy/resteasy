@@ -25,15 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomComplexModelVersionNumber {
 
-    @XmlElement
-    private long value;
+   @XmlElement
+   private long value;
 
-    public long getValue() {
-        return value;
-    }
+   public long getValue() {
+      return value;
+   }
 
-    public void setValue(long uuid) {
-        value = uuid;
-    }
+   public void setValue(long uuid) {
+      value = uuid;
+   }
 
 }

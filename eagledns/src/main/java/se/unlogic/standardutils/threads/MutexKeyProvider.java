@@ -12,37 +12,37 @@ import java.util.WeakHashMap;
 
 public class MutexKeyProvider<T> {
 
-	private final WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>> keyMap = new WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>>();
+   private final WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>> keyMap = new WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>>();
 
-	public MutexKey<T> getKey(T object) {
+   public MutexKey<T> getKey(T object) {
 
-		MutexKey<T> newKey = new MutexKey<T>(object);
+      MutexKey<T> newKey = new MutexKey<T>(object);
 
-		synchronized (keyMap) {
+      synchronized (keyMap) {
 
-			WeakReference<MutexKey<T>> reference = keyMap.get(newKey);
+         WeakReference<MutexKey<T>> reference = keyMap.get(newKey);
 
-			if (reference == null) {
-				return this.addKey(newKey);
-			}
+         if (reference == null) {
+            return this.addKey(newKey);
+         }
 
-			MutexKey<T> currentKey = reference.get();
+         MutexKey<T> currentKey = reference.get();
 
-			if (currentKey == null) {
-				return this.addKey(newKey);
-			}
+         if (currentKey == null) {
+            return this.addKey(newKey);
+         }
 
-			// System.out.println("Returning cached instance of key " + currentKey.getValue() + "[" + this.keyMap.size() + "]");
+         // System.out.println("Returning cached instance of key " + currentKey.getValue() + "[" + this.keyMap.size() + "]");
 
-			return currentKey;
-		}
-	}
+         return currentKey;
+      }
+   }
 
-	private MutexKey<T> addKey(MutexKey<T> key) {
+   private MutexKey<T> addKey(MutexKey<T> key) {
 
-		// System.out.println("\n[mutex] adding id " + key.getValue() + " to mutex map [" + this.keyMap.size() + "]\n");
+      // System.out.println("\n[mutex] adding id " + key.getValue() + " to mutex map [" + this.keyMap.size() + "]\n");
 
-		this.keyMap.put(key, new WeakReference<MutexKey<T>>(key));
-		return key;
-	}
+      this.keyMap.put(key, new WeakReference<MutexKey<T>>(key));
+      return key;
+   }
 }

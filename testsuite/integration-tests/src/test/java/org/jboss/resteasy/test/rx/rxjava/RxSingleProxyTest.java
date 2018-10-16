@@ -74,7 +74,7 @@ public class RxSingleProxyTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read,write")
+            new PropertyPermission("*", "read,write")
       ),"permissions.xml");
       TestUtilRxJava.addRxJavaLibraries(war);
       return TestUtil.finishContainerPrepare(war, null, RxSingleResourceImpl.class, TestExceptionMapper.class);
@@ -215,8 +215,8 @@ public class RxSingleProxyTest {
    public void testHead() throws Exception {
       Single<String> single = proxy.head();
       single.subscribe(
-              (String s) -> {value.set(s); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (String s) -> {value.set(s); latch.countDown();},
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

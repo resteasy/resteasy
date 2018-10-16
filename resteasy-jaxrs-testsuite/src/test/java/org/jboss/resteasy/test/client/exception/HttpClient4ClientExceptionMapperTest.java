@@ -440,7 +440,7 @@ public class HttpClient4ClientExceptionMapperTest
          after();
       }
    }
-     
+      
    @Test
    public void testAlternativeMapperProviderInstance() throws Exception
    {

@@ -35,13 +35,13 @@ public class BadgerMarshaller extends BaseMarshaller
    }
 
    public void marshal(Object o, Result result)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, result);
    }
 
    public void marshal(Object o, File file)
-           throws JAXBException
+         throws JAXBException
    {
       try
       {
@@ -62,56 +62,56 @@ public class BadgerMarshaller extends BaseMarshaller
    }
 
    public void marshal(Object o, Writer writer)
-           throws JAXBException
+         throws JAXBException
    {
       BadgerFishXMLStreamWriter badger = new BadgerFishXMLStreamWriter(writer);
       marshaller.marshal(o, badger);
    }
 
    public void marshal(Object o, ContentHandler contentHandler)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, contentHandler);
    }
 
    public void marshal(Object o, Node node)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, node);
    }
 
    public void marshal(Object o, XMLStreamWriter xmlStreamWriter)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, xmlStreamWriter);
    }
 
    public void marshal(Object o, XMLEventWriter xmlEventWriter)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, xmlEventWriter);
    }
 
    public Node getNode(Object o)
-           throws JAXBException
+         throws JAXBException
    {
       return marshaller.getNode(o);
    }
 
    public Object getProperty(String s)
-           throws PropertyException
+         throws PropertyException
    {
       return marshaller.getProperty(s);
    }
 
    public void setEventHandler(ValidationEventHandler validationEventHandler)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.setEventHandler(validationEventHandler);
    }
 
    public ValidationEventHandler getEventHandler()
-           throws JAXBException
+         throws JAXBException
    {
       return marshaller.getEventHandler();
    }

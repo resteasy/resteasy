@@ -74,7 +74,7 @@ public class TestPortProvider
     *
     * @param path the request path
     * @return a full URL
-    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found 
+    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found
     */
    public static URL createURL(String path) throws MalformedURLException
    {

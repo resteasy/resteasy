@@ -99,7 +99,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       set.add(Entry.class);
       
       if (entry.getAnyOtherJAXBObject() != null) {
-          set.add(entry.getAnyOtherJAXBObject().getClass());
+         set.add(entry.getAnyOtherJAXBObject().getClass());
       }
       if (entry.getContent() != null && entry.getContent().getJAXBObject() != null)
       {

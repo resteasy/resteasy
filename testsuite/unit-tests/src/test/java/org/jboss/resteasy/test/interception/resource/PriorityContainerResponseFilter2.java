@@ -8,8 +8,8 @@ import java.io.IOException;
 
 @Priority(200)
 public class PriorityContainerResponseFilter2 implements ContainerResponseFilter {
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+   @Override
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
 
-    }
+   }
 }

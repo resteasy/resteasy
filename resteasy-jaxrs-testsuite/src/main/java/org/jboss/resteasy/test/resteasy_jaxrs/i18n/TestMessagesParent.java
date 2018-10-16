@@ -36,17 +36,17 @@ abstract public class TestMessagesParent
    
    public boolean before(Locale locale, String filename) throws Exception
    {
-         LOG.info("default locale: " + Locale.getDefault());
-         Locale.setDefault(locale);
-         LOG.info("Set default locale to: " + locale);
-         LOG.info("Messages file: " + filename);
-         InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
-         if (is == null)
-         {
-            return false;
-         }
-         properties.load(is);
-         return getExpectedNumberOfMethods() == properties.size(); 
+      LOG.info("default locale: " + Locale.getDefault());
+      Locale.setDefault(locale);
+      LOG.info("Set default locale to: " + locale);
+      LOG.info("Messages file: " + filename);
+      InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+      if (is == null)
+      {
+         return false;
+      }
+      properties.load(is);
+      return getExpectedNumberOfMethods() == properties.size();
    }
    
    protected String getExpected(String id, String message, Object... args)

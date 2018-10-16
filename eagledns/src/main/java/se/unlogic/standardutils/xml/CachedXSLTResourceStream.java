@@ -17,33 +17,33 @@ import java.io.InputStream;
 
 public class CachedXSLTResourceStream extends CachedXSLTBase{
 
-	private Class<?> resourceClass;
-	private String path;
+   private Class<?> resourceClass;
+   private String path;
 
-	public CachedXSLTResourceStream(Class<?> resourceClass, String path) throws TransformerConfigurationException {
-		this.cacheStyleSheet(resourceClass, path);
-	}
+   public CachedXSLTResourceStream(Class<?> resourceClass, String path) throws TransformerConfigurationException {
+      this.cacheStyleSheet(resourceClass, path);
+   }
 
-	public void reloadStyleSheet() throws TransformerConfigurationException {
-		this.cacheStyleSheet(this.resourceClass,this.path);
-	}
+   public void reloadStyleSheet() throws TransformerConfigurationException {
+      this.cacheStyleSheet(this.resourceClass,this.path);
+   }
 
-	private void cacheStyleSheet(Class<?> resourceClass, String path) throws TransformerConfigurationException{
-		InputStream inputStream = resourceClass.getResourceAsStream(path);
-		Source xsltSource = new StreamSource(inputStream);
-		TransformerFactory transFact = TransformerFactory.newInstance();
-		Templates templates = transFact.newTemplates(xsltSource);
+   private void cacheStyleSheet(Class<?> resourceClass, String path) throws TransformerConfigurationException{
+      InputStream inputStream = resourceClass.getResourceAsStream(path);
+      Source xsltSource = new StreamSource(inputStream);
+      TransformerFactory transFact = TransformerFactory.newInstance();
+      Templates templates = transFact.newTemplates(xsltSource);
 
-		try {inputStream.close();} catch (IOException e) {}
+      try {inputStream.close();} catch (IOException e) {}
 
-		this.templates = templates;
-		this.resourceClass = resourceClass;
-		this.path = path;
-	}
+      this.templates = templates;
+      this.resourceClass = resourceClass;
+      this.path = path;
+   }
 
-	@Override
-	public String toString() {
+   @Override
+   public String toString() {
 
-		return "CachedXSLTResourceStream: " + resourceClass + " " + path;
-	}
+      return "CachedXSLTResourceStream: " + resourceClass + " " + path;
+   }
 }

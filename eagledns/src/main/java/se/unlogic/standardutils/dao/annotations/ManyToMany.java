@@ -18,9 +18,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ManyToMany {
 
-	String linkTable();
-	String keyField() default "";
-	boolean autoGet() default false;
-	boolean autoAdd() default false;
-	boolean autoUpdate() default false;
+   String linkTable();
+   String keyField() default "";
+   boolean autoGet() default false;
+   boolean autoAdd() default false;
+   boolean autoUpdate() default false;
 }

@@ -7,11 +7,11 @@ import javax.ws.rs.Produces;
 
 @Path("/array")
 public interface HeaderParamsAsPrimitivesArrayProxy {
-    @GET
-    @Produces("application/boolean")
-    String doGetBoolean(@HeaderParam("boolean") boolean[] v);
+   @GET
+   @Produces("application/boolean")
+   String doGetBoolean(@HeaderParam("boolean") boolean[] v);
 
-    @GET
-    @Produces("application/short")
-    String doGetShort(@HeaderParam("short") short[] v);
+   @GET
+   @Produces("application/short")
+   String doGetShort(@HeaderParam("short") short[] v);
 }

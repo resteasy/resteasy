@@ -17,50 +17,50 @@ import static org.junit.Assert.assertEquals;
  */
 public class SpringContextLoaderTest {
 
-    private SpringContextLoaderSubclass contextLoader;
+   private SpringContextLoaderSubclass contextLoader;
 
-    @Before
-    public void setupEditor() {
-        contextLoader = new SpringContextLoaderSubclass();
-    }
+   @Before
+   public void setupEditor() {
+      contextLoader = new SpringContextLoaderSubclass();
+   }
 
-    /**
-     * @tpTestDetails Tests that ResteasyDeployment is required for customizeContext() of SpringContextLoader
-     */
-    @Test(expected = RuntimeException.class)
-    public void testThatDeploymentIsRequired() {
-        contextLoader.customizeContext(mockServletContext(null), mockWebApplicationContext());
-    }
+   /**
+    * @tpTestDetails Tests that ResteasyDeployment is required for customizeContext() of SpringContextLoader
+    */
+   @Test(expected = RuntimeException.class)
+   public void testThatDeploymentIsRequired() {
+      contextLoader.customizeContext(mockServletContext(null), mockWebApplicationContext());
+   }
 
-    /**
-     * @tpTestDetails Tests that only one application listener is added for customizeContext() call of SpringContextLoader
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testThatWeAddedAnApplicationListener() {
-        StaticWebApplicationContext context = mockWebApplicationContext();
-        int numListeners = context.getApplicationListeners().size();
-        contextLoader.customizeContext(mockServletContext(someDeployment()), context);
-        int numListenersNow = context.getApplicationListeners().size();
-        assertEquals("Expected to add exactly one new listener; in fact added " + (numListenersNow - numListeners),
-                numListeners + 1, numListenersNow);
-    }
+   /**
+    * @tpTestDetails Tests that only one application listener is added for customizeContext() call of SpringContextLoader
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testThatWeAddedAnApplicationListener() {
+      StaticWebApplicationContext context = mockWebApplicationContext();
+      int numListeners = context.getApplicationListeners().size();
+      contextLoader.customizeContext(mockServletContext(someDeployment()), context);
+      int numListenersNow = context.getApplicationListeners().size();
+      assertEquals("Expected to add exactly one new listener; in fact added " + (numListenersNow - numListeners),
+            numListeners + 1, numListenersNow);
+   }
 
-    private StaticWebApplicationContext mockWebApplicationContext() {
-        return new StaticWebApplicationContext();
-    }
+   private StaticWebApplicationContext mockWebApplicationContext() {
+      return new StaticWebApplicationContext();
+   }
 
-    private ServletContext mockServletContext(ResteasyDeployment deployment) {
-        MockServletContext context = new MockServletContext();
+   private ServletContext mockServletContext(ResteasyDeployment deployment) {
+      MockServletContext context = new MockServletContext();
 
-        if (deployment != null) {
+      if (deployment != null) {
             context.setAttribute(ResteasyDeployment.class.getName(), deployment);
-        }
+      }
 
-        return context;
-    }
+      return context;
+   }
 
-    private ResteasyDeployment someDeployment() {
-        return new ResteasyDeployment();
-    }
+   private ResteasyDeployment someDeployment() {
+      return new ResteasyDeployment();
+   }
 }

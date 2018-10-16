@@ -31,63 +31,63 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class WildcardResourceMatchingTest {
 
-    static Client client;
+   static Client client;
 
-    @Deployment(name = "UriInfoSimpleResource")
-    public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(WildcardResourceMatchingTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, WildcardMatchingResource.class,
+   @Deployment(name = "UriInfoSimpleResource")
+   public static Archive<?> deployUriInfoSimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(WildcardResourceMatchingTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, WildcardMatchingResource.class,
                  WildcardMatchingSubResource.class, WildcardMatchingSubSubResource.class);
-    }
+   }
 
-    @BeforeClass
-    public static void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void cleanup() {
-        client.close();
-    }
+   @AfterClass
+   public static void cleanup() {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, WildcardResourceMatchingTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, WildcardResourceMatchingTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check root resource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMain() {
-        Response response = client.target(generateURL("/main")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingResource", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Check root resource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMain() {
+      Response response = client.target(generateURL("/main")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("WildcardMatchingResource", response.readEntity(String.class));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check sub-resource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMainSub() {
-        Response response = client.target(generateURL("/main/sub")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingSubResource", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Check sub-resource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMainSub() {
+      Response response = client.target(generateURL("/main/sub")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("WildcardMatchingSubResource", response.readEntity(String.class));
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails Check sub-sub-resource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMainSubSub() {
-        Response response = client.target(generateURL("/main/sub/sub")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("WildcardMatchingSubSubResource", response.readEntity(String.class));
-        response.close();
-    }
+   /**
+    * @tpTestDetails Check sub-sub-resource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMainSubSub() {
+      Response response = client.target(generateURL("/main/sub/sub")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("WildcardMatchingSubSubResource", response.readEntity(String.class));
+      response.close();
+   }
 
 }

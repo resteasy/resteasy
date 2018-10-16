@@ -72,7 +72,7 @@ public class RealmResource
 
       UriBuilder auth = uriInfo.getBaseUriBuilder();
       auth.path(TokenManagement.class)
-              .path(TokenManagement.class, "requestAccessCode");
+            .path(TokenManagement.class, "requestAccessCode");
       String authUri = auth.build(realm.getId()).toString();
 
       UriBuilder code = uriInfo.getBaseUriBuilder();
@@ -143,7 +143,7 @@ public class RealmResource
 
       UriBuilder auth = uriInfo.getBaseUriBuilder();
       auth.path(TokenManagement.class)
-              .path(TokenManagement.class, "requestAccessCode");
+            .path(TokenManagement.class, "requestAccessCode");
       rep.setAuthorizationUrl(auth.build(realm.getId()).toString());
 
       UriBuilder code = uriInfo.getBaseUriBuilder();

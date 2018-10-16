@@ -20,6 +20,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface OrderBy{
 
-	Order order() default Order.ASC;
-	int priority() default 0;
+   Order order() default Order.ASC;
+   int priority() default 0;
 }

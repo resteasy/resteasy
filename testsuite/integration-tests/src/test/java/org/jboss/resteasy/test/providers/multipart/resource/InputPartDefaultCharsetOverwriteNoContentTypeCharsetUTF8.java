@@ -15,8 +15,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ServerInterceptor
 public class InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8 implements PreProcessInterceptor {
-    public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, InputPartDefaultCharsetOverwriteTest.UTF_8);
-        return null;
-    }
+   public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
+      request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, InputPartDefaultCharsetOverwriteTest.UTF_8);
+      return null;
+   }
 }

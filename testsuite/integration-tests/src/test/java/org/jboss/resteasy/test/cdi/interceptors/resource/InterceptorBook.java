@@ -19,58 +19,58 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "book")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class InterceptorBook {
-    @XmlElement
-    private int id;
+   @XmlElement
+   private int id;
 
-    @XmlElement
-    @NotNull
-    @Size(min = 1, max = 25)
-    private String name;
+   @XmlElement
+   @NotNull
+   @Size(min = 1, max = 25)
+   private String name;
 
-    public InterceptorBook() {
-    }
+   public InterceptorBook() {
+   }
 
-    public InterceptorBook(final String name) {
-        this.name = name;
-    }
+   public InterceptorBook(final String name) {
+      this.name = name;
+   }
 
-    public InterceptorBook(final int id, final String name) {
-        this.id = id;
-        this.name = name;
-    }
+   public InterceptorBook(final int id, final String name) {
+      this.id = id;
+      this.name = name;
+   }
 
-    @Id
-    public int getId() {
-        return id;
-    }
+   @Id
+   public int getId() {
+      return id;
+   }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+   public void setId(int id) {
+      this.id = id;
+   }
 
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    public String toString() {
-        return "Book[" + id + "," + name + "]";
-    }
+   public String toString() {
+      return "Book[" + id + "," + name + "]";
+   }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || !(o instanceof InterceptorBook)) {
-            return false;
-        }
-        return name.equals(((InterceptorBook) o).name);
-    }
+   @Override
+   public boolean equals(Object o) {
+      if (o == null || !(o instanceof InterceptorBook)) {
+         return false;
+      }
+      return name.equals(((InterceptorBook) o).name);
+   }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
+   @Override
+   public int hashCode() {
+      return super.hashCode();
+   }
 }

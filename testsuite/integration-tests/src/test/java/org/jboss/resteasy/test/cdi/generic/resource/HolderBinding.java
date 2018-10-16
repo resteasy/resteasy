@@ -15,4 +15,3 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, PARAMETER, TYPE})
 public @interface HolderBinding {
 }
-

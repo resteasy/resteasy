@@ -13,6 +13,6 @@ import java.sql.SQLException;
 
 public interface GeneratedKeyCollector {
 
-	void collect(ResultSet rs) throws SQLException;
+   void collect(ResultSet rs) throws SQLException;
 
 }

@@ -420,8 +420,8 @@ public class TokenManagement
          throw new RuntimeException(e);
       }
       String encodedToken = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(privateKey);
+            .content(tokenBytes)
+            .rsa256(privateKey);
 
       AccessTokenResponse res = new AccessTokenResponse();
       res.setToken(encodedToken);
@@ -637,7 +637,7 @@ public class TokenManagement
          error.put("error", "invalid_client");
          error.put("error_description", Messages.MESSAGES.couldNotFindUser());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
-     }
+      }
 
       if (!user.isEnabled())
       {

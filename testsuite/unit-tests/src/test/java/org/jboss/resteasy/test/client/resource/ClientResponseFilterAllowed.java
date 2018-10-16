@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.Set;
 
 public class ClientResponseFilterAllowed implements ClientResponseFilter {
-    @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-        Set<String> allowed = responseContext.getAllowedMethods();
-        Assert.assertTrue(allowed.contains("OPTIONS"));
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+      Set<String> allowed = responseContext.getAllowedMethods();
+      Assert.assertTrue(allowed.contains("OPTIONS"));
+   }
 }

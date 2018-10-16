@@ -7,16 +7,16 @@ import java.io.Serializable;
 @JsonRootName("role")
 public class Role implements Serializable {
 
-	private String id;
-	
-	private String name;
+   private String id;
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
+   private String name;
+
+   /**
+    * @return the id
+    */
+   public String getId() {
+      return id;
+   }
 
    public void setId(String id)
    {
@@ -24,18 +24,18 @@ public class Role implements Serializable {
    }
 
    /**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    * @return the name
+    */
+   public String getName() {
+      return name;
+   }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * @param name the name to set
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
 
    @Override
    public boolean equals(Object o)

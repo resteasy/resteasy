@@ -10,23 +10,23 @@ package se.unlogic.standardutils.populators;
 
 public class PrimitiveBooleanPopulator extends BaseStringPopulator<Boolean> implements BeanStringPopulator<Boolean> {
 
-	public Boolean getValue(String value) {
+   public Boolean getValue(String value) {
 
-		if(value == null || value.equalsIgnoreCase("false")){
-			return false;
-		}else{
-			return true;
-		}
-	}
+      if(value == null || value.equalsIgnoreCase("false")){
+         return false;
+      }else{
+         return true;
+      }
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
+   @Override
+   public boolean validateDefaultFormat(String value) {
 
-		return true;
-	}
+      return true;
+   }
 
-	public Class<? extends Boolean> getType() {
+   public Class<? extends Boolean> getType() {
 
-		return boolean.class;
-	}
+      return boolean.class;
+   }
 }

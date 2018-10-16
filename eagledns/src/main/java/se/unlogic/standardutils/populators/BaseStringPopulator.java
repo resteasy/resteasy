@@ -11,42 +11,42 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public abstract class BaseStringPopulator<T> implements BeanStringPopulator<T> {
 
-	private final String populatorID;
-	private final StringFormatValidator formatValidator;
+   private final String populatorID;
+   private final StringFormatValidator formatValidator;
 
-	public BaseStringPopulator(String populatorID, StringFormatValidator formatValidator) {
-		super();
-		this.populatorID = populatorID;
-		this.formatValidator = formatValidator;
-	}
+   public BaseStringPopulator(String populatorID, StringFormatValidator formatValidator) {
+      super();
+      this.populatorID = populatorID;
+      this.formatValidator = formatValidator;
+   }
 
-	public BaseStringPopulator(String populatorID) {
-		super();
-		this.populatorID = populatorID;
-		this.formatValidator = null;
-	}
+   public BaseStringPopulator(String populatorID) {
+      super();
+      this.populatorID = populatorID;
+      this.formatValidator = null;
+   }
 
-	public BaseStringPopulator() {
-		super();
-		this.populatorID = null;
-		this.formatValidator = null;
-	}
+   public BaseStringPopulator() {
+      super();
+      this.populatorID = null;
+      this.formatValidator = null;
+   }
 
-	public String getPopulatorID() {
-		return populatorID;
-	}
+   public String getPopulatorID() {
+      return populatorID;
+   }
 
-	public final boolean validateFormat(String value) {
+   public final boolean validateFormat(String value) {
 
-		if(formatValidator == null){
+      if(formatValidator == null){
 
-			return this.validateDefaultFormat(value);
+         return this.validateDefaultFormat(value);
 
-		}else{
+      }else{
 
-			return this.formatValidator.validateFormat(value);
-		}
-	}
+         return this.formatValidator.validateFormat(value);
+      }
+   }
 
-	protected abstract boolean validateDefaultFormat(String value);
+   protected abstract boolean validateDefaultFormat(String value);
 }

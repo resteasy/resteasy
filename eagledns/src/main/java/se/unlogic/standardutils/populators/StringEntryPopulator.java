@@ -15,8 +15,8 @@ import java.sql.SQLException;
 
 public class StringEntryPopulator implements BeanResultSetPopulator<SimpleEntry<String, String>> {
 
-	public SimpleEntry<String, String> populate(ResultSet rs) throws SQLException {
+   public SimpleEntry<String, String> populate(ResultSet rs) throws SQLException {
 
-		return new SimpleEntry<String, String>(rs.getString(1),rs.getString(2));
-	}
+      return new SimpleEntry<String, String>(rs.getString(1),rs.getString(2));
+   }
 }

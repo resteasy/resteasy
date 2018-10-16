@@ -9,9 +9,9 @@ import javax.ws.rs.PathParam;
 
 @Path("/boolean/{arg}")
 public class UriParamAsPrimitiveResourceUriBoolean {
-    @GET
-    public String doGet(@PathParam("arg") boolean v) {
-        Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, true, v);
-        return "content";
-    }
+   @GET
+   public String doGet(@PathParam("arg") boolean v) {
+      Assert.assertEquals(UriParamAsPrimitiveTest.ERROR_CODE, true, v);
+      return "content";
+   }
 }

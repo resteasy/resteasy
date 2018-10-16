@@ -174,10 +174,10 @@ public class JSAPIWriter
    }
 
    private void copyResource(String name, PrintWriter writer)
-           throws IOException
+         throws IOException
    {
       Reader reader = new InputStreamReader(getClass()
-              .getResourceAsStream(name));
+            .getResourceAsStream(name));
       char[] array = new char[1024];
       int read;
       while ((read = reader.read(array)) >= 0)
@@ -193,12 +193,12 @@ public class JSAPIWriter
       String uri = methodMetaData.getUri();
       writer.println("// " + httpMethod + " " + uri);
       writer
-              .println(methodMetaData.getFunctionName() + " = function(_params){");
+            .println(methodMetaData.getFunctionName() + " = function(_params){");
       writer.println(" var params = _params ? _params : {};");
       writer.println(" var request = new REST.Request();");
       writer.println(" request.setMethod('" + httpMethod + "');");
       writer
-              .println(" var uri = params.$apiURL ? params.$apiURL : REST.apiURL;");
+            .println(" var uri = params.$apiURL ? params.$apiURL : REST.apiURL;");
       if (uri.contains("{"))
       {
          printURIParams(uri, writer);
@@ -211,7 +211,7 @@ public class JSAPIWriter
       writer.println(" request.setURI(uri);");
       writer.println(" if(params.$username && params.$password)");
       writer
-              .println("  request.setCredentials(params.$username, params.$password);");
+            .println("  request.setCredentials(params.$username, params.$password);");
       writer.println(" if(params.$accepts)");
       writer.println("  request.setAccepts(params.$accepts);");
       if (methodMetaData.getWants() != null)
@@ -234,14 +234,14 @@ public class JSAPIWriter
       writer.println("  request.setContentType(params.$contentType);");
       writer.println(" else");
       writer.println("  request.setContentType('"
-              + methodMetaData.getConsumesMIMEType() + "');");
+            + methodMetaData.getConsumesMIMEType() + "');");
       writer.println(" if(params.$callback){");
       writer.println("  request.execute(params.$callback);");
       writer.println(" }else{");
       writer.println("  var returnValue;");
       writer.println("  request.setAsync(false);");
       writer
-              .println("  var callback = function(httpCode, xmlHttpRequest, value){ returnValue = value;};");
+            .println("  var callback = function(httpCode, xmlHttpRequest, value){ returnValue = value;};");
       writer.println("  request.execute(callback);");
       writer.println("  return returnValue;");
       writer.println(" }");
@@ -309,7 +309,7 @@ public class JSAPIWriter
          if (matcher.start() > i)
          {
             writer.println(" uri += '"
-                    + replacedCurlyURI.substring(i, matcher.start()) + "';");
+               + replacedCurlyURI.substring(i, matcher.start()) + "';");
          }
          String name = matcher.group(1);
          writer.println(" uri += REST.Encoding.encodePathSegment(params." + name + ");");

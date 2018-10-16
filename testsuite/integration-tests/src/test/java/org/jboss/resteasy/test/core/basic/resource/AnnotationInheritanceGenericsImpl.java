@@ -12,44 +12,44 @@ import java.util.Collections;
 @Produces({MediaType.APPLICATION_XML})
 public class AnnotationInheritanceGenericsImpl extends AnnotationInheritanceGenericsAbstract<AnnotationInheritanceGenericsEntity, Long> {
 
-    public static final Long METHOD_ID_INTERFACE_GET_COLLECTION = 1L;
-    public static final Long METHOD_ID_INTERFACE_GET_SINGLE = 2L;
-    public static final Long METHOD_ID_INTERFACE_POST = 3L;
-    public static final Long METHOD_ID_INTERFACE_PUT = 4L;
-    public static final Long METHOD_ID_ABSTRACT_PUT = 5L;
+   public static final Long METHOD_ID_INTERFACE_GET_COLLECTION = 1L;
+   public static final Long METHOD_ID_INTERFACE_GET_SINGLE = 2L;
+   public static final Long METHOD_ID_INTERFACE_POST = 3L;
+   public static final Long METHOD_ID_INTERFACE_PUT = 4L;
+   public static final Long METHOD_ID_ABSTRACT_PUT = 5L;
 
-    @Override
-    public Collection<AnnotationInheritanceGenericsEntity> get() {
-        final AnnotationInheritanceGenericsEntity entity = new AnnotationInheritanceGenericsEntity();
-        entity.setId(METHOD_ID_INTERFACE_GET_COLLECTION);
+   @Override
+   public Collection<AnnotationInheritanceGenericsEntity> get() {
+      final AnnotationInheritanceGenericsEntity entity = new AnnotationInheritanceGenericsEntity();
+      entity.setId(METHOD_ID_INTERFACE_GET_COLLECTION);
 
-        return Collections.singleton(entity);
-    }
+      return Collections.singleton(entity);
+   }
 
-    @Override
-    public AnnotationInheritanceGenericsEntity get(Long id) {
-        final AnnotationInheritanceGenericsEntity entity = new AnnotationInheritanceGenericsEntity();
-        entity.setId(METHOD_ID_INTERFACE_GET_SINGLE);
+   @Override
+   public AnnotationInheritanceGenericsEntity get(Long id) {
+      final AnnotationInheritanceGenericsEntity entity = new AnnotationInheritanceGenericsEntity();
+      entity.setId(METHOD_ID_INTERFACE_GET_SINGLE);
 
-        return entity;
-    }
+      return entity;
+   }
 
-    @Override
-    public AnnotationInheritanceGenericsEntity post(AnnotationInheritanceGenericsEntity entity) {
-        entity.setId(METHOD_ID_INTERFACE_POST);
-        return entity;
-    }
+   @Override
+   public AnnotationInheritanceGenericsEntity post(AnnotationInheritanceGenericsEntity entity) {
+      entity.setId(METHOD_ID_INTERFACE_POST);
+      return entity;
+   }
 
-    @Override
-    public AnnotationInheritanceGenericsEntity put(Long id, AnnotationInheritanceGenericsEntity entity) {
-        entity.setId(METHOD_ID_INTERFACE_PUT);
-        return entity;
-    }
+   @Override
+   public AnnotationInheritanceGenericsEntity put(Long id, AnnotationInheritanceGenericsEntity entity) {
+      entity.setId(METHOD_ID_INTERFACE_PUT);
+      return entity;
+   }
 
-    @Override
-    public AnnotationInheritanceGenericsEntity put(AnnotationInheritanceGenericsEntity entity) {
-        entity.setId(METHOD_ID_ABSTRACT_PUT);
-        return entity;
-    }
+   @Override
+   public AnnotationInheritanceGenericsEntity put(AnnotationInheritanceGenericsEntity entity) {
+      entity.setId(METHOD_ID_ABSTRACT_PUT);
+      return entity;
+   }
 
 }

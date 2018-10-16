@@ -13,21 +13,21 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ServletConfigExceptionMapper implements ExceptionMapper<ServletConfigException> {
-    private ServletConfigApplication application;
-    private ServletConfig servletConfig;
-    private ServletContext context;
+   private ServletConfigApplication application;
+   private ServletConfig servletConfig;
+   private ServletContext context;
 
-    public ServletConfigExceptionMapper(@Context final Application application,
-                                        @Context final ServletConfig servletConfig, @Context final ServletContext context) {
-        this.application = (ServletConfigApplication) application;
-        this.servletConfig = servletConfig;
-        this.context = context;
-        Assert.assertEquals("hello", this.application.getHello());
-        Assert.assertEquals("servlet hello", this.servletConfig.getInitParameter("servlet.greeting"));
-        Assert.assertEquals("context hello", this.context.getInitParameter("context.greeting"));
-    }
+   public ServletConfigExceptionMapper(@Context final Application application,
+                              @Context final ServletConfig servletConfig, @Context final ServletContext context) {
+      this.application = (ServletConfigApplication) application;
+      this.servletConfig = servletConfig;
+      this.context = context;
+      Assert.assertEquals("hello", this.application.getHello());
+      Assert.assertEquals("servlet hello", this.servletConfig.getInitParameter("servlet.greeting"));
+      Assert.assertEquals("context hello", this.context.getInitParameter("context.greeting"));
+   }
 
-    public Response toResponse(ServletConfigException exception) {
-        return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).build();
-    }
+   public Response toResponse(ServletConfigException exception) {
+      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).build();
+   }
 }

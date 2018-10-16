@@ -27,40 +27,40 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 @RunAsClient
 public class XmlEnumParamTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(XmlEnumParamTest.class.getSimpleName());
-        war.addClass(XmlEnumParamTest.class);
-        return TestUtil.finishContainerPrepare(war, null, XmlEnumParamResource.class, XmlEnumParamLocation.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(XmlEnumParamTest.class.getSimpleName());
+      war.addClass(XmlEnumParamTest.class);
+      return TestUtil.finishContainerPrepare(war, null, XmlEnumParamResource.class, XmlEnumParamLocation.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, XmlEnumParamTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, XmlEnumParamTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests xml enum param in the resource
-     * @tpPassCrit The expected enum type is returned
-     * @tpInfo RESTEASY-428
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testXmlEnumParam() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/enum"));
-        String response = target.queryParam("loc", "north").request().get(String.class);
-        Assert.assertEquals("The response doesn't contain expected enum type", "NORTH", response.toUpperCase());
-    }
+   /**
+    * @tpTestDetails Tests xml enum param in the resource
+    * @tpPassCrit The expected enum type is returned
+    * @tpInfo RESTEASY-428
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testXmlEnumParam() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/enum"));
+      String response = target.queryParam("loc", "north").request().get(String.class);
+      Assert.assertEquals("The response doesn't contain expected enum type", "NORTH", response.toUpperCase());
+   }
 
 }

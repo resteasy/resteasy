@@ -1,31 +1,31 @@
 package org.jboss.resteasy.test.providers.jackson.resource;
 
 public class JacksonProduct {
-    protected String name;
+   protected String name;
 
-    protected int id;
+   protected int id;
 
-    public JacksonProduct() {
-    }
+   public JacksonProduct() {
+   }
 
-    public JacksonProduct(final int id, final String name) {
-        this.id = id;
-        this.name = name;
-    }
+   public JacksonProduct(final int id, final String name) {
+      this.id = id;
+      this.name = name;
+   }
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    public int getId() {
-        return id;
-    }
+   public int getId() {
+      return id;
+   }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+   public void setId(int id) {
+      this.id = id;
+   }
 }

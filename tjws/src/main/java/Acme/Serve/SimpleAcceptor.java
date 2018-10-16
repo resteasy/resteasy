@@ -55,7 +55,7 @@ public class SimpleAcceptor implements Serve.Acceptor
    public void init(Map inProperties, Map outProperties) throws IOException
    {
       int port = inProperties.get(Serve.ARG_PORT) != null ? ((Integer) inProperties.get(Serve.ARG_PORT)).intValue()
-              : Serve.DEF_PORT;
+            : Serve.DEF_PORT;
       String bindAddrStr = (String) inProperties.get(Serve.ARG_BINDADDRESS);
       InetSocketAddress bindAddr = bindAddrStr != null ? new InetSocketAddress(InetAddress.getByName(bindAddrStr), port) : null;
       String backlogStr = (String) inProperties.get(Serve.ARG_BACKLOG);

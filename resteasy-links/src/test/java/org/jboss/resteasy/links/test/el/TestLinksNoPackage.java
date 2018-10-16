@@ -53,60 +53,60 @@ public class TestLinksNoPackage
       dispatcher = null;
    }
 
-	@Parameters
-	public static List<Class<?>[]> getParameters(){
-		List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
-		classes.add(new Class<?>[]{BookStoreNoPackage.class});
-		return classes;
-	}
+   @Parameters
+   public static List<Class<?>[]> getParameters(){
+      List<Class<?>[]> classes = new ArrayList<Class<?>[]>();
+      classes.add(new Class<?>[]{BookStoreNoPackage.class});
+      return classes;
+   }
 
-	private Class<?> resourceType;
-	private String url;
-	private BookStoreService client;
-	private HttpClient httpClient;
-	
-	public TestLinksNoPackage(Class<?> resourceType){
-		this.resourceType = resourceType;
-	}
-	
-	@Before
-	public void before(){
-		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
-		url = generateBaseUrl();
-		client = ProxyFactory.create(BookStoreService.class, url,
-					executor);
-	}
+   private Class<?> resourceType;
+   private String url;
+   private BookStoreService client;
+   private HttpClient httpClient;
 
-	@After
-	public void after(){
-		// TJWS does not support chunk encodings well so I need to kill kept
-		// alive connections
-		httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
-		dispatcher.getRegistry().removeRegistrations(resourceType);
-	}
-	
-	@Test
-	public void testELWorksWithoutPackage() throws Exception
-	{
-		Book book = client.getBookXML("foo");
-		checkBookLinks1(url, book);
-		book = client.getBookJSON("foo");
-		checkBookLinks1(url, book);
-	}
+   public TestLinksNoPackage(Class<?> resourceType){
+      this.resourceType = resourceType;
+   }
 
-	private void checkBookLinks1(String url, Book book) {
-		Assert.assertNotNull(book);
-		Assert.assertEquals("foo", book.getTitle());
-		Assert.assertEquals("bar", book.getAuthor());
-		RESTServiceDiscovery links = book.getRest();
-		Assert.assertNotNull(links);
-		Assert.assertEquals(1, links.size());
-		// self
-		AtomLink atomLink = links.getLinkForRel("self");
-		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo", atomLink.getHref());
-	}
+   @Before
+   public void before(){
+      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      httpClient = new DefaultHttpClient();
+      ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+      url = generateBaseUrl();
+      client = ProxyFactory.create(BookStoreService.class, url,
+               executor);
+   }
+
+   @After
+   public void after(){
+      // TJWS does not support chunk encodings well so I need to kill kept
+      // alive connections
+      httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+      dispatcher.getRegistry().removeRegistrations(resourceType);
+   }
+
+   @Test
+   public void testELWorksWithoutPackage() throws Exception
+   {
+      Book book = client.getBookXML("foo");
+      checkBookLinks1(url, book);
+      book = client.getBookJSON("foo");
+      checkBookLinks1(url, book);
+   }
+
+   private void checkBookLinks1(String url, Book book) {
+      Assert.assertNotNull(book);
+      Assert.assertEquals("foo", book.getTitle());
+      Assert.assertEquals("bar", book.getAuthor());
+      RESTServiceDiscovery links = book.getRest();
+      Assert.assertNotNull(links);
+      Assert.assertEquals(1, links.size());
+      // self
+      AtomLink atomLink = links.getLinkForRel("self");
+      Assert.assertNotNull(atomLink);
+      Assert.assertEquals(url+"/book/foo", atomLink.getHref());
+   }
 }

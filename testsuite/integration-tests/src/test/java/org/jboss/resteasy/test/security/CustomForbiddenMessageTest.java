@@ -48,65 +48,65 @@ import java.util.Hashtable;
 @Category({NotForForwardCompatibility.class})
 public class CustomForbiddenMessageTest {
 
-    private static ResteasyClient authorizedClient;
+   private static ResteasyClient authorizedClient;
 
-    private static final String ACCESS_FORBIDDEN_MESSAGE = "My custom message from CustomForbiddenMessageExceptionMapper: Access forbidden: role not allowed";
+   private static final String ACCESS_FORBIDDEN_MESSAGE = "My custom message from CustomForbiddenMessageExceptionMapper: Access forbidden: role not allowed";
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(CustomForbiddenMessageTest.class.getSimpleName());
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(CustomForbiddenMessageTest.class.getSimpleName());
 
-        Hashtable<String, String> contextParams = new Hashtable<String, String>();
-        contextParams.put("resteasy.role.based.security", "true");
+      Hashtable<String, String> contextParams = new Hashtable<String, String>();
+      contextParams.put("resteasy.role.based.security", "true");
 
-        war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
-                .addAsWebInfResource(BasicAuthTest.class.getPackage(), "web.xml", "/web.xml");
+      war.addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
+            .addAsWebInfResource(BasicAuthTest.class.getPackage(), "web.xml", "/web.xml");
 
-        return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class, CustomForbiddenMessageExceptionMapper.class);
-    }
+      return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class, CustomForbiddenMessageExceptionMapper.class);
+   }
 
-    @BeforeClass
-    public static void init() {
-        // authorizedClient
-        {
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
-            CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-            ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
-            authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
-        }
-    }
+   @BeforeClass
+   public static void init() {
+      // authorizedClient
+      {
+         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
+         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+         credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+         CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+         ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client);
+         authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+      }
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
-        authorizedClient.close();
-    }
+   @AfterClass
+   public static void after() throws Exception {
+      authorizedClient.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CustomForbiddenMessageTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CustomForbiddenMessageTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Tests custom message from custom ExceptionMapper
-     * @tpSince RESTEasy 3.0.21.Final
-     */
-    @Test
-    public void testCustomExceptionMapper() throws Exception {
-        Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
-        String ct = response.getHeaderString("Content-Type");
-        Assert.assertEquals("text/plain;charset=UTF-8", ct);
-    }
+   /**
+    * @tpTestDetails Tests custom message from custom ExceptionMapper
+    * @tpSince RESTEasy 3.0.21.Final
+    */
+   @Test
+   public void testCustomExceptionMapper() throws Exception {
+      Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+      Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+      String ct = response.getHeaderString("Content-Type");
+      Assert.assertEquals("text/plain;charset=UTF-8", ct);
+   }
 
-    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
+   static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
 
-        @Override
-        public void setConfigurationPath() throws URISyntaxException {
-            Path filepath= Paths.get(CustomForbiddenMessageTest.class.getResource("users.properties").toURI());
-            Path parent = filepath.getParent();
-            createPropertiesFiles(new File(parent.toUri()));
-        }
-    }
+      @Override
+      public void setConfigurationPath() throws URISyntaxException {
+         Path filepath= Paths.get(CustomForbiddenMessageTest.class.getResource("users.properties").toURI());
+         Path parent = filepath.getParent();
+         createPropertiesFiles(new File(parent.toUri()));
+      }
+   }
 }

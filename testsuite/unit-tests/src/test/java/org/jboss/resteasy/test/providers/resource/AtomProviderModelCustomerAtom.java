@@ -12,17 +12,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "customer", namespace = "http://jboss.org/Customer")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomProviderModelCustomerAtom {
-    @XmlElement
-    private String name;
+   @XmlElement
+   private String name;
 
-    public AtomProviderModelCustomerAtom() {
-    }
+   public AtomProviderModelCustomerAtom() {
+   }
 
-    public AtomProviderModelCustomerAtom(final String name) {
-        this.name = name;
-    }
+   public AtomProviderModelCustomerAtom(final String name) {
+      this.name = name;
+   }
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 }

@@ -12,26 +12,26 @@ import java.util.Map;
  */
 public class ResteasyWadlServletWriter extends ResteasyWadlWriter {
 
-    public void writeWadl(String base, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
-            throws IOException {
-        try {
-            ServletOutputStream output = resp.getOutputStream();
+   public void writeWadl(String base, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
+         throws IOException {
+      try {
+         ServletOutputStream output = resp.getOutputStream();
 
-            byte[] bytes = getBytes(base, serviceRegistries);
-            resp.setContentLength(bytes.length);
-            output.write(bytes);
-            output.flush();
-            output.close();
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        }
-    }
+         byte[] bytes = getBytes(base, serviceRegistries);
+         resp.setContentLength(bytes.length);
+         output.write(bytes);
+         output.flush();
+         output.close();
+      } catch (JAXBException e) {
+         throw new IOException(e);
+      }
+   }
 
 
-    public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
-            throws IOException {
-        writeWadl(base, resp, serviceRegistries);
-    }
+   public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
+         throws IOException {
+      writeWadl(base, resp, serviceRegistries);
+   }
 
 
 }

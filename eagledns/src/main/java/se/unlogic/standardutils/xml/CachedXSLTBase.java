@@ -14,10 +14,10 @@ import javax.xml.transform.TransformerConfigurationException;
 
 public abstract class CachedXSLTBase implements CachedXSLT {
 
-	protected Templates templates;
+   protected Templates templates;
 
-	public Transformer getTransformer() throws TransformerConfigurationException {
+   public Transformer getTransformer() throws TransformerConfigurationException {
 
-		return templates.newTransformer();
-	}
+      return templates.newTransformer();
+   }
 }

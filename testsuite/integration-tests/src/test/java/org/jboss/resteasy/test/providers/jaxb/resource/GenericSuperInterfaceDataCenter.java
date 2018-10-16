@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class GenericSuperInterfaceDataCenter extends GenericSuperInterfaceBaseResource {
-    private String name;
+   private String name;
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 }

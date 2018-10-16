@@ -34,46 +34,46 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class AppConfigTest {
 
-    private static ResteasyClient client;
+   private static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, AppConfigTest.class.getSimpleName() + ".war");
-        war.addClass(AppConfigResources.class);
-        war.addClass(AppConfigApplication.class);
-        war.addAsWebInfResource(AppConfigTest.class.getPackage(), "AppConfigWeb.xml", "web.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = ShrinkWrap.create(WebArchive.class, AppConfigTest.class.getSimpleName() + ".war");
+      war.addClass(AppConfigResources.class);
+      war.addClass(AppConfigApplication.class);
+      war.addAsWebInfResource(AppConfigTest.class.getPackage(), "AppConfigWeb.xml", "web.xml");
+      return war;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, AppConfigTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, AppConfigTest.class.getSimpleName());
+   }
 
-    @Before
-    public void setup() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void setup() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Test for apache client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void apacheClient() throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(generateURL("/my"));
-        CloseableHttpResponse response1 = httpclient.execute(httpGet);
+   /**
+    * @tpTestDetails Test for apache client
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void apacheClient() throws Exception {
+      CloseableHttpClient httpclient = HttpClients.createDefault();
+      HttpGet httpGet = new HttpGet(generateURL("/my"));
+      CloseableHttpResponse response1 = httpclient.execute(httpGet);
 
-        try {
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response1.getStatusLine().getStatusCode());
-            Assert.assertEquals("\"hello\"", TestUtil.readString(response1.getEntity().getContent()));
-        } finally {
-            response1.close();
-        }
-    }
+      try {
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response1.getStatusLine().getStatusCode());
+         Assert.assertEquals("\"hello\"", TestUtil.readString(response1.getEntity().getContent()));
+      } finally {
+         response1.close();
+      }
+   }
 }

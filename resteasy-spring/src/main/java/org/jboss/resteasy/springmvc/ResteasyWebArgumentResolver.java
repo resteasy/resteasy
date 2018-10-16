@@ -49,7 +49,7 @@ public class ResteasyWebArgumentResolver implements WebArgumentResolver
                                  NativeWebRequest webRequest) throws Exception
    {
       HttpServletRequest servletRequest = (HttpServletRequest) webRequest
-              .getNativeRequest();
+            .getNativeRequest();
       Object[] parameterAnnotations = methodParameter.getParameterAnnotations();
       for (int i = 0; i < parameterAnnotations.length; i++)
       {
@@ -71,25 +71,25 @@ public class ResteasyWebArgumentResolver implements WebArgumentResolver
             String contentType = servletRequest.getContentType();
             MediaType mediaType = MediaType.valueOf(contentType);
             MessageBodyReader reader = factory.getMessageBodyReader(type,
-                    genericType, annotations, mediaType);
+               genericType, annotations, mediaType);
             if (reader == null)
                throw new BadRequestException(Messages.MESSAGES.couldNotFindMessageBodyReader(genericType, mediaType));
             return reader.readFrom(type, genericType, annotations, mediaType,
-                    request.getHttpHeaders().getRequestHeaders(), request
-                            .getInputStream());
+               request.getHttpHeaders().getRequestHeaders(), request
+                     .getInputStream());
          }
          else if (isCookie)
          {
             CookieParam cookieParam = (CookieParam) annotation;
             DefaultValue defaultValue = FindAnnotation.findAnnotation(
-                    annotations, DefaultValue.class);
+               annotations, DefaultValue.class);
             String defaultVal = null;
             if (defaultValue != null)
                defaultVal = defaultValue.value();
 
             return new CookieParamInjector(type, genericType, method,
-                    cookieParam.value(), defaultVal, annotations, factory).inject(request,
-                    null);
+               cookieParam.value(), defaultVal, annotations, factory).inject(request,
+               null);
          }
       }
       return null;

@@ -28,32 +28,32 @@ import javax.ws.rs.NotAuthorizedException;
 @RunAsClient
 public class UnauthorizedExceptionTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(UnauthorizedExceptionTest.class.getSimpleName());
-        war.addClass(UnauthorizedExceptionInterface.class);
-        return TestUtil.finishContainerPrepare(war, null, UnauthorizedExceptionResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(UnauthorizedExceptionTest.class.getSimpleName());
+      war.addClass(UnauthorizedExceptionInterface.class);
+      return TestUtil.finishContainerPrepare(war, null, UnauthorizedExceptionResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, UnauthorizedExceptionTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, UnauthorizedExceptionTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check thrown exception on client side.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testMe() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        UnauthorizedExceptionInterface proxy = client.target(generateURL("")).proxy(UnauthorizedExceptionInterface.class);
-        try {
+   /**
+    * @tpTestDetails Check thrown exception on client side.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testMe() throws Exception {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      UnauthorizedExceptionInterface proxy = client.target(generateURL("")).proxy(UnauthorizedExceptionInterface.class);
+      try {
             proxy.postIt("hello");
             Assert.fail();
-        } catch (NotAuthorizedException e) {
+      } catch (NotAuthorizedException e) {
             Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, e.getResponse().getStatus());
-        }
-        client.close();
-    }
+      }
+      client.close();
+   }
 
 }

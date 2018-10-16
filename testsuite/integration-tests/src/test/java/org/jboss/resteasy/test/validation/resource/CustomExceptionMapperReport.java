@@ -7,49 +7,49 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "testReport")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CustomExceptionMapperReport {
-    private int fieldViolations;
-    private int propertyViolations;
-    private int classViolations;
-    private int parameterViolations;
-    private int returnValueViolations;
+   private int fieldViolations;
+   private int propertyViolations;
+   private int classViolations;
+   private int parameterViolations;
+   private int returnValueViolations;
 
-    public int getFieldViolations() {
-        return fieldViolations;
-    }
+   public int getFieldViolations() {
+      return fieldViolations;
+   }
 
-    public void setFieldViolations(int fieldViolations) {
-        this.fieldViolations = fieldViolations;
-    }
+   public void setFieldViolations(int fieldViolations) {
+      this.fieldViolations = fieldViolations;
+   }
 
-    public int getPropertyViolations() {
-        return propertyViolations;
-    }
+   public int getPropertyViolations() {
+      return propertyViolations;
+   }
 
-    public void setPropertyViolations(int propertyViolations) {
-        this.propertyViolations = propertyViolations;
-    }
+   public void setPropertyViolations(int propertyViolations) {
+      this.propertyViolations = propertyViolations;
+   }
 
-    public int getClassViolations() {
-        return classViolations;
-    }
+   public int getClassViolations() {
+      return classViolations;
+   }
 
-    public void setClassViolations(int classViolations) {
-        this.classViolations = classViolations;
-    }
+   public void setClassViolations(int classViolations) {
+      this.classViolations = classViolations;
+   }
 
-    public int getParameterViolations() {
-        return parameterViolations;
-    }
+   public int getParameterViolations() {
+      return parameterViolations;
+   }
 
-    public void setParameterViolations(int parameterViolations) {
-        this.parameterViolations = parameterViolations;
-    }
+   public void setParameterViolations(int parameterViolations) {
+      this.parameterViolations = parameterViolations;
+   }
 
-    public int getReturnValueViolations() {
-        return returnValueViolations;
-    }
+   public int getReturnValueViolations() {
+      return returnValueViolations;
+   }
 
-    public void setReturnValueViolations(int returnValueViolations) {
-        this.returnValueViolations = returnValueViolations;
-    }
+   public void setReturnValueViolations(int returnValueViolations) {
+      this.returnValueViolations = returnValueViolations;
+   }
 }

@@ -44,11 +44,11 @@ public class PublisherResponseRawStreamTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(PublisherResponseRawStreamTest.class.getSimpleName());
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
+            + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write"),
-              new RuntimePermission("modifyThread")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write"),
+            new RuntimePermission("modifyThread")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseRawStreamResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);

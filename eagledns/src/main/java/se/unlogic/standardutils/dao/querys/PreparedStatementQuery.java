@@ -27,527 +27,527 @@ import java.util.Calendar;
 
 public abstract class PreparedStatementQuery {
 
-	protected Connection connection;
-	protected boolean closeConnectionOnExit;
-	protected PreparedStatement pstmt;
-	protected boolean closed;
+   protected Connection connection;
+   protected boolean closeConnectionOnExit;
+   protected PreparedStatement pstmt;
+   protected boolean closed;
 
-	public PreparedStatementQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
-		this.closeConnectionOnExit = closeConnectionOnExit;
-		this.connection = connection;
+   public PreparedStatementQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
+      this.closeConnectionOnExit = closeConnectionOnExit;
+      this.connection = connection;
 
-		try {
-			this.pstmt = this.getPreparedStatement(query);
-		} catch (SQLException e) {
+      try {
+         this.pstmt = this.getPreparedStatement(query);
+      } catch (SQLException e) {
 
-			this.abort();
+         this.abort();
 
-			throw e;
-		}
-	}
+         throw e;
+      }
+   }
 
-	protected PreparedStatement getPreparedStatement(String query) throws SQLException {
+   protected PreparedStatement getPreparedStatement(String query) throws SQLException {
 
-		return connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-	}
+      return connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+   }
 
-	public PreparedStatementQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
-		this(dataSource.getConnection(), closeConnectionOnExit, query);
-	}
+   public PreparedStatementQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
+      this(dataSource.getConnection(), closeConnectionOnExit, query);
+   }
 
-	public void setArray(int arg0, java.sql.Array arg1) throws SQLException {
+   public void setArray(int arg0, java.sql.Array arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setArray(arg0, arg1);
+         pstmt.setArray(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setAsciiStream(int arg0, InputStream arg1, int arg2) throws SQLException {
+   public void setAsciiStream(int arg0, InputStream arg1, int arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setAsciiStream(arg0, arg1, arg2);
+         pstmt.setAsciiStream(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
+   public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setBigDecimal(arg0, arg1);
+         pstmt.setBigDecimal(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setBinaryStream(int arg0, InputStream arg1, int arg2) throws SQLException {
+   public void setBinaryStream(int arg0, InputStream arg1, int arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setBinaryStream(arg0, arg1, arg2);
+         pstmt.setBinaryStream(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setBlob(int arg0, Blob arg1) throws SQLException {
+   public void setBlob(int arg0, Blob arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setBlob(arg0, arg1);
+         pstmt.setBlob(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setBoolean(int arg0, boolean arg1) throws SQLException {
+   public void setBoolean(int arg0, boolean arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setBoolean(arg0, arg1);
+         pstmt.setBoolean(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setByte(int arg0, byte arg1) throws SQLException {
+   public void setByte(int arg0, byte arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setByte(arg0, arg1);
+         pstmt.setByte(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setBytes(int arg0, byte[] arg1) throws SQLException {
+   public void setBytes(int arg0, byte[] arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setBytes(arg0, arg1);
+         pstmt.setBytes(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setCharacterStream(int arg0, Reader arg1, int arg2) throws SQLException {
+   public void setCharacterStream(int arg0, Reader arg1, int arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setCharacterStream(arg0, arg1, arg2);
+         pstmt.setCharacterStream(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setClob(int arg0, Clob arg1) throws SQLException {
+   public void setClob(int arg0, Clob arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setClob(arg0, arg1);
+         pstmt.setClob(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setCursorName(String arg0) throws SQLException {
+   public void setCursorName(String arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setCursorName(arg0);
+         pstmt.setCursorName(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException {
+   public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setDate(arg0, arg1, arg2);
+         pstmt.setDate(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setDate(int arg0, Date arg1) throws SQLException {
+   public void setDate(int arg0, Date arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setDate(arg0, arg1);
+         pstmt.setDate(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setDouble(int arg0, double arg1) throws SQLException {
+   public void setDouble(int arg0, double arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setDouble(arg0, arg1);
+         pstmt.setDouble(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setEscapeProcessing(boolean arg0) throws SQLException {
+   public void setEscapeProcessing(boolean arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setEscapeProcessing(arg0);
+         pstmt.setEscapeProcessing(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setFetchDirection(int arg0) throws SQLException {
+   public void setFetchDirection(int arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setFetchDirection(arg0);
+         pstmt.setFetchDirection(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setFetchSize(int arg0) throws SQLException {
+   public void setFetchSize(int arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setFetchSize(arg0);
+         pstmt.setFetchSize(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setFloat(int arg0, float arg1) throws SQLException {
+   public void setFloat(int arg0, float arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setFloat(arg0, arg1);
+         pstmt.setFloat(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setInt(int arg0, int arg1) throws SQLException {
+   public void setInt(int arg0, int arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setInt(arg0, arg1);
+         pstmt.setInt(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setLong(int arg0, long arg1) throws SQLException {
+   public void setLong(int arg0, long arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setLong(arg0, arg1);
+         pstmt.setLong(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setMaxFieldSize(int arg0) throws SQLException {
+   public void setMaxFieldSize(int arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setMaxFieldSize(arg0);
+         pstmt.setMaxFieldSize(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setMaxRows(int arg0) throws SQLException {
+   public void setMaxRows(int arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setMaxRows(arg0);
+         pstmt.setMaxRows(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setNull(int arg0, int arg1, String arg2) throws SQLException {
+   public void setNull(int arg0, int arg1, String arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setNull(arg0, arg1, arg2);
+         pstmt.setNull(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setNull(int arg0, int arg1) throws SQLException {
+   public void setNull(int arg0, int arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setNull(arg0, arg1);
+         pstmt.setNull(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setObject(int arg0, Object arg1, int arg2, int arg3) throws SQLException {
+   public void setObject(int arg0, Object arg1, int arg2, int arg3) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setObject(arg0, arg1, arg2, arg3);
+         pstmt.setObject(arg0, arg1, arg2, arg3);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
+   public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setObject(arg0, arg1, arg2);
+         pstmt.setObject(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setObject(int arg0, Object arg1) throws SQLException {
+   public void setObject(int arg0, Object arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setObject(arg0, arg1);
+         pstmt.setObject(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setQueryTimeout(int arg0) throws SQLException {
+   public void setQueryTimeout(int arg0) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setQueryTimeout(arg0);
+         pstmt.setQueryTimeout(arg0);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setRef(int arg0, Ref arg1) throws SQLException {
+   public void setRef(int arg0, Ref arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setRef(arg0, arg1);
+         pstmt.setRef(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setShort(int arg0, short arg1) throws SQLException {
+   public void setShort(int arg0, short arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setShort(arg0, arg1);
+         pstmt.setShort(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setString(int arg0, String arg1) throws SQLException {
+   public void setString(int arg0, String arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setString(arg0, arg1);
+         pstmt.setString(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setTime(int arg0, Time arg1, Calendar arg2) throws SQLException {
+   public void setTime(int arg0, Time arg1, Calendar arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setTime(arg0, arg1, arg2);
+         pstmt.setTime(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setTime(int arg0, Time arg1) throws SQLException {
+   public void setTime(int arg0, Time arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setTime(arg0, arg1);
+         pstmt.setTime(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setTimestamp(int arg0, Timestamp arg1, Calendar arg2) throws SQLException {
+   public void setTimestamp(int arg0, Timestamp arg1, Calendar arg2) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setTimestamp(arg0, arg1, arg2);
+         pstmt.setTimestamp(arg0, arg1, arg2);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
+   public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setTimestamp(arg0, arg1);
+         pstmt.setTimestamp(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public void setURL(int arg0, URL arg1) throws SQLException {
+   public void setURL(int arg0, URL arg1) throws SQLException {
 
-		try {
+      try {
 
-			pstmt.setURL(arg0, arg1);
+         pstmt.setURL(arg0, arg1);
 
-		} catch (SQLException e) {
+      } catch (SQLException e) {
 
-			this.abort();
-			throw e;
-		}
-	}
+         this.abort();
+         throw e;
+      }
+   }
 
-	public boolean isCloseConnectionOnExit() {
-		return closeConnectionOnExit;
-	}
+   public boolean isCloseConnectionOnExit() {
+      return closeConnectionOnExit;
+   }
 
-	public void abort() {
+   public void abort() {
 
-		DBUtils.closePreparedStatement(pstmt);
+      DBUtils.closePreparedStatement(pstmt);
 
-		if (this.closeConnectionOnExit) {
+      if (this.closeConnectionOnExit) {
 
-			DBUtils.closeConnection(connection);
-		}
+         DBUtils.closeConnection(connection);
+      }
 
-		this.closed = true;
-	}
+      this.closed = true;
+   }
 
-	public static void autoCloseQuery(PreparedStatementQuery query){
+   public static void autoCloseQuery(PreparedStatementQuery query){
 
-		if(query != null && !query.isClosed()){
+      if(query != null && !query.isClosed()){
 
-			query.abort();
-		}
-	}
+         query.abort();
+      }
+   }
 
-	public boolean isClosed() {
-		return closed;
-	}
+   public boolean isClosed() {
+      return closed;
+   }
 }

@@ -8,31 +8,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @ResourceIDs({"namea", "nameb"})
 public class ResourceIdsMethodBook extends IdBook{
 
-	private String _namea;
-	private String _nameb;
-	
-	public ResourceIdsMethodBook() {
-	}
+   private String _namea;
+   private String _nameb;
 
-	public ResourceIdsMethodBook(String namea, String nameb) {
-		this._namea = namea;
-		this._nameb = nameb;
-	}
+   public ResourceIdsMethodBook() {
+   }
 
-	public String getNamea() {
-		return _namea;
-	}
+   public ResourceIdsMethodBook(String namea, String nameb) {
+      this._namea = namea;
+      this._nameb = nameb;
+   }
 
-	public void setNamea(String namea) {
-		this._namea = namea;
-	}
+   public String getNamea() {
+      return _namea;
+   }
 
-	public String getNameb() {
-		return _nameb;
-	}
+   public void setNamea(String namea) {
+      this._namea = namea;
+   }
 
-	public void setNameb(String nameb) {
-		this._nameb = nameb;
-	}
+   public String getNameb() {
+      return _nameb;
+   }
+
+   public void setNameb(String nameb) {
+      this._nameb = nameb;
+   }
 
 }

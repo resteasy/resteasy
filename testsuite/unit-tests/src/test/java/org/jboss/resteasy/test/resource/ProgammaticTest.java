@@ -55,13 +55,13 @@ public class ProgammaticTest {
       Constructor<?> constructor = ProgrammaticResource.class.getConstructor(Configurable.class);
 
       ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
-              .constructor(constructor).param(0).context().buildConstructor()
-              .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
-              .method(put).put().path("test").consumes("text/plain").param(0).messageBody().buildMethod()
-              .field(uriInfo).context().buildField()
-              .field(configurable).context().buildField()
-              .setter(setter).context().buildSetter()
-              .buildClass();
+            .constructor(constructor).param(0).context().buildConstructor()
+            .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
+            .method(put).put().path("test").consumes("text/plain").param(0).messageBody().buildMethod()
+            .field(uriInfo).context().buildField()
+            .field(configurable).context().buildField()
+            .setter(setter).context().buildSetter()
+            .buildClass();
       dispatcher.getRegistry().addPerRequestResource(resourceclass);
       
       MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
@@ -120,12 +120,12 @@ public class ProgammaticTest {
       Constructor<?> constructor = ProgrammaticResource.class.getConstructor(Configurable.class);
 
       ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
-              .constructor(constructor).param(0).context().buildConstructor()
-              .method(get).get().path("test").produces("text/html;charset=UTF-16").param(0).queryParam("a").buildMethod()
-              .field(uriInfo).context().buildField()
-              .field(configurable).context().buildField()
-              .setter(setter).context().buildSetter()
-              .buildClass();
+            .constructor(constructor).param(0).context().buildConstructor()
+            .method(get).get().path("test").produces("text/html;charset=UTF-16").param(0).queryParam("a").buildMethod()
+            .field(uriInfo).context().buildField()
+            .field(configurable).context().buildField()
+            .setter(setter).context().buildSetter()
+            .buildClass();
       dispatcher.getRegistry().addPerRequestResource(resourceclass);
 
       MockHttpRequest request = MockHttpRequest.get("/test?a=hello");

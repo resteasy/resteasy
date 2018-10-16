@@ -7,16 +7,16 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 public class TypesTestProvider implements ExceptionMapper<NullPointerException>, StringConverter<Integer> {
 
-    public Response toResponse(NullPointerException exception) {
-        return null;
-    }
+   public Response toResponse(NullPointerException exception) {
+      return null;
+   }
 
-    public Integer fromString(String str) {
-        return null;
-    }
+   public Integer fromString(String str) {
+      return null;
+   }
 
-    public String toString(Integer value) {
-        return null;
-    }
+   public String toString(Integer value) {
+      return null;
+   }
 
 }

@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ValidationOnGetterNotNullOrOneStringBeanValidator.class)
 public @interface ValidationOnGetterNotNullOrOne {
-    String message() default "{ValidationOnGetterNotNullOrOne.message}";
+   String message() default "{ValidationOnGetterNotNullOrOne.message}";
 
-    Class<?>[] groups() default {};
+   Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+   Class<? extends Payload>[] payload() default {};
 }

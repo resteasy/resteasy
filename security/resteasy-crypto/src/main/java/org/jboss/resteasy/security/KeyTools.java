@@ -24,7 +24,7 @@ public class KeyTools
    }
 
    public static X509Certificate generateTestCertificate(String subject, String issuer, KeyPair pair) throws InvalidKeyException,
-           NoSuchProviderException, SignatureException
+         NoSuchProviderException, SignatureException
    {
 
       X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
@@ -42,7 +42,7 @@ public class KeyTools
 
 
    public static X509Certificate generateTestCertificate(KeyPair pair) throws InvalidKeyException,
-           NoSuchProviderException, SignatureException
+         NoSuchProviderException, SignatureException
    {
       return generateTestCertificate("CN=Test", "CN=Issuer", pair);
    }

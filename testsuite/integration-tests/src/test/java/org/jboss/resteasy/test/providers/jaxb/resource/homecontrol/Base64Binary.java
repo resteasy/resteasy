@@ -27,10 +27,10 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "base64Binary", propOrder = {
-        "value"
+      "value"
 })
 @XmlSeeAlso({
-        BinaryType.class
+      BinaryType.class
 })
 public class Base64Binary {
 

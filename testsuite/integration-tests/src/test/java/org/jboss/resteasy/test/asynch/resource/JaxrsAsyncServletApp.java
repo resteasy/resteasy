@@ -9,24 +9,24 @@ import java.util.Set;
  * @version $Revision: 1 $
  */
 public class JaxrsAsyncServletApp extends Application {
-    private Set<Object> singletons = new HashSet<Object>();
-    private Set<Class<?>> classes = new HashSet<Class<?>>();
+   private Set<Object> singletons = new HashSet<Object>();
+   private Set<Class<?>> classes = new HashSet<Class<?>>();
 
-    public JaxrsAsyncServletApp() {
-        classes.add(JaxrsAsyncServletResource.class);
-        classes.add(JaxrsAsyncServletServiceUnavailableExceptionMapper.class);
-        classes.add(JaxrsAsyncServletPrintingErrorHandler.class);
-        singletons.add(new JaxrsAsyncServletJaxrsResource());
-    }
+   public JaxrsAsyncServletApp() {
+      classes.add(JaxrsAsyncServletResource.class);
+      classes.add(JaxrsAsyncServletServiceUnavailableExceptionMapper.class);
+      classes.add(JaxrsAsyncServletPrintingErrorHandler.class);
+      singletons.add(new JaxrsAsyncServletJaxrsResource());
+   }
 
-    @Override
-    public Set<Class<?>> getClasses() {
-        return classes;
-    }
+   @Override
+   public Set<Class<?>> getClasses() {
+      return classes;
+   }
 
-    @Override
-    public Set<Object> getSingletons() {
-        return singletons;
-    }
+   @Override
+   public Set<Object> getSingletons() {
+      return singletons;
+   }
 
 }

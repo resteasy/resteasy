@@ -22,40 +22,39 @@ import java.lang.reflect.Type;
 @InterceptorClassBinding
 public class InterceptorBookWriter implements MessageBodyWriter<InterceptorBook> {
 
-    private static Logger logger = Logger.getLogger(InterceptorBookReader.class);
+   private static Logger logger = Logger.getLogger(InterceptorBookReader.class);
 
-    private static MessageBodyWriter<InterceptorBook> delegate;
+   private static MessageBodyWriter<InterceptorBook> delegate;
 
-    static {
-        logger.info("In InterceptorBookWriter static {}");
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        delegate = factory.getMessageBodyWriter(InterceptorBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
-    }
+   static {
+      logger.info("In InterceptorBookWriter static {}");
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+      delegate = factory.getMessageBodyWriter(InterceptorBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
+   }
 
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        logger.info("entering InterceptorBookWriter.isWriteable()");
-        boolean b = InterceptorBook.class.equals(type);
-        logger.info("leaving InterceptorBookWriter.isWriteable()");
-        return b;
-    }
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      logger.info("entering InterceptorBookWriter.isWriteable()");
+      boolean b = InterceptorBook.class.equals(type);
+      logger.info("leaving InterceptorBookWriter.isWriteable()");
+      return b;
+   }
 
-    public long getSize(InterceptorBook t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        logger.info("entering InterceptorBookWriter.getSize()");
-        logger.info("leaving InterceptorBookWriter.getSize()");
-        return -1;
-    }
+   public long getSize(InterceptorBook t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      logger.info("entering InterceptorBookWriter.getSize()");
+      logger.info("leaving InterceptorBookWriter.getSize()");
+      return -1;
+   }
 
-    @Override
-    @Interceptors({InterceptorTwo.class})
-    @InterceptorMethodBinding
-    public void writeTo(InterceptorBook t, Class<?> type, Type genericType,
-                        Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException {
-        logger.info("entering InterceptorBookWriter.writeTo()");
-        logger.info("InterceptorBookWriter.writeTo() writing " + t);
-        delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, entityStream);
-        logger.info("leaving InterceptorBookWriter.writeTo()");
-    }
+   @Override
+   @Interceptors({InterceptorTwo.class})
+   @InterceptorMethodBinding
+   public void writeTo(InterceptorBook t, Class<?> type, Type genericType,
+                  Annotation[] annotations, MediaType mediaType,
+                  MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+         throws IOException, WebApplicationException {
+      logger.info("entering InterceptorBookWriter.writeTo()");
+      logger.info("InterceptorBookWriter.writeTo() writing " + t);
+      delegate.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, entityStream);
+      logger.info("leaving InterceptorBookWriter.writeTo()");
+   }
 }
-

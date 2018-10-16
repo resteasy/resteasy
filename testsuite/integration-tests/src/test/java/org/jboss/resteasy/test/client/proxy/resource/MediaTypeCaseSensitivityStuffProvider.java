@@ -16,11 +16,11 @@ import java.lang.reflect.Type;
 @Provider
 @Consumes("appLication/stUff")
 public class MediaTypeCaseSensitivityStuffProvider implements MessageBodyReader<MediaTypeCaseSensitivityStuff> {
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(MediaTypeCaseSensitivityStuff.class);
-    }
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return type.equals(MediaTypeCaseSensitivityStuff.class);
+   }
 
-    public MediaTypeCaseSensitivityStuff readFrom(Class<MediaTypeCaseSensitivityStuff> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        return new MediaTypeCaseSensitivityStuff(ProviderHelper.readString(entityStream, mediaType));
-    }
+   public MediaTypeCaseSensitivityStuff readFrom(Class<MediaTypeCaseSensitivityStuff> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+      return new MediaTypeCaseSensitivityStuff(ProviderHelper.readString(entityStream, mediaType));
+   }
 }

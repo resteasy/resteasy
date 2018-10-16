@@ -66,7 +66,7 @@ public class QueryParamAsPrimitiveTest
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
       resourceQueryPrimitives = ProxyFactory.create(IResourceQueryPrimitives.class, generateBaseUrl());
       resourceQueryPrimitiveWrappers = ProxyFactory.create(IResourceQueryPrimitiveWrappers.class,
-              generateBaseUrl());
+            generateBaseUrl());
       resourceQueryPrimitiveList = ProxyFactory.create(IResourceQueryPrimitiveList.class, generateBaseUrl());
       resourceQueryPrimitiveArray = ProxyFactory.create(IResourceQueryPrimitiveArray.class, generateBaseUrl());
    }
@@ -1232,7 +1232,7 @@ public class QueryParamAsPrimitiveTest
       list.add(Boolean.TRUE);
       resourceQueryPrimitiveList.doGetBoolean(list);
       boolean[] array =
-              {true, true, true};
+            {true, true, true};
       resourceQueryPrimitiveArray.doGetBoolean(array);
    }
 
@@ -1272,7 +1272,7 @@ public class QueryParamAsPrimitiveTest
       list.add(new Byte((byte) 127));
       resourceQueryPrimitiveList.doGetByte(list);
       byte[] array =
-              {(byte) 127, (byte) 127, (byte) 127};
+            {(byte) 127, (byte) 127, (byte) 127};
       resourceQueryPrimitiveArray.doGetByte(array);
    }
 

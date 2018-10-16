@@ -18,31 +18,31 @@ import java.net.URISyntaxException;
 @Controller
 @Path(ContactsResource.CONTACTS_URL)
 public class ContactsResource {
-    public static final String CONTACTS_URL = "/contacts";
-    @Autowired
-    ContactService service;
+   public static final String CONTACTS_URL = "/contacts";
+   @Autowired
+   ContactService service;
 
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("data")
-    public Contacts getAll() {
-        return service.getAll();
-    }
+   @GET
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Path("data")
+   public Contacts getAll() {
+      return service.getAll();
+   }
 
-    @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("data")
-    public Response saveContact(@Context UriInfo uri, Contact contact)
+   @POST
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Path("data")
+   public Response saveContact(@Context UriInfo uri, Contact contact)
             throws URISyntaxException {
-        service.save(contact);
-        URI newURI = UriBuilder.fromUri(uri.getPath()).path(contact.getLastName()).build();
-        return Response.created(newURI).build();
-    }
+      service.save(contact);
+      URI newURI = UriBuilder.fromUri(uri.getPath()).path(contact.getLastName()).build();
+      return Response.created(newURI).build();
+   }
 
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("data/{lastName}")
-    public Contact get(@PathParam("lastName") String lastName) {
-        return service.getContact(lastName);
-    }
+   @GET
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Path("data/{lastName}")
+   public Contact get(@PathParam("lastName") String lastName) {
+      return service.getContact(lastName);
+   }
 }

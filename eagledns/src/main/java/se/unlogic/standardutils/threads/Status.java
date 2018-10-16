@@ -10,7 +10,7 @@ package se.unlogic.standardutils.threads;
 
 public enum Status {
 
-	RUNNING,
-	TERMINATING,
-	SHUTDOWN
+   RUNNING,
+   TERMINATING,
+   SHUTDOWN
 }

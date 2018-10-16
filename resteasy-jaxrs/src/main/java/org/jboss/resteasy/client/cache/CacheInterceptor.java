@@ -113,7 +113,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
    }
 
    private ClientResponse cache(ClientRequest request, ClientResponse response)
-           throws Exception
+         throws Exception
    {
       if (response.getStatus() != 200) return response;
       return cacheIfPossible(request, (BaseClientResponse) response);
@@ -212,7 +212,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
       MediaType mediaType = MediaType.valueOf(contentType);
       final BrowserCache.Entry entry = cache.put(request.getUri(), mediaType,
-              response.getResponseHeaders(), cached, expires, etag, lastModified);
+            response.getResponseHeaders(), cached, expires, etag, lastModified);
 
       response.setStreamFactory(new CachedStreamFactory(entry));
 

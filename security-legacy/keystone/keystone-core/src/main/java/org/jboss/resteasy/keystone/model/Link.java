@@ -4,39 +4,39 @@ import java.io.Serializable;
 
 public class Link implements Serializable {
 
-	private String rel;
-	
-	private String href;
-	
-	private String type;
+   private String rel;
 
-	/**
-	 * @return the rel
-	 */
-	public String getRel() {
-		return rel;
-	}
+   private String href;
 
-	/**
-	 * @return the href
-	 */
-	public String getHref() {
-		return href;
-	}
+   private String type;
 
-	/**
-	 * @return the type
-	 */
-	public String getType() {
-		return type;
-	}
+   /**
+    * @return the rel
+    */
+   public String getRel() {
+      return rel;
+   }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Link [rel=" + rel + ", href=" + href + ", type=" + type + "]";
-	}
-	
+   /**
+    * @return the href
+    */
+   public String getHref() {
+      return href;
+   }
+
+   /**
+    * @return the type
+    */
+   public String getType() {
+      return type;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Link [rel=" + rel + ", href=" + href + ", type=" + type + "]";
+   }
+
 }

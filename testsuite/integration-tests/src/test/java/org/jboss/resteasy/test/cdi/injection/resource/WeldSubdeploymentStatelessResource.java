@@ -14,15 +14,15 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 public class WeldSubdeploymentStatelessResource {
 
-    @Inject
-    private WeldSubdeploymentCdiJpaInjectingBean bean;
+   @Inject
+   private WeldSubdeploymentCdiJpaInjectingBean bean;
 
-    private boolean firstAccess = true;
+   private boolean firstAccess = true;
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public void getMethod() {
-        Assert.assertNotNull(WeldSubdeploymentTest.ERROR_MESSAGE, bean.entityManagerFactory());
-    }
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   public void getMethod() {
+      Assert.assertNotNull(WeldSubdeploymentTest.ERROR_MESSAGE, bean.entityManagerFactory());
+   }
 
 }

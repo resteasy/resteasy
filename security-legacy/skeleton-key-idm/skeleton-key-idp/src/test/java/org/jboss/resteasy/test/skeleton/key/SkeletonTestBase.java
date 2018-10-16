@@ -112,18 +112,18 @@ public class SkeletonTestBase
    public static Cache getDefaultCache()
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
-          .globalJmxStatistics()
-          .allowDuplicateDomains(true)
-          .enable()
-          .jmxDomain("custom-cache")
-          .build();
+         .globalJmxStatistics()
+         .allowDuplicateDomains(true)
+         .enable()
+         .jmxDomain("custom-cache")
+         .build();
 
       Configuration configuration = new ConfigurationBuilder()
-          .eviction()
-          .strategy(EvictionStrategy.NONE)
-          .maxEntries(5000)
-       .jmxStatistics().enable()
-          .build();
+         .eviction()
+         .strategy(EvictionStrategy.NONE)
+         .maxEntries(5000)
+      .jmxStatistics().enable()
+         .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       return manager.getCache("custom-cache");
    }

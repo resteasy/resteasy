@@ -11,12 +11,12 @@ import java.util.Set;
 
 @Path("/set")
 public class HeaderParamsAsPrimitivesResourceSet implements HeaderParamsAsPrimitivesSetProxy {
-    @GET
-    @Produces("application/boolean")
-    public String doGetBoolean(@HeaderParam("header") Set<String> v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 2, v.size());
-        Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, v.contains("one"));
-        Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, v.contains("two"));
-        return "content";
-    }
+   @GET
+   @Produces("application/boolean")
+   public String doGetBoolean(@HeaderParam("header") Set<String> v) {
+      Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 2, v.size());
+      Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, v.contains("one"));
+      Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, v.contains("two"));
+      return "content";
+   }
 }

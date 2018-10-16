@@ -102,39 +102,39 @@ public class JsonBindingTest {
       WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/cat/transient", WAR_WITH_JSONB));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
       Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+            new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat json = target.request().post(entity, Cat.class);
       logger.info("Request entity: " + entity);
       Assert.assertTrue("Failed to return the correct name", "Alfred".equals(json.getName()));
       Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-              json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+            json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
 
       String jsonbResponse = target.request().post(entity).readEntity(String.class);
       Assert.assertEquals("JsonBindingProvider is not enabled", "{\"color\":\"ginger\",\"sort\":\"semi-british\",\"name\":\"Alfred\",\"domesticated\":true}", jsonbResponse);
    }
 
-    /**
-     * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
-     *                client should not ignore @JsonbTransient annotation and should not send a value in this variable
-     *                server verify that client doesn't sent a value in a variable with @JsonbTransient annotation
-     *                server returns json data with a value in a variable with @JsonbTransient annotation
-     *                client should not ignore @JsonbTransient annotation and should not receive a value in this variable
-     *
-     * @tpPassCrit The resource returns object with correct values
-     * @tpSince RESTEasy 3.5
-     */
+   /**
+    * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
+    *                client should not ignore @JsonbTransient annotation and should not send a value in this variable
+    *                server verify that client doesn't sent a value in a variable with @JsonbTransient annotation
+    *                server returns json data with a value in a variable with @JsonbTransient annotation
+    *                client should not ignore @JsonbTransient annotation and should not receive a value in this variable
+    *
+    * @tpPassCrit The resource returns object with correct values
+    * @tpSince RESTEasy 3.5
+    */
    @Test
    public void jsonbOnClientTest() throws Exception {
       String charset = "UTF-8";
       WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/client/test/transient", CUSTOM_JSON_PROVIDER));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
       Entity<Cat> entity = Entity.entity(
-              new Cat("Rosa", "semi-british", "tabby", true,
+            new Cat("Rosa", "semi-british", "tabby", true,
                       JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
       Cat response = target.request().post(entity, Cat.class);
       Assert.assertThat("Failed to return the correct name", response.getName(), is("Rosa"));
       Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-             response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+            response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
    }
 
 
@@ -172,7 +172,7 @@ public class JsonBindingTest {
          logger.info(stackTraceString);
          for (String stackTraceLine : stackTraceString.split(System.lineSeparator())) {
             Assert.assertThat("User-unfriendly error message in JSON-B", stackTraceLine,
-                    not(containsString("Messages (implementation not found)")));
+               not(containsString("Messages (implementation not found)")));
          }
       }
    }

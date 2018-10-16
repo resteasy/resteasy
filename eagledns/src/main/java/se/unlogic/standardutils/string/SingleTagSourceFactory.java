@@ -6,27 +6,27 @@ import java.util.Set;
 
 public class SingleTagSourceFactory<T> implements TagSourceFactory<T>{
 
-	protected Set<String> tags;
-	protected String tag;
-	
-	public SingleTagSourceFactory(String tag){
-		
-		this.tags = Collections.singleton(tag);
-		this.tag = tag;
-	}
+   protected Set<String> tags;
+   protected String tag;
 
-	public <X extends T> TagSource getTagSource(X value) {
+   public SingleTagSourceFactory(String tag){
 
-		return new SingleTagSource(tags, value.toString());
-	}
+      this.tags = Collections.singleton(tag);
+      this.tag = tag;
+   }
 
-	public Set<String> getTagsSet() {
+   public <X extends T> TagSource getTagSource(X value) {
 
-		return tags;
-	}
+      return new SingleTagSource(tags, value.toString());
+   }
 
-	public String getAvailableTags() {
+   public Set<String> getTagsSet() {
 
-		return tag;
-	}
+      return tags;
+   }
+
+   public String getAvailableTags() {
+
+      return tag;
+   }
 }

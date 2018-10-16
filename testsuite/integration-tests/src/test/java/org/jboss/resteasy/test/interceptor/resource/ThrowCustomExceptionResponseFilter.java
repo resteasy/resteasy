@@ -6,8 +6,8 @@ import javax.ws.rs.client.ClientResponseFilter;
 
 
 public class ThrowCustomExceptionResponseFilter implements ClientResponseFilter {
-    @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
-        throw new CustomException();
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
+      throw new CustomException();
+   }
 }

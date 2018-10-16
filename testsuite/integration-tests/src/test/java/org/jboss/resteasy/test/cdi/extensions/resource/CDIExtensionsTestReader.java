@@ -15,15 +15,14 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Consumes("application/test+xml")
 public class CDIExtensionsTestReader implements MessageBodyReader<Object> {
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return false;
-    }
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return false;
+   }
 
-    public Object readFrom(Class<Object> type, Type genericType,
+   public Object readFrom(Class<Object> type, Type genericType,
                            Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        return null;
-    }
+         throws IOException, WebApplicationException {
+      return null;
+   }
 }
-

@@ -4,20 +4,20 @@ import javax.inject.Inject;
 
 @CDIExtensionsBoston
 public class CDIExtensionsBostonHolder {
-    @Inject public CDIExtensionsTestReader reader;
+   @Inject public CDIExtensionsTestReader reader;
 
-    @Inject @CDIExtensionsBoston
-    public CDIExtensionsBostonlLeaf leaf;
+   @Inject @CDIExtensionsBoston
+   public CDIExtensionsBostonlLeaf leaf;
 
-    public CDIExtensionsTestReader getReader() {
-        return reader;
-    }
+   public CDIExtensionsTestReader getReader() {
+      return reader;
+   }
 
-    public CDIExtensionsBostonlLeaf getLeaf() {
-        return leaf;
-    }
+   public CDIExtensionsBostonlLeaf getLeaf() {
+      return leaf;
+   }
 
-    public String toString() {
-        return String.format("%nthis: %s%nreader: %s%nleaf: %s", System.identityHashCode(this), reader, leaf);
-    }
+   public String toString() {
+      return String.format("%nthis: %s%nreader: %s%nleaf: %s", System.identityHashCode(this), reader, leaf);
+   }
 }

@@ -80,19 +80,19 @@ public class GetRestful
     */
    public static Class<?>[] getSubResourceClasses(Class<?> clazz)
    {
-       List<Class<?>> classes = new ArrayList<Class<?>>();
-       // check class & superclasses for JAX-RS annotations
-       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass()) {
-           if (hasJAXRSAnnotations(actualClass))
-              return new Class<?>[]{actualClass};
-       }
+      List<Class<?>> classes = new ArrayList<Class<?>>();
+      // check class & superclasses for JAX-RS annotations
+      for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass()) {
+         if (hasJAXRSAnnotations(actualClass))
+            return new Class<?>[]{actualClass};
+      }
 
-       // ok, no @Path or @HttpMethods so look in interfaces.
-       for (Class<?> intf : clazz.getInterfaces()) {
-           if (hasJAXRSAnnotations(intf))
+      // ok, no @Path or @HttpMethods so look in interfaces.
+      for (Class<?> intf : clazz.getInterfaces()) {
+         if (hasJAXRSAnnotations(intf))
                classes.add(intf);
-       }
-       return classes.toArray(new Class<?>[classes.size()]);
+      }
+      return classes.toArray(new Class<?>[classes.size()]);
    }
 
    private static boolean isTopObject(Class<?> actualClass)

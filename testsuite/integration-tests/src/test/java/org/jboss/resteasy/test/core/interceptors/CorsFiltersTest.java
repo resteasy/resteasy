@@ -39,111 +39,111 @@ import static org.hamcrest.core.Is.is;
 @RunWith(Arquillian.class)
 public class CorsFiltersTest {
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(CorsFiltersTest.class.getSimpleName());
-        war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
-        ), "permissions.xml");
-        List<Class<?>> singletons = new ArrayList<>();
-        singletons.add(CorsFilter.class);
-        // Arquillian in the deployment and use of PortProviderUtil
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, singletons, CorsFiltersResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(CorsFiltersTest.class.getSimpleName());
+      war.addClass(PortProviderUtil.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+            new LoggingPermission("control", ""),
+            new PropertyPermission("arquillian.*", "read"),
+            new PropertyPermission("node", "read"),
+            new PropertyPermission("ipv6", "read"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+      ), "permissions.xml");
+      List<Class<?>> singletons = new ArrayList<>();
+      singletons.add(CorsFilter.class);
+      // Arquillian in the deployment and use of PortProviderUtil
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+            new LoggingPermission("control", ""),
+            new PropertyPermission("arquillian.*", "read"),
+            new PropertyPermission("node", "read"),
+            new PropertyPermission("ipv6", "read"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, singletons, CorsFiltersResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CorsFiltersTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CorsFiltersTest.class.getSimpleName());
+   }
 
-    @After
-    public void resetFilter() {
-        CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
-        corsFilter.getAllowedOrigins().remove("http://" + PortProviderUtil.getHost());
-    }
+   @After
+   public void resetFilter() {
+      CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
+      corsFilter.getAllowedOrigins().remove("http://" + PortProviderUtil.getHost());
+   }
 
-    /**
-     * @tpTestDetails Check different options of Cors headers.
-     * CorsFilter is created as singleton in TestApplication instance.
-     * In this test is CorsFilter get from static set from TestApplication class.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testPreflight() throws Exception {
-        String testedURL = "http://" + PortProviderUtil.getHost();
+   /**
+    * @tpTestDetails Check different options of Cors headers.
+    * CorsFilter is created as singleton in TestApplication instance.
+    * In this test is CorsFilter get from static set from TestApplication class.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testPreflight() throws Exception {
+      String testedURL = "http://" + PortProviderUtil.getHost();
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/test"));
-        Response response = target.request().header(CorsHeaders.ORIGIN, testedURL)
-                .options();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        response.close();
-        response = target.request().header(CorsHeaders.ORIGIN, testedURL)
-                .get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-        response.close();
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(generateURL("/test"));
+      Response response = target.request().header(CorsHeaders.ORIGIN, testedURL)
+            .options();
+      Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+      response.close();
+      response = target.request().header(CorsHeaders.ORIGIN, testedURL)
+            .get();
+      Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+      response.close();
 
-        Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
-        CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
+      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
 
-        corsFilter.getAllowedOrigins().add(testedURL);
-        response = target.request().header(CorsHeaders.ORIGIN, testedURL)
-                .options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        response = target.request().header(CorsHeaders.ORIGIN, testedURL)
-                .get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(response.getHeaderString(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN), testedURL);
-        Assert.assertEquals("Wrong response", "hello", response.readEntity(String.class));
-        response.close();
+      corsFilter.getAllowedOrigins().add(testedURL);
+      response = target.request().header(CorsHeaders.ORIGIN, testedURL)
+            .options();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      response = target.request().header(CorsHeaders.ORIGIN, testedURL)
+            .get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals(response.getHeaderString(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN), testedURL);
+      Assert.assertEquals("Wrong response", "hello", response.readEntity(String.class));
+      response.close();
 
-        client.close();
-    }
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Test that the response contains the Vary: Origin header
-     * @tpInfo RESTEASY-1704
-     * @tpSince RESTEasy 3.0.25
-     */
-    @Test
-    public void testVaryOriginHeader() {
-        String testedURL = "http://" + PortProviderUtil.getHost();
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/test"));
+   /**
+    * @tpTestDetails Test that the response contains the Vary: Origin header
+    * @tpInfo RESTEASY-1704
+    * @tpSince RESTEasy 3.0.25
+    */
+   @Test
+   public void testVaryOriginHeader() {
+      String testedURL = "http://" + PortProviderUtil.getHost();
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(generateURL("/test"));
 
-        Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
-        CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
-        corsFilter.getAllowedOrigins().add(testedURL);
+      Assert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+      CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
+      corsFilter.getAllowedOrigins().add(testedURL);
 
-        Response response = target.request().header(CorsHeaders.ORIGIN, testedURL).get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY));
-        response.close();
+      Response response = target.request().header(CorsHeaders.ORIGIN, testedURL).get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY));
+      response.close();
 
-        response = target.request().header(CorsHeaders.ORIGIN, testedURL).options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY));
-        response.close();
+      response = target.request().header(CorsHeaders.ORIGIN, testedURL).options();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY));
+      response.close();
 
-        client.close();
-    }
+      client.close();
+   }
 
 }

@@ -8,11 +8,11 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
-* 
-* 
-* @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
-* @version $Revision: 1 $
-*/
+ *
+ *
+ * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+ * @version $Revision: 1 $
+ */
 
 public class SpringResourceFactory implements ResourceFactory 
 {
@@ -36,7 +36,7 @@ public class SpringResourceFactory implements ResourceFactory
    }
 
    public Object createResource(HttpRequest request, HttpResponse response,
-                                ResteasyProviderFactory factory)
+                        ResteasyProviderFactory factory)
    {
       return beanFactory.getBean(beanName);
    }

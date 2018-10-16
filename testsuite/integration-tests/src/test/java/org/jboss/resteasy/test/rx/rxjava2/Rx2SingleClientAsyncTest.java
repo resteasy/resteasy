@@ -237,8 +237,8 @@ public class Rx2SingleClientAsyncTest {
       SingleRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single = invoker.head();
       single.subscribe(
-              (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -379,7 +379,7 @@ public class Rx2SingleClientAsyncTest {
       }
 
       {
-        latch = new CountDownLatch(1);
+      latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
          ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();
@@ -500,13 +500,13 @@ public class Rx2SingleClientAsyncTest {
       return null;
    }
 
-    private static boolean throwableContains(Throwable t, String s) {
-        while (t != null) {
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
             if (t.getMessage().contains(s)) {
-                return true;
+            return true;
             }
             t = t.getCause();
-        }
-        return false;
-    }
+      }
+      return false;
+   }
 }

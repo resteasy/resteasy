@@ -60,8 +60,8 @@ public class CommitNewCookiesHeaderTest {
                         return "Cookie 1=Cookie 1 value;Version=1;Path=/";
                      }
                   })
-          .cookie(new NewCookie("Cookie 2", "Cookie 2 value"))
-          .build();
+         .cookie(new NewCookie("Cookie 2", "Cookie 2 value"))
+         .build();
       }
 
       @Path("three")
@@ -84,9 +84,9 @@ public class CommitNewCookiesHeaderTest {
       WebArchive war = TestUtil.prepareArchive(DEP);
       war.addClass(EchoResource.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new ReflectPermission("suppressAccessChecks"),
-              new PropertyPermission("ipv6", "read"),
-              new PropertyPermission("node", "read")
+            new ReflectPermission("suppressAccessChecks"),
+            new PropertyPermission("ipv6", "read"),
+            new PropertyPermission("node", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
    }
@@ -108,7 +108,7 @@ public class CommitNewCookiesHeaderTest {
    @Test
    public void testAcceptApplicationStar() throws Exception {
       Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
-              .request(MediaType.TEXT_PLAIN_TYPE);
+            .request(MediaType.TEXT_PLAIN_TYPE);
       try (Response response = request.get()) {
          Map<String, NewCookie> cookies = response.getCookies();
          Assert.assertEquals(3, cookies.size());
@@ -121,7 +121,7 @@ public class CommitNewCookiesHeaderTest {
    @Test
    public void testSecondCase() throws Exception {
       Invocation.Builder request = client.target(generateURL()).path("echo/two").queryParam("msg", "Hello world")
-              .request(MediaType.TEXT_PLAIN_TYPE);
+            .request(MediaType.TEXT_PLAIN_TYPE);
       try (Response response = request.get()) {
          Map<String, NewCookie> cookies = response.getCookies();
          Assert.assertEquals(2, cookies.size());
@@ -133,7 +133,7 @@ public class CommitNewCookiesHeaderTest {
    @Test
    public void testThreeCase() throws Exception {
       Invocation.Builder request = client.target(generateURL()).path("echo/three").queryParam("msg", "Hello world")
-              .request(MediaType.TEXT_PLAIN_TYPE);
+            .request(MediaType.TEXT_PLAIN_TYPE);
       try (Response response = request.get()) {
          Map<String, NewCookie> cookies = response.getCookies();
          Assert.assertEquals(2, cookies.size());

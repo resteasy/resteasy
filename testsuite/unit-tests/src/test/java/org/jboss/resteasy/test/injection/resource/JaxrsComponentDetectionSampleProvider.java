@@ -6,7 +6,7 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class JaxrsComponentDetectionSampleProvider implements ExceptionMapper<NullPointerException> {
-    public Response toResponse(NullPointerException exception) {
-        return null;
-    }
+   public Response toResponse(NullPointerException exception) {
+      return null;
+   }
 }

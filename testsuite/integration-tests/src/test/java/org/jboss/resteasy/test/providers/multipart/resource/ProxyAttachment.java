@@ -7,28 +7,28 @@ import javax.ws.rs.HeaderParam;
 
 public class ProxyAttachment {
 
-    @HeaderParam("X-Atlassian-Token")
-    @PartType("text/plain")
-    private String multipartHeader = "nocheck";
+   @HeaderParam("X-Atlassian-Token")
+   @PartType("text/plain")
+   private String multipartHeader = "nocheck";
 
-    @FormParam("file")
-    @PartType("text/plain")
-    private byte[] data;
+   @FormParam("file")
+   @PartType("text/plain")
+   private byte[] data;
 
-    public String getMultipartHeader() {
-        return multipartHeader;
-    }
+   public String getMultipartHeader() {
+      return multipartHeader;
+   }
 
-    public void setMultipartHeader(String multipartHeader) {
-        this.multipartHeader = multipartHeader;
-    }
+   public void setMultipartHeader(String multipartHeader) {
+      this.multipartHeader = multipartHeader;
+   }
 
-    public byte[] getData() {
-        return data;
-    }
+   public byte[] getData() {
+      return data;
+   }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
+   public void setData(byte[] data) {
+      this.data = data;
+   }
 
 }

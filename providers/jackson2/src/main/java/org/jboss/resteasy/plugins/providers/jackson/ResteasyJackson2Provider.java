@@ -102,11 +102,11 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
    }
 
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _readers
-           = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
+         = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
    @Override
    public Object readFrom(Class<Object> type, final Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
-           throws IOException
+         throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
@@ -148,20 +148,20 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
    }
 
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _writers
-           = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
+         = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
    @Override
    public void writeTo(Object value, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
-           throws IOException
+         throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       entityStream = new DelegatingOutputStream(entityStream) {
-          @Override
-          public void flush() throws IOException {
-              // don't flush as this is a performance hit on Undertow.
-              // and causes chunked encoding to happen.
-          }
+         @Override
+         public void flush() throws IOException {
+            // don't flush as this is a performance hit on Undertow.
+            // and causes chunked encoding to happen.
+         }
       };
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
       JsonEndpointConfig endpoint;
@@ -169,25 +169,25 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-          ObjectMapper mapper = locateMapper(type, mediaType);
-          endpoint = _configForWriting(mapper, annotations, null);
+         ObjectMapper mapper = locateMapper(type, mediaType);
+         endpoint = _configForWriting(mapper, annotations, null);
 
-          // and cache for future reuse
+         // and cache for future reuse
          _writers.put(key, endpoint);
       }
 
-       ObjectWriter writer = endpoint.getWriter();
-       boolean withIndentOutput = false; // no way to replace _serializationConfig
+      ObjectWriter writer = endpoint.getWriter();
+      boolean withIndentOutput = false; // no way to replace _serializationConfig
 
-       // we can't cache this.
-       if (annotations != null) {
-           for (Annotation annotation : annotations) {
-               if (annotation.annotationType().equals(Formatted.class)) {
-                   withIndentOutput = true;
-                   break;
-               }
-           }
-       }
+      // we can't cache this.
+      if (annotations != null) {
+         for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(Formatted.class)) {
+               withIndentOutput = true;
+               break;
+            }
+         }
+      }
 
       /* 27-Feb-2009, tatu: Where can we find desired encoding? Within
       *   HTTP headers?
@@ -237,18 +237,18 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
             ClassLoader tccl;
             if (System.getSecurityManager() == null)
             {
-                tccl = Thread.currentThread().getContextClassLoader();
+               tccl = Thread.currentThread().getContextClassLoader();
             }
             else
             {
-                tccl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-                {
-                    @Override
-                    public ClassLoader run()
-                    {
-                        return Thread.currentThread().getContextClassLoader();
-                    }
-                });
+               tccl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+               {
+                  @Override
+                  public ClassLoader run()
+                  {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
             }
             mod = ResteasyObjectWriterInjector.get(tccl);
          }

@@ -390,7 +390,7 @@ public abstract class AsyncResponseConsumer
    
    /*
     * Rather than writing a stream of data items, AsyncStreamCollectorResponseConsumer collects a sequence
-    * of data items into a list and writes the entire list when all data items have been collected. 
+    * of data items into a list and writes the entire list when all data items have been collected.
     */
    private static class AsyncStreamCollectorResponseConsumer extends AsyncStreamResponseConsumer 
    {
@@ -448,12 +448,12 @@ public abstract class AsyncResponseConsumer
 
    /**
     * AsyncGeneralStreamingSseResponseConsumer handles two cases:
-    * 
+    *
     * 1. SSE streaming, and
     * 2. General streaming, which is requested when a resource method is annotated @Stream or @Stream(Stream.MODE.GENERAL).
-    *    
+    *
     * General streaming is an extension of streaming as defined for SSE. The extension include
-    * support for encoding non-text data. 
+    * support for encoding non-text data.
     */
    private static class AsyncGeneralStreamingSseResponseConsumer extends AsyncStreamResponseConsumer 
    {

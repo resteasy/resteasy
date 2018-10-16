@@ -66,36 +66,36 @@ public class AsynchContextualDataTest {
       client.close();
    }
 
-    /**
-     * @tpTestDetails Test stack handling of context data map
-     * @tpSince RESTEasy 3.1.1.Final
-     */
-    @Test
-    @Category(NotForForwardCompatibility.class)
-    public void testContextualData() throws Exception {
-       String id = "334";
+   /**
+    * @tpTestDetails Test stack handling of context data map
+    * @tpSince RESTEasy 3.1.1.Final
+    */
+   @Test
+   @Category(NotForForwardCompatibility.class)
+   public void testContextualData() throws Exception {
+      String id = "334";
 
-       //Start the request to the waiting endpoint, but don't block
-       WebTarget target = client.target(generateURL("/products/wait/" + id));
-       Future<Response> response = target.request().async().get();
+      //Start the request to the waiting endpoint, but don't block
+      WebTarget target = client.target(generateURL("/products/wait/" + id));
+      Future<Response> response = target.request().async().get();
 
-       //Let the server set the resumable field, timing thing!
-       Thread.sleep(3000);
+      //Let the server set the resumable field, timing thing!
+      Thread.sleep(3000);
 
-       //While the other request is waiting, fire off a request to /res/ which will allow the other request to complete
-       WebTarget resTarget = client.target(generateURL("/products/res/" + id));
-       Response resResponse = resTarget.request().get();
+      //While the other request is waiting, fire off a request to /res/ which will allow the other request to complete
+      WebTarget resTarget = client.target(generateURL("/products/res/" + id));
+      Response resResponse = resTarget.request().get();
        
-       String entity = response.get().readEntity(String.class);
-       String resEntity = resResponse.readEntity(String.class);
+      String entity = response.get().readEntity(String.class);
+      String resEntity = resResponse.readEntity(String.class);
 
-       Assert.assertEquals(200, response.get().getStatus());
-       Assert.assertEquals("{\"name\":\"Iphone\",\"id\":" + id + "}", entity);
+      Assert.assertEquals(200, response.get().getStatus());
+      Assert.assertEquals("{\"name\":\"Iphone\",\"id\":" + id + "}", entity);
 
-       Assert.assertEquals(200, resResponse.getStatus());
-       Assert.assertEquals("{\"name\":\"Nexus 7\",\"id\":" + id + "}", resEntity);
+      Assert.assertEquals(200, resResponse.getStatus());
+      Assert.assertEquals("{\"name\":\"Nexus 7\",\"id\":" + id + "}", resEntity);
 
-       response.get().close();
-       resResponse.close();
-    }
+      response.get().close();
+      resResponse.close();
+   }
 }

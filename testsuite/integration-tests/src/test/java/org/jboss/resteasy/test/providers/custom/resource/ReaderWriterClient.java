@@ -7,11 +7,11 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public interface ReaderWriterClient {
-    @Path("/implicit")
-    @DELETE
-    Response deleteCustomer();
+   @Path("/implicit")
+   @DELETE
+   Response deleteCustomer();
 
-    @Path("/complex")
-    @DELETE
-    Response deleteComplex();
+   @Path("/complex")
+   @DELETE
+   Response deleteComplex();
 }

@@ -15,32 +15,32 @@ import java.sql.SQLException;
 
 public class MethodBasedResultSetPopulator<Type> implements BeanResultSetPopulator<Type> {
 
-	private Method method;
-	private String columnName;
+   private Method method;
+   private String columnName;
 
-	public MethodBasedResultSetPopulator(Method method, String columnName) {
+   public MethodBasedResultSetPopulator(Method method, String columnName) {
 
-		this.method = method;
-		this.columnName = columnName;
-	}
+      this.method = method;
+      this.columnName = columnName;
+   }
 
-	@SuppressWarnings("unchecked")
-	public Type populate(ResultSet rs) throws SQLException {
+   @SuppressWarnings("unchecked")
+   public Type populate(ResultSet rs) throws SQLException {
 
-		try {
-			return (Type) method.invoke(rs, columnName);
+      try {
+         return (Type) method.invoke(rs, columnName);
 
-		} catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
 
-			throw new RuntimeException(e);
+         throw new RuntimeException(e);
 
-		} catch (IllegalAccessException e) {
+      } catch (IllegalAccessException e) {
 
-			throw new RuntimeException(e);
+         throw new RuntimeException(e);
 
-		} catch (InvocationTargetException e) {
+      } catch (InvocationTargetException e) {
 
-			throw new RuntimeException(e);
-		}
-	}
+         throw new RuntimeException(e);
+      }
+   }
 }

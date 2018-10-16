@@ -237,8 +237,8 @@ public class Rx2SingleTest {
       SingleRxInvoker invoker = client.target(generateURL("/head/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single = invoker.head();
       single.subscribe(
-              (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();},
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -379,7 +379,7 @@ public class Rx2SingleTest {
       }
 
       {
-        latch = new CountDownLatch(1);
+      latch = new CountDownLatch(1);
          RxScheduledExecutorService.used = false;
          RxScheduledExecutorService executor = new RxScheduledExecutorService();
          ResteasyClient client = ((ResteasyClientBuilder) new ResteasyClientBuilder().executorService(executor)).build();

@@ -32,38 +32,38 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationOnGetterTest {
-    ResteasyClient client;
+   ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ValidationOnGetterTest.class.getSimpleName())
-                .addClasses(ValidationOnGetterNotNullOrOne.class, ValidationOnGetterNotNullOrOneStringBeanValidator.class, ValidationOnGetterStringBean.class);
-        return TestUtil.finishContainerPrepare(war, null, ValidationOnGetterValidateExecutableResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ValidationOnGetterTest.class.getSimpleName())
+            .addClasses(ValidationOnGetterNotNullOrOne.class, ValidationOnGetterNotNullOrOneStringBeanValidator.class, ValidationOnGetterStringBean.class);
+      return TestUtil.finishContainerPrepare(war, null, ValidationOnGetterValidateExecutableResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build().register(ValidationCoreFooReaderWriter.class);
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ValidationOnGetterTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ValidationOnGetterTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test xml media type.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetter() throws Exception {
-        Response response = client.target(generateURL("/resource/executable/getter")).request().accept(MediaType.APPLICATION_XML).get();
-        ViolationReport report = response.readEntity(ViolationReport.class);
-        TestUtil.countViolations(report, 0, 1, 0, 0, 0);
-        response.close();
-    }
+   /**
+    * @tpTestDetails Test xml media type.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetter() throws Exception {
+      Response response = client.target(generateURL("/resource/executable/getter")).request().accept(MediaType.APPLICATION_XML).get();
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      TestUtil.countViolations(report, 0, 1, 0, 0, 0);
+      response.close();
+   }
 }

@@ -24,256 +24,256 @@ import java.util.List;
 
 public class ReflectionUtils {
 
-	public static Object getInstance(String className) throws NoClassDefFoundError, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		return Class.forName(className).newInstance();
-	}
+   public static Object getInstance(String className) throws NoClassDefFoundError, ClassNotFoundException, InstantiationException, IllegalAccessException {
+      return Class.forName(className).newInstance();
+   }
 
-	public static boolean isGenericlyTyped(Field field) {
+   public static boolean isGenericlyTyped(Field field) {
 
-		if (field.getGenericType() instanceof ParameterizedType) {
+      if (field.getGenericType() instanceof ParameterizedType) {
 
-			return true;
-		}
+         return true;
+      }
 
-		return false;
-	}
+      return false;
+   }
 
-	public static int getGenericlyTypeCount(Field field) {
+   public static int getGenericlyTypeCount(Field field) {
 
-		if (field.getGenericType() instanceof ParameterizedType) {
+      if (field.getGenericType() instanceof ParameterizedType) {
 
-			ParameterizedType type = (ParameterizedType) field.getGenericType();
+         ParameterizedType type = (ParameterizedType) field.getGenericType();
 
-			return type.getActualTypeArguments().length;
-		}
+         return type.getActualTypeArguments().length;
+      }
 
-		return 0;
-	}
+      return 0;
+   }
 
-	public static int getGenericlyTypeCount(Method method) {
+   public static int getGenericlyTypeCount(Method method) {
 
-		return method.getGenericParameterTypes().length;
-	}	
-	
-	public static boolean checkGenericTypes(Field field, Class<?>... classes) {
+      return method.getGenericParameterTypes().length;
+   }
 
-		if (field.getGenericType() instanceof ParameterizedType) {
+   public static boolean checkGenericTypes(Field field, Class<?>... classes) {
 
-			ParameterizedType type = (ParameterizedType) field.getGenericType();
+      if (field.getGenericType() instanceof ParameterizedType) {
 
-			if (type.getActualTypeArguments().length != classes.length) {
-				return false;
-			}
+         ParameterizedType type = (ParameterizedType) field.getGenericType();
 
-			for (int i = 0; i < classes.length; i++) {
+         if (type.getActualTypeArguments().length != classes.length) {
+            return false;
+         }
 
-				if (!type.getActualTypeArguments()[i].equals(classes[i])) {
-					return false;
-				}
-			}
+         for (int i = 0; i < classes.length; i++) {
 
-			return true;
-		}
+            if (!type.getActualTypeArguments()[i].equals(classes[i])) {
+               return false;
+            }
+         }
 
-		return false;
-	}
+         return true;
+      }
 
-	public static Type getGenericType(Field field) {
-		
-		Type type = ((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0];
-		
-		if(type instanceof WildcardType){
-			
-			//TODO do a little bit more research on this part...
-			return ((WildcardType)type).getUpperBounds()[0];
-			
-		}else{
-			
-			return type;
-		}
-	}
+      return false;
+   }
 
-	public static Object getGenericType(Method method) {
+   public static Type getGenericType(Field field) {
 
-		return method.getGenericParameterTypes()[0];
-	}
-	
-	public static void fixFieldAccess(Field field) {
+      Type type = ((ParameterizedType)field.getGenericType()).getActualTypeArguments()[0];
 
-		if(!field.isAccessible()){
-			field.setAccessible(true);
-		}
-	}
+      if(type instanceof WildcardType){
 
-	public static void fixMethodAccess(Method method) {
+         //TODO do a little bit more research on this part...
+         return ((WildcardType)type).getUpperBounds()[0];
 
-		if(!method.isAccessible()){
-			method.setAccessible(true);
-		}
-	}
+      }else{
 
-	public static Field getField(Class<?> bean, String fieldName) {
+         return type;
+      }
+   }
+
+   public static Object getGenericType(Method method) {
+
+      return method.getGenericParameterTypes()[0];
+   }
+
+   public static void fixFieldAccess(Field field) {
+
+      if(!field.isAccessible()){
+         field.setAccessible(true);
+      }
+   }
+
+   public static void fixMethodAccess(Method method) {
+
+      if(!method.isAccessible()){
+         method.setAccessible(true);
+      }
+   }
+
+   public static Field getField(Class<?> bean, String fieldName) {
 
 
-		List<Field> fields = getFields(bean);
+      List<Field> fields = getFields(bean);
 
-		for(Field field : fields){
+      for(Field field : fields){
 
-			if(field.getName().equals(fieldName)){
+         if(field.getName().equals(fieldName)){
 
-				return field;
-			}
-		}
+            return field;
+         }
+      }
 
-		throw new RuntimeException(new NoSuchFieldError(fieldName));
-	}
+      throw new RuntimeException(new NoSuchFieldError(fieldName));
+   }
 
-	public static boolean isAvailable(String classname) {
-		try {
-			Class.forName(classname);
-			return true;
-		} catch (ClassNotFoundException cnfe) {
-			return false;
-		}
-	}
+   public static boolean isAvailable(String classname) {
+      try {
+         Class.forName(classname);
+         return true;
+      } catch (ClassNotFoundException cnfe) {
+         return false;
+      }
+   }
 
-	public static List<Field> getFields(Class<?> clazz){
-		
-		ArrayList<Field> fields = new ArrayList<Field>();
-		
-		fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-		
-		clazz = clazz.getSuperclass();
-		
-		while(clazz != Object.class){
-			
-			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-			
-			clazz = clazz.getSuperclass();
-		}
-		
-		return fields;
-	}
+   public static List<Field> getFields(Class<?> clazz){
 
-	public static List<Method> getMethods(Class<?> clazz){
-		
-		ArrayList<Method> methods = new ArrayList<Method>();
-		
-		methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-		
-		clazz = clazz.getSuperclass();
-		
-		while(clazz != Object.class){
-			
-			methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-			
-			clazz = clazz.getSuperclass();
-		}
-		
-		return methods;
-	}	
-	
-	public static Method getMethod(Class<?> clazz, String methodName, Class<?> returnType, Class<?>... inputParams) {
+      ArrayList<Field> fields = new ArrayList<Field>();
 
-		if(inputParams == null){
-		
-			inputParams = new Class<?>[0];
-		}
-		
-		Method[] methods = clazz.getDeclaredMethods();
-		
-		for(Method method : methods){
-			
-			if(method.getName().equals(methodName) && returnType.isAssignableFrom(method.getReturnType()) && Arrays.equals(inputParams, method.getParameterTypes())){
-				
-				return method;
-			}
-		}
-		
-		return null;
-	}
-	
-	
-	public static void setFieldValue(Field field, Object value, Object target) throws IllegalArgumentException, IllegalAccessException {
+      fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
 
-		boolean declaredAccessible = field.isAccessible();
+      clazz = clazz.getSuperclass();
 
-		if (!declaredAccessible) {
-			field.setAccessible(true);
-		}
+      while(clazz != Object.class){
 
-		field.set(target, value);
+         fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
 
-		if (!declaredAccessible) {
-			field.setAccessible(false);
-		}
-	}
+         clazz = clazz.getSuperclass();
+      }
 
-	public static void setMethodValue(Method method, Object value, Object target) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+      return fields;
+   }
 
-		boolean declaredAccessible = method.isAccessible();
+   public static List<Method> getMethods(Class<?> clazz){
 
-		if (!declaredAccessible) {
-			method.setAccessible(true);
-		}
+      ArrayList<Method> methods = new ArrayList<Method>();
 
-		method.invoke(target, value);
+      methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
-		if (!declaredAccessible) {
-			method.setAccessible(false);
-		}
-	}	
-	
-	public static boolean setSetterMethod(Object target, String methodName, String value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, MethodNotFoundException, UnableToFindSuitablePopulatorException {
+      clazz = clazz.getSuperclass();
 
-		if(!methodName.startsWith("set")){
-			
-			methodName = "set" + StringUtils.toFirstLetterUppercase(methodName);
-		}
-		
-		Method method = getMethod(target.getClass(),methodName,1);
-		
-		if(method == null){
-			
-			throw new MethodNotFoundException("Unable to find setter method " + methodName + " with correct signature");
-		}
-		
-		if(value == null || method.getParameterTypes()[0].equals(String.class)){
-			
-			setMethodValue(method,value,target);
-		}
-		
-		BeanStringPopulator<?> populator = BeanStringPopulatorRegistery.getBeanStringPopulator(method.getParameterTypes()[0]);
-		
-		if(populator == null){
-			
-			throw new UnableToFindSuitablePopulatorException("Unable to find BeanStringPopulator for " + method.getParameterTypes()[0]);
-		}
-		
-		setMethodValue(method,populator.getValue(value),target);
-		
-		return true;
-	}
+      while(clazz != Object.class){
 
-	public static Method getMethod(Class<?> clazz, String methodName, int argumentCount) {
+         methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
-		List<Method> methods = getMethods(clazz);
-		
-		for(Method method : methods){
-			
-			if(!method.getName().equalsIgnoreCase(methodName)){
-				
-				continue;
-			}
-			
-			if(method.getParameterTypes().length != argumentCount){
-				
-				continue;
-			}
-			
-			return method;
-		}
-		
-		return null;
-	}
+         clazz = clazz.getSuperclass();
+      }
+
+      return methods;
+   }
+
+   public static Method getMethod(Class<?> clazz, String methodName, Class<?> returnType, Class<?>... inputParams) {
+
+      if(inputParams == null){
+
+         inputParams = new Class<?>[0];
+      }
+
+      Method[] methods = clazz.getDeclaredMethods();
+
+      for(Method method : methods){
+
+         if(method.getName().equals(methodName) && returnType.isAssignableFrom(method.getReturnType()) && Arrays.equals(inputParams, method.getParameterTypes())){
+
+            return method;
+         }
+      }
+
+      return null;
+   }
+
+
+   public static void setFieldValue(Field field, Object value, Object target) throws IllegalArgumentException, IllegalAccessException {
+
+      boolean declaredAccessible = field.isAccessible();
+
+      if (!declaredAccessible) {
+         field.setAccessible(true);
+      }
+
+      field.set(target, value);
+
+      if (!declaredAccessible) {
+         field.setAccessible(false);
+      }
+   }
+
+   public static void setMethodValue(Method method, Object value, Object target) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+
+      boolean declaredAccessible = method.isAccessible();
+
+      if (!declaredAccessible) {
+         method.setAccessible(true);
+      }
+
+      method.invoke(target, value);
+
+      if (!declaredAccessible) {
+         method.setAccessible(false);
+      }
+   }
+
+   public static boolean setSetterMethod(Object target, String methodName, String value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, MethodNotFoundException, UnableToFindSuitablePopulatorException {
+
+      if(!methodName.startsWith("set")){
+
+         methodName = "set" + StringUtils.toFirstLetterUppercase(methodName);
+      }
+
+      Method method = getMethod(target.getClass(),methodName,1);
+
+      if(method == null){
+
+         throw new MethodNotFoundException("Unable to find setter method " + methodName + " with correct signature");
+      }
+
+      if(value == null || method.getParameterTypes()[0].equals(String.class)){
+
+         setMethodValue(method,value,target);
+      }
+
+      BeanStringPopulator<?> populator = BeanStringPopulatorRegistery.getBeanStringPopulator(method.getParameterTypes()[0]);
+
+      if(populator == null){
+
+         throw new UnableToFindSuitablePopulatorException("Unable to find BeanStringPopulator for " + method.getParameterTypes()[0]);
+      }
+
+      setMethodValue(method,populator.getValue(value),target);
+
+      return true;
+   }
+
+   public static Method getMethod(Class<?> clazz, String methodName, int argumentCount) {
+
+      List<Method> methods = getMethods(clazz);
+
+      for(Method method : methods){
+
+         if(!method.getName().equalsIgnoreCase(methodName)){
+
+            continue;
+         }
+
+         if(method.getParameterTypes().length != argumentCount){
+
+            continue;
+         }
+
+         return method;
+      }
+
+      return null;
+   }
 }

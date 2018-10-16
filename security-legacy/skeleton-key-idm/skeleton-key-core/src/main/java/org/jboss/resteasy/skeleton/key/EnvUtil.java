@@ -32,5 +32,3 @@ public class EnvUtil
       return buf.toString();
    }
 }
-
-

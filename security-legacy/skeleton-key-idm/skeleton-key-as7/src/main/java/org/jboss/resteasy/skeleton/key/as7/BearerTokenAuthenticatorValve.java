@@ -75,7 +75,7 @@ public class BearerTokenAuthenticatorValve extends AuthenticatorBase implements 
          if (bearer.login(request, response))
          {
             return true;
-       }
+         }
          return false;
       }
       catch (LoginException e)

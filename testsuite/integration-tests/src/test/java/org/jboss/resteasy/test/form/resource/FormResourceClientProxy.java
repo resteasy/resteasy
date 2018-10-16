@@ -9,12 +9,12 @@ import javax.ws.rs.core.MultivaluedMap;
 
 @Path("/form/{id}")
 public interface FormResourceClientProxy {
-    @Produces(MediaType.APPLICATION_FORM_URLENCODED)
-    @POST
-    MultivaluedMap<String, String> post(@BeanParam FormResourceClientForm form);
+   @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+   @POST
+   MultivaluedMap<String, String> post(@BeanParam FormResourceClientForm form);
 
-    @Produces(MediaType.APPLICATION_FORM_URLENCODED)
-    @POST
-    String postString(@BeanParam FormResourceClientForm form);
+   @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+   @POST
+   String postString(@BeanParam FormResourceClientForm form);
 
 }

@@ -102,7 +102,7 @@ public class CgiServlet extends HttpServlet
 
       // Make argument list.
       String argList[] = (path + (queryString != null && queryString.indexOf("=") == -1 ? "+" + queryString : ""))
-              .split("\\+"); /* 1.4 */
+            .split("\\+"); /* 1.4 */
 
       // Make environment list.
       Vector envVec = new Vector();

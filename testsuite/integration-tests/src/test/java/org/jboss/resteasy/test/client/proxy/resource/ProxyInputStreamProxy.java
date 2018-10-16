@@ -7,8 +7,8 @@ import java.io.InputStream;
 
 @Path("/test")
 public interface ProxyInputStreamProxy {
-    @GET
-    @Produces("text/plain")
-    InputStream get();
+   @GET
+   @Produces("text/plain")
+   InputStream get();
 
 }

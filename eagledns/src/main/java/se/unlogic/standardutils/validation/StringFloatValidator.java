@@ -12,36 +12,36 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 
 public class StringFloatValidator extends StringNumberValidator<Float> {
 
-	public StringFloatValidator() {
-		super(null, null);
-	}
+   public StringFloatValidator() {
+      super(null, null);
+   }
 
-	public StringFloatValidator(Float minValue, Float maxValue) {
-		super(minValue,maxValue);
-	}
+   public StringFloatValidator(Float minValue, Float maxValue) {
+      super(minValue,maxValue);
+   }
 
-	public boolean validateFormat(String value) {
+   public boolean validateFormat(String value) {
 
-		Float numberValue = NumberUtils.toFloat(value);
+      Float numberValue = NumberUtils.toFloat(value);
 
-		if(numberValue == null){
+      if(numberValue == null){
 
-			return false;
+         return false;
 
-		}else if(maxValue != null && minValue != null){
+      }else if(maxValue != null && minValue != null){
 
-			return numberValue <= maxValue && numberValue > minValue;
+         return numberValue <= maxValue && numberValue > minValue;
 
-		}else if(maxValue != null){
+      }else if(maxValue != null){
 
-			return numberValue <= maxValue;
+         return numberValue <= maxValue;
 
-		}else if(minValue != null){
+      }else if(minValue != null){
 
-			return numberValue >= minValue;
-		}
-		else{
-			return true;
-		}
-	}
+         return numberValue >= minValue;
+      }
+      else{
+         return true;
+      }
+   }
 }

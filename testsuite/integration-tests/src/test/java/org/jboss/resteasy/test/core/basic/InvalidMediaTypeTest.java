@@ -30,60 +30,60 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class InvalidMediaTypeTest {
 
-    protected static final Logger logger = LogManager.getLogger(InvalidMediaTypeTest.class.getName());
+   protected static final Logger logger = LogManager.getLogger(InvalidMediaTypeTest.class.getName());
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(InvalidMediaTypeTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, InvalidMediaTypeResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(InvalidMediaTypeTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, InvalidMediaTypeResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InvalidMediaTypeTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, InvalidMediaTypeTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check various wrong media type
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInvalidMediaTypes() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        Invocation.Builder request = client.target(generateURL("/test")).request();
+   /**
+    * @tpTestDetails Check various wrong media type
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testInvalidMediaTypes() throws Exception {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      Invocation.Builder request = client.target(generateURL("/test")).request();
 
-        // Missing type or subtype
-        doTest(request, "/");
-        doTest(request, "/*");
-        doTest(request, "*/");
-        doTest(request, "text/");
-        doTest(request, "/plain");
+      // Missing type or subtype
+      doTest(request, "/");
+      doTest(request, "/*");
+      doTest(request, "*/");
+      doTest(request, "text/");
+      doTest(request, "/plain");
 
-        // Illegal white space
-        doTest(request, " /*");
-        doTest(request, "/* ");
-        doTest(request, " /* ");
-        doTest(request, "/ *");
-        doTest(request, "* /");
-        doTest(request, " / *");
-        doTest(request, "* / ");
-        doTest(request, "* / *");
-        doTest(request, " * / *");
-        doTest(request, "* / * ");
-        doTest(request, "text/ plain");
-        doTest(request, "text /plain");
-        doTest(request, " text/plain");
-        doTest(request, "text/plain ");
-        doTest(request, " text/plain ");
-        doTest(request, " text / plain ");
-        client.close();
-    }
+      // Illegal white space
+      doTest(request, " /*");
+      doTest(request, "/* ");
+      doTest(request, " /* ");
+      doTest(request, "/ *");
+      doTest(request, "* /");
+      doTest(request, " / *");
+      doTest(request, "* / ");
+      doTest(request, "* / *");
+      doTest(request, " * / *");
+      doTest(request, "* / * ");
+      doTest(request, "text/ plain");
+      doTest(request, "text /plain");
+      doTest(request, " text/plain");
+      doTest(request, "text/plain ");
+      doTest(request, " text/plain ");
+      doTest(request, " text / plain ");
+      client.close();
+   }
 
-    private void doTest(Invocation.Builder request, String mediaType) {
-        request.accept(mediaType);
-        Response response = request.get();
-        logger.info("mediaType: " + mediaType + "");
-        logger.info("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
-        response.close();
-    }
+   private void doTest(Invocation.Builder request, String mediaType) {
+      request.accept(mediaType);
+      Response response = request.get();
+      logger.info("mediaType: " + mediaType + "");
+      logger.info("status: " + response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+      response.close();
+   }
 }

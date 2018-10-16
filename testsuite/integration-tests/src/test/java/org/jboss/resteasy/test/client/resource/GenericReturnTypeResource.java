@@ -6,10 +6,10 @@ import javax.ws.rs.Produces;
 
 @Path("")
 public class GenericReturnTypeResource implements GenericReturnTypeInterface<String> {
-    @GET
-    @Path("t")
-    @Produces("text/plain")
-    public String t() {
-        return "abc";
-    }
+   @GET
+   @Path("t")
+   @Produces("text/plain")
+   public String t() {
+      return "abc";
+   }
 }

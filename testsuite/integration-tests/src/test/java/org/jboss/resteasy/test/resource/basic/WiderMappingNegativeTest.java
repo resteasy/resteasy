@@ -32,43 +32,43 @@ import java.util.Map;
 @RunAsClient
 public class WiderMappingNegativeTest {
 
-    static Client client;
+   static Client client;
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, WiderMappingNegativeTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, WiderMappingNegativeTest.class.getSimpleName());
+   }
 
-    @Deployment
-    public static Archive<?> deployUriInfoSimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(WiderMappingNegativeTest.class.getSimpleName());
-        war.addClass(PortProviderUtil.class);
+   @Deployment
+   public static Archive<?> deployUriInfoSimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(WiderMappingNegativeTest.class.getSimpleName());
+      war.addClass(PortProviderUtil.class);
 
-        Map<String, String> contextParam = new HashMap<>();
-        contextParam.put("resteasy.wider.request.matching", "false");
-        return TestUtil.finishContainerPrepare(war, contextParam, WiderMappingResource.class, WiderMappingDefaultOptions.class);
-    }
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put("resteasy.wider.request.matching", "false");
+      return TestUtil.finishContainerPrepare(war, contextParam, WiderMappingResource.class, WiderMappingDefaultOptions.class);
+   }
 
 
-    @BeforeClass
-    public static void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @AfterClass
-    public static void cleanup() {
-        client.close();
-    }
+   @AfterClass
+   public static void cleanup() {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Two resources used, more general resource should not be used
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOptions() {
-        Response response = client.target(generateURL("/hello/int")).request().options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertNotEquals(response.readEntity(String.class), "hello");
-        response.close();
-    }
+   /**
+    * @tpTestDetails Two resources used, more general resource should not be used
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testOptions() {
+      Response response = client.target(generateURL("/hello/int")).request().options();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertNotEquals(response.readEntity(String.class), "hello");
+      response.close();
+   }
 
 }

@@ -128,10 +128,10 @@ public class RSAEncrypter
          throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
       }
       StringBuilder builder = new StringBuilder(encodedJWEHeader)
-              .append('.').append(encryptedKey)
-              .append('.').append(Base64Url.encode(iv))
-              .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
-              .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
+            .append('.').append(encryptedKey)
+            .append('.').append(Base64Url.encode(iv))
+            .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
+            .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
 
       return builder.toString();
    }

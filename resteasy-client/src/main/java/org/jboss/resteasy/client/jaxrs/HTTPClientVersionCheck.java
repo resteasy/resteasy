@@ -12,23 +12,23 @@ package org.jboss.resteasy.client.jaxrs;
  * Date: 5/4/17
  */
 public class HTTPClientVersionCheck {
-    private static final boolean useOldHTTPClient = Boolean.getBoolean("org.jboss.resteasy.client.useOldHTTPClient");
-    private static final boolean newHTTPClientAvailable;
-    static {
-        boolean res = true;
-        try {
-            Class.forName(ClientHttpEngineBuilder43.class.getName());
-        } catch (Throwable t) {
-            res = false;
-        }
-        newHTTPClientAvailable = res;
-    }
+   private static final boolean useOldHTTPClient = Boolean.getBoolean("org.jboss.resteasy.client.useOldHTTPClient");
+   private static final boolean newHTTPClientAvailable;
+   static {
+      boolean res = true;
+      try {
+         Class.forName(ClientHttpEngineBuilder43.class.getName());
+      } catch (Throwable t) {
+         res = false;
+      }
+      newHTTPClientAvailable = res;
+   }
 
-    static public boolean isUseOldHTTPClient () {
-        return useOldHTTPClient;
-    }
+   static public boolean isUseOldHTTPClient () {
+      return useOldHTTPClient;
+   }
 
-    static public boolean isNewHTTPClientAvailable() {
-        return newHTTPClientAvailable;
-    }
+   static public boolean isNewHTTPClientAvailable() {
+      return newHTTPClientAvailable;
+   }
 }

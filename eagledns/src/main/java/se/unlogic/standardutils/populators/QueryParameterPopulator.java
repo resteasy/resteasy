@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public interface QueryParameterPopulator<T> {
 
-	Class<? extends T> getType();
+   Class<? extends T> getType();
 
-	void populate(PreparedStatementQuery query, int paramIndex, Object bean) throws SQLException;
+   void populate(PreparedStatementQuery query, int paramIndex, Object bean) throws SQLException;
 }

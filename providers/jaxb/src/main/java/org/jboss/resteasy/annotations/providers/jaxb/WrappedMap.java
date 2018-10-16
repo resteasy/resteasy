@@ -26,7 +26,7 @@ public @interface WrappedMap
    String map() default "map";
 
    /**
-    * entry element name 
+    * entry element name
     * @return entry
     */
    String entry() default "entry";

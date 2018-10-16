@@ -5,6 +5,6 @@ import javax.ws.rs.Path;
 
 @Path("/proxy")
 public interface ResourceClassProcessorProxy {
-    @POST // should be replaced by GET in ResourceClassProcessorMethod
-    String custom();
+   @POST // should be replaced by GET in ResourceClassProcessorMethod
+   String custom();
 }

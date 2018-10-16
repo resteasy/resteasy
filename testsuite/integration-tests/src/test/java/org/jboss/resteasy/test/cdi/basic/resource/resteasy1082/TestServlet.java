@@ -21,4 +21,3 @@ public class TestServlet extends HttpServlet {
       resp.getWriter().write(this.foo.getAll().toString());
    }
 }
-

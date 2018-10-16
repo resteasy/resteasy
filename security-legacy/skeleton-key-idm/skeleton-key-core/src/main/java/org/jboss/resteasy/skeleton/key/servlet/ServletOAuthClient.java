@@ -54,10 +54,10 @@ public class ServletOAuthClient extends AbstractOAuthClient
       String state = getStateCode();
 
       URI url = UriBuilder.fromUri(authUrl)
-              .queryParam("client_id", clientId)
-              .queryParam("redirect_uri", redirectUri)
-              .queryParam("state", state)
-              .build();
+            .queryParam("client_id", clientId)
+            .queryParam("redirect_uri", redirectUri)
+            .queryParam("state", state)
+            .build();
       String cookiePath = request.getContextPath();
       if (cookiePath.equals("")) cookiePath = "/";
 

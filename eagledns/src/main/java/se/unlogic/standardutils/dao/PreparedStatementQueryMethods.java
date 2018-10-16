@@ -26,48 +26,48 @@ import java.util.HashMap;
  */
 public class PreparedStatementQueryMethods {
 
-	protected static final HashMap<Class<?>,Method> QUERY_METHOD_MAP = new HashMap<Class<?>, Method>();
-	protected static final Method SET_OBJECT_METHOD;
-	static{
-		try {
-			//Special methods mappings
-			QUERY_METHOD_MAP.put(Integer.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
-			QUERY_METHOD_MAP.put(Long.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
-			QUERY_METHOD_MAP.put(Double.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
-			QUERY_METHOD_MAP.put(Float.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
-			QUERY_METHOD_MAP.put(Boolean.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
-			QUERY_METHOD_MAP.put(Byte.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+   protected static final HashMap<Class<?>,Method> QUERY_METHOD_MAP = new HashMap<Class<?>, Method>();
+   protected static final Method SET_OBJECT_METHOD;
+   static{
+      try {
+         //Special methods mappings
+         QUERY_METHOD_MAP.put(Integer.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+         QUERY_METHOD_MAP.put(Long.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+         QUERY_METHOD_MAP.put(Double.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+         QUERY_METHOD_MAP.put(Float.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+         QUERY_METHOD_MAP.put(Boolean.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
+         QUERY_METHOD_MAP.put(Byte.class, PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class));
 
-			Method[] methods = PreparedStatementQuery.class.getMethods();
+         Method[] methods = PreparedStatementQuery.class.getMethods();
 
-			for(Method method : methods){
+         for(Method method : methods){
 
-				if(method.getName().startsWith("set") && !method.getName().equals("setObject") && method.getParameterTypes().length == 2 && method.getParameterTypes()[0] == int.class){
+            if(method.getName().startsWith("set") && !method.getName().equals("setObject") && method.getParameterTypes().length == 2 && method.getParameterTypes()[0] == int.class){
 
-					//System.out.println("Adding method " + method);
-					QUERY_METHOD_MAP.put(method.getParameterTypes()[1], method);
-				}
-			}
+               //System.out.println("Adding method " + method);
+               QUERY_METHOD_MAP.put(method.getParameterTypes()[1], method);
+            }
+         }
 
-			SET_OBJECT_METHOD = PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class);
+         SET_OBJECT_METHOD = PreparedStatementQuery.class.getMethod("setObject", int.class,Object.class);
 
-		} catch (SecurityException e) {
+      } catch (SecurityException e) {
 
-			throw new RuntimeException(e);
+         throw new RuntimeException(e);
 
-		} catch (NoSuchMethodException e) {
+      } catch (NoSuchMethodException e) {
 
-			throw new RuntimeException(e);
-		}
-	}
+         throw new RuntimeException(e);
+      }
+   }
 
-	public static Method getQueryMethod(Class<?> clazz) {
+   public static Method getQueryMethod(Class<?> clazz) {
 
-		return QUERY_METHOD_MAP.get(clazz);
-	}
+      return QUERY_METHOD_MAP.get(clazz);
+   }
 
-	public static Method getObjectQueryMethod(){
+   public static Method getObjectQueryMethod(){
 
-		return SET_OBJECT_METHOD;
-	}
+      return SET_OBJECT_METHOD;
+   }
 }

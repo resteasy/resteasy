@@ -11,15 +11,15 @@ import javax.ws.rs.core.Response;
  */
 @Produces("text/plain")
 public class ResourceLocatorRegexCapturingGroupSubResourceWithPath {
-    private String name;
+   private String name;
 
-    public ResourceLocatorRegexCapturingGroupSubResourceWithPath(String name) {
-        this.name = name;
-    }
+   public ResourceLocatorRegexCapturingGroupSubResourceWithPath(String name) {
+      this.name = name;
+   }
 
-    @GET
-    @Path("/test")
-    public Response get() {
-        return Response.ok(name + " test").build();
-    }
+   @GET
+   @Path("/test")
+   public Response get() {
+      return Response.ok(name + " test").build();
+   }
 }

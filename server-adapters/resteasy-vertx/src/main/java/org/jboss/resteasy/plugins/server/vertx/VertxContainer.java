@@ -66,6 +66,6 @@ public class VertxContainer
    }
 
    public static void main(String args[]) throws Exception {
-       start();
+      start();
    }
 }

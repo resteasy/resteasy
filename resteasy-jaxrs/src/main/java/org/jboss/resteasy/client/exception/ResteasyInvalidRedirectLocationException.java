@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyInvalidRedirectLocationException extends ResteasyRedirectException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyInvalidRedirectLocationException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyInvalidRedirectLocationException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyInvalidRedirectLocationException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyInvalidRedirectLocationException()
+   {
+   }
+
+   public ResteasyInvalidRedirectLocationException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyInvalidRedirectLocationException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyInvalidRedirectLocationException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyInvalidRedirectLocationException(Throwable cause)
+   {
+      super(cause);
+   }
 }

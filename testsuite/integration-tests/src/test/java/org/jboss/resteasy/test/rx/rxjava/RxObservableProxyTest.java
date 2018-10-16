@@ -97,8 +97,8 @@ public class RxObservableProxyTest {
       war.addClass(RxScheduledExecutorService.class);
       war.addClass(TestException.class);
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new PropertyPermission("*", "read"),
-              new PropertyPermission("*", "write")
+            new PropertyPermission("*", "read"),
+            new PropertyPermission("*", "write")
       ), "permissions.xml");
       TestUtilRxJava.setupRxJava(war);
       return TestUtil.finishContainerPrepare(war, null, RxObservableResourceImpl.class, TestExceptionMapper.class);

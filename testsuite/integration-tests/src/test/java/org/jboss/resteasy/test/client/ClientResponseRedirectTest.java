@@ -41,108 +41,108 @@ import java.util.PropertyPermission;
 public class ClientResponseRedirectTest extends ClientTestBase{
 
 
-    protected static final Logger logger = LogManager.getLogger(ClientResponseRedirectTest.class.getName());
-    static ResteasyClient client;
+   protected static final Logger logger = LogManager.getLogger(ClientResponseRedirectTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
-        war.addClass(ClientTestBase.class);
-        // Use of PortProviderutil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
+      war.addClass(ClientTestBase.class);
+      // Use of PortProviderutil in the deployment
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("node", "read"),
+            new PropertyPermission("ipv6", "read"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new PropertyPermission("org.jboss.resteasy.port", "read")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Tests redirection of the request using deprecated ProxyFactory client
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectProxyFactory() throws Exception {
-        testRedirect(ProxyFactory.create(ClientResponseRedirectClientResponseOld.class, PortProviderUtil.generateBaseUrl(ClientResponseRedirectTest.class.getSimpleName())).get());
-    }
+   /**
+    * @tpTestDetails Tests redirection of the request using deprecated ProxyFactory client
+    * @tpPassCrit The header 'location' contains the redirected target
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRedirectProxyFactory() throws Exception {
+      testRedirect(ProxyFactory.create(ClientResponseRedirectClientResponseOld.class, PortProviderUtil.generateBaseUrl(ClientResponseRedirectTest.class.getSimpleName())).get());
+   }
 
-    /**
-     * @tpTestDetails Tests redirection of the request using ProxyBuilder client
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectProxyBuilder() throws Exception {
-        testRedirect(ProxyBuilder.builder(ClientResponseRedirectIntf.class, client.target(generateURL(""))).build().get());
-    }
+   /**
+    * @tpTestDetails Tests redirection of the request using ProxyBuilder client
+    * @tpPassCrit The header 'location' contains the redirected target
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRedirectProxyBuilder() throws Exception {
+      testRedirect(ProxyBuilder.builder(ClientResponseRedirectIntf.class, client.target(generateURL(""))).build().get());
+   }
 
-    /**
-     * @tpTestDetails Tests redirection of the request using deprecated ClientRequest
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectClientRequest() throws Exception {
-        testRedirect(PortProviderUtil.createClientRequest("/redirect", ClientResponseRedirectTest.class.getSimpleName()).get());
-    }
+   /**
+    * @tpTestDetails Tests redirection of the request using deprecated ClientRequest
+    * @tpPassCrit The header 'location' contains the redirected target
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRedirectClientRequest() throws Exception {
+      testRedirect(PortProviderUtil.createClientRequest("/redirect", ClientResponseRedirectTest.class.getSimpleName()).get());
+   }
 
-    /**
-     * @tpTestDetails Tests redirection of the request using Client Webtarget request
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectClientTargetRequest() throws Exception {
-        testRedirect(client.target(generateURL("/redirect")).request().get());
-    }
+   /**
+    * @tpTestDetails Tests redirection of the request using Client Webtarget request
+    * @tpPassCrit The header 'location' contains the redirected target
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRedirectClientTargetRequest() throws Exception {
+      testRedirect(client.target(generateURL("/redirect")).request().get());
+   }
 
-    /**
-     * @tpTestDetails Tests redirection of the request using HttpUrlConnection
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectHttpUrlConnection() throws Exception {
-        URL url = PortProviderUtil.createURL("/redirect", ClientResponseRedirectTest.class.getSimpleName());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setInstanceFollowRedirects(false);
-        conn.setRequestMethod("GET");
+   /**
+    * @tpTestDetails Tests redirection of the request using HttpUrlConnection
+    * @tpPassCrit The header 'location' contains the redirected target
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRedirectHttpUrlConnection() throws Exception {
+      URL url = PortProviderUtil.createURL("/redirect", ClientResponseRedirectTest.class.getSimpleName());
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setInstanceFollowRedirects(false);
+      conn.setRequestMethod("GET");
 //        for (Object name : conn.getHeaderFields().keySet()) {
 //            logger.debug(name);
 //        }
-        Assert.assertEquals("The response from the server was: " + conn.getResponseCode(),
-                HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
-    }
+      Assert.assertEquals("The response from the server was: " + conn.getResponseCode(),
+            HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
+   }
 
-    private void testRedirect(ClientResponse response) {
-        MultivaluedMap headers = response.getResponseHeaders();
-        logger.info("size: " + headers.size());
-        for (Object name : headers.keySet()) {
-            logger.info(name + ":" + headers.getFirst(name.toString()));
-        }
-        Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName())));
-    }
+   private void testRedirect(ClientResponse response) {
+      MultivaluedMap headers = response.getResponseHeaders();
+      logger.info("size: " + headers.size());
+      for (Object name : headers.keySet()) {
+         logger.info(name + ":" + headers.getFirst(name.toString()));
+      }
+      Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName())));
+   }
 
-    @SuppressWarnings(value = "unchecked")
-    private void testRedirect(Response response) {
-        MultivaluedMap<String, Object> headers = response.getHeaders();
+   @SuppressWarnings(value = "unchecked")
+   private void testRedirect(Response response) {
+      MultivaluedMap<String, Object> headers = response.getHeaders();
 //        logger.debug("size: " + headers.size());
 //        for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
 //            logger.debug(entry.getKey() + ":" + entry.getValue().get(0));
 //        }
-        Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName())));
-    }
+      Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(PortProviderUtil.generateURL("/redirect/data", ClientResponseRedirectTest.class.getSimpleName())));
+   }
 
 }

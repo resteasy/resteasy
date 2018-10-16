@@ -10,9 +10,9 @@ import java.io.IOException;
 
 @Priority(Integer.MAX_VALUE)
 public class PriorityExecutionClientResponseFilterMax implements ClientResponseFilter {
-    @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-        PriorityExecutionTest.logger.info(this);
-        PriorityExecutionTest.interceptors.add("PriorityExecutionClientResponseFilterMax");
-    }
+   @Override
+   public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+      PriorityExecutionTest.logger.info(this);
+      PriorityExecutionTest.interceptors.add("PriorityExecutionClientResponseFilterMax");
+   }
 }

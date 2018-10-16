@@ -159,7 +159,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
                      ResteasyProviderFactory.getInstance(), t -> {
-                     }, true);
+                  }, true);
                response.getOutputStream().write(SseConstants.EOL);
                response.getOutputStream().write(SseConstants.EOL);
                response.flushBuffer();

@@ -13,29 +13,29 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class StringURLPopulator extends BaseStringPopulator<String> implements BeanStringPopulator<String> {
 
-	public StringURLPopulator(String populatorID, StringFormatValidator formatValidator) {
-		super(populatorID, formatValidator);
-	}
+   public StringURLPopulator(String populatorID, StringFormatValidator formatValidator) {
+      super(populatorID, formatValidator);
+   }
 
-	public StringURLPopulator(String populatorID) {
-		super(populatorID);
-	}
+   public StringURLPopulator(String populatorID) {
+      super(populatorID);
+   }
 
-	public StringURLPopulator(){
-		super("url");
-	}
+   public StringURLPopulator(){
+      super("url");
+   }
 
-	public Class<? extends String> getType() {
-		return String.class;
-	}
+   public Class<? extends String> getType() {
+      return String.class;
+   }
 
-	public String getValue(String value) {
-		return value;
-	}
+   public String getValue(String value) {
+      return value;
+   }
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
-		return StringUtils.isValidURL(value);
-	}
+   @Override
+   public boolean validateDefaultFormat(String value) {
+      return StringUtils.isValidURL(value);
+   }
 
 }

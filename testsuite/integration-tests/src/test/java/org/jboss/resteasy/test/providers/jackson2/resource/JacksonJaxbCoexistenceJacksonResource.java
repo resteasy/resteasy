@@ -9,27 +9,27 @@ import javax.ws.rs.Consumes;
 @Path("/products")
 public class JacksonJaxbCoexistenceJacksonResource {
 
-    @GET
-    @Produces("application/json")
-    @Path("{id}")
-    public JacksonJaxbCoexistenceProduct getProduct() {
-        return new JacksonJaxbCoexistenceProduct(333, "Iphone");
-    }
+   @GET
+   @Produces("application/json")
+   @Path("{id}")
+   public JacksonJaxbCoexistenceProduct getProduct() {
+      return new JacksonJaxbCoexistenceProduct(333, "Iphone");
+   }
 
-    @GET
-    @Produces("application/json")
-    public JacksonJaxbCoexistenceProduct[] getProducts() {
+   @GET
+   @Produces("application/json")
+   public JacksonJaxbCoexistenceProduct[] getProducts() {
 
-        JacksonJaxbCoexistenceProduct[] products = {new JacksonJaxbCoexistenceProduct(333, "Iphone"), new JacksonJaxbCoexistenceProduct(44, "macbook")};
-        return products;
-    }
+      JacksonJaxbCoexistenceProduct[] products = {new JacksonJaxbCoexistenceProduct(333, "Iphone"), new JacksonJaxbCoexistenceProduct(44, "macbook")};
+      return products;
+   }
 
-    @POST
-    @Produces("application/foo+json")
-    @Consumes("application/foo+json")
-    @Path("{id}")
-    public JacksonJaxbCoexistenceProduct post(JacksonJaxbCoexistenceProduct p) {
-        return p;
-    }
+   @POST
+   @Produces("application/foo+json")
+   @Consumes("application/foo+json")
+   @Path("{id}")
+   public JacksonJaxbCoexistenceProduct post(JacksonJaxbCoexistenceProduct p) {
+      return p;
+   }
 
 }

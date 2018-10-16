@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractURITemplateAnnotationResolver implements
-        URIResolver
+      URIResolver
 {
 
    @SuppressWarnings("unchecked")
@@ -30,11 +30,11 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    public String resolveURI(Object object)
    {
       Class<? extends Object> clazz = AnnotationResolver
-              .getClassWithAnnotation(object.getClass(), getAnnotationType());
+            .getClassWithAnnotation(object.getClass(), getAnnotationType());
       ResteasyUriBuilder uriBuilderImpl = getUriBuilder(clazz);
       Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(clazz);
       List<Object> values = getValues(object, descriptors, uriBuilderImpl
-              .getPathParamNamesInDeclarationOrder());
+            .getPathParamNamesInDeclarationOrder());
       return uriBuilderImpl.build(values.toArray()).toString();
    }
 
@@ -73,7 +73,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    }
 
    private Map<String, PropertyDescriptor> getPropertyDescriptors(
-           Class<? extends Object> clazz)
+         Class<? extends Object> clazz)
    {
       try
       {

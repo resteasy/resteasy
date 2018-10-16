@@ -11,11 +11,11 @@ import java.util.logging.Logger;
 @Provider
 @DecoratorsFilterBinding
 public class DecoratorsResponseFilter implements ContainerResponseFilter {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        log.info("executing DecoratorsResponseFilter.filter()");
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+      log.info("executing DecoratorsResponseFilter.filter()");
+   }
 }

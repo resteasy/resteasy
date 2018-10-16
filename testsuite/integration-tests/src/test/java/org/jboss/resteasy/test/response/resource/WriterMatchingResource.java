@@ -5,9 +5,9 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class WriterMatchingResource {
-    @GET
-    @Path("bool")
-    public Boolean responseOk() {
-        return true;
-    }
+   @GET
+   @Path("bool")
+   public Boolean responseOk() {
+      return true;
+   }
 }

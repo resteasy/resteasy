@@ -9,16 +9,16 @@ import javax.ws.rs.Path;
 @Path("/secured3")
 @RolesAllowed("admin")
 public class BasicAuthBaseResourceAnybody {
-    @GET
-    @Path("/authorized")
-    public String getAuthorized() {
-        return "authorized";
-    }
+   @GET
+   @Path("/authorized")
+   public String getAuthorized() {
+      return "authorized";
+   }
 
-    @GET
-    @Path("/anybody")
-    @PermitAll
-    public String getAnybody() {
-        return "anybody";
-    }
+   @GET
+   @Path("/anybody")
+   @PermitAll
+   public String getAnybody() {
+      return "anybody";
+   }
 }

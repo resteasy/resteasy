@@ -132,9 +132,9 @@ public class AbstractOAuthClient
       redirectUri = stripOauthParametersFromRedirect(redirectUri);
       String authHeader = BasicAuthHelper.createHeader(clientId, password);
       Form codeForm = new Form()
-              .param("grant_type", "authorization_code")
-              .param("code", code)
-              .param("redirect_uri", redirectUri);
+            .param("grant_type", "authorization_code")
+            .param("code", code)
+            .param("redirect_uri", redirectUri);
       Response res = client.target(codeUrl).request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(codeForm));
       try
       {
@@ -159,8 +159,8 @@ public class AbstractOAuthClient
    {
       LOG.info(Messages.MESSAGES.redirectUri(uri));
       UriBuilder builder = UriBuilder.fromUri(uri)
-              .replaceQueryParam("code", null)
-              .replaceQueryParam("state", null);
+            .replaceQueryParam("code", null)
+            .replaceQueryParam("state", null);
       return builder.build().toString();
    }
 

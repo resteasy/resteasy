@@ -6,9 +6,9 @@ import javax.ws.rs.PathParam;
 
 @Path("subsub")
 public class InheritedContextNewSubService extends InheritedContextNewService {
-    @Path("test/{level}")
-    @GET
-    public String test(@PathParam("level") String level) {
-        return Boolean.toString(level.equals("SomeSubService") && testContexts());
-    }
+   @Path("test/{level}")
+   @GET
+   public String test(@PathParam("level") String level) {
+      return Boolean.toString(level.equals("SomeSubService") && testContexts());
+   }
 }

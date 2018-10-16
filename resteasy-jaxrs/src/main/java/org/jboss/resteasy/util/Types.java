@@ -303,12 +303,12 @@ public class Types
       }
       else if (type instanceof WildcardType)
       {
-          WildcardType wildcardType = (WildcardType) type;
-          Type[] upperBounds = wildcardType.getUpperBounds();
-          if (upperBounds != null && upperBounds.length > 0)
-          {
-              return getRawType(upperBounds[0]);
-          }
+         WildcardType wildcardType = (WildcardType) type;
+         Type[] upperBounds = wildcardType.getUpperBounds();
+         if (upperBounds != null && upperBounds.length > 0)
+         {
+            return getRawType(upperBounds[0]);
+         }
       }
       throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
    }

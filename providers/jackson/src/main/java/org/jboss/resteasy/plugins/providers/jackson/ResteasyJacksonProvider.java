@@ -25,9 +25,9 @@ import java.lang.reflect.Type;
 @Deprecated
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {
-    public ResteasyJacksonProvider() {
-        super(Annotations.JACKSON, Annotations.JAXB);
-    }
+   public ResteasyJacksonProvider() {
+      super(Annotations.JACKSON, Annotations.JAXB);
+   }
 
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)

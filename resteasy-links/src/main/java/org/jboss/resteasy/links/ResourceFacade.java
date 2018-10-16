@@ -13,25 +13,25 @@ import java.util.Map;
  * @param <T> the type of entity that this facade should receive links for
  */
 public interface ResourceFacade<T> {
-	/**
-	 * Returns the type of entity that this facade should receive links for. If we represent
-	 * a list of Comment entities, then that would be the type to return.
-	 */
-	Class<T> facadeFor();
-	
-	/**
-	 * <p>
-	 * Returns a map of path parameters to use to build any path to this facade's type's links. If there
-	 * are too many path parameter for a link, the extra ones will be ignored, but if there are not enough
-	 * path parameters the link will be skipped.
-	 * </p>
-	 * <p>
-	 * For example, when scanning a facade for a list of order comments for an order with ID "foo", 
-	 * you should return a map for 
-	 * {orderId {@literal =>} "foo"}, which will get you links for "/order/{orderId}/comments" ("list" and "add")
-	 * but not for "/order/{orderId}/comment/{commentId}" since those need actual Comment instances ("self" and 
-	 * "delete").
-	 * </p>
-	 */
-	Map<String, ? extends Object> pathParameters();
+   /**
+    * Returns the type of entity that this facade should receive links for. If we represent
+    * a list of Comment entities, then that would be the type to return.
+    */
+   Class<T> facadeFor();
+
+   /**
+    * <p>
+    * Returns a map of path parameters to use to build any path to this facade's type's links. If there
+    * are too many path parameter for a link, the extra ones will be ignored, but if there are not enough
+    * path parameters the link will be skipped.
+    * </p>
+    * <p>
+    * For example, when scanning a facade for a list of order comments for an order with ID "foo",
+    * you should return a map for
+    * {orderId {@literal =>} "foo"}, which will get you links for "/order/{orderId}/comments" ("list" and "add")
+    * but not for "/order/{orderId}/comment/{commentId}" since those need actual Comment instances ("self" and
+    * "delete").
+    * </p>
+    */
+   Map<String, ? extends Object> pathParameters();
 }

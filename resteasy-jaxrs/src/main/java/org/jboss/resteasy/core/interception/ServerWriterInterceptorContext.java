@@ -39,7 +39,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    protected MessageBodyWriter resolveWriter()
    {
       return providerFactory.getServerMessageBodyWriter(
-              type, genericType, annotations, mediaType);
+            type, genericType, annotations, mediaType);
 
    }
    @Override

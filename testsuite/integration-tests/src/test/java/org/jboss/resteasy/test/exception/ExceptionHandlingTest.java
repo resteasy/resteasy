@@ -31,55 +31,55 @@ import javax.ws.rs.Path;
 @RunAsClient
 public class ExceptionHandlingTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ExceptionHandlingTest.class.getSimpleName());
-        war.addClass(ExceptionHandlingTest.class);
-        return TestUtil.finishContainerPrepare(war, null, ExceptionHandlingResource.class, ExceptionHandlingProvider.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ExceptionHandlingTest.class.getSimpleName());
+      war.addClass(ExceptionHandlingTest.class);
+      return TestUtil.finishContainerPrepare(war, null, ExceptionHandlingResource.class, ExceptionHandlingProvider.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ExceptionHandlingTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ExceptionHandlingTest.class.getSimpleName());
+   }
 
-    @Path("/")
-    public interface ThrowsExceptionInterface {
-        @Path("test")
-        @POST
-        void post() throws Exception;
-    }
+   @Path("/")
+   public interface ThrowsExceptionInterface {
+      @Path("test")
+      @POST
+      void post() throws Exception;
+   }
 
-    /**
-     * @tpTestDetails POST request is sent by client via client proxy. The resource on the server throws exception,
-     * which is handled by ExceptionMapper.
-     * @tpPassCrit The response with expected Exception text is returned
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testThrowsException() throws Exception {
+   /**
+    * @tpTestDetails POST request is sent by client via client proxy. The resource on the server throws exception,
+    * which is handled by ExceptionMapper.
+    * @tpPassCrit The response with expected Exception text is returned
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testThrowsException() throws Exception {
 
-        ThrowsExceptionInterface proxy = client.target(generateURL("/")).proxy(ThrowsExceptionInterface.class);
-        try {
-            proxy.post();
-        } catch (InternalServerErrorException e) {
-            Response response = e.getResponse();
-            String errorText = response.readEntity(String.class);
-            Assert.assertNotNull("Missing the expected exception text", errorText);
-        }
+      ThrowsExceptionInterface proxy = client.target(generateURL("/")).proxy(ThrowsExceptionInterface.class);
+      try {
+         proxy.post();
+      } catch (InternalServerErrorException e) {
+         Response response = e.getResponse();
+         String errorText = response.readEntity(String.class);
+         Assert.assertNotNull("Missing the expected exception text", errorText);
+      }
 
-    }
+   }
 
 }

@@ -11,19 +11,19 @@ import javax.ws.rs.Produces;
 
 @Path("/signed")
 public interface SigningProxy {
-    @GET
-    @Verify
-    @Produces("text/plain")
-    @Path("bad-signature")
-    String bad();
+   @GET
+   @Verify
+   @Produces("text/plain")
+   @Path("bad-signature")
+   String bad();
 
-    @GET
-    @Verify
-    @Produces("text/plain")
-    String hello();
+   @GET
+   @Verify
+   @Produces("text/plain")
+   String hello();
 
-    @POST
-    @Consumes("text/plain")
-    @Signed(selector = "test", domain = "samplezone.org")
-    void postSimple(String input);
+   @POST
+   @Consumes("text/plain")
+   @Signed(selector = "test", domain = "samplezone.org")
+   void postSimple(String input);
 }

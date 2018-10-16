@@ -162,7 +162,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
     * @deprecated   As of version 2.1, use encodeURL(String url) instead
     *
     * @param  url   the url to be encoded.
-    * @return    the encoded URL if encoding is needed; 
+    * @return    the encoded URL if encoding is needed;
     *         the unchanged URL otherwise.
     */
    @Override
@@ -172,11 +172,11 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
    }
 
    /**
-    * @deprecated   As of version 2.1, use 
+    * @deprecated   As of version 2.1, use
     *         encodeRedirectURL(String url) instead
     *
     * @param  url   the url to be encoded.
-    * @return    the encoded URL if encoding is needed; 
+    * @return    the encoded URL if encoding is needed;
     *         the unchanged URL otherwise.
     */
    @Override
@@ -246,13 +246,13 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
    }
 
    /**
-    * @deprecated As of version 2.1, due to ambiguous meaning of the 
-    * message parameter. To set a status code 
+    * @deprecated As of version 2.1, due to ambiguous meaning of the
+    * message parameter. To set a status code
     * use <code>setStatus(int)</code>, to send an error with a description
     * use <code>sendError(int, String)</code>.
     *
     * Sets the status code and message for this response.
-    * 
+    *
     * @param  sc the status code
     * @param  sm the status message
     */

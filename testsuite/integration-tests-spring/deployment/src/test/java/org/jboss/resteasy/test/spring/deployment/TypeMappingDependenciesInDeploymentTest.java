@@ -40,95 +40,95 @@ import static org.junit.Assert.assertEquals;
 public class TypeMappingDependenciesInDeploymentTest {
 
 
-    @Deployment
-    private static Archive<?> deploy() {
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, TypeMappingDependenciesInDeploymentTest.class.getSimpleName() + ".war")
-                .addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
-        archive.addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "typeMapping/spring-typemapping-test-server.xml", "applicationContext.xml");
-        archive.addClass(TypeMappingResource.class);
+   @Deployment
+   private static Archive<?> deploy() {
+      WebArchive archive = ShrinkWrap.create(WebArchive.class, TypeMappingDependenciesInDeploymentTest.class.getSimpleName() + ".war")
+            .addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
+      archive.addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "typeMapping/spring-typemapping-test-server.xml", "applicationContext.xml");
+      archive.addClass(TypeMappingResource.class);
 
-        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getClassLoader"),
-                new FilePermission("<<ALL FILES>>", "read"),
-                new LoggingPermission("control", "")
-        ), "permissions.xml");
+      archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+      ), "permissions.xml");
 
-        TestUtilSpring.addSpringLibraries(archive);
-        return archive;
-    }
+      TestUtilSpring.addSpringLibraries(archive);
+      return archive;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, TypeMappingDependenciesInDeploymentTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, TypeMappingDependenciesInDeploymentTest.class.getSimpleName());
+   }
 
-    private void requestAndAssert(String path, String extension, String accept, String expectedContentType) {
-        // prepare URL
-        String url = generateURL("/test/" + path);
-        if (extension != null) {
+   private void requestAndAssert(String path, String extension, String accept, String expectedContentType) {
+      // prepare URL
+      String url = generateURL("/test/" + path);
+      if (extension != null) {
             url = url + "." + extension;
-        }
+      }
 
-        // make request
-        Client client = ResteasyClientBuilder.newClient();
-        WebTarget target = client.target(url);
-        Invocation.Builder builder = target.request();
-        if (accept != null) {
+      // make request
+      Client client = ResteasyClientBuilder.newClient();
+      WebTarget target = client.target(url);
+      Invocation.Builder builder = target.request();
+      if (accept != null) {
             builder.accept(accept);
-        }
-        Response response = builder.get();
-        int status = response.getStatus();
-        String contentType = response.getHeaderString("Content-type");
-        assertEquals("Request for " + url + " returned a non-200 status", HttpResponseCodes.SC_OK, status);
-        assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, contentType);
+      }
+      Response response = builder.get();
+      int status = response.getStatus();
+      String contentType = response.getHeaderString("Content-type");
+      assertEquals("Request for " + url + " returned a non-200 status", HttpResponseCodes.SC_OK, status);
+      assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, contentType);
 
-        // close
-        response.close();
-        client.close();
-    }
+      // close
+      response.close();
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Test various option of type mapping. Reproducer for RESTEASY-1287.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    @Category({NotForForwardCompatibility.class})
-    public void test() throws Exception {
-        // acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception {
-        requestAndAssert("noproduces", "json", "application/json, application/xml", "application/json");
+   /**
+    * @tpTestDetails Test various option of type mapping. Reproducer for RESTEASY-1287.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   @Category({NotForForwardCompatibility.class})
+   public void test() throws Exception {
+      // acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception {
+      requestAndAssert("noproduces", "json", "application/json, application/xml", "application/json");
 
-        // acceptJSONAndXMLRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/json, application/xml", "application/xml;charset=UTF-8");
+      // acceptJSONAndXMLRequestNoProducesXMLExtension() throws Exception {
+      requestAndAssert("noproduces", "xml", "application/json, application/xml", "application/xml;charset=UTF-8");
 
-        // acceptJSONOnlyRequestNoProducesJSONExtension() throws Exception {
-        requestAndAssert("noproduces", "json", "application/json", "application/json");
+      // acceptJSONOnlyRequestNoProducesJSONExtension() throws Exception {
+      requestAndAssert("noproduces", "json", "application/json", "application/json");
 
-        // acceptJSONOnlyRequestNoProducesNoExtension() throws Exception {
-        requestAndAssert("noproduces", null, "application/json", "application/json");
+      // acceptJSONOnlyRequestNoProducesNoExtension() throws Exception {
+      requestAndAssert("noproduces", null, "application/json", "application/json");
 
-        // acceptJSONOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/json", "application/xml;charset=UTF-8");
+      // acceptJSONOnlyRequestNoProducesXMLExtension() throws Exception {
+      requestAndAssert("noproduces", "xml", "application/json", "application/xml;charset=UTF-8");
 
-        // acceptNullRequestNoProducesJSONExtension() throws Exception {
-        requestAndAssert("noproduces", "json", null, "application/json");
+      // acceptNullRequestNoProducesJSONExtension() throws Exception {
+      requestAndAssert("noproduces", "json", null, "application/json");
 
-        // acceptNullRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", null, "application/xml;charset=UTF-8");
+      // acceptNullRequestNoProducesXMLExtension() throws Exception {
+      requestAndAssert("noproduces", "xml", null, "application/xml;charset=UTF-8");
 
-        // acceptXMLAndJSONRequestNoProducesJSONExtension() throws Exception {
-        requestAndAssert("noproduces", "json", "application/xml, application/json", "application/json");
+      // acceptXMLAndJSONRequestNoProducesJSONExtension() throws Exception {
+      requestAndAssert("noproduces", "json", "application/xml, application/json", "application/json");
 
-        // acceptXMLAndJSONRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/xml, application/json", "application/xml;charset=UTF-8");
+      // acceptXMLAndJSONRequestNoProducesXMLExtension() throws Exception {
+      requestAndAssert("noproduces", "xml", "application/xml, application/json", "application/xml;charset=UTF-8");
 
-        // acceptXMLOnlyRequestNoProducesJSONExtension() throws Exception {
-        requestAndAssert("noproduces", "json", "application/xml", "application/json");
+      // acceptXMLOnlyRequestNoProducesJSONExtension() throws Exception {
+      requestAndAssert("noproduces", "json", "application/xml", "application/json");
 
-        // acceptXMLOnlyRequestNoProducesNoExtension() throws Exception {
-        requestAndAssert("noproduces", null, "application/xml", "application/xml;charset=UTF-8");
+      // acceptXMLOnlyRequestNoProducesNoExtension() throws Exception {
+      requestAndAssert("noproduces", null, "application/xml", "application/xml;charset=UTF-8");
 
-        // acceptXMLOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/xml", "application/xml;charset=UTF-8");
-    }
+      // acceptXMLOnlyRequestNoProducesXMLExtension() throws Exception {
+      requestAndAssert("noproduces", "xml", "application/xml", "application/xml;charset=UTF-8");
+   }
 }

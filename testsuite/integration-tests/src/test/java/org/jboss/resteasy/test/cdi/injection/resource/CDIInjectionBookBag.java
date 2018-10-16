@@ -8,15 +8,14 @@ import java.util.HashSet;
 @Stateful
 @SessionScoped
 public class CDIInjectionBookBag implements CDIInjectionBookBagLocal {
-    private HashSet<CDIInjectionBook> books = new HashSet<CDIInjectionBook>();
+   private HashSet<CDIInjectionBook> books = new HashSet<CDIInjectionBook>();
 
-    public void addBook(CDIInjectionBook book) {
-        books.add(book);
-    }
+   public void addBook(CDIInjectionBook book) {
+      books.add(book);
+   }
 
-    public Collection<CDIInjectionBook> getContents() {
-        return new HashSet<CDIInjectionBook>(books);
-    }
+   public Collection<CDIInjectionBook> getContents() {
+      return new HashSet<CDIInjectionBook>(books);
+   }
 
 }
-

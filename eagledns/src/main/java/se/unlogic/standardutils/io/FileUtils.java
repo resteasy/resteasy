@@ -24,194 +24,194 @@ import java.io.IOException;
  */
 public class FileUtils {
 
-	public static String toAsciiFilename(String string) {
+   public static String toAsciiFilename(String string) {
 
-		return string.replaceAll("[^0-9a-zA-Z-.]", "_");
-	}
+      return string.replaceAll("[^0-9a-zA-Z-.]", "_");
+   }
 
-	public static String toValidHttpFilename(String string) {
+   public static String toValidHttpFilename(String string) {
 
-		return string.replaceAll("[^0-9a-öA-Ö-+. ()-+!@é&%$§=´]", "_");
-	}	
-	
-	public final static byte[] getRawBytes(File f) throws IOException {
-		FileInputStream fin = new FileInputStream(f);
-		byte[] buffer = new byte[(int) f.length()];
-		fin.read(buffer);
-		fin.close();
-		return buffer;
-	}
+      return string.replaceAll("[^0-9a-ï¿½A-ï¿½-+. ()-+!@ï¿½&%$ï¿½=ï¿½]", "_");
+   }
 
-	public static String getFileExtension(File file) {
-		return getFileExtension(file.getName());
-	}
+   public final static byte[] getRawBytes(File f) throws IOException {
+      FileInputStream fin = new FileInputStream(f);
+      byte[] buffer = new byte[(int) f.length()];
+      fin.read(buffer);
+      fin.close();
+      return buffer;
+   }
 
-	public static String getFileExtension(String filename) {
+   public static String getFileExtension(File file) {
+      return getFileExtension(file.getName());
+   }
 
-		int dotIndex = filename.lastIndexOf(".");
+   public static String getFileExtension(String filename) {
 
-		if (dotIndex == -1 || (dotIndex + 1) == filename.length()) {
-			return null;
-		} else {
-			return filename.substring(dotIndex + 1);
-		}
-	}
+      int dotIndex = filename.lastIndexOf(".");
 
-	public static boolean fileExists(String path) {
+      if (dotIndex == -1 || (dotIndex + 1) == filename.length()) {
+         return null;
+      } else {
+         return filename.substring(dotIndex + 1);
+      }
+   }
 
-		File file = new File(path);
+   public static boolean fileExists(String path) {
 
-		return file.exists();
-	}
+      File file = new File(path);
 
-	/**
-	 * Removes all files in the given directory matching the given filter
-	 * 
-	 * @param directory
-	 *            the directory to be cleared
-	 * @param filter
-	 *            {@link FileFilter} used to filter files
-	 * @param recursive
-	 *            controls weather files should be deleted from sub directories too
-	 */
-	public static int deleteFiles(String directory, FileFilter filter, boolean recursive) {
+      return file.exists();
+   }
 
-		return deleteFiles(new File(directory), filter, recursive);
-	}
-	
-	public static int deleteFiles(File dir, FileFilter filter, boolean recursive) {
+   /**
+    * Removes all files in the given directory matching the given filter
+    *
+    * @param directory
+    *            the directory to be cleared
+    * @param filter
+    *            {@link FileFilter} used to filter files
+    * @param recursive
+    *            controls weather files should be deleted from sub directories too
+    */
+   public static int deleteFiles(String directory, FileFilter filter, boolean recursive) {
 
-		if (dir.exists() && dir.isDirectory()) {
+      return deleteFiles(new File(directory), filter, recursive);
+   }
 
-			int deletedFiles = 0;
+   public static int deleteFiles(File dir, FileFilter filter, boolean recursive) {
 
-			File[] files = dir.listFiles(filter);
+      if (dir.exists() && dir.isDirectory()) {
 
-			for (File file : files) {
+         int deletedFiles = 0;
 
-				if (file.isDirectory()) {
+         File[] files = dir.listFiles(filter);
 
-					if (recursive) {
+         for (File file : files) {
 
-						deletedFiles += deleteFiles(file, filter, recursive);
-					}
+            if (file.isDirectory()) {
 
-				} else {
+               if (recursive) {
 
-					if(file.delete()){
-					
-						deletedFiles++;
-					}
-				}
-			}
+                  deletedFiles += deleteFiles(file, filter, recursive);
+               }
 
-			return deletedFiles;
-		}
+            } else {
 
-		return 0;
-	}	
+               if(file.delete()){
 
-	public static int replace(File dir, String filename, File replacementFile, boolean recursive, boolean caseSensitive, Callback<File> callback) {
+                  deletedFiles++;
+               }
+            }
+         }
 
-		if (dir.exists() && dir.isDirectory()) {
+         return deletedFiles;
+      }
 
-			int replacedFiles = 0;
+      return 0;
+   }
 
-			File[] files = dir.listFiles();
+   public static int replace(File dir, String filename, File replacementFile, boolean recursive, boolean caseSensitive, Callback<File> callback) {
 
-			for (File file : files) {
+      if (dir.exists() && dir.isDirectory()) {
 
-				if (file.isDirectory()) {
+         int replacedFiles = 0;
 
-					if (recursive) {
+         File[] files = dir.listFiles();
 
-						replacedFiles += replace(file, filename,replacementFile, recursive, caseSensitive, callback);
-					}
+         for (File file : files) {
 
-				} else {
+            if (file.isDirectory()) {
 
-					if(caseSensitive){
-						
-						if(!file.getName().equals(filename)){
-							
-							continue;	
-						}
-						
-					}else if(!file.getName().equalsIgnoreCase(filename)){
-						
-						continue;
-					}
-					
-					if(file.canWrite()){
-						
-						try {
-							if(callback != null){
-								callback.callback(file);
-							}
-							
-							replaceFile(file,replacementFile);
-							
-							replacedFiles++;
-							
-						} catch (IOException e) {}
-					}
-				}
-			}
+               if (recursive) {
 
-			return replacedFiles;
-		}
+                  replacedFiles += replace(file, filename,replacementFile, recursive, caseSensitive, callback);
+               }
 
-		return 0;
-	}
-	
-	public static void replaceFile(File target, File replacement) throws IOException {
-		
-		FileInputStream inputStream = null;
-		FileOutputStream outputStream = null;
-		
-		try{			
-			inputStream = new FileInputStream(replacement);
-			outputStream = new FileOutputStream(target);
-			
-			inputStream.getChannel().transferTo(0, replacement.length(), outputStream.getChannel());
-			
-			StreamUtils.transfer(inputStream, outputStream);
-			
-		}finally{
-			StreamUtils.closeStream(inputStream);
-			StreamUtils.closeStream(outputStream);
-		}
-	}
+            } else {
 
-	public static boolean deleteDirectory(String directoryPath) {
+               if(caseSensitive){
 
-		return deleteDirectory(new File(directoryPath));
-	}
+                  if(!file.getName().equals(filename)){
 
-	public static boolean deleteDirectory(File directory) {
+                     continue;
+                  }
 
-		if (directory.exists()) {
+               }else if(!file.getName().equalsIgnoreCase(filename)){
 
-			File[] files = directory.listFiles();
+                  continue;
+               }
 
-			for (File file : files) {
+               if(file.canWrite()){
 
-				if (file.isDirectory()) {
-					deleteDirectory(file);
-				} else {
-					file.delete();
-				}
-			}
-		}
-		return directory.delete();
-	}
+                  try {
+                     if(callback != null){
+                        callback.callback(file);
+                     }
 
-	public static void deleteFile(String path) {
+                     replaceFile(file,replacementFile);
 
-		File file = new File(path);
-		
-		if(file.exists()){
-			file.delete();
-		}
-	}
+                     replacedFiles++;
+
+                  } catch (IOException e) {}
+               }
+            }
+         }
+
+         return replacedFiles;
+      }
+
+      return 0;
+   }
+
+   public static void replaceFile(File target, File replacement) throws IOException {
+
+      FileInputStream inputStream = null;
+      FileOutputStream outputStream = null;
+
+      try{
+         inputStream = new FileInputStream(replacement);
+         outputStream = new FileOutputStream(target);
+
+         inputStream.getChannel().transferTo(0, replacement.length(), outputStream.getChannel());
+
+         StreamUtils.transfer(inputStream, outputStream);
+
+      }finally{
+         StreamUtils.closeStream(inputStream);
+         StreamUtils.closeStream(outputStream);
+      }
+   }
+
+   public static boolean deleteDirectory(String directoryPath) {
+
+      return deleteDirectory(new File(directoryPath));
+   }
+
+   public static boolean deleteDirectory(File directory) {
+
+      if (directory.exists()) {
+
+         File[] files = directory.listFiles();
+
+         for (File file : files) {
+
+            if (file.isDirectory()) {
+               deleteDirectory(file);
+            } else {
+               file.delete();
+            }
+         }
+      }
+      return directory.delete();
+   }
+
+   public static void deleteFile(String path) {
+
+      File file = new File(path);
+
+      if(file.exists()){
+         file.delete();
+      }
+   }
 }

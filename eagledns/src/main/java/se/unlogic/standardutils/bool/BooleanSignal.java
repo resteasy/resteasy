@@ -9,15 +9,15 @@ package se.unlogic.standardutils.bool;
 
 public class BooleanSignal {
 
-	private boolean signal;
+   private boolean signal;
 
-	public boolean isSignal() {
+   public boolean isSignal() {
 
-		return signal;
-	}
+      return signal;
+   }
 
-	public void setSignal(boolean signal) {
+   public void setSignal(boolean signal) {
 
-		this.signal = signal;
-	}
+      this.signal = signal;
+   }
 }

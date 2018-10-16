@@ -33,107 +33,107 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class WireSmokeTest {
 
-    static Client client;
-    private static final String WRONG_RESPONSE = "Wrong response content.";
+   static Client client;
+   private static final String WRONG_RESPONSE = "Wrong response content.";
 
-    @Deployment(name = "LocatingResource")
-    public static Archive<?> deployLocatingResource() {
-        WebArchive war = TestUtil.prepareArchive(WireSmokeLocatingResource.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, WireSmokeLocatingResource.class, WireSmokeSimpleResource.class, WireSmokeSimpleSubresource.class);
-    }
+   @Deployment(name = "LocatingResource")
+   public static Archive<?> deployLocatingResource() {
+      WebArchive war = TestUtil.prepareArchive(WireSmokeLocatingResource.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, WireSmokeLocatingResource.class, WireSmokeSimpleResource.class, WireSmokeSimpleSubresource.class);
+   }
 
-    @Deployment(name = "SimpleResource")
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(WireSmokeSimpleResource.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, WireSmokeSimpleResource.class);
-    }
+   @Deployment(name = "SimpleResource")
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(WireSmokeSimpleResource.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, WireSmokeSimpleResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURLNoDefault(String path) {
-        return PortProviderUtil.generateURL(path, WireSmokeSimpleResource.class.getSimpleName());
-    }
+   private String generateURLNoDefault(String path) {
+      return PortProviderUtil.generateURL(path, WireSmokeSimpleResource.class.getSimpleName());
+   }
 
-    private String generateURLLocating(String path) {
-        return PortProviderUtil.generateURL(path, WireSmokeLocatingResource.class.getSimpleName());
-    }
+   private String generateURLLocating(String path) {
+      return PortProviderUtil.generateURL(path, WireSmokeLocatingResource.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Check result from simple resource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testNoDefaultsResource() throws Exception {
-        {
+   /**
+    * @tpTestDetails Check result from simple resource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testNoDefaultsResource() throws Exception {
+      {
             Response response = client.target(generateURLNoDefault("/basic")).request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "basic", response.readEntity(String.class));
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLNoDefault("/basic")).request().put(Entity.entity("basic", "text/plain"));
             Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
             response.close();
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLNoDefault("/queryParam")).queryParam("param", "hello world").request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "hello world", response.readEntity(String.class));
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLNoDefault("/uriParam/1234")).request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "1234", response.readEntity(String.class));
-        }
-    }
+      }
+   }
 
-    /**
-     * @tpTestDetails Check result from more resources.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testLocatingResource() throws Exception {
-        {
+   /**
+    * @tpTestDetails Check result from more resources.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testLocatingResource() throws Exception {
+      {
             Response response = client.target(generateURLLocating("/locating/basic")).request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "basic", response.readEntity(String.class));
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLLocating("/locating/basic")).request().put(Entity.entity("basic", "text/plain"));
             Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
             response.close();
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLLocating("/locating/queryParam")).queryParam("param", "hello world").request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "hello world", response.readEntity(String.class));
-        }
-        {
+      }
+      {
             Response response = client.target(generateURLLocating("/locating/uriParam/1234")).queryParam("param", "hello world").request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "1234", response.readEntity(String.class));
-        }
-        {
-           Response response = client.target(generateURLLocating("/locating/uriParam/x1234")).queryParam("param", "hello world").request().get();
-           Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-           response.close();
-        }
-        {
-           Response response = client.target(generateURLLocating("/locating/notmatching")).request().get();
-           Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-           response.close();
-        }
-        {
-           Response response = client.target(generateURLLocating("/subresource/subresource/subresource/basic")).request().get();
-           Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-           Assert.assertEquals("basic", response.readEntity(String.class));
-        }
-    }
+      }
+      {
+         Response response = client.target(generateURLLocating("/locating/uriParam/x1234")).queryParam("param", "hello world").request().get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+         response.close();
+      }
+      {
+         Response response = client.target(generateURLLocating("/locating/notmatching")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+         response.close();
+      }
+      {
+         Response response = client.target(generateURLLocating("/subresource/subresource/subresource/basic")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals("basic", response.readEntity(String.class));
+      }
+   }
 }

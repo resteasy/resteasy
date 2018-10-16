@@ -8,19 +8,19 @@ import javax.ws.rs.Produces;
 
 @Path("/")
 public interface GzipIGZIP {
-    @GET
-    @Path("text")
-    @Produces("text/plain")
-    String getText();
+   @GET
+   @Path("text")
+   @Produces("text/plain")
+   String getText();
 
-    @GET
-    @Path("encoded/text")
-    @GZIP
-    String getGzipText();
+   @GET
+   @Path("encoded/text")
+   @GZIP
+   String getGzipText();
 
-    @GET
-    @Path("encoded/text/error")
-    @GZIP
-    String getGzipErrorText();
+   @GET
+   @Path("encoded/text/error")
+   @GZIP
+   String getGzipErrorText();
 
 }

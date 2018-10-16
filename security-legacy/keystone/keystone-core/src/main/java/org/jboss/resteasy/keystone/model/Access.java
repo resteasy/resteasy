@@ -15,12 +15,12 @@ public class Access implements Serializable {
 
    @JsonIgnoreProperties(ignoreUnknown = true)
    public static final class Token implements Serializable {
-		
-		private String id;
-		
-		private Calendar expires;
-		
-		private Project project;
+
+      private String id;
+
+      private Calendar expires;
+
+      private Project project;
 
       public Token()
       {
@@ -34,144 +34,144 @@ public class Access implements Serializable {
       }
 
       /**
-		 * @return the id
-		 */
-		public String getId() {
-			return id;
-		}
+       * @return the id
+       */
+      public String getId() {
+         return id;
+      }
 
-		/**
-		 * @return the expires
-		 */
-		public Calendar getExpires() {
-			return expires;
-		}
+      /**
+       * @return the expires
+       */
+      public Calendar getExpires() {
+         return expires;
+      }
 
       public boolean expired()
       {
          return expires.getTime().getTime() < System.currentTimeMillis();
       }
 
-		/**
-		 * @return the project
-		 */
-		public Project getProject() {
-			return project;
-		}
+      /**
+       * @return the project
+       */
+      public Project getProject() {
+         return project;
+      }
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "Token [id=" + id + ", expires=" + expires + ", project="
-					+ project + "]";
-		}
-		
-	}
-	
-	public static final class Service implements Serializable {
-		
-		@JsonIgnoreProperties(ignoreUnknown=true)
-		public static final class Endpoint {
-			
-			private String region;
-			
-			private String publicURL;
-			
-			private String internalURL;
-			
-			private String adminURL;
+      /* (non-Javadoc)
+       * @see java.lang.Object#toString()
+       */
+      @Override
+      public String toString() {
+         return "Token [id=" + id + ", expires=" + expires + ", project="
+               + project + "]";
+      }
 
-			/**
-			 * @return the region
-			 */
-			public String getRegion() {
-				return region;
-			}
+   }
 
-			/**
-			 * @return the publicURL
-			 */
-			public String getPublicURL() {
-				return publicURL;
-			}
+   public static final class Service implements Serializable {
 
-			/**
-			 * @return the internalURL
-			 */
-			public String getInternalURL() {
-				return internalURL;
-			}
+      @JsonIgnoreProperties(ignoreUnknown=true)
+      public static final class Endpoint {
 
-			/**
-			 * @return the adminURL
-			 */
-			public String getAdminURL() {
-				return adminURL;
-			}
+         private String region;
 
-			/* (non-Javadoc)
-			 * @see java.lang.Object#toString()
-			 */
-			@Override
-			public String toString() {
-				return "Endpoint [region=" + region + ", publicURL="
-						+ publicURL + ", internalURL=" + internalURL
-						+ ", adminURL=" + adminURL + "]";
-			}
-			
-		}
-		
-		private String type;
-		
-		private String name;
-		
-		private List<Endpoint> endpoints;
-		
-		@JsonProperty("endpoints_links")
-		private List<Link> endpointsLinks;
+         private String publicURL;
 
-		/**
-		 * @return the type
-		 */
-		public String getType() {
-			return type;
-		}
+         private String internalURL;
 
-		/**
-		 * @return the name
-		 */
-		public String getName() {
-			return name;
-		}
+         private String adminURL;
 
-		/**
-		 * @return the endpoints
-		 */
-		public List<Endpoint> getEndpoints() {
-			return endpoints;
-		}
+         /**
+          * @return the region
+          */
+         public String getRegion() {
+            return region;
+         }
 
-		/**
-		 * @return the endpointsLinks
-		 */
-		public List<Link> getEndpointsLinks() {
-			return endpointsLinks;
-		}
+         /**
+          * @return the publicURL
+          */
+         public String getPublicURL() {
+            return publicURL;
+         }
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "Service [type=" + type + ", name=" + name + ", endpoints="
-					+ endpoints + ", endpointsLinks=" + endpointsLinks + "]";
-		}
-		
-	}
-	
-	public static final class User implements Serializable {
+         /**
+          * @return the internalURL
+          */
+         public String getInternalURL() {
+            return internalURL;
+         }
+
+         /**
+          * @return the adminURL
+          */
+         public String getAdminURL() {
+            return adminURL;
+         }
+
+         /* (non-Javadoc)
+          * @see java.lang.Object#toString()
+          */
+         @Override
+         public String toString() {
+            return "Endpoint [region=" + region + ", publicURL="
+                  + publicURL + ", internalURL=" + internalURL
+                  + ", adminURL=" + adminURL + "]";
+         }
+
+      }
+
+      private String type;
+
+      private String name;
+
+      private List<Endpoint> endpoints;
+
+      @JsonProperty("endpoints_links")
+      private List<Link> endpointsLinks;
+
+      /**
+       * @return the type
+       */
+      public String getType() {
+         return type;
+      }
+
+      /**
+       * @return the name
+       */
+      public String getName() {
+         return name;
+      }
+
+      /**
+       * @return the endpoints
+       */
+      public List<Endpoint> getEndpoints() {
+         return endpoints;
+      }
+
+      /**
+       * @return the endpointsLinks
+       */
+      public List<Link> getEndpointsLinks() {
+         return endpointsLinks;
+      }
+
+      /* (non-Javadoc)
+       * @see java.lang.Object#toString()
+       */
+      @Override
+      public String toString() {
+         return "Service [type=" + type + ", name=" + name + ", endpoints="
+               + endpoints + ", endpointsLinks=" + endpointsLinks + "]";
+      }
+
+   }
+
+   public static final class User implements Serializable {
 
       public User()
       {
@@ -186,62 +186,62 @@ public class Access implements Serializable {
       }
 
       private String id;
-		
-		private String name;
-		
-		private String username;
-		
-		private Set<Role> roles;
-		
-		/**
-		 * @return the id
-		 */
-		public String getId() {
-			return id;
-		}
 
-		/**
-		 * @return the name
-		 */
-		public String getName() {
-			return name;
-		}
+      private String name;
 
-		/**
-		 * @return the username
-		 */
-		public String getUsername() {
-			return username;
-		}
+      private String username;
 
-		/**
-		 * @return the roles
-		 */
-		public Set<Role> getRoles() {
-			return roles;
-		}
+      private Set<Role> roles;
 
-		/**
-		 * @return the rolesLinks
-		 */
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "User [id=" + id + ", name=" + name + ", username="
-					+ username + ", roles=" + roles + "]";
-		}
-		
-	}
-	
-	private Token token;
-	
-	private List<Service> serviceCatalog;
-	
-	private User user;
-	
-	private Map<String, Object> metadata;
+      /**
+       * @return the id
+       */
+      public String getId() {
+         return id;
+      }
+
+      /**
+       * @return the name
+       */
+      public String getName() {
+         return name;
+      }
+
+      /**
+       * @return the username
+       */
+      public String getUsername() {
+         return username;
+      }
+
+      /**
+       * @return the roles
+       */
+      public Set<Role> getRoles() {
+         return roles;
+      }
+
+      /**
+       * @return the rolesLinks
+       */
+      /* (non-Javadoc)
+       * @see java.lang.Object#toString()
+       */
+      @Override
+      public String toString() {
+         return "User [id=" + id + ", name=" + name + ", username="
+               + username + ", roles=" + roles + "]";
+      }
+
+   }
+
+   private Token token;
+
+   private List<Service> serviceCatalog;
+
+   private User user;
+
+   private Map<String, Object> metadata;
 
    public Access()
    {
@@ -256,32 +256,32 @@ public class Access implements Serializable {
    }
 
    /**
-	 * @return the token
-	 */
-	public Token getToken() {
-		return token;
-	}
+    * @return the token
+    */
+   public Token getToken() {
+      return token;
+   }
 
-	/**
-	 * @return the serviceCatalog
-	 */
-	public List<Service> getServiceCatalog() {
-		return serviceCatalog;
-	}
+   /**
+    * @return the serviceCatalog
+    */
+   public List<Service> getServiceCatalog() {
+      return serviceCatalog;
+   }
 
-	/**
-	 * @return the user
-	 */
-	public User getUser() {
-		return user;
-	}
+   /**
+    * @return the user
+    */
+   public User getUser() {
+      return user;
+   }
 
-	/**
-	 * @return the metadata
-	 */
-	public Map<String, Object> getMetadata() {
-		return metadata;
-	}
+   /**
+    * @return the metadata
+    */
+   public Map<String, Object> getMetadata() {
+      return metadata;
+   }
 
    public void setToken(Token token)
    {
@@ -304,12 +304,12 @@ public class Access implements Serializable {
    }
 
    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-	@Override
-	public String toString() {
-		return "Access [token=" + token + ", serviceCatalog=" + serviceCatalog
-				+ ", user=" + user + ", metadata=" + metadata + "]";
-	}
-	
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Access [token=" + token + ", serviceCatalog=" + serviceCatalog
+            + ", user=" + user + ", metadata=" + metadata + "]";
+   }
+
 }

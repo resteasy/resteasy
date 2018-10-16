@@ -46,58 +46,58 @@ import java.util.PropertyPermission;
 @RunWith(Arquillian.class)
 public class GenericSuperInterfaceTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(GenericSuperInterfaceTest.class.getSimpleName());
-        war.addClasses(GenericSuperInterfaceBackendDataCentersResource.class,
-                GenericSuperInterfaceAbstractBackendCollectionResource.class,
-                GenericSuperInterfaceAbstractBackendResource.class,
-                GenericSuperInterfaceAbstractBackendSubResource.class,
-                GenericSuperInterfaceAction.class, GenericSuperInterfaceAssignedPermissionsResource.class,
-                GenericSuperInterfaceBackendDataCenterResource.class,
-                GenericSuperInterfaceBackendDataCentersResource.class,
-                GenericSuperInterfaceBackendResource.class,
-                GenericSuperInterfaceBaseResource.class, GenericSuperInterfaceBaseResources.class,
-                GenericSuperInterfaceBusinessEntity.class,
-                GenericSuperInterfaceDataCenter.class, GenericSuperInterfaceDataCenterResource.class,
-                GenericSuperInterfaceDataCenters.class,
-                GenericSuperInterfaceDataCentersResource.class, GenericSuperInterfaceGuid.class,
-                GenericSuperInterfaceINotifyPropertyChanged.class, GenericSuperInterfaceIVdcQueryable.class,
-                GenericSuperInterfaceStoragePool.class, GenericSuperInterfaceUpdatableResource.class,
-                GenericSuperInterfaceBaseBackendResource.class,
-                TestUtil.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, GenericSuperInterfaceTop.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(GenericSuperInterfaceTest.class.getSimpleName());
+      war.addClasses(GenericSuperInterfaceBackendDataCentersResource.class,
+            GenericSuperInterfaceAbstractBackendCollectionResource.class,
+            GenericSuperInterfaceAbstractBackendResource.class,
+            GenericSuperInterfaceAbstractBackendSubResource.class,
+            GenericSuperInterfaceAction.class, GenericSuperInterfaceAssignedPermissionsResource.class,
+            GenericSuperInterfaceBackendDataCenterResource.class,
+            GenericSuperInterfaceBackendDataCentersResource.class,
+            GenericSuperInterfaceBackendResource.class,
+            GenericSuperInterfaceBaseResource.class, GenericSuperInterfaceBaseResources.class,
+            GenericSuperInterfaceBusinessEntity.class,
+            GenericSuperInterfaceDataCenter.class, GenericSuperInterfaceDataCenterResource.class,
+            GenericSuperInterfaceDataCenters.class,
+            GenericSuperInterfaceDataCentersResource.class, GenericSuperInterfaceGuid.class,
+            GenericSuperInterfaceINotifyPropertyChanged.class, GenericSuperInterfaceIVdcQueryable.class,
+            GenericSuperInterfaceStoragePool.class, GenericSuperInterfaceUpdatableResource.class,
+            GenericSuperInterfaceBaseBackendResource.class,
+            TestUtil.class);
+      // Arquillian in the deployment
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new PropertyPermission("arquillian.*", "read")), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, GenericSuperInterfaceTop.class);
+   }
 
-    /**
-     * @tpTestDetails Test on server.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testGetImplementationReflection() throws Exception {
-        Class updatableResource = GenericSuperInterfaceBackendDataCenterResource.class.getInterfaces()[0].getInterfaces()[0];
-        Assert.assertEquals(updatableResource, GenericSuperInterfaceUpdatableResource.class);
-        Method update = null;
-        for (Method method : updatableResource.getMethods()) {
+   /**
+    * @tpTestDetails Test on server.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testGetImplementationReflection() throws Exception {
+      Class updatableResource = GenericSuperInterfaceBackendDataCenterResource.class.getInterfaces()[0].getInterfaces()[0];
+      Assert.assertEquals(updatableResource, GenericSuperInterfaceUpdatableResource.class);
+      Method update = null;
+      for (Method method : updatableResource.getMethods()) {
             if (method.getName().equals("update")) {
-                update = method;
+            update = method;
             }
-        }
-        Assert.assertNotNull("Updated method was not found", update);
+      }
+      Assert.assertNotNull("Updated method was not found", update);
 
-        Method implemented = Types.getImplementingMethod(GenericSuperInterfaceBackendDataCenterResource.class, update);
+      Method implemented = Types.getImplementingMethod(GenericSuperInterfaceBackendDataCenterResource.class, update);
 
-        Method actual = null;
-        for (Method method : GenericSuperInterfaceBackendDataCenterResource.class.getMethods()) {
+      Method actual = null;
+      for (Method method : GenericSuperInterfaceBackendDataCenterResource.class.getMethods()) {
             if (method.getName().equals("update") && !method.isSynthetic()) {
-                actual = method;
+            actual = method;
             }
-        }
-        Assert.assertEquals("Interface was not detected", implemented, actual);
-    }
+      }
+      Assert.assertEquals("Interface was not detected", implemented, actual);
+   }
 }

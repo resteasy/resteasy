@@ -39,114 +39,112 @@ public class ClientHttpEngineBuilder4 implements ClientHttpEngineBuilder {
 
    @Override
    public ClientHttpEngine build()
-    {
-        X509HostnameVerifier verifier = null;
-        if (that.verifier != null) {
-            verifier = new VerifierWrapper(that.verifier);
-        }
-        else
-        {
-            switch (that.policy)
-            {
-                case ANY:
-                    verifier = new AllowAllHostnameVerifier();
-                    break;
-                case WILDCARD:
-                    verifier = new BrowserCompatHostnameVerifier();
-                    break;
-                case STRICT:
-                    verifier = new StrictHostnameVerifier();
-                    break;
-            }
-        }
-        try
-        {
-            SSLSocketFactory sslsf = null;
-            SSLContext theContext = that.sslContext;
-            if (that.disableTrustManager)
-            {
-                theContext = SSLContext.getInstance("SSL");
-                theContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
-                    new SecureRandom());
-                verifier =  new AllowAllHostnameVerifier();
-                sslsf = new SSLSocketFactory(theContext, verifier);
-            }
-            else if (theContext != null)
-            {
-                sslsf = new SSLSocketFactory(theContext, verifier) {
-                    @Override
-                    protected void prepareSocket(SSLSocket socket) throws IOException
-                    {
-                        that.prepareSocketForSni(socket);
-                    }
-                };
-            }
-            else if (that.clientKeyStore != null || that.truststore != null)
-            {
-                sslsf = new SSLSocketFactory(SSLSocketFactory.TLS,
-                    that.clientKeyStore, that.clientPrivateKeyPassword,
-                    that.truststore, null, verifier) {
-                    @Override
-                    protected void prepareSocket(SSLSocket socket) throws IOException
-                    {
-                        that.prepareSocketForSni(socket);
-                    }
-                };
-            }
-            else
-            {
-                final SSLContext tlsContext = SSLContext.getInstance(SSLSocketFactory.TLS);
-                tlsContext.init(null, null, null);
-                sslsf = new SSLSocketFactory(tlsContext, verifier);
-            }
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(
-                new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-            Scheme httpsScheme = new Scheme("https", 443, sslsf);
-            registry.register(httpsScheme);
-            ClientConnectionManager cm = null;
-            if (that.connectionPoolSize > 0)
-            {
-                PoolingClientConnectionManager tcm =
-                    new PoolingClientConnectionManager(registry,
+   {
+      X509HostnameVerifier verifier = null;
+      if (that.verifier != null) {
+         verifier = new VerifierWrapper(that.verifier);
+      }
+      else
+      {
+         switch (that.policy)
+         {
+            case ANY:
+               verifier = new AllowAllHostnameVerifier();
+               break;
+            case WILDCARD:
+               verifier = new BrowserCompatHostnameVerifier();
+               break;
+            case STRICT:
+               verifier = new StrictHostnameVerifier();
+               break;
+         }
+      }
+      try
+      {
+         SSLSocketFactory sslsf = null;
+         SSLContext theContext = that.sslContext;
+         if (that.disableTrustManager)
+         {
+            theContext = SSLContext.getInstance("SSL");
+            theContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
+                  new SecureRandom());
+            verifier =  new AllowAllHostnameVerifier();
+            sslsf = new SSLSocketFactory(theContext, verifier);
+         }
+         else if (theContext != null)
+         {
+            sslsf = new SSLSocketFactory(theContext, verifier) {
+               @Override
+               protected void prepareSocket(SSLSocket socket) throws IOException
+               {
+                  that.prepareSocketForSni(socket);
+               }
+            };
+         }
+         else if (that.clientKeyStore != null || that.truststore != null)
+         {
+            sslsf = new SSLSocketFactory(SSLSocketFactory.TLS,
+            that.clientKeyStore, that.clientPrivateKeyPassword,
+            that.truststore, null, verifier) {
+               @Override
+               protected void prepareSocket(SSLSocket socket) throws IOException
+               {
+                  that.prepareSocketForSni(socket);
+               }
+            };
+         }
+         else
+         {
+            final SSLContext tlsContext = SSLContext.getInstance(SSLSocketFactory.TLS);
+            tlsContext.init(null, null, null);
+            sslsf = new SSLSocketFactory(tlsContext, verifier);
+         }
+         SchemeRegistry registry = new SchemeRegistry();
+         registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+         Scheme httpsScheme = new Scheme("https", 443, sslsf);
+         registry.register(httpsScheme);
+         ClientConnectionManager cm = null;
+         if (that.connectionPoolSize > 0)
+         {
+            PoolingClientConnectionManager tcm =
+               new PoolingClientConnectionManager(registry,
                         that.connectionTTL, that.connectionTTLUnit);
-                tcm.setMaxTotal(that.connectionPoolSize);
-                if (that.maxPooledPerRoute == 0) that.maxPooledPerRoute = that.connectionPoolSize;
-                tcm.setDefaultMaxPerRoute(that.maxPooledPerRoute);
-                cm = tcm;
+            tcm.setMaxTotal(that.connectionPoolSize);
+            if (that.maxPooledPerRoute == 0) that.maxPooledPerRoute = that.connectionPoolSize;
+            tcm.setDefaultMaxPerRoute(that.maxPooledPerRoute);
+            cm = tcm;
 
-            }
-            else
-            {
-                cm = new BasicClientConnectionManager(registry);
-            }
-            BasicHttpParams params = new BasicHttpParams();
-            if (that.socketTimeout > -1)
-            {
-                HttpConnectionParams.setSoTimeout(params,
-                    (int) that.socketTimeoutUnits.toMillis(that.socketTimeout));
+         }
+         else
+         {
+            cm = new BasicClientConnectionManager(registry);
+         }
+         BasicHttpParams params = new BasicHttpParams();
+         if (that.socketTimeout > -1)
+         {
+            HttpConnectionParams.setSoTimeout(params,
+               (int) that.socketTimeoutUnits.toMillis(that.socketTimeout));
 
-            }
-            if (that.establishConnectionTimeout > -1)
-            {
-                HttpConnectionParams.setConnectionTimeout(params,
-                    (int)that.establishConnectionTimeoutUnits.toMillis(
-                        that.establishConnectionTimeout));
-            }
-            if (that.connectionCheckoutTimeoutMs > -1)
-            {
-                HttpClientParams.setConnectionManagerTimeout(params,
-                    that.connectionCheckoutTimeoutMs);
-            }
-            params.setParameter(ConnRoutePNames.DEFAULT_PROXY, that.defaultProxy);
+         }
+         if (that.establishConnectionTimeout > -1)
+         {
+            HttpConnectionParams.setConnectionTimeout(params,
+               (int)that.establishConnectionTimeoutUnits.toMillis(
+                     that.establishConnectionTimeout));
+         }
+         if (that.connectionCheckoutTimeoutMs > -1)
+         {
+            HttpClientParams.setConnectionManagerTimeout(params, that.connectionCheckoutTimeoutMs);
+         }
+         params.setParameter(ConnRoutePNames.DEFAULT_PROXY, that.defaultProxy);
 
-            return createEngine(cm, params, verifier, theContext, that.responseBufferSize);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
+         return createEngine(cm, params, verifier, theContext, that.responseBufferSize);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
     
    protected ClientHttpEngine createEngine(ClientConnectionManager cm, BasicHttpParams params,
          X509HostnameVerifier verifier, SSLContext theContext, int responseBufferSize)

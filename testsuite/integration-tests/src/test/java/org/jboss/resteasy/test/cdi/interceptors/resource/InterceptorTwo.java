@@ -6,16 +6,15 @@ import javax.interceptor.InvocationContext;
 import java.util.logging.Logger;
 
 public class InterceptorTwo {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @AroundInvoke
-    public Object intercept(InvocationContext ctx) throws Exception {
-        log.info("*** Intercepting call in InterceptorTwo.intercept()");
-        InterceptorVisitList.add(this);
-        Object result = ctx.proceed();
-        log.info("*** Back from intercepting call in InterceptorTwo.intercept()");
-        return result;
-    }
+   @AroundInvoke
+   public Object intercept(InvocationContext ctx) throws Exception {
+      log.info("*** Intercepting call in InterceptorTwo.intercept()");
+      InterceptorVisitList.add(this);
+      Object result = ctx.proceed();
+      log.info("*** Back from intercepting call in InterceptorTwo.intercept()");
+      return result;
+   }
 }
-

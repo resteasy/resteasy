@@ -32,13 +32,13 @@ public abstract class WriterUtility
    private WriterInterceptor[] interceptors;
 
    public static String asString(Object toOutput, String contentType)
-           throws IOException
+         throws IOException
    {
       return new String(getBytes(toOutput, contentType));
    }
 
    public static byte[] getBytes(Object toOutput, String contentType)
-           throws IOException
+         throws IOException
    {
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       write(toOutput, MediaType.valueOf(contentType), bos);
@@ -46,7 +46,7 @@ public abstract class WriterUtility
    }
 
    public static void write(Object toOutput, MediaType mt, OutputStream os)
-           throws IOException
+         throws IOException
    {
       new WriterUtility()
       {
@@ -72,21 +72,21 @@ public abstract class WriterUtility
    }
 
    public void doWrite(Object toOutput, MediaType mediaType, OutputStream os)
-           throws IOException
+         throws IOException
    {
       doWrite(toOutput, toOutput.getClass(), mediaType, os);
    }
 
 
    public void doWrite(Object toOutput, Class type, MediaType mediaType, OutputStream os)
-           throws IOException
+         throws IOException
    {
       doWrite(toOutput, type, type, mediaType, null, null, os);
    }
 
    public void doWrite(Object toOutput, Class type, Type genericType, MediaType mediaType,
                        MultivaluedMap<String, Object> requestHeaders, OutputStream os)
-           throws IOException
+         throws IOException
    {
       doWrite(toOutput, type, genericType, mediaType, null, requestHeaders, os);
    }
@@ -95,7 +95,7 @@ public abstract class WriterUtility
                        Annotation[] annotations, MediaType mediaType) throws IOException
    {
       doWrite(toOutput, type, genericType, mediaType, annotations, response
-              .getOutputHeaders(), response.getOutputStream());
+            .getOutputHeaders(), response.getOutputStream());
    }
 
    public void doWrite(Object toOutput, Class type, Type genericType,
@@ -105,9 +105,9 @@ public abstract class WriterUtility
    {
       final Map<String, Object> attributes = new HashMap<String, Object>();
       AbstractWriterInterceptorContext messageBodyWriterContext = new ClientWriterInterceptorContext(interceptors, factory, toOutput, type,
-              genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
+            genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
       messageBodyWriterContext
-              .proceed();
+            .proceed();
    }
 
    public abstract RuntimeException createWriterNotFound(Type genericType,

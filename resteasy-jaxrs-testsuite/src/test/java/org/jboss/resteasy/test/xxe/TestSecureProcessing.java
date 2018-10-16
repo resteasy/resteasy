@@ -150,7 +150,7 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.DEFAULT));
       doTestFailsFailsPassesFails();
    }
-  
+   
    @Test
    public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception
    {
@@ -171,7 +171,7 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.TRUE, MapInclusion.DEFAULT));
       doTestSkipFailsFailsSkip();
    }
-  
+   
    @Test
    public void testSecurityDefaultDTDsTrueExpansionFalse() throws Exception
    {

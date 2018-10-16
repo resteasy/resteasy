@@ -7,9 +7,9 @@ import javax.ws.rs.QueryParam;
 
 @Path("enum")
 public class XmlEnumParamResource {
-    @GET
-    @Produces("text/plain")
-    public String get(@QueryParam("loc") XmlEnumParamLocation loc) {
-        return loc.toString();
-    }
+   @GET
+   @Produces("text/plain")
+   public String get(@QueryParam("loc") XmlEnumParamLocation loc) {
+      return loc.toString();
+   }
 }

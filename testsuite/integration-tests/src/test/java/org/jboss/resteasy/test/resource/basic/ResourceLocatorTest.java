@@ -49,37 +49,37 @@ public class ResourceLocatorTest
 
    @BeforeClass
    public static void setup() {
-       client = ClientBuilder.newClient();
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void close() {
-       client.close();
+      client.close();
    }
 
    @Deployment
    public static Archive<?> deploy() {
-       WebArchive war = TestUtil.prepareArchive(ResourceLocatorTest.class.getSimpleName());
-       war.addClass(ResourceLocatorQueueReceiver.class)
-          .addClass(ResourceLocatorReceiver.class)
-          .addClass(ResourceLocatorRootInterface.class)
-          .addClass(ResourceLocatorSubInterface.class)
-          .addClass(ResourceLocatorSubresource3Interface.class)
-          ;
-       return TestUtil.finishContainerPrepare(war, null,
-             ResourceLocatorAbstractAnnotationFreeResouce.class,
-             ResourceLocatorAnnotationFreeSubResource.class,
-             ResourceLocatorBaseResource.class,
-             ResourceLocatorCollectionResource.class,
-             ResourceLocatorDirectory.class,
-             ResourceLocatorSubresource.class,
-             ResourceLocatorSubresource2.class,
-             ResourceLocatorSubresource3.class
-             );
+      WebArchive war = TestUtil.prepareArchive(ResourceLocatorTest.class.getSimpleName());
+      war.addClass(ResourceLocatorQueueReceiver.class)
+         .addClass(ResourceLocatorReceiver.class)
+         .addClass(ResourceLocatorRootInterface.class)
+         .addClass(ResourceLocatorSubInterface.class)
+         .addClass(ResourceLocatorSubresource3Interface.class)
+         ;
+      return TestUtil.finishContainerPrepare(war, null,
+            ResourceLocatorAbstractAnnotationFreeResouce.class,
+            ResourceLocatorAnnotationFreeSubResource.class,
+            ResourceLocatorBaseResource.class,
+            ResourceLocatorCollectionResource.class,
+            ResourceLocatorDirectory.class,
+            ResourceLocatorSubresource.class,
+            ResourceLocatorSubresource2.class,
+            ResourceLocatorSubresource3.class
+            );
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, ResourceLocatorTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ResourceLocatorTest.class.getSimpleName());
    }
 
 

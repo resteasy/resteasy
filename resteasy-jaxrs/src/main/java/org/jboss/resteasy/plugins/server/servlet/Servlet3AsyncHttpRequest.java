@@ -187,7 +187,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                     t -> asyncContext.complete());
+                  t -> asyncContext.complete());
             }
          }
 
@@ -202,7 +202,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                     t -> asyncContext.complete());
+                  t -> asyncContext.complete());
             }
          }
 

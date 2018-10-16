@@ -82,7 +82,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          }
          else if ("public".equals(lowercase))
          {
-             result.setPublic(true);
+            result.setPublic(true);
          }
          else
          {
@@ -121,11 +121,11 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
       }
       if (value instanceof ExtendedCacheControl)
       {
-          ExtendedCacheControl ecc = (ExtendedCacheControl) value;
-          if (ecc.isPublic())
-          {
-              addDirective("public", buffer);
-          }
+         ExtendedCacheControl ecc = (ExtendedCacheControl) value;
+         if (ecc.isPublic())
+         {
+            addDirective("public", buffer);
+         }
       }
       if (value.isMustRevalidate()) addDirective("must-revalidate", buffer);
       if (value.isNoTransform()) addDirective("no-transform", buffer);

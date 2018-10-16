@@ -33,91 +33,91 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ClientResponseWithEntityTest {
 
-	@XmlRootElement
-	public static class Message {
-		private String message;
+   @XmlRootElement
+   public static class Message {
+      private String message;
 
-		public Message() {
-		}
+      public Message() {
+      }
 
-		public String getMessage() {
-			return this.message;
-		}
+      public String getMessage() {
+         return this.message;
+      }
 
-		public void setMessage(String message) {
-			this.message = message;
-		}
-	}
+      public void setMessage(String message) {
+         this.message = message;
+      }
+   }
 
-	@Path("echo")
-	@Produces(MediaType.APPLICATION_XML)
-	public static class EchoResource {
+   @Path("echo")
+   @Produces(MediaType.APPLICATION_XML)
+   public static class EchoResource {
 
-		@GET
-		public Response echo(@QueryParam("msg") String msg) {
-			Message message = new Message();
-			message.setMessage(String.valueOf(msg));
-			return Response.ok(message).build();
-		}
+      @GET
+      public Response echo(@QueryParam("msg") String msg) {
+         Message message = new Message();
+         message.setMessage(String.valueOf(msg));
+         return Response.ok(message).build();
+      }
 
-	}
+   }
 
-	private static Client client;
-	private static final String DEP = "ClientResponseWithEntityTest";
+   private static Client client;
+   private static final String DEP = "ClientResponseWithEntityTest";
 
-	@Deployment
-	public static Archive<?> deploy() {
-		WebArchive war = TestUtil.prepareArchive(DEP);
-		war.addClass(Message.class);
-		war.addClass(EchoResource.class);
-		return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
-	}
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(DEP);
+      war.addClass(Message.class);
+      war.addClass(EchoResource.class);
+      return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
+   }
 
-	@BeforeClass
-	public static void setup() {
-		client = ClientBuilder.newClient();
-	}
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-	@AfterClass
-	public static void cleanup() {
-		client.close();
-	}
+   @AfterClass
+   public static void cleanup() {
+      client.close();
+   }
 
-	private static String generateURL() {
-		return PortProviderUtil.generateBaseUrl(DEP);
-	}
+   private static String generateURL() {
+      return PortProviderUtil.generateBaseUrl(DEP);
+   }
 
-	@Test
-	public void Should_ReturnEntity_When_NoNull() throws Exception {
-		Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
-				.request(MediaType.APPLICATION_XML_TYPE);
-		try (ClientResponse response = (ClientResponse) request.get()) {
-			Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-			Assert.assertTrue(response.hasEntity());
-			Assert.assertNotNull(response.getEntity());
-			Assert.assertNotNull(response.getEntityClass());
-		}
-	}
+   @Test
+   public void Should_ReturnEntity_When_NoNull() throws Exception {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+      try (ClientResponse response = (ClientResponse) request.get()) {
+         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertNotNull(response.getEntity());
+         Assert.assertNotNull(response.getEntityClass());
+      }
+   }
 
-	@Test(expected = IllegalStateException.class)
-	public void Should_ThrowIllegalStateException_When_EntityIsConsumed() throws Exception {
-		Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
-				.request(MediaType.APPLICATION_XML_TYPE);
-		try (ClientResponse response = (ClientResponse) request.get()) {
-			Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-			Assert.assertTrue(response.hasEntity());
-			InputStream entityStream = (InputStream) response.getEntity();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			byte[] buffer = new byte[1024];
-			int wasRead = 0;
-			do {
-				wasRead = entityStream.read(buffer);
-				if (wasRead > 0) {
-					baos.write(buffer, 0, wasRead);
-				}
-			} while (wasRead > -1);
-			response.getEntity();
-		}
-	}
+   @Test(expected = IllegalStateException.class)
+   public void Should_ThrowIllegalStateException_When_EntityIsConsumed() throws Exception {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+      try (ClientResponse response = (ClientResponse) request.get()) {
+         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+         Assert.assertTrue(response.hasEntity());
+         InputStream entityStream = (InputStream) response.getEntity();
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         byte[] buffer = new byte[1024];
+         int wasRead = 0;
+         do {
+            wasRead = entityStream.read(buffer);
+            if (wasRead > 0) {
+               baos.write(buffer, 0, wasRead);
+            }
+         } while (wasRead > -1);
+         response.getEntity();
+      }
+   }
 
 }

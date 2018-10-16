@@ -43,7 +43,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class JacksonTest extends BaseResourceTest
 {
 
-    private static final Logger LOG = Logger.getLogger(JacksonTest.class);
+   private static final Logger LOG = Logger.getLogger(JacksonTest.class);
 
    public static class Product
    {
@@ -210,7 +210,7 @@ public class JacksonTest extends BaseResourceTest
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
       dispatcher.getRegistry().addPerRequestResource(JAXBService.class);
-       client = new ResteasyClientBuilder().build();
+      client = new ResteasyClientBuilder().build();
    }
 
 
@@ -298,95 +298,95 @@ public class JacksonTest extends BaseResourceTest
       Assert.assertEquals("Stuff", p.getName());
    }
 
-    @XmlRootElement
-    public static class XmlResourceWithJAXB {
-        String attr1;
-        String attr2;
+   @XmlRootElement
+   public static class XmlResourceWithJAXB {
+      String attr1;
+      String attr2;
 
-        @XmlElement(name = "attr_1")
-        public String getAttr1() {
+      @XmlElement(name = "attr_1")
+      public String getAttr1() {
             return attr1;
-        }
+      }
 
-        public void setAttr1(String attr1) {
+      public void setAttr1(String attr1) {
             this.attr1 = attr1;
-        }
+      }
 
-        @XmlElement
-        public String getAttr2() {
+      @XmlElement
+      public String getAttr2() {
             return attr2;
-        }
+      }
 
-        public void setAttr2(String attr2) {
+      public void setAttr2(String attr2) {
             this.attr2 = attr2;
-        }
-    }
+      }
+   }
 
-    public static class XmlResourceWithJacksonAnnotation {
-        String attr1;
-        String attr2;
+   public static class XmlResourceWithJacksonAnnotation {
+      String attr1;
+      String attr2;
 
-        @JsonProperty("attr_1")
-        public String getAttr1() {
+      @JsonProperty("attr_1")
+      public String getAttr1() {
             return attr1;
-        }
+      }
 
-        public void setAttr1(String attr1) {
+      public void setAttr1(String attr1) {
             this.attr1 = attr1;
-        }
+      }
 
-        @XmlElement
-        public String getAttr2() {
+      @XmlElement
+      public String getAttr2() {
             return attr2;
-        }
+      }
 
-        public void setAttr2(String attr2) {
+      public void setAttr2(String attr2) {
             this.attr2 = attr2;
-        }
-    }
+      }
+   }
 
-    @Path("/jaxb")
-    public static class JAXBService {
+   @Path("/jaxb")
+   public static class JAXBService {
 
-        @GET
-        @Produces("application/json")
-        public XmlResourceWithJAXB getJAXBResource() {
+      @GET
+      @Produces("application/json")
+      public XmlResourceWithJAXB getJAXBResource() {
             XmlResourceWithJAXB resourceWithJAXB = new XmlResourceWithJAXB();
             resourceWithJAXB.setAttr1("XXX");
             resourceWithJAXB.setAttr2("YYY");
             return resourceWithJAXB;
-        }
+      }
 
 
-        @GET
-        @Path(("/json"))
-        @Produces("application/json")
-        public XmlResourceWithJacksonAnnotation getJacksonAnnotatedResource() {
+      @GET
+      @Path(("/json"))
+      @Produces("application/json")
+      public XmlResourceWithJacksonAnnotation getJacksonAnnotatedResource() {
             XmlResourceWithJacksonAnnotation resource = new XmlResourceWithJacksonAnnotation();
             resource.setAttr1("XXX");
             resource.setAttr2("YYY");
             return resource;
-        }
+      }
 
-    }
+   }
 
-    @Test
-    public void testJacksonJAXB() throws Exception {
-        {
+   @Test
+   public void testJacksonJAXB() throws Exception {
+      {
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet get = new HttpGet(generateBaseUrl() + "/jaxb");
             HttpResponse response = client.execute(get);
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             Assert.assertTrue(reader.readLine().contains("attr_1"));
-        }
+      }
 
-        {
+      {
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet get = new HttpGet(generateBaseUrl() + "/jaxb/json");
             HttpResponse response = client.execute(get);
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             Assert.assertTrue(reader.readLine().contains("attr_1"));
-        }
+      }
 
-    }
+   }
 }

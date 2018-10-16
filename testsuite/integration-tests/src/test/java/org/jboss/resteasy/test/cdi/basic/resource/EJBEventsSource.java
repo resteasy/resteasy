@@ -5,10 +5,9 @@ import javax.ws.rs.PathParam;
 
 @Local
 public interface EJBEventsSource {
-    int createBook(EJBBook book);
+   int createBook(EJBBook book);
 
-    EJBBook lookupBookById(@PathParam("id") int id);
+   EJBBook lookupBookById(@PathParam("id") int id);
 
-    boolean test();
+   boolean test();
 }
-

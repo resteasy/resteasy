@@ -39,32 +39,32 @@ import javax.ws.rs.core.Response;
 @Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class})
 public class JsonFilterWithInterceptorMultipleFiltersTest {
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorMultipleFiltersTest.class.getSimpleName());
-        war.addClasses(Jackson2Person.class, PersonType.class, ObjectFilterModifierMultiple.class);
-        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        return TestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class, JsonFilterModifierMultipleWriteInterceptor.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorMultipleFiltersTest.class.getSimpleName());
+      war.addClasses(Jackson2Person.class, PersonType.class, ObjectFilterModifierMultiple.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+      return TestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class, JsonFilterModifierMultipleWriteInterceptor.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JsonFilterWithInterceptorMultipleFiltersTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JsonFilterWithInterceptorMultipleFiltersTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails  Correct filter is used when multiple filters available
-     * @tpSince RESTEasy 3.0.20.Final
-     */
-    @Test
-    public void testJacksonString2() throws Exception {
-        Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("/person/333"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("Multiple filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                !response.readEntity(String.class).contains("name") &&
-                !response.readEntity(String.class).contains("address") &&
-                response.readEntity(String.class).contains("personType"));
-        client.close();
-    }
+   /**
+    * @tpTestDetails  Correct filter is used when multiple filters available
+    * @tpSince RESTEasy 3.0.20.Final
+    */
+   @Test
+   public void testJacksonString2() throws Exception {
+      Client client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(generateURL("/person/333"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("Multiple filter doesn't work", !response.readEntity(String.class).contains("id") &&
+            !response.readEntity(String.class).contains("name") &&
+            !response.readEntity(String.class).contains("address") &&
+            response.readEntity(String.class).contains("personType"));
+      client.close();
+   }
 }

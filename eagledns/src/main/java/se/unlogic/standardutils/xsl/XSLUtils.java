@@ -21,56 +21,56 @@ import java.util.regex.Pattern;
 
 public class XSLUtils {
 
-	private static Pattern XSL_VARIABLE_PATTERN = Pattern.compile("(?<=\\$)[\\w\\.]*(?=($|[\\W]))");
+   private static Pattern XSL_VARIABLE_PATTERN = Pattern.compile("(?<=\\$)[\\w\\.]*(?=($|[\\W]))");
 
-	/**
-	 * Scans XSL documents for references to XSL variables such as {@literal <}xsl:value-of select="$foo"/{@literal>} and {@literal <}a href="{$foo}"/{@literal >}. Returns the variable names.
-	 * 
-	 * @param file Input XSL file
-	 * @return
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws ParserConfigurationException
-	 */
-	public static Set<String> getVariableReferenses(File file) throws SAXException, IOException, ParserConfigurationException {
+   /**
+    * Scans XSL documents for references to XSL variables such as {@literal <}xsl:value-of select="$foo"/{@literal>} and {@literal <}a href="{$foo}"/{@literal >}. Returns the variable names.
+    *
+    * @param file Input XSL file
+    * @return
+    * @throws SAXException
+    * @throws IOException
+    * @throws ParserConfigurationException
+    */
+   public static Set<String> getVariableReferenses(File file) throws SAXException, IOException, ParserConfigurationException {
 
-		XMLSettingNode settingNode = new XMLSettingNode(file);
+      XMLSettingNode settingNode = new XMLSettingNode(file);
 
-		List<String> tags = settingNode.getStrings("//@*[contains(.,'$')]");
+      List<String> tags = settingNode.getStrings("//@*[contains(.,'$')]");
 
-		if(tags == null){
-			
-			return null;
-		}
-		
-		LinkedHashSet<String> stringSet = new LinkedHashSet<String>();
+      if(tags == null){
 
-		for (String tag : tags) {
+         return null;
+      }
 
-			Matcher matcher = XSL_VARIABLE_PATTERN.matcher(tag);
+      LinkedHashSet<String> stringSet = new LinkedHashSet<String>();
 
-			while (matcher.find()) {
+      for (String tag : tags) {
 
-				stringSet.add(matcher.group());
-			}
-		}
+         Matcher matcher = XSL_VARIABLE_PATTERN.matcher(tag);
 
-		return stringSet;
-	}
+         while (matcher.find()) {
 
-	/**
-	 * Scans XSL documents for declared XSL variables such as {@literal <}xsl:variable name="myvariable"/{@literal>}
-	 * 
-	 * @param file Input XSL file
-	 * @return
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws ParserConfigurationException
-	 */
-	public static List<String> getDeclaredVariables(File file) throws SAXException, IOException, ParserConfigurationException {
+            stringSet.add(matcher.group());
+         }
+      }
 
-		XMLSettingNode settingNode = new XMLSettingNode(file);
+      return stringSet;
+   }
 
-		return settingNode.getStrings("//variable/@name");
-	}
+   /**
+    * Scans XSL documents for declared XSL variables such as {@literal <}xsl:variable name="myvariable"/{@literal>}
+    *
+    * @param file Input XSL file
+    * @return
+    * @throws SAXException
+    * @throws IOException
+    * @throws ParserConfigurationException
+    */
+   public static List<String> getDeclaredVariables(File file) throws SAXException, IOException, ParserConfigurationException {
+
+      XMLSettingNode settingNode = new XMLSettingNode(file);
+
+      return settingNode.getStrings("//variable/@name");
+   }
 }

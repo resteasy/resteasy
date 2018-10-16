@@ -5,11 +5,11 @@ import javax.ws.rs.Path;
 
 @Path("/")
 public class SubresourceValidationResource {
-    @Inject
-    private SubresourceValidationSubResource subResource;
+   @Inject
+   private SubresourceValidationSubResource subResource;
 
-    @Path("/sub")
-    public SubresourceValidationSubResource getSubResouce() {
-        return subResource;
-    }
+   @Path("/sub")
+   public SubresourceValidationSubResource getSubResouce() {
+      return subResource;
+   }
 }

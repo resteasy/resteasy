@@ -45,71 +45,71 @@ class MicroprofileClientBuilder implements RestClientBuilder {
    private static final Logger LOG = Logger.getLogger(MicroprofileClientBuilder.class);
 
    MicroprofileClientBuilder() {
-       ClientBuilder availableBuilder = ClientBuilder.newBuilder();
+      ClientBuilder availableBuilder = ClientBuilder.newBuilder();
 
-       if (availableBuilder instanceof ResteasyClientBuilder) {
-           this.builderDelegate = (ResteasyClientBuilder) availableBuilder;
-           this.configurationWrapper = new ConfigurationWrapper(this.builderDelegate.getConfiguration());
-           Config cfg = null;
-           try {
-              ConfigProviderResolver.instance();
-              cfg = ConfigProvider.getConfig();
-           } catch (IllegalStateException ise) {
-              //ignore
-           }
-           this.config = cfg;
-       } else {
-           throw new IllegalStateException("Incompatible client builder found " + availableBuilder.getClass());
-       }
+      if (availableBuilder instanceof ResteasyClientBuilder) {
+         this.builderDelegate = (ResteasyClientBuilder) availableBuilder;
+         this.configurationWrapper = new ConfigurationWrapper(this.builderDelegate.getConfiguration());
+         Config cfg = null;
+         try {
+            ConfigProviderResolver.instance();
+            cfg = ConfigProvider.getConfig();
+         } catch (IllegalStateException ise) {
+            //ignore
+         }
+         this.config = cfg;
+      } else {
+         throw new IllegalStateException("Incompatible client builder found " + availableBuilder.getClass());
+      }
    }
 
    public Configuration getConfigurationWrapper() {
-       return this.configurationWrapper;
+      return this.configurationWrapper;
    }
 
    @Override
    public RestClientBuilder baseUrl(URL url) {
-       try {
-           this.baseURI = url.toURI();
-           return this;
-       } catch (URISyntaxException e) {
-           throw new RuntimeException(e.getMessage());
-       }
+      try {
+         this.baseURI = url.toURI();
+         return this;
+      } catch (URISyntaxException e) {
+         throw new RuntimeException(e.getMessage());
+      }
    }
 
    @SuppressWarnings("unchecked")
    @Override
    public <T> T build(Class<T> aClass) throws IllegalStateException, RestClientDefinitionException {
 
-       // Interface validity
-       verifyInterface(aClass);
+      // Interface validity
+      verifyInterface(aClass);
 
-       // Provider annotations
-       RegisterProvider[] providers = aClass.getAnnotationsByType(RegisterProvider.class);
+      // Provider annotations
+      RegisterProvider[] providers = aClass.getAnnotationsByType(RegisterProvider.class);
 
-       for (RegisterProvider provider : providers) {
-           register(provider.value(), provider.priority());
-       }
+      for (RegisterProvider provider : providers) {
+         register(provider.value(), provider.priority());
+      }
 
-       // Default exception mapper
-       if (!isMapperDisabled()) {
-           register(DefaultResponseExceptionMapper.class);
-       }
+      // Default exception mapper
+      if (!isMapperDisabled()) {
+         register(DefaultResponseExceptionMapper.class);
+      }
 
-       this.builderDelegate.register(new ExceptionMapping(localProviderInstances), 1);
+      this.builderDelegate.register(new ExceptionMapping(localProviderInstances), 1);
 
-       ClassLoader classLoader = aClass.getClassLoader();
+      ClassLoader classLoader = aClass.getClassLoader();
 
-       List<String> noProxyHosts = Arrays.asList(
+      List<String> noProxyHosts = Arrays.asList(
                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
 
-       final T actualClient;
+      final T actualClient;
 
-       final String proxyHost = System.getProperty("http.proxyHost");
+      final String proxyHost = System.getProperty("http.proxyHost");
 
-       if (proxyHost != null && !noProxyHosts.contains(this.baseURI.getHost())) {
-           // Use proxy, if defined
-           actualClient = this.builderDelegate.defaultProxy(
+      if (proxyHost != null && !noProxyHosts.contains(this.baseURI.getHost())) {
+         // Use proxy, if defined
+         actualClient = this.builderDelegate.defaultProxy(
                    proxyHost,
                    Integer.parseInt(System.getProperty("http.proxyPort", "80")))
                    .build()
@@ -119,249 +119,249 @@ class MicroprofileClientBuilder implements RestClientBuilder {
                    .defaultConsumes(MediaType.TEXT_PLAIN)
                    .defaultProduces(MediaType.TEXT_PLAIN)
                    .build();
-       } else {
-           actualClient = this.builderDelegate.build()
+      } else {
+         actualClient = this.builderDelegate.build()
                    .target(this.baseURI)
                    .proxyBuilder(aClass)
                    .classloader(classLoader)
                    .defaultConsumes(MediaType.TEXT_PLAIN)
                    .defaultProduces(MediaType.TEXT_PLAIN)
                    .build();
-       }
+      }
 
-       return (T) Proxy.newProxyInstance(
+      return (T) Proxy.newProxyInstance(
                classLoader,
                new Class[] {aClass},
                new ProxyInvocationHandler(actualClient, getLocalProviderInstances())
-       );
+      );
 
    }
 
    private boolean isMapperDisabled() {
-       boolean disabled = false;
-       Optional<Boolean> defaultMapperProp = this.config != null ? this.config.getOptionalValue(DEFAULT_MAPPER_PROP, Boolean.class) : Optional.empty();
+      boolean disabled = false;
+      Optional<Boolean> defaultMapperProp = this.config != null ? this.config.getOptionalValue(DEFAULT_MAPPER_PROP, Boolean.class) : Optional.empty();
 
-       // disabled through config api
-       if (defaultMapperProp.isPresent() && defaultMapperProp.get().equals(Boolean.TRUE)) {
-           disabled = true;
-       } else if (!defaultMapperProp.isPresent()) {
+      // disabled through config api
+      if (defaultMapperProp.isPresent() && defaultMapperProp.get().equals(Boolean.TRUE)) {
+         disabled = true;
+      } else if (!defaultMapperProp.isPresent()) {
 
-           // disabled through jaxrs property
-           try {
-               Object property = this.builderDelegate.getConfiguration().getProperty(DEFAULT_MAPPER_PROP);
-               if (property != null) {
-                   disabled = (Boolean)property;
-               }
-           } catch (Throwable e) {
+         // disabled through jaxrs property
+         try {
+            Object property = this.builderDelegate.getConfiguration().getProperty(DEFAULT_MAPPER_PROP);
+            if (property != null) {
+               disabled = (Boolean)property;
+            }
+         } catch (Throwable e) {
                // ignore cast exception
-           }
-       }
-       return disabled;
+         }
+      }
+      return disabled;
    }
 
    private <T> void verifyInterface(Class<T> typeDef) {
 
-       Method[] methods = typeDef.getMethods();
+      Method[] methods = typeDef.getMethods();
 
-       // multiple verbs
-       for (Method method : methods) {
-           boolean hasHttpMethod = false;
-           for (Annotation annotation : method.getAnnotations()) {
-               boolean isHttpMethod = (annotation.annotationType().getAnnotation(HttpMethod.class) != null);
-               if (!hasHttpMethod && isHttpMethod) {
-                   hasHttpMethod = true;
-               } else if (hasHttpMethod && isHttpMethod) {
-                   throw new RestClientDefinitionException("Ambiguous @Httpmethod defintion on type " + typeDef);
-               }
-           }
-       }
+      // multiple verbs
+      for (Method method : methods) {
+         boolean hasHttpMethod = false;
+         for (Annotation annotation : method.getAnnotations()) {
+            boolean isHttpMethod = (annotation.annotationType().getAnnotation(HttpMethod.class) != null);
+            if (!hasHttpMethod && isHttpMethod) {
+               hasHttpMethod = true;
+            } else if (hasHttpMethod && isHttpMethod) {
+               throw new RestClientDefinitionException("Ambiguous @Httpmethod defintion on type " + typeDef);
+            }
+         }
+      }
 
-       // invalid parameter
-       Path classPathAnno = typeDef.getAnnotation(Path.class);
+      // invalid parameter
+      Path classPathAnno = typeDef.getAnnotation(Path.class);
 
-       final Set<String> classLevelVariables = new HashSet<>();
-       ResteasyUriBuilder classTemplate = null;
-       if (classPathAnno != null) {
-           classTemplate = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
-           classLevelVariables.addAll(classTemplate.getPathParamNamesInDeclarationOrder());
-       }
-       ResteasyUriBuilder template;
-       for (Method method : methods) {
+      final Set<String> classLevelVariables = new HashSet<>();
+      ResteasyUriBuilder classTemplate = null;
+      if (classPathAnno != null) {
+         classTemplate = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
+         classLevelVariables.addAll(classTemplate.getPathParamNamesInDeclarationOrder());
+      }
+      ResteasyUriBuilder template;
+      for (Method method : methods) {
 
-           Path methodPathAnno = method.getAnnotation(Path.class);
-           if (methodPathAnno != null) {
-               template = classPathAnno == null ? (ResteasyUriBuilder)UriBuilder.fromUri(methodPathAnno.value())
+         Path methodPathAnno = method.getAnnotation(Path.class);
+         if (methodPathAnno != null) {
+            template = classPathAnno == null ? (ResteasyUriBuilder)UriBuilder.fromUri(methodPathAnno.value())
                        : (ResteasyUriBuilder)UriBuilder.fromUri(classPathAnno.value() + "/" + methodPathAnno.value());
-           } else {
-               template = classTemplate;
-           }
-           if (template == null) {
-               continue;
-           }
+         } else {
+            template = classTemplate;
+         }
+         if (template == null) {
+            continue;
+         }
 
-           // it's not executed, so this can be anything - but a hostname needs to present
-           template.host("localhost");
+         // it's not executed, so this can be anything - but a hostname needs to present
+         template.host("localhost");
 
-           Set<String> allVariables = new HashSet<>(template.getPathParamNamesInDeclarationOrder());
-           Map<String, Object> paramMap = new HashMap<>();
-           for (Parameter p : method.getParameters()) {
-               PathParam pathParam = p.getAnnotation(PathParam.class);
-               if (pathParam != null) {
-                   paramMap.put(pathParam.value(), "foobar");
-               }
-           }
+         Set<String> allVariables = new HashSet<>(template.getPathParamNamesInDeclarationOrder());
+         Map<String, Object> paramMap = new HashMap<>();
+         for (Parameter p : method.getParameters()) {
+            PathParam pathParam = p.getAnnotation(PathParam.class);
+            if (pathParam != null) {
+               paramMap.put(pathParam.value(), "foobar");
+            }
+         }
 
-           if (allVariables.size() != paramMap.size()) {
-               throw new RestClientDefinitionException("Parameters and variables don't match on " + typeDef + "::" + method.getName());
-           }
+         if (allVariables.size() != paramMap.size()) {
+            throw new RestClientDefinitionException("Parameters and variables don't match on " + typeDef + "::" + method.getName());
+         }
 
-           try {
-               template.resolveTemplates(paramMap, false).build();
-           } catch (IllegalArgumentException ex) {
-               throw new RestClientDefinitionException("Parameter names don't match variable names on " + typeDef + "::" + method.getName(), ex);
-           }
+         try {
+            template.resolveTemplates(paramMap, false).build();
+         } catch (IllegalArgumentException ex) {
+            throw new RestClientDefinitionException("Parameter names don't match variable names on " + typeDef + "::" + method.getName(), ex);
+         }
 
-       }
+      }
    }
 
 
    @Override
    public Configuration getConfiguration() {
-       return getConfigurationWrapper();
+      return getConfigurationWrapper();
    }
 
    @Override
    public RestClientBuilder property(String name, Object value) {
-       this.builderDelegate.property(name, value);
-       return this;
+      this.builderDelegate.property(name, value);
+      return this;
    }
 
    private static Object newInstanceOf(Class clazz) {
-       try {
-           return clazz.newInstance();
-       } catch (Throwable t) {
-           throw new RuntimeException("Failed to register " + clazz, t);
-       }
+      try {
+         return clazz.newInstance();
+      } catch (Throwable t) {
+         throw new RuntimeException("Failed to register " + clazz, t);
+      }
    }
    @Override
    public RestClientBuilder register(Class<?> aClass) {
-       this.register(newInstanceOf(aClass));
-       return this;
+      this.register(newInstanceOf(aClass));
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Class<?> aClass, int i) {
 
-       this.register(newInstanceOf(aClass), i);
-       return this;
+      this.register(newInstanceOf(aClass), i);
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Class<?> aClass, Class<?>[] classes) {
-       this.register(newInstanceOf(aClass), classes);
-       return this;
+      this.register(newInstanceOf(aClass), classes);
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Class<?> aClass, Map<Class<?>, Integer> map) {
-       this.register(newInstanceOf(aClass), map);
-       return this;
+      this.register(newInstanceOf(aClass), map);
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Object o) {
-       if (o instanceof ResponseExceptionMapper) {
-           ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
-           register(mapper, mapper.getPriority());
-       } else if (o instanceof ParamConverterProvider) {
-           register(o, Priorities.USER);
-       } else {
-           this.builderDelegate.register(o);
-       }
-       return this;
+      if (o instanceof ResponseExceptionMapper) {
+         ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
+         register(mapper, mapper.getPriority());
+      } else if (o instanceof ParamConverterProvider) {
+         register(o, Priorities.USER);
+      } else {
+         this.builderDelegate.register(o);
+      }
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Object o, int i) {
-       if (o instanceof ResponseExceptionMapper) {
+      if (o instanceof ResponseExceptionMapper) {
 
-           // local
-           ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
-           HashMap<Class<?>, Integer> contracts = new HashMap<>();
-           contracts.put(ResponseExceptionMapper.class, i);
-           registerLocalProviderInstance(mapper, contracts);
+         // local
+         ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
+         HashMap<Class<?>, Integer> contracts = new HashMap<>();
+         contracts.put(ResponseExceptionMapper.class, i);
+         registerLocalProviderInstance(mapper, contracts);
 
-           // delegate
-           this.builderDelegate.register(mapper, i);
+         // delegate
+         this.builderDelegate.register(mapper, i);
 
-       } else if (o instanceof ParamConverterProvider) {
+      } else if (o instanceof ParamConverterProvider) {
 
-           // local
-           ParamConverterProvider converter = (ParamConverterProvider)o;
-           HashMap<Class<?>, Integer> contracts = new HashMap<>();
-           contracts.put(ParamConverterProvider.class, i);
-           registerLocalProviderInstance(converter, contracts);
+         // local
+         ParamConverterProvider converter = (ParamConverterProvider)o;
+         HashMap<Class<?>, Integer> contracts = new HashMap<>();
+         contracts.put(ParamConverterProvider.class, i);
+         registerLocalProviderInstance(converter, contracts);
 
-           // delegate
-           this.builderDelegate.register(converter, i);
+         // delegate
+         this.builderDelegate.register(converter, i);
 
-       } else {
-           this.builderDelegate.register(o, i);
-       }
-       return this;
+      } else {
+         this.builderDelegate.register(o, i);
+      }
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Object o, Class<?>[] classes) {
 
-       // local
-       for (Class<?> aClass : classes) {
-           if (aClass.isAssignableFrom(ResponseExceptionMapper.class)) {
-               register(o);
-           }
-       }
+      // local
+      for (Class<?> aClass : classes) {
+         if (aClass.isAssignableFrom(ResponseExceptionMapper.class)) {
+            register(o);
+         }
+      }
 
-       // other
-       this.builderDelegate.register(o, classes);
-       return this;
+      // other
+      this.builderDelegate.register(o, classes);
+      return this;
    }
 
    @Override
    public RestClientBuilder register(Object o, Map<Class<?>, Integer> map) {
 
 
-       if (o instanceof ResponseExceptionMapper) {
+      if (o instanceof ResponseExceptionMapper) {
 
-           //local
-           ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
-           HashMap<Class<?>, Integer> contracts = new HashMap<>();
-           contracts.put(ResponseExceptionMapper.class, map.get(ResponseExceptionMapper.class));
-           registerLocalProviderInstance(mapper, contracts);
+         //local
+         ResponseExceptionMapper mapper = (ResponseExceptionMapper)o;
+         HashMap<Class<?>, Integer> contracts = new HashMap<>();
+         contracts.put(ResponseExceptionMapper.class, map.get(ResponseExceptionMapper.class));
+         registerLocalProviderInstance(mapper, contracts);
 
-           // other
-           this.builderDelegate.register(o, map);
+         // other
+         this.builderDelegate.register(o, map);
 
-       } else {
-           this.builderDelegate.register(o, map);
-       }
+      } else {
+         this.builderDelegate.register(o, map);
+      }
 
-       return this;
+      return this;
    }
 
    public Set<Object> getLocalProviderInstances() {
-       return localProviderInstances;
+      return localProviderInstances;
    }
 
    public void registerLocalProviderInstance(Object provider, Map<Class<?>, Integer> contracts) {
-       for (Object registered : getLocalProviderInstances()) {
-           if (registered == provider) {
-               LOG.infov("Provider already registered {0}", provider.getClass().getName());
-               return;
-           }
-       }
+      for (Object registered : getLocalProviderInstances()) {
+         if (registered == provider) {
+            LOG.infov("Provider already registered {0}", provider.getClass().getName());
+            return;
+         }
+      }
 
-       localProviderInstances.add(provider);
-       configurationWrapper.registerLocalContract(provider.getClass(), contracts);
+      localProviderInstances.add(provider);
+      configurationWrapper.registerLocalContract(provider.getClass(), contracts);
    }
 
    private final ResteasyClientBuilder builderDelegate;

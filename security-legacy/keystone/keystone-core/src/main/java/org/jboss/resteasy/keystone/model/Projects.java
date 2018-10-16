@@ -8,11 +8,11 @@ import java.util.List;
 
 public class Projects implements Iterable<Project>, Serializable {
 
-	@JsonProperty("projects")
-	private List<Project> list;
-	
-	@JsonProperty("projects_links")
-	private List<Link> links;
+   @JsonProperty("projects")
+   private List<Project> list;
+
+   @JsonProperty("projects_links")
+   private List<Link> links;
 
    public void setList(List<Project> list)
    {
@@ -20,32 +20,32 @@ public class Projects implements Iterable<Project>, Serializable {
    }
 
    /**
-	 * @return the list
-	 */
-	public List<Project> getList() {
-		return list;
-	}
+    * @return the list
+    */
+   public List<Project> getList() {
+      return list;
+   }
 
-	/**
-	 * @return the links
-	 */
-	public List<Link> getLinks() {
-		return links;
-	}
+   /**
+    * @return the links
+    */
+   public List<Link> getLinks() {
+      return links;
+   }
 
 
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Projects [list=" + list + ", links=" + links + "]";
-	}
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString() {
+      return "Projects [list=" + list + ", links=" + links + "]";
+   }
 
-	@Override
-	public Iterator<Project> iterator() {
-		return list.iterator();
-	}
-	
+   @Override
+   public Iterator<Project> iterator() {
+      return list.iterator();
+   }
+
 }

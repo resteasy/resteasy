@@ -6,28 +6,28 @@ import java.util.Set;
 
 public class SingleTagSource implements TagSource {
 
-	protected Set<String> tags;
-	protected String value;
-	
-	protected SingleTagSource(Set<String> tags, String value) {
+   protected Set<String> tags;
+   protected String value;
 
-		this.tags = tags;
-		this.value = value;
-	}
+   protected SingleTagSource(Set<String> tags, String value) {
 
-	public SingleTagSource(String tag, String value){
-		
-		this.tags = Collections.singleton(tag);
-		this.value = value;
-	}
-	
-	public Set<String> getTags() {
+      this.tags = tags;
+      this.value = value;
+   }
 
-		return tags;
-	}
+   public SingleTagSource(String tag, String value){
 
-	public String getTagValue(String tag) {
+      this.tags = Collections.singleton(tag);
+      this.value = value;
+   }
 
-		return value;
-	}
+   public Set<String> getTags() {
+
+      return tags;
+   }
+
+   public String getTagValue(String tag) {
+
+      return value;
+   }
 }

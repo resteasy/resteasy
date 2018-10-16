@@ -8,16 +8,16 @@ import javax.ws.rs.core.Context;
 
 @Path("foo")
 public class DefaultMediaTypesResource implements DefaultMediaTypesTest.Foo {
-    @Context
-    HttpRequest request;
+   @Context
+   HttpRequest request;
 
-    @Override
-    public String getFoo() {
-        return request.getHttpHeaders().getAcceptableMediaTypes().toString();
-    }
+   @Override
+   public String getFoo() {
+      return request.getHttpHeaders().getAcceptableMediaTypes().toString();
+   }
 
-    @Override
-    public String setFoo(String value) {
-        return request.getHttpHeaders().getMediaType().toString();
-    }
+   @Override
+   public String setFoo(String value) {
+      return request.getHttpHeaders().getMediaType().toString();
+   }
 }

@@ -14,76 +14,76 @@ import java.sql.Timestamp;
  */
 public class SecondaryZone {
 
-	private Name zoneName;
-	private String remoteServerAddress;
-	private String dclass;
-	private Timestamp downloaded;
-	private Zone zoneCopy;
+   private Name zoneName;
+   private String remoteServerAddress;
+   private String dclass;
+   private Timestamp downloaded;
+   private Zone zoneCopy;
 
-	public SecondaryZone(String zoneName, String remoteServerAddress, String dclass) throws TextParseException {
+   public SecondaryZone(String zoneName, String remoteServerAddress, String dclass) throws TextParseException {
 
-		super();
-		this.zoneName = Name.fromString(zoneName, Name.root);
-		this.remoteServerAddress = remoteServerAddress;
-		this.dclass = dclass;
-	}
+      super();
+      this.zoneName = Name.fromString(zoneName, Name.root);
+      this.remoteServerAddress = remoteServerAddress;
+      this.dclass = dclass;
+   }
 
-	public SecondaryZone(String zoneName, String remoteServerAddress, String dclass, Timestamp zoneDownloaded, Zone zone) throws TextParseException {
+   public SecondaryZone(String zoneName, String remoteServerAddress, String dclass, Timestamp zoneDownloaded, Zone zone) throws TextParseException {
 
-		this.zoneName = Name.fromString(zoneName, Name.root);
-		this.remoteServerAddress = remoteServerAddress;
-		this.dclass = dclass;
-		this.zoneCopy = zone;
-		this.downloaded = zoneDownloaded;
-	}
+      this.zoneName = Name.fromString(zoneName, Name.root);
+      this.remoteServerAddress = remoteServerAddress;
+      this.dclass = dclass;
+      this.zoneCopy = zone;
+      this.downloaded = zoneDownloaded;
+   }
 
-	public Name getZoneName() {
+   public Name getZoneName() {
 
-		return zoneName;
-	}
+      return zoneName;
+   }
 
-	public void setZoneName(Name zoneName) {
+   public void setZoneName(Name zoneName) {
 
-		this.zoneName = zoneName;
-	}
+      this.zoneName = zoneName;
+   }
 
-	public String getRemoteServerAddress() {
+   public String getRemoteServerAddress() {
 
-		return remoteServerAddress;
-	}
+      return remoteServerAddress;
+   }
 
-	public void setRemoteServerAddress(String remoteServerIP) {
+   public void setRemoteServerAddress(String remoteServerIP) {
 
-		this.remoteServerAddress = remoteServerIP;
-	}
+      this.remoteServerAddress = remoteServerIP;
+   }
 
-	public Zone getZoneCopy() {
+   public Zone getZoneCopy() {
 
-		return zoneCopy;
-	}
+      return zoneCopy;
+   }
 
-	public void setZoneCopy(Zone zone) {
+   public void setZoneCopy(Zone zone) {
 
-		this.zoneCopy = zone;
-	}
+      this.zoneCopy = zone;
+   }
 
-	public String getDclass() {
-		return dclass;
-	}
+   public String getDclass() {
+      return dclass;
+   }
 
-	public void setDclass(String dclass) {
-		this.dclass = dclass;
-	}
+   public void setDclass(String dclass) {
+      this.dclass = dclass;
+   }
 
-	
-	public Timestamp getDownloaded() {
-	
-		return downloaded;
-	}
 
-	
-	public void setDownloaded(Timestamp zoneDownloaded) {
-	
-		this.downloaded = zoneDownloaded;
-	}
+   public Timestamp getDownloaded() {
+
+      return downloaded;
+   }
+
+
+   public void setDownloaded(Timestamp zoneDownloaded) {
+
+      this.downloaded = zoneDownloaded;
+   }
 }

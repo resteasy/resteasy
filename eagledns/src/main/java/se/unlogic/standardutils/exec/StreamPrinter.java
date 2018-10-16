@@ -28,114 +28,114 @@ import java.io.PrintWriter;
  */
 public class StreamPrinter extends Thread implements StreamHandler {
 
-	private InputStream inputStream;
-	private String prefix;
-	private OutputStream outputStream;
+   private InputStream inputStream;
+   private String prefix;
+   private OutputStream outputStream;
 
-	private boolean terminated = false;
-	
-	public StreamPrinter(String prefix, OutputStream os) {
-		super();
-		this.outputStream = os;
-		this.prefix = prefix;
-	}
-	
-	public StreamPrinter(OutputStream os) {
-		super();
-		this.outputStream = os;
-	}
+   private boolean terminated = false;
 
-	public StreamPrinter() {}
+   public StreamPrinter(String prefix, OutputStream os) {
+      super();
+      this.outputStream = os;
+      this.prefix = prefix;
+   }
 
-	public boolean isTerminated(){
-		
-		return terminated;
-	}
-	
-	public void terminate(){
-		
-		this.terminated = true;
-	}
-	
-	@Override
-	public void run() {
-		
-		InputStreamReader inputStreamReader = null;
-		BufferedReader bufferedReader = null;
-		
-		try {
-			PrintWriter pw = null;
+   public StreamPrinter(OutputStream os) {
+      super();
+      this.outputStream = os;
+   }
 
-			if (outputStream != null) {
-				pw = new PrintWriter(outputStream);
-			}else{
-				//CHECKSTYLE.OFF: RegexpSinglelineJava
-				pw = new PrintWriter(System.out);
-				//CHECKSTYLE.ON: RegexpSinglelineJava
-			}
+   public StreamPrinter() {}
 
-			inputStreamReader = new InputStreamReader(inputStream);
-			bufferedReader = new BufferedReader(inputStreamReader);
+   public boolean isTerminated(){
 
-			String line = null;
+      return terminated;
+   }
 
-			if(prefix != null){
+   public void terminate(){
 
-				while (!terminated && (line = bufferedReader.readLine()) != null) {
+      this.terminated = true;
+   }
 
-					pw.println(prefix + line);
-				}
+   @Override
+   public void run() {
 
-			}else{
+      InputStreamReader inputStreamReader = null;
+      BufferedReader bufferedReader = null;
 
-				while (!terminated && (line = bufferedReader.readLine()) != null) {
+      try {
+         PrintWriter pw = null;
 
-					pw.println(line);
-				}
-			}
+         if (outputStream != null) {
+            pw = new PrintWriter(outputStream);
+         }else{
+            //CHECKSTYLE.OFF: RegexpSinglelineJava
+            pw = new PrintWriter(System.out);
+            //CHECKSTYLE.ON: RegexpSinglelineJava
+         }
 
-			if (pw != null) {
-				pw.flush();
-			}
-			
-		} catch (IOException e) {
-						
-			throw new RuntimeException(e);
-			
-		}finally{
-			ReadWriteUtils.closeReader(bufferedReader);
-			ReadWriteUtils.closeReader(inputStreamReader);
-			
-			this.terminated = true;
-		}
-	}
+         inputStreamReader = new InputStreamReader(inputStream);
+         bufferedReader = new BufferedReader(inputStreamReader);
 
-	public void handleStream(InputStream is) {
-		this.inputStream = is;
-		this.start();
-	}
+         String line = null;
 
-	public String getPrefix() {
-		return prefix;
-	}
+         if(prefix != null){
 
-	public OutputStream getOutputStream() {
-		return outputStream;
-	}
+            while (!terminated && (line = bufferedReader.readLine()) != null) {
 
-	public boolean isFinished() {
+               pw.println(prefix + line);
+            }
 
-		return !this.isAlive();
-	}
+         }else{
 
-	public void awaitFinish() {
+            while (!terminated && (line = bufferedReader.readLine()) != null) {
 
-		try {
-			this.join();
-			
-		} catch (InterruptedException e) {
+               pw.println(line);
+            }
+         }
 
-			throw new RuntimeException(e);
-		}
-	}
+         if (pw != null) {
+            pw.flush();
+         }
+
+      } catch (IOException e) {
+
+         throw new RuntimeException(e);
+
+      }finally{
+         ReadWriteUtils.closeReader(bufferedReader);
+         ReadWriteUtils.closeReader(inputStreamReader);
+
+         this.terminated = true;
+      }
+   }
+
+   public void handleStream(InputStream is) {
+      this.inputStream = is;
+      this.start();
+   }
+
+   public String getPrefix() {
+      return prefix;
+   }
+
+   public OutputStream getOutputStream() {
+      return outputStream;
+   }
+
+   public boolean isFinished() {
+
+      return !this.isAlive();
+   }
+
+   public void awaitFinish() {
+
+      try {
+         this.join();
+
+      } catch (InterruptedException e) {
+
+         throw new RuntimeException(e);
+      }
+   }
 }

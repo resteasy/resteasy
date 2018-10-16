@@ -30,37 +30,37 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class InterceptorStreamTest {
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(InterceptorStreamTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, InterceptorStreamCustom.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(InterceptorStreamTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, InterceptorStreamCustom.class);
+   }
 
-    static Client client;
+   static Client client;
 
-    @Before
-    public void setup() {
-        client = ClientBuilder.newClient();
-    }
+   @Before
+   public void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-    @After
-    public void cleanup() {
-        client.close();
-    }
+   @After
+   public void cleanup() {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InterceptorStreamTest.class.getSimpleName());
-    }
-    /**
-     * @tpTestDetails Use ReaderInterceptor and WriterInterceptor together
-     * @tpSince RESTEasy 3.1.0
-     */
-    @Test
-    public void testPriority() throws Exception {
-        Response response = client.target(generateURL("/test")).request().post(Entity.text("test"));
-        response.bufferEntity();
-        Assert.assertEquals("Wrong response status, interceptors don't work correctly", HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response, interceptors don't work correctly", "writer_interceptor_testtest", response.readEntity(String.class));
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, InterceptorStreamTest.class.getSimpleName());
+   }
+   /**
+    * @tpTestDetails Use ReaderInterceptor and WriterInterceptor together
+    * @tpSince RESTEasy 3.1.0
+    */
+   @Test
+   public void testPriority() throws Exception {
+      Response response = client.target(generateURL("/test")).request().post(Entity.text("test"));
+      response.bufferEntity();
+      Assert.assertEquals("Wrong response status, interceptors don't work correctly", HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response, interceptors don't work correctly", "writer_interceptor_testtest", response.readEntity(String.class));
 
-    }
+   }
 }

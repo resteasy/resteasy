@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyCookieRestrictionViolationException extends ResteasyMalformedCookieException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyCookieRestrictionViolationException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyCookieRestrictionViolationException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyCookieRestrictionViolationException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyCookieRestrictionViolationException()
+   {
+   }
+
+   public ResteasyCookieRestrictionViolationException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyCookieRestrictionViolationException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyCookieRestrictionViolationException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyCookieRestrictionViolationException(Throwable cause)
+   {
+      super(cause);
+   }
 }

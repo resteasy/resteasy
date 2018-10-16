@@ -14,38 +14,38 @@ import java.lang.reflect.Method;
 
 public class ResultSetField {
 
-	private final Field beanField;
-	private final Method resultSetColumnNameMethod;
-	private final Method resultSetColumnIndexMethod;
-	private final BeanStringPopulator<?> beanStringPopulator;
-	private final String alias;
+   private final Field beanField;
+   private final Method resultSetColumnNameMethod;
+   private final Method resultSetColumnIndexMethod;
+   private final BeanStringPopulator<?> beanStringPopulator;
+   private final String alias;
 
-	public ResultSetField(Field beanField, Method resultSetColumnNameMethod, Method resultSetColumnIndexMethod, String alias , BeanStringPopulator<?> typePopulator) {
-		super();
-		this.beanField = beanField;
-		this.resultSetColumnNameMethod = resultSetColumnNameMethod;
-		this.resultSetColumnIndexMethod = resultSetColumnIndexMethod;
-		this.alias = alias;
-		this.beanStringPopulator = typePopulator;
-	}
+   public ResultSetField(Field beanField, Method resultSetColumnNameMethod, Method resultSetColumnIndexMethod, String alias , BeanStringPopulator<?> typePopulator) {
+      super();
+      this.beanField = beanField;
+      this.resultSetColumnNameMethod = resultSetColumnNameMethod;
+      this.resultSetColumnIndexMethod = resultSetColumnIndexMethod;
+      this.alias = alias;
+      this.beanStringPopulator = typePopulator;
+   }
 
-	public BeanStringPopulator<?> getBeanStringPopulator() {
-		return beanStringPopulator;
-	}
+   public BeanStringPopulator<?> getBeanStringPopulator() {
+      return beanStringPopulator;
+   }
 
-	public Field getBeanField() {
-		return beanField;
-	}
+   public Field getBeanField() {
+      return beanField;
+   }
 
-	public Method getResultSetColumnNameMethod() {
-		return resultSetColumnNameMethod;
-	}
+   public Method getResultSetColumnNameMethod() {
+      return resultSetColumnNameMethod;
+   }
 
-	public String getAlias() {
-		return alias;
-	}
+   public String getAlias() {
+      return alias;
+   }
 
-	public Method getResultSetColumnIndexMethod() {
-		return resultSetColumnIndexMethod;
-	}
+   public Method getResultSetColumnIndexMethod() {
+      return resultSetColumnIndexMethod;
+   }
 }

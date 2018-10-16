@@ -49,8 +49,8 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
          Thread.currentThread().setContextClassLoader(old);
       }
       client = new ResteasyClientBuilder().providerFactory(providerFactory)
-              .connectionPoolSize(100)
-              .maxPooledPerRoute(100).build();
+            .connectionPoolSize(100)
+            .maxPooledPerRoute(100).build();
    }
 
    static void initAdmin(Map<String, ?> options)

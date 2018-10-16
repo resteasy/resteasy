@@ -25,7 +25,7 @@ public class SkeletonKeyTokenTest
    @Test
    public void testScope() throws Exception
    {
-     SkeletonKeyScope scope2 = new SkeletonKeyScope();
+      SkeletonKeyScope scope2 = new SkeletonKeyScope();
 
       scope2.add("one", "admin");
       scope2.add("one", "buyer");
@@ -66,8 +66,8 @@ public class SkeletonKeyTokenTest
       byte[] tokenBytes = JsonSerialization.toByteArray(token, true);
 
       String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(keyPair.getPrivate());
+            .content(tokenBytes)
+            .rsa256(keyPair.getPrivate());
 
       LOG.info(encoded);
 

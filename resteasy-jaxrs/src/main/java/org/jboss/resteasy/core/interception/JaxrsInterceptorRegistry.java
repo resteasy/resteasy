@@ -53,7 +53,7 @@ public class JaxrsInterceptorRegistry<T>
       {
          if (annotation.annotationType().isAnnotationPresent(NameBinding.class))
          {
-             nameBound.add(annotation.annotationType());
+            nameBound.add(annotation.annotationType());
          }
       }
       return nameBound;

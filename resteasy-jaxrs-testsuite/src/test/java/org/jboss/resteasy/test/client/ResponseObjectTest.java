@@ -32,114 +32,114 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 public class ResponseObjectTest
 {
 
-    private static ResteasyClient client;
-    private static ResponseObjectClient responseObjectClient;
+   private static ResteasyClient client;
+   private static ResponseObjectClient responseObjectClient;
 
-    @Path("test")
-    interface ResponseObjectClient
-    {
-        @GET
-        BasicObject get();
+   @Path("test")
+   interface ResponseObjectClient
+   {
+      @GET
+      BasicObject get();
 
-        @GET
-        @Path("link-header")
-        HateoasObject performGetBasedOnHeader();
-    }
+      @GET
+      @Path("link-header")
+      HateoasObject performGetBasedOnHeader();
+   }
 
-    @ResponseObject
-    public interface BasicObject
-    {
-        @Status
-        int status();
+   @ResponseObject
+   public interface BasicObject
+   {
+      @Status
+      int status();
 
-        @Body
-        String body();
+      @Body
+      String body();
 
-        ClientResponse response();
+      ClientResponse response();
 
-        @HeaderParam("Content-Type")
-        String contentType();
-    }
+      @HeaderParam("Content-Type")
+      String contentType();
+   }
 
-    @ResponseObject
-    public interface HateoasObject
-    {
-        @Status
-        int status();
+   @ResponseObject
+   public interface HateoasObject
+   {
+      @Status
+      int status();
 
-        @LinkHeaderParam(rel = "nextLink")
-        URI nextLink();
+      @LinkHeaderParam(rel = "nextLink")
+      URI nextLink();
 
-        @GET
-        @LinkHeaderParam(rel = "nextLink")
-        String followNextLink();
-    }
+      @GET
+      @LinkHeaderParam(rel = "nextLink")
+      String followNextLink();
+   }
 
-    @Path("test")
-    public static class ResponseObjectResource
-    {
+   @Path("test")
+   public static class ResponseObjectResource
+   {
 
-        @GET
-        @Produces("text/plain")
-        public String get()
-        {
-            return "ABC";
-        }
+      @GET
+      @Produces("text/plain")
+      public String get()
+      {
+         return "ABC";
+      }
 
-        @GET
-        @Path("/link-header")
-        public Response getWithHeader(@Context UriInfo uri)
-        {
-            URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
-            org.jboss.resteasy.spi.Link link = new org.jboss.resteasy.spi.Link();
-            link.setHref(subUri.toASCIIString());
-            link.setRelationship("nextLink");
-            return Response.noContent().header("Link", link.toString()).build();
-        }
+      @GET
+      @Path("/link-header")
+      public Response getWithHeader(@Context UriInfo uri)
+      {
+         URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
+         org.jboss.resteasy.spi.Link link = new org.jboss.resteasy.spi.Link();
+         link.setHref(subUri.toASCIIString());
+         link.setRelationship("nextLink");
+         return Response.noContent().header("Link", link.toString()).build();
+      }
 
-        @GET
-        @Produces("text/plain")
-        @Path("/link-header/next-link")
-        public String getHeaderForward()
-        {
-            return "forwarded";
-        }
-    }
+      @GET
+      @Produces("text/plain")
+      @Path("/link-header/next-link")
+      public String getHeaderForward()
+      {
+         return "forwarded";
+      }
+   }
 
-    @BeforeClass
-    public static void before() throws Exception
-    {
-        final Dispatcher dispatcher = EmbeddedContainer.start().getDispatcher();
-        client = new ResteasyClientBuilder().build();
-        dispatcher.getRegistry().addPerRequestResource(ResponseObjectResource.class);
-        responseObjectClient = ProxyBuilder.builder(ResponseObjectClient.class, client.target(generateBaseUrl())).build();
-    }
+   @BeforeClass
+   public static void before() throws Exception
+   {
+      final Dispatcher dispatcher = EmbeddedContainer.start().getDispatcher();
+      client = new ResteasyClientBuilder().build();
+      dispatcher.getRegistry().addPerRequestResource(ResponseObjectResource.class);
+      responseObjectClient = ProxyBuilder.builder(ResponseObjectClient.class, client.target(generateBaseUrl())).build();
+   }
 
-    @AfterClass
-    public static void after() throws Exception
-    {
-        client.close();
-        EmbeddedContainer.stop();
-    }
+   @AfterClass
+   public static void after() throws Exception
+   {
+      client.close();
+      EmbeddedContainer.stop();
+   }
 
-    @Test
-    public void testSimple()
-    {
-        BasicObject obj = responseObjectClient.get();
-        org.junit.Assert.assertEquals(HttpResponseCodes.SC_OK, obj.status());
-        org.junit.Assert.assertEquals("The response object doesn't contain the expected string", "ABC", obj.body());
-        org.junit.Assert.assertEquals("The response object doesn't contain the expected header",
-                "text/plain;charset=UTF-8", obj.response().getHeaders().getFirst("Content-Type"));
-        org.junit.Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
-    }
+   @Test
+   public void testSimple()
+   {
+      BasicObject obj = responseObjectClient.get();
+      org.junit.Assert.assertEquals(HttpResponseCodes.SC_OK, obj.status());
+      org.junit.Assert.assertEquals("The response object doesn't contain the expected string", "ABC", obj.body());
+      org.junit.Assert.assertEquals("The response object doesn't contain the expected header",
+            "text/plain;charset=UTF-8", obj.response().getHeaders().getFirst("Content-Type"));
+      org.junit.Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
+   }
 
-    @Test
-    public void testLinkFollow()
-    {
-        HateoasObject obj = responseObjectClient.performGetBasedOnHeader();
-        org.junit.Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, obj.status());
-        org.junit.Assert.assertTrue("The resource was not forwarded", obj.nextLink().getPath().endsWith("next-link"));
-        org.junit.Assert.assertEquals("The resource was not forwarded", "forwarded", obj.followNextLink());
+   @Test
+   public void testLinkFollow()
+   {
+      HateoasObject obj = responseObjectClient.performGetBasedOnHeader();
+      org.junit.Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, obj.status());
+      org.junit.Assert.assertTrue("The resource was not forwarded", obj.nextLink().getPath().endsWith("next-link"));
+      org.junit.Assert.assertEquals("The resource was not forwarded", "forwarded", obj.followNextLink());
 
-    }
+   }
 }

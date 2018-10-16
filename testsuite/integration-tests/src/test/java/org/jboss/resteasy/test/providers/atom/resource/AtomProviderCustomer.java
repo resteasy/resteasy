@@ -8,17 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "customer", namespace = "http://jboss.org/Customer")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AtomProviderCustomer {
-    @XmlElement
-    private String name;
+   @XmlElement
+   private String name;
 
-    public AtomProviderCustomer() {
-    }
+   public AtomProviderCustomer() {
+   }
 
-    public AtomProviderCustomer(final String name) {
-        this.name = name;
-    }
+   public AtomProviderCustomer(final String name) {
+      this.name = name;
+   }
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 }

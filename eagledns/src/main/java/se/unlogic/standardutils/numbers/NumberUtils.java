@@ -19,305 +19,305 @@ import java.util.regex.Pattern;
 
 public class NumberUtils {
 
-	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\D*");
+   private static final Pattern NUMBER_PATTERN = Pattern.compile("\\D*");
 
-	public static boolean isLong(Double value) {
+   public static boolean isLong(Double value) {
 
-		if (value != null) {
+      if (value != null) {
 
-			Long longValue = value.longValue();
-			Double doubleValue = longValue.doubleValue();
+         Long longValue = value.longValue();
+         Double doubleValue = longValue.doubleValue();
 
-			if (doubleValue.equals(value)) {
-				return true;
-			}
-		}
-		return false;
-	}
+         if (doubleValue.equals(value)) {
+            return true;
+         }
+      }
+      return false;
+   }
 
-	public static boolean isInt(String value) {
+   public static boolean isInt(String value) {
 
-		if (value != null) {
+      if (value != null) {
 
-			try {
-				Integer.parseInt(value);
-				return true;
+         try {
+            Integer.parseInt(value);
+            return true;
 
-			} catch (NumberFormatException e) {}
-		}
-		return false;
-	}
+         } catch (NumberFormatException e) {}
+      }
+      return false;
+   }
 
-	public static boolean isLong(String value) {
+   public static boolean isLong(String value) {
 
-		if (value != null) {
+      if (value != null) {
 
-			try {
-				Long.parseLong(value);
-				return true;
+         try {
+            Long.parseLong(value);
+            return true;
 
-			} catch (NumberFormatException e) {}
-		}
-		return false;
-	}
+         } catch (NumberFormatException e) {}
+      }
+      return false;
+   }
 
-	public static boolean isFloat(String value) {
+   public static boolean isFloat(String value) {
 
-		if (value != null) {
+      if (value != null) {
 
-			try {
-				Float.parseFloat(value);
-				return true;
+         try {
+            Float.parseFloat(value);
+            return true;
 
-			} catch (NumberFormatException e) {}
-		}
-		return false;
-	}
+         } catch (NumberFormatException e) {}
+      }
+      return false;
+   }
 
-	public static boolean isDouble(String value) {
+   public static boolean isDouble(String value) {
 
-		if (value != null) {
-			try {
-				Double.parseDouble(value);
-				return true;
+      if (value != null) {
+         try {
+            Double.parseDouble(value);
+            return true;
 
-			} catch (NumberFormatException e) {}
-		}
-		return false;
-	}
+         } catch (NumberFormatException e) {}
+      }
+      return false;
+   }
 
-	public static boolean isNumber(String value) {
+   public static boolean isNumber(String value) {
 
-		return isDouble(value) || isLong(value) ? true : false;
-	}
+      return isDouble(value) || isLong(value) ? true : false;
+   }
 
-	public static Integer toInt(String value) {
+   public static Integer toInt(String value) {
 
-		if (value != null) {
-			try {
-				return Integer.parseInt(value);
+      if (value != null) {
+         try {
+            return Integer.parseInt(value);
 
-			} catch (NumberFormatException e) {}
-		}
+         } catch (NumberFormatException e) {}
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public static List<Integer> toInt(Collection<? extends Object> list, Field field) throws IllegalArgumentException, IllegalAccessException {
+   public static List<Integer> toInt(Collection<? extends Object> list, Field field) throws IllegalArgumentException, IllegalAccessException {
 
-		Type type = field.getType();
+      Type type = field.getType();
 
-		if (list != null && type.equals(Integer.class) || type.equals(int.class)) {
+      if (list != null && type.equals(Integer.class) || type.equals(int.class)) {
 
-			List<Integer> validIntegers = new ArrayList<Integer>();
+         List<Integer> validIntegers = new ArrayList<Integer>();
 
-			for (Object object : list) {
+         for (Object object : list) {
 
-				Integer value = (Integer) field.get(object);
+            Integer value = (Integer) field.get(object);
 
-				if (value != null) {
-					validIntegers.add(value);
-				}
+            if (value != null) {
+               validIntegers.add(value);
+            }
 
-			}
+         }
 
-			return validIntegers;
-		}
+         return validIntegers;
+      }
 
-		return null;
+      return null;
 
-	}
+   }
 
-	public static ArrayList<Integer> toInt(Collection<String> values) {
+   public static ArrayList<Integer> toInt(Collection<String> values) {
 
-		if (values == null) {
+      if (values == null) {
 
-			return null;
+         return null;
 
-		} else {
+      } else {
 
-			ArrayList<Integer> validIntegers = new ArrayList<Integer>();
+         ArrayList<Integer> validIntegers = new ArrayList<Integer>();
 
-			for (String value : values) {
+         for (String value : values) {
 
-				if (value != null) {
+            if (value != null) {
 
-					Integer intValue = NumberUtils.toInt(value);
+               Integer intValue = NumberUtils.toInt(value);
 
-					if (intValue != null) {
-						validIntegers.add(intValue);
-					}
-				}
-			}
+               if (intValue != null) {
+                  validIntegers.add(intValue);
+               }
+            }
+         }
 
-			if (validIntegers.isEmpty()) {
+         if (validIntegers.isEmpty()) {
 
-				return null;
+            return null;
 
-			} else {
+         } else {
 
-				return validIntegers;
-			}
-		}
-	}
+            return validIntegers;
+         }
+      }
+   }
 
-	public static ArrayList<Integer> toInt(String[] values) {
+   public static ArrayList<Integer> toInt(String[] values) {
 
-		if (values == null) {
+      if (values == null) {
 
-			return null;
+         return null;
 
-		} else {
+      } else {
 
-			ArrayList<Integer> validIntegers = new ArrayList<Integer>();
+         ArrayList<Integer> validIntegers = new ArrayList<Integer>();
 
-			for (String value : values) {
+         for (String value : values) {
 
-				if (value != null) {
+            if (value != null) {
 
-					Integer intValue = NumberUtils.toInt(value);
+               Integer intValue = NumberUtils.toInt(value);
 
-					if (intValue != null) {
-						validIntegers.add(intValue);
-					}
-				}
-			}
+               if (intValue != null) {
+                  validIntegers.add(intValue);
+               }
+            }
+         }
 
-			if (validIntegers.isEmpty()) {
+         if (validIntegers.isEmpty()) {
 
-				return null;
+            return null;
 
-			} else {
+         } else {
 
-				return validIntegers;
-			}
-		}
-	}
+            return validIntegers;
+         }
+      }
+   }
 
-	public static Long toLong(String value) {
+   public static Long toLong(String value) {
 
-		if (value != null) {
-			try {
-				return Long.parseLong(value);
-			} catch (NumberFormatException e) {}
-		}
+      if (value != null) {
+         try {
+            return Long.parseLong(value);
+         } catch (NumberFormatException e) {}
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public static Float toFloat(String value) {
+   public static Float toFloat(String value) {
 
-		if (value != null) {
-			try {
-				return Float.parseFloat(value);
-			} catch (NumberFormatException e) {}
-		}
+      if (value != null) {
+         try {
+            return Float.parseFloat(value);
+         } catch (NumberFormatException e) {}
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public static Double toDouble(String value) {
+   public static Double toDouble(String value) {
 
-		if (value != null) {
-			try {
-				return Double.parseDouble(value);
-			} catch (NumberFormatException e) {}
-		}
+      if (value != null) {
+         try {
+            return Double.parseDouble(value);
+         } catch (NumberFormatException e) {}
+      }
 
-		return null;
-	}
+      return null;
+   }
 
-	public static List<Double> toDouble(List<String> values) {
+   public static List<Double> toDouble(List<String> values) {
 
-		if (values == null) {
-			
-			return null;
-			
-		} else {
-			
-			ArrayList<Double> validDoubles = new ArrayList<Double>();
+      if (values == null) {
 
-			for (String value : values) {
-				
-				if (value != null) {
-					
-					Double doubleValue = NumberUtils.toDouble(value);
+         return null;
 
-					if (doubleValue != null) {
-						validDoubles.add(doubleValue);
-					}
-				}
-			}
+      } else {
 
-			if (validDoubles.isEmpty()) {
-				return null;
-			} else {
-				return validDoubles;
-			}
-		}
-	}
+         ArrayList<Double> validDoubles = new ArrayList<Double>();
 
-	public static List<Long> toLong(List<String> values) {
+         for (String value : values) {
 
-		if (values == null) {
-			return null;
-		} else {
-			ArrayList<Long> validLongs = new ArrayList<Long>();
+            if (value != null) {
 
-			for (String value : values) {
-				if (value != null) {
-					Long LongValue = NumberUtils.toLong(value);
+               Double doubleValue = NumberUtils.toDouble(value);
 
-					if (LongValue != null) {
-						validLongs.add(LongValue);
-					}
-				}
-			}
+               if (doubleValue != null) {
+                  validDoubles.add(doubleValue);
+               }
+            }
+         }
 
-			if (validLongs.isEmpty()) {
-				return null;
-			} else {
-				return validLongs;
-			}
-		}
-	}
+         if (validDoubles.isEmpty()) {
+            return null;
+         } else {
+            return validDoubles;
+         }
+      }
+   }
 
-	public static Long getNumbers(String revstring) {
+   public static List<Long> toLong(List<String> values) {
 
-		String result = NUMBER_PATTERN.matcher(revstring).replaceAll("");
+      if (values == null) {
+         return null;
+      } else {
+         ArrayList<Long> validLongs = new ArrayList<Long>();
 
-		return toLong(result);
-	}
+         for (String value : values) {
+            if (value != null) {
+               Long LongValue = NumberUtils.toLong(value);
 
-	public static String formatNumber(Number value, int minDecimals, int maxDecimals, boolean grouping, boolean dotDecimalSymbol) {
+               if (LongValue != null) {
+                  validLongs.add(LongValue);
+               }
+            }
+         }
 
-		DecimalFormat formatter = new DecimalFormat();
+         if (validLongs.isEmpty()) {
+            return null;
+         } else {
+            return validLongs;
+         }
+      }
+   }
 
-		formatter.setMinimumFractionDigits(minDecimals);
+   public static Long getNumbers(String revstring) {
 
-		formatter.setMaximumFractionDigits(maxDecimals);
+      String result = NUMBER_PATTERN.matcher(revstring).replaceAll("");
 
-		if (dotDecimalSymbol) {
+      return toLong(result);
+   }
 
-			formatter.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
+   public static String formatNumber(Number value, int minDecimals, int maxDecimals, boolean grouping, boolean dotDecimalSymbol) {
 
-		}
+      DecimalFormat formatter = new DecimalFormat();
 
-		formatter.setGroupingUsed(grouping);
+      formatter.setMinimumFractionDigits(minDecimals);
 
-		return formatter.format(value);
+      formatter.setMaximumFractionDigits(maxDecimals);
 
-	}
+      if (dotDecimalSymbol) {
 
-	public static Byte toByte(String value) {
+         formatter.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 
-		if (value != null) {
-			try {
-				return Byte.parseByte(value);
-			} catch (NumberFormatException e) {}
-		}
+      }
 
-		return null;
-	}
+      formatter.setGroupingUsed(grouping);
+
+      return formatter.format(value);
+
+   }
+
+   public static Byte toByte(String value) {
+
+      if (value != null) {
+         try {
+            return Byte.parseByte(value);
+         } catch (NumberFormatException e) {}
+      }
+
+      return null;
+   }
 
 }

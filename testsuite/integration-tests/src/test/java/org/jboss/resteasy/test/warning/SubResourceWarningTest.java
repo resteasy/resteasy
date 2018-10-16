@@ -36,7 +36,7 @@ public class SubResourceWarningTest {
    public static Archive<?> deploySimpleResource() {
       WebArchive war = TestUtil.prepareArchive(SubResourceWarningTest.class.getSimpleName());
       return TestUtil.finishContainerPrepare(war, null, SubResourceWarningResource.class,
-              TestResource1.class, TestResource2.class, TestSubResource.class);
+            TestResource1.class, TestResource2.class, TestSubResource.class);
    }
 
    @BeforeClass

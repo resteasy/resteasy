@@ -9,31 +9,31 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XmlJavaTypeAdapterFoo {
-    @XmlJavaTypeAdapter(XmlJavaTypeAdapterAlienAdapter.class)
-    @XmlElement
-    XmlJavaTypeAdapterAlien alien;
+   @XmlJavaTypeAdapter(XmlJavaTypeAdapterAlienAdapter.class)
+   @XmlElement
+   XmlJavaTypeAdapterAlien alien;
 
-    public void setName(String name) {
-        alien = new XmlJavaTypeAdapterAlien();
-        alien.setName(name);
-    }
+   public void setName(String name) {
+      alien = new XmlJavaTypeAdapterAlien();
+      alien.setName(name);
+   }
 
-    public String toString() {
-        return "Foo[Alien[" + alien.getName() + "]]: " + super.toString();
-    }
+   public String toString() {
+      return "Foo[Alien[" + alien.getName() + "]]: " + super.toString();
+   }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof XmlJavaTypeAdapterFoo)) {
-            return false;
-        }
-        XmlJavaTypeAdapterFoo foo = XmlJavaTypeAdapterFoo.class.cast(o);
-        return alien.getName().equals(foo.alien.getName());
-    }
+   @Override
+   public boolean equals(Object o) {
+      if (!(o instanceof XmlJavaTypeAdapterFoo)) {
+         return false;
+      }
+      XmlJavaTypeAdapterFoo foo = XmlJavaTypeAdapterFoo.class.cast(o);
+      return alien.getName().equals(foo.alien.getName());
+   }
 
-    @Override
-    public int hashCode() {
-        return alien.hashCode();
-    }
+   @Override
+   public int hashCode() {
+      return alien.hashCode();
+   }
 
 }

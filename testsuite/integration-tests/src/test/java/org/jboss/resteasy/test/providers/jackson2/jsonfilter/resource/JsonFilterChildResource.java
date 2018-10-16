@@ -7,10 +7,10 @@ import javax.ws.rs.Produces;
 
 @Path("/superclass")
 public class JsonFilterChildResource {
-    @GET
-    @Produces("application/json")
-    @Path("{id}")
-    public JsonFilterChild getProduct(@PathParam("id") int id) {
-        return new JsonFilterChild(PersonType.CUSTOMER, id, "Melissa");
-    }
+   @GET
+   @Produces("application/json")
+   @Path("{id}")
+   public JsonFilterChild getProduct(@PathParam("id") int id) {
+      return new JsonFilterChild(PersonType.CUSTOMER, id, "Melissa");
+   }
 }

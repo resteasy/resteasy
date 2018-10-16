@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("multipart/related")
 public class MultipartRelatedWriter extends AbstractMultipartRelatedWriter
-        implements MessageBodyWriter<MultipartRelatedOutput>
+      implements MessageBodyWriter<MultipartRelatedOutput>
 {
 
    public boolean isWriteable(Class<?> type, Type genericType,
@@ -41,10 +41,10 @@ public class MultipartRelatedWriter extends AbstractMultipartRelatedWriter
                        Class<?> type, Type genericType, Annotation[] annotations,
                        MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException,
-           WebApplicationException
+         WebApplicationException
    {
       writeRelated(multipartRelatedOutput, mediaType, httpHeaders,
-              entityStream);
+            entityStream);
    }
 
 }

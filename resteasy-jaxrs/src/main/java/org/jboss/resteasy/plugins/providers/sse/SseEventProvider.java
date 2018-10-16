@@ -26,10 +26,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 @Provider
-@Produces(
-{"text/event-stream", "application/x-stream-general"})
-@Consumes(
-{"text/event-stream", "application/x-stream-general"})
+@Produces({"text/event-stream", "application/x-stream-general"})
+@Consumes({"text/event-stream", "application/x-stream-general"})
 public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    public static final MediaType GENERAL_STREAM_TYPE = new MediaType("application", "x-stream-general");
@@ -50,10 +48,9 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
    }
 
    @Override
-   @SuppressWarnings(
-   {"unchecked"})
+   @SuppressWarnings({"unchecked"})
    public void writeTo(OutboundSseEvent event, Class<?> type, Type genericType, Annotation[] annotations,
-         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;

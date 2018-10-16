@@ -15,33 +15,33 @@ import java.util.List;
 
 public class BeanRelationPopulator<T> implements BeanResultSetPopulator<T>{
 
-	private BeanResultSetPopulator<T> populator;
-	private List<ManyToOneRelation<T,?,?>> manyToOneRelations;
-	private Connection connection;
-	private RelationQuery relationQuery;
+   private BeanResultSetPopulator<T> populator;
+   private List<ManyToOneRelation<T,?,?>> manyToOneRelations;
+   private Connection connection;
+   private RelationQuery relationQuery;
 
-	public BeanRelationPopulator(BeanResultSetPopulator<T> populator, List<ManyToOneRelation<T,?,?>> manyToOneRelations, Connection connection, RelationQuery relationQuery) {
-		super();
-		this.populator = populator;
-		this.manyToOneRelations = manyToOneRelations;
-		this.connection = connection;
-		this.relationQuery = relationQuery;
-	}
+   public BeanRelationPopulator(BeanResultSetPopulator<T> populator, List<ManyToOneRelation<T,?,?>> manyToOneRelations, Connection connection, RelationQuery relationQuery) {
+      super();
+      this.populator = populator;
+      this.manyToOneRelations = manyToOneRelations;
+      this.connection = connection;
+      this.relationQuery = relationQuery;
+   }
 
-	public T populate(ResultSet rs) throws SQLException {
+   public T populate(ResultSet rs) throws SQLException {
 
-		T bean = populator.populate(rs);
+      T bean = populator.populate(rs);
 
-		if(bean != null){
+      if(bean != null){
 
-			for(ManyToOneRelation<T, ?, ?> relation : manyToOneRelations){
+         for(ManyToOneRelation<T, ?, ?> relation : manyToOneRelations){
 
-				relation.getRemoteValue(bean, rs, connection, relationQuery);
-			}
-		}
+            relation.getRemoteValue(bean, rs, connection, relationQuery);
+         }
+      }
 
-		return bean;
-	}
+      return bean;
+   }
 
 
 }

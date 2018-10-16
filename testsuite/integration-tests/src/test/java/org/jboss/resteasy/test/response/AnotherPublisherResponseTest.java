@@ -47,15 +47,15 @@ public class AnotherPublisherResponseTest {
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-              new RuntimePermission("modifyThread"),
-              new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
-              new PropertyPermission("arquillian.*", "read"),
-              new RuntimePermission("accessDeclaredMembers"),
-              new ReflectPermission("suppressAccessChecks"),
-              new PropertyPermission("org.jboss.resteasy.port", "read"),
-              new RuntimePermission("getenv.RESTEASY_PORT"),
-              new PropertyPermission("ipv6", "read"),
-              new PropertyPermission("node", "read")
+            new RuntimePermission("modifyThread"),
+            new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+            new PropertyPermission("arquillian.*", "read"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new ReflectPermission("suppressAccessChecks"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new PropertyPermission("ipv6", "read"),
+            new PropertyPermission("node", "read")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class, PortProviderUtil.class);

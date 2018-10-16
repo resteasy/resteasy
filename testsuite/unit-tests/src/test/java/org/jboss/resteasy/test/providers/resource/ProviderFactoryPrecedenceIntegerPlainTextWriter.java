@@ -14,14 +14,14 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("text/plain")
 public class ProviderFactoryPrecedenceIntegerPlainTextWriter implements MessageBodyWriter<Integer> {
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return true;
+   }
 
-    public long getSize(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return 0;
-    }
+   public long getSize(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return 0;
+   }
 
-    public void writeTo(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-    }
+   public void writeTo(Integer integer, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+   }
 }

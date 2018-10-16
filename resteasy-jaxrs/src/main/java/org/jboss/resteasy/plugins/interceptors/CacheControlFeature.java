@@ -79,9 +79,9 @@ public class CacheControlFeature implements DynamicFeature
    protected CacheControl initCacheControl(NoCache value)
    {
       CacheControl cacheControl = new CacheControl();
-       cacheControl.setNoCache(true);
-       cacheControl.setNoTransform(false);
-       for (String field : value.fields()) cacheControl.getNoCacheFields().add(field);
+      cacheControl.setNoCache(true);
+      cacheControl.setNoTransform(false);
+      for (String field : value.fields()) cacheControl.getNoCacheFields().add(field);
       return cacheControl;
    }
 }

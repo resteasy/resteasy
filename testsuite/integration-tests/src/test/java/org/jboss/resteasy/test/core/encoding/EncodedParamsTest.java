@@ -28,37 +28,37 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class EncodedParamsTest {
 
-    public static final String ERROR_MESSAGE = "Wrong encoded characters in request";
+   public static final String ERROR_MESSAGE = "Wrong encoded characters in request";
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(EncodedParamsTest.class.getSimpleName());
-        war.addClass(EncodedParamsTest.class);
-        return TestUtil.finishContainerPrepare(war, null,
-                EncodedParamsComplexResource.class, EncodedParamsSimpleResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(EncodedParamsTest.class.getSimpleName());
+      war.addClass(EncodedParamsTest.class);
+      return TestUtil.finishContainerPrepare(war, null,
+            EncodedParamsComplexResource.class, EncodedParamsSimpleResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, EncodedParamsTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, EncodedParamsTest.class.getSimpleName());
+   }
 
-    private void basicTest(String path) {
-        Client client = ClientBuilder.newClient();
-        Response response = client.target(generateURL(path)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        client.close();
-    }
+   private void basicTest(String path) {
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL(path)).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Check various location of "?", "%20" characters
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testEncoded() throws Exception {
-        basicTest("/encodedParam?hello%20world=5&stuff=hello%20world");
-        basicTest("/encodedParam/hello%20world");
-        basicTest("/encodedMethod?hello%20world=5&stuff=hello%20world");
-        basicTest("/encodedMethod/hello%20world");
-    }
+   /**
+    * @tpTestDetails Check various location of "?", "%20" characters
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testEncoded() throws Exception {
+      basicTest("/encodedParam?hello%20world=5&stuff=hello%20world");
+      basicTest("/encodedParam/hello%20world");
+      basicTest("/encodedMethod?hello%20world=5&stuff=hello%20world");
+      basicTest("/encodedMethod/hello%20world");
+   }
 }

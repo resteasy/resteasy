@@ -19,64 +19,64 @@ import java.text.ParseException;
 
 public class TimeStampPopulator extends BaseStringPopulator<Timestamp> implements BeanResultSetPopulator<Timestamp> {
 
-	private final DateFormat dateFormat;
+   private final DateFormat dateFormat;
 
-	private static final TimeStampPopulator POPULATOR = new TimeStampPopulator();
-	
-	public TimeStampPopulator(){
-		super();
-		
-		this.dateFormat = null;
-	}
-	
-	public TimeStampPopulator(DateFormat dateFormat) {
+   private static final TimeStampPopulator POPULATOR = new TimeStampPopulator();
 
-		super();
+   public TimeStampPopulator(){
+      super();
 
-		this.dateFormat = dateFormat;
-	}
+      this.dateFormat = null;
+   }
 
-	public TimeStampPopulator(String populatorID, DateFormat dateFormat) {
+   public TimeStampPopulator(DateFormat dateFormat) {
 
-		super(populatorID);
+      super();
 
-		this.dateFormat = dateFormat;
-	}
+      this.dateFormat = dateFormat;
+   }
 
-	public TimeStampPopulator(String populatorID, DateFormat dateFormat, StringFormatValidator formatValidator) {
+   public TimeStampPopulator(String populatorID, DateFormat dateFormat) {
 
-		super(populatorID,formatValidator);
-		this.dateFormat = dateFormat;
-	}
+      super(populatorID);
 
-	public Class<? extends Timestamp> getType() {
+      this.dateFormat = dateFormat;
+   }
 
-		return Timestamp.class;
-	}
+   public TimeStampPopulator(String populatorID, DateFormat dateFormat, StringFormatValidator formatValidator) {
 
-	public Timestamp getValue(String value) {
+      super(populatorID,formatValidator);
+      this.dateFormat = dateFormat;
+   }
 
-		try {
-			return new Timestamp(this.dateFormat.parse(value).getTime());
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
+   public Class<? extends Timestamp> getType() {
 
-	@Override
-	public boolean validateDefaultFormat(String value) {
+      return Timestamp.class;
+   }
 
-		return DateUtils.isValidDate(this.dateFormat, value);
-	}
-	
-	public static TimeStampPopulator getPopulator(){
-		return POPULATOR;
-	}
+   public Timestamp getValue(String value) {
 
-	public Timestamp populate(ResultSet rs) throws SQLException {
-		
-		return rs.getTimestamp(1);
-		
-		
-	}
+      try {
+         return new Timestamp(this.dateFormat.parse(value).getTime());
+      } catch (ParseException e) {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Override
+   public boolean validateDefaultFormat(String value) {
+
+      return DateUtils.isValidDate(this.dateFormat, value);
+   }
+
+   public static TimeStampPopulator getPopulator(){
+      return POPULATOR;
+   }
+
+   public Timestamp populate(ResultSet rs) throws SQLException {
+
+      return rs.getTimestamp(1);
+
+
+   }
 }

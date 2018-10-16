@@ -13,43 +13,43 @@ import java.util.Map;
 @Path("/yaml")
 public class YamlResource {
 
-    public static YamlPojoBindingObject createMyObject() {
-        YamlPojoBindingObject obj = new YamlPojoBindingObject();
+   public static YamlPojoBindingObject createMyObject() {
+      YamlPojoBindingObject obj = new YamlPojoBindingObject();
 
-        obj.setSomeText("This is some sample text");
-        obj.setDate(new Date(123456789));
-        obj.getNested().setMoreText("This is some more sample text");
+      obj.setSomeText("This is some sample text");
+      obj.setDate(new Date(123456789));
+      obj.getNested().setMoreText("This is some more sample text");
 
-        Map<String, YamlPojoBindingNestedObject> dataMap = new HashMap<String, YamlPojoBindingNestedObject>();
-        YamlPojoBindingNestedObject mno = new YamlPojoBindingNestedObject();
-        mno.setMoreText("blah");
-        dataMap.put("fooBar", mno);
+      Map<String, YamlPojoBindingNestedObject> dataMap = new HashMap<String, YamlPojoBindingNestedObject>();
+      YamlPojoBindingNestedObject mno = new YamlPojoBindingNestedObject();
+      mno.setMoreText("blah");
+      dataMap.put("fooBar", mno);
 
-        obj.setData(dataMap);
+      obj.setData(dataMap);
 
-        return obj;
-    }
-
-
-    @GET
-    @Produces("text/x-yaml")
-    public YamlPojoBindingObject getMyObject() {
-        return createMyObject();
-    }
+      return obj;
+   }
 
 
-    @POST
-    @Consumes("text/x-yaml")
-    @Produces("text/x-yaml")
-    public YamlPojoBindingObject setMyObject(YamlPojoBindingObject obj) {
-        return obj;
-    }
+   @GET
+   @Produces("text/x-yaml")
+   public YamlPojoBindingObject getMyObject() {
+      return createMyObject();
+   }
 
-    @POST
-    @Path("/list")
-    @Consumes("text/x-yaml")
-    @Produces("text/plain")
-    public String populate(List<String> data) {
-        return data.toString();
-    }
+
+   @POST
+   @Consumes("text/x-yaml")
+   @Produces("text/x-yaml")
+   public YamlPojoBindingObject setMyObject(YamlPojoBindingObject obj) {
+      return obj;
+   }
+
+   @POST
+   @Path("/list")
+   @Consumes("text/x-yaml")
+   @Produces("text/plain")
+   public String populate(List<String> data) {
+      return data.toString();
+   }
 }

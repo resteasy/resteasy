@@ -35,101 +35,101 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class StreamResetTest {
 
-    private final Logger logger = Logger.getLogger(StreamResetTest.class);
+   private final Logger logger = Logger.getLogger(StreamResetTest.class);
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(StreamResetTest.class.getSimpleName());
-        war.addClass(StreamResetTest.class);
-        return TestUtil.finishContainerPrepare(war, null, StreamResetPlace.class, StreamResetPerson.class,
-                StreamResetResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(StreamResetTest.class.getSimpleName());
+      war.addClass(StreamResetTest.class);
+      return TestUtil.finishContainerPrepare(war, null, StreamResetPlace.class, StreamResetPerson.class,
+            StreamResetResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = new ResteasyClientBuilder().build();
-    }
+   @Before
+   public void init() {
+      client = new ResteasyClientBuilder().build();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-        client = null;
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+      client = null;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, StreamResetTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, StreamResetTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is called.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testJBEAP2138() throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL("/test"));
-        Response response = target.request().get();
+   /**
+    * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is called.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testJBEAP2138() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/test"));
+      Response response = target.request().get();
 
-        response.bufferEntity();
+      response.bufferEntity();
 
-        try {
+      try {
+         response.readEntity(StreamResetPlace.class);
+      } catch (Exception e) {
+      }
+
+      response.readEntity(StreamResetPerson.class);
+   }
+
+   /**
+    * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is not called.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testJBEAP2138WithoutBufferedEntity() throws Exception {
+      try {
+         Client client = ClientBuilder.newClient();
+         WebTarget target = client.target(generateURL("/test"));
+         Response response = target.request().get();
+
+         try {
             response.readEntity(StreamResetPlace.class);
-        } catch (Exception e) {
-        }
+         } catch (Exception e) {
+         }
 
-        response.readEntity(StreamResetPerson.class);
-    }
+         response.readEntity(StreamResetPerson.class);
 
-    /**
-     * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is not called.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testJBEAP2138WithoutBufferedEntity() throws Exception {
-        try {
-            Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(generateURL("/test"));
-            Response response = target.request().get();
+         Assert.fail();
+      } catch (IllegalStateException e) {
+         logger.info("Expected IllegalStateException was thrown");
+      }
+   }
 
-            try {
-                response.readEntity(StreamResetPlace.class);
-            } catch (Exception e) {
-            }
+   /**
+    * @tpTestDetails Tests streamReset method of deprecated ClientResponse class. In case exception is thrown during processing
+    * response from the server, the stream of the response must be reset before reading it again.
+    * @tpPassCrit After exception is thrown the response is parsed correctly with getEntity()
+    * @tpInfo RESTEASY-456
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testClientRequestResetStream() throws Exception {
+      ClientRequest request = new ClientRequest(generateURL("/test"));
+      ClientResponse<StreamResetPlace> response = request.get(StreamResetPlace.class);
+      boolean exceptionThrown = false;
+      try {
+         StreamResetPlace place = response.getEntity();
 
-            response.readEntity(StreamResetPerson.class);
+      } catch (Exception e) {
+         exceptionThrown = true;
+      }
+      Assert.assertTrue("The expected exception didn't happen", exceptionThrown);
 
-            Assert.fail();
-        } catch (IllegalStateException e) {
-            logger.info("Expected IllegalStateException was thrown");
-        }
-    }
-
-    /**
-     * @tpTestDetails Tests streamReset method of deprecated ClientResponse class. In case exception is thrown during processing
-     * response from the server, the stream of the response must be reset before reading it again.
-     * @tpPassCrit After exception is thrown the response is parsed correctly with getEntity()
-     * @tpInfo RESTEASY-456
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testClientRequestResetStream() throws Exception {
-        ClientRequest request = new ClientRequest(generateURL("/test"));
-        ClientResponse<StreamResetPlace> response = request.get(StreamResetPlace.class);
-        boolean exceptionThrown = false;
-        try {
-            StreamResetPlace place = response.getEntity();
-
-        } catch (Exception e) {
-            exceptionThrown = true;
-        }
-        Assert.assertTrue("The expected exception didn't happen", exceptionThrown);
-
-        response.resetStream();
-        StreamResetPerson person = response.getEntity(StreamResetPerson.class);
-        Assert.assertNotNull("The stream was not correctly reset", person);
-        Assert.assertEquals("The response from the server is not the one expected", "bill", person.getName());
-    }
+      response.resetStream();
+      StreamResetPerson person = response.getEntity(StreamResetPerson.class);
+      Assert.assertNotNull("The stream was not correctly reset", person);
+      Assert.assertEquals("The response from the server is not the one expected", "bill", person.getName());
+   }
 
 }

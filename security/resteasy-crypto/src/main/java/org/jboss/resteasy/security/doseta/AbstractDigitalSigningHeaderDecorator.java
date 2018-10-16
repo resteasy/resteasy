@@ -48,11 +48,11 @@ public class AbstractDigitalSigningHeaderDecorator
 
       After after = signed.expires();
       if (after.seconds() > 0
-              || after.minutes() > 0
-              || after.hours() > 0
-              || after.days() > 0
-              || after.months() > 0
-              || after.years() > 0)
+            || after.minutes() > 0
+            || after.hours() > 0
+            || after.days() > 0
+            || after.months() > 0
+            || after.years() > 0)
       {
          header.setExpiration(after.seconds(), after.minutes(), after.hours(), after.days(), after.months(), after.years());
       }

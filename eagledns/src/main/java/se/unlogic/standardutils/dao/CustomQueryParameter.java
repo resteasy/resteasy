@@ -13,30 +13,30 @@ import java.lang.reflect.Method;
 
 public class CustomQueryParameter<T>{
 
-	private QueryParameterPopulator<?> queryParameterPopulator;
-	private Method queryMethod;
-	private Object paramValue;
+   private QueryParameterPopulator<?> queryParameterPopulator;
+   private Method queryMethod;
+   private Object paramValue;
 
-	public CustomQueryParameter(Column<T,?> column , T bean) {
+   public CustomQueryParameter(Column<T,?> column , T bean) {
 
-		super();
-		this.queryParameterPopulator = column.getQueryParameterPopulator();
-		this.queryMethod = column.getQueryMethod();
-		this.paramValue = column.getBeanValue(bean);
-	}
+      super();
+      this.queryParameterPopulator = column.getQueryParameterPopulator();
+      this.queryMethod = column.getQueryMethod();
+      this.paramValue = column.getBeanValue(bean);
+   }
 
-	public QueryParameterPopulator<?> getQueryParameterPopulator() {
+   public QueryParameterPopulator<?> getQueryParameterPopulator() {
 
-		return queryParameterPopulator;
-	}
+      return queryParameterPopulator;
+   }
 
-	public Method getQueryMethod() {
+   public Method getQueryMethod() {
 
-		return queryMethod;
-	}
+      return queryMethod;
+   }
 
-	public Object getParamValue() {
+   public Object getParamValue() {
 
-		return paramValue;
-	}
+      return paramValue;
+   }
 }

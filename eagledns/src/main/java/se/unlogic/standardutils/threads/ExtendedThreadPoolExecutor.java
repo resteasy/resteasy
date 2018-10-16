@@ -18,84 +18,84 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ExtendedThreadPoolExecutor extends ThreadPoolExecutor {
 
-	private boolean isPaused;
-	private final ReentrantLock pauseLock = new ReentrantLock();
-	private final Condition unpaused = pauseLock.newCondition();
-	private final ConcurrentLinkedQueue<ThreadPoolListener> listeners = new ConcurrentLinkedQueue<ThreadPoolListener>();
+   private boolean isPaused;
+   private final ReentrantLock pauseLock = new ReentrantLock();
+   private final Condition unpaused = pauseLock.newCondition();
+   private final ConcurrentLinkedQueue<ThreadPoolListener> listeners = new ConcurrentLinkedQueue<ThreadPoolListener>();
 
-	public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,	BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-	}
+   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
+      super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
+   }
 
-	public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,	BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,	RejectedExecutionHandler handler) {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
-	}
+   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,   RejectedExecutionHandler handler) {
+      super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+   }
 
-	public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,	BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-	}
+   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+      super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+   }
 
-	public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-	}
+   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+      super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+   }
 
-	@Override
-	protected void beforeExecute(Thread t, Runnable r) {
-		super.beforeExecute(t, r);
-		pauseLock.lock();
-		try {
-			while (isPaused) {
-				unpaused.await();
-			}
-		} catch (InterruptedException ie) {
-			t.interrupt();
-		} finally {
-			pauseLock.unlock();
-		}
-		
-		for(ThreadPoolListener listerner : this.listeners){
-			
-			listerner.beforeExecute(t,r);
-		}
-	}
+   @Override
+   protected void beforeExecute(Thread t, Runnable r) {
+      super.beforeExecute(t, r);
+      pauseLock.lock();
+      try {
+         while (isPaused) {
+            unpaused.await();
+         }
+      } catch (InterruptedException ie) {
+         t.interrupt();
+      } finally {
+         pauseLock.unlock();
+      }
 
-	public void pause() {
-		pauseLock.lock();
-		try {
-			isPaused = true;
-		} finally {
-			pauseLock.unlock();
-		}
-	}
+      for(ThreadPoolListener listerner : this.listeners){
 
-	public void resume() {
-		pauseLock.lock();
-		try {
-			isPaused = false;
-			unpaused.signalAll();
-		} finally {
-			pauseLock.unlock();
-		}
-	}
+         listerner.beforeExecute(t,r);
+      }
+   }
 
-	@Override
-	protected void afterExecute(Runnable r, Throwable t) {
+   public void pause() {
+      pauseLock.lock();
+      try {
+         isPaused = true;
+      } finally {
+         pauseLock.unlock();
+      }
+   }
 
-		super.afterExecute(r, t);
-		
-		for(ThreadPoolListener listerner : this.listeners){
-			
-			listerner.afterExecute(t,r);
-		}
-	}
+   public void resume() {
+      pauseLock.lock();
+      try {
+         isPaused = false;
+         unpaused.signalAll();
+      } finally {
+         pauseLock.unlock();
+      }
+   }
 
-	public boolean addListener(ThreadPoolListener listener) {
+   @Override
+   protected void afterExecute(Runnable r, Throwable t) {
 
-		return listeners.add(listener);
-	}
+      super.afterExecute(r, t);
 
-	public boolean remove(ThreadPoolListener listener) {
+      for(ThreadPoolListener listerner : this.listeners){
 
-		return listeners.remove(listener);
-	}
+         listerner.afterExecute(t,r);
+      }
+   }
+
+   public boolean addListener(ThreadPoolListener listener) {
+
+      return listeners.add(listener);
+   }
+
+   public boolean remove(ThreadPoolListener listener) {
+
+      return listeners.remove(listener);
+   }
 }

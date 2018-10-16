@@ -17,39 +17,39 @@ import java.sql.SQLException;
 
 public class ObjectQuery<ReturnType> extends PopulatedQuery<ReturnType> {
 
-	public ObjectQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
-		super(connection, closeConnectionOnExit, query, bp);
-	}
+   public ObjectQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+      super(connection, closeConnectionOnExit, query, bp);
+   }
 
-	public ObjectQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
-		super(dataSource, closeConnectionOnExit, query, bp);
-	}
+   public ObjectQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+      super(dataSource, closeConnectionOnExit, query, bp);
+   }
 
-	public ReturnType executeQuery() throws SQLException {
+   public ReturnType executeQuery() throws SQLException {
 
-		ResultSet rs = null;
+      ResultSet rs = null;
 
-		try {
+      try {
 
-			// Send query to database and store results.
-			rs = pstmt.executeQuery();
+         // Send query to database and store results.
+         rs = pstmt.executeQuery();
 
-			if (rs.next()) {
-				return this.beanPopulator.populate(rs);
-			} else {
-				return null;
-			}
-		} catch (SQLException sqle) {
-			throw sqle;
-		} finally {
-			DBUtils.closeResultSet(rs);
-			DBUtils.closePreparedStatement(pstmt);
+         if (rs.next()) {
+            return this.beanPopulator.populate(rs);
+         } else {
+            return null;
+         }
+      } catch (SQLException sqle) {
+         throw sqle;
+      } finally {
+         DBUtils.closeResultSet(rs);
+         DBUtils.closePreparedStatement(pstmt);
 
-			if (this.closeConnectionOnExit) {
-				DBUtils.closeConnection(connection);
-			}
+         if (this.closeConnectionOnExit) {
+            DBUtils.closeConnection(connection);
+         }
 
-			this.closed = true;
-		}
-	}
+         this.closed = true;
+      }
+   }
 }

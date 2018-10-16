@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Consumes(Constants.MEDIA_TYPE_TEST_XML)
 public interface EJBBookReader extends MessageBodyReader<EJBBook> {
-    int getUses();
+   int getUses();
 
-    void reset();
+   void reset();
 }

@@ -135,18 +135,18 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
    @POST
    @Path("a/{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}/{pathParam4}")
    public Response post(
-           @CookieParam String cookieParam3,
-           @FormParam String formParam3,
-           @HeaderParam String headerParam3,
-           @MatrixParam String matrixParam3,
-           @PathParam String pathParam3,
-           @QueryParam String queryParam3,
-           @javax.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
-           @javax.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
-           @javax.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
-           @javax.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
-           @javax.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
-           @javax.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
+         @CookieParam String cookieParam3,
+         @FormParam String formParam3,
+         @HeaderParam String headerParam3,
+         @MatrixParam String matrixParam3,
+         @PathParam String pathParam3,
+         @QueryParam String queryParam3,
+         @javax.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
+         @javax.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
+         @javax.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
+         @javax.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
+         @javax.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
+         @javax.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
    {
 
       StringBuilder details = new StringBuilder();
@@ -189,55 +189,55 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
       logger.info(details);
 
       if(!"cookieParam0".equals(cookieParam0)
-              || !"cookieParam1".equals(cookieParam1)
-              || !"cookieParam2".equals(cookieParam2)
-              || !"cookieParam3".equals(cookieParam3)
-              || !"cookieParam4".equals(jaxrsCookieParam4)) {
+            || !"cookieParam1".equals(cookieParam1)
+            || !"cookieParam2".equals(cookieParam2)
+            || !"cookieParam3".equals(cookieParam3)
+            || !"cookieParam4".equals(jaxrsCookieParam4)) {
          logger.error("cookie error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"formParam0".equals(formParam0)
-              || !"formParam1".equals(formParam1)
-              || !"formParam2".equals(formParam2)
-              || !"formParam3".equals(formParam3)
-              || !"formParam4".equals(jaxrsFormParam4)) {
+            || !"formParam1".equals(formParam1)
+            || !"formParam2".equals(formParam2)
+            || !"formParam3".equals(formParam3)
+            || !"formParam4".equals(jaxrsFormParam4)) {
          logger.error("form error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"headerParam0".equals(headerParam0)
-              || !"headerParam1".equals(headerParam1)
-              || !"headerParam2".equals(headerParam2)
-              || !"headerParam3".equals(headerParam3)
-              || !"headerParam4".equals(jaxrsHeaderParam4)) {
+            || !"headerParam1".equals(headerParam1)
+            || !"headerParam2".equals(headerParam2)
+            || !"headerParam3".equals(headerParam3)
+            || !"headerParam4".equals(jaxrsHeaderParam4)) {
          logger.error("header error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"matrixParam0".equals(matrixParam0)
-              || !"matrixParam1".equals(matrixParam1)
-              || !"matrixParam2".equals(matrixParam2)
-              || !"matrixParam3".equals(matrixParam3)
-              || !"matrixParam4".equals(jaxrsMatrixParam4)) {
+            || !"matrixParam1".equals(matrixParam1)
+            || !"matrixParam2".equals(matrixParam2)
+            || !"matrixParam3".equals(matrixParam3)
+            || !"matrixParam4".equals(jaxrsMatrixParam4)) {
          logger.error("matrix error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"pathParam0".equals(pathParam0)
-              || !"pathParam1".equals(pathParam1)
-              || !"pathParam2".equals(pathParam2)
-              || !"pathParam3".equals(pathParam3)
-              || !"pathParam4".equals(jaxrsPathParam4)) {
+            || !"pathParam1".equals(pathParam1)
+            || !"pathParam2".equals(pathParam2)
+            || !"pathParam3".equals(pathParam3)
+            || !"pathParam4".equals(jaxrsPathParam4)) {
          logger.error("path error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
       if(!"queryParam0".equals(queryParam0)
-              || !"queryParam1".equals(queryParam1)
-              || !"queryParam2".equals(queryParam2)
-              || !"queryParam3".equals(queryParam3)
-              || !"queryParam4".equals(jaxrsQueryParam4)) {
+            || !"queryParam1".equals(queryParam1)
+            || !"queryParam2".equals(queryParam2)
+            || !"queryParam3".equals(queryParam3)
+            || !"queryParam4".equals(jaxrsQueryParam4)) {
          logger.error("query error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }

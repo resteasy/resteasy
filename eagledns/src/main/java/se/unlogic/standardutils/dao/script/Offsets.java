@@ -13,20 +13,20 @@ package se.unlogic.standardutils.dao.script;
  */
 public class Offsets {
 
-	private final Integer start;
-	private final Integer end;
+   private final Integer start;
+   private final Integer end;
 
-	public Offsets(Integer start, Integer end) {
-		super();
-		this.start = start;
-		this.end = end;
-	}
+   public Offsets(Integer start, Integer end) {
+      super();
+      this.start = start;
+      this.end = end;
+   }
 
-	public Integer getStart() {
-		return start;
-	}
+   public Integer getStart() {
+      return start;
+   }
 
-	public Integer getEnd() {
-		return end;
-	}
+   public Integer getEnd() {
+      return end;
+   }
 }

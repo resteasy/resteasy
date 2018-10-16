@@ -12,24 +12,24 @@ import java.io.IOException;
 
 public class ZoneDissasembler {
 
-	public static void main(String[] args) throws TextParseException, IOException {
+   public static void main(String[] args) throws TextParseException, IOException {
 
-		File zoneFile = new File("zones/unlogic.se");
+      File zoneFile = new File("zones/unlogic.se");
 
-		Master master = new Master(zoneFile.getPath(),Name.fromString(zoneFile.getName(), Name.root));
+      Master master = new Master(zoneFile.getPath(),Name.fromString(zoneFile.getName(), Name.root));
 
-		Record record = master._nextRecord();
+      Record record = master._nextRecord();
 
-		Logger LOG = Logger.getLogger(ZoneDissasembler.class);
+      Logger LOG = Logger.getLogger(ZoneDissasembler.class);
 
-		while(record != null){
+      while(record != null){
 
-			LOG.info("Class: " + record.getClass());
-			LOG.info("Name: " + record.getName());
-			LOG.info("toString: " + record.toString());
+         LOG.info("Class: " + record.getClass());
+         LOG.info("Name: " + record.getName());
+         LOG.info("toString: " + record.toString());
 
-			record = master._nextRecord();
-		}
-	}
+         record = master._nextRecord();
+      }
+   }
 
 }

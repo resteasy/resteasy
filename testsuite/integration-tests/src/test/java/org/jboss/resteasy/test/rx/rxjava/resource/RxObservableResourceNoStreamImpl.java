@@ -50,7 +50,7 @@ public class RxObservableResourceNoStreamImpl {
    @Path("get/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> getBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
 
    @PUT
@@ -82,8 +82,8 @@ public class RxObservableResourceNoStreamImpl {
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> putBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
 
    @POST
@@ -115,8 +115,8 @@ public class RxObservableResourceNoStreamImpl {
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> postBytes(String s) {
-       int n = Integer.valueOf(s);
-       return buildObservableBytes(n);
+      int n = Integer.valueOf(s);
+      return buildObservableBytes(n);
    }
    
    @DELETE
@@ -144,7 +144,7 @@ public class RxObservableResourceNoStreamImpl {
    @Path("delete/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> deleteBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @HEAD
@@ -179,7 +179,7 @@ public class RxObservableResourceNoStreamImpl {
    @Path("options/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> optionsBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @TRACE
@@ -207,7 +207,7 @@ public class RxObservableResourceNoStreamImpl {
    @Path("trace/bytes")
    @Produces(MediaType.APPLICATION_JSON)
    public Observable<byte[]> traceBytes() {
-       return buildObservableBytes(3);
+      return buildObservableBytes(3);
    }
    
    @GET
@@ -275,8 +275,8 @@ public class RxObservableResourceNoStreamImpl {
    
    @SuppressWarnings("deprecation")
    static Observable<byte[]> buildObservableBytes(int n) {
-       return Observable.create(
-           new Observable.OnSubscribe<byte[]>() {
+      return Observable.create(
+         new Observable.OnSubscribe<byte[]>() {
 
                @Override
                public void call(Subscriber<? super byte[]> t) {
@@ -286,6 +286,6 @@ public class RxObservableResourceNoStreamImpl {
                    }
                    t.onCompleted();
                }
-           });
+         });
    }
 }

@@ -32,29 +32,29 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class ComplexFormTest {
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
-        war.addClasses(ComplexFormPerson.class, ComplexFormAddress.class);
-        return TestUtil.finishContainerPrepare(war, null, ComplexFormResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(CollectionsFormTest.class.getSimpleName());
+      war.addClasses(ComplexFormPerson.class, ComplexFormAddress.class);
+      return TestUtil.finishContainerPrepare(war, null, ComplexFormResource.class);
+   }
 
-    /**
-     * @tpTestDetails Set all relevant parameters to form and check return value.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void shouldSupportNestedForm() throws Exception {
-        javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
-        .param("name", "John Doe")
-        .param("invoice.street", "Main Street")
-        .param("shipping.street", "Station Street");
+   /**
+    * @tpTestDetails Set all relevant parameters to form and check return value.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void shouldSupportNestedForm() throws Exception {
+      javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
+      .param("name", "John Doe")
+      .param("invoice.street", "Main Street")
+      .param("shipping.street", "Station Street");
 
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
-        Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
+      Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "name:'John Doe', invoice:'Main Street', shipping:'Station Street'", response.readEntity(String.class));
-    }
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("Wrong content of response", "name:'John Doe', invoice:'Main Street', shipping:'Station Street'", response.readEntity(String.class));
+   }
 }

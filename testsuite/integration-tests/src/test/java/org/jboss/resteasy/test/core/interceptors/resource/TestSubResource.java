@@ -14,4 +14,3 @@ public class TestSubResource {
       return "sub(" + s + ")";
    }
 }
-

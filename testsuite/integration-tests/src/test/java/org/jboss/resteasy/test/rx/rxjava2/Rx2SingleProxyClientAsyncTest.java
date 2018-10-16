@@ -213,8 +213,8 @@ public class Rx2SingleProxyClientAsyncTest {
    public void testHead() throws Exception {
       Single<String> single = proxy.head();
       single.subscribe(
-              (String s) -> {value.set(s); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (String s) -> {value.set(s); latch.countDown();},
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 

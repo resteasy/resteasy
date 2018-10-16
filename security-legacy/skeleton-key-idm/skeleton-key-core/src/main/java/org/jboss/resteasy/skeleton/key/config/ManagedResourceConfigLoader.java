@@ -26,7 +26,7 @@ public class ManagedResourceConfigLoader
    public static KeyStore loadKeyStore(String filename, String password) throws Exception
    {
       KeyStore trustStore = KeyStore.getInstance(KeyStore
-              .getDefaultType());
+            .getDefaultType());
       File truststoreFile = new File(filename);
       FileInputStream trustStream = new FileInputStream(truststoreFile);
       trustStore.load(trustStream, password.toCharArray());
@@ -35,7 +35,8 @@ public class ManagedResourceConfigLoader
    }
 
    protected void init(InputStream is)
-   {ObjectMapper mapper = new ObjectMapper();
+   {
+      ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       remoteSkeletonKeyConfig = null;
       try

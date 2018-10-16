@@ -211,8 +211,8 @@ public class Rx2SingleProxyTest {
    public void testHead() throws Exception {
       Single<String> single = proxy.head();
       single.subscribe(
-              (String s) -> {value.set(s); latch.countDown();},
-              (Throwable t) -> throwableContains(t, "Input stream was empty"));
+            (String s) -> {value.set(s); latch.countDown();},
+            (Throwable t) -> throwableContains(t, "Input stream was empty"));
       Assert.assertNull(value.get());
    }
 
@@ -404,13 +404,13 @@ public class Rx2SingleProxyTest {
       return null;
    }
 
-    private static boolean throwableContains(Throwable t, String s) {
-        while (t != null) {
+   private static boolean throwableContains(Throwable t, String s) {
+      while (t != null) {
             if (t.getMessage().contains(s)) {
-                return true;
+            return true;
             }
             t = t.getCause();
-        }
-        return false;
-    }
+      }
+      return false;
+   }
 }

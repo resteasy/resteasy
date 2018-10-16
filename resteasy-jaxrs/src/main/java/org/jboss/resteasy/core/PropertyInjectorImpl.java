@@ -128,7 +128,7 @@ public class PropertyInjectorImpl implements PropertyInjector
    {
       boolean extractBody = (FindAnnotation.findAnnotation(annotations, Body.class) != null);
       ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(clazz, accessibleObject, defaultName, type, genericType,
-              annotations, extractBody, factory);
+            annotations, extractBody, factory);
       return injector;
    }
 
@@ -194,19 +194,19 @@ public class PropertyInjectorImpl implements PropertyInjector
 
    private Field[] getDeclaredFields(final Class<?> clazz)
    {
-       final SecurityManager sm = System.getSecurityManager();
-       if (sm != null)
-       {
-          return AccessController.doPrivileged(new PrivilegedAction<Field[]>()
-          {
-             @Override
-             public Field[] run()
-             {
-                return clazz.getDeclaredFields();
-             }
-          });
-       }
-       return clazz.getDeclaredFields();
+      final SecurityManager sm = System.getSecurityManager();
+      if (sm != null)
+      {
+         return AccessController.doPrivileged(new PrivilegedAction<Field[]>()
+         {
+            @Override
+            public Field[] run()
+            {
+               return clazz.getDeclaredFields();
+            }
+         });
+      }
+      return clazz.getDeclaredFields();
    }
 
    private Method[] getDeclaredMethods(final Class<?> clazz)

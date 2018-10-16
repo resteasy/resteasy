@@ -67,7 +67,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          return new MediaType(major, subtype);
       }
    }
-   */
+    */
 
    protected static boolean isValid(String str)
    {

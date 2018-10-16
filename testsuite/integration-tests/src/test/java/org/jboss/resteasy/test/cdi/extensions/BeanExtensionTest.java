@@ -46,42 +46,42 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class BeanExtensionTest {
-    protected static final Logger log = LogManager.getLogger(BeanExtensionTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(BeanExtensionTest.class.getName());
 
-    @SuppressWarnings(value = "unchecked")
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(BeanExtensionTest.class.getSimpleName());
-        war.addClasses(UtilityProducer.class, Utilities.class)
-                .addClasses(CDIExtensionsBostonBeanExtension.class, CDIExtensionsBoston.class, CDIExtensionsBostonBean.class)
-                .addClasses(CDIExtensionsResource.class, CDIExtensionsTestReader.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addAsServiceProvider(Extension.class, CDIExtensionsBostonBeanExtension.class);
+   @SuppressWarnings(value = "unchecked")
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(BeanExtensionTest.class.getSimpleName());
+      war.addClasses(UtilityProducer.class, Utilities.class)
+            .addClasses(CDIExtensionsBostonBeanExtension.class, CDIExtensionsBoston.class, CDIExtensionsBostonBean.class)
+            .addClasses(CDIExtensionsResource.class, CDIExtensionsTestReader.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .addAsServiceProvider(Extension.class, CDIExtensionsBostonBeanExtension.class);
 
-        JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClasses(CDIExtensionsBostonHolder.class, CDIExtensionsBostonlLeaf.class);
-        war.addAsLibrary(jar);
+      JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClasses(CDIExtensionsBostonHolder.class, CDIExtensionsBostonlLeaf.class);
+      war.addAsLibrary(jar);
 
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
 
-    /**
-     * @tpTestDetails Client get request. Resource check extension bean on server.
-     * @tpPassCrit Response status should not contain error.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testBostonBeans() throws Exception {
-        log.info("starting testBostonBeans()");
+   /**
+    * @tpTestDetails Client get request. Resource check extension bean on server.
+    * @tpPassCrit Response status should not contain error.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testBostonBeans() throws Exception {
+      log.info("starting testBostonBeans()");
 
-        Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/extension/boston/", BeanExtensionTest.class.getSimpleName()));
-        Response response = base.request().post(Entity.text(new String()));
+      Client client = ClientBuilder.newClient();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/extension/boston/", BeanExtensionTest.class.getSimpleName()));
+      Response response = base.request().post(Entity.text(new String()));
 
-        log.info("Response status: " + response.getStatus());
+      log.info("Response status: " + response.getStatus());
 
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
-        response.close();
-        client.close();
-    }
+      response.close();
+      client.close();
+   }
 }

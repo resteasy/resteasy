@@ -55,7 +55,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
    public static DataSource readDataSource(InputStream in, MediaType mediaType) throws IOException
    {
       ByteArrayDataSource ds = new ByteArrayDataSource(new BufferedInputStream(in), mediaType
-              .toString());
+            .toString());
 
       return ds;
    }

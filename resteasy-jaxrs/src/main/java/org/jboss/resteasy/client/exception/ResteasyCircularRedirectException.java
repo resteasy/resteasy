@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyCircularRedirectException extends ResteasyRedirectException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyCircularRedirectException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyCircularRedirectException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyCircularRedirectException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyCircularRedirectException()
+   {
+   }
+
+   public ResteasyCircularRedirectException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyCircularRedirectException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyCircularRedirectException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyCircularRedirectException(Throwable cause)
+   {
+      super(cause);
+   }
 }

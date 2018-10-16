@@ -10,21 +10,21 @@ import javax.ws.rs.Produces;
 @Path("/xml/products")
 public class JacksonXmlResource {
 
-    @BadgerFish
-    @GET
-    @Produces("application/json")
-    @Path("{id}")
-    public JacksonXmlProduct getProduct() {
-        return new JacksonXmlProduct(333, "Iphone");
-    }
+   @BadgerFish
+   @GET
+   @Produces("application/json")
+   @Path("{id}")
+   public JacksonXmlProduct getProduct() {
+      return new JacksonXmlProduct(333, "Iphone");
+   }
 
-    @GET
-    @Produces("application/json")
-    @NoJackson
-    public JacksonXmlProduct[] getProducts() {
+   @GET
+   @Produces("application/json")
+   @NoJackson
+   public JacksonXmlProduct[] getProducts() {
 
-        JacksonXmlProduct[] products = {new JacksonXmlProduct(333, "Iphone"), new JacksonXmlProduct(44, "macbook")};
-        return products;
-    }
+      JacksonXmlProduct[] products = {new JacksonXmlProduct(333, "Iphone"), new JacksonXmlProduct(44, "macbook")};
+      return products;
+   }
 
 }

@@ -15,9 +15,9 @@ public class HeadersInViewResponseResource {
    public Response get()
    {
       return Response.ok(new View("/test/view"))
-             .header("abc", "123")
-             .cookie(new NewCookie("name1", "value1"))
-             .build();
+            .header("abc", "123")
+            .cookie(new NewCookie("name1", "value1"))
+            .build();
    }
 
    @GET

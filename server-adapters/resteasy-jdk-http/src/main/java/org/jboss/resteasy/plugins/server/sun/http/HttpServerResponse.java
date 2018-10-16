@@ -166,7 +166,7 @@ public class HttpServerResponse implements HttpResponse
 
    @Override
    public void flushBuffer() throws IOException {
-	   commitHeaders();
-	   exchange.getResponseBody().flush();
+      commitHeaders();
+      exchange.getResponseBody().flush();
    }
 }

@@ -179,7 +179,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
    {
       KeyStore trustStore = KeyStore.getInstance(KeyStore
-              .getDefaultType());
+            .getDefaultType());
       File truststoreFile = new File(filename);
       FileInputStream trustStream = new FileInputStream(truststoreFile);
       trustStore.load(trustStream, password.toCharArray());
@@ -449,9 +449,9 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       // the login query parameter is on request URL,
       // and we have configured the login-role
       else if (!skeletonKeyConfig.isSsoDisabled()
-              && request.getSessionInternal() != null
-              && request.getSessionInternal().getPrincipal() != null
-              && request.getParameter("login") != null)
+            && request.getSessionInternal() != null
+            && request.getSessionInternal().getPrincipal() != null
+            && request.getParameter("login") != null)
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.alreadyLoggedIn());
          GenericPrincipal gp = (GenericPrincipal) request.getSessionInternal().getPrincipal();
@@ -523,7 +523,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
          return;
       }
       RequestDispatcher disp =
-              context.getServletContext().getRequestDispatcher(forwardTo);
+            context.getServletContext().getRequestDispatcher(forwardTo);
       try
       {
          disp.forward(request.getRequest(), response);
@@ -856,7 +856,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       String wildcard = skeletonKeyConfig.getWildcardRole() == null ? "*" : skeletonKeyConfig.getWildcardRole();
       Set<String> codeRoles = accessCode.getToken().getRealmAccess().getRoles();
       if (codeRoles != null &&
-              (codeRoles.contains(skeletonKeyConfig.getClientRole()) || codeRoles.contains(skeletonKeyConfig.getLoginRole())))
+            (codeRoles.contains(skeletonKeyConfig.getClientRole()) || codeRoles.contains(skeletonKeyConfig.getLoginRole())))
       {
          // we store roles a oauth client is granted in the user role mapping, remove those roles as we don't want those clients with those
          // permissions if they are logging in.
@@ -871,8 +871,8 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       // is we have a login role, then we don't need to filter out roles, just grant all the roles the user has
       // Also, if the client has the "wildcard" role, then we don't need to filter out roles
       if (codeRoles != null
-              && !gp.hasRole(wildcard)
-              && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
+            && !gp.hasRole(wildcard)
+            && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
       {
          Set<String> clientAllowed = new HashSet<String>();
          for (String role : gp.getRoles())
@@ -923,8 +923,8 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
          throw new RuntimeException(e);
       }
       return new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(privateKey);
+            .content(tokenBytes)
+            .rsa256(privateKey);
    }
 
 

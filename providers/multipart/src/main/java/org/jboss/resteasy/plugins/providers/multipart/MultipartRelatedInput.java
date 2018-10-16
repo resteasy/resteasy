@@ -14,45 +14,45 @@ import java.util.Map;
  */
 public interface MultipartRelatedInput extends MultipartInput {
 
-	/**
-	 * The type parameter as it was read from the content-type header of the
-	 * multipart/related message. A well formed multipart/related message always
-	 * has this parameter. This is the type of the root part of the message. If
-	 * a content-type header is presented in the root part as well it should
-	 * hold the same value.
-	 * 
-	 * @return the type parameter of the content-type header of the message,
-	 *         null if there was no such parameter
-	 */
-	String getType();
+   /**
+    * The type parameter as it was read from the content-type header of the
+    * multipart/related message. A well formed multipart/related message always
+    * has this parameter. This is the type of the root part of the message. If
+    * a content-type header is presented in the root part as well it should
+    * hold the same value.
+    *
+    * @return the type parameter of the content-type header of the message,
+    *         null if there was no such parameter
+    */
+   String getType();
 
-	/**
-	 * A start parameter is not mandatory in a message. If it is presented it
-	 * holds the id of the root part.
-	 * 
-	 * @return the start parameter of the content-type header of the message,
-	 *         null if there was no such parameter
-	 */
-	String getStart();
+   /**
+    * A start parameter is not mandatory in a message. If it is presented it
+    * holds the id of the root part.
+    *
+    * @return the start parameter of the content-type header of the message,
+    *         null if there was no such parameter
+    */
+   String getStart();
 
-	/**
-	 * Optional.
-	 * 
-	 * @return the start-info parameter of the content-type header of the
-	 *         message, null if there was no such parameter
-	 */
-	String getStartInfo();
+   /**
+    * Optional.
+    *
+    * @return the start-info parameter of the content-type header of the
+    *         message, null if there was no such parameter
+    */
+   String getStartInfo();
 
-	/**
-	 * @return the root part of the message. If a start parameter was set in the
-	 *         message header the part with that id is returned. If no start
-	 *         parameter was set the first part is returned.
-	 */
-	InputPart getRootPart();
+   /**
+    * @return the root part of the message. If a start parameter was set in the
+    *         message header the part with that id is returned. If no start
+    *         parameter was set the first part is returned.
+    */
+   InputPart getRootPart();
 
-	/**
-	 * @return a map holding all parts with their unique id-s as keys. The root
-	 *         part and the related parts too.
-	 */
-	Map<String, InputPart> getRelatedMap();
+   /**
+    * @return a map holding all parts with their unique id-s as keys. The root
+    *         part and the related parts too.
+    */
+   Map<String, InputPart> getRelatedMap();
 }

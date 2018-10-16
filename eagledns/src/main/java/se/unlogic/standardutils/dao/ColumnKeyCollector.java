@@ -17,54 +17,54 @@ import java.sql.SQLException;
 
 public class ColumnKeyCollector<T> {
 
-	private final ResultSetField resultSetField;
-	private final int columnIndex;
+   private final ResultSetField resultSetField;
+   private final int columnIndex;
 
-	public ColumnKeyCollector(Field field, AnnotatedResultSetPopulator<T> populator, int columnIndex) {
+   public ColumnKeyCollector(Field field, AnnotatedResultSetPopulator<T> populator, int columnIndex) {
 
-		this.resultSetField = populator.getResultSetField(field);
-		this.columnIndex = columnIndex;
-	}
+      this.resultSetField = populator.getResultSetField(field);
+      this.columnIndex = columnIndex;
+   }
 
-	public void collect(T bean, ResultSet rs) throws SQLException {
+   public void collect(T bean, ResultSet rs) throws SQLException {
 
-		try {
-			if(resultSetField.getResultSetColumnIndexMethod() != null){
+      try {
+         if(resultSetField.getResultSetColumnIndexMethod() != null){
 
-				Object value = resultSetField.getResultSetColumnIndexMethod().invoke(rs, columnIndex);
+            Object value = resultSetField.getResultSetColumnIndexMethod().invoke(rs, columnIndex);
 
-				if(value == null && !resultSetField.getBeanField().getType().isPrimitive()){
+            if(value == null && !resultSetField.getBeanField().getType().isPrimitive()){
 
-					resultSetField.getBeanField().set(bean, null);
+               resultSetField.getBeanField().set(bean, null);
 
-				}else{
+            }else{
 
-					resultSetField.getBeanField().set(bean, value);
-				}
+               resultSetField.getBeanField().set(bean, value);
+            }
 
-			}else{
+         }else{
 
-				String value = rs.getString(columnIndex);
+            String value = rs.getString(columnIndex);
 
-				if(value != null || resultSetField.getBeanStringPopulator().getType().isPrimitive()){
+            if(value != null || resultSetField.getBeanStringPopulator().getType().isPrimitive()){
 
-					resultSetField.getBeanField().set(bean, resultSetField.getBeanStringPopulator().getValue(value));
-				}else{
-					resultSetField.getBeanField().set(bean, null);
-				}
-			}
+               resultSetField.getBeanField().set(bean, resultSetField.getBeanStringPopulator().getValue(value));
+            }else{
+               resultSetField.getBeanField().set(bean, null);
+            }
+         }
 
-		} catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
 
-			throw new RuntimeException(e);
+         throw new RuntimeException(e);
 
-		} catch (IllegalAccessException e) {
+      } catch (IllegalAccessException e) {
 
-			throw new RuntimeException(e);
+         throw new RuntimeException(e);
 
-		} catch (InvocationTargetException e) {
+      } catch (InvocationTargetException e) {
 
-			throw new RuntimeException(e);
-		}
-	}
+         throw new RuntimeException(e);
+      }
+   }
 }

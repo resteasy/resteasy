@@ -8,24 +8,24 @@ package org.jboss.resteasy.client.exception;
  */
 public class ResteasyHttpContentTooLargeException extends ResteasyHttpException
 {
-	private static final long serialVersionUID = -5711578608757689465L;
-	
-	public ResteasyHttpContentTooLargeException()
-	{
-	}
+   private static final long serialVersionUID = -5711578608757689465L;
 
-	public ResteasyHttpContentTooLargeException(String message)
-	{
-		super(message);
-    }
-	
-    public ResteasyHttpContentTooLargeException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+   public ResteasyHttpContentTooLargeException()
+   {
+   }
+
+   public ResteasyHttpContentTooLargeException(String message)
+   {
+      super(message);
+   }
+
+   public ResteasyHttpContentTooLargeException(String message, Throwable cause)
+   {
+      super(message, cause);
+   }
     
-    public ResteasyHttpContentTooLargeException(Throwable cause)
-    {
-        super(cause);
-    }
+   public ResteasyHttpContentTooLargeException(Throwable cause)
+   {
+      super(cause);
+   }
 }

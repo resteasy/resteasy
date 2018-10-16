@@ -10,13 +10,13 @@ package se.unlogic.eagledns;
  */
 public interface ZoneProviderUpdatable {
 
-	/**
-	 * This method is automatically called by Eagle DNS when the {@link ZoneProvider} has been instantiated, before the {@link ZoneProvider#init(String) init()} method is called.
-	 * 
-	 * @see ZoneChangeCallback
-	 * 
-	 * @param zoneChangeCallback Callback handle
-	 */
-	void setChangeListener(ZoneChangeCallback zoneChangeCallback);
+   /**
+    * This method is automatically called by Eagle DNS when the {@link ZoneProvider} has been instantiated, before the {@link ZoneProvider#init(String) init()} method is called.
+    *
+    * @see ZoneChangeCallback
+    *
+    * @param zoneChangeCallback Callback handle
+    */
+   void setChangeListener(ZoneChangeCallback zoneChangeCallback);
 
 }
