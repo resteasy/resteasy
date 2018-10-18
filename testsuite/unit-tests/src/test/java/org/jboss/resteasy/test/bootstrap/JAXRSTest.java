@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.ws.rs.GET;
@@ -20,6 +19,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -74,7 +74,7 @@ public class JAXRSTest
    }
 
    @Test
-   public void testSSLClientAuthNone() throws Exception
+   public void testSSL() throws Exception
    {
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8443).rootPath("ssl")
             .sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())

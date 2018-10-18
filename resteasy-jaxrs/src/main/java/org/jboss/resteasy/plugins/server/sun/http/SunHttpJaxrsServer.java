@@ -1,17 +1,17 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import javax.net.ssl.SSLContext;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import javax.net.ssl.SSLContext;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 
 /**
  * com.sun.net.httpserver.HttpServer adapter for Resteasy.  You may instead want to create and manage your own HttpServer.
@@ -138,9 +138,10 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
             } else {
                address = new InetSocketAddress(host, configuredPort);
             }
-            if (protocol.equalsIgnoreCase("HTTPS") || this.sslContext != null) {
-                HttpsServer httpsServer = HttpsServer.create(address, 10);
-                httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+            if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null) {
+                HttpsServer sslServer = HttpsServer.create(address, 10);
+                sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+                httpServer = sslServer;
             } else
             {
                httpServer = HttpServer.create(address, 10);

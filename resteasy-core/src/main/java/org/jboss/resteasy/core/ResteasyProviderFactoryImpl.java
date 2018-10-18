@@ -2749,8 +2749,24 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             server.setPort(configuration.port());
             server.setHost(configuration.host());
             server.setRootResourcePath(configuration.rootPath());
-            server.setSSLContext(configuration.sslContext());
+            if (configuration.sslContext() != null)
+            {
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.NONE)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(false);
+               }
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.OPTIONAL)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setWantClientAuth(true);
+               }
+               if (configuration.sslClientAuthentication() == SSLClientAuthentication.MANDATORY)
+               {
+                  configuration.sslContext().getDefaultSSLParameters().setNeedClientAuth(true);
+               }
+               server.setSSLContext(configuration.sslContext());
+            }
             server.setProtocol(configuration.protocol());
+
             ResteasyDeployment deployment = new ResteasyDeployment();
             deployment.setApplication(application);
             server.setDeployment(deployment);
