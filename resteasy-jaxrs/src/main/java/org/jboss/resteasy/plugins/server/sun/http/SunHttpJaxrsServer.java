@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -11,6 +12,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 /**
@@ -29,6 +31,8 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    protected String host;
    protected SSLContext sslContext;
    protected String protocol;
+   protected SSLParameters sslParameters;
+
 
    public void setRootResourcePath(String rootResourcePath)
    {
@@ -125,6 +129,17 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       this.protocol = protocol;
    }
+   
+   public SSLParameters getSslParameters()
+   {
+      return sslParameters;
+   }
+
+   public void setSslParameters(SSLParameters sslParameters)
+   {
+      this.sslParameters = sslParameters;
+   }
+
    @Override
    public void start()
    {
@@ -140,7 +155,22 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
             }
             if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null) {
                 HttpsServer sslServer = HttpsServer.create(address, 10);
-                sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+               sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext)
+               {
+                  @Override
+                  public void configure(HttpsParameters params)
+                  {
+                     if (sslParameters != null)
+                     {
+                        params.setSSLParameters(sslParameters);
+                     }
+                     else
+                     {
+                        super.configure(params);
+                     }
+
+                  }
+               });
                 httpServer = sslServer;
             } else
             {

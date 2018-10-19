@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.jboss.logging.processor.apt.ProcessingException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
@@ -74,7 +75,7 @@ public class JAXRSTest
    }
 
    @Test
-   public void testSSL() throws Exception
+   public void testSSLClientAuthNone() throws Exception
    {
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8443).rootPath("ssl")
             .sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())
