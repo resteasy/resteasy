@@ -2794,7 +2794,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                            @Override
                            public <T> T unwrap(Class<T> nativeClass)
                            {
-                              //TODO:implement this;
                               return null;
                            }
                             
@@ -2807,7 +2806,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                @Override
                public <T> T unwrap(Class<T> nativeClass)
                {
-                  // TODO Auto-generated method stub
                   return null;
                }
 

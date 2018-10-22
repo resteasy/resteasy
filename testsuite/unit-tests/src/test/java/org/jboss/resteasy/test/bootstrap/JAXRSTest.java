@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.bootstrap;
 
 import java.util.HashSet;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
