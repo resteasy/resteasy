@@ -98,8 +98,8 @@ class MicroprofileClientBuilder implements RestClientBuilder {
 
        ClassLoader classLoader = aClass.getClassLoader();
 
-       List<String> noProxyHosts = Arrays.asList(
-               System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
+      List<String> noProxyHosts = Arrays.asList(
+               System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
 
        final T actualClient;
 
