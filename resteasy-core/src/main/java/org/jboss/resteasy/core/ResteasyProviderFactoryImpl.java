@@ -2656,6 +2656,12 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
+
+   public <T> T getContextData(Class<T> type)
+   {
+      return ResteasyContext.getContextData(type);
+   }   
+   
    public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
    {
       return CompletableFuture.supplyAsync(new Supplier<Instance>()
@@ -2689,87 +2695,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             server.setProtocol(configuration.protocol());
 
             ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-            deployment.setApplication(application);
-            server.setDeployment(deployment);
-            server.start();
-            return new Instance()
-            {
-               @Override
-               public javax.ws.rs.JAXRS.Configuration configuration()
-               {
-                  return configuration;
-               }
-
-               @Override
-               public CompletionStage<StopResult> stop()
-               {
-                  return CompletableFuture.supplyAsync(new Supplier<StopResult>() {
-
-                     @Override
-                     public StopResult get()
-                     {
-                         server.stop();
-                         return new StopResult() {
-
-                           @Override
-                           public <T> T unwrap(Class<T> nativeClass)
-                           {
-                              return null;
-                           }
-                            
-                         };
-                     }
-                    
-                  });
-               }
-
-               @Override
-               public <T> T unwrap(Class<T> nativeClass)
-               {
-                  return null;
-               }
-
-            };
-         }
-      });
-   }
-   public <T> T getContextData(Class<T> type)
-   {
-      return ResteasyContext.getContextData(type);
-   }   
-   public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
-   {
-      return CompletableFuture.supplyAsync(new Supplier<Instance>()
-      {
-
-         @Override
-         public Instance get()
-         {
-            SunHttpJaxrsServer server = new SunHttpJaxrsServer();
-            server.setPort(configuration.port());
-            server.setHost(configuration.host());
-            server.setRootResourcePath(configuration.rootPath());
-            if (configuration.sslContext() != null)
-            {
-               SSLParameters sslParams = configuration.sslContext().getDefaultSSLParameters();
-               if (configuration.sslClientAuthentication() == SSLClientAuthentication.NONE)
-               {
-                  sslParams.setNeedClientAuth(false);
-               }
-               if (configuration.sslClientAuthentication() == SSLClientAuthentication.OPTIONAL)
-               {
-                  sslParams.setWantClientAuth(true);
-               }
-               if (configuration.sslClientAuthentication() == SSLClientAuthentication.MANDATORY)
-               {
-                  sslParams.setNeedClientAuth(true);
-               }
-               server.setSslParameters(sslParams);
-               server.setSSLContext(configuration.sslContext());
-            }
-            server.setProtocol(configuration.protocol());
-
-            ResteasyDeployment deployment = new ResteasyDeployment();
             deployment.setApplication(application);
             server.setDeployment(deployment);
             server.start();
