@@ -25,7 +25,7 @@ public class SimpleViolationsContainer implements Serializable
 
    public SimpleViolationsContainer(final Set<ConstraintViolation<Object>> cvs)
    {
-      violations.addAll(cvs);
+      addViolations(cvs);
    }
 
    public void addViolations(Set<ConstraintViolation<Object>> cvs)
