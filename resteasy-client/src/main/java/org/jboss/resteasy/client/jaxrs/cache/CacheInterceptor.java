@@ -202,10 +202,11 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
       String etag = (String) response.getHeaderString(HttpHeaders.ETAG);
 
       String contentType = (String) response.getHeaderString(HttpHeaders.CONTENT_TYPE);
+      String accept = (String) request.getHeaderString(HttpHeaders.ACCEPT);
 
       byte[] cached = ReadFromStream.readFromStream(1024, response.getEntityStream());
-
-      MediaType mediaType = MediaType.valueOf(contentType);
+      // if Accept is present, use it, if not fallback to response Content-Type
+      MediaType mediaType = accept != null ? MediaType.valueOf(accept) : MediaType.valueOf(contentType);
       final BrowserCache.Entry entry = cache.put(request.getUri().toString(), mediaType,
             response.getHeaders(), cached, expires, etag, lastModified);
 
