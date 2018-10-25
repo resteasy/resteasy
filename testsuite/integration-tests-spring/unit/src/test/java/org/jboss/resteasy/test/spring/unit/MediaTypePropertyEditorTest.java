@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MediaTypeEditor;
+import org.jboss.resteasy.propertyeditor.mediatype.editor.MediaTypeEditor;
 import java.beans.PropertyEditor;
 import java.nio.charset.StandardCharsets;
 
