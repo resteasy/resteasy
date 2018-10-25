@@ -16,6 +16,7 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import javax.ws.rs.ApplicationPath;
 
 import java.net.InetSocketAddress;
@@ -216,5 +217,19 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
          bootstrap.releaseExternalResources();
       }
       deployment.stop();
+   }
+
+   @Override
+   public void setProtocol(String protocol)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void setSslParameters(SSLParameters sslParameters)
+   {
+      // TODO Auto-generated method stub
+      
    }
 }

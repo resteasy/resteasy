@@ -26,6 +26,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
 import javax.ws.rs.ApplicationPath;
 
 import java.net.InetSocketAddress;
@@ -329,5 +330,19 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       runtimePort = -1;
       eventLoopGroup.shutdownGracefully();
       eventExecutor.shutdownGracefully();
+   }
+
+   @Override
+   public void setProtocol(String protocol)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void setSslParameters(SSLParameters sslParameters)
+   {
+      // TODO Auto-generated method stub
+      
    }
 }

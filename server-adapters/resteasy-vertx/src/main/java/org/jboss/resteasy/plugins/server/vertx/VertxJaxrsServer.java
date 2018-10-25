@@ -8,6 +8,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -18,6 +21,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
+
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -224,5 +228,26 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
             }
          });
       }
+   }
+
+   @Override
+   public void setSSLContext(SSLContext sslContext)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void setProtocol(String protocol)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void setSslParameters(SSLParameters sslParameters)
+   {
+      // TODO Auto-generated method stub
+      
    }
 }

@@ -114,7 +114,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       return this.sslContext;
    }
-   
+   @Override
    public void setSSLContext(SSLContext sslContext)
    {
       this.sslContext = sslContext;
@@ -124,17 +124,17 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       return protocol;
    }
-
+   @Override
    public void setProtocol(String protocol)
    {
       this.protocol = protocol;
    }
-   
+
    public SSLParameters getSslParameters()
    {
       return sslParameters;
    }
-
+   @Override
    public void setSslParameters(SSLParameters sslParameters)
    {
       this.sslParameters = sslParameters;
