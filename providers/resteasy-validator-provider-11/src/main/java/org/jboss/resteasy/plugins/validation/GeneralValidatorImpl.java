@@ -554,19 +554,21 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @SuppressWarnings({"rawtypes", "unchecked"})
    public void checkForConstraintViolations(HttpRequest request, Exception e)
    {
-      if (e instanceof InvocationTargetException)
+      Throwable t = e;
+      while (t != null && !(t instanceof ConstraintViolationException))
       {
-         Throwable t = InvocationTargetException.class.cast(e).getTargetException();
-         if (t instanceof ConstraintViolationException)
-         {
-            e = ConstraintViolationException.class.cast(t);
-         }
+         t = t.getCause();
       }
       
-      if (e instanceof ConstraintViolationException)
+      if (t instanceof ResteasyViolationException)
+      {
+         throw ResteasyViolationException.class.cast(t);
+      }
+      
+      if (t instanceof ConstraintViolationException)
       {
          SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
-         ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
+         ConstraintViolationException cve = ConstraintViolationException.class.cast(t);
          Set cvs = cve.getConstraintViolations();
          violationsContainer.addViolations(cvs);
          if (violationsContainer.size() > 0)
@@ -575,15 +577,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          }
       }
       
-      Throwable t = e.getCause();
-      while (t != null && !(t instanceof ResteasyViolationException))
-      {
-         t = t.getCause();    
-      }
-      if (t instanceof ResteasyViolationException)
-      {
-         throw ResteasyViolationException.class.cast(t);
-      }
+      return;
    }
    
    protected Validator getValidator(HttpRequest request)
