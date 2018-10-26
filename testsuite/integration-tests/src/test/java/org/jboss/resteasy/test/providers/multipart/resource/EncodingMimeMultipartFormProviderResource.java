@@ -23,7 +23,7 @@ public class EncodingMimeMultipartFormProviderResource {
    /**
     * Non-ASCII file name
     */
-   public static final String FILENAME_NON_ASCII = "Döner.png";
+   public static final String FILENAME_NON_ASCII = "Döner 1 + 2.png";
 
    @POST
    @Path("file")
