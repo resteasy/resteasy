@@ -48,7 +48,7 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
             // append encoding charset into the value if and only if encoding was needed
             if (!encodedFilename.equals(filename)) {
             // encoding was needed, so per rfc5987 we have to prepend charset
-               return "; filename*=utf-8''" + encodedFilename;
+               return "; filename*=utf-8''" + encodedFilename.replaceAll("\\+", "%20");
             }
          } catch (UnsupportedEncodingException e) {
             // should not happen
