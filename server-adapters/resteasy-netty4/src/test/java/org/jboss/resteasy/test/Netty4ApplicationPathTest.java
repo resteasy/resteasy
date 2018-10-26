@@ -70,14 +70,14 @@ public class Netty4ApplicationPathTest
          deployment.setApplicationClass(TestApplication.class.getName());
          server = new NettyJaxrsServer();
          server.setDeployment(deployment);
-         server.setHostname("localhost");
+         server.setHost("localhost");
          server.setPort(8080);
          server.start();
 
          // call resource
          final String path = "/rest-test/echo";
          client = ClientBuilder.newClient();
-         String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
+         String url = String.format("http://%s:%d%s", server.getHost(), server.getPort(), path);
          Response response = client.target(url).queryParam("text", ECHO).request().get();
          assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
          String msg = response.readEntity(String.class);
@@ -108,14 +108,14 @@ public class Netty4ApplicationPathTest
          deployment.setApplication(app);
          server = new NettyJaxrsServer();
          server.setDeployment(deployment);
-         server.setHostname("localhost");
+         server.setHost("localhost");
          server.setPort(8080);
          server.start();
 
          // call resource
          final String path = "/rest-test/echo";
          client = ClientBuilder.newClient();
-         String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
+         String url = String.format("http://%s:%d%s", server.getHost(), server.getPort(), path);
          Response response = client.target(url).queryParam("text", ECHO).request().get();
          assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
          String msg = response.readEntity(String.class);
@@ -146,7 +146,7 @@ public class Netty4ApplicationPathTest
          server = new NettyJaxrsServer();
          server.setRootResourcePath("/new-rest-test");
          server.setDeployment(deployment);
-         server.setHostname("localhost");
+         server.setHost("localhost");
          server.setPort(8080);
          server.start();
 
@@ -154,7 +154,7 @@ public class Netty4ApplicationPathTest
          // root resource should be taken from setRootResourcePath method
          final String path = "/new-rest-test/echo";
          client = ClientBuilder.newClient();
-         String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
+         String url = String.format("http://%s:%d%s", server.getHost(), server.getPort(), path);
          Response response = client.target(url).queryParam("text", ECHO).request().get();
          assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
          String msg = response.readEntity(String.class);

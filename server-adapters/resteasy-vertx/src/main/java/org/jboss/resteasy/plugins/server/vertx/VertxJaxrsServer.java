@@ -22,9 +22,9 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -48,12 +48,12 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    private String deploymentID;
    // default no idle timeout.
 
-   public String getHostname()
+   public String getHost()
    {
       return serverOptions.getHost();
    }
 
-   public void setHostname(String hostname)
+   public void setHost(String hostname)
    {
       serverOptions.setHost(hostname);
    }

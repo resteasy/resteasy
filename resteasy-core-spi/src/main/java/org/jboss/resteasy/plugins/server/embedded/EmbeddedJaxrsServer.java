@@ -28,4 +28,8 @@ public interface EmbeddedJaxrsServer
    void setProtocol(String protocol);
    
    void setSslParameters(SSLParameters sslParameters);
+   
+   void setPort(int port);
+   
+   void setHost(String host);
 }

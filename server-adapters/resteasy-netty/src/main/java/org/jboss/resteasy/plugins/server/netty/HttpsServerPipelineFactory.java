@@ -7,6 +7,8 @@ import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protoc
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
+
 import java.util.List;
 
 /**
@@ -19,6 +21,8 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
 {
 
    private final SSLContext context;
+   
+   private SSLParameters sslParameters;
 
    public HttpsServerPipelineFactory(final RequestDispatcher dispatcher, final String root, final int executorThreadCount, final int maxRequestSize, final boolean isKeepAlive, final List<ChannelHandler> additionalChannelHandlers, final SSLContext context)
    {
@@ -32,6 +36,11 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
       ChannelPipeline cp = super.getPipeline();
       SSLEngine engine = context.createSSLEngine();
       engine.setUseClientMode(false);
+      if (sslParameters != null)
+      {
+          engine.setNeedClientAuth(sslParameters.getNeedClientAuth());
+          engine.setWantClientAuth(sslParameters.getWantClientAuth());
+      }
       cp.addFirst("sslHandler", new SslHandler(engine));
       return cp;
    }
@@ -42,4 +51,8 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
       return Protocol.HTTPS;
    }
 
+   public void setSSLParameters(SSLParameters params)
+   {
+      this.sslParameters = params;
+   }
 }

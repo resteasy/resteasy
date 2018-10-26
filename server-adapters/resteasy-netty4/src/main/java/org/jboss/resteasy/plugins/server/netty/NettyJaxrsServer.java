@@ -20,9 +20,9 @@ import io.netty.util.concurrent.EventExecutor;
 
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -33,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
 import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
@@ -73,6 +74,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
    private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
+   private SSLParameters sslParameters;
+   private String protocol;
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -132,11 +135,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.maxChunkSize = maxChunkSize;
    }
 
-   public String getHostname() {
+   public String getHost() {
       return hostname;
    }
 
-   public void setHostname(String hostname) {
+   public void setHost(String hostname) {
       this.hostname = hostname;
    }
 
@@ -335,14 +338,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void setProtocol(String protocol)
    {
-      // TODO Auto-generated method stub
-      
+      this.protocol = protocol;
    }
 
    @Override
-   public void setSslParameters(SSLParameters sslParameters)
+   public void setSslParameters(SSLParameters params)
    {
-      // TODO Auto-generated method stub
-      
+      this.sslParameters = params;
    }
 }

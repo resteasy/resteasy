@@ -11,9 +11,9 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -52,6 +52,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private boolean isKeepAlive = true;
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
    private Map<String, Object> channelOptions = Collections.emptyMap();
+   private SSLParameters sslParameters;
+   private String protocol;
 
    static final ChannelGroup allChannels = new DefaultChannelGroup("NettyJaxrsServer");
 
@@ -98,11 +100,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.isKeepAlive = isKeepAlive;
    }
 
-   public String getHostname() {
+   public String getHost() {
       return hostname;
    }
 
-   public void setHostname(String hostname) {
+   public void setHost(String hostname) {
       this.hostname = hostname;
    }
 
@@ -187,7 +189,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       if (sslContext == null) {
          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers);
       } else {
-         factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers, sslContext);
+         HttpsServerPipelineFactory httpsFactory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers, sslContext);
+         if (this.sslParameters != null)
+         {
+            httpsFactory.setSSLParameters(sslParameters);
+         }
+         factory = httpsFactory;
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);
@@ -222,14 +229,14 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void setProtocol(String protocol)
    {
-      // TODO Auto-generated method stub
-      
+      //TODO: look at if this is required
+      this.protocol = protocol;
    }
 
    @Override
    public void setSslParameters(SSLParameters sslParameters)
    {
-      // TODO Auto-generated method stub
+      this.sslParameters = sslParameters;
       
    }
 }

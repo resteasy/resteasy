@@ -3,11 +3,11 @@ package org.jboss.resteasy.plugins.server.netty.cdi;
 import io.netty.channel.ChannelHandlerContext;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.netty.RequestDispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.weld.context.bound.BoundRequestContext;
 
 import javax.enterprise.inject.Instance;

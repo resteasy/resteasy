@@ -27,6 +27,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 
@@ -312,5 +313,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract boolean isReactive(Class<?> clazz);
 
    public abstract ResourceBuilder getResourceBuilder();
+   
+   public abstract EmbeddedJaxrsServer getJaxrsServer();
 
 }

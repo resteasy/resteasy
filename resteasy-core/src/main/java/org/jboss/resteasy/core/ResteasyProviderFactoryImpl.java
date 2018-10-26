@@ -17,6 +17,7 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -260,9 +261,11 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    private Map<String, Object> properties;
    private Map<Class<?>, Class<? extends RxInvokerProvider<?>>> reactiveClasses;
    private ResourceBuilder resourceBuilder;
+   private EmbeddedJaxrsServer jaxrsServer;
    protected Set<Feature> enabledFeatures;
    protected Set<Class<?>> providerClasses;
    protected Set<Object> providerInstances;
+   
 
    public ResteasyProviderFactoryImpl()
    {
@@ -1667,6 +1670,17 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             Class<?> headerClass = Types.getRawType(headerTypes[0]);
             HeaderDelegate<?> delegate = createProviderInstance((Class<? extends HeaderDelegate>) provider);
             addHeaderDelegate(headerClass, delegate);
+      if (isA(provider, EmbeddedJaxrsServer.class, contracts))
+      {
+         try
+         {
+            //TODO: if there is already jaxrs server loaded
+            this.jaxrsServer = (EmbeddedJaxrsServer) provider.newInstance();
+            newContracts.put(EmbeddedJaxrsServer.class, 0);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
          }
       }
    }
@@ -2656,6 +2670,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
+   
+   public EmbeddedJaxrsServer getJaxrsServer() {
+      return jaxrsServer;
+   }
 
    public <T> T getContextData(Class<T> type)
    {
@@ -2670,10 +2688,13 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          @Override
          public Instance get()
          {
-            SunHttpJaxrsServer server = new SunHttpJaxrsServer();
-            server.setPort(configuration.port());
-            server.setHost(configuration.host());
-            server.setRootResourcePath(configuration.rootPath());
+            if (jaxrsServer == null)
+            {
+               jaxrsServer = new SunHttpJaxrsServer();
+            }
+            jaxrsServer.setPort(configuration.port());
+            jaxrsServer.setHost(configuration.host());
+            jaxrsServer.setRootResourcePath(configuration.rootPath());
             if (configuration.sslContext() != null)
             {
                SSLParameters sslParams = configuration.sslContext().getDefaultSSLParameters();
@@ -2689,15 +2710,15 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                {
                   sslParams.setNeedClientAuth(true);
                }
-               server.setSslParameters(sslParams);
-               server.setSSLContext(configuration.sslContext());
+               jaxrsServer.setSslParameters(sslParams);
+               jaxrsServer.setSSLContext(configuration.sslContext());
             }
-            server.setProtocol(configuration.protocol());
+            jaxrsServer.setProtocol(configuration.protocol());
 
             ResteasyDeployment deployment = new ResteasyDeploymentImpl();
             deployment.setApplication(application);
-            server.setDeployment(deployment);
-            server.start();
+            jaxrsServer.setDeployment(deployment);
+            jaxrsServer.start();
             return new Instance()
             {
                @Override
@@ -2713,7 +2734,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                      @Override
                      public StopResult get()
                      {
-                         server.stop();
+                        jaxrsServer.stop();
                          return new StopResult() {
 
                            @Override
