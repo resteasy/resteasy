@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.NotAcceptableException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.ClientBuilder;
@@ -27,7 +26,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.test.UndertowTestRunner;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingLevel;
@@ -55,12 +53,12 @@ import static javax.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
 @RunWith(Arquillian.class)
 //@RunWith(UndertowTestRunner.class)
 @RunAsClient
-public class ClosedResponseHandling
+public class ClosedResponseHandlingTest
 {
 	@Deployment
 	public static Archive<?> deploy() {
-		WebArchive war = TestUtil.prepareArchive(ClosedResponseHandling.class.getSimpleName());
-		war.addClass(ClosedResponseHandling.class);
+		WebArchive war = TestUtil.prepareArchive(ClosedResponseHandlingTest.class.getSimpleName());
+		war.addClass(ClosedResponseHandlingTest.class);
 		war.addClass(PortProviderUtil.class);
 		war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
 				new ReflectPermission("suppressAccessChecks")
@@ -77,7 +75,7 @@ public class ClosedResponseHandling
 
 	/**
 	 * @tpTestDetails Request is sent to an endpoint that issues a Resteasy client request triggering a 404 error.
-	 * @tpPassCrit A NotFoundException is returned
+	 * @tpPassCrit A NotAcceptableException is returned
 	 * @tpSince RESTEasy 4.0.0.CR1
 	 */
 	@Test(expected = NotAcceptableException.class)
@@ -87,7 +85,7 @@ public class ClosedResponseHandling
 
 	/**
 	 * @tpTestDetails Request is sent to an exception mapping and tracing endpoint that issues a Resteasy client request triggering a 404 error.
-	 * @tpPassCrit A NotFoundException is returned
+	 * @tpPassCrit A NotSupportedException is returned
 	 * @tpSince RESTEasy 4.0.0.CR1
 	 */
 	@Test(expected = NotSupportedException.class)
@@ -155,11 +153,11 @@ public class ClosedResponseHandling
 		public void filter(ContainerRequestContext containerRequestContext) throws IOException {
 			// force verbose tracing, enabling via finishContainerPrepare()'s contextParams didn't work
 			containerRequestContext.setProperty(RESTEasyTracing.PROPERTY_NAME,
-					RESTEasyTracingLogger.create(RESTEasyTracingLevel.VERBOSE.name(), ClosedResponseHandling.class.getSimpleName()));
+					RESTEasyTracingLogger.create(RESTEasyTracingLevel.VERBOSE.name(), ClosedResponseHandlingTest.class.getSimpleName()));
 		}
 	}
 
 	private static String generateURL(String path) {
-		return PortProviderUtil.generateURL(path, ClosedResponseHandling.class.getSimpleName());
+		return PortProviderUtil.generateURL(path, ClosedResponseHandlingTest.class.getSimpleName());
 	}
 }
