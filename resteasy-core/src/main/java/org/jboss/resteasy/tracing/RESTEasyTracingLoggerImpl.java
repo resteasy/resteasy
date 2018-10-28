@@ -146,17 +146,17 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
 
       Object entity;
       try {
-          entity = response.getEntity();
+         entity = response.getEntity();
       }
       catch(IllegalStateException ise) {
-          // [RESTEASY-1142] IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
-          entity = null;
+         // [RESTEASY-1142] IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
+         entity = null;
       }
 
       if (entity != null) {
-          formatInstance(entity, text);
+         formatInstance(entity, text);
       } else {
-          text.append("-no-entity-");
+         text.append("-no-entity-");
       }
 
       text.append('>');
