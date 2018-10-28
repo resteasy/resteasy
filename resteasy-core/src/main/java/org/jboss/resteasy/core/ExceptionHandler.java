@@ -165,13 +165,14 @@ public class ExceptionHandler
 
       if (unwrappedException instanceof WebApplicationException) {
          WebApplicationException wae = (WebApplicationException) unwrappedException;
-         if (wae.getResponse() != null) {
+         Response response = wae.getResponse();
+         if (response != null) {
             try {
-               if (wae.getResponse().getEntity() != null) return wae.getResponse();
+               if (response.getEntity() != null) return response;
             }
             catch(IllegalStateException ise) {
-               // ignore
                // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
+               return response;
             }
          }
       }
