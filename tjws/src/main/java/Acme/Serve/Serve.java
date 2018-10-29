@@ -3950,6 +3950,12 @@ public class Serve implements ServletContext, Serializable
          }
       }
 
+      // Gets the current status code of this response.
+      // added in Servlet 3.0
+      public int getStatus() {
+         return this.resCode;
+      }
+
       // / Sets the value of a header field.
       // @param name the header field name
       // @param value the header field value
