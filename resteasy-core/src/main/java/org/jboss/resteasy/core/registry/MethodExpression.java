@@ -33,12 +33,12 @@ public class MethodExpression extends Expression
       else return 1;
    }
 
-   public MethodExpression(SegmentNode parent, String segment, ResourceInvoker invoker)
+   public MethodExpression(final SegmentNode parent, final String segment, final ResourceInvoker invoker)
    {
       this(parent, segment, invoker, null);
    }
 
-   public MethodExpression(SegmentNode parent, String segment, ResourceInvoker invoker, String additionalRegex)
+   public MethodExpression(final SegmentNode parent, final String segment, final ResourceInvoker invoker, final String additionalRegex)
    {
       super(segment, additionalRegex);
       this.parent = parent;

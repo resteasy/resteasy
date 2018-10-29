@@ -8,12 +8,12 @@ import javax.ws.rs.core.MediaType;
  */
 public class EnvelopedOutput extends SMIMEOutput
 {
-   public EnvelopedOutput(Object obj, String mediaType)
+   public EnvelopedOutput(final Object obj, final String mediaType)
    {
       super(obj, mediaType);
    }
 
-   public EnvelopedOutput(Object obj, MediaType mediaType)
+   public EnvelopedOutput(final Object obj, final MediaType mediaType)
    {
       super(obj, mediaType);
    }

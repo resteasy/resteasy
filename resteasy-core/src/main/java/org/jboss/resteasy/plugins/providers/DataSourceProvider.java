@@ -46,8 +46,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       private final File tempFile;
       private final String type;
 
-      protected SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
-                                 int byteBufferLength, File tempFile, String type)
+      protected SequencedDataSource(final byte[] byteBuffer, final int byteBufferOffset,
+                                    final int byteBufferLength, final File tempFile, final String type)
       {
          super();
          this.byteBuffer = byteBuffer;
@@ -281,7 +281,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
       private File tempFile;
 
-      TempFileCleanable(File tempFile) {
+      TempFileCleanable(final File tempFile) {
          this.tempFile = tempFile;
       }
 

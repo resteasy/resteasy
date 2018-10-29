@@ -22,7 +22,7 @@ public class BasicAuthFilter extends Filter
 {
    protected SecurityDomain domain;
 
-   public BasicAuthFilter(SecurityDomain domain)
+   public BasicAuthFilter(final SecurityDomain domain)
    {
       this.domain = domain;
    }

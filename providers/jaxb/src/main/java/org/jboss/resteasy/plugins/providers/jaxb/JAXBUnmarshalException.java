@@ -10,32 +10,32 @@ import javax.ws.rs.core.Response;
  */
 public class JAXBUnmarshalException extends ReaderException
 {
-   public JAXBUnmarshalException(String s)
+   public JAXBUnmarshalException(final String s)
    {
       super(s);
    }
 
-   public JAXBUnmarshalException(String s, Response response)
+   public JAXBUnmarshalException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public JAXBUnmarshalException(String s, Throwable throwable, Response response)
+   public JAXBUnmarshalException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public JAXBUnmarshalException(String s, Throwable throwable)
+   public JAXBUnmarshalException(final String s, final Throwable throwable)
    {
       super(s, throwable);
    }
 
-   public JAXBUnmarshalException(Throwable throwable)
+   public JAXBUnmarshalException(final Throwable throwable)
    {
       super(throwable);
    }
 
-   public JAXBUnmarshalException(Throwable throwable, Response response)
+   public JAXBUnmarshalException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

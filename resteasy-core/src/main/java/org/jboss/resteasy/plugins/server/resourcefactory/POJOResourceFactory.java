@@ -28,24 +28,24 @@ public class POJOResourceFactory implements ResourceFactory
    private PropertyInjector propertyInjector;
 
    @Deprecated
-   public POJOResourceFactory(Class<?> scannableClass)
+   public POJOResourceFactory(final Class<?> scannableClass)
    {
       this(new ResourceBuilder(), scannableClass);
    }
 
-   public POJOResourceFactory(ResourceBuilder resourceBuilder, Class<?> scannableClass)
+   public POJOResourceFactory(final ResourceBuilder resourceBuilder, final Class<?> scannableClass)
    {
       this.resourceBuilder = resourceBuilder;
       this.scannableClass = scannableClass;
       this.resourceClass = resourceBuilder.getRootResourceFromAnnotations(scannableClass);
    }
 
-   public POJOResourceFactory(ResourceClass resourceClass)
+   public POJOResourceFactory(final ResourceClass resourceClass)
    {
       this(new ResourceBuilder(), resourceClass);
    }
 
-   public POJOResourceFactory(ResourceBuilder resourceBuilder, ResourceClass resourceClass)
+   public POJOResourceFactory(final ResourceBuilder resourceBuilder, final ResourceClass resourceClass)
    {
       this.resourceBuilder = resourceBuilder;
       this.scannableClass = resourceClass.getClazz();

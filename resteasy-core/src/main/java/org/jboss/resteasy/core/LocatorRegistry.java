@@ -22,7 +22,7 @@ public class LocatorRegistry
    protected RootNode root = new RootNode();
    protected ResteasyProviderFactory providerFactory;
 
-   public LocatorRegistry(Class<?> clazz, ResteasyProviderFactory providerFactory)
+   public LocatorRegistry(final Class<?> clazz, final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       ResourceBuilder resourceBuilder = providerFactory.getResourceBuilder();

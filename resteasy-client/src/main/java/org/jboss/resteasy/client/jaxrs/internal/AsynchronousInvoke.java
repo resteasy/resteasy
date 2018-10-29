@@ -19,7 +19,7 @@ public class AsynchronousInvoke implements AsyncInvoker
 {
    protected ClientInvocation invocation;
 
-   public AsynchronousInvoke(ClientInvocation invocation)
+   public AsynchronousInvoke(final ClientInvocation invocation)
    {
       this.invocation = invocation;
    }

@@ -220,7 +220,7 @@ public class FileProvider implements MessageBodyReader<File>,
    {
       File file;
 
-      FileHolder(File file)
+      FileHolder(final File file)
       {
          this.file = file;
       }

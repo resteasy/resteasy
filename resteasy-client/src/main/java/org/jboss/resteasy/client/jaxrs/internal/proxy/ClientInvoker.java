@@ -53,7 +53,7 @@ public class ClientInvoker implements MethodInvoker
    protected SyncInvoker syncInvoker;
 
 
-   public ClientInvoker(ResteasyWebTarget parent, Class<?> declaring, Method method, ProxyConfig config)
+   public ClientInvoker(final ResteasyWebTarget parent, final Class<?> declaring, final Method method, final ProxyConfig config)
    {
       // webTarget must be a clone so that it has a cloned ClientConfiguration so we can apply DynamicFeature
       if (method.isAnnotationPresent(Path.class))

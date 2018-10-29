@@ -15,7 +15,7 @@ public class InputStreamToByteArray extends InputStream
    protected InputStream delegate;
    protected ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-   public InputStreamToByteArray(InputStream delegate)
+   public InputStreamToByteArray(final InputStream delegate)
    {
       this.delegate = delegate;
    }

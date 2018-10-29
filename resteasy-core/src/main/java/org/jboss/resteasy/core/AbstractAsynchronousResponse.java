@@ -39,7 +39,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected Map<Class<?>, Object> contextDataMap;
    private boolean callbacksCalled;
 
-   protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
+   protected AbstractAsynchronousResponse(final SynchronousDispatcher dispatcher,final HttpRequest request,final HttpResponse response)
    {
       this.dispatcher = dispatcher;
       this.request = request;

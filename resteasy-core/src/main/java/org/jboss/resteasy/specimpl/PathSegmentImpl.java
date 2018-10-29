@@ -22,7 +22,7 @@ public class PathSegmentImpl implements PathSegment
     * @param segment encoded path segment
     * @param decode whether or not to decode values
     */
-   public PathSegmentImpl(String segment, boolean decode)
+   public PathSegmentImpl(final String segment, final boolean decode)
    {
       this.original = segment;
       this.path = segment;

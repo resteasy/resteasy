@@ -14,7 +14,7 @@ public class FeatureContextDelegate implements FeatureContext
 {
    protected Configurable configurable;
 
-   public FeatureContextDelegate(Configurable configurable)
+   public FeatureContextDelegate(final Configurable configurable)
    {
       this.configurable = configurable;
    }

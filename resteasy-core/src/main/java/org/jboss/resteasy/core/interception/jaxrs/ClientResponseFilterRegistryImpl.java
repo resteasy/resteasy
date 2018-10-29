@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ClientResponseFilterRegistryImpl extends JaxrsInterceptorRegistryImpl<ClientResponseFilter>
 {
-   public ClientResponseFilterRegistryImpl(ResteasyProviderFactory providerFactory)
+   public ClientResponseFilterRegistryImpl(final ResteasyProviderFactory providerFactory)
    {
       super(providerFactory, ClientResponseFilter.class);
    }

@@ -34,7 +34,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    private PropertyInjector propertyInjector;
    private GeneralValidatorCDI validator;
 
-   public JaxrsInjectionTarget(InjectionTarget<T> delegate, Class<T> clazz)
+   public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz)
    {
       this.delegate = delegate;
       this.clazz = clazz;

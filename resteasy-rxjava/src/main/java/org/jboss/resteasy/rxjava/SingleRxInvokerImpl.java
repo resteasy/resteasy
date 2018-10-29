@@ -22,7 +22,7 @@ public class SingleRxInvokerImpl implements SingleRxInvoker
    private final CompletionStageRxInvoker completionStageRxInvoker;
    private final SingleProvider singleProvider;
 
-   public SingleRxInvokerImpl(CompletionStageRxInvoker completionStageRxInvoker)
+   public SingleRxInvokerImpl(final CompletionStageRxInvoker completionStageRxInvoker)
    {
       this.completionStageRxInvoker = completionStageRxInvoker;
       this.singleProvider = new SingleProvider();

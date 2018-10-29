@@ -35,7 +35,7 @@ public class ObservableRxInvokerImpl implements ObservableRxInvoker
    private ClientInvocationBuilder syncInvoker;
    private ScheduledExecutorService executorService;
 
-   public ObservableRxInvokerImpl(SyncInvoker syncInvoker, ExecutorService executorService)
+   public ObservableRxInvokerImpl(final SyncInvoker syncInvoker, final ExecutorService executorService)
    {
       if (!(syncInvoker instanceof ClientInvocationBuilder))
       {

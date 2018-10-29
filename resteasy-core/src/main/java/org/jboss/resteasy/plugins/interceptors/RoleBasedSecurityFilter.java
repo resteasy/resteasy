@@ -23,7 +23,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
    protected boolean denyAll;
    protected boolean permitAll;
 
-   public RoleBasedSecurityFilter(String[] rolesAllowed, boolean denyAll, boolean permitAll)
+   public RoleBasedSecurityFilter(final String[] rolesAllowed, final boolean denyAll, final boolean permitAll)
    {
       this.rolesAllowed = rolesAllowed;
       this.denyAll = denyAll;

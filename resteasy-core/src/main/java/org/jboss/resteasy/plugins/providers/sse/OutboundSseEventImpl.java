@@ -154,7 +154,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       }
    }
 
-   OutboundSseEventImpl(final String name, final String id, final long reconnectDelay, final Class<?> type, Type genericType,
+   OutboundSseEventImpl(final String name, final String id, final long reconnectDelay, final Class<?> type, final Type genericType,
          final MediaType mediaType, final Object data, final String comment)
    {
       this.name = name;

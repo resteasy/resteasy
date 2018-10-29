@@ -44,7 +44,7 @@ public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter
     *
     * @param paramMapping The name of query parameter that will be used to do the content negotiation
     */
-   public AcceptParameterHttpPreprocessor(String paramMapping)
+   public AcceptParameterHttpPreprocessor(final String paramMapping)
    {
       if (paramMapping == null || paramMapping.matches("\\s+"))
          throw new IllegalArgumentException(Messages.MESSAGES.constructorMappingInvalid());

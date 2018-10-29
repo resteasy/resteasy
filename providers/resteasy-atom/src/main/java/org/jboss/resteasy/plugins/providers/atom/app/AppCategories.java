@@ -66,8 +66,8 @@ public class AppCategories extends AppCommonAttributes {
 
    public AppCategories() {}
 
-   public AppCategories(List<Category> category, Boolean fixed, String scheme,
-         String href) {
+   public AppCategories(final List<Category> category, final Boolean fixed, final String scheme,
+                        final String href) {
       super();
       this.category = category;
       this.fixed = fixed;

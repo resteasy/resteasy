@@ -17,7 +17,7 @@ public interface BrowserCache
       private String name;
       private String value;
 
-      public Header(String name, String value)
+      public Header(final String name, final String value)
       {
          this.name = name;
          this.value = value;

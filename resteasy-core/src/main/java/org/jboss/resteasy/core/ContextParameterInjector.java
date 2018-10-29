@@ -40,7 +40,7 @@ public class ContextParameterInjector implements ValueInjector
    private Type genericType;
    private Annotation[] annotations;
 
-   public ContextParameterInjector(Class proxy, Class rawType, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
+   public ContextParameterInjector(final Class proxy, final Class rawType, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       this.rawType = rawType;
       this.genericType = genericType;

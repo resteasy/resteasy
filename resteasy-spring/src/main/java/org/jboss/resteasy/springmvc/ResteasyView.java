@@ -32,7 +32,7 @@ public class ResteasyView implements View
    private List<MediaType> potentialContentTypes = null;
    private ResteasyDeployment deployment;
 
-   public ResteasyView(String contentType, ResteasyDeployment deployment)
+   public ResteasyView(final String contentType, final ResteasyDeployment deployment)
    {
       setContentType(contentType);
       this.deployment = deployment;

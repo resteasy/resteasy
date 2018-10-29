@@ -16,7 +16,7 @@ public class ServletBootstrap extends ListenerBootstrap
 {
    private ServletConfig config;
 
-   public ServletBootstrap(ServletConfig config)
+   public ServletBootstrap(final ServletConfig config)
    {
       super(config.getServletContext());
       this.config = config;

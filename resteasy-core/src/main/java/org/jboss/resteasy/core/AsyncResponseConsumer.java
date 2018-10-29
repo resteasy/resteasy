@@ -50,7 +50,7 @@ public abstract class AsyncResponseConsumer
    protected ResteasyAsynchronousResponse asyncResponse;
    protected boolean isComplete;
 
-   public AsyncResponseConsumer(ResourceMethodInvoker method)
+   public AsyncResponseConsumer(final ResourceMethodInvoker method)
    {
       this.method = method;
       contextDataMap = ResteasyContext.getContextDataMap();
@@ -214,7 +214,7 @@ public abstract class AsyncResponseConsumer
    {
       private AsyncResponseProvider<?> asyncResponseProvider;
 
-      CompletionStageResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider)
+      CompletionStageResponseConsumer(final ResourceMethodInvoker method, final AsyncResponseProvider<?> asyncResponseProvider)
       {
          super(method);
          this.asyncResponseProvider = asyncResponseProvider;
@@ -253,7 +253,7 @@ public abstract class AsyncResponseConsumer
       protected Subscription subscription;
       private AsyncStreamProvider<?> asyncStreamProvider;
 
-      AsyncStreamResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method);
          this.asyncStreamProvider = asyncStreamProvider;
@@ -324,7 +324,7 @@ public abstract class AsyncResponseConsumer
    {
       private boolean sentEntity;
 
-      AsyncRawStreamingResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncRawStreamingResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
       }
@@ -394,7 +394,7 @@ public abstract class AsyncResponseConsumer
    {
       private List<Object> collector = new ArrayList<Object>();
 
-      AsyncStreamCollectorResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      AsyncStreamCollectorResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
       }
@@ -460,7 +460,7 @@ public abstract class AsyncResponseConsumer
       private volatile boolean onCompleteReceived = false;
       private volatile boolean sendingEvent = false;
 
-      private AsyncGeneralStreamingSseResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
+      private AsyncGeneralStreamingSseResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
          sse = new SseImpl();

@@ -52,7 +52,7 @@ public class ResourceMethodRegistry implements Registry
    protected ResourceBuilder resourceBuilder;
 
 
-   public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
+   public ResourceMethodRegistry(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.resourceBuilder = providerFactory.getResourceBuilder();

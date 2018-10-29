@@ -18,7 +18,7 @@ class ExceptionMapping implements ClientResponseFilter
 {
    private Set<Object> instances;
 
-   ExceptionMapping(Set<Object> instances)
+   ExceptionMapping(final Set<Object> instances)
    {
       this.instances = instances;
    }

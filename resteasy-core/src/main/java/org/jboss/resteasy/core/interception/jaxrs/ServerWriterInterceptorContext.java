@@ -27,11 +27,11 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    private HttpRequest request;
 
-   public ServerWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
-                                         Object entity, Class type, Type genericType, Annotation[] annotations,
-                                         MediaType mediaType, MultivaluedMap<String, Object> headers,
-                                         OutputStream outputStream,
-                                         HttpRequest request)
+   public ServerWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
+                                         final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
+                                         final MediaType mediaType, final MultivaluedMap<String, Object> headers,
+                                         final OutputStream outputStream,
+                                         final HttpRequest request)
    {
       // server side must use request instead of provider factory to get tracing logger.
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers, RESTEasyTracingLogger.getInstance(request));

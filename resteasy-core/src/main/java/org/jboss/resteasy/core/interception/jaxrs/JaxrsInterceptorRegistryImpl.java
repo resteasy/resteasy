@@ -55,7 +55,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       protected volatile boolean initialized;
       protected boolean ignorePrematch;
 
-      public AbstractInterceptorFactory(Class declaring)
+      public AbstractInterceptorFactory(final Class declaring)
       {
          this.declaring = getNonSyntheticClass(declaring);
       }
@@ -157,7 +157,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    {
       protected volatile Object interceptor;
 
-      public OnDemandInterceptorFactory(Class declaring)
+      public OnDemandInterceptorFactory(final Class declaring)
       {
          super(declaring);
          setPrecedence(declaring);
@@ -201,7 +201,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    {
       protected Object interceptor;
 
-      public SingletonInterceptorFactory(Class declaring, Object interceptor)
+      public SingletonInterceptorFactory(final Class declaring, final Object interceptor)
       {
          super(declaring);
          this.interceptor = interceptor;
@@ -228,7 +228,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    protected Class<T> intf;
    protected volatile T[] cachedPreMatch;
 
-   public JaxrsInterceptorRegistryImpl(ResteasyProviderFactory providerFactory, Class<T> intf)
+   public JaxrsInterceptorRegistryImpl(final ResteasyProviderFactory providerFactory, final Class<T> intf)
    {
       this.providerFactory = providerFactory;
       this.intf = intf;

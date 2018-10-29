@@ -92,7 +92,7 @@ public class ClientInvocation implements Invocation
 
    protected OutputStream entityStream = delegatingOutputStream;
 
-   public ClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
+   public ClientInvocation(final ResteasyClient client, final URI uri, final ClientRequestHeaders headers, final ClientConfiguration parent)
    {
       this.uri = uri;
       this.client = client;
@@ -117,7 +117,7 @@ public class ClientInvocation implements Invocation
 
    }
 
-   protected ClientInvocation(ClientInvocation clientInvocation)
+   protected ClientInvocation(final ClientInvocation clientInvocation)
    {
       this.client = clientInvocation.client;
       this.configuration = new ClientConfiguration(clientInvocation.configuration);
@@ -810,7 +810,7 @@ public class ClientInvocation implements Invocation
 
       private final ExecutionException ex;
 
-      CompletedFuture(T result, ExecutionException ex)
+      CompletedFuture(final T result, final ExecutionException ex)
       {
          this.ex = ex;
          this.result = result;

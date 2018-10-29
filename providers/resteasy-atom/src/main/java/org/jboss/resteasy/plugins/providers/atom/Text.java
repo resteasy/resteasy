@@ -66,13 +66,13 @@ public class Text extends CommonAttributes
    {
    }
 
-   public Text(String text, String type)
+   public Text(final String text, final String type)
    {
       setText(text);
       setRawType(type);
    }
 
-   public Text(String text)
+   public Text(final String text)
    {
       setText(text);
    }

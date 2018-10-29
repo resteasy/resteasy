@@ -26,7 +26,7 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
 {
    private boolean encode;
 
-   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
+   public MatrixParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String paramName, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);
       this.encode = encode;

@@ -20,7 +20,7 @@ public class VertxResourceFactory implements ResourceFactory
    private final ResourceFactory delegate;
    private final String id = UUID.randomUUID().toString();
 
-   public VertxResourceFactory(ResourceFactory delegate)
+   public VertxResourceFactory(final ResourceFactory delegate)
    {
       this.delegate = delegate;
    }

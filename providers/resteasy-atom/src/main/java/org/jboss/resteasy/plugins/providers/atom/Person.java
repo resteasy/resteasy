@@ -36,7 +36,7 @@ public class Person extends CommonAttributes
    {
    }
 
-   public Person(String name)
+   public Person(final String name)
    {
       this.name = name;
    }

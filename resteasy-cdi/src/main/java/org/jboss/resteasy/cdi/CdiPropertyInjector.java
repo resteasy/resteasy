@@ -48,7 +48,7 @@ public class CdiPropertyInjector implements PropertyInjector
    private Class<?> clazz;
    private boolean injectorEnabled = true;
 
-   public CdiPropertyInjector(PropertyInjector delegate, Class<?> clazz, Map<Class<?>, Type> sessionBeanInterface, BeanManager manager)
+   public CdiPropertyInjector(final PropertyInjector delegate, final Class<?> clazz, final Map<Class<?>, Type> sessionBeanInterface, final BeanManager manager)
    {
       this.delegate = delegate;
       this.clazz = clazz;

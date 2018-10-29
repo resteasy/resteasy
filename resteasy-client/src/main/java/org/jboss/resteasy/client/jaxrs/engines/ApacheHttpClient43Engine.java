@@ -118,13 +118,13 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
       this.allowClosingHttpClient = true;
    }
 
-   public ApacheHttpClient43Engine(HttpClient httpClient)
+   public ApacheHttpClient43Engine(final HttpClient httpClient)
    {
       this.httpClient = httpClient;
       this.allowClosingHttpClient = true;
    }
 
-   public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient)
+   public ApacheHttpClient43Engine(final HttpClient httpClient, final boolean closeHttpClient)
    {
       if (closeHttpClient && !(httpClient instanceof CloseableHttpClient))
       {
@@ -135,7 +135,7 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
       this.allowClosingHttpClient = closeHttpClient;
    }
 
-   public ApacheHttpClient43Engine(HttpClient httpClient, HttpContextProvider httpContextProvider)
+   public ApacheHttpClient43Engine(final HttpClient httpClient, final HttpContextProvider httpContextProvider)
    {
       this.httpClient = httpClient;
       this.httpContextProvider = httpContextProvider;
@@ -640,7 +640,7 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
        * @param pContentType -
        */
       @SuppressWarnings("deprecation")
-      FileExposingFileEntity(File pFile, String pContentType)
+      FileExposingFileEntity(final File pFile, final String pContentType)
       {
          super(pFile, pContentType);
       }

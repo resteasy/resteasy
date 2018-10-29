@@ -20,7 +20,7 @@ public class JndiResourceFactory implements ResourceFactory
    private String jndiName;
    private InitialContext ctx;
 
-   public JndiResourceFactory(String jndiName)
+   public JndiResourceFactory(final String jndiName)
    {
       this.jndiName = jndiName;
       try

@@ -30,25 +30,25 @@ public class ClientWebTarget implements ResteasyWebTarget
    protected ClientConfiguration configuration;
    protected boolean chunked = false;
 
-   protected ClientWebTarget(ResteasyClient client, ClientConfiguration configuration)
+   protected ClientWebTarget(final ResteasyClient client, final ClientConfiguration configuration)
    {
       this.configuration = new ClientConfiguration(configuration);
       this.client = client;
    }
 
-   public ClientWebTarget(ResteasyClient client, String uri, ClientConfiguration configuration) throws IllegalArgumentException, NullPointerException
+   public ClientWebTarget(final ResteasyClient client, final String uri, final ClientConfiguration configuration) throws IllegalArgumentException, NullPointerException
    {
       this(client, configuration);
       uriBuilder = uriBuilderFromUri(uri);
    }
 
-   public ClientWebTarget(ResteasyClient client, URI uri, ClientConfiguration configuration) throws NullPointerException
+   public ClientWebTarget(final ResteasyClient client, final URI uri, final ClientConfiguration configuration) throws NullPointerException
    {
       this(client, configuration);
       uriBuilder = uriBuilderFromUri(uri);
    }
 
-   public ClientWebTarget(ResteasyClient client, UriBuilder uriBuilder, ClientConfiguration configuration) throws NullPointerException
+   public ClientWebTarget(final ResteasyClient client, final UriBuilder uriBuilder, final ClientConfiguration configuration) throws NullPointerException
    {
       this(client, configuration);
       this.uriBuilder = uriBuilder.clone();

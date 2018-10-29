@@ -29,7 +29,7 @@ public class ResteasyHandlerAdapter extends
 {
    protected ResteasyDeployment deployment;
 
-   public ResteasyHandlerAdapter(ResteasyDeployment deployment)
+   public ResteasyHandlerAdapter(final ResteasyDeployment deployment)
    {
       super(deployment.getProviderFactory());
       this.deployment = deployment;

@@ -82,7 +82,7 @@ public class ConfiguredDosetaKeyRepository implements KeyRepository
       return variable;
    }
 
-   public ConfiguredDosetaKeyRepository(@Context ResteasyConfiguration config)
+   public ConfiguredDosetaKeyRepository(final @Context ResteasyConfiguration config)
    {
       String password = getVariable(config, RESTEASY_KEY_STORE_PASSWORD);
       keyRepository.setKeyStorePassword(password);

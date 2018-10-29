@@ -12,7 +12,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class ContainerRequestFilterRegistryImpl extends JaxrsInterceptorRegistryImpl<ContainerRequestFilter>
 {
-   public ContainerRequestFilterRegistryImpl(ResteasyProviderFactory providerFactory)
+   public ContainerRequestFilterRegistryImpl(final ResteasyProviderFactory providerFactory)
    {
       super(providerFactory, ContainerRequestFilter.class);
    }

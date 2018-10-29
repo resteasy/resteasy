@@ -28,12 +28,12 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
 
    private boolean ejbsPresent;
 
-   public SimpleViolationsContainer(Object target)
+   public SimpleViolationsContainer(final Object target)
    {
       super(target);
    }
 
-   public SimpleViolationsContainer(Set<ConstraintViolation<Object>> cvs)
+   public SimpleViolationsContainer(final Set<ConstraintViolation<Object>> cvs)
    {
       super(cvs);
    }

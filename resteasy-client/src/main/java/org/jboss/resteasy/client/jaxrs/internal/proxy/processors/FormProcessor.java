@@ -30,7 +30,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
 
    private static class GetterMethod
    {
-      private GetterMethod(Method method, Object processor)
+      private GetterMethod(final Method method, final Object processor)
       {
          this.method = method;
          this.processor = processor;
@@ -44,7 +44,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    protected HashMap<Long, Method> getterHashes = new HashMap<Long, Method>();
    protected Class clazz;
 
-   public FormProcessor(Class clazz, ClientConfiguration configuration)
+   public FormProcessor(final Class clazz, final ClientConfiguration configuration)
    {
       this.clazz = clazz;
 

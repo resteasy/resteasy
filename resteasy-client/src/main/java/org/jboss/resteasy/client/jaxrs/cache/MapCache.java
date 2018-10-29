@@ -15,7 +15,7 @@ public class MapCache implements BrowserCache
       this(new ConcurrentHashMap<String, Map<String, Entry>>());
    }
 
-   public MapCache(Map<String, Map<String, Entry>> cache)
+   public MapCache(final Map<String, Map<String, Entry>> cache)
    {
       this.cache = cache;
    }

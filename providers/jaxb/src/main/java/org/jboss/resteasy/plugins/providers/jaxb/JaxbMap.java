@@ -33,7 +33,7 @@ public class JaxbMap
    {
    }
 
-   public JaxbMap(String entryName, String keyAttributeName, String namespace)
+   public JaxbMap(final String entryName, final String keyAttributeName, final String namespace)
    {
       this.entryName = entryName;
       this.namespace = namespace;
@@ -59,7 +59,7 @@ public class JaxbMap
       {
       }
 
-      public Entry(String keyAttributeName, String key, Object value)
+      public Entry(final String keyAttributeName, final String key, final Object value)
       {
          this.value = value;
          this.keyAttributeName = keyAttributeName;

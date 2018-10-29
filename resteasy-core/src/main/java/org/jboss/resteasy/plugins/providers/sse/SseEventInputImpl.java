@@ -41,8 +41,8 @@ public class SseEventInputImpl implements EventInput, Closeable
 
    private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
 
-   public SseEventInputImpl(Annotation[] annotations, MediaType streamType, MediaType elementType,
-         MultivaluedMap<String, String> httpHeaders, InputStream inputStream)
+   public SseEventInputImpl(final Annotation[] annotations, final MediaType streamType, final MediaType elementType,
+                            final MultivaluedMap<String, String> httpHeaders, final InputStream inputStream)
    {
       this.annotations = annotations;
       this.mediaType = elementType;

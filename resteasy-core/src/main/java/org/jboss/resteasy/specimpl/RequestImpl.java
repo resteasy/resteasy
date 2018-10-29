@@ -42,7 +42,7 @@ public class RequestImpl implements Request
    private HttpRequest request;
    private HttpResponse response;
 
-   public RequestImpl(HttpRequest request, HttpResponse response)
+   public RequestImpl(final HttpRequest request, final HttpResponse response)
    {
       this.headers = request.getHttpHeaders();
       this.httpMethod = request.getHttpMethod().toUpperCase();

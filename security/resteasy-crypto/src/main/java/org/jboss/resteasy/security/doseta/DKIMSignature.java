@@ -70,13 +70,13 @@ public class DKIMSignature
    {
    }
 
-   public DKIMSignature(Map<String, String> attrs)
+   public DKIMSignature(final Map<String, String> attrs)
    {
       attributes = attrs;
       extractAttributes();
    }
 
-   public DKIMSignature(String headerValue)
+   public DKIMSignature(final String headerValue)
    {
       this.headerValue = headerValue;
       ParameterParser parser = new ParameterParser();

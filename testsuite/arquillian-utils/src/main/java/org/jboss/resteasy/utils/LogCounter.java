@@ -26,14 +26,14 @@ public class LogCounter {
    private String containerQualifier;
 
 
-   public LogCounter(String message, boolean onServer, String containerQualifier) {
+   public LogCounter(final String message, final boolean onServer, final String containerQualifier) {
       this.message = message;
       this.onServer = onServer;
       this.containerQualifier = containerQualifier;
       this.initCount = TestUtil.getWarningCount(message, onServer, containerQualifier);
    }
 
-   public LogCounter(String message, boolean onServer) {
+   public LogCounter(final String message, final boolean onServer) {
       this(message, onServer, null);
    }
 

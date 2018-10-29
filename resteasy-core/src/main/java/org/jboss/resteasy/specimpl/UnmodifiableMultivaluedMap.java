@@ -18,7 +18,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
 
    private final MultivaluedMap<K, V> delegate;
 
-   public UnmodifiableMultivaluedMap(MultivaluedMap<K, V> delegate)
+   public UnmodifiableMultivaluedMap(final MultivaluedMap<K, V> delegate)
    {
       this.delegate = delegate;
    }

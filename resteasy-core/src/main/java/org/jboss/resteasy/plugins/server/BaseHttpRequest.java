@@ -25,7 +25,7 @@ public abstract class BaseHttpRequest implements HttpRequest
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected ResteasyUriInfo uri;
 
-   protected BaseHttpRequest(ResteasyUriInfo uri)
+   protected BaseHttpRequest(final ResteasyUriInfo uri)
    {
       this.uri = uri;
    }

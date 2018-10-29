@@ -10,32 +10,32 @@ import javax.ws.rs.core.Response;
  */
 public class JAXBMarshalException extends WriterException
 {
-   public JAXBMarshalException(String s)
+   public JAXBMarshalException(final String s)
    {
       super(s);
    }
 
-   public JAXBMarshalException(String s, Response response)
+   public JAXBMarshalException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public JAXBMarshalException(String s, Throwable throwable, Response response)
+   public JAXBMarshalException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public JAXBMarshalException(String s, Throwable throwable)
+   public JAXBMarshalException(final String s, final Throwable throwable)
    {
       super(s, throwable);
    }
 
-   public JAXBMarshalException(Throwable throwable)
+   public JAXBMarshalException(final Throwable throwable)
    {
       super(throwable);
    }
 
-   public JAXBMarshalException(Throwable throwable, Response response)
+   public JAXBMarshalException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

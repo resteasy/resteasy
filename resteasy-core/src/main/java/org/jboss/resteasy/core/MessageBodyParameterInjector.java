@@ -76,7 +76,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
    private ReaderInterceptor[] interceptors;
    private boolean isMarshalledEntity;
 
-   public MessageBodyParameterInjector(Class declaringClass, AccessibleObject target, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory)
+   public MessageBodyParameterInjector(final Class declaringClass, final AccessibleObject target, final Class type, final Type genericType, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       this.factory = factory;
       this.target = target;

@@ -27,7 +27,7 @@ public class HttpServerResponse implements HttpResponse
    private boolean committed;
    private ResteasyProviderFactory factory;
 
-   public HttpServerResponse(ResteasyProviderFactory factory, HttpExchange ex)
+   public HttpServerResponse(final ResteasyProviderFactory factory, final HttpExchange ex)
    {
       this.exchange = ex;
       this.factory = factory;

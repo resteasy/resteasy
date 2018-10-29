@@ -26,12 +26,12 @@ public class ResteasyRequestWrapper
    private String errorMessage;
    private Response abortedResponse;
 
-   public ResteasyRequestWrapper(HttpServletRequest request) throws ServletException, IOException
+   public ResteasyRequestWrapper(final HttpServletRequest request) throws ServletException, IOException
    {
       this(request, request.getMethod(), "");
    }
 
-   public ResteasyRequestWrapper(HttpServletRequest request, String httpMethod, String prefix)
+   public ResteasyRequestWrapper(final HttpServletRequest request, final String httpMethod, final String prefix)
          throws ServletException, IOException
    {
       this.httpServletRequest = request;

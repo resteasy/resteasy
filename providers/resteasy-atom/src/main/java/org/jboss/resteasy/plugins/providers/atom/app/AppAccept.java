@@ -58,7 +58,7 @@ public class AppAccept extends AppCommonAttributes
 
    public AppAccept() {}
 
-   public AppAccept(String content) {
+   public AppAccept(final String content) {
       super();
       this.content = content;
    }

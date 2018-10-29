@@ -19,12 +19,12 @@ public class OutputPart
    private MediaType mediaType;
    private String filename;
 
-   public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType)
    {
       this(entity, type, genericType, mediaType, null);
    }
 
-   public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType, final String filename)
    {
       this.entity = entity;
       this.type = type;

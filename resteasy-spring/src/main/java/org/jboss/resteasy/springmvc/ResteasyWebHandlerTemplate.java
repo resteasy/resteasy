@@ -14,7 +14,7 @@ public abstract class ResteasyWebHandlerTemplate<T>
 {
    protected ResteasyProviderFactory factory;
 
-   public ResteasyWebHandlerTemplate(ResteasyProviderFactory factory)
+   public ResteasyWebHandlerTemplate(final ResteasyProviderFactory factory)
    {
       this.factory = factory;
    }

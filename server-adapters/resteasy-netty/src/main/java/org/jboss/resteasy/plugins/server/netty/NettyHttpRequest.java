@@ -36,7 +36,7 @@ public class NettyHttpRequest extends BaseHttpRequest
    private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
+   public NettyHttpRequest(final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod,final  SynchronousDispatcher dispatcher, final NettyHttpResponse httpResponse, final boolean is100ContinueExpected)
    {
       super(uri);
       this.is100ContinueExpected = is100ContinueExpected;

@@ -73,7 +73,7 @@ class JettyResponseStream extends InputStream {
       final ByteBuffer buf;
       final Callback callback;
 
-      Chunk(ByteBuffer buf, Callback callback) {
+      Chunk(final ByteBuffer buf, final Callback callback) {
          this.buf = buf;
          this.callback = callback;
       }

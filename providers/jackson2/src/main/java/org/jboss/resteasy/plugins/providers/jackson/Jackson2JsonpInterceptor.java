@@ -136,7 +136,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     */
    private static class DoNotCloseDelegateOutputStream extends BufferedOutputStream {
 
-      DoNotCloseDelegateOutputStream(OutputStream delegate) {
+      DoNotCloseDelegateOutputStream(final OutputStream delegate) {
          super(delegate);
       }
 
