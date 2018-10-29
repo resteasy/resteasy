@@ -188,7 +188,7 @@ public class UriParamAsPrimitiveTest {
    public void testGetDouble() {
       basicTest("double", "3.14159265358979");
    }
-   
+
    /**
     * @tpTestDetails Test char primitive object
     * @tpSince RESTEasy 3.0.16

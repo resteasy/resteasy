@@ -12,7 +12,7 @@ import org.jboss.resteasy.rxjava2.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -25,10 +25,10 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    protected String BASE3 = BASE.substring(0, 3);
    protected TypeVariable<?> var;
    protected MediaType mediaType = new MediaType("xx", "yy", "zz");
-   
+
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/rxjava2/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -36,14 +36,14 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "00", "expectedClientInvocationBuilder", "abc"), Messages.MESSAGES.expectedClientInvocationBuilder("abc"));   }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

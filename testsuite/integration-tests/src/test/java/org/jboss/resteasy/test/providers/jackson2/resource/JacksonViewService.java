@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/json_view")
 public class JacksonViewService {
-   
+
    public static Something SOMETHING = new Something("annotated value", "annotated value 2", "not annotated value");
 
    @GET

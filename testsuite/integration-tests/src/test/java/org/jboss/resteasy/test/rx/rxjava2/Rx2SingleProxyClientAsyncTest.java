@@ -45,10 +45,10 @@ import io.reactivex.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the client uses a proxy that calls a SingleRxInvoker, which returns a Single<T>
  * to which the client subscribes.
- * 
+ *
  * The server synchronously returns objects of type T.
  */
 @RunWith(Arquillian.class)
@@ -363,7 +363,7 @@ public class Rx2SingleProxyClientAsyncTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       Rx2SingleResource proxy1 = client.target(generateURL("/")).proxy(Rx2SingleResource.class);
-      Single<String> single1 = proxy1.get();   
+      Single<String> single1 = proxy1.get();
 
       Rx2SingleResource proxy2 = client.target(generateURL("/")).proxy(Rx2SingleResource.class);
       Single<String> single2 = proxy2.get();
@@ -386,7 +386,7 @@ public class Rx2SingleProxyClientAsyncTest {
 
       Single<String> single1 = proxy.get();
       Single<String> single2 = proxy.get();
-      
+
       single1.subscribe((String s) -> {list.add(s); cdl.countDown();});
       single2.subscribe((String s) -> {list.add(s); cdl.countDown();});
 

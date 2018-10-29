@@ -474,7 +474,7 @@ public class BuiltResponse extends Response
       return Link.fromLink(link);
    }
 
-   
+
    private final class LinkHeaders
    {
       private Map<String, Link> linksByRelationship = new HashMap<String, Link>();

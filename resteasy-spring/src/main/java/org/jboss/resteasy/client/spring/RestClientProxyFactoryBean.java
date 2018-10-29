@@ -83,7 +83,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       RegisterBuiltin.register(resteasyProviderFactory);
       ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
       clientBuilder.providerFactory(resteasyProviderFactory);
-      
+
       if (clientEngine == null)
       {
          if (httpClient == null)

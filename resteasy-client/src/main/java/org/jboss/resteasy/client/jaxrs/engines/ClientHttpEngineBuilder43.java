@@ -178,7 +178,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          throw new RuntimeException(e);
       }
    }
-   
+
    private static HttpHost getDefaultProxy(ResteasyClientBuilder that) {
       String hostName = that.getDefaultProxyHostname();
       return hostName != null ? new HttpHost(hostName, that.getDefaultProxyPort(), that.getDefaultProxyScheme()) : null;

@@ -14,14 +14,14 @@ public class FilteredCookieResource {
    private static final String OLD_COOKIE_NAME = "old-cookie";
    private static final String NEW_COOKIE_NAME = "new-cookie";
    private @Context HttpHeaders headers;
-   
+
    @GET
    @Path("get")
    public Response getCookie() {
       NewCookie cookie = new NewCookie(OLD_COOKIE_NAME, "value");
       return Response.ok().cookie(cookie).build();
    }
-   
+
    @GET
    @Path("return")
    public Response returnCookie() {

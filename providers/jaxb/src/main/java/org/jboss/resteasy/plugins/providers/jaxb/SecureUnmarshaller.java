@@ -38,9 +38,9 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 /**
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
- * 
+ *
  * @version $Revision: 1.1 $
  * Created Feb 1, 2012
  */
@@ -50,12 +50,12 @@ public class SecureUnmarshaller implements Unmarshaller {
    {
       private static final Map<ClassLoader, SAXParserProvider> saxParserProviders = Collections.synchronizedMap(new WeakHashMap<>());
       private final SAXParserFactory[] factories = new SAXParserFactory[8];
-      
+
       private SAXParserProvider()
       {
          //NOOP
       }
-      
+
       public static SAXParserProvider getInstance()
       {
          final SecurityManager sm = System.getSecurityManager();
@@ -86,7 +86,7 @@ public class SecureUnmarshaller implements Unmarshaller {
          }
          return spp;
       }
-      
+
       public SAXParser getParser(boolean disableExternalEntities, boolean enableSecureProcessingFeature, boolean disableDTDs) throws ParserConfigurationException, SAXException
       {
          int index = (disableExternalEntities ? 1 : 0) | (enableSecureProcessingFeature ? 1 << 1 : 0) | (disableDTDs ? 1 << 2 : 0);
@@ -174,7 +174,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    public void setListener(Listener listener) {
       delegate.setListener(listener);
    }
-   
+
    public void setProperty(String name, Object value) throws PropertyException {
       delegate.setProperty(name, value);
    }
@@ -201,7 +201,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    public Object unmarshal(InputStream is) throws JAXBException {
       return unmarshal(new InputSource(is));
    }
-   
+
    public Object unmarshal(Reader reader) throws JAXBException {
       throw new UnsupportedOperationException(Messages.MESSAGES.unexpectedUse("Reader"));
    }
@@ -348,6 +348,6 @@ public class SecureUnmarshaller implements Unmarshaller {
       factory.setFeature("http://xml.org/sax/features/external-general-entities", !disableExternalEntities);
       factory.setFeature("http://xml.org/sax/features/external-parameter-entities", !disableExternalEntities);
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, enableSecureProcessingFeature);
-      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs); 
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs);
    }
 }

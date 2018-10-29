@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Helper base class for multipart/related producing providers.
- * 
+ *
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */

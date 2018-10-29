@@ -1,8 +1,8 @@
 package org.jboss.resteasy.links;
 
 /**
- * Defines a single URI template parameter binding. 
- * 
+ * Defines a single URI template parameter binding.
+ *
  * @author <a href="mailto:alexander.rashed@gmail.com">Alexander Rashed</a>
  */
 public @interface ParamBinding {

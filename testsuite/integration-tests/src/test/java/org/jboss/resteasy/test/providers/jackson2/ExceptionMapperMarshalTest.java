@@ -96,7 +96,7 @@ public class ExceptionMapperMarshalTest {
       });
       Assert.assertEquals("The response has unexpected content", "error", errors.get(0).getError());
    }
-    
+
    @Test
    public void testMyCustomUsed() {
       Response response = client.target(generateURL("/resource/customME")).request().get();

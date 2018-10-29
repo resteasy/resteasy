@@ -52,10 +52,10 @@ import io.reactivex.Observable;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the server uses Observables to create results asynchronously and streams the elements
  * of the Observables as they are created.
- * 
+ *
  * The client makes invocations on an ObservableRxInvoker.
  */
 @RunWith(Arquillian.class)
@@ -68,7 +68,7 @@ public class Rx2ObservableTest {
    private static AtomicInteger errors;
 
    private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();   
+   private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
@@ -735,12 +735,12 @@ public class Rx2ObservableTest {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(ObservableRxInvokerProvider.class);
       ObservableRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
-      Observable<String> observable1 = (Observable<String>) invoker1.get();      
+      Observable<String> observable1 = (Observable<String>) invoker1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(ObservableRxInvokerProvider.class);
       ObservableRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
-      Observable<String> observable2 = (Observable<String>) invoker2.get();   
+      Observable<String> observable2 = (Observable<String>) invoker2.get();
 
       observable1.subscribe(
          (String o) -> list.add(o),
@@ -769,10 +769,10 @@ public class Rx2ObservableTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       ObservableRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
-      Observable<String> observable1 = (Observable<String>) invoker1.get();      
+      Observable<String> observable1 = (Observable<String>) invoker1.get();
 
       ObservableRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
-      Observable<String> observable2 = (Observable<String>) invoker2.get();   
+      Observable<String> observable2 = (Observable<String>) invoker2.get();
 
       observable1.subscribe(
          (String o) -> list.add(o),
@@ -800,8 +800,8 @@ public class Rx2ObservableTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       ObservableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(ObservableRxInvoker.class);
-      Observable<String> observable1 = (Observable<String>) invoker.get();      
-      Observable<String> observable2 = (Observable<String>) invoker.get();   
+      Observable<String> observable1 = (Observable<String>) invoker.get();
+      Observable<String> observable2 = (Observable<String>) invoker.get();
 
       observable1.subscribe(
          (String o) -> list.add(o),

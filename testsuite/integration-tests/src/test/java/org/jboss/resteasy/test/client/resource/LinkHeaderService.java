@@ -57,7 +57,7 @@ public class LinkHeaderService {
       String link = "<" + builder.build().toString() + ">; rel=\"top-message\"; title=\"top-message\"";
       return link;
    }
-    
+
    private static String toString(LinkHeader value)
    {
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());

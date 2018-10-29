@@ -36,7 +36,7 @@ public class GenericResourceTest {
    @BeforeClass
    public static void setup() {
       ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateURL(""));
-      proxy = target.register(GenericResourceStudentReader.class).register(GenericResourceStudentWriter.class).proxy(GenericResourceStudentInterface.class); 
+      proxy = target.register(GenericResourceStudentReader.class).register(GenericResourceStudentWriter.class).proxy(GenericResourceStudentInterface.class);
    }
 
    @Deployment

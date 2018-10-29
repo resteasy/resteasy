@@ -51,27 +51,27 @@ public class ServerResponseWriter
       void run() throws IOException;
    }
 
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, onComplete, true);
    }
 
    @Deprecated
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory) throws IOException
    {
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, true);
    }
 
    @Deprecated
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, boolean sendHeaders) throws IOException
    {
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, sendHeaders);
    }
 
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete, boolean sendHeaders) throws IOException
    {
       ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
@@ -79,7 +79,7 @@ public class ServerResponseWriter
       // do this even if we're not sending the headers, because this sets the content type in the response,
       // which is used by marshalling, and NPEs otherwise
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
-      
+
       executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, () -> {
          Object entity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
 
@@ -160,7 +160,7 @@ public class ServerResponseWriter
          jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
       }
    }
-   
+
    public static MediaType getResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       MediaType mt = null;
@@ -191,8 +191,8 @@ public class ServerResponseWriter
       return mt;
    }
 
-   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, 
-         ResteasyProviderFactory providerFactory, 
+   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response,
+         ResteasyProviderFactory providerFactory,
          ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
@@ -209,7 +209,7 @@ public class ServerResponseWriter
       if (responseFilters != null)
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
-         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse,
                requestContext, responseFilters, onComplete, continuation);
 
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
@@ -221,7 +221,7 @@ public class ServerResponseWriter
       }
       else
       {
-         try 
+         try
          {
             continuation.run();
             onComplete.accept(null);
@@ -233,13 +233,13 @@ public class ServerResponseWriter
          }
       }
    }
-   
+
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       MediaType chosen = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
    }
-   
+
    protected static MediaType getDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
@@ -249,10 +249,10 @@ public class ServerResponseWriter
       boolean hasProduces = chosen != null && Boolean.valueOf(chosen.getParameters().get(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES));
       hasProduces |= method != null && method.getProduces() != null && method.getProduces().length > 0;
       hasProduces |= method != null && method.getMethod().getClass().getAnnotation(Produces.class) != null;
-      
+
       if (hasProduces)
       {
-         //we have @Produces on the resource (method or class), so we're not going to scan for @Produces on MBws  
+         //we have @Produces on the resource (method or class), so we're not going to scan for @Produces on MBws
          if (!isConcrete(chosen))
          {
             //no concrete content-type set, compute again (JAX-RS 2.0 Section 3.8 step 2, first and second bullets)
@@ -264,7 +264,7 @@ public class ServerResponseWriter
                {
                   produces = method.getProduces();
                }
-               else 
+               else
                {
                   String[] producesValues = method.getMethod().getClass().getAnnotation(Produces.class).value();
                   produces = new MediaType[producesValues.length];
@@ -319,7 +319,7 @@ public class ServerResponseWriter
          {
             annotations = method.getMethodAnnotations();
          }
-         
+
          //JAX-RS 2.0 Section 3.8.4, 3.8.5
          List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
          List<SortableMediaType> M = new ArrayList<SortableMediaType>();
@@ -340,7 +340,7 @@ public class ServerResponseWriter
                {
                   pFound = true;
                   MediaType produce = MediaType.valueOf(produceValue);
-                  
+
                   if (produce.isCompatible(accept))
                   {
                      SortableMediaType ms = mostSpecific(produce, wt, accept, null);
@@ -397,7 +397,7 @@ public class ServerResponseWriter
       }
       return chosen;
    }
-   
+
    private static MediaType chooseFromM(MediaType currentChoice, List<SortableMediaType> M, boolean hasStarStar, boolean hasApplicationStar)
    {
       //JAX-RS 2.0 Section 3.8.6
@@ -431,12 +431,12 @@ public class ServerResponseWriter
       }
       return currentChoice;
    }
-   
+
    private static boolean isConcrete(MediaType m)
    {
       return m != null && !m.isWildcardType() && !m.isWildcardSubtype();
    }
-   
+
    public static MediaType resolveContentType(BuiltResponse response)
    {
       MediaType responseContentType = null;
@@ -490,13 +490,13 @@ public class ServerResponseWriter
          response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
       }
    }
-   
+
    private static class SortableMediaType extends MediaType implements Comparable<SortableMediaType>
    {
       double q = 1;
       double qs = 1;
       Class<?> writerType = null;
-      
+
       SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
       {
          super(type, subtype, parameters);
@@ -526,7 +526,7 @@ public class ServerResponseWriter
             }
          }
       }
-      
+
       @Override
       public int compareTo(SortableMediaType o)
       {
@@ -563,7 +563,7 @@ public class ServerResponseWriter
          return 0;
       }
    }
-   
+
    /**
     * m1, m2 are compatible
     */
@@ -606,7 +606,7 @@ public class ServerResponseWriter
          }
       }
    }
-   
+
    private static SortableMediaType mostSpecific(MediaType p, Class<?> wtp, MediaType a, Class<?> wta)
    {
       if (p.getType().equals("*"))
@@ -646,7 +646,7 @@ public class ServerResponseWriter
          }
       }
    }
-   
+
    private static SortableMediaType mixAddingQ(MediaType p, Class<?> wtp, MediaType a)
    {
       Map<String, String> pars = p.getParameters();
@@ -658,7 +658,7 @@ public class ServerResponseWriter
       }
       return new SortableMediaType(p.getType(), p.getSubtype(), pars, wtp);
    }
-   
+
    private static SortableMediaType mixAddingQS(MediaType a, Class<?> wta, MediaType p)
    {
       Map<String, String> pars = a.getParameters();
@@ -669,6 +669,6 @@ public class ServerResponseWriter
          pars.put("qs", qs);
       }
       return new SortableMediaType(a.getType(), a.getSubtype(), pars, wta);
-      
+
    }
 }

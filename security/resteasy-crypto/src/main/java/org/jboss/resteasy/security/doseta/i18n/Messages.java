@@ -6,7 +6,7 @@ import org.jboss.logging.annotations.MessageBundle;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -23,7 +23,7 @@ public interface Messages
 
    @Message(id = BASE + 5, value = "Certificate nor public key properties set")
    String certificateNorPublicKeySet();
-   
+
    @Message(id = BASE + 10, value = "The certificate object was not set.")
    String certificateObjectNotSet();
 
@@ -32,10 +32,10 @@ public interface Messages
 
    @Message(id = BASE + 20, value = "Could not find a message body reader for type: %s")
    String couldNotFindMessageBodyReader(String className);
-   
+
    @Message(id = BASE + 25, value = "Could not find PublicKey for DKIMSignature %s")
    String couldNotFindPublicKey(DKIMSignature signature);
-   
+
    @Message(id = BASE + 30, value = ">>>> DNS found record: %s")
    String dnsRecordFound(String record);
 
@@ -58,20 +58,20 @@ public interface Messages
    String failedToSign();
 
    @Message(id = BASE + 65, value = "Failed to verify signature.")
-   String failedToVerifySignature(); 
-   
+   String failedToVerifySignature();
+
    @Message(id = BASE + 70, value = "Failed to verify signatures:")
    String failedToVerifySignatures();
- 
+
    @Message(id = BASE + 75, value = "Malformed %s header")
    String malformedSignatureHeader(String signature);
-   
+
    @Message(id = BASE + 80, value = "No key to verify with.")
    String noKeyToVerifyWith();
 
    @Message(id = BASE + 85, value = "No p entry in text record.")
    String noPEntry();
-   
+
    @Message(id = BASE + 90, value = "pem: %s")
    String pem(String pem);
 
@@ -86,10 +86,10 @@ public interface Messages
 
    @Message(id = BASE + 110, value = "Signature is stale")
    String signatureIsStale();
-   
+
    @Message(id = BASE + 115, value = "There was no body hash (bh) in header")
    String thereWasNoBodyHash();
-   
+
    @Message(id = BASE + 120, value = "There was no %s header")
    String thereWasNoSignatureHeader(String signature);
 

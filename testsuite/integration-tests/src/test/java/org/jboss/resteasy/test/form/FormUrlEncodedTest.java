@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 public class FormUrlEncodedTest {
 
    private static Client client;
-   
+
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(FormUrlEncodedTest.class.getSimpleName());
@@ -61,7 +61,7 @@ public class FormUrlEncodedTest {
    public static void after() throws Exception {
       client.close();
    }
-   
+
    /**
     * @tpTestDetails Get form parameter from resource using InputStream and StreamingOutput
     * @tpSince RESTEasy 3.0.16
@@ -77,7 +77,7 @@ public class FormUrlEncodedTest {
 
       response.close();
    }
-   
+
    /**
     * @tpTestDetails Send form with an empty parameter value.
     * @tpSince RESTEasy 3.0.20
@@ -119,7 +119,7 @@ public class FormUrlEncodedTest {
          throw new RuntimeException(e);
       }
    }
-   
+
    /**
     * @tpTestDetails Send form with two parameters.
     * @tpSince RESTEasy 3.0.20
@@ -140,7 +140,7 @@ public class FormUrlEncodedTest {
          throw new RuntimeException(e);
       }
    }
-   
+
    @Path("/")
    public interface TestProxy {
       @Path("/form")

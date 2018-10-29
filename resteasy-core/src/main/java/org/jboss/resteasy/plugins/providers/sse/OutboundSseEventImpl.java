@@ -19,17 +19,17 @@ public class OutboundSseEventImpl implements OutboundSseEvent
    private final String id;
 
    private final Class<?> type;
-   
+
    private final Type genericType;
 
    private MediaType mediaType;
-   
+
    private boolean mediaTypeSet;
 
    private final Object data;
 
    private final long reconnectDelay;
-   
+
    private boolean escape = false;
 
    public static class BuilderImpl implements Builder
@@ -43,7 +43,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
       private long reconnectDelay = SseEvent.RECONNECT_NOT_SET;
 
       private Class<?> type;
-      
+
       private Type genericType;
 
       private Object data;
@@ -128,7 +128,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          {
             throw new NullPointerException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("data"));
          }
-         
+
          if (data instanceof GenericEntity)
          {
             GenericEntity<?> genericEntity = (GenericEntity<?>) data;
@@ -201,12 +201,12 @@ public class OutboundSseEventImpl implements OutboundSseEvent
    {
       return mediaType;
    }
-   
+
    public boolean isMediaTypeSet()
    {
       return mediaTypeSet;
    }
-   
+
    public void setMediaType(MediaType mediaType)
    {
       this.mediaType = mediaType;
@@ -227,7 +227,7 @@ public class OutboundSseEventImpl implements OutboundSseEvent
    {
       return escape;
    }
-   
+
    public void setEscape(Boolean escape)
    {
       this.escape = escape;

@@ -18,7 +18,7 @@ public class StreamRawFlowableRxJava2Resource {
    public Flowable<Byte> aByteDefault() {
       return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
    }
-   
+
    @GET
    @Path("byte/false")
    @Produces("application/octet-stream;x=y")
@@ -26,7 +26,7 @@ public class StreamRawFlowableRxJava2Resource {
    public Flowable<Byte> aByteFalse() {
       return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
    }
-   
+
    @GET
    @Path("byte/true")
    @Produces("application/octet-stream;x=y")
@@ -52,7 +52,7 @@ public class StreamRawFlowableRxJava2Resource {
       byte[] bytes = new byte[] {0, 1, 2};
       return Flowable.fromArray(bytes, bytes, bytes);
    }
-   
+
    @GET
    @Path("bytes/true")
    @Produces("application/octet-stream;x=y")
@@ -61,7 +61,7 @@ public class StreamRawFlowableRxJava2Resource {
       byte[] bytes = new byte[] {0, 1, 2};
       return Flowable.fromArray(bytes, bytes, bytes);
    }
-   
+
    @GET
    @Path("char/default")
    @Produces("text/plain;charset=UTF-8")
@@ -69,7 +69,7 @@ public class StreamRawFlowableRxJava2Resource {
    public Flowable<Character> aCharDefault() {
       return Flowable.fromArray('a', 'b', 'c');
    }
-   
+
    @GET
    @Path("char/false")
    @Produces("text/plain;charset=UTF-8")
@@ -77,7 +77,7 @@ public class StreamRawFlowableRxJava2Resource {
    public Flowable<Character> aCharFalse() {
       return Flowable.fromArray('a', 'b', 'c');
    }
-   
+
    @GET
    @Path("char/true")
    @Produces("text/plain;charset=UTF-8")
@@ -94,7 +94,7 @@ public class StreamRawFlowableRxJava2Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Flowable.fromArray(chars, chars, chars);
    }
-   
+
    @GET
    @Path("chars/false")
    @Produces("text/plain;charset=UTF-8")
@@ -103,7 +103,7 @@ public class StreamRawFlowableRxJava2Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Flowable.fromArray(chars, chars, chars);
    }
-   
+
    @GET
    @Path("chars/true")
    @Produces("text/plain;charset=UTF-8")

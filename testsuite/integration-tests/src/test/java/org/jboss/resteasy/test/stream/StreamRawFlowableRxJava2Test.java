@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * These tests check raw streaming.
  */
 @RunWith(Arquillian.class)
@@ -75,7 +75,7 @@ public class StreamRawFlowableRxJava2Test {
       doByteTest("false");
       doByteTest("true");
    }
-   
+
    void doByteTest(String include) {
       Invocation.Builder request = client.target(generateURL("/byte/" + include)).request();
       Response response = request.get();
@@ -87,14 +87,14 @@ public class StreamRawFlowableRxJava2Test {
          Assert.assertEquals((byte) i, entity[i]);
       }
    }
-   
+
    @Test
    public void testByteArray() throws Exception {
       doByteArrayTest("default");
       doByteArrayTest("false");
       doByteArrayTest("true");
    }
-   
+
    void doByteArrayTest(String include) {
       Invocation.Builder request = client.target(generateURL("/bytes/" + include)).request();
       Response response = request.get();
@@ -107,14 +107,14 @@ public class StreamRawFlowableRxJava2Test {
          Assert.assertEquals(expected[i], entity[i]);
       }
    }
-   
+
    @Test
    public void testChar() throws Exception {
       doCharTest("default");
       doCharTest("false");
       doCharTest("true");
    }
-   
+
    void doCharTest(String include) {
       Invocation.Builder request = client.target(generateURL("/char/" + include)).request();
       Response response = request.get();
@@ -123,14 +123,14 @@ public class StreamRawFlowableRxJava2Test {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("abc", entity);
    }
-   
+
    @Test
    public void testCharArray() throws Exception {
       doCharArrayTest("default");
       doCharArrayTest("false");
       doCharArrayTest("true");
    }
-   
+
    void doCharArrayTest(String include) {
       Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars/" + include)).request();
       Response response = request.get();

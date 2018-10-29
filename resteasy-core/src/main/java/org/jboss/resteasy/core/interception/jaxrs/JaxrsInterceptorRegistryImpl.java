@@ -333,7 +333,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       factory.setOrder(priority);
       register(factory);
    }
-   
+
    private Class<?> getNonSyntheticClass(Class<?> clazz)
    {
       while (clazz.isSynthetic())

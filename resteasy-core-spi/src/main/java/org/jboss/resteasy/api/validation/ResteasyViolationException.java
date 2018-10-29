@@ -117,7 +117,7 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
    }
 
    public abstract ConstraintTypeUtil getConstraintTypeUtil();
-   
+
    public List<MediaType> getAccept()
    {
       return toMediaTypeList(accept);
@@ -303,7 +303,7 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       }
       return index;
    }
-   
+
    protected abstract ResteasyConfiguration getResteasyConfiguration();
 
    protected void checkSuppressPath()

@@ -201,7 +201,7 @@ public class ClientErrorTest
       catch (Exception e)
       {
          throw new RuntimeException(e);
-      }  
+      }
       finally
       {
          response.close();
@@ -282,7 +282,7 @@ public class ClientErrorTest
          response.close();
       }
    }
-   
+
    static class TestMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate
    {
       public static MediaType parse(String type)

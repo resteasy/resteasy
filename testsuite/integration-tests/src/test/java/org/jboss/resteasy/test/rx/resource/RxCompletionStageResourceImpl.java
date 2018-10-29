@@ -21,7 +21,7 @@ import org.jboss.resteasy.rxjava2.SingleProvider;
 public class RxCompletionStageResourceImpl {
 
    private static SingleProvider singleProvider = new SingleProvider();
-   
+
    @SuppressWarnings("unchecked")
    @GET
    @Path("get/string")
@@ -153,7 +153,7 @@ public class RxCompletionStageResourceImpl {
       }
       return (CompletionStage<List<Thing>>) singleProvider.toCompletionStage(Single.just(list));
    }
-   
+
    @GET
    @Path("exception/unhandled")
    public CompletionStage<Thing> exceptionUnhandled() throws Exception {

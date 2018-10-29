@@ -47,7 +47,7 @@ public class SimpleSecurityDomain implements SecurityDomain
       String passwd = users.get(username);
       if (passwd == null) throw new SecurityException(Messages.MESSAGES.userIsNotRegistered(username));
       if (!passwd.equals(password)) throw new SecurityException(Messages.MESSAGES.wrongPassword(username));
-      
+
       return new SimplePrincipal(username);
    }
 

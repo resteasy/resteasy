@@ -74,7 +74,7 @@ public class ReaderWriterTest {
       war.addClass(PortProviderUtil.class);
       return TestUtil.finishContainerPrepare(war, null, ReaderWriterCurlyBraces.class);
    }
-    
+
    @Deployment(name = PriorityDeploymenetName)
    public static Archive<?> deployCustomWriterWithPriority() {
       WebArchive war = TestUtil.prepareArchive(PriorityDeploymenetName);
@@ -199,7 +199,7 @@ public class ReaderWriterTest {
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       response.close();
    }
-    
+
    @Test
    @OperateOnDeployment(PriorityDeploymenetName)
    public void testProviderWithPriority() throws Exception {

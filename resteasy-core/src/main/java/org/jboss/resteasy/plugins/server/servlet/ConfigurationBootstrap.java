@@ -224,7 +224,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          boolean b = parseBooleanParam(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER, disableHtmlSanitizer);
          deployment.setProperty(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER, b);
       }
-      
+
       String injectorFactoryClass = getParameter("resteasy.injector.factory");
       if (injectorFactoryClass != null)
       {

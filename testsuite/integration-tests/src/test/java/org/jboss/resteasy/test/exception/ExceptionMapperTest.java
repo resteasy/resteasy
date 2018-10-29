@@ -105,7 +105,7 @@ public class ExceptionMapperTest {
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("custom", response.readEntity(String.class));
    }
-    
+
    /**
     * @tpTestDetails Client sends GET request to a nonexistent resource, which causes a NotFoundException to be thrown.
     * The NotFoundException is caught by the application provided NotFoundExceptionMapper, which sends a 410 status.

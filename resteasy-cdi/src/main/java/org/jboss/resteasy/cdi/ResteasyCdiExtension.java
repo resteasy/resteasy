@@ -44,7 +44,7 @@ import org.jboss.resteasy.util.GetRestful;
 public class ResteasyCdiExtension implements Extension
 {
    private static boolean active;
-   
+
    private BeanManager beanManager;
    private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
    private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
@@ -66,12 +66,12 @@ public class ResteasyCdiExtension implements Extension
    {
       return active;
    }
-   
+
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
 
    /**
     * Obtain BeanManager reference for future use.
-    * 
+    *
     * @param event event
     * @param beanManager bean manager
     */
@@ -164,7 +164,7 @@ public class ResteasyCdiExtension implements Extension
    /**
     * Wrap InjectionTarget of JAX-RS components within JaxrsInjectionTarget
     * which takes care of JAX-RS property injection.
-    * 
+    *
     * @param <T> type
     * @param event event
     */
@@ -192,10 +192,10 @@ public class ResteasyCdiExtension implements Extension
     * interface) map for Session beans with local interfaces. This map is
     * necessary since RESTEasy identifies a bean class as JAX-RS components
     * while CDI requires a local interface to be used for lookup.
-    * 
+    *
     * @param <T> type
     * @param event event
-    * 
+    *
     */
    public <T> void observeSessionBeans(@Observes ProcessSessionBean<T> event)
    {

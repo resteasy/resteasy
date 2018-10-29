@@ -40,7 +40,7 @@ public class DuplicateProviderRegistrationTest {
 
    private static final String RESTEASY_002155_ERR_MSG = "Wrong count of RESTEASY002155 warning message";
    private static final String RESTEASY_002160_ERR_MSG = "Wrong count of RESTEASY002160 warning message";
-   
+
    @SuppressWarnings(value = "unchecked")
    @Deployment
    public static Archive<?> createTestArchive() {
@@ -64,7 +64,7 @@ public class DuplicateProviderRegistrationTest {
    private static int getRESTEASY002155WarningCount() {
       return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
    }
-   
+
    private static int getRESTEASY002160WarningCount() {
       return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
    }

@@ -9,7 +9,7 @@ import org.jboss.resteasy.annotations.GZIP;
 
 @Path("")
 public interface GZIPAnnotationInterface {
-   
+
    @Path("/foo")
    @Consumes("text/plain")
    @Produces("text/plain")

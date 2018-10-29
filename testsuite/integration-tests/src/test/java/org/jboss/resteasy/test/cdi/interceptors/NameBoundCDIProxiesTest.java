@@ -49,7 +49,7 @@ public class NameBoundCDIProxiesTest {
    }
 
    /**
-    * @tpTestDetails Verify that 
+    * @tpTestDetails Verify that
     * @tpSince RESTEasy 4.0.0
     */
    @Test

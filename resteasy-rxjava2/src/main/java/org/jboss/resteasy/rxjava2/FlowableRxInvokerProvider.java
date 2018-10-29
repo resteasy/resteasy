@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider;
 public class FlowableRxInvokerProvider implements RxInvokerProvider<FlowableRxInvoker>
 {
    WebTarget target;
-   
+
    @Override
    public boolean isProviderFor(Class<?> clazz)
    {

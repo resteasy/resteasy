@@ -11,7 +11,7 @@ import org.jboss.resteasy.test.providers.multipart.InputPartDefaultCharsetOverwr
 
 @Provider
 public class InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8 implements ContainerRequestFilter {
-   
+
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {

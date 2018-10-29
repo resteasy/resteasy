@@ -37,12 +37,12 @@ import org.reactivestreams.Subscription;
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
- * 
+ *
  * The basic idea implemented by AsyncResponseConsumer is that a resource method returns a CompletionStage,
  * an Observable, etc., and some version of AsyncResponseConsumer subscribes to it. Each subclass of
  * AsyncResponseConsumer knows how to handle new data items as they are provided.
  */
-public abstract class AsyncResponseConsumer 
+public abstract class AsyncResponseConsumer
 {
    protected Map<Class<?>, Object> contextDataMap;
    protected ResourceMethodInvoker method;
@@ -61,7 +61,7 @@ public abstract class AsyncResponseConsumer
       else
          asyncResponse = httpRequest.getAsyncContext().suspend();
    }
-   
+
    public static AsyncResponseConsumer makeAsyncResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider) {
       return new CompletionStageResponseConsumer(method, asyncResponseProvider);
    }
@@ -89,7 +89,7 @@ public abstract class AsyncResponseConsumer
    protected void doComplete() {
       asyncResponse.complete();
    }
-   
+
    synchronized final public void complete(Throwable t)
    {
       if (!isComplete)
@@ -127,7 +127,7 @@ public abstract class AsyncResponseConsumer
 
    private void exceptionWhileResuming(Throwable e)
    {
-      try 
+      try
       {
          // OK, not funny: if this is not a handled exception, it will just be logged and rethrown, so ignore it and move on
          internalResume(e, t -> {});
@@ -147,7 +147,7 @@ public abstract class AsyncResponseConsumer
    }
 
    protected abstract boolean sendHeaders();
-   
+
    protected void internalResume(Throwable t, Consumer<Throwable> onComplete)
    {
       ResteasyContext.pushContextDataMap(contextDataMap);
@@ -210,7 +210,7 @@ public abstract class AsyncResponseConsumer
     * As the name indicates, CompletionStageResponseConsumer subscribes to a CompletionStage supplied by
     * a resource method.
     */
-   private static class CompletionStageResponseConsumer extends AsyncResponseConsumer implements BiConsumer<Object, Throwable> 
+   private static class CompletionStageResponseConsumer extends AsyncResponseConsumer implements BiConsumer<Object, Throwable>
    {
       private AsyncResponseProvider<?> asyncResponseProvider;
 
@@ -225,7 +225,7 @@ public abstract class AsyncResponseConsumer
       {
          return true;
       }
-      
+
       @Override
       public void accept(Object t, Throwable u)
       {
@@ -248,7 +248,7 @@ public abstract class AsyncResponseConsumer
       }
    }
 
-   private abstract static class AsyncStreamResponseConsumer extends AsyncResponseConsumer implements Subscriber<Object> 
+   private abstract static class AsyncStreamResponseConsumer extends AsyncResponseConsumer implements Subscriber<Object>
    {
       protected Subscription subscription;
       private AsyncStreamProvider<?> asyncStreamProvider;
@@ -267,7 +267,7 @@ public abstract class AsyncResponseConsumer
             subscription.cancel();
          super.doComplete();
       }
-      
+
       @Override
       public void onComplete()
       {
@@ -285,14 +285,14 @@ public abstract class AsyncResponseConsumer
        * @param element the next element to collect
        * @return true if you want more elements, false if not
        */
-      protected void addNextElement(Object element) 
+      protected void addNextElement(Object element)
       {
          internalResume(element, t -> {
             if(t != null)
                complete(t);
          });
       }
-      
+
       @Override
       public void onNext(Object v)
       {
@@ -305,7 +305,7 @@ public abstract class AsyncResponseConsumer
          this.subscription = subscription;
          subscription.request(1);
       }
-      
+
       @Override
       public void subscribe(Object rtn)
       {
@@ -320,7 +320,7 @@ public abstract class AsyncResponseConsumer
     * is annotated with @Stream(Stream.MODE.RAW). In raw streaming, an undelimited sequence of data elements
     * such as bytes or chars is written. The client application is responsible for parsing it.
     */
-   private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer 
+   private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer
    {
       private boolean sentEntity;
 
@@ -364,11 +364,11 @@ public abstract class AsyncResponseConsumer
          super.sendBuiltResponse(builtResponse, httpRequest, httpResponse, onComplete);
          sentEntity = true;
       }
-      
-      protected void addNextElement(Object element) 
+
+      protected void addNextElement(Object element)
       {
          internalResume(element, t -> {
-            if(t != null) 
+            if(t != null)
             {
                complete(t);
             }
@@ -385,12 +385,12 @@ public abstract class AsyncResponseConsumer
          return !sentEntity;
       }
    }
-   
+
    /*
     * Rather than writing a stream of data items, AsyncStreamCollectorResponseConsumer collects a sequence
-    * of data items into a list and writes the entire list when all data items have been collected. 
+    * of data items into a list and writes the entire list when all data items have been collected.
     */
-   private static class AsyncStreamCollectorResponseConsumer extends AsyncStreamResponseConsumer 
+   private static class AsyncStreamCollectorResponseConsumer extends AsyncStreamResponseConsumer
    {
       private List<Object> collector = new ArrayList<Object>();
 
@@ -404,20 +404,20 @@ public abstract class AsyncResponseConsumer
       {
          return true;
       }
-      
+
       @Override
       protected void addNextElement(Object element)
       {
          collector.add(element);
          subscription.request(1);
-      }      
+      }
 
       @Override
       public void onComplete()
       {
          internalResume(collector, t -> complete(t));
       }
-      
+
       @Override
       protected Type adaptGenericType(Type unwrappedType)
       {
@@ -446,27 +446,27 @@ public abstract class AsyncResponseConsumer
 
    /**
     * AsyncGeneralStreamingSseResponseConsumer handles two cases:
-    * 
+    *
     * 1. SSE streaming, and
     * 2. General streaming, which is requested when a resource method is annotated @Stream or @Stream(Stream.MODE.GENERAL).
-    *    
+    *
     * General streaming is an extension of streaming as defined for SSE. The extension include
-    * support for encoding non-text data. 
+    * support for encoding non-text data.
     */
-   private static class AsyncGeneralStreamingSseResponseConsumer extends AsyncStreamResponseConsumer 
+   private static class AsyncGeneralStreamingSseResponseConsumer extends AsyncStreamResponseConsumer
    {
       private SseImpl sse;
       private SseEventSink sseEventSink;
       private volatile boolean onCompleteReceived = false;
       private volatile boolean sendingEvent = false;
-      
+
       private AsyncGeneralStreamingSseResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
          super(method, asyncStreamProvider);
          sse = new SseImpl();
          sseEventSink = ResteasyContext.getContextData(SseEventSink.class);
       }
-      
+
       @Override
       protected void doComplete()
       {
@@ -490,7 +490,7 @@ public abstract class AsyncResponseConsumer
          if(sendingEvent == false)
             super.onComplete();
       }
-      
+
       @Override
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete)
       {
@@ -520,7 +520,7 @@ public abstract class AsyncResponseConsumer
             if (elementType == null)
             {
                String et = contentType.getParameters().get(SseConstants.SSE_ELEMENT_MEDIA_TYPE);
-               elementType = et != null ? MediaType.valueOf(et) : MediaType.TEXT_PLAIN_TYPE;     
+               elementType = et != null ? MediaType.valueOf(et) : MediaType.TEXT_PLAIN_TYPE;
             }
          }
          else

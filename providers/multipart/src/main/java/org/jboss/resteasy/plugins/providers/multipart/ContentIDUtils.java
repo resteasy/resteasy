@@ -11,7 +11,7 @@ import java.util.UUID;
 
 /**
  * Utility class to help generate, convert RFC compliant Content-ID and cid.
- * 
+ *
  * @author Attila Kiraly
  *
  */

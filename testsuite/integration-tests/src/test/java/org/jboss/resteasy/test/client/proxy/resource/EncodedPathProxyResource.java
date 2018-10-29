@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 @Path("test")
-public class EncodedPathProxyResource implements EncodedPathProxyInterface { 
+public class EncodedPathProxyResource implements EncodedPathProxyInterface {
 
    @GET
    @Path("/encode/{path:.+}")

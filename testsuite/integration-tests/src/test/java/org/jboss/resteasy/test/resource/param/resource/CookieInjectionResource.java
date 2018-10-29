@@ -24,7 +24,7 @@ public class CookieInjectionResource {
    public Response set() {
       return Response.ok("content").cookie(new NewCookie("meaning", "42")).build();
    }
-    
+
    @Path("/expire")
    @GET
    public Response expire() {

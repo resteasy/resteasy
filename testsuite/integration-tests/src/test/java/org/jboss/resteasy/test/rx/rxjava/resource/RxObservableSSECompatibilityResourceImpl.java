@@ -35,7 +35,7 @@ public class RxObservableSSECompatibilityResourceImpl {
          }
       });
    }
-   
+
    @SuppressWarnings("deprecation")
    @GET
    @Path("observable/thing")

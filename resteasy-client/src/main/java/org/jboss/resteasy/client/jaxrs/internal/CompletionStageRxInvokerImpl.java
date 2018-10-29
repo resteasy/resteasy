@@ -12,7 +12,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 /**
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * <p>

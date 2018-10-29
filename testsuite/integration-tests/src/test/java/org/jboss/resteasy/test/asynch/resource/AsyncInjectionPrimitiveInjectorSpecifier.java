@@ -16,6 +16,6 @@ public @interface AsyncInjectionPrimitiveInjectorSpecifier
    enum Type {
       VALUE, NULL, NO_RESULT;
    }
-   
+
    Type value() default Type.VALUE;
 }

@@ -56,7 +56,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
    public static class DigitalVerificationHeaderDecorator extends AbstractDigitalVerificationHeaderDecorator implements ContainerRequestFilter
    {
       protected boolean hasEntityParameter;
-      
+
       public DigitalVerificationHeaderDecorator(Verify verify, Verifications verifications, boolean hasEntityParameter)
       {
          this.verify = verify;
@@ -78,7 +78,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
       }
 
    }
-   
+
    static boolean hasEntityParameter(Method method)
    {
       Annotation[][] annotations = method.getParameterAnnotations();
@@ -106,7 +106,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
       }
       return false;
    }
-   
+
    static protected void verify(ContainerRequestContext context, Verifier verifier)
    {
       MultivaluedMap<String, String> headers = context.getHeaders();

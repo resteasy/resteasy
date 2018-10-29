@@ -47,7 +47,7 @@ import rx.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the client uses a SingleRxInvoker and subscribes to instances of Single<T>.
  * The server synchronously returns objects of type T.
  */
@@ -428,7 +428,7 @@ public class RxSingleClientAsyncTest {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(SingleRxInvokerProvider.class);
@@ -452,7 +452,7 @@ public class RxSingleClientAsyncTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       SingleRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       SingleRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single2 = (Single<Response>) invoker2.get();
@@ -474,7 +474,7 @@ public class RxSingleClientAsyncTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       SingleRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker.get();      
+      Single<Response> single1 = (Single<Response>) invoker.get();
       Single<Response> single2 = (Single<Response>) invoker.get();
 
       single1.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});

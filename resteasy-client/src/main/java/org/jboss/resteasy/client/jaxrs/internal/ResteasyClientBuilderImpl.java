@@ -530,7 +530,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    {
       return defaultProxy != null ? defaultProxy.getSchemeName() : null;
    }
-   
+
    @Override
    public long getReadTimeout(TimeUnit unit)
    {

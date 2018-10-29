@@ -47,7 +47,7 @@ public class GetRestful
 
       return false;
    }
-   
+
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *

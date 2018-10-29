@@ -108,7 +108,7 @@ public class AbortedResponse extends ClientResponse
    {
       releaseConnection(false);
    }
-   
+
    @Override
    public void releaseConnection(boolean consumeInputStream)
    {
@@ -131,7 +131,7 @@ public class AbortedResponse extends ClientResponse
       }
 
    }
-   
+
    /**
     * Added for RESTEASY-1540.
     */

@@ -68,7 +68,7 @@ public class RequestImpl implements Request
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
       if (variants == null || variants.size() == 0) throw new IllegalArgumentException(MESSAGES.variantListMustNotBeZero());
-      
+
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
       MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
       negotiation.setAcceptHeaders(requestHeaders.get(ACCEPT));

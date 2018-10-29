@@ -34,7 +34,7 @@ public class PartialResponse extends Response implements Serializable
    private byte[] bufferedEntity;
    private final transient ClientResponseContext responseContext;
    private static final Logger LOG = Logger.getLogger(PartialResponse.class);
-   
+
    PartialResponse(ClientResponseContext responseContext)
    {
       this.responseContext = responseContext;

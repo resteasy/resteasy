@@ -61,11 +61,11 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   
+
    private boolean disableExternalEntities = true;
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
-   
+
    public CollectionProvider()
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : CollectionProvider", getClass().getName());
@@ -136,7 +136,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       try
       {
          JAXBElement<JaxbCollection> ele = null;
-         
+
          if (needsSecurity())
          {
             SAXSource source = null;
@@ -154,7 +154,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             ele = unmarshaller.unmarshal(source, JaxbCollection.class);
          }
          else
-         {  
+         {
             StreamSource source = null;
             if (getCharset(mediaType) == null)
             {
@@ -167,7 +167,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
          }
-         
+
          Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
          if (wrapped != null)
          {
@@ -194,11 +194,11 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          if (xmlAdapter != null)
          {
             Class<?> adaptedType = xmlAdapter.getValueType();
-            ctx = finder.findCachedContext(adaptedType, mediaType, null);  
+            ctx = finder.findCachedContext(adaptedType, mediaType, null);
          }
          else
          {
-            ctx = finder.findCachedContext(baseType, mediaType, null);  
+            ctx = finder.findCachedContext(baseType, mediaType, null);
          }
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
          unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(baseType, annotations, mediaType, unmarshaller);
@@ -329,7 +329,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
                   try
                   {
                      obj = xmlAdapter.marshal(obj);
-                  } 
+                  }
                   catch (Exception e)
                   {
                      throw new JAXBUnmarshalException(e);
@@ -401,7 +401,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       }
       return null;
    }
-   
+
    protected boolean needsSecurity()
    {
       return true;

@@ -19,7 +19,7 @@ public class VariantQuality
    private QualityValue characterSetQualityValue = QualityValue.DEFAULT;
    private QualityValue encodingQualityValue = QualityValue.DEFAULT;
    private QualityValue languageQualityValue = QualityValue.DEFAULT;
-   
+
    private MediaType requestMediaType;
 
 

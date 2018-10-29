@@ -45,7 +45,7 @@ import com.fasterxml.classmate.members.RawMethod;
 import com.fasterxml.classmate.members.ResolvedMethod;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -54,7 +54,7 @@ import com.fasterxml.classmate.members.ResolvedMethod;
 public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
    public static final String SUPPRESS_VIOLATION_PATH = "resteasy.validation.suppress.path";
-   
+
    /**
     * Used for resolving type parameters. Thread-safe.
     */
@@ -70,7 +70,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       this.validatorFactory = validatorFactory;
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
       this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
-      
+
       try
       {
          cdiActive = ResteasyCdiExtension.isCDIActive();
@@ -81,7 +81,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          // In case ResteasyCdiExtension is not on the classpath.
          LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionNotOnClasspath());
       }
-      
+
       ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
@@ -98,7 +98,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       Validator validator = getValidator(request);
       Set<ConstraintViolation<Object>> cvs = null;
-      
+
       try
       {
          cvs = validator.validate(object, groups);
@@ -110,7 +110,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          violationsContainer.setFieldsValidated(true);
          throw toValidationException(e, violationsContainer);
       }
-      
+
       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(cvs);
       violationsContainer.setFieldsValidated(true);
@@ -141,7 +141,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          }
       }
    }
-   
+
    @Override
    public void checkViolationsfromCDI(HttpRequest request)
    {
@@ -149,7 +149,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return;
       }
-      
+
       SimpleViolationsContainer violationsContainer = SimpleViolationsContainer.class.cast(request.getAttribute(SimpleViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
@@ -170,7 +170,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
 
       Set<ConstraintViolation<Object>> cvs = null;
-      
+
       try
       {
          cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
@@ -196,7 +196,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       Validator validator = getValidator(request);
       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       Set<ConstraintViolation<Object>> cvs = null;
-      
+
       try
       {
          cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
@@ -212,7 +212,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
-   
+
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
@@ -223,7 +223,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return true;
    }
-   
+
 
    @Override
    public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
@@ -248,7 +248,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       return true;
    }
-   
+
    @Override
    public boolean isMethodValidatable(Method m)
    {
@@ -256,7 +256,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return false;
       }
-      
+
       ExecutableType[] types = null;
       List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
       if (typesList.size() > 1)
@@ -286,7 +286,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             }
          }
       }
-      
+
       boolean isGetterMethod = isGetter(m);
       for (int i = 0; i < types.length; i++)
       {
@@ -295,36 +295,36 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             case IMPLICIT:
             case ALL:
                return true;
-               
+
             case NONE:
                continue;
-               
+
             case NON_GETTER_METHODS:
                if (!isGetterMethod)
                {
                   return true;
                }
                continue;
-               
+
             case GETTER_METHODS:
                if (isGetterMethod)
                {
                   return true;
                }
                continue;
-               
-            default: 
+
+            default:
                continue;
          }
       }
       return false;
    }
-   
+
    protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
    {
       Class<?> clazz = method.getDeclaringClass();
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
-      
+
       while (clazz != null)
       {
          // We start by examining the method itself.
@@ -343,7 +343,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return typesList;
    }
-   
+
    protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
@@ -367,7 +367,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return typesList;
    }
-   
+
    static protected ExecutableType[] getExecutableTypesOnMethod(Method method)
    {
       ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
@@ -382,7 +382,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return types;
    }
-   
+
    static protected boolean isGetter(Method m)
    {
       String name = m.getName();
@@ -405,7 +405,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return false;
    }
-   
+
    static protected String convertArrayToString(Object o)
    {
       String result = null;
@@ -426,7 +426,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return result;
    }
-   
+
    /**
     * Returns a super method, if any, of a method in a class.
     * Here, the "super" relationship is reflexive.  That is, a method
@@ -459,7 +459,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return null;
    }
-   
+
    /**
     * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
     *
@@ -548,7 +548,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
 
       return true;
    }
-   
+
    @Override
    @SuppressWarnings({"rawtypes", "unchecked"})
    public void checkForConstraintViolations(HttpRequest request, Exception e)
@@ -558,12 +558,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          t = t.getCause();
       }
-      
+
       if (t instanceof ResteasyViolationException)
       {
          throw ResteasyViolationException.class.cast(t);
       }
-      
+
       if (t instanceof ConstraintViolationException)
       {
          SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
@@ -575,10 +575,10 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
          }
       }
-      
+
       return;
    }
-   
+
    protected Validator getValidator(HttpRequest request)
    {
       Validator v = Validator.class.cast(request.getAttribute(Validator.class.getName()));
@@ -613,7 +613,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       return violationsContainer;
    }
-   
+
    private Locale getLocale(HttpRequest request) {
       if (request == null)
       {
@@ -623,12 +623,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       Locale locale = locales == null || locales.isEmpty() ? null : locales.get(0);
       return locale;
    }
-   
+
    /**
     * A filter implementation filtering methods matching given methods.
-    * 
+    *
     * @author Gunnar Morling
-    * 
+    *
     * Taken from Hibernate Validator
     */
    static protected class SimpleMethodFilter implements Filter<RawMethod>
@@ -671,7 +671,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          return interpolator.interpolate(messageTemplate, context, locale);
       }
    }
-   
+
    ResteasyConstraintViolation createResteasyConstraintViolation(ConstraintViolation<?> cv, Type ct)
    {
       String path = (suppressPath ? "*" : cv.getPropertyPath().toString());

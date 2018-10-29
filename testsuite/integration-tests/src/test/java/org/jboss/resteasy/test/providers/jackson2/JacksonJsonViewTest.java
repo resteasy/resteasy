@@ -82,7 +82,7 @@ public class JacksonJsonViewTest {
       return TestUtil.finishContainerPrepare(war, null, Something.class, TestJsonView.class, TestJsonView2.class, JacksonViewService.class);
    }
 
-    
+
    private static ResteasyClient client;
 
    /**

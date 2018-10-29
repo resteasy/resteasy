@@ -206,7 +206,7 @@ public class Verification
    {
       if (publicKey == null) publicKey = key;
       if (publicKey == null) throw new SignatureException(Messages.MESSAGES.publicKeyIsNull());
-      
+
       MultivaluedMap<String, String> verifiedHeaders = signature.verify(bodyHashRequired, headers, body, publicKey);
 
       if (isIgnoreExpiration() == false)

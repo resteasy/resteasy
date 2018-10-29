@@ -84,9 +84,9 @@ public class Resteasy1405Test
    {
       client.close();
    }
-   
+
    private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, Resteasy1405Test.class.getSimpleName());      
+      return PortProviderUtil.generateURL(path, Resteasy1405Test.class.getSimpleName());
    }
 
    /**

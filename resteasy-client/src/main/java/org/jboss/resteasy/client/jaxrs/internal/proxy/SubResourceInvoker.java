@@ -57,7 +57,7 @@ public class SubResourceInvoker implements MethodInvoker
          HashMap<String, Object> pathParams = new HashMap<String, Object>();
          for (int i = 0; i < jaxParams.length; i++)
          {
-            if (jaxParams[i] instanceof PathParam) 
+            if (jaxParams[i] instanceof PathParam)
             {
                pathParams.put(((PathParam) jaxParams[i]).value(), args[i]);
             }
@@ -66,7 +66,7 @@ public class SubResourceInvoker implements MethodInvoker
                target = target.matrixParam(((MatrixParam) jaxParams[i]).value(), args[i]);
             }
          }
-         if (!pathParams.isEmpty()) 
+         if (!pathParams.isEmpty())
          {
             target = target.resolveTemplates(pathParams);
          }

@@ -15,7 +15,7 @@ public interface ResponseObjectBasicObjectIntf {
    String body();
 
    org.jboss.resteasy.client.jaxrs.internal.ClientResponse response();
-    
+
    @HeaderParam("Content-Type")
    String contentType();
 }

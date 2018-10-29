@@ -52,7 +52,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
       this.dispatcher = dispatcher;
    }
 
-   
+
    public URI getBaseUri()
    {
       return baseUri;
@@ -183,17 +183,17 @@ public class InMemoryClientEngine implements ClientHttpEngine
       // TODO Auto-generated method stub
       return null;
    }
-   
+
    public static class InMemoryClientResponse extends ClientResponse
    {
       private InputStream stream;
-      
+
       protected InMemoryClientResponse(ClientConfiguration configuration, InputStream is)
       {
          super(configuration);
          stream = is;
       }
-      
+
       @Override
       protected void setInputStream(InputStream is)
       {
@@ -209,12 +209,12 @@ public class InMemoryClientEngine implements ClientHttpEngine
       public void releaseConnection() throws IOException
       {
       }
-      
+
       @Override
       public void releaseConnection(boolean consumeInputStream) throws IOException
       {
       }
-      
+
    }
-   
+
 }

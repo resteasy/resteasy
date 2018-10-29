@@ -42,13 +42,13 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
-   
+
    static ResteasyClient client;
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
-      war.addClasses(ProviderPriorityFoo.class, 
+      war.addClasses(ProviderPriorityFoo.class,
             ProviderPriorityFooParamConverter.class,
             ProviderPriorityTestException.class,
             ProviderPriorityExceptionMapperCCC.class,
@@ -58,7 +58,7 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
       singletons.add(ProviderPriorityExceptionMapperCCC.class);
       singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
       return TestUtil.finishContainerPrepare(war, null, singletons,
-            ProviderPriorityResource.class, 
+            ProviderPriorityResource.class,
             ProviderPriorityExceptionMapperAAA.class,
             ProviderPriorityExceptionMapperBBB.class,
             ProviderPriorityFooParamConverterProviderAAA.class,
@@ -99,11 +99,11 @@ public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
       Response response = base.path("/register").request().get();
       assertEquals(200, response.getStatus());
       assertEquals("ok", response.readEntity(String.class));
-      
+
       response = base.path("/exception").request().get();
       assertEquals(444, response.getStatus());
       assertEquals("CCC", response.readEntity(String.class));
-      
+
       response = base.path("/paramconverter/dummy").request().get();
       assertEquals(200, response.getStatus());
       assertEquals("CCC", response.readEntity(String.class));

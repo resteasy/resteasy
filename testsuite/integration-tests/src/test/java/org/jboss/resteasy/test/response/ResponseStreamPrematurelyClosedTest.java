@@ -120,16 +120,16 @@ public class ResponseStreamPrematurelyClosedTest {
          }
       }
    }
-    
+
    private static class MyByteArrayOutputStream extends ByteArrayOutputStream {
-        
+
       public String getSubstring(int from, int to) {
          if (from < 0 || to > count) {
             throw new IllegalArgumentException();
          }
          return new String(buf, from, to);
       }
-        
+
       public String toShortString() {
          int s = size();
          if (s <= 14000) {

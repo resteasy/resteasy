@@ -37,7 +37,7 @@ public class CustomConstrainedFeatureTest {
    private static final String TEST_URI = generateURL("/test-custom-feature");
    private static final Logger LOGGER = LogManager.getLogger(CustomConstrainedFeatureTest.class.getName());
    private static final String CUSTOM_PROVIDERS_FILENAME = "CustomConstrainedFeature.Providers";
-    
+
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(CustomConstrainedFeatureTest.class.getSimpleName());

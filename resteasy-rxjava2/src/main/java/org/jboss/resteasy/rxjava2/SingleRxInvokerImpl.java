@@ -18,7 +18,7 @@ public class SingleRxInvokerImpl implements SingleRxInvoker
       this.completionStageRxInvoker = completionStageRxInvoker;
       this.singleProvider = new SingleProvider();
    }
-   
+
    @Override
    public Single<Response> get()
    {

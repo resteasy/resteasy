@@ -11,7 +11,7 @@ import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -24,7 +24,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/plugins/spring/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -32,18 +32,18 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "00", "cannotUseScanParameters"), Messages.MESSAGES.cannotUseScanParameters());
       Assert.assertEquals(getExpected(BASE + "05", "couldNotConvertBeanToClass", "bean"), Messages.MESSAGES.couldNotConvertBeanToClass("bean"));
       Assert.assertEquals(getExpected(BASE + "10", "couldNotFindMessageBodyReader", getClass().getGenericSuperclass(), new MediaType("xx", "yy")), Messages.MESSAGES.couldNotFindMessageBodyReader(getClass().getGenericSuperclass(), new MediaType("xx", "yy")));
       Assert.assertEquals(getExpected(BASE + "55", "providerIsNotSingleton", "provider"), Messages.MESSAGES.providerIsNotSingleton("provider"));
       Assert.assertEquals(getExpected(BASE + "90", "startingUpJetty"), Messages.MESSAGES.startingUpJetty());   }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

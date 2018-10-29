@@ -27,7 +27,7 @@ public class TestPortProvider
    {
       return (ResteasyWebTarget) ClientBuilder.newClient().target(generateURL(path));
    }
-   
+
    /**
     * Create a Resteasy client proxy with an empty base request path.
     *
@@ -70,7 +70,7 @@ public class TestPortProvider
     *
     * @param path the request path
     * @return a full URL
-    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found 
+    * @throws MalformedURLException if no protocol is specified or an unknown protocol is found
     */
    public static URL createURL(String path) throws MalformedURLException
    {
@@ -108,7 +108,7 @@ public class TestPortProvider
    {
       return PortProvider.getPort();
    }
-   
+
    /**
     * Look up the configured hostname, first checking an environment variable (RESTEASY_HOST),
     * then a system property (org.jboss.resteasy.host), and finally the default hostname (localhost).

@@ -45,7 +45,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    private boolean disableExternalEntities = true;
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
-   
+
    public AbstractJAXBProvider()
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : AbstractJAXBProvider", getClass().getName());
@@ -69,7 +69,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          }
       }
    }
-   
+
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
          throws JAXBException
    {
@@ -94,7 +94,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       DecoratorMatcher processor = new DecoratorMatcher();
       return processor.decorate(Unmarshaller.class, marshaller, type, annotations, mediaType);
    }
-   
+
    @SuppressWarnings("unchecked")
    public T readFrom(Class<T> type,
                      Type genericType,
@@ -110,12 +110,12 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         
+
          if (needsSecurity())
          {
             return processWithSecureProcessing(unmarshaller, entityStream, getCharset(mediaType));
          }
-         
+
          if (getCharset(mediaType) == null)
          {
             InputSource is = new InputSource(entityStream);
@@ -126,7 +126,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          }
          else
          {
-            return (T) unmarshaller.unmarshal(new StreamSource(entityStream));  
+            return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
          }
       }
       catch (JAXBException e)
@@ -234,7 +234,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       return null;
    }
-   
+
    public boolean isDisableExternalEntities()
    {
       return disableExternalEntities;
@@ -269,10 +269,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       return true;
    }
-   
+
    @SuppressWarnings("unchecked")
    protected T processWithSecureProcessing(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
-   {  
+   {
       unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
       if (charset == null)
       {
@@ -282,7 +282,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       else
       {
-         return (T) unmarshaller.unmarshal(entityStream); 
+         return (T) unmarshaller.unmarshal(entityStream);
       }
    }
 }

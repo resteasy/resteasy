@@ -154,13 +154,13 @@ public class RxSingleResourceImpl {
    public Single<List<Thing>> traceThingList() {
       return buildSingleThingList("x", 3);
    }
-   
+
    @GET
    @Path("exception/unhandled")
    public Single<Thing> exceptionUnhandled() throws Exception {
       throw new Exception("unhandled");
    }
-   
+
    @GET
    @Path("exception/handled")
    public Single<Thing> exceptionHandled() throws Exception {

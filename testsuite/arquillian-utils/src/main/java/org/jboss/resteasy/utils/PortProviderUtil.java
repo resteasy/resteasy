@@ -126,7 +126,7 @@ public class PortProviderUtil {
     * Generate a URL incorporating the configured port.
     *
     * @param path the path
-    * @param testName the test name 
+    * @param testName the test name
     * @return a full URL
     */
    public static String generateURL(String path, String testName) {

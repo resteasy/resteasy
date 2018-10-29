@@ -16,7 +16,7 @@ import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptor
 
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -25,19 +25,19 @@ import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptor
 public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation.SimpleViolationsContainer implements Serializable
 {
    private static final long serialVersionUID = -7895854137980651539L;
-   
+
    private boolean ejbsPresent;
-   
+
    public SimpleViolationsContainer(Object target)
    {
       super(target);
    }
-   
+
    public SimpleViolationsContainer(Set<ConstraintViolation<Object>> cvs)
    {
       super(cvs);
    }
-   
+
    /**
     * If some ConstraintViolations are created by Resteasy and some are created by CDI, two
     * essentially identical ones might appear to be different. For example, those created by Resteasy
@@ -47,7 +47,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
    {
       if (!ejbsPresent(cvs) || getViolations().size() == 0)
       {
-          getViolations().addAll(cvs); 
+          getViolations().addAll(cvs);
          return;
       }
       boolean skip = false;
@@ -72,44 +72,44 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
    static boolean compareConstraintViolation(ConstraintViolation<?> cv1, ConstraintViolation<?> cv2)
    {
       if (cv1 == cv2)
-      { 
-         return true; 
+      {
+         return true;
       }
-      
+
       if (cv1 == null || cv2 == null)
       {
          return false;
       }
-      
+
       if (cv1.getMessage() != null ? !cv1.getMessage().equals(cv2.getMessage()) : cv2.getMessage() != null)
       {
          return false;
       }
-      
+
       if (cv1.getPropertyPath() != null ? !comparePropertyPath(cv1.getPropertyPath(), cv2.getPropertyPath()) : cv2.getPropertyPath() != null)
-      { 
+      {
          return false;
       }
-      
+
       // Can't compare root beans: one might be a proxy while the other one isn't.
       // Can't compare leaf bean instance: one might be a proxy while the other isn't.
       // Compare classes as an approximation.
-      
+
       if (cv1.getRootBeanClass() != null ? !compareClass(cv1.getRootBeanClass(), cv2.getRootBeanClass()) : cv2.getRootBeanClass() != null)
       {
          return false;
       }
-      
+
       if (cv1.getLeafBean() != null ? !compareClass(cv1.getLeafBean().getClass(), cv2.getLeafBean().getClass()) : cv2.getLeafBean() != null)
       {
          return false;
       }
-      
+
       if (cv1.getConstraintDescriptor() != null ? !cv1.getConstraintDescriptor().equals(cv2.getConstraintDescriptor()) : cv2.getConstraintDescriptor() != null)
       {
          return false;
       }
-      
+
       if (cv1.getConstraintDescriptor() instanceof ConstraintDescriptorImpl && cv2.getConstraintDescriptor() instanceof ConstraintDescriptorImpl)
       {
          ConstraintDescriptorImpl<?> cdi1 = (ConstraintDescriptorImpl<?>) cv1.getConstraintDescriptor();
@@ -127,14 +127,14 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
 //      {
 //         return false;
 //      }
-      
+
       if (cv1.getInvalidValue() != null ? !cv1.getInvalidValue().equals(cv2.getInvalidValue()) : cv2.getInvalidValue() != null)
       {
          return false;
       }
       return true;
    }
-   
+
    private static boolean compareClass(Class<?> c1, Class<?> c2)
    {
       while (c1.isSynthetic() && !Object.class.equals(c1))
@@ -147,7 +147,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       }
       return c1.equals(c2);
    }
-   
+
    private static boolean comparePropertyPath(Path p1, Path p2)
    {
       if (p1 == p2)
@@ -166,7 +166,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       Iterator<Node> it2 = p2.iterator();
       while (true)
       {
-         if (it1.hasNext() && it2.hasNext()) 
+         if (it1.hasNext() && it2.hasNext())
          {
             if (!compareNode(it1.next(), it2.next()))
             {
@@ -179,7 +179,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
          }
       }
    }
-   
+
    private static boolean compareNode(Node n1, Node n2)
    {
       if (n1 == n2)
@@ -267,7 +267,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       }
       return true;
    }
-   
+
    private static boolean compareClassList(List<Class<?>> l1, List<Class<?>> l2)
    {
       if (l1.size() != l2.size())
@@ -283,7 +283,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       }
       return true;
    }
-   
+
    private boolean ejbsPresent(Set<ConstraintViolation<Object>> set1)
    {
       if (ejbsPresent)
@@ -300,7 +300,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       }
       return false;
    }
-   
+
    private static boolean isEjb(Class<?> clazz)
    {
       while (clazz != null)
@@ -326,7 +326,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       }
       return false;
    }
-   
+
    private static boolean isEjbAnnotation(Class<?> c)
    {
       if ("javax.ejb.Stateless".equals(c.getName()) ||
@@ -336,9 +336,9 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
          return true;
       }
       return false;
-      
+
    }
-   
+
    private static <T> Class<?> getRealClass(Class<?> clazz)
    {
       while (clazz.isSynthetic())

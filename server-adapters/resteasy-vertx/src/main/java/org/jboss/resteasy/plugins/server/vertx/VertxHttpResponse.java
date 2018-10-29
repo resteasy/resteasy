@@ -87,7 +87,7 @@ public class VertxHttpResponse implements HttpResponse
       if(vertxException != null)
          throw new IOException(vertxException);
    }
-   
+
    @Override
    public void sendError(int status) throws IOException
    {
@@ -157,7 +157,7 @@ public class VertxHttpResponse implements HttpResponse
       response.setChunked(true);
       transformHeaders(this, response, providerFactory);
    }
-   
+
    private void prepareEmptyResponse()
    {
       committed = true;

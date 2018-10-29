@@ -10,7 +10,7 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.spi.util.Types;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -20,30 +20,30 @@ class XmlAdapterWrapper extends XmlAdapter<Object, Object>
 {
    private XmlAdapter<Object, Object> delegate;
    private Class<?> clazz;
-   
+
    XmlAdapterWrapper(XmlAdapter<Object, Object> delegate, Class<?> clazz)
    {
       this.delegate = delegate;
       this.clazz = clazz;
    }
-   
+
    @Override
    public Object unmarshal(Object v) throws Exception
    {
       return delegate.unmarshal(v);
    }
-   
+
    @Override
    public Object marshal(Object v) throws Exception
    {
       return delegate.marshal(v);
    }
-   
+
    public Class<?> getValueType()
    {
       return clazz;
    }
-   
+
    protected static Class<?> xmlAdapterValueType(Class<?> baseType, Annotation[] annotations)
    {
       Class<?> clazz = baseType;
@@ -61,7 +61,7 @@ class XmlAdapterWrapper extends XmlAdapter<Object, Object>
       }
       return clazz;
    }
-   
+
    @SuppressWarnings("unchecked")
    protected static XmlAdapterWrapper getXmlAdapter(Class<?> baseType, Annotation[] annotations)
    {

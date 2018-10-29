@@ -33,7 +33,7 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
 {
 
    private Set<Class<?>> classes = new HashSet<>();
-   
+
    public UndertowTestRunner(Class<?> klass) throws InitializationError
    {
       super(klass);
@@ -45,7 +45,7 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
       for (Method method : klass.getDeclaredMethods())
       {
          if(Modifier.isStatic(method.getModifiers())
-               && method.isAnnotationPresent(Deployment.class)) 
+               && method.isAnnotationPresent(Deployment.class))
          {
             try
             {
@@ -62,7 +62,7 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
                   }
                }
                return;
-            } 
+            }
             catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
                throw new RuntimeException(e);
@@ -84,14 +84,14 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
             return classes;
          }
       }, super.getTestClass().getJavaClass().getSimpleName());
-      try 
+      try
       {
          super.run(notifier);
       }
-      finally 
+      finally
       {
          server.stop();
       }
-      
+
    }
 }

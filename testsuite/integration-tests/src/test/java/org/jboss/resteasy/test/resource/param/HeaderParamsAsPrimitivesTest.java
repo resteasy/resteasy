@@ -636,7 +636,7 @@ public class HeaderParamsAsPrimitivesTest {
    public void testGetDoublePrimitiveListDefault() {
       testListDefault("double", "3.14159265358979");
    }
-   
+
    /**
     * @tpTestDetails Basic test for char
     * @tpSince RESTEasy 3.0.24

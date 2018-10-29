@@ -98,7 +98,7 @@ public abstract class ClientResponse extends BuiltResponse
       }
       return getEntityStream();
    }
-   
+
    @Override
    public Class<?> getEntityClass()
    {
@@ -175,16 +175,16 @@ public abstract class ClientResponse extends BuiltResponse
       InputStream is = getInputStream();
       return is != null ? new InputStreamWrapper(is, this) : null;
    }
-   
+
    private static class InputStreamWrapper extends FilterInputStream {
-      
+
       private ClientResponse response;
-      
+
       protected InputStreamWrapper(InputStream in, ClientResponse response) {
          super(in);
          this.response = response;
       }
-      
+
       public int read() throws IOException
       {
          return checkEOF(super.read());
@@ -227,7 +227,7 @@ public abstract class ClientResponse extends BuiltResponse
 
    /**
     * Release underlying connection but do not close.
-    * 
+    *
     * @param consumeInputStream boolean to indicate either the underlying input stream must be fully read before releasing the connection or not.
     * <p>
     * For most HTTP connection implementations, consuming the underlying input stream before releasing the connection will help to ensure connection reusability with respect of Keep-Alive policy.
@@ -351,7 +351,7 @@ public abstract class ClientResponse extends BuiltResponse
          } finally {
             tracingLogger.logDuration("RI_SUMMARY", timestamp, context.getProcessedInterceptorCount());
          }
-         
+
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -437,5 +437,5 @@ public abstract class ClientResponse extends BuiltResponse
    {
       if (bufferedEntity == null) super.abortIfClosed();
    }
-   
+
 }

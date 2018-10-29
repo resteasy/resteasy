@@ -246,9 +246,9 @@ public class SseTest
       eventSource2.close();
    }
 
-   //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will 
+   //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will
    //disconnect the connection, but events is continued to add to eventsStore. SseEventSource will automatically reconnect
-   //with LastEventId and receive the missed events  
+   //with LastEventId and receive the missed events
    @Test
    @InSequence(5)
    public void testReconnect() throws Exception
@@ -498,7 +498,7 @@ public class SseTest
       {
          logger.info("Thread sleep interruped", e);
       }
-     
+
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
       //test for [Resteasy-1863]:SseEventSourceImpl should not close Client instance
       results.clear();
@@ -517,7 +517,7 @@ public class SseTest
       }
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
    }
-   
+
    @Test
    @InSequence(13)
    public void testNoContent() throws Exception
@@ -549,7 +549,7 @@ public class SseTest
    //    //This will open a browser and test with html sse client
    //    public void testHtmlSse() throws Exception
    //    {
-   //       
+   //
    //       Runtime runtime = Runtime.getRuntime();
    //       try
    //       {

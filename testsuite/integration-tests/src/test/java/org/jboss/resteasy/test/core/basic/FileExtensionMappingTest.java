@@ -53,7 +53,7 @@ public class FileExtensionMappingTest
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, FileExtensionMappingTest.class.getSimpleName());
    }
-   
+
    /**
     * @tpTestDetails Map suffix .txt to Accept: text/plain
     * @tpSince RESTEasy 3.0.20
@@ -65,7 +65,7 @@ public class FileExtensionMappingTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("plain: whosOnFirst", entity);
    }
-   
+
    /**
     * @tpTestDetails Map suffix .html to Accept: text/html
     * @tpSince RESTEasy 3.0.20

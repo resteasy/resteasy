@@ -197,21 +197,21 @@ public class BasicAuthTest
       CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
-   
+
       {
          Builder request = client.target(generateURL("/secured")).request();
          Response response = request.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          Assert.assertEquals("hello", response.readEntity(String.class));
       }
-      
+
       {
          Builder request = client.target(generateURL("/secured/authorized")).request();
          Response response = request.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.readEntity(String.class));  
+         Assert.assertEquals("authorized", response.readEntity(String.class));
       }
-      
+
       {
          Builder request = client.target(generateURL("/secured/deny")).request();
          Response response = request.get();
@@ -254,15 +254,15 @@ public class BasicAuthTest
 
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
-      
+
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
          cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
          Response response = client.target(generateURL("/secured/authorized")).request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.readEntity(String.class));  
+         Assert.assertEquals("authorized", response.readEntity(String.class));
       }
-      
+
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("mo", "password");
          cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
@@ -275,12 +275,12 @@ public class BasicAuthTest
    /**
     * Create a ClientExecutor which does preemptive authentication.
     */
-   
+
    static private ClientHttpEngine createAuthenticatingEngine(CloseableHttpClient client)
    {
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
-      
+
       // Create ClientExecutor.
       ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(client, new HttpContextProvider()
       {

@@ -29,7 +29,7 @@ public class StreamRawCharArrayMessageBodyReaderWriter implements MessageBodyRea
 
    @Override
    public Character[] readFrom(Class<Character[]> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-      List<Character> chars = new ArrayList<Character>(); 
+      List<Character> chars = new ArrayList<Character>();
       int c = entityStream.read();
       while (c != -1) {
          chars.add((char) c);
@@ -48,5 +48,5 @@ public class StreamRawCharArrayMessageBodyReaderWriter implements MessageBodyRea
       for (Character c : t) {
          entityStream.write(Character.toString(c).getBytes());
       }
-   }  
+   }
 }

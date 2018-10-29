@@ -65,14 +65,14 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
          this.maxSize = maxSize;
       }
    }
-   
+
    private static class SecureRandomWrapper
    {
       private static final int DEFAULT_MAX_USES = 100;
       private SecureRandom random;
       private int maxUses = -1;
       private int uses = 0; // uses > maxUses so that context parameters will get checked upon first use.
-      
+
       synchronized public int nextInt()
       {
          if (++uses > maxUses)
@@ -81,7 +81,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
          }
          return random.nextInt();
       }
-      
+
       private void reset()
       {
          if (maxUses < 0)
@@ -92,7 +92,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
          random.nextBytes(new byte[20]); // Causes SecureRandom to self seed.
          uses = 0;
       }
-      
+
       private int getMaxUses()
       {
          maxUses = DEFAULT_MAX_USES;
@@ -251,19 +251,19 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       else
       {
          if (wait > maxWaitMilliSeconds) wait = maxWaitMilliSeconds;
-         try 
+         try
          {
             response = job.get(wait, TimeUnit.MILLISECONDS);
-         } 
-         catch (InterruptedException e) 
+         }
+         catch (InterruptedException e)
          {
             return Response.serverError().build();
-         } 
-         catch (ExecutionException e) 
+         }
+         catch (ExecutionException e)
          {
             return Response.serverError().build();
-         } 
-         catch (TimeoutException e) 
+         }
+         catch (TimeoutException e)
          {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
          }

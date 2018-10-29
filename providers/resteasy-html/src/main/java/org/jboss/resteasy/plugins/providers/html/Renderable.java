@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * If you return one of these from a resource method, RESTEasy-HTML will render it.  This
  * interface allows for exotic view rendering types.
- * 
+ *
  * @author <a href="mailto:jeff@infohazard.org">Jeff Schnitzer</a>
  */
 public interface Renderable

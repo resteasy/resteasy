@@ -12,7 +12,7 @@ public class ResteasyObjectWriterInjector
 
    //optimization
    private static final AtomicBoolean hasBeenSet = new AtomicBoolean(false);
-   
+
    private ResteasyObjectWriterInjector() {
    }
 

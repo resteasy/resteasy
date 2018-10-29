@@ -57,7 +57,7 @@ public class MatrixParamAsPrimitiveArrayDefaultNull {
       Assert.assertTrue(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, v.length == 0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@MatrixParam("char")  char[] v) {

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 
 /**
- * AES/CBC/PKCS5Padding and AES/CBC/PKCS5Padding/HMAC-SHA2 encryption and 
+ * AES/CBC/PKCS5Padding and AES/CBC/PKCS5Padding/HMAC-SHA2 encryption and
  * decryption methods.
  *
  * <p>See draft-ietf-jose-json-web-algorithms-10, section 4.8.3.

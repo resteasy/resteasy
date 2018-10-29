@@ -4,7 +4,7 @@ public class SpringMvcHttpResponseCodesPerson {
    private String name;
 
    public SpringMvcHttpResponseCodesPerson() {
-        
+
    }
 
    public SpringMvcHttpResponseCodesPerson(String name) {

@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/testapp")
 public interface ApplicationScopeIRestServiceAppScoped {
-   
+
    @POST
    @Path("/send")
    @Consumes(MediaType.APPLICATION_JSON)

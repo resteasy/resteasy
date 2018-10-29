@@ -22,6 +22,6 @@ public class ContextAfterEncoderInterceptor implements WriterInterceptor {
       Assert.assertTrue(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("encoder"));
       Assert.assertFalse(HEADER_ERROR_MESSAGE, context.getHeaders().containsKey("end"));
       context.getHeaders().add("after-encoder", "true");
-      context.proceed();  
+      context.proceed();
    }
 }

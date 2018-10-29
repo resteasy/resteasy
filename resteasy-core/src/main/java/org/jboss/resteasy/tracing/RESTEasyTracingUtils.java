@@ -49,7 +49,7 @@ public class RESTEasyTracingUtils {
          return String.valueOf(object);
       }
    }
-    
+
    /**
     * Test if application and request settings enabled tracing support.
     *
@@ -78,7 +78,7 @@ public class RESTEasyTracingUtils {
       }
       return result;
    }
-    
+
    /**
     * Get request header specified JDK logger name suffix.
     *

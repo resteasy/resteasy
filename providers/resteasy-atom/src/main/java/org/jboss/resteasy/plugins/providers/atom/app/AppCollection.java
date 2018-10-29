@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,18 +30,18 @@ import java.util.List;
  * <p>
  * Per RFC5023:
  * </p>
- * 
+ *
  * <pre>
  * The "app:collection" element describes a Collection.  The app:
  *    collection element MUST contain one atom:title element.
- * 
+ *
  *    The app:collection element MAY contain any number of app:accept
  *    elements, indicating the types of representations accepted by the
  *    Collection.  The order of such elements is not significant.
- * 
+ *
  *    The app:collection element MAY contain any number of app:categories
  *    elements.
- * 
+ *
  *    appCollection =
  *       element app:collection {
  *          appCommonAttributes,
@@ -52,7 +52,7 @@ import java.util.List;
  *            {@literal &} extensionSansTitleElement* )
  *       }
  * </pre>
- * 
+ *
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
  * @version $Revision: 1 $
  */
@@ -72,9 +72,9 @@ public class AppCollection extends AppCommonAttributes {
    @XmlAnyElement(lax = true)
    protected List<Object> any;
 
- 
+
    public AppCollection() {}
-    
+
    public AppCollection(String href, String title) {
       super();
       this.href = href;
@@ -83,9 +83,9 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Gets the value of the title property.
-    * 
+    *
     * @return possible object is {@link String }
-    * 
+    *
     */
    public String getTitle() {
       return title;
@@ -93,10 +93,10 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Sets the value of the title property.
-    * 
+    *
     * @param value
     *            allowed object is {@link String }
-    * 
+    *
     */
    public void setTitle(String value) {
       this.title = value;
@@ -104,24 +104,24 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Gets the value of the accept property.
-    * 
+    *
     * <p>
     * This accessor method returns a reference to the live list, not a
     * snapshot. Therefore any modification you make to the returned list will
     * be present inside the JAXB object. This is why there is not a
     * <CODE>set</CODE> method for the accept property.
-    * 
+    *
     * <p>
     * For example, to add a new item, do as follows:
-    * 
+    *
     * <pre>
     * getAccept().add(newItem);
     * </pre>
-    * 
-    * 
+    *
+    *
     * <p>
     * Objects of the following type(s) are allowed in the list {@link String }
-    * 
+    *
     *  @return list of {@link AppAccept}
     */
    public List<AppAccept> getAccept() {
@@ -133,27 +133,27 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Gets the value of the categories property.
-    * 
+    *
     * <p>
     * This accessor method returns a reference to the live list, not a
     * snapshot. Therefore any modification you make to the returned list will
     * be present inside the JAXB object. This is why there is not a
     * <CODE>set</CODE> method for the categories property.
-    * 
+    *
     * <p>
     * For example, to add a new item, do as follows:
-    * 
+    *
     * <pre>
     * getCategories().add(newItem);
     * </pre>
-    * 
-    * 
+    *
+    *
     * <p>
     * Objects of the following type(s) are allowed in the list
     * {@link AppCategories }
-    * 
+    *
     * @return list of {@link AppCategories}
-    * 
+    *
     */
    public List<AppCategories> getCategories() {
       if (categories == null) {
@@ -164,27 +164,27 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Gets the value of the any property.
-    * 
+    *
     * <p>
     * This accessor method returns a reference to the live list, not a
     * snapshot. Therefore any modification you make to the returned list will
     * be present inside the JAXB object. This is why there is not a
     * <CODE>set</CODE> method for the any property.
-    * 
+    *
     * <p>
     * For example, to add a new item, do as follows:
-    * 
+    *
     * <pre>
     * getAny().add(newItem);
     * </pre>
-    * 
-    * 
+    *
+    *
     * <p>
     * Objects of the following type(s) are allowed in the list {@link Element }
     * {@link Object }
-    * 
+    *
     * @return list of objects
-    * 
+    *
     */
    public List<Object> getAny() {
       if (any == null) {
@@ -195,9 +195,9 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Gets the value of the href property.
-    * 
+    *
     * @return possible object is {@link String }
-    * 
+    *
     */
    public String getHref() {
       return href;
@@ -205,10 +205,10 @@ public class AppCollection extends AppCommonAttributes {
 
    /**
     * Sets the value of the href property.
-    * 
+    *
     * @param value
     *            allowed object is {@link String }
-    * 
+    *
     */
    public void setHref(String value) {
       this.href = value;

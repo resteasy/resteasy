@@ -252,7 +252,7 @@ public class ExceptionHandler
 
    protected Response handleWebApplicationException(WebApplicationException wae)
    {
-      if (wae instanceof NotFoundException) 
+      if (wae instanceof NotFoundException)
       {
          LogMessages.LOGGER.failedToExecuteDebug(wae);
       }
@@ -263,7 +263,7 @@ public class ExceptionHandler
       Response response = wae.getResponse();
       return response;
    }
-   
+
    public Response handleException(HttpRequest request, Throwable e) {
 
       Response jaxrsResponse = null;

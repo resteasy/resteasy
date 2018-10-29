@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2008 The Apache Software Foundation or its licensors, as
  * applicable.
  *
@@ -21,7 +21,7 @@ package org.jboss.resteasy.security;
 
 /*
  * Allowed signing algorithms by DKIM RFC 4871 with translation to different Java notations
- * 
+ *
  * @author Florian Sager, http://www.agitos.de, 22.11.2008
  */
 

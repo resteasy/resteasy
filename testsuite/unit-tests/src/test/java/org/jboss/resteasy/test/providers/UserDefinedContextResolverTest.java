@@ -24,7 +24,7 @@ public class UserDefinedContextResolverTest {
    public static class TestException extends RuntimeException {
       private static final long serialVersionUID = 1L;
    }
-   
+
    @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
    @SuppressWarnings("rawtypes")
    public static class TestContextFinder implements JAXBContextFinder {
@@ -46,7 +46,7 @@ public class UserDefinedContextResolverTest {
          return null;
       }
    }
-   
+
    @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
    public static class TestContextResolver implements ContextResolver<JAXBContextFinder> {
 
@@ -55,7 +55,7 @@ public class UserDefinedContextResolverTest {
          return new TestContextFinder();
       }
    }
-   
+
    @Test
    public void testUserDefinedContextResolver() {
 

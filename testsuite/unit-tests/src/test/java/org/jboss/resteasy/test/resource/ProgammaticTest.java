@@ -27,19 +27,19 @@ import org.junit.Test;
  * @tpSince RESTEasy 3.0.20
  */
 public class ProgammaticTest {
-   
+
    private static Dispatcher dispatcher;
-   
+
    @BeforeClass
    public static void BeforeClass() {
       dispatcher = MockDispatcherFactory.createDispatcher();
    }
-   
+
    @Before
    public void before() {
       ResteasyContext.getContextDataMap().put(Configurable.class, dispatcher.getProviderFactory());
    }
-   
+
    /**
     * @tpTestDetails Programmatically create resource class
     * @tpSince RESTEasy 3.0.20
@@ -63,12 +63,12 @@ public class ProgammaticTest {
               .setter(setter).context().buildSetter()
               .buildClass();
       dispatcher.getRegistry().addPerRequestResource(resourceclass);
-      
+
       MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
       MockHttpResponse response = new MockHttpResponse();
       dispatcher.invoke(request, response);
       Assert.assertEquals(response.getContentAsString(), "hello");
-      
+
       request = MockHttpRequest.put("/test").content("hello".getBytes()).contentType("text/plain");
       response = new MockHttpResponse();
       dispatcher.invoke(request, response);

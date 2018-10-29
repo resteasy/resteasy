@@ -4,7 +4,7 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -21,13 +21,13 @@ public interface Messages
 
    @Message(id = BASE + 2, value = "Exception caught by handler")
    String exceptionCaught();
-   
+
    @Message(id = BASE + 5, value = "Failed to parse request.")
    String failedToParseRequest();
-   
+
    @Message(id = BASE + 10, value = "Request media type is not application/x-www-form-urlencoded")
    String requestMediaType();
-   
+
    @Message(id = BASE + 15, value = "Unexpected")
    String unexpected();
 }

@@ -52,7 +52,7 @@ public class TestResource
       };
       t.start();
    }
-   
+
    @GET
    @Path("default")
    public void defaultTest(final @Suspended AsyncResponse response)

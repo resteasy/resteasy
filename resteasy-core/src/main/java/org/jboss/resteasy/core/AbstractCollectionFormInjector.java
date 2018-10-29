@@ -83,7 +83,7 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
    /**
     * Creates an instance of the collection type.
     * @param collectionType collection type
-    * @return object instance of type T 
+    * @return object instance of type T
     */
    protected abstract T createInstance(Class collectionType);
 

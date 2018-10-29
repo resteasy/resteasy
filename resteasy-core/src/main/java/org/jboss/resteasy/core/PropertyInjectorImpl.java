@@ -92,7 +92,7 @@ public class PropertyInjectorImpl implements PropertyInjector
          Type genericType = method.getGenericParameterTypes()[0];
 
          String propertyName = Introspector.decapitalize(method.getName().substring(3));
-         
+
          ValueInjector extractor = getParameterExtractor(clazz, factory, method, propertyName, annotations, type, genericType);
          if (extractor != null)
          {

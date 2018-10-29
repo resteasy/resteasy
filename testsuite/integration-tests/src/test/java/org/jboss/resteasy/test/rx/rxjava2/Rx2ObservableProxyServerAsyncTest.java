@@ -41,10 +41,10 @@ import org.junit.runners.MethodSorters;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the server uses Observables to build objects asynchronously, then collects the
  * results and returns then in one transmission.
- * 
+ *
  * The client uses a proxy to make synchronous calls.
  */
 @RunWith(Arquillian.class)
@@ -56,12 +56,12 @@ public class Rx2ObservableProxyServerAsyncTest {
    private static Rx2ListNoStreamResource proxy;
 
    private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();   
+   private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
    private final static List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
-   
+
    static {
       for (int i = 0; i < 3; i++) {xStringList.add("x");}
       for (int i = 0; i < 3; i++) {aStringList.add("a");}
@@ -111,7 +111,7 @@ public class Rx2ObservableProxyServerAsyncTest {
       List<String> list = proxy.get();
       Assert.assertEquals(xStringList, list);
    }
-   
+
    @Test
    public void testGetThing() throws Exception {
       List<Thing> list = proxy.getThing();
@@ -132,7 +132,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
    }
-   
+
    @Test
    public void testPut() throws Exception {
       List<String> list = proxy.put("a");
@@ -150,7 +150,7 @@ public class Rx2ObservableProxyServerAsyncTest {
       List<List<Thing>> list = proxy.putThingList("a");
       Assert.assertEquals(aThingListList, list);
    }
-   
+
    @Test
    public void testPutBytes() throws Exception {
       List<byte[]> list = proxy.putBytes("3");
@@ -186,7 +186,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
    }
-   
+
    @Test
    public void testDelete() throws Exception {
       List<String> list = proxy.delete();
@@ -198,7 +198,7 @@ public class Rx2ObservableProxyServerAsyncTest {
       List<Thing> list = proxy.deleteThing();
       Assert.assertEquals(xThingList, list);
    }
-   
+
    @Test
    public void testDeleteThingList() throws Exception {
       List<List<Thing>> list = proxy.deleteThingList();
@@ -213,7 +213,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
    }
-   
+
    @Test
    public void testHead() throws Exception {
       try {
@@ -249,7 +249,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
    }
-   
+
    @Test
    @Ignore // TRACE turned off by default in Wildfly
    public void testTrace() throws Exception {
@@ -280,7 +280,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
       }
    }
-   
+
    @Test
    public void testUnhandledException() throws Exception {
       try
@@ -292,7 +292,7 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(e.getMessage().contains("500"));
       }
    }
-   
+
    @Test
    public void testHandledException() throws Exception {
       try
@@ -304,16 +304,16 @@ public class Rx2ObservableProxyServerAsyncTest {
          Assert.assertTrue(e.getMessage().contains("444"));
       }
    }
-   
+
    @Test
    public void testGetTwoClients() throws Exception {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       Rx2ListNoStreamResource proxy1 = client1.target(generateURL("/")).proxy(Rx2ListNoStreamResource.class);
-      List<String> list1 = proxy1.get();  
+      List<String> list1 = proxy1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       Rx2ListNoStreamResource proxy2 = client2.target(generateURL("/")).proxy(Rx2ListNoStreamResource.class);
-      List<String> list2 = proxy2.get(); 
+      List<String> list2 = proxy2.get();
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
@@ -325,22 +325,22 @@ public class Rx2ObservableProxyServerAsyncTest {
    @Test
    public void testGetTwoProxies() throws Exception {
       Rx2ListNoStreamResource proxy1 = client.target(generateURL("/")).proxy(Rx2ListNoStreamResource.class);
-      List<String> list1 = proxy1.get();   
+      List<String> list1 = proxy1.get();
 
       Rx2ListNoStreamResource proxy2 = client.target(generateURL("/")).proxy(Rx2ListNoStreamResource.class);
-      List<String> list2 = proxy2.get(); 
-      
+      List<String> list2 = proxy2.get();
+
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
       for (int i = 0; i < 6; i++) {
          Assert.assertEquals("x", list1.get(i));
       }
    }
-   
+
    @Test
    public void testGetTwoLists() throws Exception {
-      List<String> list1 = proxy.get(); 
-      List<String> list2 = proxy.get(); 
+      List<String> list1 = proxy.get();
+      List<String> list2 = proxy.get();
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());

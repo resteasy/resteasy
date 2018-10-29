@@ -72,7 +72,7 @@ public class AsyncRequestFilterTest {
       WebTarget base = client.target(generateURL("/"));
 
       // all sync
-        
+
       Response response = base.request()
          .header("Filter1", "sync-pass")
          .header("Filter2", "sync-pass")
@@ -188,7 +188,7 @@ public class AsyncRequestFilterTest {
               .get();
       assertEquals(200, response.getStatus());
       assertEquals("Filter1", response.readEntity(String.class));
-        
+
       client.close();
    }
 
@@ -204,7 +204,7 @@ public class AsyncRequestFilterTest {
       WebTarget base = client.target(generateURL("/"));
 
       // all sync
-        
+
       Response response = base.request()
          .header("PreMatchFilter1", "sync-pass")
          .header("PreMatchFilter2", "sync-pass")
@@ -319,7 +319,7 @@ public class AsyncRequestFilterTest {
       WebTarget base = client.target(generateURL("/"));
 
       // all sync
-        
+
       Response response = base.request()
          .header("ResponseFilter1", "sync-pass")
          .header("ResponseFilter2", "sync-pass")
@@ -503,11 +503,11 @@ public class AsyncRequestFilterTest {
       // check that callbacks were called
       response = base.request().get();
       assertEquals(200, response.getStatus());
-      if(useExceptionMapper) 
+      if(useExceptionMapper)
          assertEquals("org.jboss.resteasy.test.asynch.resource.AsyncFilterException: ouch", response.getHeaders().getFirst("ResponseFilterCallbackResponseFilter3"));
       else
          assertEquals("java.lang.Throwable: ouch", response.getHeaders().getFirst("ResponseFilterCallbackResponseFilter3"));
-          
+
 
       // throw in request filter
       response = base.request()
@@ -516,12 +516,12 @@ public class AsyncRequestFilterTest {
             .header("UseExceptionMapper", useExceptionMapper)
             .header("Filter3", "async-throw-late")
             .get();
-      if(useExceptionMapper) 
+      if(useExceptionMapper)
       {
          assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatus());
          assertEquals("exception was mapped", response.readEntity(String.class));
       }
-      else 
+      else
       {
          assertEquals(500, response.getStatus());
       }
@@ -537,11 +537,11 @@ public class AsyncRequestFilterTest {
       // check that callbacks were called
       response = base.request().get();
       assertEquals(200, response.getStatus());
-      if(useExceptionMapper) 
+      if(useExceptionMapper)
          assertEquals("org.jboss.resteasy.test.asynch.resource.AsyncFilterException: ouch", response.getHeaders().getFirst("RequestFilterCallbackFilter3"));
       else
          assertEquals("java.lang.Throwable: ouch", response.getHeaders().getFirst("RequestFilterCallbackFilter3"));
-      
+
    }
 
    /**
