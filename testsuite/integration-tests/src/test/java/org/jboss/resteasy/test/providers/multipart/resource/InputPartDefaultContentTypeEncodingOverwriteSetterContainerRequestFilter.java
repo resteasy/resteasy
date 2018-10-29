@@ -16,7 +16,7 @@ public class InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestF
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
       requestContext.setProperty(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
-            InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8); 
+            InputPartDefaultContentTypeEncodingOverwriteTest.TEXT_PLAIN_WITH_CHARSET_UTF_8);
    }
 
 }

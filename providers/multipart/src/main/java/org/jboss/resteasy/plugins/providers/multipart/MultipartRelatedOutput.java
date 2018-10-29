@@ -8,20 +8,20 @@ import javax.ws.rs.core.MediaType;
  * parts which are referenced from the root part. All parts have a unique id.
  * The type and the id of the start part is presented in parameters in the
  * message content-type header.
- * 
+ *
  * Usage is the same as with {@link MultipartOutput}:
- * 
+ *
  * <code>
  * MultipartRelatedDataOutput mrdo = new MultipartRelatedDataOutput();
  * mrdo.addPart(...);
  * </code>
- * 
+ *
  * The first added part will be used as root. The root parts content-type will
  * be used as the type parameter of the content-type of the mime message.
- * 
+ *
  * For parts without Content-ID header a unique id will be generated during
  * serialization.
- * 
+ *
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */

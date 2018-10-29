@@ -47,10 +47,10 @@ import org.junit.runners.MethodSorters;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the server uses Observables to build objects asynchronously, then collects the
  * results and returns then in one transmission.
- * 
+ *
  * The client makes synchronous calls.
  */
 @RunWith(Arquillian.class)
@@ -61,7 +61,7 @@ public class RxObservableServerAsyncTest {
    private static ResteasyClient client;
 
    private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();   
+   private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
@@ -420,12 +420,12 @@ public class RxObservableServerAsyncTest {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       Builder request1 = client1.target(generateURL("/get/string")).request();
       Response response1 = request1.get();
-      List<String> list1 = response1.readEntity(LIST_OF_STRING);      
+      List<String> list1 = response1.readEntity(LIST_OF_STRING);
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       Builder request2 = client2.target(generateURL("/get/string")).request();
       Response response2 = request2.get();
-      List<String> list2 = response2.readEntity(LIST_OF_STRING); 
+      List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
@@ -437,12 +437,12 @@ public class RxObservableServerAsyncTest {
    @Test
    public void testGetTwoRequests() throws Exception {
       Builder request1 = client.target(generateURL("/get/string")).request();
-      Response response1 = request1.get();  
-      List<String> list1 = response1.readEntity(LIST_OF_STRING); 
+      Response response1 = request1.get();
+      List<String> list1 = response1.readEntity(LIST_OF_STRING);
 
       Builder request2 = client.target(generateURL("/get/string")).request();
-      Response response2 = request2.get();  
-      List<String> list2 = response2.readEntity(LIST_OF_STRING); 
+      Response response2 = request2.get();
+      List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
@@ -454,11 +454,11 @@ public class RxObservableServerAsyncTest {
    @Test
    public void testGetTwoLists() throws Exception {
       Builder request = client.target(generateURL("/get/string")).request();
-      Response response1 = request.get();      
-      List<String> list1 = response1.readEntity(LIST_OF_STRING);  
+      Response response1 = request.get();
+      List<String> list1 = response1.readEntity(LIST_OF_STRING);
 
-      Response response2 = request.get();      
-      List<String> list2 = response2.readEntity(LIST_OF_STRING);  
+      Response response2 = request.get();
+      List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());

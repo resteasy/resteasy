@@ -43,7 +43,7 @@ public class ResponseCommittedTest
    {
       return PortProviderUtil.generateBaseUrl(ResponseCommittedTest.class.getSimpleName());
    }
-   
+
    @BeforeClass
    public static void setup() {
       client = ClientBuilder.newClient();

@@ -84,7 +84,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       {
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         
+
          if (needsSecurity())
          {
             unmarshaller = new SecureUnmarshaller(unmarshaller, isDisableExternalEntities(), isEnableSecureProcessingFeature(), isDisableDTDs());

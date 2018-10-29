@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider;
 public class ObservableRxInvokerProvider implements RxInvokerProvider<ObservableRxInvoker>
 {
    WebTarget target;
-   
+
    @Override
    public boolean isProviderFor(Class<?> clazz)
    {

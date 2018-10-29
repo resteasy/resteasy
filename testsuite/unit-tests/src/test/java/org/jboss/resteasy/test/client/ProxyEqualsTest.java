@@ -18,7 +18,7 @@ import org.junit.Test;
 public class ProxyEqualsTest {
 
    public interface I {
-       
+
    }
    /**
     * @tpTestDetails Verify equality works for proxies

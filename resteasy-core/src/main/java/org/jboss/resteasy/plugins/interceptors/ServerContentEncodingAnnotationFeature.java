@@ -41,7 +41,7 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
       }
       configurable.register(createFilter(encodings));
    }
-   
+
    protected boolean isGZipRegistered(Configuration configuration)
    {
       return configuration.isRegistered(GZIPEncodingInterceptor.class);

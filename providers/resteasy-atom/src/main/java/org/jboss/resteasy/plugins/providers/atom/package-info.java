@@ -1,5 +1,5 @@
 @XmlSchema(namespace = "http://www.w3.org/2005/Atom",
-//        attributeFormDefault = XmlNsForm.QUALIFIED, 
+//        attributeFormDefault = XmlNsForm.QUALIFIED,
       elementFormDefault = XmlNsForm.QUALIFIED
 )
 @XmlJavaTypeAdapters(

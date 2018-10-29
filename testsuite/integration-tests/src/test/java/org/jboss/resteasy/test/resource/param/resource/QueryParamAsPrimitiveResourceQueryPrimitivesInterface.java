@@ -34,7 +34,7 @@ public interface QueryParamAsPrimitiveResourceQueryPrimitivesInterface {
    @GET
    @Produces("application/double")
    String doGet(@QueryParam("double") double v);
-    
+
    @GET
    @Produces("application/char")
    String doGet(@QueryParam("char") char v);

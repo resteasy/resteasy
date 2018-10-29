@@ -19,7 +19,7 @@ public class StreamRawObservableRxJava1Resource {
       Byte[] array = new Byte[] {(byte) 0, (byte) 1, (byte) 2};
       return Observable.from(array);
    }
-   
+
    @GET
    @Path("byte/false")
    @Produces("application/octet-stream;x=y")
@@ -28,7 +28,7 @@ public class StreamRawObservableRxJava1Resource {
       Byte[] array = new Byte[] {(byte) 0, (byte) 1, (byte) 2};
       return Observable.from(array);
    }
-   
+
    @GET
    @Path("byte/true")
    @Produces("application/octet-stream;x=y")
@@ -55,7 +55,7 @@ public class StreamRawObservableRxJava1Resource {
       Byte[] bytes = new Byte[] {0, 1, 2};
       return Observable.from(new Byte[][] {bytes, bytes, bytes});
    }
-   
+
    @GET
    @Path("bytes/true")
    @Produces("application/octet-stream;x=y")
@@ -64,7 +64,7 @@ public class StreamRawObservableRxJava1Resource {
       Byte[] bytes = new Byte[] {0, 1, 2};
       return Observable.from(new Byte[][] {bytes, bytes, bytes});
    }
-   
+
    @GET
    @Path("char/default")
    @Produces("text/plain;charset=UTF-8")
@@ -73,7 +73,7 @@ public class StreamRawObservableRxJava1Resource {
       Character[] array = new Character[] {'a', 'b', 'c'};
       return Observable.from(array);
    }
-   
+
    @GET
    @Path("char/false")
    @Produces("text/plain;charset=UTF-8")
@@ -82,7 +82,7 @@ public class StreamRawObservableRxJava1Resource {
       Character[] array = new Character[] {'a', 'b', 'c'};
       return Observable.from(array);
    }
-   
+
    @GET
    @Path("char/true")
    @Produces("text/plain;charset=UTF-8")
@@ -100,7 +100,7 @@ public class StreamRawObservableRxJava1Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Observable.from(new Character[][] {chars, chars, chars});
    }
-   
+
    @GET
    @Path("chars/false")
    @Produces("text/plain;charset=UTF-8")
@@ -109,7 +109,7 @@ public class StreamRawObservableRxJava1Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Observable.from(new Character[][] {chars, chars, chars});
    }
-   
+
    @GET
    @Path("chars/true")
    @Produces("text/plain;charset=UTF-8")

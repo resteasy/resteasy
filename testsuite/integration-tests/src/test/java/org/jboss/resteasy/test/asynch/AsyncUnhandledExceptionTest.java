@@ -53,7 +53,7 @@ public class AsyncUnhandledExceptionTest {
          client.close();
       }
    }
-   
+
    /**
    * @tpTestDetails Unhandled exception is thrown from a separate thread
     * @tpSince RESTEasy 4.0.0

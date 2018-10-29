@@ -94,7 +94,7 @@ public class OptionsTest {
       response = base.request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       response.close();
-        
+
       base = client.target(generateURL("/users/53/contacts"));
       response = base.request().options();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -115,7 +115,7 @@ public class OptionsTest {
       Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
       response.close();
    }
-    
+
    /**
     * @tpTestDetails Check Allow header on 200 status
     * @tpSince RESTEasy 3.0.20
@@ -126,9 +126,9 @@ public class OptionsTest {
       Response response = base.request().options();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       checkOptions(response, "GET", "POST", "HEAD", "OPTIONS");
-      response.close();   
+      response.close();
    }
-    
+
    /**
     * @tpTestDetails Check Allow header on 405 status
     * @tpSince RESTEasy 3.0.20

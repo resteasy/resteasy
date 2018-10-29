@@ -11,13 +11,13 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
-* 
-* 
+*
+*
 * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
 * @version $Revision: 1 $
 */
 
-public class SpringResourceFactory implements ResourceFactory 
+public class SpringResourceFactory implements ResourceFactory
 {
 
    protected BeanFactory beanFactory;
@@ -62,17 +62,17 @@ public class SpringResourceFactory implements ResourceFactory
    public void unregistered()
    {
    }
-   
+
    public String getBeanName()
    {
       return beanName;
    }
-   
+
    public void setContext(String context)
    {
       this.context = context;
    }
-   
+
    public String getContext()
    {
       return context;

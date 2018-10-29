@@ -36,7 +36,7 @@ public class HeadContentLengthTest
          return "hello world";
       }
    }
-   
+
    private static HttpServer httpServer;
    private static HttpContextBuilder contextBuilder;
 

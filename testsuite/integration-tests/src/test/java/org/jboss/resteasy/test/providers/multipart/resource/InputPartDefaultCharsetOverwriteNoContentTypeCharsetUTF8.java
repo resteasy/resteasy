@@ -15,6 +15,6 @@ public class InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8 implements
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      requestContext.setProperty(InputPart.DEFAULT_CHARSET_PROPERTY, InputPartDefaultCharsetOverwriteTest.UTF_8);  
+      requestContext.setProperty(InputPart.DEFAULT_CHARSET_PROPERTY, InputPartDefaultCharsetOverwriteTest.UTF_8);
    }
 }

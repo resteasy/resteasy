@@ -15,50 +15,50 @@ import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 /**
  * This {@link OneToOneDecoder} is responsible for decode {@link org.jboss.netty.handler.codec.http.HttpRequest}
  * to {@link NettyHttpRequest}'s
- * 
+ *
  * This implementation is {@link Sharable}
- * 
+ *
  * @author Norman Maurer
  *
  */
 @Sharable
-public class RestEasyHttpRequestDecoder extends OneToOneDecoder 
+public class RestEasyHttpRequestDecoder extends OneToOneDecoder
 {
 
    private final SynchronousDispatcher dispatcher;
    private final String servletMappingPrefix;
    private final String proto;
    private final boolean isKeepAlive;
-    
-   public enum Protocol 
+
+   public enum Protocol
    {
       HTTPS,
       HTTP
    }
-    
-   public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive) 
+
+   public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive)
    {
       this.dispatcher = dispatcher;
       this.servletMappingPrefix = servletMappingPrefix;
-      if (protocol == Protocol.HTTP) 
+      if (protocol == Protocol.HTTP)
       {
          proto = "http";
-      } 
-      else 
+      }
+      else
       {
          proto = "https";
       }
       this.isKeepAlive = isKeepAlive;
    }
-    
+
    @Override
-   protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
+   protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
    {
-      if (!(msg instanceof org.jboss.netty.handler.codec.http.HttpRequest)) 
+      if (!(msg instanceof org.jboss.netty.handler.codec.http.HttpRequest))
       {
          return msg;
       }
-        
+
       org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
       boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request) & isKeepAlive;
 
@@ -81,7 +81,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
          response.sendError(400);
          // made it warn so that people can filter this.
          LogMessages.LOGGER.warn(Messages.MESSAGES.failedToParseRequest(), e);
-           
+
          return null;
       }
 

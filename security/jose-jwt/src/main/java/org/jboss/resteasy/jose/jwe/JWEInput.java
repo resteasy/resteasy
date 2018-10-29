@@ -133,7 +133,7 @@ public class JWEInput
       }
       /**
        * Defaults to '*' if there is no cty header.
-       * 
+       *
        * @param <T> type
        * @param type type class
        * @return read entity of type T

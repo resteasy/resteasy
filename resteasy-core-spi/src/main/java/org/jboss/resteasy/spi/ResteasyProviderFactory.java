@@ -58,7 +58,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract Set<Class<?>> getProviderClasses();
 
    public abstract Set<Object> getProviderInstances();
-   
+
    public abstract <T> T getContextData(Class<T> type);
 
    public abstract <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations,

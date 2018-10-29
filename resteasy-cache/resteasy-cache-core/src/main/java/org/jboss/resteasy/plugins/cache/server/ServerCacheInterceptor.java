@@ -137,7 +137,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
          {
             etag = etagObject.toString();
          }
-         
+
          if (!cc.isPrivate() && !cc.isNoStore()) {
             MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
             if (context.getHeaders().containsKey(HttpHeaders.VARY)) {

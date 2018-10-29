@@ -41,18 +41,18 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
       }
    }
 
-   @SuppressWarnings({ "rawtypes", "unchecked" }) 
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    public static void transformHeaders(NettyHttpResponse nettyResponse, HttpResponse response, ResteasyProviderFactory factory)
    {
-      if(nettyResponse.isKeepAlive()) 
+      if(nettyResponse.isKeepAlive())
       {
          response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-      } 
-      else 
+      }
+      else
       {
          response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
       }
-      
+
       for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
       {
          String key = entry.getKey();

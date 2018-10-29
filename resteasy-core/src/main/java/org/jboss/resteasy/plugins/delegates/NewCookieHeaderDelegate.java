@@ -72,7 +72,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
       {
          cookieValue = "";
       }
-      
+
       return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
 
    }
@@ -94,7 +94,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
       StringBuilder b = new StringBuilder();
 
       b.append(cookie.getName()).append('=');
-      
+
       if (cookie.getValue() != null) {
          quote(b, cookie.getValue());
       }

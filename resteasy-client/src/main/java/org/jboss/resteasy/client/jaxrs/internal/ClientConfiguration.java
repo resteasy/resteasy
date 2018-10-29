@@ -291,7 +291,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       return providerFactory.getContracts(componentClass);
    }
-   
+
    public <I extends RxInvoker<?>> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
    {
       return providerFactory.getRxInvokerProvider(clazz);
@@ -301,7 +301,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       return providerFactory.getRxInvokerProviderFromReactiveClass(clazz);
    }
-   
+
    public boolean isReactive(Class<?> clazz)
    {
       return providerFactory.isReactive(clazz);

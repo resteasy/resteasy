@@ -31,7 +31,7 @@ public class MatrixPathParamTest
    private String generateBaseUrl() {
       return PortProviderUtil.generateBaseUrl(MatrixPathParamTest.class.getSimpleName());
    }
-   
+
    @Path("/")
    static public class TestResourceServer
    {
@@ -78,7 +78,7 @@ public class MatrixPathParamTest
    {
       ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
       TestInterfaceClient proxy = target.proxy(TestInterfaceClient.class);
-      
+
       String result = proxy.getM1("a").getM2("b");
       Assert.assertEquals("ab", result);
    }

@@ -100,7 +100,7 @@ public class RequestScopeModuleTest
          return "ok";
       }
    }
-   
+
    /**
     * Tests fix for RESTEASY-1428. Thanks to Antti Lampinen for this test.
     */

@@ -162,8 +162,8 @@ public interface ResteasyDeployment
    InjectorFactory getInjectorFactory();
 
    void setInjectorFactory(InjectorFactory injectorFactory);
-   
+
    Object getProperty(String key);
-   
+
    void setProperty(String key, Object value);
 }

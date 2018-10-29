@@ -30,7 +30,7 @@ public class View implements Renderable
 
    /**
     * Creates a view without a model.
-    * 
+    *
     * @param path
     *           will be dispatched to using the servlet container; it should
     *           have a leading /.

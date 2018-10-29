@@ -34,7 +34,7 @@ public class InfinispanCache implements ServerCache
    public static class CacheEntry implements Entry, Serializable
    {
       private static final long serialVersionUID = 2848638331930090578L;
-      
+
       private byte[] cached;
       private int expires;
       private long timestamp = System.currentTimeMillis();
@@ -42,7 +42,7 @@ public class InfinispanCache implements ServerCache
       private transient MultivaluedMap<String, Object> headers;
       private transient MediaType mediaType;
       private transient MultivaluedMap<String, String> varyHeaders;
-      
+
       private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MediaType mediaType, MultivaluedMap<String, String> varyHeaders)
       {
          this.cached = cached;
@@ -87,7 +87,7 @@ public class InfinispanCache implements ServerCache
       {
          return mediaType;
       }
-      
+
       private void writeObject(ObjectOutputStream stream) throws IOException
       {
          stream.defaultWriteObject();
@@ -192,7 +192,7 @@ public class InfinispanCache implements ServerCache
             }
             else if (o instanceof Cookie)
             {
-               outList.add(new HeaderHolder(HeaderHolder.Type.COOKIE, Cookie.class.cast(o).toString()));     
+               outList.add(new HeaderHolder(HeaderHolder.Type.COOKIE, Cookie.class.cast(o).toString()));
             }
             else if (o instanceof EntityTag)
             {
@@ -206,7 +206,7 @@ public class InfinispanCache implements ServerCache
       }
       return holders;
    }
-   
+
 
    protected static MultivaluedMap<String, Object> unstringifyHeaders(MultivaluedMap<String, Object> headers)
    {
@@ -218,7 +218,7 @@ public class InfinispanCache implements ServerCache
          holders.put(key, outList);
          List<Object> list = headers.get(key);
          for (Iterator<Object> it2 = list.iterator(); it2.hasNext(); )
-         {  
+         {
             HeaderHolder holder = HeaderHolder.class.cast(it2.next());
             if (HeaderHolder.Type.CACHE_CONTROL.equals(holder.getType()))
             {
@@ -236,7 +236,7 @@ public class InfinispanCache implements ServerCache
             {
                outList.add(NewCookie.valueOf(holder.getValue()));
             }
-            else 
+            else
             {
                outList.add(holder.getValue());
             }

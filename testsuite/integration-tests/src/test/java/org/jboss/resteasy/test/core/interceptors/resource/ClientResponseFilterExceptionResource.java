@@ -17,22 +17,22 @@ public interface ClientResponseFilterExceptionResource {
    @GET
    @Produces("text/plain")
    String sync();
-   
+
    @Path("cs")
    @GET
    @Produces("text/plain")
    CompletionStage<String> cs();
-   
+
    @Path("single")
    @GET
    @Produces("text/plain")
    Single<String> single();
-   
+
    @Path("observable")
    @GET
    @Produces("text/plain")
    Observable<String> observable();
-   
+
    @Path("flowable")
    @GET
    @Produces("text/plain")

@@ -88,7 +88,7 @@ public class AsynchSpringTest
       Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
       response.close();
    }
-   
+
    @Test
    public void testAsynch() throws Exception
    {
@@ -103,7 +103,7 @@ public class AsynchSpringTest
          String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
 //         System.out.println("JOB: " + jobUrl);
          response.close();
-         
+
          Builder jobBuilder = client.target(jobUrl).request();
          response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
@@ -118,7 +118,7 @@ public class AsynchSpringTest
          response = client.target(newUri).request().get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.readEntity(String.class));
-         
+
          // test its still there
          response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -126,8 +126,8 @@ public class AsynchSpringTest
 
          // delete and test delete
          response = jobBuilder.delete();
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());      
-         
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+
          response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.close();
@@ -151,7 +151,7 @@ public class AsynchSpringTest
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
          response.close();
-         
+
          builder = client.target(jobUrl1).request();
          response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
@@ -163,16 +163,16 @@ public class AsynchSpringTest
          response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.readEntity(String.class));
-         
+
          // delete and test delete
          response = builder.delete();
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());         
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
 
          response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.close();
       }
-      
+
       // test readAndRemove
       {
          dispatcher.setMaxCacheSize(10);
@@ -191,7 +191,7 @@ public class AsynchSpringTest
          response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.readEntity(String.class));
-         
+
          builder = client.target(jobUrl2).request();
          response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());

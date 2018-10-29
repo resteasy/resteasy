@@ -46,7 +46,7 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
 {
    public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
    public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
-   
+
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Serializable.class.isAssignableFrom(type)

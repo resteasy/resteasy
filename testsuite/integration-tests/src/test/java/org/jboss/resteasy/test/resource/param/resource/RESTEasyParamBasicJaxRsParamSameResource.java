@@ -65,12 +65,12 @@ public class RESTEasyParamBasicJaxRsParamSameResource
       this.pathParam0 = pathParam0;
       this.queryParam0 = queryParam0;
    }
-   
+
    public String getCookieParam2()
    {
       return cookieParam2;
    }
-   
+
    @CookieParam
    public void setCookieParam2(String cookieParam2)
    {
@@ -81,40 +81,40 @@ public class RESTEasyParamBasicJaxRsParamSameResource
    {
       return formParam2;
    }
-   
+
    @FormParam
    public void setFormParam2(String formParam2)
    {
       this.formParam2 = formParam2;
    }
-   
+
    public String getPathParam2()
    {
       return pathParam2;
    }
-   
+
    public String getHeaderParam2()
    {
       return headerParam2;
    }
-   
+
    @HeaderParam
    public void setHeaderParam2(String headerParam2)
    {
       this.headerParam2 = headerParam2;
    }
-   
+
    public String getMatrixParam2()
    {
       return matrixParam2;
    }
-   
+
    @MatrixParam
    public void setMatrixParam2(String matrixParam2)
    {
       this.matrixParam2 = matrixParam2;
    }
-   
+
    @PathParam
    public void setPathParam2(String pathParam2)
    {
@@ -125,7 +125,7 @@ public class RESTEasyParamBasicJaxRsParamSameResource
    {
       return queryParam2;
    }
-   
+
    @QueryParam
    public void setQueryParam2(String queryParam2)
    {

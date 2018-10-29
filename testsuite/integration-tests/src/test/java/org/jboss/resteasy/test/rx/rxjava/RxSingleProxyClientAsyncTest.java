@@ -43,10 +43,10 @@ import rx.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the client uses a proxy that calls a SingleRxInvoker, which returns a Single<T>
  * to which the client subscribes.
- * 
+ *
  * The server synchronously returns objects of type T.
  */
 @RunWith(Arquillian.class)

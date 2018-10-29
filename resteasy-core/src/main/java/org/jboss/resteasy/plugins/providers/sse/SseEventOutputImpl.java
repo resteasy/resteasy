@@ -46,7 +46,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private final Map<Class<?>, Object> contextDataMap;
 
    private boolean responseFlushed = false;
-   
+
    private final Object lock = new Object();
 
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
@@ -88,7 +88,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
       }
    }
-   
+
    protected void flushResponseToClient()
    {
       try
@@ -99,7 +99,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
       }
    }
-   
+
    private void internalFlushResponseToClient(boolean throwIOException) throws IOException
    {
       synchronized (lock)
@@ -146,9 +146,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                      parameterMap.put(SseConstants.SSE_ELEMENT_MEDIA_TYPE, elementType.toString());
                      String[] streamType = getStreamType(method);
                      MediaType mediaType = new MediaType(streamType[0], streamType[1], parameterMap);
-                     jaxrsResponse = (BuiltResponse) Response.ok().type(mediaType).build(); 
+                     jaxrsResponse = (BuiltResponse) Response.ok().type(mediaType).build();
                   }
-                  else 
+                  else
                   {
                      throw new RuntimeException(Messages.MESSAGES.expectedStreamOrSseMediaType());
                   }
@@ -266,8 +266,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
          catch (IOException e)
          {
-            //The connection could be broken or closed. whenever IO error happens, mark closed to true to 
-            //stop event writing 
+            //The connection could be broken or closed. whenever IO error happens, mark closed to true to
+            //stop event writing
             close();
             LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
             throw e;
@@ -283,7 +283,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
       }
    }
-   
+
    private String[] getStreamType(ResourceMethodInvoker method)
    {
       Stream stream = method.getMethod().getAnnotation(Stream.class);
@@ -302,7 +302,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       }
       throw new RuntimeException(Messages.MESSAGES.expectedStreamModeGeneralOrRaw(mode));
    }
-   
+
    private boolean contains(String[] ss, String t)
    {
       for (String s : ss)

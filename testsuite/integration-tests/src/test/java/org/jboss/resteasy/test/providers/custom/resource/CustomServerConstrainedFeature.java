@@ -10,7 +10,7 @@ import org.jboss.logging.Logger;
 
 /**
  * A feature constrained to the server runtime.
- * 
+ *
  * @author pjurak
  */
 @Provider

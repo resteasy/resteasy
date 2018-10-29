@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for favoriteMovieXmlType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="favoriteMovieXmlType">
  *   &lt;complexContent>
@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "favoriteMovieXmlType", propOrder = {
@@ -39,11 +39,11 @@ public class FavoriteMovieXmlType {
 
    /**
     * Gets the value of the title property.
-    * 
+    *
     * @return
     *     possible object is
     *     {@link String }
-    *     
+    *
     */
    public String getTitle() {
       return title;
@@ -51,11 +51,11 @@ public class FavoriteMovieXmlType {
 
    /**
     * Sets the value of the title property.
-    * 
+    *
     * @param value
     *     allowed object is
     *     {@link String }
-    *     
+    *
     */
    public void setTitle(String value) {
       this.title = value;

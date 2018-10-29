@@ -44,10 +44,10 @@ import org.junit.runners.MethodSorters;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the server uses Observables to build objects asynchronously, then collects the
  * results and returns then in one transmission.
- * 
+ *
  * The client uses a proxy to make synchronous calls.
  */
 @RunWith(Arquillian.class)
@@ -59,7 +59,7 @@ public class RxObservableProxyServerAsyncTest {
    private static RxObservableNoStreamResource proxy;
 
    private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();   
+   private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
@@ -317,11 +317,11 @@ public class RxObservableProxyServerAsyncTest {
    public void testGetTwoClients() throws Exception {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       RxObservableNoStreamResource proxy1 = client1.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
-      List<String> list1 = proxy1.get();  
+      List<String> list1 = proxy1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       RxObservableNoStreamResource proxy2 = client2.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
-      List<String> list2 = proxy2.get(); 
+      List<String> list2 = proxy2.get();
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
@@ -333,10 +333,10 @@ public class RxObservableProxyServerAsyncTest {
    @Test
    public void testGetTwoProxies() throws Exception {
       RxObservableNoStreamResource proxy1 = client.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
-      List<String> list1 = proxy1.get();   
+      List<String> list1 = proxy1.get();
 
       RxObservableNoStreamResource proxy2 = client.target(generateURL("/")).proxy(RxObservableNoStreamResource.class);
-      List<String> list2 = proxy2.get(); 
+      List<String> list2 = proxy2.get();
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());
@@ -347,8 +347,8 @@ public class RxObservableProxyServerAsyncTest {
 
    @Test
    public void testGetTwoLists() throws Exception {
-      List<String> list1 = proxy.get(); 
-      List<String> list2 = proxy.get(); 
+      List<String> list1 = proxy.get();
+      List<String> list2 = proxy.get();
 
       list1.addAll(list2);
       Assert.assertEquals(6, list1.size());

@@ -39,6 +39,6 @@ public class EncodingMimeMultipartFormProviderResource {
       ContentDisposition cd = new ContentDisposition(dispositionHeader);
       String filenameFromHeader = cd.getParameter("filename");
       logger.infov("Got filename {0}", filenameFromHeader);
-      assertEquals("Filename must match", FILENAME_NON_ASCII, filenameFromHeader); 
+      assertEquals("Filename must match", FILENAME_NON_ASCII, filenameFromHeader);
    }
 }

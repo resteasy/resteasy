@@ -153,7 +153,7 @@ public class SpringMvcHttpResponseCodesTest {
 
    /**
     * @tpTestDetails Test server http response code for NotSupportedException
-    * (The client posts an application/xml request, while the server only accepts application/json 
+    * (The client posts an application/xml request, while the server only accepts application/json
     * @tpSince RESTEasy 3.1.0
     */
    @Test

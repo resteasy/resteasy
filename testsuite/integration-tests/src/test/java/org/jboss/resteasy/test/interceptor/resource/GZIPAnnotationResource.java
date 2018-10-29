@@ -22,7 +22,7 @@ public class GZIPAnnotationResource implements GZIPAnnotationInterface
    @POST
    @Override
    public String getFoo(String request) {
-      
+
       if ("test".equals(request)) {
          String contentEncoding = headers.getRequestHeader(HttpHeaders.CONTENT_ENCODING).get(0);
          String acceptEncoding = headers.getRequestHeader(HttpHeaders.ACCEPT_ENCODING).get(0);

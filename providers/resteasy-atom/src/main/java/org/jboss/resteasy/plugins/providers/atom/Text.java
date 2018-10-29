@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  *  atomXHTMLTextConstruct =
  *    atomCommonAttributes,
  *    attribute type { "xhtml" },
- *    xhtmlDiv 
+ *    xhtmlDiv
  *
  *  atomTextConstruct = atomPlainTextConstruct | atomXHTMLTextConstruct
  *
@@ -45,9 +45,9 @@ import org.w3c.dom.Element;
  * @version $Revision: 1 $
  */
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Text extends CommonAttributes 
+public class Text extends CommonAttributes
 {
-  
+
    private String type;
 
    private MediaType mediaType;
@@ -75,8 +75,8 @@ public class Text extends CommonAttributes
    public Text(String text)
    {
       setText(text);
-   }  
-  
+   }
+
    protected void setFinder(JAXBContextFinder finder)
    {
       this.finder = finder;
@@ -93,7 +93,7 @@ public class Text extends CommonAttributes
    {
       this.value = value;
    }
-    
+
    /**
     * Mime type.
     *
@@ -120,7 +120,7 @@ public class Text extends CommonAttributes
       else if (type.equals(MediaType.APPLICATION_XHTML_XML_TYPE)) this.type = "xhtml";
       else this.type = type.toString();
    }
-  
+
    @XmlAttribute(name = "type")
    public String getRawType()
    {
@@ -131,7 +131,7 @@ public class Text extends CommonAttributes
    {
       this.type = type;
    }
-  
+
    /**
     * If content is text, return it as a String.  Otherwise, if content is not text this will return null.
     *
@@ -151,7 +151,7 @@ public class Text extends CommonAttributes
       text = buf.toString();
       return text;
    }
-  
+
    /**
     * Set content as text.
     *
@@ -199,7 +199,7 @@ public class Text extends CommonAttributes
       value.add(element);
 
    }
-    
+
    /**
     * Extract the content as the provided JAXB annotated type.
     * <p>
@@ -270,5 +270,5 @@ public class Text extends CommonAttributes
          value.add(obj);
       }
       jaxbObject = obj;
-   }  
+   }
 }

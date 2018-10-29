@@ -1117,7 +1117,7 @@ public class Base64
       }   // end if
       if (srcOffset < 0 || srcOffset + 3 >= source.length)
       {
-         throw new IllegalArgumentException(Messages.MESSAGES.sourceArrayCannotProcessFourBytes(source.length, srcOffset));  
+         throw new IllegalArgumentException(Messages.MESSAGES.sourceArrayCannotProcessFourBytes(source.length, srcOffset));
       }   // end if
       if (destOffset < 0 || destOffset + 2 >= destination.length)
       {

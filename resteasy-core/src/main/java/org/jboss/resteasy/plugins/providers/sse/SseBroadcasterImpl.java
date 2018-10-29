@@ -26,9 +26,9 @@ public class SseBroadcasterImpl implements SseBroadcaster
    private final List<BiConsumer<SseEventSink, Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
 
    private final List<Consumer<SseEventSink>> closeConsumers = new CopyOnWriteArrayList<>();
-   
+
    private final AtomicBoolean closed = new AtomicBoolean();
-   
+
    // Used to perform a mutual exclusion between register and close operations
    // since every registered SseEventSink needs to be closed when
    // SseBroadcaster.close() is invoked to prevent leaks due to SseEventSink
@@ -70,7 +70,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
          writeLock.unlock();
       }
    }
-   
+
    private void checkClosed()
    {
       if (closed.get())
@@ -78,7 +78,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
          throw new IllegalStateException(Messages.MESSAGES.sseBroadcasterIsClosed());
       }
    }
-   
+
    private void notifyOnCloseListeners(SseEventSink eventSink)
    {
       // First remove the eventSink from the outputQueue to ensure that
@@ -91,7 +91,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
          });
       }
    }
-   
+
    private void notifyOnErrorListeners(SseEventSink eventSink, Throwable throwable)
    {
       // We have to notify close listeners if the SSE event output has been
@@ -106,7 +106,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
          consumer.accept(eventSink, throwable);
       });
    }
-   
+
    @Override
    public void onError(BiConsumer<SseEventSink, Throwable> onError)
    {

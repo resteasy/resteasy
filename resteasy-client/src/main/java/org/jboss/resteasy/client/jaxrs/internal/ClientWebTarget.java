@@ -53,12 +53,12 @@ public class ClientWebTarget implements ResteasyWebTarget
       this(client, configuration);
       this.uriBuilder = uriBuilder.clone();
    }
-   
+
    /**
     * Get a new UriBuilder explicitly using RESTEasy implementation
     * (instead of running UriBuilder.fromUri(uri) which relies on
     * current registered JAX-RS implementation)
-    * 
+    *
     * @param uri
     * @return
     */
@@ -66,12 +66,12 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       return new ResteasyUriBuilderImpl().uri(uri);
    }
-   
+
    private static UriBuilder uriBuilderFromUri(String uri)
    {
       return new ResteasyUriBuilderImpl().uri(uri);
    }
-   
+
    @Override
    public ResteasyWebTarget clone()
    {
@@ -101,7 +101,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (proxyInterface == null) throw new NullPointerException(Messages.MESSAGES.proxyInterfaceWasNull());
       return createProxyBuilder(proxyInterface, this);
    }
-   
+
    protected <T> ProxyBuilder<T> createProxyBuilder(Class<T> proxyInterface, ClientWebTarget cwt)
    {
       return ProxyBuilder.builder(proxyInterface, cwt);
@@ -345,7 +345,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       }
       return newInstance(client, copy, configuration);
    }
-   
+
    protected ClientWebTarget newInstance(ResteasyClient client, UriBuilder uriBuilder, ClientConfiguration configuration) {
       return new ClientWebTarget(client, uriBuilder, configuration);
    }
@@ -381,7 +381,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       builder.setTarget(this);
       return builder;
    }
-   
+
    protected ClientInvocationBuilder createClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
       return new ClientInvocationBuilder(client, uri, configuration);
@@ -459,7 +459,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       configuration.register(component, contracts);
       return this;
    }
-   
+
    @Override
    public ResteasyWebTarget setChunked(boolean chunked)
    {

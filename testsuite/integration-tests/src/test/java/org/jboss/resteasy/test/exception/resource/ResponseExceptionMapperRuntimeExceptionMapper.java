@@ -21,7 +21,7 @@ public class ResponseExceptionMapperRuntimeExceptionMapper implements ResponseEx
          case 406:
             return new RuntimeException(response.readEntity(String.class));
          case 500:
-            return new RuntimeException(response.readEntity(String.class));   
+            return new RuntimeException(response.readEntity(String.class));
       }
       return null;
    }

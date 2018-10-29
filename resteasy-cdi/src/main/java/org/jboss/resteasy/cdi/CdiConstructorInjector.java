@@ -23,7 +23,7 @@ import java.util.concurrent.CompletionStage;
 /**
  * This ConstructorInjector implementation uses CDI's BeanManager to obtain
  * a contextual instance of a bean.
- * 
+ *
  * @author Jozef Hartinger
  *
  */
@@ -42,7 +42,7 @@ public class CdiConstructorInjector implements ConstructorInjector
    public CompletionStage<Object> construct(boolean unwrapAsync)
    {
       Set<Bean<?>> beans = manager.getBeans(type);
-      
+
       if (beans.size() > 1)
       {
          Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
@@ -55,17 +55,17 @@ public class CdiConstructorInjector implements ConstructorInjector
             if (!bean.getBeanClass().equals(type) && !bean.isAlternative())
             {
                // remove Beans that have clazz in their type closure but not as a base class
-               iterator.remove(); 
+               iterator.remove();
             }
          }
          beans = modifiableBeans;
       }
-      
+
       if (LogMessages.LOGGER.isDebugEnabled()) //keep this check for performance reasons, as toString() is expensive on CDI Bean
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.beansFound(type, beans));
       }
-      
+
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
       return CompletableFuture.completedFuture(manager.getReference(bean, type, context));

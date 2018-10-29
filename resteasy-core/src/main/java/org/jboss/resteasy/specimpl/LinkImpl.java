@@ -30,8 +30,8 @@ public class LinkImpl extends Link
    {
       return delegate.fromString(value);
    }
-   
-   LinkImpl(URI uri, Map<String, String> map) 
+
+   LinkImpl(URI uri, Map<String, String> map)
    {
       this.uri = uri;
       this.map = map.isEmpty() ? Collections.<String, String> emptyMap() : Collections

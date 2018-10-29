@@ -515,7 +515,7 @@ public class QueryParamAsPrimitiveTest {
    public void testGetDoublePrimitiveListDefault() {
       testListDefault("double", "3.14159265358979");
    }
-   
+
    /**
     * @tpTestDetails Test char primitive object for get method
     * @tpSince RESTEasy 3.0.24
@@ -551,7 +551,7 @@ public class QueryParamAsPrimitiveTest {
    public void testGetCharPrimitiveListDefault() {
       testListDefault("char", "a");
    }
-   
+
    /**
     * @tpTestDetails Test char primitive objects in array
     * @tpSince RESTEasy 3.0.24

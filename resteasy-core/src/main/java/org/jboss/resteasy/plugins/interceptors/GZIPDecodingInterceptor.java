@@ -32,17 +32,17 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
 {
    private static final int DEFAULT_MAX_SIZE = 10000000;
    private int maxSize;
-   
+
    public GZIPDecodingInterceptor(int maxSize)
    {
       this.maxSize = maxSize;
    }
-   
+
    public GZIPDecodingInterceptor()
    {
       this.maxSize = -1;
    }
-   
+
    public static class FinishableGZIPInputStream extends GZIPInputStream
    {
       private int maxSize;
@@ -53,20 +53,20 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
       {
          this(is, true, DEFAULT_MAX_SIZE);
       }
-      
+
       public FinishableGZIPInputStream(final InputStream is, boolean server) throws IOException
       {
          this(is, server, DEFAULT_MAX_SIZE);
       }
-      
+
       public FinishableGZIPInputStream(final InputStream is, boolean server, int maxSize) throws IOException
       {
          super(is);
          this.server = server;
          this.maxSize = maxSize;
       }
-      
-      public int read(byte[] buf, int off, int len) throws IOException 
+
+      public int read(byte[] buf, int off, int len) throws IOException
       {
          LogMessages.LOGGER.debugf("Interceptor : %s,  Method : read", getClass().getName());
          int n = super.read(buf, off, len);
@@ -123,14 +123,14 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
          return context.proceed();
       }
    }
-   
+
    private int getMaxSize()
    {
       if (maxSize != -1)
       {
          return maxSize;
       }
-      
+
       int size = -1;
       ServletContext context = ResteasyContext.getContextData(ServletContext.class);
       if (context != null)
@@ -152,7 +152,7 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
       {
          size = DEFAULT_MAX_SIZE;
       }
-      
+
       return size;
    }
 }

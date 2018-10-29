@@ -41,7 +41,7 @@ import io.reactivex.Flowable;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * These tests demonstrate compatibility between Rx and SSE clients and servers.
  */
 @RunWith(Arquillian.class)
@@ -108,7 +108,7 @@ public class Rx2FlowableSSECompatibilityTest {
          Assert.assertEquals(eThingList, thingList);
       }
    }
-   
+
    @Test
    public void testSseToSse() throws Exception {
       final CountDownLatch latch = new CountDownLatch(3);
@@ -129,7 +129,7 @@ public class Rx2FlowableSSECompatibilityTest {
          Assert.assertEquals(eThingList, thingList);
       }
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testFlowableToFlowable() throws Exception {
@@ -146,7 +146,7 @@ public class Rx2FlowableSSECompatibilityTest {
       Assert.assertEquals(0, errors.get());
       Assert.assertEquals(eThingList, thingList);
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testFlowableToSse() throws Exception {
@@ -163,7 +163,7 @@ public class Rx2FlowableSSECompatibilityTest {
       Assert.assertEquals(0, errors.get());
       Assert.assertEquals(eThingList, thingList);
    }
-   
+
    @Test
    public void testFlowableToFlowableProxy() throws Exception {
       CountDownLatch latch = new CountDownLatch(1);

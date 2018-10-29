@@ -19,7 +19,7 @@ public class ExceptionMapperResource {
    public String custom() throws Throwable {
       throw new ExceptionMapperMyCustomException("hello");
    }
-    
+
    @GET
    @Path("sub")
    public String sub() throws Throwable {

@@ -35,9 +35,9 @@ public class ContentEncodingInvocationTest
       }
       String contentEncoding = invocation.getHeaders().getHeader("Content-Encoding");
       Assert.assertEquals(1, countEncoding(contentEncoding));
-      
+
    }
-   
+
    private int countEncoding(String s)
    {
       int i = 0;

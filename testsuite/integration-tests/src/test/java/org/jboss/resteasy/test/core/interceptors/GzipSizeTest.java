@@ -96,7 +96,7 @@ public class GzipSizeTest {
       Assert.assertTrue(message.contains("RESTEASY003357"));
       Assert.assertTrue(message.contains("16"));
    }
-   
+
    /**
     * @tpTestDetails Test exceeding configured maximum size on client
     * @tpSince RESTEasy 3.1.0.Final

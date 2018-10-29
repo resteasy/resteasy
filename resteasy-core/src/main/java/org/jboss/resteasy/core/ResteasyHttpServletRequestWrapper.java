@@ -19,7 +19,7 @@ import javax.servlet.http.Part;
  * ResteasyHttpServletRequestWrapper is introduced to support the use of
  * RequestDispatcher.forward() and RequestDispatcher.include(), which need
  * to be able to retrieve the orginal HttpServletRequest.
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -29,19 +29,19 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
 {
    private HttpServletRequest request;
    private HttpServletRequest proxy;
-   
+
    public ResteasyHttpServletRequestWrapper(HttpServletRequest request, HttpServletRequest proxy)
    {
       super(proxy);
       this.request = request;
       this.proxy = proxy;
    }
-   
+
    public HttpServletRequest getHttpServletRequest()
    {
       return request;
    }
-   
+
    @Override
    public ServletRequest getRequest()
    {
@@ -223,14 +223,14 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
    public void login(String username, String password) throws ServletException
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
    public void logout() throws ServletException
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
@@ -253,5 +253,5 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
       // TODO Auto-generated method stub
       return null;
    }
-   
+
 }

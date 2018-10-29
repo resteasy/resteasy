@@ -42,13 +42,13 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ProviderPriorityProvidersInApplicationTest {
-   
+
    static ResteasyClient client;
 
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersInApplicationTest.class.getSimpleName());
-      war.addClasses(ProviderPriorityFoo.class, 
+      war.addClasses(ProviderPriorityFoo.class,
             ProviderPriorityFooParamConverter.class,
             ProviderPriorityTestException.class
       );
@@ -56,7 +56,7 @@ public class ProviderPriorityProvidersInApplicationTest {
       singletons.add(ProviderPriorityExceptionMapperCCC.class);
       singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
       return TestUtil.finishContainerPrepare(war, null, singletons,
-            ProviderPriorityResource.class, 
+            ProviderPriorityResource.class,
             ProviderPriorityExceptionMapperAAA.class,
             ProviderPriorityExceptionMapperBBB.class,
             ProviderPriorityExceptionMapperCCC.class,
@@ -98,7 +98,7 @@ public class ProviderPriorityProvidersInApplicationTest {
       assertEquals(444, response.getStatus());
       assertEquals("CCC", response.readEntity(String.class));
    }
-   
+
    /**
     * @tpTestDetails Tests that ParamConverterProviders are sorted by priority
     * @tpSince RESTEasy 4.0.0

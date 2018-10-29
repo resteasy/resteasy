@@ -109,19 +109,19 @@ public class ResteasyJAXRSImplTest
       testResteasyProviderFactoryGetInstance();
       testResteasyProviderFactoryNewInstance();
    }
-   
+
    private void testClientBuilderNewBuilder() {
       ClientBuilder client = ClientBuilder.newBuilder();
       Assert.assertTrue(client instanceof ResteasyClientBuilder);
    }
-   
+
    private void testRuntimeDelegateGetInstance() {
       RuntimeDelegate.setInstance(null);
       RuntimeDelegate rd = RuntimeDelegate.getInstance();
       Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rd.getClass()));
       RuntimeDelegate.setInstance(null);
    }
-   
+
    private void testResteasyProviderFactoryGetInstance() {
       ResteasyProviderFactory.setInstance(null);
       ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
@@ -133,7 +133,7 @@ public class ResteasyJAXRSImplTest
       Assert.assertNotEquals(rpf, rpf2);
       ResteasyProviderFactory.setInstance(null);
    }
-   
+
    private void testResteasyProviderFactoryNewInstance() {
       ResteasyProviderFactory.setInstance(null);
       ResteasyProviderFactory rpf = ResteasyProviderFactory.newInstance();
@@ -148,7 +148,7 @@ public class ResteasyJAXRSImplTest
       Assert.assertNotEquals(rpf, rpf2);
       Assert.assertNotEquals(rpf, rpf3);
       Assert.assertNotEquals(rpf2, rpf3);
-      
+
       ResteasyProviderFactory rpfGI = ResteasyProviderFactory.getInstance();
       Assert.assertTrue(ResteasyProviderFactory.class.isAssignableFrom(rpfGI.getClass()));
       Assert.assertNotEquals(rpfGI, rpf3);

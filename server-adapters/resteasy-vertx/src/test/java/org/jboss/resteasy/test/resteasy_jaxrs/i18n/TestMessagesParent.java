@@ -9,10 +9,10 @@ import java.util.Locale;
 import java.util.Properties;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
- * 
+ *
  * Copyright Oct 8, 2014
  */
 abstract public class TestMessagesParent
@@ -24,16 +24,16 @@ abstract public class TestMessagesParent
    @BeforeClass
    static public void beforeClass()
    {
-      savedLocale = Locale.getDefault();  
+      savedLocale = Locale.getDefault();
    }
-   
+
    @AfterClass
    static public void afterClass()
    {
       Locale.setDefault(savedLocale);
       LOG.info("Reset default locale to: " + savedLocale);
    }
-   
+
    public boolean before(Locale locale, String filename) throws Exception
    {
       LOG.info("default locale: " + Locale.getDefault());
@@ -48,14 +48,14 @@ abstract public class TestMessagesParent
       properties.load(is);
       return getExpectedNumberOfMethods() == properties.size();
    }
-   
+
    protected String getExpected(String id, String message, Object... args)
    {
       String expected = "RESTEASY" + id + ": " + String.format(replacePositionalSpecifiers(String.class.cast(properties.get(message))), args);
       LOG.info("expected: " + expected);
-      return expected;    
+      return expected;
    }
-   
+
    protected String replacePositionalSpecifiers(String s)
    {
 //      LOG.info("before: " + s);
@@ -77,7 +77,7 @@ abstract public class TestMessagesParent
 //      LOG.info("after: " + s);
       return s;
    }
-   
+
    abstract protected int getExpectedNumberOfMethods();
    abstract protected Locale getLocale();
 }

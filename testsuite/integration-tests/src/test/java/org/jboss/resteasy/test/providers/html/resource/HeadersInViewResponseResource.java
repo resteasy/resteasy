@@ -9,7 +9,7 @@ import org.jboss.resteasy.plugins.providers.html.View;
 
 @Path("/test")
 public class HeadersInViewResponseResource {
-   
+
    @GET
    @Path("get")
    public Response get()

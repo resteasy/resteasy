@@ -19,26 +19,26 @@ import org.junit.Test;
  * @tpSince RESTEasy 4.0.0
  */
 public class MessageSanitizerMediaTypeTest {
-   
+
    static private final String input = "<html &lt;\"abc\" 'xyz'&gt;/>";
    static private final String output = "&lt;html &amp;lt;&quot;abc&quot; &#x27;xyz&#x27;&amp;gt;&#x2F;&gt;";
-   
+
    public static class TestContainerResponseContext extends  ContainerResponseContextImpl {
       public TestContainerResponseContext(BuiltResponse builtResponse) {
          super(null, null, builtResponse, null, null, null, null);
       }
    }
-   
+
    @Test
    public void testMessageSanitizerText() throws Exception {
       doTestMessageSanitizerMediaType("text/html");
    }
-   
+
    @Test
    public void testMessageSanitizerMediaType() throws Exception {
       doTestMessageSanitizerMediaType(MediaType.TEXT_HTML_TYPE);
    }
-   
+
    void doTestMessageSanitizerMediaType(Object mediaType) throws Exception {
       Headers<Object> headers = new Headers<Object>();
       headers.add("Content-Type", mediaType);

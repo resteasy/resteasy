@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class GZIPAnnotationTest {
-   
+
    static Client client;
 
    @BeforeClass

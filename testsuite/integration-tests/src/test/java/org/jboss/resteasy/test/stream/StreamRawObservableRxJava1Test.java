@@ -34,7 +34,7 @@ import java.util.PropertyPermission;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * These tests check raw streaming.
  */
 @RunWith(Arquillian.class)
@@ -81,7 +81,7 @@ public class StreamRawObservableRxJava1Test {
       doTestByte("false");
       doTestByte("true");
    }
-   
+
    void doTestByte(String include) {
       Invocation.Builder request = client.register(StreamRawByteMessageBodyReaderWriter.class).target(generateURL("/byte/" + include)).request();
       Response response = request.get();
@@ -100,7 +100,7 @@ public class StreamRawObservableRxJava1Test {
       doTestByteArray("false");
       doTestByteArray("true");
    }
-   
+
    void doTestByteArray(String include) {
       Invocation.Builder request = client.target(generateURL("/bytes/" + include)).request();
       Response response = request.get();
@@ -113,14 +113,14 @@ public class StreamRawObservableRxJava1Test {
          Assert.assertEquals(expected[i], entity[i]);
       }
    }
-   
+
    @Test
    public void testChar() throws Exception {
       doTestChar("default");
       doTestChar("false");
       doTestChar("true");
    }
-   
+
    void doTestChar(String include) {
       Invocation.Builder request = client.target(generateURL("/char/" + include)).request();
       Response response = request.get();
@@ -129,14 +129,14 @@ public class StreamRawObservableRxJava1Test {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("abc", entity);
    }
-   
+
    @Test
    public void testCharArray() throws Exception {
       doTestCharArray("default");
       doTestCharArray("false");
       doTestCharArray("true");
    }
-   
+
    void doTestCharArray(String include) {
       Invocation.Builder request = client.register(StreamRawCharArrayMessageBodyReaderWriter.class).target(generateURL("/chars/" + include)).request();
       Response response = request.get();

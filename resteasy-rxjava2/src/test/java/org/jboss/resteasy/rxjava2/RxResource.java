@@ -109,7 +109,7 @@ public class RxResource
          return str;
       });
    }
-   
+
    @Path("injection")
    @GET
    public Single<Integer> injection(@Context Integer value)

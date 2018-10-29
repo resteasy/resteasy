@@ -140,7 +140,7 @@ public class SimpleResourceImpl {
    public Thing exceptionHandled() throws Exception {
       throw new TestException("handled");
    }
-   
+
    static List<Thing> buildThingList(String s, int listSize) {
       List<Thing> list = new ArrayList<Thing>();
       for (int i = 0; i < listSize; i++) {

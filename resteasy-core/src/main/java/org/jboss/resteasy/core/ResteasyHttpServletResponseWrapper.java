@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * ResteasyHttpServletResponseWrapper is introduced to support the use of
  * RequestDispatcher.forward() and RequestDispatcher.include(), which need
  * to be able to retrieve the orginal HttpServletResponse.
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -25,25 +25,25 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
 {
    private HttpServletResponse response;
    private HttpServletResponse proxy;
-   
+
    public ResteasyHttpServletResponseWrapper(HttpServletResponse response, HttpServletResponse proxy)
    {
       super(response);
       this.proxy = proxy;
       this.response = response;
    }
-   
+
    public HttpServletResponse getHttpServletResponse()
    {
       return response;
-   }  
-   
+   }
+
    @Override
    public ServletResponse getResponse()
    {
       return response;
-   } 
-   
+   }
+
    @Override
    public String getCharacterEncoding()
    {
@@ -162,7 +162,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
     * @deprecated   As of version 2.1, use encodeURL(String url) instead
     *
     * @param  url   the url to be encoded.
-    * @return    the encoded URL if encoding is needed; 
+    * @return    the encoded URL if encoding is needed;
     *         the unchanged URL otherwise.
     */
    @Override
@@ -172,11 +172,11 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
    }
 
    /**
-    * @deprecated   As of version 2.1, use 
+    * @deprecated   As of version 2.1, use
     *         encodeRedirectURL(String url) instead
     *
     * @param  url   the url to be encoded.
-    * @return    the encoded URL if encoding is needed; 
+    * @return    the encoded URL if encoding is needed;
     *         the unchanged URL otherwise.
     */
    @Override
@@ -246,13 +246,13 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
    }
 
    /**
-    * @deprecated As of version 2.1, due to ambiguous meaning of the 
-    * message parameter. To set a status code 
+    * @deprecated As of version 2.1, due to ambiguous meaning of the
+    * message parameter. To set a status code
     * use <code>setStatus(int)</code>, to send an error with a description
     * use <code>sendError(int, String)</code>.
     *
     * Sets the status code and message for this response.
-    * 
+    *
     * @param  sc the status code
     * @param  sm the status message
     */
@@ -289,5 +289,5 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
       // TODO Auto-generated method stub
       return null;
    }
-   
+
 }

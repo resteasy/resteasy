@@ -232,7 +232,7 @@ public final class TypeConverter
    {
       Class<?> actualTarget = targetType;
       /*
-       * if this is a primitive type, use the Object class's "valueOf()" 
+       * if this is a primitive type, use the Object class's "valueOf()"
        * method.
        */
       if (targetType.isPrimitive())
@@ -276,7 +276,7 @@ public final class TypeConverter
     * @return object instance of type T
     * @throws IllegalArgumentException if not suitable constructor was found
     * @throws InstantiationException if the underlying constructor represents an abstract class
-    * @throws IllegalAccessException if the underlying constructor is not accessible 
+    * @throws IllegalAccessException if the underlying constructor is not accessible
     * @throws InvocationTargetException if the underlying constructor throws exception
     */
    private static <T> T getTypeViaStringConstructor(String source, Class<T> targetType)

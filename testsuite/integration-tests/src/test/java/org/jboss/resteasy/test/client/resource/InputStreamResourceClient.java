@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 @Produces("text/plain")
 @Consumes("text/plain")
 public interface InputStreamResourceClient {
-   
+
    @GET
    String getAsString();
 

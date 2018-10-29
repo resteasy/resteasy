@@ -35,7 +35,7 @@ import java.util.Map;
  * A special JAXB Provider. It is not a real provider, it is only used as a
  * helper class inside {@link XopWithMultipartRelatedReader} and
  * {@link XopWithMultipartRelatedWriter}.
- * 
+ *
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */

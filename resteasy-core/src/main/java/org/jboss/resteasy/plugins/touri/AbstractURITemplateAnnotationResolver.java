@@ -52,7 +52,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          PropertyDescriptor propertyDescriptor = descriptors.get(param);
          if (propertyDescriptor == null)
          {
-            throw new RuntimeException(Messages.MESSAGES.couldNotFindGetterForParam(param));  
+            throw new RuntimeException(Messages.MESSAGES.couldNotFindGetterForParam(param));
          }
 
          Method readMethod = propertyDescriptor.getReadMethod();
@@ -67,7 +67,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          }
          catch (Exception e)
          {
-            throw new RuntimeException(Messages.MESSAGES.couldNotGetAValue(param), e);  
+            throw new RuntimeException(Messages.MESSAGES.couldNotGetAValue(param), e);
          }
       }
       return values;
@@ -90,7 +90,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
       }
       catch (IntrospectionException e)
       {
-         throw new RuntimeException(Messages.MESSAGES.couldNotIntrospectClass(clazz.getName()), e);  
+         throw new RuntimeException(Messages.MESSAGES.couldNotIntrospectClass(clazz.getName()), e);
       }
    }
 }

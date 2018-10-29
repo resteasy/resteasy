@@ -37,12 +37,12 @@ public class ClientInvocationBuilder implements Invocation.Builder
       invocation = createClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
       this.uri = uri;
    }
-   
+
    protected ClientInvocation createClientInvocation(ResteasyClient client, URI uri, ClientRequestHeaders headers, ClientConfiguration parent)
    {
       return new ClientInvocation(client, uri, headers, parent);
    }
-   
+
    protected ClientInvocation createClientInvocation(ClientInvocation invocation)
    {
       return new ClientInvocation(invocation);
@@ -52,7 +52,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       return invocation.headers;
    }
-   
+
    public void setClientInvocation(ClientInvocation invocation)
    {
       this.invocation = invocation;
@@ -332,12 +332,12 @@ public class ClientInvocationBuilder implements Invocation.Builder
       invocation.property(name, value);
       return this;
    }
-   
+
    public boolean isChunked()
    {
       return invocation.isChunked();
    }
-   
+
    public void setChunked(boolean chunked)
    {
       invocation.setChunked(chunked);
@@ -374,7 +374,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       return build(HttpMethod.PATCH, entity).invoke(responseType);
    }
-   
+
    public URI getURI()
    {
       return uri;

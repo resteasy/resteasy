@@ -145,7 +145,7 @@ public class PublisherResponseNoStreamTest {
          if(collector.size() >= 2) {
             future.complete(null);
          }
-      }, 
+      },
          t -> {
             logger.error(t.getMessage(), t);
             errors.add(t);

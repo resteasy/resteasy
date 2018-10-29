@@ -191,7 +191,7 @@ public class ValidationExceptionsTest {
       logger.info("entity: " + entity);
       Assert.assertTrue(ERROR_MESSAGE, entity.contains("ConstraintDeclarationException"));
    }
-    
+
    @Test
    @OperateOnDeployment(CUSTOM_DECL_EXCEPTION)
    public void testCustomConstraintDeclarationException() throws Exception {

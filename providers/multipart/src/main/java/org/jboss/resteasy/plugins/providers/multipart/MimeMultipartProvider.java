@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
  * <p>
  * When the {@link MimeMultipart} is passed to the method body, it is up to the
  * developer to extract the various parts.
- * 
+ *
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  */
 

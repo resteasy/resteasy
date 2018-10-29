@@ -81,7 +81,7 @@ public interface BasicResource
    @Produces("text/plain")
    @Path("bogus-rul-test")
    Response testBogusUrl();
-   
+
    @GET
    @Produces("application/xml")
    @Path("spring/object/xml")

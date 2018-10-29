@@ -33,29 +33,29 @@ public class AsyncInjectionResource
       this.resolvedContextConstructor = resolvedContextConstructor;
       this.asyncContextConstructor = asyncContextConstructor;
    }
-   
+
    public CompletionStage<AsyncInjectionContext> getAsyncContextProperty()
    {
       return asyncContextProperty;
    }
-   
+
    @Context
    public void setAsyncContextProperty(CompletionStage<AsyncInjectionContext> asyncContextProperty)
    {
       this.asyncContextProperty = asyncContextProperty;
    }
-   
+
    public AsyncInjectionContext getResolvedContextProperty()
    {
       return resolvedContextProperty;
    }
-   
+
    @Context
    public void setResolvedContextProperty(AsyncInjectionContext resolvedContextProperty)
    {
       this.resolvedContextProperty = resolvedContextProperty;
    }
-   
+
    @GET
    public Response asyncInjectionPoints(@Context AsyncInjectionContext resolvedContextParam,
          @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
@@ -98,7 +98,7 @@ public class AsyncInjectionResource
 
       if(request.getAsyncContext().isSuspended())
          return Response.serverError().entity("Suspended request").build();
-      
+
       return Response.ok("resource").build();
    }
 
@@ -116,7 +116,7 @@ public class AsyncInjectionResource
 
       if(!request.getAsyncContext().isSuspended())
          return Response.serverError().entity("Non-suspended request").build();
-      
+
       return Response.ok("resource").build();
    }
 
@@ -145,9 +145,9 @@ public class AsyncInjectionResource
 
    @Path("/exception-async")
    @GET
-   public Response asyncInjectionExceptionAsync(@AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
+   public Response asyncInjectionExceptionAsync(@AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier
          @Context AsyncInjectionContext resolvedContextParam,
-         @AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier 
+         @AsyncInjectionContextErrorSpecifier @AsyncInjectionContextAsyncSpecifier
          @Context CompletionStage<AsyncInjectionContext> asyncContextParam)
          throws InterruptedException, ExecutionException
    {
@@ -177,12 +177,12 @@ public class AsyncInjectionResource
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Boolean boolBoxedNull,
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Boolean boolBoxedNull2,
          @Context boolean bool,
-         
+
          @Context Character charBoxedS,
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Character charBoxedNull,
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Character charBoxedNull2,
          @Context char c,
-         
+
          @Context Byte byteBoxed42,
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NULL) Byte byteBoxedNull,
          @Context @AsyncInjectionPrimitiveInjectorSpecifier(Type.NO_RESULT) Byte byteBoxedNull2,

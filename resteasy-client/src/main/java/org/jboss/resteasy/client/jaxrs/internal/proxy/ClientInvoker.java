@@ -51,7 +51,7 @@ public class ClientInvoker implements MethodInvoker
    protected ClientConfiguration invokerConfig;
    protected RxInvokerProvider<?> rxInvokerProvider;
    protected SyncInvoker syncInvoker;
-   
+
 
    public ClientInvoker(ResteasyWebTarget parent, Class<?> declaring, Method method, ProxyConfig config)
    {
@@ -113,7 +113,7 @@ public class ClientInvoker implements MethodInvoker
    {
       return rxInvokerProvider != null ? invokeAsync(args) : invokeSync(args);
    }
-   
+
    protected Object invokeAsync(final Object[] args)
    {
       ClientInvocationBuilder builder = (ClientInvocationBuilder) webTarget.request();
@@ -122,7 +122,7 @@ public class ClientInvoker implements MethodInvoker
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
       {
-         executor = webTarget.getResteasyClient().asyncInvocationExecutor();         
+         executor = webTarget.getResteasyClient().asyncInvocationExecutor();
       }
       RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
       Type type = method.getGenericReturnType();
@@ -143,7 +143,7 @@ public class ClientInvoker implements MethodInvoker
       }
       return o;
    }
-   
+
    protected Object invokeSync(Object[] args)
    {
       ClientInvocation request = createRequest(args);

@@ -51,10 +51,10 @@ import io.reactivex.Flowable;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * In these tests, the server uses Flowables to create results asynchronously and streams the elements
  * of the Flowables as they are created.
- * 
+ *
  * The client makes invocations on an FlowableRxInvoker.
  */
 @RunWith(Arquillian.class)
@@ -67,7 +67,7 @@ public class Rx2FlowableTest {
    private static AtomicInteger errors;
 
    private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();   
+   private final static List<String> aStringList = new ArrayList<String>();
    private final static List<Thing>  xThingList =  new ArrayList<Thing>();
    private final static List<Thing>  aThingList =  new ArrayList<Thing>();
    private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
@@ -734,12 +734,12 @@ public class Rx2FlowableTest {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();      
+      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(FlowableRxInvokerProvider.class);
       FlowableRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();   
+      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();
 
       flowable1.subscribe(
          (String o) -> list.add(o),
@@ -767,10 +767,10 @@ public class Rx2FlowableTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       FlowableRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();      
+      Flowable<String> flowable1 = (Flowable<String>) invoker1.get();
 
       FlowableRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();   
+      Flowable<String> flowable2 = (Flowable<String>) invoker2.get();
 
       flowable1.subscribe(
          (String o) -> list.add(o),
@@ -798,8 +798,8 @@ public class Rx2FlowableTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
-      Flowable<String> flowable1 = (Flowable<String>) invoker.get();      
-      Flowable<String> flowable2 = (Flowable<String>) invoker.get();   
+      Flowable<String> flowable1 = (Flowable<String>) invoker.get();
+      Flowable<String> flowable2 = (Flowable<String>) invoker.get();
 
       flowable1.subscribe(
          (String o) -> list.add(o),

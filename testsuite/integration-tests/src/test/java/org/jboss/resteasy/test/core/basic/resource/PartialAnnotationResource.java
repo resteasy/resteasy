@@ -6,7 +6,7 @@ import javax.ws.rs.Produces;
 
 /**
  * A PartialAnnotationResource.
- * 
+ *
  * @author pjurak
  */
 @Path("/test")
@@ -17,8 +17,8 @@ public interface PartialAnnotationResource
    String bar();
 
    /** This is not REST method.
-    * 
-    * @return 
+    *
+    * @return
     */
    // @GET
    // @Produces("text/plain")

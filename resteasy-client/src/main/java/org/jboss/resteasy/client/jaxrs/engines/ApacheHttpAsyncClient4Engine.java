@@ -203,7 +203,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
             return this;
          }
       };
-      
+
       private ClientConfiguration configuration;
       private Map<String, Object> properties;
       private ResultExtractor<T> extractor;
@@ -655,7 +655,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       {
          releaseConnection(false);
       }
-      
+
       @Override
       public synchronized void releaseConnection(boolean consumeInputStream) throws IOException
       {
@@ -689,7 +689,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
             }
          }
       }
-      
+
    }
 
    private static class EndOfStream implements ContentDecoder

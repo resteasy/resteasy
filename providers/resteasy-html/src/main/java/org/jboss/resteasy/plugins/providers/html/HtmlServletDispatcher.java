@@ -18,11 +18,11 @@ public class HtmlServletDispatcher extends HttpServletDispatcher
    {
       return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory())
       {
-         
+
          protected OutputStream getSuperOuptutStream() throws IOException{
             return super.getOutputStream();
          }
-         
+
          public OutputStream getOutputStream() throws IOException
          {
             return new OutputStream()
@@ -56,7 +56,7 @@ public class HtmlServletDispatcher extends HttpServletDispatcher
                {
                   getSuperOuptutStream().close();
                }
-               
+
             };
          }
       };

@@ -51,7 +51,7 @@ public class HttpContextTest
    public void testNoDefaultsResource() throws Exception
    {
       Client client = ClientBuilder.newClient();
-      
+
       {
          Response response = client.target(generateURL("/basic")).request().get();
          Assert.assertEquals(200, response.getStatus());
@@ -63,7 +63,7 @@ public class HttpContextTest
          Assert.assertEquals(204, response.getStatus());
          response.close();
       }
-      
+
       {
          Response response = client.target(generateURL("/queryParam")).queryParam("param", "hello world").request().get();
          Assert.assertEquals(200, response.getStatus());
@@ -73,7 +73,7 @@ public class HttpContextTest
       {
          Response response = client.target(generateURL("/uriParam/1234")).request().get();
          Assert.assertEquals(200, response.getStatus());
-         Assert.assertEquals("1234", response.readEntity(String.class));   
+         Assert.assertEquals("1234", response.readEntity(String.class));
       }
    }
 

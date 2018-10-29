@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0
- * 
+ *
  * These tests run synchronously on client, making synchronous invocations.
  * The server creates and returns CompletionStages which run asynchronously.
  */
@@ -324,7 +324,7 @@ public class RxCompletionStageServerAsyncTest {
       ResteasyClient client1 = (ResteasyClient)ClientBuilder.newClient();
       client1.register(CompletionStageRxInvokerProvider.class);
       Builder request1 = client1.target(generateURL("/get/string")).request();
-      Response response1 = request1.get();      
+      Response response1 = request1.get();
 
       ResteasyClient client2 = (ResteasyClient)ClientBuilder.newClient();
       client2.register(CompletionStageRxInvokerProvider.class);
@@ -345,7 +345,7 @@ public class RxCompletionStageServerAsyncTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       Builder request1 = client.target(generateURL("/get/string")).request();
-      Response response1 = request1.get();      
+      Response response1 = request1.get();
 
       Builder request2 = client.target(generateURL("/get/string")).request();
       Response response2 = request2.get();
@@ -364,7 +364,7 @@ public class RxCompletionStageServerAsyncTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       Builder request = client.target(generateURL("/get/string")).request();
-      Response response1 = request.get();      
+      Response response1 = request.get();
       Response response2 = request.get();
 
       list.add(response1.readEntity(String.class));

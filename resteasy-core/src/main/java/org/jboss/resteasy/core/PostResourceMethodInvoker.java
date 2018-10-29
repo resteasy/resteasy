@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */

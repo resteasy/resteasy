@@ -24,13 +24,13 @@ import java.util.concurrent.CompletionStage;
 public class FormParamInjector extends StringParameterInjector implements ValueInjector
 {
    private boolean encode;
-   
+
    public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       super(type, genericType, header, FormParam.class, defaultValue, target, annotations, factory);
       this.encode = encode;
    }
-   
+
    @Override
    public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {

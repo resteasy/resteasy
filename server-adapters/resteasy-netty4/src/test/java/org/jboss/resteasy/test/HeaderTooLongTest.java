@@ -20,7 +20,7 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * RESTEASY-1244
- * 
+ *
  * @version $Revision: 1 $
  */
 public class HeaderTooLongTest

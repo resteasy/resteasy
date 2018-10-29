@@ -160,7 +160,7 @@ public class Rx2SingleResourceImpl {
    public Single<Thing> exceptionUnhandled() throws Exception {
       throw new Exception("unhandled");
    }
-   
+
    @GET
    @Path("exception/handled")
    public Single<Thing> exceptionHandled() throws Exception {

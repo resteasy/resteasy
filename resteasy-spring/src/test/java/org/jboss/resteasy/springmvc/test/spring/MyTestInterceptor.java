@@ -19,7 +19,7 @@ public class MyTestInterceptor implements HandlerInterceptor
       hitCount.put("afterCompletion", 0);
       hitCount.put("postHandle", 0);
       hitCount.put("preHandle", 0);
-      
+
    }
 
    public void afterCompletion(HttpServletRequest request,

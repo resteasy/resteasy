@@ -125,7 +125,7 @@ public class ResteasyUriInfo implements UriInfo
       }
       extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
-      else 
+      else
       {
          matchingPath = encodedPath;
          if (matchingPath.length() > 1 && matchingPath.endsWith("/"))

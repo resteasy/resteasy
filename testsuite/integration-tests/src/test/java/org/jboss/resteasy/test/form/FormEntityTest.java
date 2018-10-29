@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 public class FormEntityTest {
 
    private static Client client;
-   
+
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(FormEntityTest.class.getSimpleName());
@@ -64,7 +64,7 @@ public class FormEntityTest {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(s.equals("abc|fp=abc&fp2=\"\"") || s.equals("abc|fp2=\"\"&fp=abc"));
    }
-   
+
    /**
     * @tpTestDetails Retrieve form param and form entity
     * @tpSince RESTEasy 4.0.0
@@ -78,7 +78,7 @@ public class FormEntityTest {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(s.equals("abc|fp=abc&fp2") || s.equals("abc|fp2&fp=abc"));
    }
-   
+
    /**
     * @tpTestDetails Retrieve form param and form entity
     * @tpSince RESTEasy 4.0.0

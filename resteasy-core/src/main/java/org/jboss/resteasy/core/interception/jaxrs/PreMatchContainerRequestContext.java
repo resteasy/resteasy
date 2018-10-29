@@ -51,8 +51,8 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    {
       this(request, new ContainerRequestFilter[]{}, null);
    }
-   
-   public PreMatchContainerRequestContext(HttpRequest request, 
+
+   public PreMatchContainerRequestContext(HttpRequest request,
          ContainerRequestFilter[] requestFilters, Supplier<BuiltResponse> continuation)
    {
       this.httpRequest = request;
@@ -243,7 +243,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          suspended = false;
       }
    }
-   
+
    @Override
    public synchronized void resume() {
       if(!suspended)
@@ -254,7 +254,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          suspended = false;
          return;
       }
-         
+
       ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
       try {
@@ -264,7 +264,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          writeException(t);
       }
    }
-   
+
    @Override
    public synchronized void resume(Throwable t) {
       if(!suspended)
@@ -281,7 +281,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          writeException(t);
       }
    }
-   
+
    private void writeException(Throwable t)
    {
       /*

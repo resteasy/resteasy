@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,12 +34,12 @@ import java.util.List;
  * either "yes" or "no", indicating whether the list of categories is a fixed or
  * an open set. The absence of the "fixed" attribute is equivalent to the
  * presence of a "fixed" attribute with a value of "no".
- * 
+ *
  * Alternatively, the app:categories element MAY contain an "href" attribute,
  * whose value MUST be an IRI reference identifying a Category Document. If the
  * "href" attribute is provided, the app: categories element MUST be empty and
  * MUST NOT have the "fixed" or "scheme" attributes.
- * 
+ *
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
  * @version $Revision: 1 $
  */
@@ -65,7 +65,7 @@ public class AppCategories extends AppCommonAttributes {
    protected String href;
 
    public AppCategories() {}
-    
+
    public AppCategories(List<Category> category, Boolean fixed, String scheme,
          String href) {
       super();
@@ -77,25 +77,25 @@ public class AppCategories extends AppCommonAttributes {
 
    /**
     * Gets the value of the category property.
-    * 
+    *
     * <p>
     * This accessor method returns a reference to the live list,
     * not a snapshot. Therefore any modification you make to the
     * returned list will be present inside the JAXB object.
     * This is why there is not a <CODE>set</CODE> method for the category property.
-    * 
+    *
     * <p>
     * For example, to add a new item, do as follows:
     * <pre>
     *    getCategory().add(newItem);
     * </pre>
-    * 
-    * 
+    *
+    *
     * <p>
     * Objects of the following type(s) are allowed in the list
     * {@link Category }
     * @return list of categories
-    * 
+    *
     */
    public List<Category> getCategory() {
       if (category == null) {
@@ -106,11 +106,11 @@ public class AppCategories extends AppCommonAttributes {
 
    /**
     * Gets the value of the fixed property.
-    * 
+    *
     * @return
     *     possible object is
     *     {@link Boolean }
-    *     
+    *
     */
    public Boolean isFixed() {
       return fixed;
@@ -118,21 +118,21 @@ public class AppCategories extends AppCommonAttributes {
 
    /**
     * Sets the value of the fixed property.
-    * 
+    *
     * @param value
     *     allowed object is
     *     {@link Boolean }
-    *     
+    *
     */
    public void setFixed(Boolean value) {
       this.fixed = value;
    }
-    
+
    /**
     * Gets the value of the scheme property.
-    * 
+    *
     * @return possible object is {@link String }
-    * 
+    *
     */
    public String getScheme() {
       return scheme;
@@ -140,20 +140,20 @@ public class AppCategories extends AppCommonAttributes {
 
    /**
     * Sets the value of the scheme property.
-    * 
+    *
     * @param value
     *            allowed object is {@link String }
-    * 
+    *
     */
    public void setScheme(String value) {
       this.scheme = value;
    }
-    
+
    /**
     * Gets the value of the href property.
-    * 
+    *
     * @return possible object is {@link String }
-    * 
+    *
     */
    public String getHref() {
       return href;
@@ -161,10 +161,10 @@ public class AppCategories extends AppCommonAttributes {
 
    /**
     * Sets the value of the href property.
-    * 
+    *
     * @param value
     *            allowed object is {@link String }
-    * 
+    *
     */
    public void setHref(String value) {
       this.href = value;

@@ -36,21 +36,21 @@ public class ChunkedTransferEncodingUnitTest
    private static ServerSocket ss;
    private static Socket s;
    private final static Logger logger = Logger.getLogger(ChunkedTransferEncodingUnitTest.class);
-   
+
    private static String RESPONSE_200 =
          "HTTP/1.1 200 OK\r\n" +
          "Content-Type: text/plain;charset=UTF-8\r\n" +
          "Content-Length: 2\r\n" +
          "\r\n" +
          "ok";
-   
+
    private static String RESPONSE_400 =
          "HTTP/1.1 400 OK\r\n" +
          "Content-Type: text/plain;charset=UTF-8\r\n" +
          "Content-Length: 6\r\n" +
          "\r\n" +
          "not ok";
-              
+
    static final String testFilePath;
 
    static {
@@ -58,14 +58,13 @@ public class ChunkedTransferEncodingUnitTest
    }
 
    private String fakeServerHostAndPort;
-
    //////////////////////////////////////////////////////////////////////////////
-   
+
    @Before
    public void before() throws Exception
    {
       int[] chars = new int[1024];
-      
+
       t = new Thread() {
          public void run() {
             try {
@@ -106,7 +105,7 @@ public class ChunkedTransferEncodingUnitTest
       }
       return chars[length - 4] == '\r' && chars[length - 3] == '\n' && chars[length - 2] == '\r' && chars[length - 1] == '\n';
    }
-   
+
    private static int getLength(int[] chars, int start, InputStream is) throws IOException {
       int i = start;
       while (true) {
@@ -121,7 +120,7 @@ public class ChunkedTransferEncodingUnitTest
          }
       }
    }
-   
+
    @After
    public void after() throws Exception
    {
@@ -149,7 +148,7 @@ public class ChunkedTransferEncodingUnitTest
       response.close();
       client.close();
    }
-   
+
    @Test
    public void testChunkedRequest() throws Exception {
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();

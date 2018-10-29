@@ -22,7 +22,7 @@ public class JsonParsing
       char c = (char) i;
       StringBuffer buffer = new StringBuffer();
       if (c != '{') throw new JAXBUnmarshalException(Messages.MESSAGES.expectingLeftBraceJsonMap());
-      
+
       buffer.append(c);
       do
       {

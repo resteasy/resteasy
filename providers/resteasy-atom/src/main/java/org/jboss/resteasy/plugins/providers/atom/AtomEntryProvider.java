@@ -97,7 +97,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       }
       HashSet<Class> set = new HashSet<Class>();
       set.add(Entry.class);
-      
+
       if (entry.getAnyOtherJAXBObject() != null) {
          set.add(entry.getAnyOtherJAXBObject().getClass());
       }

@@ -54,7 +54,7 @@ public class AsyncInjectionTest {
    public static Archive<?> createTestArchive() {
 
       WebArchive war = TestUtil.prepareArchive(AsyncInjectionTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class, 
+      return TestUtil.finishContainerPrepare(war, null, AsyncInjectionResource.class,
               AsyncInjectionContext.class, AsyncInjectionContextInjector.class,
               AsyncInjectionContextInterface.class, AsyncInjectionContextInterfaceInjector.class,
               AsyncInjectionContextAsyncSpecifier.class, AsyncInjectionContextErrorSpecifier.class,
@@ -83,7 +83,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 
@@ -100,7 +100,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 
@@ -117,7 +117,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 
@@ -134,7 +134,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 
@@ -151,7 +151,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
-        
+
       client.close();
    }
 
@@ -168,7 +168,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-202 result: "+response.readEntity(String.class), 202, response.getStatus());
-        
+
       client.close();
    }
 
@@ -185,7 +185,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 
@@ -202,7 +202,7 @@ public class AsyncInjectionTest {
       Response response = base.request()
          .get();
       assertEquals("Non-200 result: "+response.readEntity(String.class), 200, response.getStatus());
-        
+
       client.close();
    }
 }

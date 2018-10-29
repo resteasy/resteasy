@@ -75,7 +75,7 @@ public class CacheControlFeature implements DynamicFeature
       cacheControl.setNoCache(methodCached.noCache());
       return cacheControl;
    }
-   
+
    protected CacheControl initCacheControl(NoCache value)
    {
       CacheControl cacheControl = new CacheControl();

@@ -70,7 +70,7 @@ public class ServerCacheInterceptorTest {
    }
 
    /**
-    * @tpTestDetails Verifies that a 'public' resource is cached by the server side cache. 
+    * @tpTestDetails Verifies that a 'public' resource is cached by the server side cache.
     * @tpSince RESTEasy 3.0.16
     */
    @Test

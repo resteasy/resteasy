@@ -83,7 +83,7 @@ public class ContextParameterInjector implements ValueInjector
                // make request async
                if(!request.getAsyncContext().isSuspended())
                   request.getAsyncContext().suspend();
-               
+
                Map<Class<?>, Object> contextDataMap = ResteasyContext.getContextDataMap();
                // Don't forget to restore the context
                return ((CompletionStage<Object>) contextData).thenApply(value -> {
@@ -103,7 +103,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          try
          {
-           
+
             Object delegate = factory.getContextData(rawType, genericType, annotations, false);
             if (delegate == null)
             {
@@ -112,8 +112,8 @@ public class ContextParameterInjector implements ValueInjector
                {
                   return null;
                }
-              
-               if ("getContextResolver".equals(name)) 
+
+               if ("getContextResolver".equals(name))
                {
                   return method.invoke(factory, objects);
                }

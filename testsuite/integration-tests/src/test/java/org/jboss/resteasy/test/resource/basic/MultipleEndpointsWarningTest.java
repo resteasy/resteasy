@@ -36,7 +36,7 @@ import java.util.logging.LoggingPermission;
 public class MultipleEndpointsWarningTest
 {
    private static Client client;
-   
+
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
@@ -52,7 +52,7 @@ public class MultipleEndpointsWarningTest
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, MultipleEndpointsWarningTest.class.getSimpleName());
    }
-   
+
    @BeforeClass
    public static void setUp() throws Exception {
       client = ClientBuilder.newClient();
@@ -64,7 +64,7 @@ public class MultipleEndpointsWarningTest
       client.target(generateURL("/teardown")).request().get();
       client.close();
    }
-   
+
    @Test
    public void testUnique() throws Exception {
       Response response = client.target(generateURL("/unique/")).request().accept(MediaType.TEXT_PLAIN).get();

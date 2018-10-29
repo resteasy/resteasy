@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,11 +51,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Gets the value of the base property.
-    * 
+    *
     * @return
     *     possible object is
     *     {@link String }
-    *     
+    *
     */
    @javax.xml.bind.annotation.XmlTransient
    public String getBase() {
@@ -64,11 +64,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Sets the value of the base property.
-    * 
+    *
     * @param value
     *     allowed object is
     *     {@link String }
-    *     
+    *
     */
    public void setBase(String value) {
       this.base = value;
@@ -76,11 +76,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Gets the value of the lang property.
-    * 
+    *
     * @return
     *     possible object is
     *     {@link String }
-    *     
+    *
     */
    @javax.xml.bind.annotation.XmlTransient
    public String getLang() {
@@ -89,11 +89,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Sets the value of the lang property.
-    * 
+    *
     * @param value
     *     allowed object is
     *     {@link String }
-    *     
+    *
     */
    public void setLang(String value) {
       this.lang = value;
@@ -101,11 +101,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Gets the value of the space property.
-    * 
+    *
     * @return
     *     possible object is
     *     {@link String }
-    *     
+    *
     */
    @javax.xml.bind.annotation.XmlTransient
    public String getSpace() {
@@ -114,11 +114,11 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Sets the value of the space property.
-    * 
+    *
     * @param value
     *     allowed object is
     *     {@link String }
-    *     
+    *
     */
    public void setSpace(String value) {
       this.space = value;
@@ -126,15 +126,15 @@ public class AppCommonAttributes implements Serializable
 
    /**
     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-    * 
+    *
     * <p>
-    * the map is keyed by the name of the attribute and 
+    * the map is keyed by the name of the attribute and
     * the value is the string value of the attribute.
-    * 
+    *
     * the map returned by this method is live, and you can add new attribute
     * by updating the map directly. Because of this design, there's no setter.
-    * 
-    * 
+    *
+    *
     * @return
     *     always non-null
     */

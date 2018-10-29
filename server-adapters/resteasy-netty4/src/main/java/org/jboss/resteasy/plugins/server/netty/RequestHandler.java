@@ -68,9 +68,9 @@ public class RequestHandler extends SimpleChannelInboundHandler
       }
    }
 
-// No longer called. However, note that if it is called, it should write a 
+// No longer called. However, note that if it is called, it should write a
 // io.netty.handler.codec.http.DefaultFullHttpResponse rather
-// than a io.netty.handler.codec.http.DefaultHttpResponse. The latter doesn't leave 
+// than a io.netty.handler.codec.http.DefaultHttpResponse. The latter doesn't leave
 // io.netty.handler.codec.http.HttpObjectEncoder in state ST_INIT, so that the next
 // message going into HttpObjectEncoder causes it to throw an exception.
 //

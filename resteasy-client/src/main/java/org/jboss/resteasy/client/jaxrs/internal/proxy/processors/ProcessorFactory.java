@@ -154,14 +154,14 @@ public class ProcessorFactory
       }
       return processor;
    }
-   
+
    static Type getTypeArgument(TypeVariable<?> var, Class<?> clazz, Class<?> baseInterface) {
       TypeVariable<?> tv = var;
       // collect superinterfaces
       Stack<Type> superinterfaces = new Stack<Type>();
       Type currentType;
       Class<?> currentClass = clazz;
-      recursivePush(currentClass, baseInterface, superinterfaces); 
+      recursivePush(currentClass, baseInterface, superinterfaces);
 
       while (!superinterfaces.isEmpty()) {
          currentType = superinterfaces.pop();

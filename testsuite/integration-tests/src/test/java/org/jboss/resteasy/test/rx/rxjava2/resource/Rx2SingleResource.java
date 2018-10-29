@@ -121,7 +121,7 @@ public interface Rx2SingleResource {
    @Path("trace/thing/list")
    @Produces(MediaType.APPLICATION_JSON)
    Single<List<Thing>> traceThingList();
-   
+
    @GET
    @Path("exception/unhandled")
    Single<Thing> exceptionUnhandled() throws Exception;

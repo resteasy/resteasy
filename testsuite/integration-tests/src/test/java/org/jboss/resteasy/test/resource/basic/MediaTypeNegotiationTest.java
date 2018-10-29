@@ -76,7 +76,7 @@ public class MediaTypeNegotiationTest
          message.setMessage(String.valueOf(msg));
          return Response.ok(message).build();
       }
-      
+
       @Produces({"foo/bar"})
       @GET
       @Path("missingMBW")
@@ -112,7 +112,7 @@ public class MediaTypeNegotiationTest
          return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_XML_TYPE).entity(message).build();
       }
    }
-   
+
    private static Client client;
    private static final String DEP = "MediaTypeNegotiationTest";
 
@@ -184,7 +184,7 @@ public class MediaTypeNegotiationTest
          response.close();
       }
    }
-   
+
    @Test
    public void Should_ReturnXMLEncodedMessageEntity_When_NotFoundException() throws Exception
    {

@@ -21,7 +21,7 @@ public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, C
    @Override
    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
       Object entity = application.getClass().isSynthetic() ? in + responseContext.getEntity() + "-out" : responseContext.getEntity();
-      responseContext.setEntity(entity); 
+      responseContext.setEntity(entity);
    }
 
    @Override

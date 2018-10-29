@@ -107,5 +107,5 @@ public class CacheControlAnnotationTest {
       Assert.assertTrue("There must be no-cache", cc.isNoCache());
       response.close();
    }
-   
+
 }

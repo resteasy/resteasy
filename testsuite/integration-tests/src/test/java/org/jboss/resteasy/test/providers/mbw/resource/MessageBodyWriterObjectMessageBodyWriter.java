@@ -18,7 +18,7 @@ import javax.ws.rs.ext.Provider;
 public class MessageBodyWriterObjectMessageBodyWriter implements MessageBodyWriter<Object> {
 
    public static volatile boolean used;
-   
+
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
       return MessageBodyWriterObjectMessage.class.isAssignableFrom(type);

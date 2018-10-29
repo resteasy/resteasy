@@ -34,7 +34,7 @@ public class TestWadlFunctions extends WADLTestSetup {
    private static HttpServer httpServer;
    protected static HttpContextBuilder contextBuilder;
    private Client client;
-
+   
    public Client getClient() {
       return client;
    }
@@ -61,17 +61,17 @@ public class TestWadlFunctions extends WADLTestSetup {
 
    @AfterClass
    public static void after() throws Exception {
-        
+
       contextBuilder.cleanup();
       httpServer.stop(0);
       Thread.sleep(100);
    }
-    
+
    @Before
    public void init() {
       setClient(ClientBuilder.newClient());
    }
-    
+
    @After
    public void clean() {
       try {

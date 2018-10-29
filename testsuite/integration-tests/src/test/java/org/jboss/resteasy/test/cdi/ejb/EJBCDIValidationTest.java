@@ -77,7 +77,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 1, 0, 1, 0); 
+      TestUtil.countViolations(r, 0, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -93,7 +93,7 @@ public class EJBCDIValidationTest {
       r = new ViolationReport(answer);
       TestUtil.countViolations(r, 0, 0, 0, 1, 0);
    }
-   
+
    /**
     * @tpTestDetails Verify correct order of validation on stateful EJBs
     * @tpSince RESTEasy 4.0.0
@@ -107,7 +107,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 1, 0, 1, 0); 
+      TestUtil.countViolations(r, 0, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -123,7 +123,7 @@ public class EJBCDIValidationTest {
       r = new ViolationReport(answer);
       TestUtil.countViolations(r, 0, 1, 0, 1, 0);
    }
-   
+
    /**
     * @tpTestDetails Verify correct order of validation on singleton EJBs
     * @tpSince RESTEasy 4.0.0
@@ -133,7 +133,7 @@ public class EJBCDIValidationTest {
       doTestSingleton(1); // Expect property violation when EJB resource gets created.
       doTestSingleton(0); // EJB resource has been created: expect no property violation.
    }
-   
+
    void doTestSingleton(int propertyViolations) {
       // Expect property, parameter violations
       WebTarget base = client.target(generateURL("/rest/singleton/"));
@@ -142,7 +142,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, propertyViolations, 0, 1, 0);   
+      TestUtil.countViolations(r, 0, propertyViolations, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
