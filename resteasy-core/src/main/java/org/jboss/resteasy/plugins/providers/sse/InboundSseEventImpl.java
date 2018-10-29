@@ -56,7 +56,7 @@ public class InboundSseEventImpl implements InboundSseEvent
 
       private final StringBuilder commentBuilder;
 
-      Builder(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers)
+      Builder(final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> headers)
       {
          this.annotations = annotations;
          this.mediaType = mediaType;

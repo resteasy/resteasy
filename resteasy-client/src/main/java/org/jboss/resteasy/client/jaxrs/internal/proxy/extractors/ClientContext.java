@@ -9,7 +9,7 @@ public class ClientContext
    private ClientResponse clientResponse;
    private EntityExtractorFactory extractorFactory;
 
-   public ClientContext(ClientInvocation invocation, ClientResponse clientResponse, EntityExtractorFactory extractorFactory)
+   public ClientContext(final ClientInvocation invocation, final ClientResponse clientResponse, final EntityExtractorFactory extractorFactory)
    {
       this.invocation = invocation;
       this.clientResponse = clientResponse;

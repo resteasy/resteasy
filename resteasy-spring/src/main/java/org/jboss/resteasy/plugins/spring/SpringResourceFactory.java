@@ -26,7 +26,7 @@ public class SpringResourceFactory implements ResourceFactory
    protected PropertyInjector propertyInjector;
    protected String context = null;
 
-   public SpringResourceFactory(String beanName, BeanFactory beanFactory, Class<?> scannable)
+   public SpringResourceFactory(final String beanName, final BeanFactory beanFactory, final Class<?> scannable)
    {
       this.beanName = beanName;
       this.beanFactory = beanFactory;

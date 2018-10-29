@@ -43,7 +43,7 @@ public class ServerDigitalSigningHeaderDecoratorFeature implements DynamicFeatur
    @Priority(Priorities.HEADER_DECORATOR)
    public static class DigitalSigningHeaderDecorator extends AbstractDigitalSigningHeaderDecorator implements ContainerResponseFilter
    {
-      public DigitalSigningHeaderDecorator(Signed signed)
+      public DigitalSigningHeaderDecorator(final Signed signed)
       {
          this.signed = signed;
       }

@@ -28,7 +28,7 @@ public class FlowableRxInvokerImpl implements FlowableRxInvoker
    private ScheduledExecutorService executorService;
    private BackpressureStrategy backpressureStrategy = BackpressureStrategy.BUFFER;
 
-   public FlowableRxInvokerImpl(SyncInvoker syncInvoker, ExecutorService executorService)
+   public FlowableRxInvokerImpl(final SyncInvoker syncInvoker, final ExecutorService executorService)
    {
       if (!(syncInvoker instanceof ClientInvocationBuilder))
       {

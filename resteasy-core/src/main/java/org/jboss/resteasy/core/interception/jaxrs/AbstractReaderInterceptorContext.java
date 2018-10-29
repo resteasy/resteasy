@@ -37,7 +37,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    protected int index = 0;
 
    @Deprecated
-   public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
+   public AbstractReaderInterceptorContext(final MediaType mediaType, final ResteasyProviderFactory providerFactory, final Annotation[] annotations, final ReaderInterceptor[] interceptors, final MultivaluedMap<String, String> headers, final Type genericType, final Class type, final InputStream inputStream)
    {
       this.mediaType = mediaType;
       this.annotations = annotations;
@@ -50,7 +50,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       this.tracingLogger = RESTEasyTracingLogger.empty();
    }
 
-   public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream, RESTEasyTracingLogger logger)
+   public AbstractReaderInterceptorContext(final MediaType mediaType, final ResteasyProviderFactory providerFactory, final Annotation[] annotations, final ReaderInterceptor[] interceptors, final MultivaluedMap<String, String> headers, final Type genericType, final Class type, final InputStream inputStream, final RESTEasyTracingLogger logger)
    {
       this.mediaType = mediaType;
       this.annotations = annotations;

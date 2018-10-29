@@ -30,7 +30,7 @@ public class ChunkOutputStream extends OutputStream
    private final VertxHttpResponse response;
    private final int chunkSize;
 
-   ChunkOutputStream(VertxHttpResponse response, int chunksize)
+   ChunkOutputStream(final VertxHttpResponse response, final int chunksize)
    {
       this.response = response;
       if (chunksize < 1)

@@ -16,7 +16,7 @@ public class Redirect implements Renderable
 
    private URI path;
 
-   public Redirect(URI path)
+   public Redirect(final URI path)
    {
       this.path = path;
    }
@@ -25,7 +25,7 @@ public class Redirect implements Renderable
     * @param path
     *           must be a valid URI
     */
-   public Redirect(String path)
+   public Redirect(final String path)
    {
       try
       {

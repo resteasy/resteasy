@@ -17,7 +17,7 @@ public class ResteasyRegistration
    {
    }
 
-   public ResteasyRegistration(String context, String beanName)
+   public ResteasyRegistration(final String context, final String beanName)
    {
       this.context = context;
       this.beanName = beanName;

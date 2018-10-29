@@ -16,7 +16,7 @@ public class FilterBootstrap extends ListenerBootstrap
 {
    private FilterConfig config;
 
-   public FilterBootstrap(FilterConfig config)
+   public FilterBootstrap(final FilterConfig config)
    {
       super(config.getServletContext());
       this.config = config;

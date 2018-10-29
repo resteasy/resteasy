@@ -22,7 +22,7 @@ import java.util.concurrent.CompletionStage;
 public class HeaderParamInjector extends StringParameterInjector implements ValueInjector
 {
 
-   public HeaderParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
+   public HeaderParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String header, final String defaultValue, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       super(type, genericType, header, HeaderParam.class, defaultValue, target, annotations, factory);
    }

@@ -89,7 +89,7 @@ public class JAXBContextWrapper extends JAXBContext
     */
    private Schema schema;
 
-   public JAXBContextWrapper(JAXBContext wrappedContext, JAXBConfig config) throws JAXBException
+   public JAXBContextWrapper(final JAXBContext wrappedContext, final JAXBConfig config) throws JAXBException
    {
       processConfig(config);
       this.wrappedContext = wrappedContext;
@@ -103,7 +103,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config jaxb configuration
     * @throws JAXBException jaxb exception
     */
-   public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, JAXBConfig config) throws JAXBException
+   public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, final JAXBConfig config) throws JAXBException
    {
       processConfig(config);
       try
@@ -137,7 +137,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config jaxb config
     * @throws JAXBException jaxb exception
     */
-   public JAXBContextWrapper(final String contextPath, JAXBConfig config) throws JAXBException
+   public JAXBContextWrapper(final String contextPath, final JAXBConfig config) throws JAXBException
    {
       processConfig(config);
       try
@@ -171,7 +171,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config jaxb config
     * @throws JAXBException jaxb exception
     */
-   public JAXBContextWrapper(JAXBConfig config, Class<?>... classes) throws JAXBException
+   public JAXBContextWrapper(final JAXBConfig config, final Class<?>... classes) throws JAXBException
    {
       this(classes, Collections.<String, Object>emptyMap(), config);
    }

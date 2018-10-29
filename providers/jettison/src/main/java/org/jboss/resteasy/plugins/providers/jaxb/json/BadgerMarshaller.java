@@ -28,7 +28,7 @@ public class BadgerMarshaller extends BaseMarshaller
 {
    private JAXBContext context;
 
-   public BadgerMarshaller(JAXBContext context) throws JAXBException
+   public BadgerMarshaller(final JAXBContext context) throws JAXBException
    {
       this.context = context;
       marshaller = this.context.createMarshaller();

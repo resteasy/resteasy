@@ -21,7 +21,7 @@ public class ServerCacheHitFilter implements ContainerRequestFilter
    protected ServerCache cache;
    public static final String DO_NOT_CACHE_RESPONSE = "DO NOT CACHE RESPONSE";
 
-   public ServerCacheHitFilter(ServerCache cache)
+   public ServerCacheHitFilter(final ServerCache cache)
    {
       this.cache = cache;
    }

@@ -18,7 +18,7 @@ public class CacheControlFilter implements ContainerResponseFilter
 {
    protected CacheControl cacheControl;
 
-   public CacheControlFilter(CacheControl cacheControl)
+   public CacheControlFilter(final CacheControl cacheControl)
    {
       this.cacheControl = cacheControl;
    }

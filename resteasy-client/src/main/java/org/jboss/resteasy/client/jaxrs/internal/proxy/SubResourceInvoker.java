@@ -21,7 +21,7 @@ public class SubResourceInvoker implements MethodInvoker
    Annotation[] jaxParams;
    boolean hasJaxParams;
 
-   public SubResourceInvoker(ResteasyWebTarget parent, Method method, ProxyConfig config)
+   public SubResourceInvoker(final ResteasyWebTarget parent, final Method method, final ProxyConfig config)
    {
       this.config = config;
       this.method = method;

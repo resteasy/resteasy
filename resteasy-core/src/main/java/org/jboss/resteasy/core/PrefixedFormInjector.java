@@ -24,7 +24,7 @@ public class PrefixedFormInjector extends FormInjector
     * @param prefix prefix
     * @param factory provider factory
     */
-   public PrefixedFormInjector(Class type, String prefix, ResteasyProviderFactory factory)
+   public PrefixedFormInjector(final Class type, final String prefix, final ResteasyProviderFactory factory)
    {
       super(type, factory);
       this.prefix = prefix;

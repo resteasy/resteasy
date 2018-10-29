@@ -13,7 +13,7 @@ public class VerifierWrapper implements X509HostnameVerifier
 {
    protected HostnameVerifier verifier;
 
-   VerifierWrapper(HostnameVerifier verifier)
+   VerifierWrapper(final HostnameVerifier verifier)
    {
       this.verifier = verifier;
    }

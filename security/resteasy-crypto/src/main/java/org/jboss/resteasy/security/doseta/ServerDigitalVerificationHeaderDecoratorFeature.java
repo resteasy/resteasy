@@ -57,7 +57,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
    {
       protected boolean hasEntityParameter;
 
-      public DigitalVerificationHeaderDecorator(Verify verify, Verifications verifications, boolean hasEntityParameter)
+      public DigitalVerificationHeaderDecorator(final Verify verify, final Verifications verifications, final boolean hasEntityParameter)
       {
          this.verify = verify;
          this.verifications = verifications;

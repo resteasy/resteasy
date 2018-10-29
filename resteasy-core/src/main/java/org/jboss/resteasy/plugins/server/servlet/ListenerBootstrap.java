@@ -21,7 +21,7 @@ public class ListenerBootstrap extends ConfigurationBootstrap
 {
    protected ServletContext servletContext;
 
-   public ListenerBootstrap(ServletContext servletContext)
+   public ListenerBootstrap(final ServletContext servletContext)
    {
       this.servletContext = servletContext;
    }

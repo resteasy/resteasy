@@ -50,12 +50,12 @@ public class KeyStoreKeyRepository
       }
    }
 
-   public KeyStoreKeyRepository(InputStream is, String password)
+   public KeyStoreKeyRepository(final InputStream is, final String password)
    {
       init(is, password);
    }
 
-   public KeyStoreKeyRepository(String filename, String password) throws IOException
+   public KeyStoreKeyRepository(final String filename, final String password) throws IOException
    {
       InputStream is = new FileInputStream(filename);
       init(is, password);

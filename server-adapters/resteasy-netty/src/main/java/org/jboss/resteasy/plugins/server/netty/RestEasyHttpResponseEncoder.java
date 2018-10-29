@@ -34,7 +34,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
 
    private final RequestDispatcher dispatcher;
 
-   public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher)
+   public RestEasyHttpResponseEncoder(final RequestDispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }

@@ -30,7 +30,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
 {
    protected final RequestDispatcher dispatcher;
 
-   public RequestHandler(RequestDispatcher dispatcher)
+   public RequestHandler(final RequestDispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }

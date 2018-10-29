@@ -19,7 +19,7 @@ public abstract class AbstractCollectionProcessor<T>
    protected Annotation[] annotations;
    protected ClientConfiguration config;
 
-   public AbstractCollectionProcessor(String paramName)
+   public AbstractCollectionProcessor(final String paramName)
    {
       this.paramName = paramName;
    }

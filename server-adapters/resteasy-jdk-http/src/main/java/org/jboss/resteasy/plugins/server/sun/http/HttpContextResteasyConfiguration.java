@@ -15,7 +15,7 @@ public class HttpContextResteasyConfiguration implements ResteasyConfiguration
 {
    protected HttpContext context;
 
-   public HttpContextResteasyConfiguration(HttpContext context)
+   public HttpContextResteasyConfiguration(final HttpContext context)
    {
       this.context = context;
    }

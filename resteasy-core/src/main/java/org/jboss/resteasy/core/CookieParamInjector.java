@@ -24,7 +24,7 @@ import java.util.concurrent.CompletionStage;
 public class CookieParamInjector extends StringParameterInjector implements ValueInjector
 {
 
-   public CookieParamInjector(Class type, Type genericType, AccessibleObject target, String cookieName, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
+   public CookieParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String cookieName, final String defaultValue, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       if (type.equals(Cookie.class))
       {

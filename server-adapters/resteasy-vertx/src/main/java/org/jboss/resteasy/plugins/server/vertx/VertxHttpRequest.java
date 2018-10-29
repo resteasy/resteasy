@@ -50,7 +50,7 @@ public class VertxHttpRequest extends BaseHttpRequest
    private final Context context;
    private volatile boolean flushed;
 
-   public VertxHttpRequest(Context context, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, VertxHttpResponse response, boolean is100ContinueExpected)
+   public VertxHttpRequest(final Context context, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher, final VertxHttpResponse response, final boolean is100ContinueExpected)
    {
       super(uri);
       this.context = context;
@@ -180,7 +180,7 @@ public class VertxHttpRequest extends BaseHttpRequest
       protected volatile boolean wasSuspended;
       protected VertxHttpAsyncResponse asyncResponse;
 
-      VertxExecutionContext(VertxHttpRequest request, VertxHttpResponse response, SynchronousDispatcher dispatcher)
+      VertxExecutionContext(final VertxHttpRequest request, final VertxHttpResponse response, final SynchronousDispatcher dispatcher)
       {
          super(dispatcher, request, response);
          this.request = request;
@@ -235,7 +235,7 @@ public class VertxHttpRequest extends BaseHttpRequest
          private long timerID = -1;
          private VertxHttpResponse vertxResponse;
 
-         VertxHttpAsyncResponse(SynchronousDispatcher dispatcher, VertxHttpRequest request, VertxHttpResponse response)
+         VertxHttpAsyncResponse(final SynchronousDispatcher dispatcher, final VertxHttpRequest request, final VertxHttpResponse response)
          {
             super(dispatcher, request, response);
             this.vertxResponse = response;

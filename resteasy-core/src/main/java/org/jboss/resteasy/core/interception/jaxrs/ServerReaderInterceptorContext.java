@@ -31,10 +31,10 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
 {
    private HttpRequest request;
 
-   public ServerReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
-                                         Type genericType, Annotation[] annotations, MediaType mediaType,
-                                         MultivaluedMap<String, String> headers, InputStream inputStream,
-                                         HttpRequest request)
+   public ServerReaderInterceptorContext(final ReaderInterceptor[] interceptors, final ResteasyProviderFactory providerFactory, final Class type,
+                                         final Type genericType, final Annotation[] annotations, final MediaType mediaType,
+                                         final MultivaluedMap<String, String> headers, final InputStream inputStream,
+                                         final HttpRequest request)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream, RESTEasyTracingLogger.getInstance(request));
       this.request = request;

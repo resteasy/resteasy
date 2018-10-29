@@ -47,13 +47,13 @@ public abstract class ClientResponse extends BuiltResponse
    protected RESTEasyTracingLogger tracingLogger;
 
    @Deprecated
-   protected ClientResponse(ClientConfiguration configuration)
+   protected ClientResponse(final ClientConfiguration configuration)
    {
       setClientConfiguration(configuration);
       tracingLogger = RESTEasyTracingLogger.empty();
    }
 
-   protected ClientResponse(ClientConfiguration configuration, RESTEasyTracingLogger tracingLogger)
+   protected ClientResponse(final ClientConfiguration configuration, final RESTEasyTracingLogger tracingLogger)
    {
       setClientConfiguration(configuration);
       this.tracingLogger = tracingLogger;
@@ -180,7 +180,7 @@ public abstract class ClientResponse extends BuiltResponse
 
       private ClientResponse response;
 
-      protected InputStreamWrapper(InputStream in, ClientResponse response) {
+      protected InputStreamWrapper(final InputStream in, final ClientResponse response) {
          super(in);
          this.response = response;
       }

@@ -33,7 +33,7 @@ public class ChunkOutputStream extends OutputStream {
    final ChannelHandlerContext ctx;
    final NettyHttpResponse response;
 
-   ChunkOutputStream(NettyHttpResponse response, ChannelHandlerContext ctx, int chunksize) {
+   ChunkOutputStream(final NettyHttpResponse response, final ChannelHandlerContext ctx, final int chunksize) {
       this.response = response;
       if (chunksize < 1) {
          throw new IllegalArgumentException(Messages.MESSAGES.chunkSizeMustBeAtLeastOne());

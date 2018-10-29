@@ -33,7 +33,7 @@ public class MediaTypeMap<T>
       private static final long serialVersionUID = -8815419198743440920L;
       private Class<?> type;
 
-      TypedEntryComparator(Class<?> type)
+      TypedEntryComparator(final Class<?> type)
       {
          this.type = type;
       }
@@ -97,7 +97,7 @@ public class MediaTypeMap<T>
       public MediaType mediaType;
       public T object;
 
-      private Entry(MediaType mediaType, T object)
+      private Entry(final MediaType mediaType, final T object)
       {
          this.mediaType = mediaType;
          this.object = object;
@@ -268,7 +268,7 @@ public class MediaTypeMap<T>
       private final int hash;
 
       @SuppressWarnings({"rawtypes", "unchecked"})
-      private CachedMediaTypeAndClass(Class clazz, MediaType mediaType)
+      private CachedMediaTypeAndClass(final Class clazz, final MediaType mediaType)
       {
          this.clazz = new WeakReference(clazz);
          this.mediaType = mediaType;

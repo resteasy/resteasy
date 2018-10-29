@@ -16,7 +16,7 @@ public class NoContentInputStreamDelegate extends InputStream
    protected InputStream delegate;
    protected boolean hasRead;
 
-   public NoContentInputStreamDelegate(InputStream delegate)
+   public NoContentInputStreamDelegate(final InputStream delegate)
    {
       this.delegate = delegate;
    }

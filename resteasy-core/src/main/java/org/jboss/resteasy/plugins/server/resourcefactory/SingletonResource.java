@@ -22,13 +22,13 @@ public class SingletonResource implements ResourceFactory
    private final ResourceClass resourceClass;
 
    @Deprecated
-   public SingletonResource(Object obj)
+   public SingletonResource(final Object obj)
    {
       this.obj = obj;
       this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(obj.getClass());
    }
 
-   public SingletonResource(Object obj, ResourceClass resourceClass)
+   public SingletonResource(final Object obj, final ResourceClass resourceClass)
    {
       this.obj = obj;
       this.resourceClass = resourceClass;

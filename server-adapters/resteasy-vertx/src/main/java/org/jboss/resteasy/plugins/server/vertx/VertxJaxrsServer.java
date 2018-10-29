@@ -189,7 +189,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
       final ResteasyDeployment deployment;
       final SecurityDomain domain;
 
-      Helper(String root, HttpServerOptions serverOptions, ResteasyDeployment deployment, SecurityDomain domain)
+      Helper(final String root, final HttpServerOptions serverOptions, final ResteasyDeployment deployment, final SecurityDomain domain)
       {
          this.root = root;
          this.serverOptions = serverOptions;

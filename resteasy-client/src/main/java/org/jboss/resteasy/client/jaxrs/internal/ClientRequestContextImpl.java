@@ -29,7 +29,7 @@ public class ClientRequestContextImpl implements ClientRequestContext
    protected ClientInvocation invocation;
    protected Response abortedWithResponse;
 
-   public ClientRequestContextImpl(ClientInvocation invocation)
+   public ClientRequestContextImpl(final ClientInvocation invocation)
    {
       this.invocation = invocation;
    }

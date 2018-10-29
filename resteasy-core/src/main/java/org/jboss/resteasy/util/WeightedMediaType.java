@@ -19,7 +19,7 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
    private float weight = 1.0f;
 
 
-   private WeightedMediaType(String type, String subtype, Map<String, String> parameters)
+   private WeightedMediaType(final String type, final String subtype, final Map<String, String> parameters)
    {
       super(type, subtype, parameters);
    }

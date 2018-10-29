@@ -21,7 +21,7 @@ public class CacheEntry implements Entry, Serializable
    private final String key;
    private Map extendedProperties = new ConcurrentHashMap();
 
-   public CacheEntry(String key, MultivaluedMap<String, String> headers, byte[] cached, int expires, String etag, String lastModified, MediaType mediaType)
+   public CacheEntry(final String key, final MultivaluedMap<String, String> headers, final byte[] cached, final int expires, final String etag, final String lastModified, final MediaType mediaType)
    {
       this.key = key;
       this.cached = cached;

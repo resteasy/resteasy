@@ -36,12 +36,12 @@ public class Verification
    {
    }
 
-   public Verification(PublicKey key)
+   public Verification(final PublicKey key)
    {
       this.key = key;
    }
 
-   public Verification(KeyRepository repository)
+   public Verification(final KeyRepository repository)
    {
       this.repository = repository;
    }

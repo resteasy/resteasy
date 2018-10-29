@@ -25,7 +25,7 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
 {
    private boolean encode;
 
-   public FormParamInjector(Class type, Type genericType, AccessibleObject target, String header, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
+   public FormParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String header, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       super(type, genericType, header, FormParam.class, defaultValue, target, annotations, factory);
       this.encode = encode;

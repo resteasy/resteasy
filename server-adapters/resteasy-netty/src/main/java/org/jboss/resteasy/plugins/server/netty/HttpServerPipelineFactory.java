@@ -33,7 +33,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final List<ChannelHandler> additionalChannelHandlers;
    private final int maxRequestSize;
 
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive, List<ChannelHandler> additionalChannelHandlers)
+   public HttpServerPipelineFactory(final RequestDispatcher dispatcher, final String root, final int executorThreadCount, final int maxRequestSize, final boolean isKeepAlive, final List<ChannelHandler> additionalChannelHandlers)
    {
       this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol(), isKeepAlive);
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);

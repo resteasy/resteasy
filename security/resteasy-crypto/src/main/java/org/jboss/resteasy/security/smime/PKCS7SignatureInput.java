@@ -38,7 +38,7 @@ public class PKCS7SignatureInput<T>
    {
    }
 
-   public PKCS7SignatureInput(CMSSignedData data)
+   public PKCS7SignatureInput(final CMSSignedData data)
    {
       this.data = data;
    }
@@ -48,7 +48,7 @@ public class PKCS7SignatureInput<T>
     *
     * @param base64 Base64 encoded string
     */
-   public PKCS7SignatureInput(String base64)
+   public PKCS7SignatureInput(final String base64)
    {
       try
       {
@@ -67,7 +67,7 @@ public class PKCS7SignatureInput<T>
     *
     * @param bytes data
     */
-   public PKCS7SignatureInput(byte[] bytes)
+   public PKCS7SignatureInput(final byte[] bytes)
    {
       try
       {

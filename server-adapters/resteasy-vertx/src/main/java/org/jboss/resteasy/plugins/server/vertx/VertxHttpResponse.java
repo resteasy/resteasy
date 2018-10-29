@@ -28,12 +28,12 @@ public class VertxHttpResponse implements HttpResponse
    private final HttpMethod method;
    private Throwable vertxException;
 
-   public VertxHttpResponse(HttpServerResponse response, ResteasyProviderFactory providerFactory)
+   public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory)
    {
       this(response, providerFactory, null);
    }
 
-   public VertxHttpResponse(HttpServerResponse response, ResteasyProviderFactory providerFactory, HttpMethod method)
+   public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory, final HttpMethod method)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       this.method = method;

@@ -50,7 +50,7 @@ public class ResteasyUriInfo implements UriInfo
    private List<Object> ancestors;
 
 
-   public ResteasyUriInfo(CharSequence absoluteUri, String queryString, String contextPath)
+   public ResteasyUriInfo(final CharSequence absoluteUri, final String queryString, final String contextPath)
    {
       initialize(absoluteUri, queryString, contextPath);
    }
@@ -82,7 +82,7 @@ public class ResteasyUriInfo implements UriInfo
       processPath();
    }
 
-   public ResteasyUriInfo(URI base, URI relative)
+   public ResteasyUriInfo(final URI base, final URI relative)
    {
       String b = base.toString();
       if (!b.endsWith("/")) b += "/";

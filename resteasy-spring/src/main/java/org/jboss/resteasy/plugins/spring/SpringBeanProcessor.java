@@ -84,7 +84,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    {
       private ConfigurableListableBeanFactory beanFactory;
 
-      protected ResteasyBeanPostProcessor(ConfigurableListableBeanFactory beanFactory)
+      protected ResteasyBeanPostProcessor(final ConfigurableListableBeanFactory beanFactory)
       {
          this.beanFactory = beanFactory;
       }
@@ -191,19 +191,19 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
    }
 
-   public SpringBeanProcessor(ResteasyDeployment deployment)
+   public SpringBeanProcessor(final ResteasyDeployment deployment)
    {
       this(deployment.getDispatcher(), deployment.getRegistry(), deployment.getProviderFactory());
       this.deployment = deployment;
    }
 
-   public SpringBeanProcessor(Dispatcher dispatcher)
+   public SpringBeanProcessor(final Dispatcher dispatcher)
    {
       this(dispatcher, dispatcher.getRegistry(), dispatcher.getProviderFactory());
    }
 
-   public SpringBeanProcessor(Dispatcher dispatcher, Registry registry,
-                              ResteasyProviderFactory providerFactory)
+   public SpringBeanProcessor(final Dispatcher dispatcher, final Registry registry,
+                              final ResteasyProviderFactory providerFactory)
    {
       this.setRegistry(registry);
       this.setProviderFactory(providerFactory);

@@ -35,7 +35,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResourceLocator method;
    protected ConcurrentHashMap<Class<?>, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class<?>, LocatorRegistry>();
 
-   public ResourceLocatorInvoker(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, ResourceLocator locator)
+   public ResourceLocatorInvoker(final ResourceFactory resource, final InjectorFactory injector, final ResteasyProviderFactory providerFactory, final ResourceLocator locator)
    {
       this.resource = resource;
       this.injector = injector;

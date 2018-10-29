@@ -33,7 +33,7 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
    private static final int DEFAULT_MAX_SIZE = 10000000;
    private int maxSize;
 
-   public GZIPDecodingInterceptor(int maxSize)
+   public GZIPDecodingInterceptor(final int maxSize)
    {
       this.maxSize = maxSize;
    }
@@ -54,12 +54,12 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
          this(is, true, DEFAULT_MAX_SIZE);
       }
 
-      public FinishableGZIPInputStream(final InputStream is, boolean server) throws IOException
+      public FinishableGZIPInputStream(final InputStream is, final boolean server) throws IOException
       {
          this(is, server, DEFAULT_MAX_SIZE);
       }
 
-      public FinishableGZIPInputStream(final InputStream is, boolean server, int maxSize) throws IOException
+      public FinishableGZIPInputStream(final InputStream is, final boolean server, final int maxSize) throws IOException
       {
          super(is);
          this.server = server;

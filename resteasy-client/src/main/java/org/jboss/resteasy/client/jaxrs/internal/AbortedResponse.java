@@ -27,7 +27,7 @@ public class AbortedResponse extends ClientResponse
    protected InputStream is;
 
    @SuppressWarnings("unchecked")
-   public AbortedResponse(ClientConfiguration configuration, Response response)
+   public AbortedResponse(final ClientConfiguration configuration,final Response response)
    {
       super(configuration);
 

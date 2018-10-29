@@ -10,7 +10,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class WriterInterceptorRegistryImpl extends JaxrsInterceptorRegistryImpl<WriterInterceptor>
 {
-   public WriterInterceptorRegistryImpl(ResteasyProviderFactory providerFactory)
+   public WriterInterceptorRegistryImpl(final ResteasyProviderFactory providerFactory)
    {
       super(providerFactory, WriterInterceptor.class);
    }

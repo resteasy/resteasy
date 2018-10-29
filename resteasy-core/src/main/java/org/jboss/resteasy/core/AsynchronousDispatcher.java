@@ -49,7 +49,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    {
       private int maxSize = 100;
 
-      Cache(int maxSize)
+      Cache(final int maxSize)
       {
          this.maxSize = maxSize;
       }
@@ -126,13 +126,13 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private int maxCacheSize = 100;
 
 
-   public AsynchronousDispatcher(ResteasyProviderFactory providerFactory)
+   public AsynchronousDispatcher(final ResteasyProviderFactory providerFactory)
    {
       super(providerFactory);
       counter = new SecureRandomWrapper();
    }
 
-   public AsynchronousDispatcher(ResteasyProviderFactory providerFactory, ResourceMethodRegistry registry)
+   public AsynchronousDispatcher(final ResteasyProviderFactory providerFactory, final ResourceMethodRegistry registry)
    {
       super(providerFactory, registry);
       counter = new SecureRandomWrapper();

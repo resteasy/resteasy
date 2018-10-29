@@ -22,7 +22,7 @@ public class JaxrsAnnotatedType<TYPE> implements AnnotatedType<TYPE>
    private AnnotatedType<TYPE> delegate;
    private Set<Annotation> annotations = new HashSet<Annotation>();
 
-   public JaxrsAnnotatedType(AnnotatedType<TYPE> delegate, Annotation scope)
+   public JaxrsAnnotatedType(final AnnotatedType<TYPE> delegate, final Annotation scope)
    {
       this.delegate = delegate;
       this.annotations.addAll(delegate.getAnnotations());

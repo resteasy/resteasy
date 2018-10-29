@@ -24,7 +24,7 @@ public class ClassNode
    protected Map<String, ClassNode> children = new HashMap<String, ClassNode>();
    protected List<ClassExpression> targets = new ArrayList<ClassExpression>();
 
-   public ClassNode(String segment)
+   public ClassNode(final String segment)
    {
       this.segment = segment;
    }

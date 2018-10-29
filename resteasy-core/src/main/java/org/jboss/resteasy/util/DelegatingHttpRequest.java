@@ -19,7 +19,7 @@ public class DelegatingHttpRequest implements HttpRequest
 {
    private HttpRequest delegate;
 
-   public DelegatingHttpRequest(HttpRequest delegate)
+   public DelegatingHttpRequest(final HttpRequest delegate)
    {
       this.delegate = delegate;
    }

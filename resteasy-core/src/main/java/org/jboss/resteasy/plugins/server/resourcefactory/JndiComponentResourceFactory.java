@@ -26,7 +26,7 @@ public class JndiComponentResourceFactory implements ResourceFactory
    private boolean cache;
 
 
-   public JndiComponentResourceFactory(String jndiName, Class scannable, boolean cacheReference)
+   public JndiComponentResourceFactory(final String jndiName, final Class scannable, final boolean cacheReference)
    {
       this.jndiName = jndiName;
       this.scannable = scannable;

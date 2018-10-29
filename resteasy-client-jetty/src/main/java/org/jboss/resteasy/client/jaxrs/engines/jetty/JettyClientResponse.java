@@ -10,7 +10,7 @@ class JettyClientResponse extends ClientResponse {
    private final Runnable cancel;
    private InputStream stream;
 
-   JettyClientResponse(ClientConfiguration configuration, InputStream stream, Runnable cancel) {
+   JettyClientResponse(final ClientConfiguration configuration, final InputStream stream, final Runnable cancel) {
       super(configuration);
       this.cancel = cancel;
       this.stream = stream;

@@ -32,7 +32,7 @@ public class RequestDispatcher
    protected final ResteasyProviderFactory providerFactory;
    protected final SecurityDomain domain;
 
-   public RequestDispatcher(SynchronousDispatcher dispatcher, ResteasyProviderFactory providerFactory, SecurityDomain domain)
+   public RequestDispatcher(final SynchronousDispatcher dispatcher, final ResteasyProviderFactory providerFactory, final SecurityDomain domain)
    {
       this.dispatcher = dispatcher;
       this.providerFactory = providerFactory;

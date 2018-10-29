@@ -68,7 +68,7 @@ public class StringParameterInjector
    private static final class UnmodifiableArrayList<E> extends ArrayList<E>{
 
       private static final long serialVersionUID = -4912938596876802150L;
-      private UnmodifiableArrayList(Collection<E>collection) {
+      private UnmodifiableArrayList(final Collection<E>collection) {
          super(collection);
       }
 
@@ -181,7 +181,7 @@ public class StringParameterInjector
       private static final long serialVersionUID = 9175388977415467750L;
       private final boolean initialized;
 
-      private UnmodifiableHashSet(Collection<E>collection) {
+      private UnmodifiableHashSet(final Collection<E>collection) {
          super(collection);
          this.initialized=true;
       }
@@ -244,12 +244,12 @@ public class StringParameterInjector
       private static final long serialVersionUID = 6337958351217117300L;
       private final boolean initialized;
 
-      private UnmodifiableTreeSet(Collection<E>collection) {
+      private UnmodifiableTreeSet(final Collection<E>collection) {
          super(collection);
          this.initialized=true;
       }
 
-      private UnmodifiableTreeSet(Comparator<? super E> comparator,Collection<E>collection) {
+      private UnmodifiableTreeSet(final Comparator<? super E> comparator, final Collection<E>collection) {
          super(comparator);
          addAll(collection);
          this.initialized=true;
@@ -393,7 +393,7 @@ public class StringParameterInjector
 
    }
 
-   public StringParameterInjector(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
+   public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName, final Class<?> paramType, final String defaultValue, final AccessibleObject target, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
    }

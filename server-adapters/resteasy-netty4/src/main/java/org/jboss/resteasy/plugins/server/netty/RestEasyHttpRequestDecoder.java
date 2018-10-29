@@ -38,7 +38,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
       HTTP
    }
 
-   public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol)
+   public RestEasyHttpRequestDecoder(final SynchronousDispatcher dispatcher, final String servletMappingPrefix, final Protocol protocol)
    {
       this.dispatcher = dispatcher;
       this.servletMappingPrefix = servletMappingPrefix;

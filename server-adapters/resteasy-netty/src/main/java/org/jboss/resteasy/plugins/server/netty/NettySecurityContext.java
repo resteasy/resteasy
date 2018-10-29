@@ -16,7 +16,7 @@ public class NettySecurityContext implements SecurityContext
    protected final String authScheme;
    protected final boolean isSecure;
 
-   public NettySecurityContext(Principal principal, SecurityDomain domain, String authScheme, boolean secure)
+   public NettySecurityContext(final Principal principal, final SecurityDomain domain, final String authScheme, final boolean secure)
    {
       this.principal = principal;
       this.domain = domain;

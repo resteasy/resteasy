@@ -26,7 +26,7 @@ public class RelativeLink extends Link
    {
    }
 
-   public RelativeLink(String rel, String relativeLink)
+   public RelativeLink(final String rel, final String relativeLink)
    {
       UriInfo uriInfo = ResteasyContext.getContextData(UriInfo.class);
       if (uriInfo == null)
@@ -36,13 +36,13 @@ public class RelativeLink extends Link
       setRel(rel);
    }
 
-   public RelativeLink(String rel, String relativeLink, MediaType mediaType)
+   public RelativeLink(final String rel, final String relativeLink, final MediaType mediaType)
    {
       this(rel, relativeLink);
       this.setType(mediaType);
    }
 
-   public RelativeLink(String rel, String relativeLink, String mediaType)
+   public RelativeLink(final String rel, final String relativeLink, final String mediaType)
    {
       this(rel, relativeLink);
       this.setType(MediaType.valueOf(mediaType));

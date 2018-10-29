@@ -20,7 +20,7 @@ public class QueryInjector implements ValueInjector {
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
-   public QueryInjector(Class type, ResteasyProviderFactory factory) {
+   public QueryInjector(final Class type, final ResteasyProviderFactory factory) {
       this.type = type;
       Constructor<?> constructor;
 

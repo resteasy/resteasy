@@ -32,7 +32,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
 {
    protected ServerCache cache;
 
-   public ServerCacheInterceptor(ServerCache cache)
+   public ServerCacheInterceptor(final ServerCache cache)
    {
       this.cache = cache;
    }

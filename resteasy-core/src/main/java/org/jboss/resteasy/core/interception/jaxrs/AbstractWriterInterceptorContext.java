@@ -45,7 +45,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    // We need tracing logger to log the proceed event.
    // So the new constructor with logger should be used.
    @Deprecated
-   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers)
+   public AbstractWriterInterceptorContext(final WriterInterceptor[] interceptors, final Annotation[] annotations, final Object entity, final Type genericType, final MediaType mediaType, final Class type, final OutputStream outputStream, final ResteasyProviderFactory providerFactory, final MultivaluedMap<String, Object> headers)
    {
       this.providerFactory = providerFactory;
       this.interceptors = interceptors;
@@ -59,7 +59,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       this.tracingLogger = RESTEasyTracingLogger.empty();
    }
 
-   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers, RESTEasyTracingLogger logger) {
+   public AbstractWriterInterceptorContext(final WriterInterceptor[] interceptors, final Annotation[] annotations, final Object entity, final Type genericType, final MediaType mediaType, final Class type, final OutputStream outputStream, final ResteasyProviderFactory providerFactory, final MultivaluedMap<String, Object> headers, final RESTEasyTracingLogger logger) {
       this.providerFactory = providerFactory;
       this.interceptors = interceptors;
       this.annotations = annotations;

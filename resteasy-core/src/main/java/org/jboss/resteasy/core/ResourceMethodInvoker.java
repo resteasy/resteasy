@@ -84,7 +84,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
 
 
-   public ResourceMethodInvoker(ResourceMethod method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory)
+   public ResourceMethodInvoker(final ResourceMethod method, final InjectorFactory injector, final ResourceFactory resource, final ResteasyProviderFactory providerFactory)
    {
       this.injector = injector;
       this.resource = resource;

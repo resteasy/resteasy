@@ -58,7 +58,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
    }
 
-   public HttpServletResponseWrapper(HttpServletResponse response, ResteasyProviderFactory factory)
+   public HttpServletResponseWrapper(final HttpServletResponse response, final ResteasyProviderFactory factory)
    {
       this.response = response;
       outputHeaders = new HttpServletResponseHeaders(response, factory);

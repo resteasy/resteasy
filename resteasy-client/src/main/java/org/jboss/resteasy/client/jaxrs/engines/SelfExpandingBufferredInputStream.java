@@ -18,13 +18,13 @@ public class SelfExpandingBufferredInputStream extends BufferedInputStream
 {
    private static int defaultBufferSize = 8192;
 
-   public SelfExpandingBufferredInputStream(InputStream in)
+   public SelfExpandingBufferredInputStream(final InputStream in)
    {
       super(in);
       super.mark(defaultBufferSize);
    }
 
-   public SelfExpandingBufferredInputStream(InputStream in, int size)
+   public SelfExpandingBufferredInputStream(final InputStream in, final int size)
    {
       super(in, size);
       super.mark(size);

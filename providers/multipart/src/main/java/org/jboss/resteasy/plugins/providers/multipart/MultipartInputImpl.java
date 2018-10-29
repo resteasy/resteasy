@@ -100,13 +100,13 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          }
       }
 
-      private BinaryOnlyMessageBuilder(Entity entity)
+      private BinaryOnlyMessageBuilder(final Entity entity)
       {
          super(entity);
          init();
       }
 
-      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider)
+      private BinaryOnlyMessageBuilder(final Entity entity, final StorageProvider storageProvider)
       {
          super(entity, storageProvider);
          init();
@@ -167,7 +167,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    private static class BinaryMessage extends Message
    {
-      private BinaryMessage(InputStream is) throws IOException, MimeIOException
+      private BinaryMessage(final InputStream is) throws IOException, MimeIOException
       {
          try {
             MimeStreamParser parser = new MimeStreamParser(null);
@@ -188,7 +188,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       }
    }
 
-   public MultipartInputImpl(MediaType contentType, Providers workers)
+   public MultipartInputImpl(final MediaType contentType, final Providers workers)
    {
       this.contentType = contentType;
       this.workers = workers;
@@ -208,8 +208,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       }
    }
 
-   public MultipartInputImpl(MediaType contentType, Providers workers,
-                             MediaType defaultPartContentType, String defaultPartCharset)
+   public MultipartInputImpl(final MediaType contentType, final Providers workers,
+                             final MediaType defaultPartContentType, final String defaultPartCharset)
    {
       this.contentType = contentType;
       this.workers = workers;
@@ -221,7 +221,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       }
    }
 
-   public MultipartInputImpl(Multipart multipart, Providers workers) throws IOException
+   public MultipartInputImpl(final Multipart multipart, final Providers workers) throws IOException
    {
       for (BodyPart bodyPart : multipart.getBodyParts())
          parts.add(extractPart(bodyPart));
@@ -278,7 +278,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       private MultivaluedMap<String, String> headers = new CaseInsensitiveMap<String>();
       private boolean contentTypeFromMessage;
 
-      public PartImpl(BodyPart bodyPart)
+      public PartImpl(final BodyPart bodyPart)
       {
          this.bodyPart = bodyPart;
          for (Field field : bodyPart.getHeader())
@@ -529,7 +529,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          this(DEFAULT_PREFIX, null, null);
       }
 
-      CustomTempFileStorageProvider(String prefix, String suffix, File directory)
+      CustomTempFileStorageProvider(final String prefix, final String suffix, final File directory)
       {
          if (prefix == null || prefix.length() < 3)
             throw new IllegalArgumentException("invalid prefix");
@@ -555,7 +555,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
          private OutputStream out;
 
-         TempFileStorageOutputStream(File file) throws IOException
+         TempFileStorageOutputStream(final File file) throws IOException
          {
             this.file = file;
             this.out = new FileOutputStream(file);
@@ -589,7 +589,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
          private static final Set<File> filesToDelete = new HashSet<File>();
 
-         TempFileStorage(File file)
+         TempFileStorage(final File file)
          {
             this.file = file;
          }

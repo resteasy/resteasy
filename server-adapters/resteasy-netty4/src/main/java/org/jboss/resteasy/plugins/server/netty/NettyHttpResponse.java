@@ -43,12 +43,12 @@ public class NettyHttpResponse implements HttpResponse
    private ResteasyProviderFactory providerFactory;
    private HttpMethod method;
 
-   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
+   public NettyHttpResponse(final ChannelHandlerContext ctx, final boolean keepAlive, final ResteasyProviderFactory providerFactory)
    {
       this(ctx, keepAlive, providerFactory, null);
    }
 
-   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory, HttpMethod method)
+   public NettyHttpResponse(final ChannelHandlerContext ctx, final boolean keepAlive, final ResteasyProviderFactory providerFactory, final HttpMethod method)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       this.method = method;

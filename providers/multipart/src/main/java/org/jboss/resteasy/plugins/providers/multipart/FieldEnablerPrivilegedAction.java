@@ -20,7 +20,7 @@ import java.security.PrivilegedAction;
 public class FieldEnablerPrivilegedAction implements PrivilegedAction<Object> {
    private final Field field;
 
-   public FieldEnablerPrivilegedAction(Field field) {
+   public FieldEnablerPrivilegedAction(final Field field) {
       super();
       this.field = field;
    }

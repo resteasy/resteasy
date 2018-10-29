@@ -61,7 +61,7 @@ public class ResteasyWadlMethodMetaData {
       this.klassUri = klassUri;
    }
 
-   public ResteasyWadlMethodMetaData(ResteasyWadlServiceRegistry serviceRegistry, ResourceMethodInvoker resourceInvoker) {
+   public ResteasyWadlMethodMetaData(final ResteasyWadlServiceRegistry serviceRegistry, final ResourceMethodInvoker resourceInvoker) {
       this.registry = serviceRegistry;
       this.resourceInvoker = resourceInvoker;
       this.method = resourceInvoker.getMethod();

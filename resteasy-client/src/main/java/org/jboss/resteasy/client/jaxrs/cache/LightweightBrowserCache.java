@@ -30,7 +30,7 @@ public class LightweightBrowserCache implements BrowserCache
       this(new MapCache());
    }
 
-   public LightweightBrowserCache(BrowserCache cache)
+   public LightweightBrowserCache(final BrowserCache cache)
    {
       this.internalCache = cache;
    }

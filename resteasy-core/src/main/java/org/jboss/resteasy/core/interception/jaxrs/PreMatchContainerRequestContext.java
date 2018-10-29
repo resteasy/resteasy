@@ -47,13 +47,13 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    private boolean startedContinuation;
 
    @Deprecated
-   public PreMatchContainerRequestContext(HttpRequest request)
+   public PreMatchContainerRequestContext(final HttpRequest request)
    {
       this(request, new ContainerRequestFilter[]{}, null);
    }
 
-   public PreMatchContainerRequestContext(HttpRequest request,
-         ContainerRequestFilter[] requestFilters, Supplier<BuiltResponse> continuation)
+   public PreMatchContainerRequestContext(final HttpRequest request,
+                                          final ContainerRequestFilter[] requestFilters, final Supplier<BuiltResponse> continuation)
    {
       this.httpRequest = request;
       this.requestFilters = requestFilters;

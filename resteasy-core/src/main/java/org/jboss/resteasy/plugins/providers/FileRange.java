@@ -28,7 +28,7 @@ public class FileRange
    private long begin;
    private long end;
 
-   public FileRange(File file, long begin, long end)
+   public FileRange(final File file, final long begin, final long end)
    {
       this.file = file;
       this.begin = begin;

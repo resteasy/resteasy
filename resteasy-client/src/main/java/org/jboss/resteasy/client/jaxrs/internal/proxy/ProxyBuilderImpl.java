@@ -51,7 +51,7 @@ public class ProxyBuilderImpl<T> extends ProxyBuilder<T>
       return invoker;
    }
 
-   public ProxyBuilderImpl(Class<T> iface, WebTarget webTarget)
+   public ProxyBuilderImpl(final Class<T> iface, final WebTarget webTarget)
    {
       if (System.getSecurityManager() == null)
       {

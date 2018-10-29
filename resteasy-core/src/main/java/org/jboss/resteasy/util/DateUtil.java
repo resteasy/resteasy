@@ -29,17 +29,17 @@ public class DateUtil
       {
       }
 
-      public DateParseException(String s)
+      public DateParseException(final String s)
       {
          super(s);
       }
 
-      public DateParseException(String s, Throwable throwable)
+      public DateParseException(final String s, final Throwable throwable)
       {
          super(s, throwable);
       }
 
-      public DateParseException(Throwable throwable)
+      public DateParseException(final Throwable throwable)
       {
          super(throwable);
       }

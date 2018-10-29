@@ -15,7 +15,7 @@ public class BadgerContext extends JAXBContext
 {
    private JAXBContext context;
 
-   public BadgerContext(Class... clazz)
+   public BadgerContext(final Class... clazz)
    {
       try
       {
@@ -27,7 +27,7 @@ public class BadgerContext extends JAXBContext
       }
    }
 
-   public BadgerContext(String contextPath)
+   public BadgerContext(final String contextPath)
    {
       try
       {

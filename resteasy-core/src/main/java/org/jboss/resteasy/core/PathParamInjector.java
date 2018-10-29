@@ -35,7 +35,7 @@ public class PathParamInjector implements ValueInjector
    private boolean pathSegmentArray = false;
    private boolean pathSegmentList = false;
 
-   public PathParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
+   public PathParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String paramName, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
       if (isPathSegmentArray(type))
       {

@@ -20,7 +20,7 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
    private Type genericType;
    private Annotation[] annotations;
 
-   public MessageBodyParameterProcessor(MediaType mediaType, Class<?> type, Type genericType, Annotation[] annotations)
+   public MessageBodyParameterProcessor(final MediaType mediaType, final Class<?> type, final Type genericType, final Annotation[] annotations)
    {
       this.type = type;
       this.mediaType = mediaType;

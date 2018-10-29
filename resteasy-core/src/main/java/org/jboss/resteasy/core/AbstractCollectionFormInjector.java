@@ -33,7 +33,7 @@ public abstract class AbstractCollectionFormInjector<T> extends PrefixedFormInje
     * @param pattern        The pattern that a field name should follow to be a part of this collection. The first group in the pattern must be the index.
     * @param factory provider factory
     */
-   protected AbstractCollectionFormInjector(Class collectionType, Class genericType, String prefix, Pattern pattern, ResteasyProviderFactory factory)
+   protected AbstractCollectionFormInjector(final Class collectionType,final Class genericType,final String prefix,final Pattern pattern,final ResteasyProviderFactory factory)
    {
       super(genericType, prefix, factory);
       this.collectionType = collectionType;

@@ -32,7 +32,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    private final URI uri;
    private WebTarget target;
 
-   public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
+   public ClientInvocationBuilder(final ResteasyClient client, final URI uri, final ClientConfiguration configuration)
    {
       invocation = createClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
       this.uri = uri;

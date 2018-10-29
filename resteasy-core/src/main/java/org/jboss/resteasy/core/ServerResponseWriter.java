@@ -497,7 +497,7 @@ public class ServerResponseWriter
       double qs = 1;
       Class<?> writerType = null;
 
-      SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
+      SortableMediaType(final String type, final String subtype, final Map<String, String> parameters, final Class<?> writerType)
       {
          super(type, subtype, parameters);
          this.writerType = writerType;

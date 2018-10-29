@@ -18,7 +18,7 @@ public enum EncryptionMethod
    ;
    private int cekBitLength;
 
-   EncryptionMethod(int cekBitLength)
+   EncryptionMethod(final int cekBitLength)
    {
       this.cekBitLength = cekBitLength;
    }

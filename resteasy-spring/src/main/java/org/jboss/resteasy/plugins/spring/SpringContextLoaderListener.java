@@ -20,7 +20,7 @@ public class SpringContextLoaderListener extends ContextLoaderListener
    public SpringContextLoaderListener() {
    }
 
-   public SpringContextLoaderListener(WebApplicationContext context) {
+   public SpringContextLoaderListener(final WebApplicationContext context) {
       super(context);
    }
 

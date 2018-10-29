@@ -25,19 +25,19 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    protected Map<String, Object> properties;
 
    @Deprecated
-   public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
-                                         Type genericType, Annotation[] annotations, MediaType mediaType,
-                                         MultivaluedMap<String, String> headers, InputStream inputStream,
-                                         Map<String, Object> properties)
+   public ClientReaderInterceptorContext(final ReaderInterceptor[] interceptors, final ResteasyProviderFactory providerFactory, final Class type,
+                                         final Type genericType, final Annotation[] annotations, final MediaType mediaType,
+                                         final MultivaluedMap<String, String> headers, final InputStream inputStream,
+                                         final Map<String, Object> properties)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
       this.properties = properties;
    }
 
-   public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
-                                         Type genericType, Annotation[] annotations, MediaType mediaType,
-                                         MultivaluedMap<String, String> headers, InputStream inputStream,
-                                         Map<String, Object> properties, RESTEasyTracingLogger tracingLogger)
+   public ClientReaderInterceptorContext(final ReaderInterceptor[] interceptors, final ResteasyProviderFactory providerFactory, final Class type,
+                                         final Type genericType, final Annotation[] annotations, final MediaType mediaType,
+                                         final MultivaluedMap<String, String> headers, final InputStream inputStream,
+                                         final Map<String, Object> properties, final RESTEasyTracingLogger tracingLogger)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream, tracingLogger);
       this.properties = properties;

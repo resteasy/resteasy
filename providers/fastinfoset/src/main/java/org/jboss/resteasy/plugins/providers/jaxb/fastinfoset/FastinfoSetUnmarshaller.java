@@ -38,7 +38,7 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
 {
    private Unmarshaller unmarshaller;
 
-   public FastinfoSetUnmarshaller(JAXBContext context) throws JAXBException
+   public FastinfoSetUnmarshaller(final JAXBContext context) throws JAXBException
    {
       unmarshaller = context.createUnmarshaller();
    }

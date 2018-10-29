@@ -39,7 +39,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    protected ResteasyAsynchronousContext asynchronousContext;
    protected ScheduledExecutorService asyncScheduler; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   public Servlet3AsyncHttpRequest(final HttpServletRequest httpServletRequest, final HttpServletResponse response, final ServletContext servletContext, final HttpResponse httpResponse, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uriInfo, final String s, final SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, response, servletContext, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
@@ -60,7 +60,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       protected volatile boolean wasSuspended;
       protected Servle3AsychronousResponse asynchronousResponse;
 
-      Servlet3ExecutionContext(ServletRequest servletRequest)
+      Servlet3ExecutionContext(final ServletRequest servletRequest)
       {
          super(Servlet3AsyncHttpRequest.this.dispatcher, Servlet3AsyncHttpRequest.this, Servlet3AsyncHttpRequest.this.httpResponse);
          this.servletRequest = servletRequest;

@@ -14,7 +14,7 @@ public abstract class AbstractExecutionContext implements ResteasyAsynchronousCo
    protected HttpRequest request;
    protected HttpResponse response;
 
-   protected AbstractExecutionContext(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
+   protected AbstractExecutionContext(final SynchronousDispatcher dispatcher,final HttpRequest request,final HttpResponse response)
    {
       this.dispatcher = dispatcher;
       this.request = request;

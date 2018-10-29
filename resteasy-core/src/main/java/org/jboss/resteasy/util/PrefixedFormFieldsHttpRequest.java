@@ -8,7 +8,7 @@ public class PrefixedFormFieldsHttpRequest extends DelegatingHttpRequest {
 
    private final String prefix;
 
-   public PrefixedFormFieldsHttpRequest(String prefix, HttpRequest request) {
+   public PrefixedFormFieldsHttpRequest(final String prefix, final HttpRequest request) {
       super(request);
       this.prefix = prefix;
    }

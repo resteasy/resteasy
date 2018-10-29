@@ -45,7 +45,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
    private static class XopAttachmentMarshaller extends AttachmentMarshaller {
       private final MultipartRelatedOutput xopPackage;
 
-      private XopAttachmentMarshaller(MultipartRelatedOutput xopPackage) {
+      private XopAttachmentMarshaller(final MultipartRelatedOutput xopPackage) {
          this.xopPackage = xopPackage;
       }
 
@@ -88,7 +88,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
       private final String cid;
       private final InputPart inputPart;
 
-      private InputPartBackedDataSource(String cid, InputPart inputPart) {
+      private InputPartBackedDataSource(final String cid, final InputPart inputPart) {
          this.cid = cid;
          this.inputPart = inputPart;
       }
@@ -115,7 +115,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 
       private final MultipartRelatedInput xopPackage;
 
-      private XopAttachmentUnmarshaller(MultipartRelatedInput xopPackage) {
+      private XopAttachmentUnmarshaller(final MultipartRelatedInput xopPackage) {
          this.xopPackage = xopPackage;
       }
 
@@ -150,7 +150,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
       }
    }
 
-   public XopWithMultipartRelatedJAXBProvider(Providers providers) {
+   public XopWithMultipartRelatedJAXBProvider(final Providers providers) {
       super();
       this.providers = providers;
    }
