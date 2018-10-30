@@ -21,6 +21,7 @@ import java.util.Map;
  * This servlet does not support grammars.
  * Use @org.jboss.resteasy.wadl.ResteasyWadlDefaultServlet instead.
  */
+// TODO: remove this in master in proper time
 @Deprecated
 public class ResteasyWadlServlet extends HttpServlet {
 
