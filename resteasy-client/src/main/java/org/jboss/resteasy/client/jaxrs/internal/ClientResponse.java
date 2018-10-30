@@ -190,12 +190,12 @@ public abstract class ClientResponse extends BuiltResponse
          return checkEOF(super.read());
       }
 
-      public int read(byte b[]) throws IOException
+      public int read(byte[] b) throws IOException
       {
          return checkEOF(super.read(b));
       }
 
-      public int read(byte b[], int off, int len) throws IOException
+      public int read(byte[] b, int off, int len) throws IOException
       {
          return checkEOF(super.read(b, off, len));
       }
