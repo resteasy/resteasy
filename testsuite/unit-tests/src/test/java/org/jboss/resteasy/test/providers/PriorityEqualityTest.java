@@ -51,14 +51,14 @@ public class PriorityEqualityTest {
 
    public static class Foo {
       private String foo;
-      public Foo(String foo) {this.foo = foo;}
+      public Foo(final String foo) {this.foo = foo;}
       public String getFoo() {return foo;}
    }
 
    public static class FooParamConverter implements ParamConverter<Foo> {
       private String foo;
 
-      public FooParamConverter(String foo) {
+      public FooParamConverter(final String foo) {
          this.foo = foo;
       }
 

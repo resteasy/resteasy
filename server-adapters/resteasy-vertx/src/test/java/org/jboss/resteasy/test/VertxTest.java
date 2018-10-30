@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.junit.AfterClass;

@@ -68,12 +68,12 @@ public class Rx2ObservableProxyTest {
    private static List<List<Thing>> thingListList = new ArrayList<List<Thing>>();
    private static List<byte[]> bytesList = new ArrayList<byte[]>();
 
-   private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();
-   private final static List<Thing>  xThingList =  new ArrayList<Thing>();
-   private final static List<Thing>  aThingList =  new ArrayList<Thing>();
-   private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
-   private final static List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
+   private static final List<String> xStringList = new ArrayList<String>();
+   private static final List<String> aStringList = new ArrayList<String>();
+   private static final List<Thing>  xThingList =  new ArrayList<Thing>();
+   private static final List<Thing>  aThingList =  new ArrayList<Thing>();
+   private static final List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
+   private static final List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
 
    static {
       for (int i = 0; i < 3; i++) {xStringList.add("x");}

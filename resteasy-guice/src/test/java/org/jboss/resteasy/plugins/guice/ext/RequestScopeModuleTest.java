@@ -81,8 +81,8 @@ public class RequestScopeModuleTest
       private final SecurityContext securityContext;
 
       @Inject
-      public RequestScopeTestResource(Request request,
-            HttpHeaders httpHeaders, UriInfo uriInfo, SecurityContext securityContext)
+      public RequestScopeTestResource(final Request request,
+                                      final HttpHeaders httpHeaders, final UriInfo uriInfo, final SecurityContext securityContext)
       {
          this.request = request;
          this.httpHeaders = httpHeaders;

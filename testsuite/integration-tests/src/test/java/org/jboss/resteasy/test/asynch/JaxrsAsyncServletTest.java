@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**

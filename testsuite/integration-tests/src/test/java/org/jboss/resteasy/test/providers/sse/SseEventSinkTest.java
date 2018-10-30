@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 public class SseEventSinkTest
 {
 
-   private final static Logger logger = Logger.getLogger(SseEventSinkTest.class);
+   private static final Logger logger = Logger.getLogger(SseEventSinkTest.class);
 
    @Deployment
    public static Archive<?> deploy()

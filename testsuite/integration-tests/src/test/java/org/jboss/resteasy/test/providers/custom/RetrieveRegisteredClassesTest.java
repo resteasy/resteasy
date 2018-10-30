@@ -47,7 +47,7 @@ public class RetrieveRegisteredClassesTest
    {
 
       // To discard empty constructor
-      private MyFilter(Object value)
+      private MyFilter(final Object value)
       {
       }
 

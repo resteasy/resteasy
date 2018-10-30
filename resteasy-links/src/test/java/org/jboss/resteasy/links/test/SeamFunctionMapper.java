@@ -22,7 +22,7 @@ public class SeamFunctionMapper extends FunctionMapper
    private FunctionMapper functionMapper;
    private static final Logger LOG = Logger.getLogger(SeamFunctionMapper.class);
 
-   public SeamFunctionMapper(FunctionMapper functionMapper)
+   public SeamFunctionMapper(final FunctionMapper functionMapper)
    {
       this.functionMapper = functionMapper;
    }

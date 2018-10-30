@@ -276,7 +276,7 @@ public class BasicAuthTest
     * Create a ClientExecutor which does preemptive authentication.
     */
 
-   static private ClientHttpEngine createAuthenticatingEngine(CloseableHttpClient client)
+   private static ClientHttpEngine createAuthenticatingEngine(CloseableHttpClient client)
    {
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();

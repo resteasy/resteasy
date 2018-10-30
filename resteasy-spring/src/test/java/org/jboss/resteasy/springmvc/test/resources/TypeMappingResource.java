@@ -24,7 +24,7 @@ public class TypeMappingResource
 
       }
 
-      public TestBean(String name)
+      public TestBean(final String name)
       {
          this.name = name;
       }

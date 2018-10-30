@@ -55,7 +55,7 @@ public class SseResource
 
    private AtomicInteger noContentCount = new AtomicInteger();
 
-   private final static Logger logger = Logger.getLogger(SseResource.class);
+   private static final Logger logger = Logger.getLogger(SseResource.class);
 
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)

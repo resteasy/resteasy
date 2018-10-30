@@ -13,7 +13,7 @@ public class HomecontrolCustomJAXBContext extends JAXBContext {
    private JAXBContext delegate;
    private static final Logger LOG = Logger.getLogger(HomecontrolCustomJAXBContext.class);
 
-   public HomecontrolCustomJAXBContext(Class<?> type) {
+   public HomecontrolCustomJAXBContext(final Class<?> type) {
       try {
          this.delegate = JAXBContext.newInstance(type.getPackage().getName());
       } catch (JAXBException e) {

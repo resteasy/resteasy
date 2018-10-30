@@ -23,9 +23,9 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-   private final static QName _User_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "user");
-   private final static QName _Error_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "error");
-   private final static QName _Id_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "id");
+   private static final QName _User_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "user");
+   private static final QName _Error_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "error");
+   private static final QName _Id_QNAME = new QName("http://creaity.de/homecontrol/rest/types/v1", "id");
 
    /**
     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: de.creaity.homecontrol.service.rest.jaxb.v1

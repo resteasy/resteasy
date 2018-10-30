@@ -6,7 +6,7 @@ public class MultiValuedCookieParamConverter implements ParamConverter<MultiValu
 
    private final ParamConverter<?> paramConverter;
 
-   public MultiValuedCookieParamConverter(ParamConverter<?> paramConverter) {
+   public MultiValuedCookieParamConverter(final ParamConverter<?> paramConverter) {
       this.paramConverter = paramConverter;
    }
 

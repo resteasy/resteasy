@@ -50,12 +50,12 @@ public class RESTEasyParamBasicCustomValuesResource
 
 
    public RESTEasyParamBasicCustomValuesResource(
-         @CookieParam("cookieParam0") String cookieParam0Updated,
-         @FormParam("formParam0") String formParam0Updated,
-         @HeaderParam("headerParam0") String headerParam0Updated,
-         @MatrixParam("matrixParam0") String matrixParam0Updated,
-         @PathParam("pathParam0") String pathParam0Updated,
-         @QueryParam("queryParam0") String queryParam0Updated
+         final @CookieParam("cookieParam0") String cookieParam0Updated,
+         final @FormParam("formParam0") String formParam0Updated,
+         final @HeaderParam("headerParam0") String headerParam0Updated,
+         final @MatrixParam("matrixParam0") String matrixParam0Updated,
+         final @PathParam("pathParam0") String pathParam0Updated,
+         final @QueryParam("queryParam0") String queryParam0Updated
    )
    {
       this.cookieParam0Updated = cookieParam0Updated;

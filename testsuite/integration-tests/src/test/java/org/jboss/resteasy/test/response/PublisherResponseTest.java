@@ -16,7 +16,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.ClientErrorException;
@@ -46,7 +50,7 @@ public class PublisherResponseTest {
 
    Client client;
 
-   private final static Logger logger = Logger.getLogger(PublisherResponseTest.class);
+   private static final Logger logger = Logger.getLogger(PublisherResponseTest.class);
    private static CountDownLatch latch;
 
    @Deployment

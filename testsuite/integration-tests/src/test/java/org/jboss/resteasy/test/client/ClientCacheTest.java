@@ -5,7 +5,6 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCache;
 import org.jboss.resteasy.client.jaxrs.cache.BrowserCacheFeature;

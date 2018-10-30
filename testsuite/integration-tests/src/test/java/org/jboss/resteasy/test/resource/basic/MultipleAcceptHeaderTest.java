@@ -42,7 +42,7 @@ public class MultipleAcceptHeaderTest
    }
 
    @Path("/test")
-   static public class TestResourceServer
+   public static class TestResourceServer
    {
       @GET
       @Path("accept")

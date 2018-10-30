@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.rx.resource;
 
+import java.util.Objects;
+
 public class Thing {
 
    private String name;
@@ -7,7 +9,7 @@ public class Thing {
    public Thing() {
    }
 
-   public Thing(String name) {
+   public Thing(final String name) {
       this.name = name;
    }
 
@@ -29,5 +31,10 @@ public class Thing {
          return false;
       }
       return name.equals(((Thing) o).name);
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(name);
    }
 }

@@ -68,7 +68,7 @@ public class TestLinksNoPackage
    private BookStoreService client;
    private HttpClient httpClient;
 
-   public TestLinksNoPackage(Class<?> resourceType){
+   public TestLinksNoPackage(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

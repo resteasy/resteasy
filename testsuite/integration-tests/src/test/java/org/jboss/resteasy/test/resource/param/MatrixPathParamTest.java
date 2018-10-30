@@ -33,7 +33,7 @@ public class MatrixPathParamTest
    }
 
    @Path("/")
-   static public class TestResourceServer
+   public static class TestResourceServer
    {
       @Path("matrix1")
       public TestSubResourceServer getM1(@MatrixParam("m1") String m1)
@@ -42,11 +42,11 @@ public class MatrixPathParamTest
       }
    }
 
-   static public class TestSubResourceServer
+   public static class TestSubResourceServer
    {
       protected String m1;
 
-      TestSubResourceServer(String m1)
+      TestSubResourceServer(final String m1)
       {
          this.m1 = m1;
       }

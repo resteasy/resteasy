@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunAsClient
 public class SseBroadcastTest {
 
-   private final static Logger logger = Logger.getLogger(SseBroadcastTest.class);
+   private static final Logger logger = Logger.getLogger(SseBroadcastTest.class);
    final String textMessage = "This is broadcast message";
 
    @Deployment

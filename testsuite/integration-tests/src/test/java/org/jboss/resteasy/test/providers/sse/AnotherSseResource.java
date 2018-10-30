@@ -29,7 +29,7 @@ public class AnotherSseResource
 
    private final SseResource sseResource;
 
-   public AnotherSseResource(SseResource sseResource) {
+   public AnotherSseResource(final SseResource sseResource) {
       this.sseResource = sseResource;
    }
 

@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.client;
 
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestFilter;
 import org.jboss.resteasy.test.client.resource.NoContentStreamingCloseTestInputStream;

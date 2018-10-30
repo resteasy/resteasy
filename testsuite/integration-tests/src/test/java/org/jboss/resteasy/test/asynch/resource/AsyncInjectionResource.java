@@ -27,8 +27,8 @@ public class AsyncInjectionResource
    AsyncInjectionContext resolvedContextProperty;
    CompletionStage<AsyncInjectionContext> asyncContextProperty;
 
-   public AsyncInjectionResource(@Context AsyncInjectionContext resolvedContextConstructor,
-         @Context CompletionStage<AsyncInjectionContext> asyncContextConstructor)
+   public AsyncInjectionResource(final @Context AsyncInjectionContext resolvedContextConstructor,
+                                 final @Context CompletionStage<AsyncInjectionContext> asyncContextConstructor)
    {
       this.resolvedContextConstructor = resolvedContextConstructor;
       this.asyncContextConstructor = asyncContextConstructor;

@@ -4,7 +4,7 @@ package org.jboss.resteasy.test.asynch.resource;
 public class AsyncFilterException extends RuntimeException
 {
 
-   public AsyncFilterException(String message)
+   public AsyncFilterException(final String message)
    {
       super(message);
    }

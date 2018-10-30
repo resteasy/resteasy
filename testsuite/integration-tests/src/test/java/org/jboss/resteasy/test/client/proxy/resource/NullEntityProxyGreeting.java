@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.client.proxy.resource;
 public class NullEntityProxyGreeting {
    NullEntityProxyGreeter greeter;
 
-   public NullEntityProxyGreeting(NullEntityProxyGreeter greeter) {
+   public NullEntityProxyGreeting(final NullEntityProxyGreeter greeter) {
       this.greeter = greeter;
    }
 

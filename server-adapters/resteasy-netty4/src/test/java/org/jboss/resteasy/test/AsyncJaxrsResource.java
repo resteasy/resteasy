@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class AsyncJaxrsResource
 {
    protected boolean cancelled;
-   private final static Logger logger = Logger.getLogger(AsyncJaxrsResource.class);
+   private static final Logger logger = Logger.getLogger(AsyncJaxrsResource.class);
 
    @GET
    @Path("resume/object")

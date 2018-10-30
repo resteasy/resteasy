@@ -91,7 +91,7 @@ public class TestSecureLinks
    private BookStoreService client;
    private CloseableHttpClient httpClient;
    private CredentialsProvider cp;
-   public TestSecureLinks(Class<?> resourceType){
+   public TestSecureLinks(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

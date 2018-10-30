@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
 /**
  * @tpSubChapter Jaxb provider

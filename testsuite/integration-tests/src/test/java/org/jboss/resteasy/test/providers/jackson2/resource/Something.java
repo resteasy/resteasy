@@ -15,7 +15,7 @@ public class Something
    {
    }
 
-   public Something(String annotatedValue, String annotatedValue2, String notAnnotatedValue)
+   public Something(final String annotatedValue, final String annotatedValue2, final String notAnnotatedValue)
    {
       this.annotatedValue = annotatedValue;
       this.annotatedValue2 = annotatedValue2;

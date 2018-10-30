@@ -13,7 +13,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.TRACE;
@@ -56,12 +55,12 @@ public class Rx2FlowableProxyServerAsyncTest {
    private static ResteasyClient client;
    private static Rx2ListNoStreamResource proxy;
 
-   private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();
-   private final static List<Thing>  xThingList =  new ArrayList<Thing>();
-   private final static List<Thing>  aThingList =  new ArrayList<Thing>();
-   private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
-   private final static List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
+   private static final List<String> xStringList = new ArrayList<String>();
+   private static final List<String> aStringList = new ArrayList<String>();
+   private static final List<Thing>  xThingList =  new ArrayList<Thing>();
+   private static final List<Thing>  aThingList =  new ArrayList<Thing>();
+   private static final List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
+   private static final List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
 
    static {
       for (int i = 0; i < 3; i++) {xStringList.add("x");}

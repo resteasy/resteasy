@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.spring.deployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringLocatingLocatingResource;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringLocatingSimpleResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;

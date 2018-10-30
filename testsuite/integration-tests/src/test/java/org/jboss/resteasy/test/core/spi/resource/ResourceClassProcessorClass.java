@@ -17,7 +17,7 @@ public class ResourceClassProcessorClass implements ResourceClass {
    private final ResourceClass delegate;
    private final ResourceMethod[] resourceMethods;
 
-   public ResourceClassProcessorClass(ResourceClass delegate) {
+   public ResourceClassProcessorClass(final ResourceClass delegate) {
       logger.info(String.format("ResourceClassProcessorClass constructor called for %s class", delegate.getClazz().getSimpleName()));
       this.delegate = delegate;
 

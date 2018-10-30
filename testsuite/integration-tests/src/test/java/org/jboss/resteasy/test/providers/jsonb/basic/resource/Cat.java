@@ -30,7 +30,7 @@ public class Cat {
       transientVar = DEFAULT_TRANSIENT_VAR_VALUE;
    }
 
-   public Cat(String name, String sort, String color, boolean domesticated, int transientVar) {
+   public Cat(final String name, final String sort, final String color, final boolean domesticated, final int transientVar) {
       this.name = name;
       this.sort = sort;
       this.color = color;

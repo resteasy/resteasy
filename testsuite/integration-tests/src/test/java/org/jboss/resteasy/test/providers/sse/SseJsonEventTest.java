@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class SseJsonEventTest
 {
-   private final static Logger logger = Logger.getLogger(SseJsonEventTest.class);
+   private static final Logger logger = Logger.getLogger(SseJsonEventTest.class);
 
    @Deployment
    public static Archive<?> deploy()

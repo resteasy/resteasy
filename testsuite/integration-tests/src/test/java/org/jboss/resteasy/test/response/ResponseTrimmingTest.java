@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.response.resource.ResponseTrimmingResource;
 import org.jboss.resteasy.utils.PortProviderUtil;

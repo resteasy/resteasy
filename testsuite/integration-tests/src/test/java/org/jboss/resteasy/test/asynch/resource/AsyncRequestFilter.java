@@ -22,7 +22,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
    private String callbackException;
    private static final Logger LOG = Logger.getLogger(AsyncRequestFilter.class);
 
-   public AsyncRequestFilter(String name)
+   public AsyncRequestFilter(final String name)
    {
       this.name = name;
    }

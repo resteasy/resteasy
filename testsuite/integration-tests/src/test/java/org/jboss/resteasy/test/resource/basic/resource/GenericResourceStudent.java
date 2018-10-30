@@ -8,7 +8,7 @@ public class GenericResourceStudent
    {
    }
 
-   public GenericResourceStudent(String name)
+   public GenericResourceStudent(final String name)
    {
       this.name = name;
    }

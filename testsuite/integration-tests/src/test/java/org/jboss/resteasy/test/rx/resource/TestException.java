@@ -4,7 +4,7 @@ public class TestException extends Exception {
 
    private static final long serialVersionUID = -1827713152234765715L;
 
-   public TestException(String message) {
+   public TestException(final String message) {
       super(message);
    }
 }

@@ -4,7 +4,7 @@ package org.jboss.resteasy.test.asynch.resource;
 public class AsyncInjectionException extends Exception
 {
 
-   public AsyncInjectionException(String message)
+   public AsyncInjectionException(final String message)
    {
       super(message);
    }
