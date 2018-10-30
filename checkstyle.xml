@@ -36,12 +36,6 @@
 
     <module name="TreeWalker">
 
-        <module name="SuppressWithNearbyCommentFilter">
-            <property name="commentFormat" value="@cs-: (\w+) \((\w|\s)+\)"/>
-            <property name="checkFormat" value="$1"/>
-            <property name="influenceFormat" value="0"/>
-        </module>
-
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
         <!-- Checks for imports                              -->
@@ -88,21 +82,26 @@
         <module name="ArrayTypeStyle"/>
 
         <!-- Checks for System.out -->
-        <module name="Regexp">
+        <module name="RegexpSinglelineJava">
             <property name="format" value="System\.out"/>
-            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
         </module>
 
-        <!-- Checks for System.err -->
-        <module name="Regexp">
+        <module name="RegexpSinglelineJava">
             <property name="format" value="System\.err"/>
-            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
         </module>
 
-        <!-- Checks for printStackTrace -->
-        <module name="Regexp">
+        <!--  Checks for printStackTrace  -->
+        <module name="RegexpSinglelineJava">
             <property name="format" value="printStackTrace\(\)"/>
-            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
         </module>
 
     </module>
