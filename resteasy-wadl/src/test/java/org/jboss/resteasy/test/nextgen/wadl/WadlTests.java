@@ -52,16 +52,10 @@ public class WadlTests extends WADLTestSetup {
       httpServer = HttpServer.create(new InetSocketAddress(TestPortProvider.getPort()), 10);
       contextBuilder = new HttpContextBuilder();
       contextBuilder.getDeployment().getActualResourceClasses().add(BasicResource.class);
-//      contextBuilder.getDeployment().getActualResourceClasses().add(ResteasyWadlDefaultResource.class);
-//      contextBuilder.getDeployment().getActualResourceClasses().add(ResteasyWadlExtendedResource.class);
       contextBuilder.getDeployment().getActualResourceClasses().add(RESTEASY1246.class);
       contextBuilder.getDeployment().getActualResourceClasses().add(ExtendedResource.class);
-
       contextBuilder.bind(httpServer);
-//      defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(contextBuilder.getDeployment()));
       contextBuilder.getDeployment().getResources().add(defaultResource);
-
-
       httpServer.start();
    }
 

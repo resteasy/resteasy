@@ -28,16 +28,10 @@ public class DeploymentTest {
 
    @Deployment
    public static Archive<?> deploy() {
-
-//      WebArchive war = ShrinkWrap.create(WebArchive.class, DeploymentTest.class.getSimpleName() + ".war");
-//      war.addClass(WadlTestApplication.class);
-
       WebArchive war = TestUtil.prepareArchiveWithApplication(DeploymentTest.class.getSimpleName(), WadlTestApplication.class);
       war.addPackages(true, "org.jboss.resteasy.wadl");
 
       TestUtil.finishContainerPrepare(war, null, ExtendedResource.class, ListType.class);
-
-//      war.as(ZipExporter.class).exportTo(new File("/tmp/" + war.getName()), true);
       return war;
    }
 
