@@ -11,6 +11,7 @@ import java.util.Map;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  * @deprecated Using @org.jboss.resteasy.wadl.ResteasyWadlDefaultResource instead.
  */
+// TODO: remove this in master in proper time
 @Deprecated
 public class ResteasyWadlServletWriter extends ResteasyWadlWriter {
 
