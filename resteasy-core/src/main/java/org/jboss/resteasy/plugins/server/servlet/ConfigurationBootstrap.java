@@ -17,7 +17,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-abstract public class ConfigurationBootstrap implements ResteasyConfiguration
+public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 {
    private ResteasyDeployment deployment = new ResteasyDeploymentImpl();
 

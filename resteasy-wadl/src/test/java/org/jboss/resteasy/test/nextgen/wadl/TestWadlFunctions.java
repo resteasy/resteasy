@@ -34,7 +34,7 @@ public class TestWadlFunctions extends WADLTestSetup {
    private static HttpServer httpServer;
    protected static HttpContextBuilder contextBuilder;
    private Client client;
-   
+
    public Client getClient() {
       return client;
    }

@@ -29,7 +29,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 public class AbstractValidatorContextResolver
 {
    private volatile ValidatorFactory validatorFactory;
-   final static Object RD_LOCK = new Object();
+   static final  Object RD_LOCK = new Object();
    private volatile Configuration<?> config;
    private volatile BootstrapConfiguration bootstrapConfiguration;
 

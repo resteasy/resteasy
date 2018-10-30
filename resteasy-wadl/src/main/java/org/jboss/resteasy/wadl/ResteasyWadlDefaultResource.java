@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Path("/")
 public class ResteasyWadlDefaultResource {
-
+   
    private Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
    private void loadServices(ResteasyDeployment deployment) {

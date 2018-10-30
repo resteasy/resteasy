@@ -368,7 +368,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return typesList;
    }
 
-   static protected ExecutableType[] getExecutableTypesOnMethod(Method method)
+   protected static ExecutableType[] getExecutableTypesOnMethod(Method method)
    {
       ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
       if (voe == null || voe.type().length == 0)
@@ -383,7 +383,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return types;
    }
 
-   static protected boolean isGetter(Method m)
+   protected static boolean isGetter(Method m)
    {
       String name = m.getName();
       Class<?> returnType = m.getReturnType();
@@ -406,7 +406,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return false;
    }
 
-   static protected String convertArrayToString(Object o)
+   protected static  String convertArrayToString(Object o)
    {
       String result = null;
       if (o instanceof Object[])
@@ -631,7 +631,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
     *
     * Taken from Hibernate Validator
     */
-   static protected class SimpleMethodFilter implements Filter<RawMethod>
+   protected static class SimpleMethodFilter implements Filter<RawMethod>
    {
       private final Method method1;
       private final Method method2;
@@ -649,7 +649,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
    }
 
-   static protected class LocaleSpecificMessageInterpolator implements MessageInterpolator {
+   protected static class LocaleSpecificMessageInterpolator implements MessageInterpolator {
       private final MessageInterpolator interpolator;
       private final Locale locale;
 

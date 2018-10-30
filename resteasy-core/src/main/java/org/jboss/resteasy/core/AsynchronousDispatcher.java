@@ -73,7 +73,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       private int maxUses = -1;
       private int uses = 0; // uses > maxUses so that context parameters will get checked upon first use.
 
-      synchronized public int nextInt()
+      public synchronized int nextInt()
       {
          if (++uses > maxUses)
          {

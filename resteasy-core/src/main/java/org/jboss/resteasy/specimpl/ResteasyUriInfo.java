@@ -136,7 +136,7 @@ public class ResteasyUriInfo implements UriInfo
 
    }
 
-   public ResteasyUriInfo(URI requestURI)
+   public ResteasyUriInfo(final URI requestURI)
    {
       initializeFromRequest(requestURI);
 
