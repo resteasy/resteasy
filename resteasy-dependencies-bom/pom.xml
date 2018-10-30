@@ -81,7 +81,7 @@
         <version.org.wildfly.wildfly-arquillian-container-managed>2.1.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.1.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
-        <version.org.wildfly.security.wildfly-elytron>1.1.5.Final</version.org.wildfly.security.wildfly-elytron>
+        <version.org.wildfly.security.wildfly-elytron>1.6.1.Final</version.org.wildfly.security.wildfly-elytron>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.weld.api>3.0.SP3</version.weld.api>
         <version.weld>3.0.4.Final</version.weld>
@@ -92,6 +92,7 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.2</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.10.Final</version.org.hibernate.validator>
+        <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
     </properties>
 
     <distributionManagement>
@@ -790,6 +791,16 @@
                 <groupId>io.reactivex.rxjava2</groupId>
                 <artifactId>rxjava</artifactId>
                 <version>${version.io.reactivex.rxjava2-rxjava}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.marshalling</groupId>
+                <artifactId>jboss-marshalling</artifactId>
+                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.marshalling</groupId>
+                <artifactId>jboss-marshalling-river</artifactId>
+                <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
