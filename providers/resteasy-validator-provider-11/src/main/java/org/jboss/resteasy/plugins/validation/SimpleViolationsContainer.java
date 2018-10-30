@@ -47,7 +47,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
    {
       if (!ejbsPresent(cvs) || getViolations().size() == 0)
       {
-          getViolations().addAll(cvs);
+         getViolations().addAll(cvs);
          return;
       }
       boolean skip = false;
@@ -64,7 +64,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
          }
          if (!skip)
          {
-             getViolations().add(cv1);
+            getViolations().add(cv1);
          }
       }
    }
