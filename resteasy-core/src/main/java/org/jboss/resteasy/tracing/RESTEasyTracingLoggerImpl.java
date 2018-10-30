@@ -40,8 +40,11 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
 
    RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
       this.threshold = threshold;
-      loggerNameSuffix = loggerNameSuffix != null ? loggerNameSuffix : DEFAULT_LOGGER_NAME_SUFFIX;
-      this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
+      if (loggerNameSuffix != null) {
+         this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
+      } else {
+         this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + DEFAULT_LOGGER_NAME_SUFFIX);
+      }
       tracingInfo = RESTEasyTracingInfo.get(format);
    }
 

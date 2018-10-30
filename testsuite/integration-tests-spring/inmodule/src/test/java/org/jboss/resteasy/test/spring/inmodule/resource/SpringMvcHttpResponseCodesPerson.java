@@ -7,7 +7,7 @@ public class SpringMvcHttpResponseCodesPerson {
 
    }
 
-   public SpringMvcHttpResponseCodesPerson(String name) {
+   public SpringMvcHttpResponseCodesPerson(final String name) {
       this.name = name;
    }
 

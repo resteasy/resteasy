@@ -623,7 +623,7 @@ public class QueryParamAsPrimitiveTest {
       }
    }
 
-   static public String updateQuery(String uriString, String query)
+   public static String updateQuery(String uriString, String query)
    {
       try
       {

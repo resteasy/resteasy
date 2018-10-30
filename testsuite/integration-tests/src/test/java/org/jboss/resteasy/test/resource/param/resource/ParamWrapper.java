@@ -10,7 +10,7 @@ public class ParamWrapper<E> {
 
    private final E element;
 
-   public ParamWrapper(E element) {
+   public ParamWrapper(final E element) {
       this.element = element;
    }
 

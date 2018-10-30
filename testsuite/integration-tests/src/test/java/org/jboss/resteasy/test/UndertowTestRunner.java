@@ -34,7 +34,7 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
 
    private Set<Class<?>> classes = new HashSet<>();
 
-   public UndertowTestRunner(Class<?> klass) throws InitializationError
+   public UndertowTestRunner(final Class<?> klass) throws InitializationError
    {
       super(klass);
       loadDeployment(klass);

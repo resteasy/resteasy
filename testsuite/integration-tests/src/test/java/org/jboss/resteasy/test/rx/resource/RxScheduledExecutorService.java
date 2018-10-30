@@ -38,7 +38,7 @@ public class RxScheduledExecutorService implements ScheduledExecutorService {
    }
 
    private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
-   static public boolean used;
+   public static boolean used;
 
    @Override
    public void shutdown() {

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseSmokeTest {
-   private final static Logger logger = Logger.getLogger(SseSmokeTest.class);
+   private static final Logger logger = Logger.getLogger(SseSmokeTest.class);
    static Client client;
 
    @Deployment

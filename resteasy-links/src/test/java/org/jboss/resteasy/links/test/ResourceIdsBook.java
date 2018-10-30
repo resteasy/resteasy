@@ -13,7 +13,7 @@ public class ResourceIdsBook extends IdBook{
    public ResourceIdsBook() {
    }
 
-   public ResourceIdsBook(String namea, String nameb) {
+   public ResourceIdsBook(final String namea, final String nameb) {
       this.namea = namea;
       this.nameb = nameb;
    }

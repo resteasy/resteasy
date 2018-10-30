@@ -12,7 +12,7 @@ public class ResourceIdMethodBook extends IdBook{
    public ResourceIdMethodBook() {
    }
 
-   public ResourceIdMethodBook(String name) {
+   public ResourceIdMethodBook(final String name) {
       this.name = name;
    }
 

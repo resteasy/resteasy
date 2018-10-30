@@ -35,7 +35,7 @@ public class ChunkedTransferEncodingUnitTest
    private static Thread t;
    private static ServerSocket ss;
    private static Socket s;
-   private final static Logger logger = Logger.getLogger(ChunkedTransferEncodingUnitTest.class);
+   private static final Logger logger = Logger.getLogger(ChunkedTransferEncodingUnitTest.class);
 
    private static String RESPONSE_200 =
          "HTTP/1.1 200 OK\r\n" +

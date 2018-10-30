@@ -13,7 +13,7 @@ public class Book {
    public Book() {
    }
 
-   public Book(String author, String isbn, String title) {
+   public Book(final String author, final String isbn, final String title) {
       this.author = author;
       this.isbn = isbn;
       this.title = title;

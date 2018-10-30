@@ -6,7 +6,7 @@ public class MultiValuedParamConverter implements ParamConverter<MultiValuedPara
 
    private final ParamConverter<?> paramConverter;
 
-   public MultiValuedParamConverter(ParamConverter<?> paramConverter) {
+   public MultiValuedParamConverter(final ParamConverter<?> paramConverter) {
       this.paramConverter = paramConverter;
    }
 

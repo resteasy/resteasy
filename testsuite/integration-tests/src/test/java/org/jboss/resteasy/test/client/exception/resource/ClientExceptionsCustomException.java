@@ -4,7 +4,7 @@ import javax.ws.rs.WebApplicationException;
 
 public class ClientExceptionsCustomException extends WebApplicationException {
 
-   public ClientExceptionsCustomException(String message) {
+   public ClientExceptionsCustomException(final String message) {
       super(message);
    }
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Context;
 @NameBoundProxiesAnnotation
 public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, ContainerResponseFilter {
 
-   static private String in = "";
+   private static String in = "";
 
    /** The application context, used for retrieving the {@link ApplicationPath} value. */
    @Context Application application;

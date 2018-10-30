@@ -125,10 +125,6 @@ public class SseEventSourceImpl implements SseEventSource
       //tck requries this
       this.alwaysReconnect = true;
 
-      if (name == null)
-      {
-         name = String.format("sse-event-source(%s)", target.getUri());
-      }
       if (executor == null)
       {
          ScheduledExecutorService scheduledExecutor = null;
@@ -136,11 +132,19 @@ public class SseEventSourceImpl implements SseEventSource
          {
             scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
          }
-         this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name);
+         if (name != null) {
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
+         } else {
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, String.format("sse-event-source(%s)", target.getUri()));
+         }
       }
       else
       {
-         this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
+         if (name != null) {
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
+         } else {
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, String.format("sse-event-source(%s)", target.getUri()));
+         }
       }
 
       if (open)

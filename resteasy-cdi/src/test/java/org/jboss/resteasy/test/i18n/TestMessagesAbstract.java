@@ -24,7 +24,7 @@ import org.junit.Test;
  * Copyright Aug 25, 2015
  */
 @SuppressWarnings(value = "unchecked")
-abstract public class TestMessagesAbstract extends TestMessagesParent
+public abstract class TestMessagesAbstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final Annotation testAnnotation = new Annotation()
@@ -80,5 +80,5 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       return Messages.class.getDeclaredMethods().length;
    }
 
-   abstract protected Locale getLocale();
+   protected abstract Locale getLocale();
 }

@@ -12,8 +12,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.custom.resource.CustomProviderPreferenceUser;
 import org.jboss.resteasy.test.providers.custom.resource.MediaTypeFromMessageBodyWriterResource2;
 import org.jboss.resteasy.test.providers.custom.resource.MediaTypeFromMessageBodyWriterTextJson;
@@ -45,7 +43,7 @@ public class MediaTypeFromMessageBodyWriterTest {
       String path;
       String queryName;
       String queryValue;
-      Target(String path, String queryName, String queryValue) {
+      Target(final String path, final String queryName, final String queryValue) {
          this.path = path;
          this.queryName = queryName;
          this.queryValue = queryValue;

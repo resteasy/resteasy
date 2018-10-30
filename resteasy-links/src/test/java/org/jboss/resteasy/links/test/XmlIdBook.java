@@ -11,7 +11,7 @@ public class XmlIdBook extends IdBook {
    public XmlIdBook() {
    }
 
-   public XmlIdBook(String name) {
+   public XmlIdBook(final String name) {
       this.name = name;
    }
 

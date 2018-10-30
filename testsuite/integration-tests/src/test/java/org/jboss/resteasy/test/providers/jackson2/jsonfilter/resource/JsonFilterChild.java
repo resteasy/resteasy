@@ -7,7 +7,7 @@ public class JsonFilterChild extends JsonFilterParent {
 
    }
 
-   public JsonFilterChild(PersonType personType, int id, String name) {
+   public JsonFilterChild(final PersonType personType, final int id, final String name) {
       super(name, id);
       this.personType = personType;
    }

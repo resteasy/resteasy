@@ -10,7 +10,7 @@ public class CookieParamWrapper<E> {
 
    private final E element;
 
-   public CookieParamWrapper(E element) {
+   public CookieParamWrapper(final E element) {
       this.element = element;
    }
 

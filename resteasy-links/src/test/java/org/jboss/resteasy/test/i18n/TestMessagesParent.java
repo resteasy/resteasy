@@ -15,21 +15,21 @@ import org.junit.BeforeClass;
  *
  * Copyright Aug 20, 2015
  */
-abstract public class TestMessagesParent
+public abstract class TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesParent.class);
-   static protected Locale savedLocale;
+   protected static Locale savedLocale;
 
    protected Properties properties = new Properties();
 
    @BeforeClass
-   static public void beforeClass()
+   public static void beforeClass()
    {
       savedLocale = Locale.getDefault();
    }
 
    @AfterClass
-   static public void afterClass()
+   public static void afterClass()
    {
       Locale.setDefault(savedLocale);
       LOG.info("Reset default locale to: " + savedLocale);
@@ -81,7 +81,7 @@ abstract public class TestMessagesParent
       return s;
    }
 
-   abstract protected int getExpectedNumberOfMethods();
+   protected abstract int getExpectedNumberOfMethods();
 
-   abstract protected Locale getLocale();
+   protected abstract Locale getLocale();
 }
