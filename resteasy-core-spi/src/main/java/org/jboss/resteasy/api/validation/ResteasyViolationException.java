@@ -20,7 +20,6 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.ConstraintTypeUtil;
 
 /**

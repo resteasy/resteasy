@@ -1,7 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.InjectorFactoryImpl;
-import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistryImpl;
 import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistryImpl;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistryImpl;
