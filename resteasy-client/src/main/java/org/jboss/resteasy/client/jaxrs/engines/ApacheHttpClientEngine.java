@@ -9,7 +9,7 @@ public interface ApacheHttpClientEngine extends ClientHttpEngine
    /**
     * Enumeration to represent memory units.
     */
-   public enum MemoryUnit {
+   enum MemoryUnit {
       /**
        * Bytes
        */
@@ -30,17 +30,17 @@ public interface ApacheHttpClientEngine extends ClientHttpEngine
       GB
    }
 
-   public static ApacheHttpClientEngine create()
+   static ApacheHttpClientEngine create()
    {
       return new ApacheHttpClient43Engine();
    }
 
-   public static ApacheHttpClientEngine create(CloseableHttpClient httpClient)
+   static ApacheHttpClientEngine create(CloseableHttpClient httpClient)
    {
       return new ApacheHttpClient43Engine(httpClient);
    }
 
-   public static ApacheHttpClientEngine create(HttpClient httpClient, boolean closeHttpClient)
+   static ApacheHttpClientEngine create(HttpClient httpClient, boolean closeHttpClient)
    {
       return new ApacheHttpClient43Engine(httpClient, closeHttpClient);
    }

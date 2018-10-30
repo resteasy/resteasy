@@ -90,7 +90,7 @@ public abstract class AsyncResponseConsumer
       asyncResponse.complete();
    }
 
-   synchronized final public void complete(Throwable t)
+   public final synchronized void complete(Throwable t)
    {
       if (!isComplete)
       {

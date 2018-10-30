@@ -107,7 +107,7 @@ public class ServerDigitalVerificationHeaderDecoratorFeature implements DynamicF
       return false;
    }
 
-   static protected void verify(ContainerRequestContext context, Verifier verifier)
+   protected static void verify(ContainerRequestContext context, Verifier verifier)
    {
       MultivaluedMap<String, String> headers = context.getHeaders();
       List<String> strings = headers.get(DKIMSignature.DKIM_SIGNATURE);

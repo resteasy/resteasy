@@ -47,6 +47,6 @@ public abstract class ResteasyWebHandlerTemplate<T>
       return result;
    }
 
-   abstract protected T handle(ResteasyRequestWrapper requestWrapper, HttpResponse response) throws Exception;
+   protected abstract T handle(ResteasyRequestWrapper requestWrapper, HttpResponse response) throws Exception;
 
 }
