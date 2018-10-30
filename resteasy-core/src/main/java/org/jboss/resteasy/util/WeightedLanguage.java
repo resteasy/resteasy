@@ -121,4 +121,8 @@ public class WeightedLanguage implements Comparable<WeightedLanguage>
       return super.equals(obj);
    }
 
+   @Override
+   public int hashCode() {
+      return super.hashCode();
+   }
 }

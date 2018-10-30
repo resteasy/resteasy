@@ -160,4 +160,9 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
       return super.equals(obj);
    }
 
+   @Override
+   public int hashCode() {
+      return super.hashCode();
+   }
+
 }
