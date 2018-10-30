@@ -4,12 +4,6 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvokerFactory;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientProxy;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.MethodInvoker;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy;
-import org.jboss.resteasy.client.jaxrs.internal.proxy.SubResourceInvoker;
 import org.jboss.resteasy.util.IsHttpMethod;
 
 import javax.ws.rs.Path;

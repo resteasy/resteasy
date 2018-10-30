@@ -1,11 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
-import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
-import org.jboss.resteasy.core.AsynchronousDispatcher;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;

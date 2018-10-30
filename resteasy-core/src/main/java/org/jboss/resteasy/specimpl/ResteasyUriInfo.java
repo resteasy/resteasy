@@ -1,8 +1,5 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.specimpl.UnmodifiableMultivaluedMap;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
