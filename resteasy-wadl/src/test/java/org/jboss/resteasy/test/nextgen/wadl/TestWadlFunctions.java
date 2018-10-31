@@ -29,7 +29,7 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-public class WadlTests extends WADLTestSetup {
+public class TestWadlFunctions extends WADLTestSetup {
 
    private static HttpServer httpServer;
    protected static HttpContextBuilder contextBuilder;
@@ -55,8 +55,8 @@ public class WadlTests extends WADLTestSetup {
       contextBuilder.getDeployment().getActualResourceClasses().add(RESTEASY1246.class);
       contextBuilder.getDeployment().getActualResourceClasses().add(ExtendedResource.class);
       contextBuilder.bind(httpServer);
-      contextBuilder.getDeployment().getResources().add(defaultResource);
       httpServer.start();
+      contextBuilder.getDeployment().getRegistry().addSingletonResource(defaultResource);
    }
 
    @AfterClass
@@ -83,7 +83,7 @@ public class WadlTests extends WADLTestSetup {
    }
 
 
-   public WadlTests() {
+   public TestWadlFunctions() {
 
    }
 
@@ -182,7 +182,7 @@ public class WadlTests extends WADLTestSetup {
       testGrammarGeneration();
       // test again to make sure the grammar generation is re-entrant
       testGrammarGeneration();
-
+      
       {
          org.jboss.resteasy.wadl.jaxb.Application application;
 
