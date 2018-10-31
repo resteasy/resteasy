@@ -45,7 +45,7 @@ public class MultiValuedParamConverterProvider implements ParamConverterProvider
       String separator = getSeparator(annotations);
       Class<?> paramType = getHeaderParam(annotations);
       if (Collection.class.isAssignableFrom(rawType))
-      {   
+      {
          if (!PROXY_REGEX.matcher(separator).matches())
          {
             LogMessages.LOGGER.invalidRegex(rawType.getName(), separator);
@@ -154,7 +154,7 @@ public class MultiValuedParamConverterProvider implements ParamConverterProvider
       }
       return ",";
    }
-   
+
    private Class<?> getHeaderParam(Annotation[] annotations)
    {
       if (annotations == null)

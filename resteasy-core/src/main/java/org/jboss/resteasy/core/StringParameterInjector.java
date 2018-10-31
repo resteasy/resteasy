@@ -750,12 +750,12 @@ public class StringParameterInjector
    {
       return paramConverter;
    }
-   
+
    public HeaderDelegate<?> getHeaderDelegate()
    {
       return delegate;
    }
-   
+
    protected void throwProcessingException(String message, Throwable cause)
    {
       throw new BadRequestException(message, cause);

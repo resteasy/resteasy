@@ -18,8 +18,8 @@ public abstract class AbstractInvocationCollectionProcessor extends AbstractColl
    {
       super(paramName);
    }
-	   
-   public AbstractInvocationCollectionProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+
+   public AbstractInvocationCollectionProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.exception.resource;
 
-import org.jboss.resteasy.test.exception.ClosedResponseHandlingTest;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;

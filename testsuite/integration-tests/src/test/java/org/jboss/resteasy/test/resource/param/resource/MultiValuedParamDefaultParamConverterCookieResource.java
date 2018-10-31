@@ -17,7 +17,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
 
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterConstructorClass
-   
+
    @Path("constructor/separator/list")
    @GET
    public String cookieConstructorSeparatorList(@CookieParam("c") @Separator("#") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -27,7 +27,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
- 
+
    @Path("constructor/separator/set")
    @GET
    public String cookieConstructorSeparatorSet(@CookieParam("c") @Separator("#") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -49,7 +49,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/separator/array")
    @GET
    public String cookieConstructorSeparatorArray(@CookieParam("c") @Separator("#") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -59,7 +59,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/list")
    @GET
    public String cookieConstructorRegexList(@CookieParam("c") @Separator("[#-,]") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -69,7 +69,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/set")
    @GET
    public String cookieConstructorRegexSet(@CookieParam("c") @Separator("[#-,]") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -81,7 +81,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/sortedset")
    @GET
    public String cookieConstructorRegexSortedSet(@CookieParam("c") @Separator("[#-,]") SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -91,7 +91,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/array")
    @GET
    public String cookieConstructorRegexArray(@CookieParam("c") @Separator("[#-,]") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -101,7 +101,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/list")
    @GET
    public String cookieConstructorDefaultList(@CookieParam("c") @Separator List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -111,7 +111,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/set")
    @GET
    public String cookieConstructorDefaultSet(@CookieParam("c") @Separator Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -123,7 +123,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/sortedset")
    @GET
    public String cookieConstructorDefaultSortedSet(@CookieParam("c") @Separator SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -133,7 +133,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/array")
    @GET
    public String cookieConstructorDefaultArray(@CookieParam("c") @Separator MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -143,10 +143,10 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterValueOfClass
-   
+
    @Path("valueOf/separator/list")
    @GET
    public String cookieValueOfSeparatorList(@CookieParam("c") @Separator("#") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -156,7 +156,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/set")
    @GET
    public String cookieValueOfSeparatorSet(@CookieParam("c") @Separator("#") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -168,7 +168,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/sortedset")
    @GET
    public String cookieValueOfSeparatorSortedSet(@CookieParam("c") @Separator("#") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -178,7 +178,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/array")
    @GET
    public String cookieValueOfSeparatorArray(@CookieParam("c") @Separator("#") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -188,7 +188,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/list")
    @GET
    public String cookieValueOfRegexList(@CookieParam("c") @Separator("[#-,]") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -198,7 +198,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/set")
    @GET
    public String cookieValueOfRegexSet(@CookieParam("c") @Separator("[#-,]") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -210,7 +210,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/sortedset")
    @GET
    public String cookieValueOfRegexSortedSet(@CookieParam("c") @Separator("[#-,]") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -220,7 +220,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/array")
    @GET
    public String cookieValueOfRegexArray(@CookieParam("c") @Separator("[#-,]") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -230,7 +230,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/list")
    @GET
    public String cookieValueOfDefaultList(@CookieParam("c") @Separator List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -240,7 +240,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/set")
    @GET
    public String cookieValueOfRegexSetDefault(@CookieParam("c") @Separator Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -252,7 +252,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/sortedset")
    @GET
    public String cookieValueOfDefaultSortedSet(@CookieParam("c") @Separator SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -262,7 +262,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/array")
    @GET
    public String cookieValueOfDefaultArray(@CookieParam("c") @Separator MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -272,7 +272,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/list")
    @GET
    public String cookieFromStringSeparatorList(@CookieParam("c") @Separator("#") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -282,7 +282,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/set")
    @GET
    public String cookieFromStringSeparatorSet(@CookieParam("c") @Separator("#") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -294,7 +294,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/sortedset")
    @GET
    public String cookieFromStringSeparatorSortedSet(@CookieParam("c") @Separator("#") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -304,7 +304,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/array")
    @GET
    public String cookieFromStringSeparatorArray(@CookieParam("c") @Separator("#") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -314,7 +314,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/list")
    @GET
    public String cookieFromStringRegexList(@CookieParam("c") @Separator("[#-,]") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -324,7 +324,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/set")
    @GET
    public String cookieFromStringRegexSet(@CookieParam("c") @Separator("[#-,]") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -336,7 +336,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/sortedset")
    @GET
    public String cookieFromStringRegexSortedSet(@CookieParam("c") @Separator("[#-,]") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -346,7 +346,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/array")
    @GET
    public String cookieFromStringRegexArray(@CookieParam("c") @Separator("[#-,]") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -356,7 +356,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/list")
    @GET
    public String cookieFromStringDefaultList(@CookieParam("c") @Separator List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -366,7 +366,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/set")
    @GET
    public String cookieFromStringDefaultSet(@CookieParam("c") @Separator Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -378,7 +378,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/sortedset")
    @GET
    public String cookieFromStringDefaultSortedSet(@CookieParam("c") @Separator SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -388,7 +388,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/array")
    @GET
    public String cookieFromStringDefaultArray(@CookieParam("c") @Separator MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -398,7 +398,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/list")
    @GET
    public String cookieParamConverterSeparatorList(@CookieParam("c") @Separator("#") List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -408,7 +408,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/set")
    @GET
    public String cookieParamConverterSeparatorSet(@CookieParam("c") @Separator("#") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -420,7 +420,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/sortedset")
    @GET
    public String cookieParamConverterSeparatorSortedSet(@CookieParam("c") @Separator("#") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -430,7 +430,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/array")
    @GET
    public String cookieParamConverterSeparatorArray(@CookieParam("c") @Separator("#") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -440,7 +440,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/list")
    @GET
    public String cookieParamConverterRegexList(@CookieParam("c") @Separator("[#-,]") List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -450,7 +450,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/set")
    @GET
    public String cookieParamConverterRegexSet(@CookieParam("c") @Separator("[#-,]") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -462,7 +462,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/sortedset")
    @GET
    public String cookieParamConverterRegexSortedSet(@CookieParam("c") @Separator("[#-,]") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -472,7 +472,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/array")
    @GET
    public String cookieParamConverterRegexArray(@CookieParam("c") @Separator("[#-,]") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -482,7 +482,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/list")
    @GET
    public String cookieParamConverterDefaultList(@CookieParam("c") @Separator List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -492,7 +492,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/set")
    @GET
    public String cookieParamConverterDefaultSet(@CookieParam("c") @Separator Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -504,7 +504,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/sortedset")
    @GET
    public String cookieParamConverterDefaultSortedSet(@CookieParam("c") @Separator SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -514,7 +514,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/array")
    @GET
    public String cookieParamConverterDefaultArray(@CookieParam("c") @Separator MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -524,7 +524,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("boolean")
    @GET
    public String cookieBoolean(@CookieParam("c") @Separator("#") boolean[] array) {
@@ -544,7 +544,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("char")
    @GET
    public String cookieChar(@CookieParam("c") @Separator("#") char[] array) {
@@ -554,7 +554,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("short")
    @GET
    public String cookieShort(@CookieParam("c") @Separator("#") short[] array) {
@@ -564,7 +564,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("int")
    @GET
    public String cookieShort(@CookieParam("c") @Separator("#") int[] array) {
@@ -574,7 +574,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("long")
    @GET
    public String cookieLong(@CookieParam("c") @Separator("#") long[] array) {
@@ -584,7 +584,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
-   
+
    @Path("float")
    @GET
    public String cookieFloat(@CookieParam("c") @Separator("#") float[] array) {
@@ -594,7 +594,7 @@ public class MultiValuedParamDefaultParamConverterCookieResource {
       }
       return sb.toString();
    }
- 
+
    @Path("double")
    @GET
    public String cookieDouble(@CookieParam("c") @Separator("#") double[] array) {

@@ -21,8 +21,8 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
    {
       super(paramName);
    }
-   
-   public FormParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+
+   public FormParamProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }

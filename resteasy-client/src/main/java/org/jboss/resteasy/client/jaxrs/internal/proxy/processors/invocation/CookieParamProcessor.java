@@ -23,8 +23,8 @@ public class CookieParamProcessor implements InvocationProcessor
    {
       this.cookieName = cookieName;
    }
-   
-   public CookieParamProcessor(String cookieName, Type type, Annotation[] annotations)
+
+   public CookieParamProcessor(final String cookieName, final Type type, final Annotation[] annotations)
    {
       this.cookieName = cookieName;
       this.annotations = annotations;

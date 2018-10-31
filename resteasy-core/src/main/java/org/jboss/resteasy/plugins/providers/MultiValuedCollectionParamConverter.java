@@ -13,11 +13,11 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  * @author Marek Kopecky mkopecky@redhat.com
  * @author Ron Sigal rsigal@redhat.com
  */
-public class MultiValuedCollectionParamConverter extends MultiValuedAbstractParamConverter implements ParamConverter<Collection<?>> 
+public class MultiValuedCollectionParamConverter extends MultiValuedAbstractParamConverter implements ParamConverter<Collection<?>>
 {
    private Constructor<?> constructor;
 
-   public MultiValuedCollectionParamConverter(StringParameterInjector stringParameterInjector, String separator, Constructor<?> constructor)
+   public MultiValuedCollectionParamConverter(final StringParameterInjector stringParameterInjector, final String separator, final Constructor<?> constructor)
    {
       super(stringParameterInjector, separator);
       this.constructor = constructor;

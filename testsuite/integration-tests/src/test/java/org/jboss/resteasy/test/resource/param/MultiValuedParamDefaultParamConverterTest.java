@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterConstructorClass;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterFromStringClass;
 import org.jboss.resteasy.test.resource.param.resource.MultiValuedParamDefaultParamConverterHeaderDelegate;
@@ -48,7 +47,7 @@ import javax.ws.rs.client.ClientBuilder;
 public class MultiValuedParamDefaultParamConverterTest {
 
    private static Client client;
-   
+
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(MultiValuedParamDefaultParamConverterTest.class.getSimpleName());
@@ -150,7 +149,7 @@ public class MultiValuedParamDefaultParamConverterTest {
     */
    @Test
    public void testHeader() {
-       
+
       doTestHeader("constructor", "separator", "-", "list");
       doTestHeader("constructor", "separator", "-", "set");
       doTestHeader("constructor", "separator", "-", "sortedset");
@@ -176,7 +175,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestHeader("valueOf", "default",   ",", "set");
       doTestHeader("valueOf", "default",   ",", "sortedset");
       doTestHeader("valueOf", "default",   ",", "array");
-      
+
       doTestHeader("fromString", "separator", "-", "list");
       doTestHeader("fromString", "separator", "-", "set");
       doTestHeader("fromString", "separator", "-", "sortedset");
@@ -202,7 +201,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestHeader("headerDelegate", "default",   ",", "set");
       doTestHeader("headerDelegate", "default",   ",", "sortedset");
       doTestHeader("headerDelegate", "default",   ",", "array");
-      
+
       doTestHeader("paramConverter", "separator", "-", "list");
       doTestHeader("paramConverter", "separator", "-", "set");
       doTestHeader("paramConverter", "separator", "-", "sortedset");
@@ -249,7 +248,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestMatrix("valueOf", "default",   ",", "set");
       doTestMatrix("valueOf", "default",   ",", "sortedset");
       doTestMatrix("valueOf", "default",   ",", "array");
-      
+
       doTestMatrix("fromString", "separator", "-", "list");
       doTestMatrix("fromString", "separator", "-", "set");
       doTestMatrix("fromString", "separator", "-", "sortedset");
@@ -262,7 +261,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestMatrix("fromString", "default",   ",", "set");
       doTestMatrix("fromString", "default",   ",", "sortedset");
       doTestMatrix("fromString", "default",   ",", "array");
-      
+
       doTestMatrix("paramConverter", "separator", "-", "list");
       doTestMatrix("paramConverter", "separator", "-", "set");
       doTestMatrix("paramConverter", "separator", "-", "sortedset");
@@ -309,7 +308,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestPath("valueOf", "default",   ",", "set");
       doTestPath("valueOf", "default",   ",", "sortedset");
       doTestPath("valueOf", "default",   ",", "array");
-      
+
       doTestPath("fromString", "separator", "-", "list");
       doTestPath("fromString", "separator", "-", "set");
       doTestPath("fromString", "separator", "-", "sortedset");
@@ -356,7 +355,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestQuery("constructor", "default",   ",", "set");
       doTestQuery("constructor", "default",   ",", "sortedset");
       doTestQuery("constructor", "default",   ",", "array");
-      
+
       doTestQuery("valueOf", "separator", "-", "list");
       doTestQuery("valueOf", "separator", "-", "set");
       doTestQuery("valueOf", "separator", "-", "sortedset");
@@ -369,7 +368,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestQuery("valueOf", "default",   ",", "set");
       doTestQuery("valueOf", "default",   ",", "sortedset");
       doTestQuery("valueOf", "default",   ",", "array");
-      
+
       doTestQuery("fromString", "separator", "-", "list");
       doTestQuery("fromString", "separator", "-", "set");
       doTestQuery("fromString", "separator", "-", "sortedset");
@@ -396,32 +395,32 @@ public class MultiValuedParamDefaultParamConverterTest {
       doTestQuery("paramConverter", "default",   ",", "sortedset");
       doTestQuery("paramConverter", "default",   ",", "array");
    }
-   
+
    /**
-    * @tpTestDetails 
+    * @tpTestDetails
     * @tpSince RESTEasy 4.0.0
     */
    @Test
    public void testMisc() {
-       
+
        // Verifies that @Separator with a set of separators works.
        String response = client.target(generateURL("/misc/regex")).queryParam("w", "w1-w2;w3,w4").request().get(String.class);
        Assert.assertEquals("cw1|cw2|cw3|cw4|", response);
-       
-       // This following tests verify that MultiValuedParamConverterProvider does not engage on the 
+
+       // This following tests verify that MultiValuedParamConverterProvider does not engage on the
        // server side if @Separator has an inappropriate value.
        response = client.target(generateURL("/misc/regex/server/cookie")).request().cookie("p", "p1-p2").get(String.class);
        Assert.assertEquals("p1-p2|", response);
-       
+
        response = client.target(generateURL("/misc/regex/server/header")).request().header("p", "p1-p2").get(String.class);
        Assert.assertEquals("p1-p2|", response);
-       
+
        response = client.target(generateURL("/misc/regex/server/matrix")).matrixParam("p", "p1-p2").request().get(String.class);
        Assert.assertEquals("p1-p2|", response);
-       
+
        response = client.target(generateURL("/misc/regex/server/path/p1-p2")).request().get(String.class);
        Assert.assertEquals("p1-p2|", response);
-       
+
        response = client.target(generateURL("/misc/regex/server/query")).queryParam("p", "p1-p2").request().get(String.class);
        Assert.assertEquals("p1-p2|", response);
    }
@@ -456,7 +455,7 @@ public class MultiValuedParamDefaultParamConverterTest {
       String response = client.target(generateURL("/query/" + conversion + "/" + format + "/" + clazz)).queryParam("q", "q1" + separator + "q2").request().get(String.class);
       Assert.assertEquals(t + "q1|" + t + "q2|", response);
    }
-   
+
    String tag(String conversion) {
       switch (conversion) {
           case "constructor":

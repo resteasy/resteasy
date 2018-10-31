@@ -182,7 +182,7 @@ public class TestWadlFunctions extends WADLTestSetup {
       testGrammarGeneration();
       // test again to make sure the grammar generation is re-entrant
       testGrammarGeneration();
-      
+
       {
          org.jboss.resteasy.wadl.jaxb.Application application;
 

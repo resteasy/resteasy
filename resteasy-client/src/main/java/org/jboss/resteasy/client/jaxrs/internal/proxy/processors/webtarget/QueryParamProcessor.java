@@ -19,11 +19,11 @@ public class QueryParamProcessor extends AbstractWebTargetCollectionProcessor
       super(paramName);
    }
 
-   public QueryParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   public QueryParamProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }
-   
+
    @Override
    protected WebTarget apply(WebTarget target, Object object)
    {

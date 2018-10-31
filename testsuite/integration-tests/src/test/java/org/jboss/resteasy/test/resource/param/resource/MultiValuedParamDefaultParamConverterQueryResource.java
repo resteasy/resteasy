@@ -18,7 +18,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
 
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterConstructorClass
-   
+
    @Path("constructor/separator/list")
    @GET
    public String queryConstructorSeparatorList(@QueryParam("q") @Separator("-") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -28,7 +28,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
- 
+
    @Path("constructor/separator/set")
    @GET
    public String queryConstructorSeparatorSet(@QueryParam("q") @Separator("-") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -50,7 +50,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/separator/array")
    @GET
    public String queryConstructorSeparatorArray(@QueryParam("q") @Separator("-") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -60,7 +60,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/list")
    @GET
    public String queryConstructorRegexList(@QueryParam("q") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -70,7 +70,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/set")
    @GET
    public String queryConstructorRegexSet(@QueryParam("q") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -82,7 +82,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/sortedset")
    @GET
    public String queryConstructorRegexSortedSet(@QueryParam("q") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -92,7 +92,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/array")
    @GET
    public String queryConstructorRegexArray(@QueryParam("q") @Separator("[-,;]") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -102,7 +102,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/list")
    @GET
    public String queryConstructorDefaultList(@QueryParam("q") @Separator List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -112,7 +112,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/set")
    @GET
    public String queryConstructorDefaultSet(@QueryParam("q") @Separator Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -124,7 +124,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/sortedset")
    @GET
    public String queryConstructorDefaultSortedSet(@QueryParam("q") @Separator SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -134,7 +134,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/array")
    @GET
    public String queryConstructorDefaultArray(@QueryParam("q") @Separator MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -144,10 +144,10 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterValueOfClass
-   
+
    @Path("valueOf/separator/list")
    @GET
    public String queryValueOfSeparatorList(@QueryParam("q") @Separator("-") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -157,7 +157,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/set")
    @GET
    public String queryValueOfSeparatorSet(@QueryParam("q") @Separator("-") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -169,7 +169,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/sortedset")
    @GET
    public String queryValueOfSeparatorSortedSet(@QueryParam("q") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -179,7 +179,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/array")
    @GET
    public String queryValueOfSeparatorArray(@QueryParam("q") @Separator("-") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -189,7 +189,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/list")
    @GET
    public String queryValueOfRegexList(@QueryParam("q") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -199,7 +199,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/set")
    @GET
    public String queryValueOfRegexSet(@QueryParam("q") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -211,7 +211,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/sortedset")
    @GET
    public String queryValueOfRegexSortedSet(@QueryParam("q") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -221,7 +221,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/array")
    @GET
    public String queryValueOfRegexArray(@QueryParam("q") @Separator("[-,;]") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -231,7 +231,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/list")
    @GET
    public String queryValueOfDefaultList(@QueryParam("q") @Separator List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -241,7 +241,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/set")
    @GET
    public String queryValueOfRegexSetDefault(@QueryParam("q") @Separator Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -253,7 +253,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/sortedset")
    @GET
    public String queryValueOfDefaultSortedSet(@QueryParam("q") @Separator SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -263,7 +263,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/array")
    @GET
    public String queryValueOfDefaultArray(@QueryParam("q") @Separator MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -273,7 +273,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/list")
    @GET
    public String queryFromStringSeparatorList(@QueryParam("q") @Separator("-") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -283,7 +283,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/set")
    @GET
    public String queryFromStringSeparatorSet(@QueryParam("q") @Separator("-") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -295,7 +295,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/sortedset")
    @GET
    public String queryFromStringSeparatorSortedSet(@QueryParam("q") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -305,7 +305,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/array")
    @GET
    public String queryFromStringSeparatorArray(@QueryParam("q") @Separator("-") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -315,7 +315,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/list")
    @GET
    public String queryFromStringRegexList(@QueryParam("q") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -325,7 +325,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/set")
    @GET
    public String queryFromStringRegexSet(@QueryParam("q") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -337,7 +337,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/sortedset")
    @GET
    public String queryFromStringRegexSortedSet(@QueryParam("q") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -347,7 +347,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/array")
    @GET
    public String queryFromStringRegexArray(@QueryParam("q") @Separator("[-,;]") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -357,7 +357,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/list")
    @GET
    public String queryFromStringDefaultList(@QueryParam("q") @Separator List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -367,7 +367,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/set")
    @GET
    public String queryFromStringDefaultSet(@QueryParam("q") @Separator Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -379,7 +379,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/sortedset")
    @GET
    public String queryFromStringDefaultSortedSet(@QueryParam("q") @Separator SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -389,7 +389,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/array")
    @GET
    public String queryFromStringDefaultArray(@QueryParam("q") @Separator MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -399,7 +399,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/list")
    @GET
    public String queryParamConverterSeparatorList(@QueryParam("q") @Separator("-") List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -409,7 +409,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/set")
    @GET
    public String queryParamConverterSeparatorSet(@QueryParam("q") @Separator("-") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -421,7 +421,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/sortedset")
    @GET
    public String queryParamConverterSeparatorSortedSet(@QueryParam("q") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -431,7 +431,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/array")
    @GET
    public String queryParamConverterSeparatorArray(@QueryParam("q") @Separator("-") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -441,7 +441,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/list")
    @GET
    public String queryParamConverterRegexList(@QueryParam("q") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -451,7 +451,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/set")
    @GET
    public String queryParamConverterRegexSet(@QueryParam("q") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -463,7 +463,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/sortedset")
    @GET
    public String queryParamConverterRegexSortedSet(@QueryParam("q") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -473,7 +473,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/array")
    @GET
    public String queryParamConverterRegexArray(@QueryParam("q") @Separator("[-,;]") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -483,7 +483,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/list")
    @GET
    public String queryParamConverterDefaultList(@QueryParam("q") @Separator List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -493,7 +493,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/set")
    @GET
    public String queryParamConverterDefaultSet(@QueryParam("q") @Separator Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -505,7 +505,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/sortedset")
    @GET
    public String queryParamConverterDefaultSortedSet(@QueryParam("q") @Separator SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -515,7 +515,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/array")
    @GET
    public String queryParamConverterDefaultArray(@QueryParam("q") @Separator MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -525,7 +525,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("boolean")
    @GET
    public String queryBoolean(@HeaderParam("h") @Separator("#") boolean[] array) {
@@ -535,7 +535,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("byte")
    @GET
    public String queryByte(@HeaderParam("h") @Separator("#") byte[] array) {
@@ -545,7 +545,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("char")
    @GET
    public String queryChar(@HeaderParam("h") @Separator("#") char[] array) {
@@ -555,7 +555,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("short")
    @GET
    public String queryShort(@HeaderParam("h") @Separator("#") short[] array) {
@@ -565,7 +565,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("int")
    @GET
    public String queryInt(@HeaderParam("h") @Separator("#") int[] array) {
@@ -575,7 +575,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("long")
    @GET
    public String queryLong(@HeaderParam("h") @Separator("#") long[] array) {
@@ -585,7 +585,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
-   
+
    @Path("float")
    @GET
    public String queryFloat(@HeaderParam("h") @Separator("#") float[] array) {
@@ -595,7 +595,7 @@ public class MultiValuedParamDefaultParamConverterQueryResource {
       }
       return sb.toString();
    }
- 
+
    @Path("double")
    @GET
    public String queryDouble(@HeaderParam("h") @Separator("#") double[] array) {

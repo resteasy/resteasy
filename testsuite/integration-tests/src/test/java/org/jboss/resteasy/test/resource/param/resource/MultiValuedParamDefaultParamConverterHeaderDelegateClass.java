@@ -17,13 +17,13 @@ public class MultiValuedParamDefaultParamConverterHeaderDelegateClass implements
    public int compareTo(MultiValuedParamDefaultParamConverterHeaderDelegateClass o) {
       return s.compareTo(o.getS());
    }
-   
-   static public MultiValuedParamDefaultParamConverterHeaderDelegateClass valueOf(String s) {
+
+   public static MultiValuedParamDefaultParamConverterHeaderDelegateClass valueOf(String s) {
       MultiValuedParamDefaultParamConverterHeaderDelegateClass hd = new MultiValuedParamDefaultParamConverterHeaderDelegateClass();
       hd.setS("h" + s);
       return hd;
     }
-   
+
    public static Comp COMP = new Comp();
    static class Comp implements Comparator<MultiValuedParamDefaultParamConverterHeaderDelegateClass> {
 
