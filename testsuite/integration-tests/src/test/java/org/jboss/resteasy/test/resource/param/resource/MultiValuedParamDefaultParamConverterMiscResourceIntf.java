@@ -15,28 +15,28 @@ import org.jboss.resteasy.annotations.Separator;
 
 @Path("misc")
 public interface MultiValuedParamDefaultParamConverterMiscResourceIntf {
- 
+
    @Path("regex")
    @GET
-   public String regex(@QueryParam("w") @Separator("[-,;]") List<String> list);
+   String regex(@QueryParam("w") @Separator("[-,;]") List<String> list);
 
    @Path("regex/client/cookie")
    @GET
-   public String regexClientCookie(@Separator("(-)") @CookieParam("p") Set<String> ss);
-   
+   String regexClientCookie(@Separator("(-)") @CookieParam("p") Set<String> ss);
+
    @Path("regex/client/header")
    @GET
-   public String regexClientHeader(@Separator("(-)") @HeaderParam("p") Set<String> ss);
-   
+   String regexClientHeader(@Separator("(-)") @HeaderParam("p") Set<String> ss);
+
    @Path("regex/client/matrix")
    @GET
-   public String regexClientMatrix(@Separator("(-)") @MatrixParam("p") Set<String> ss);
-   
+   String regexClientMatrix(@Separator("(-)") @MatrixParam("p") Set<String> ss);
+
    @Path("regex/client/query")
    @GET
-   public String regexClientQuery(@Separator("(-)") @QueryParam("p") Set<String> ss);
-   
+   String regexClientQuery(@Separator("(-)") @QueryParam("p") Set<String> ss);
+
    @Path("regex/client/path/{p}")
    @GET
-   public String regexClientPath(@Separator("(-)") @PathParam("p") Set<String> ss);
+   String regexClientPath(@Separator("(-)") @PathParam("p") Set<String> ss);
 }

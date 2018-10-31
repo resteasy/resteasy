@@ -12,16 +12,16 @@ public class MultiValuedParamDefaultParamConverterParamConverterClass implements
    public void setS(String s) {
        this.s = s;
    }
-   
+
    @Override
    public int compareTo(MultiValuedParamDefaultParamConverterParamConverterClass o) {
       return s.compareTo(o.getS());
    }
-   
+
    public String toString() {
       return "oops";
    }
-   
+
    public static Comp COMP = new Comp();
    static class Comp implements Comparator<MultiValuedParamDefaultParamConverterParamConverterClass> {
 

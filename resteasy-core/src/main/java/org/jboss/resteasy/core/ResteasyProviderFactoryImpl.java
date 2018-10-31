@@ -1216,7 +1216,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
       return object.toString();
    }
-   
+
    @Override
    public String toHeaderString(Object object)
    {

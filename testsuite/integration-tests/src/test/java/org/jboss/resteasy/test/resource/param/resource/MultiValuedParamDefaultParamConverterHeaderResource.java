@@ -17,7 +17,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
 
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterConstructorClass
-   
+
    @Path("constructor/separator/list")
    @GET
    public String headerConstructorSeparatorList(@HeaderParam("h") @Separator("-") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -27,7 +27,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
- 
+
    @Path("constructor/separator/set")
    @GET
    public String headerConstructorSeparatorSet(@HeaderParam("h") @Separator("-") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -49,7 +49,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/separator/array")
    @GET
    public String headerConstructorSeparatorArray(@HeaderParam("h") @Separator("-") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -59,7 +59,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/list")
    @GET
    public String headerConstructorRegexList(@HeaderParam("h") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -69,7 +69,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/set")
    @GET
    public String headerConstructorRegexSet(@HeaderParam("h") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -81,7 +81,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/sortedset")
    @GET
    public String headerConstructorRegexSortedSet(@HeaderParam("h") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -91,7 +91,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/regex/array")
    @GET
    public String headerConstructorRegexArray(@HeaderParam("h") @Separator("[-,;]") MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -101,7 +101,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/list")
    @GET
    public String headerConstructorDefaultList(@HeaderParam("h") @Separator List<MultiValuedParamDefaultParamConverterConstructorClass> list) {
@@ -111,7 +111,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/set")
    @GET
    public String headerConstructorDefaultSet(@HeaderParam("h") @Separator Set<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -123,7 +123,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/sortedset")
    @GET
    public String headerConstructorDefaultSortedSet(@HeaderParam("h") @Separator SortedSet<MultiValuedParamDefaultParamConverterConstructorClass> set) {
@@ -133,7 +133,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("constructor/default/array")
    @GET
    public String headerConstructorDefaultArray(@HeaderParam("h") @Separator MultiValuedParamDefaultParamConverterConstructorClass[] array) {
@@ -143,10 +143,10 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    //////////////////////////////////
    // MultiValuedParamDefaultParamConverterValueOfClass
-   
+
    @Path("valueOf/separator/list")
    @GET
    public String headerValueOfSeparatorList(@HeaderParam("h") @Separator("-") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -156,7 +156,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/set")
    @GET
    public String headerValueOfSeparatorSet(@HeaderParam("h") @Separator("-") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -168,7 +168,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/sortedset")
    @GET
    public String headerValueOfSeparatorSortedSet(@HeaderParam("h") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -178,7 +178,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/separator/array")
    @GET
    public String headerValueOfSeparatorArray(@HeaderParam("h") @Separator("-") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -188,7 +188,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/list")
    @GET
    public String headerValueOfRegexList(@HeaderParam("h") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -198,7 +198,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/set")
    @GET
    public String headerValueOfRegexSet(@HeaderParam("h") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -210,7 +210,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/sortedset")
    @GET
    public String headerValueOfRegexSortedSet(@HeaderParam("h") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -220,7 +220,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/regex/array")
    @GET
    public String headerValueOfRegexArray(@HeaderParam("h") @Separator("[-,;]") MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -230,7 +230,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/list")
    @GET
    public String headerValueOfDefaultList(@HeaderParam("h") @Separator List<MultiValuedParamDefaultParamConverterValueOfClass> list) {
@@ -240,7 +240,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/set")
    @GET
    public String headerValueOfRegexSetDefault(@HeaderParam("h") @Separator Set<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -252,7 +252,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/sortedset")
    @GET
    public String headerValueOfDefaultSortedSet(@HeaderParam("h") @Separator SortedSet<MultiValuedParamDefaultParamConverterValueOfClass> set) {
@@ -262,7 +262,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("valueOf/default/array")
    @GET
    public String headerValueOfDefaultArray(@HeaderParam("h") @Separator MultiValuedParamDefaultParamConverterValueOfClass[] array) {
@@ -272,7 +272,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/list")
    @GET
    public String headerFromStringSeparatorList(@HeaderParam("h") @Separator("-") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -282,7 +282,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/set")
    @GET
    public String headerFromStringSeparatorSet(@HeaderParam("h") @Separator("-") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -294,7 +294,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/sortedset")
    @GET
    public String headerFromStringSeparatorSortedSet(@HeaderParam("h") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -304,7 +304,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/separator/array")
    @GET
    public String headerFromStringSeparatorArray(@HeaderParam("h") @Separator("-") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -314,7 +314,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/list")
    @GET
    public String headerFromStringRegexList(@HeaderParam("h") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -324,7 +324,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/set")
    @GET
    public String headerFromStringRegexSet(@HeaderParam("h") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -336,7 +336,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/sortedset")
    @GET
    public String headerFromStringRegexSortedSet(@HeaderParam("h") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -346,7 +346,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/regex/array")
    @GET
    public String headerFromStringRegexArray(@HeaderParam("h") @Separator("[-,;]") MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -356,7 +356,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/list")
    @GET
    public String headerFromStringDefaultList(@HeaderParam("h") @Separator List<MultiValuedParamDefaultParamConverterFromStringClass> list) {
@@ -366,7 +366,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/set")
    @GET
    public String headerFromStringDefaultSet(@HeaderParam("h") @Separator Set<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -378,7 +378,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/sortedset")
    @GET
    public String headerFromStringDefaultSortedSet(@HeaderParam("h") @Separator SortedSet<MultiValuedParamDefaultParamConverterFromStringClass> set) {
@@ -388,7 +388,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("fromString/default/array")
    @GET
    public String headerFromStringDefaultArray(@HeaderParam("h") @Separator MultiValuedParamDefaultParamConverterFromStringClass[] array) {
@@ -398,7 +398,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-     
+
    @Path("headerDelegate/separator/list")
    @GET
    public String headerHeaderDelegateSeparatorList(@HeaderParam("h") @Separator("-") List<MultiValuedParamDefaultParamConverterHeaderDelegateClass> list) {
@@ -408,7 +408,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/separator/set")
    @GET
    public String headerHeaderDelegateSeparatorSet(@HeaderParam("h") @Separator("-") Set<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -420,7 +420,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/separator/sortedset")
    @GET
    public String headerHeaderDelegateSeparatorSortedSet(@HeaderParam("h") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -430,7 +430,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/separator/array")
    @GET
    public String headerHeaderDelegateSeparatorArray(@HeaderParam("h") @Separator("-") MultiValuedParamDefaultParamConverterHeaderDelegateClass[] array) {
@@ -440,7 +440,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/regex/list")
    @GET
    public String headerHeaderDelegateRegexList(@HeaderParam("h") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterHeaderDelegateClass> list) {
@@ -450,7 +450,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/regex/set")
    @GET
    public String headerHeaderDelegateRegexSet(@HeaderParam("h") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -462,7 +462,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/regex/sortedset")
    @GET
    public String headerHeaderDelegateRegexSortedSet(@HeaderParam("h") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -472,7 +472,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/regex/array")
    @GET
    public String headerHeaderDelegateRegexArray(@HeaderParam("h") @Separator("[-,;]") MultiValuedParamDefaultParamConverterHeaderDelegateClass[] array) {
@@ -482,7 +482,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/default/list")
    @GET
    public String headerHeaderDelegateDefaultList(@HeaderParam("h") @Separator List<MultiValuedParamDefaultParamConverterHeaderDelegateClass> list) {
@@ -492,7 +492,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/default/set")
    @GET
    public String headerHeaderDelegateDefaultSet(@HeaderParam("h") @Separator Set<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -504,7 +504,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/default/sortedset")
    @GET
    public String headerHeaderDelegateDefaultSortedSet(@HeaderParam("h") @Separator SortedSet<MultiValuedParamDefaultParamConverterHeaderDelegateClass> set) {
@@ -514,7 +514,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("headerDelegate/default/array")
    @GET
    public String headerHeaderDelegateDefaultArray(@HeaderParam("h") @Separator MultiValuedParamDefaultParamConverterHeaderDelegateClass[] array) {
@@ -534,7 +534,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/set")
    @GET
    public String headerParamConverterSeparatorSet(@HeaderParam("h") @Separator("-") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -546,7 +546,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/sortedset")
    @GET
    public String headerParamConverterSeparatorSortedSet(@HeaderParam("h") @Separator("-") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -556,7 +556,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/separator/array")
    @GET
    public String headerParamConverterSeparatorArray(@HeaderParam("h") @Separator("-") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -566,7 +566,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/list")
    @GET
    public String headerParamConverterRegexList(@HeaderParam("h") @Separator("[-,;]") List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -576,7 +576,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/set")
    @GET
    public String headerParamConverterRegexSet(@HeaderParam("h") @Separator("[-,;]") Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -588,7 +588,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/sortedset")
    @GET
    public String headerParamConverterRegexSortedSet(@HeaderParam("h") @Separator("[-,;]") SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -598,7 +598,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/regex/array")
    @GET
    public String headerParamConverterRegexArray(@HeaderParam("h") @Separator("[-,;]") MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -608,7 +608,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/list")
    @GET
    public String headerParamConverterDefaultList(@HeaderParam("h") @Separator List<MultiValuedParamDefaultParamConverterParamConverterClass> list) {
@@ -618,7 +618,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/set")
    @GET
    public String headerParamConverterDefaultSet(@HeaderParam("h") @Separator Set<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -630,7 +630,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/sortedset")
    @GET
    public String headerParamConverterDefaultSortedSet(@HeaderParam("h") @Separator SortedSet<MultiValuedParamDefaultParamConverterParamConverterClass> set) {
@@ -640,7 +640,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("paramConverter/default/array")
    @GET
    public String headerParamConverterDefaultArray(@HeaderParam("h") @Separator MultiValuedParamDefaultParamConverterParamConverterClass[] array) {
@@ -650,7 +650,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("boolean")
    @GET
    public String headerBoolean(@HeaderParam("h") @Separator("#") boolean[] array) {
@@ -660,7 +660,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("byte")
    @GET
    public String headerByte(@HeaderParam("h") @Separator("#") byte[] array) {
@@ -670,7 +670,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("char")
    @GET
    public String headerChar(@HeaderParam("h") @Separator("#") char[] array) {
@@ -680,7 +680,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("short")
    @GET
    public String headerShort(@HeaderParam("h") @Separator("#") short[] array) {
@@ -690,7 +690,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("int")
    @GET
    public String headerInt(@HeaderParam("h") @Separator("#") int[] array) {
@@ -700,7 +700,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("long")
    @GET
    public String headerLong(@HeaderParam("h") @Separator("#") long[] array) {
@@ -710,7 +710,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
-   
+
    @Path("float")
    @GET
    public String headerFloat(@HeaderParam("h") @Separator("#") float[] array) {
@@ -720,7 +720,7 @@ public class MultiValuedParamDefaultParamConverterHeaderResource {
       }
       return sb.toString();
    }
- 
+
    @Path("double")
    @GET
    public String headerDouble(@HeaderParam("h") @Separator("#") double[] array) {

@@ -310,7 +310,7 @@ public class ResteasyWadlWriter {
        public void includeGrammars(String grammarFileName) {
            externalSchemas.clear();
 
-           try (final InputStream is = loader.getResourceAsStream(grammarFileName)) {
+           try (InputStream is = loader.getResourceAsStream(grammarFileName)) {
                if (is != null) {
                    Grammars grammars = unmarshall(is);
                    List<Include> includes = grammars.getInclude();
@@ -395,7 +395,9 @@ public class ResteasyWadlWriter {
                    Iterator<Include> iter = grammars.getInclude().iterator();
                    while (iter.hasNext()) {
                        for (Doc doc : iter.next().getDoc()) {
-                           if ("Generated".equals(doc.getTitle())) ;
+                           // CHECKSTYLE.OFF: EmptyStatement
+                           if ("Generated".equals(doc.getTitle()));
+                           // CHECKSTYLE.ON: EmptyStatement
                            iter.remove();
                        }
                    }

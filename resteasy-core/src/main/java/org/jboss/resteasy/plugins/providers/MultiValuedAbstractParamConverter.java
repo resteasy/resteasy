@@ -21,7 +21,7 @@ public abstract class MultiValuedAbstractParamConverter
    protected HeaderDelegate headerDelegate;
    protected String separator;
 
-   public MultiValuedAbstractParamConverter(StringParameterInjector stringParameterInjector, String separator)
+   public MultiValuedAbstractParamConverter(final StringParameterInjector stringParameterInjector, final String separator)
    {
       this.stringParameterInjector = stringParameterInjector;
       this.paramConverter = stringParameterInjector.getParamConverter();
@@ -53,7 +53,7 @@ public abstract class MultiValuedAbstractParamConverter
          }
          else if (paramConverter != null)
          {
-            sb.append(paramConverter.toString(v)); 
+            sb.append(paramConverter.toString(v));
          }
          else if (headerDelegate != null)
          {

@@ -122,7 +122,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       return providerFactory.getClientDynamicFeatures();
    }
-   
+
    public ParamConverter getParamConverter(Class<?> clazz, Type genericType, Annotation[] annotations)
    {
       return providerFactory.getParamConverter(clazz, genericType, annotations);
@@ -307,7 +307,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       return providerFactory.isReactive(clazz);
    }
-   
+
    public void addHeaderDelegate(Class<?> clazz, HeaderDelegate header)
    {
       providerFactory.addHeaderDelegate(clazz, header);

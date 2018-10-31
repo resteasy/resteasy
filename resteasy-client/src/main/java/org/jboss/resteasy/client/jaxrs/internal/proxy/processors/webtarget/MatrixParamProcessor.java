@@ -19,11 +19,11 @@ public class MatrixParamProcessor extends AbstractWebTargetCollectionProcessor
       super(paramName);
    }
 
-   public MatrixParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   public MatrixParamProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }
-   
+
    @Override
    protected WebTarget apply(WebTarget target, Object object)
    {

@@ -20,11 +20,11 @@ public abstract class AbstractWebTargetCollectionProcessor extends AbstractColle
       super(paramName);
    }
 
-   public AbstractWebTargetCollectionProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   public AbstractWebTargetCollectionProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }
-   
+
    @Override
    public WebTarget build(WebTarget target, Object param)
    {

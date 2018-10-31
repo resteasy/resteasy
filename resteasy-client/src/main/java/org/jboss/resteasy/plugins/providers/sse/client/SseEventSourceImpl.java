@@ -133,9 +133,9 @@ public class SseEventSourceImpl implements SseEventSource
             scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
          }
          if (name != null) {
-            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name);
          } else {
-            this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, String.format("sse-event-source(%s)", target.getUri()));
+            this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, String.format("sse-event-source(%s)", target.getUri()));
          }
       }
       else

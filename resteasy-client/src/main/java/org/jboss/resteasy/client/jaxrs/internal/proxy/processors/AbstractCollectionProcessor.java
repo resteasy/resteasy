@@ -23,8 +23,8 @@ public abstract class AbstractCollectionProcessor<T>
    {
       this.paramName = paramName;
    }
-   
-   public AbstractCollectionProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+
+   public AbstractCollectionProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       this.paramName = paramName;
       this.type = type;

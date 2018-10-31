@@ -17,11 +17,11 @@ public class MultiValuedParamDefaultParamConverterValueOfClass implements Compar
    public int compareTo(MultiValuedParamDefaultParamConverterValueOfClass o) {
       return s.compareTo(o.getS());
    }
-   
+
    public String toString() {
       return "s" + s;
    }
-   
+
    public static Comp COMP = new Comp();
    static class Comp implements Comparator<MultiValuedParamDefaultParamConverterValueOfClass> {
 
@@ -30,8 +30,8 @@ public class MultiValuedParamDefaultParamConverterValueOfClass implements Compar
          return o1.getS().compareTo(o2.getS());
       }
    }
-   
-   static public MultiValuedParamDefaultParamConverterValueOfClass valueOf(String s) {
+
+   public static MultiValuedParamDefaultParamConverterValueOfClass valueOf(String s) {
       MultiValuedParamDefaultParamConverterValueOfClass vo = new MultiValuedParamDefaultParamConverterValueOfClass();
       vo.setS("v" + s);
       return vo;

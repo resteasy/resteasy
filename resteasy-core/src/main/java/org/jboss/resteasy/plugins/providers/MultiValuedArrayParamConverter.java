@@ -18,7 +18,7 @@ public class MultiValuedArrayParamConverter extends MultiValuedAbstractParamConv
 {
    private Class<?> rawType;
 
-   public MultiValuedArrayParamConverter(StringParameterInjector stringParameterInjector, String separator, Class<?> rawType)
+   public MultiValuedArrayParamConverter(final StringParameterInjector stringParameterInjector, final String separator, final Class<?> rawType)
    {
       super(stringParameterInjector, separator);
       this.rawType = rawType;
@@ -71,7 +71,7 @@ public class MultiValuedArrayParamConverter extends MultiValuedAbstractParamConv
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
+
    private void copyPrimitiveArray(Object[] objectArray, Object primitiveArray)
    {
       int primitiveArrayLength= Array.getLength(primitiveArray);

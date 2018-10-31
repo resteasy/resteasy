@@ -6,7 +6,7 @@ public class ClosedResponseHandlingPleaseMapException extends RuntimeException {
 
    final Response response;
 
-   public ClosedResponseHandlingPleaseMapException(Response response) {
+   public ClosedResponseHandlingPleaseMapException(final Response response) {
       this.response = response;
    }
 }

@@ -19,8 +19,8 @@ public class PathParamProcessor implements WebTargetProcessor
    protected Type type;
    protected Annotation[] annotations;
    protected ClientConfiguration configuration;
-   
-   public PathParamProcessor(String paramName, Boolean encodeSlashInPath, Type genericType, Annotation[] annotations, ClientConfiguration clientConfiguration)
+
+   public PathParamProcessor(final String paramName, final Boolean encodeSlashInPath, final Type genericType, final Annotation[] annotations, final ClientConfiguration clientConfiguration)
    {
       this.paramName = paramName;
       this.encodeSlashInPath = encodeSlashInPath;
@@ -28,7 +28,7 @@ public class PathParamProcessor implements WebTargetProcessor
       this.annotations = annotations;
       this.configuration = clientConfiguration;
    }
-   
+
    @Override
    public WebTarget build(WebTarget target, Object param)
    {

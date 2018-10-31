@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Separator
 {
-   public String value() default "";
+   String value() default "";
 }

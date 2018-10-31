@@ -18,11 +18,11 @@ public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
       super(paramName);
    }
 
-   public HeaderParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   public HeaderParamProcessor(final String paramName, final Type type, final Annotation[] annotations, final ClientConfiguration config)
    {
       super(paramName, type, annotations, config);
    }
-   
+
    @Override
    protected ClientInvocation apply(ClientInvocation invocation, Object object)
    {

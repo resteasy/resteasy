@@ -115,7 +115,7 @@ public class PriorityTest {
       assertTrue(ERROR_MESSAGE, clientRequestFilters[1] instanceof PriorityClientRequestFilter1);
       assertTrue(ERROR_MESSAGE, clientRequestFilters[2] instanceof PriorityClientRequestFilter2);
    }
-    
+
    @Test
    public void testClientRequestFilterPriorityOverride()
    {
