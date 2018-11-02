@@ -2682,12 +2682,14 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    
    public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
    {
+      RegisterBuiltin.register(this);
       return CompletableFuture.supplyAsync(new Supplier<Instance>()
       {
 
          @Override
          public Instance get()
          {
+           
             if (jaxrsServer == null)
             {
                jaxrsServer = new SunHttpJaxrsServer();

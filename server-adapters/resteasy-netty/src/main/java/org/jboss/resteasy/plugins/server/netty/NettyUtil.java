@@ -12,7 +12,9 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,9 @@ public class NettyUtil
 
       String uriString = protocol + "://" + host + uri;
       URI absoluteURI = URI.create(uriString);
+      if (contextPath != null && !contextPath.isEmpty() && !contextPath.startsWith("/")) {
+         contextPath = "/"+ contextPath;
+      }
       return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
    }
 
