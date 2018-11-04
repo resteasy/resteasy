@@ -172,7 +172,6 @@ public class ExceptionHandler
             }
             catch(IllegalStateException ise) {
                // IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
-               return response;
             }
          }
       }
