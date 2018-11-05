@@ -21,6 +21,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
@@ -114,7 +115,7 @@ public class Jackson2Test {
    /**
     * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
     */
-   @Deployment(name = "jettison")
+//   @Deployment(name = "jettison")
    public static Archive<?> deployJettison() {
       WebArchive war = TestUtil.prepareArchive(JETTISON_DEPLOYMENT);
       war.addClass(Jackson2Test.class);
@@ -252,6 +253,7 @@ public class Jackson2Test {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Ignore
    public void testXmlString() throws Exception {
       WebTarget target = client.target(PortProviderUtil.generateURL("/xml/products/333", JETTISON_DEPLOYMENT));
       Response response = target.request().get();

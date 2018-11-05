@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

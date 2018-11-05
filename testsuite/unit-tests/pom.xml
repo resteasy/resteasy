@@ -40,12 +40,11 @@
             <version>${version.resteasy.testsuite}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
-            <version>${version.resteasy.testsuite}</version>
-        </dependency>
-
+        <!--<dependency>-->
+            <!--<groupId>org.jboss.resteasy</groupId>-->
+            <!--<artifactId>resteasy-jettison-provider</artifactId>-->
+            <!--<version>${version.resteasy.testsuite}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>

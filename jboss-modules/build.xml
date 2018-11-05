@@ -49,10 +49,6 @@
           ~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
           -->
 
-        <module-def name="org.codehaus.jettison">
-            <maven-resource group="org.codehaus.jettison" artifact="jettison"/>
-        </module-def>
-
         <module-def name="org.reactivestreams">
             <maven-resource group="org.reactivestreams" artifact="reactive-streams"/>
         </module-def>
@@ -148,10 +144,6 @@
 
         <module-def name="org.jboss.resteasy.resteasy-jaxb-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxb-provider"/>
-        </module-def>
-
-        <module-def name="org.jboss.resteasy.resteasy-jettison-provider">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jettison-provider"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs-public">
