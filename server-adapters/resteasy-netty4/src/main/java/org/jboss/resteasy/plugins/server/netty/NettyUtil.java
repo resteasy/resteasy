@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.handler.codec.http.HttpRequest;
+
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
@@ -11,6 +12,7 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +38,9 @@ public class NettyUtil
       } else {
          uriString = protocol + "://" + host + uri;
       }
-
+      if (contextPath != null && !contextPath.isEmpty() && !contextPath.startsWith("/")) {
+         contextPath = "/"+ contextPath;
+      }
       URI absoluteURI = URI.create(uriString);
       return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
    }
