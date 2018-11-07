@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-public class ConfigurationInheritenceTestMessageBodyReader3 implements MessageBodyReader<String> {
+public class ConfigurationInheritanceTestMessageBodyReader6 implements MessageBodyReader<String> {
    @Override
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
       return false;
