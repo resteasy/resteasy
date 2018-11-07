@@ -32,6 +32,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 public class ClientResponseFilterTest {
 
    static Client client;
+
    String dummyUrl = "dummyUrl";
 
    @BeforeClass

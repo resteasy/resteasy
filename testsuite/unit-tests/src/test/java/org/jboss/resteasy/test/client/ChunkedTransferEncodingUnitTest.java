@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.utils.TestUtil;
@@ -56,6 +57,8 @@ public class ChunkedTransferEncodingUnitTest
       testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
    }
 
+   private String fakeServerHostAndPort;
+
    //////////////////////////////////////////////////////////////////////////////
 
    @Before
@@ -66,7 +69,8 @@ public class ChunkedTransferEncodingUnitTest
       t = new Thread() {
          public void run() {
             try {
-               ss = new ServerSocket(8081);
+               ss = new ServerSocket(0, 0, Inet4Address.getLocalHost());
+               fakeServerHostAndPort = ss.getInetAddress().getHostAddress() + ":" + ss.getLocalPort();
                s = ss.accept();
                InputStream is = s.getInputStream();
                int j = 0;
@@ -133,8 +137,8 @@ public class ChunkedTransferEncodingUnitTest
 
    @Test
    public void testChunkedTarget() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      ResteasyWebTarget target = client.target("http://" + fakeServerHostAndPort + "/test");
       target.setChunked(true);
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       File file = new File(testFilePath);
@@ -148,8 +152,8 @@ public class ChunkedTransferEncodingUnitTest
 
    @Test
    public void testChunkedRequest() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      ResteasyWebTarget target = client.target("http://" + fakeServerHostAndPort + "/test");
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       request.setChunked(true);
       File file = new File(testFilePath);
