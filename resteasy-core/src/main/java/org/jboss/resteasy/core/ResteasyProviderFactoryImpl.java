@@ -578,6 +578,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public void setRegisterBuiltins(boolean registerBuiltins)
    {
+      if (registerBuiltins != this.registerBuiltins) {
+         notifyListenersAndCleanUp();
+      }
       this.registerBuiltins = registerBuiltins;
    }
 
@@ -736,6 +739,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public void addHeaderDelegate(Class clazz, HeaderDelegate header)
    {
+      notifyListenersAndCleanUp();
       if (headerDelegates == null)
       {
          headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
@@ -1317,6 +1321,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
          return;
       }
+      notifyListenersAndCleanUp();
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
       providerClasses.add(provider);
@@ -1679,6 +1684,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          LogMessages.LOGGER.providerInstanceAlreadyRegistered(providerClass.getName());
          return;
       }
+      notifyListenersAndCleanUp();
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
       providerInstances.add(provider);
@@ -2373,15 +2379,19 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public ResteasyProviderFactory setProperties(Map<String, ?> properties)
    {
-      Map<String, Object> newProp = new ConcurrentHashMap<String, Object>();
-      newProp.putAll(properties);
-      this.properties = newProp;
+      if (properties != null && !properties.isEmpty()) {
+         notifyListenersAndCleanUp();
+         Map<String, Object> newProp = new ConcurrentHashMap<String, Object>();
+         newProp.putAll(properties);
+         this.properties = newProp;
+      }
       return this;
    }
 
    @Override
    public ResteasyProviderFactory property(String name, Object value)
    {
+      notifyListenersAndCleanUp();
       if (value == null)
          properties.remove(name);
       else

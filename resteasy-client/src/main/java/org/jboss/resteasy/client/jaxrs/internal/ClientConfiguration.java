@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.core.DelegateLazyResteasyProviderFactory;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
@@ -37,16 +38,16 @@ import java.util.Set;
  */
 public class ClientConfiguration implements Configuration, Configurable<ClientConfiguration>, Providers, HeaderValueProcessor
 {
-   protected ResteasyProviderFactory providerFactory;
+   private ResteasyProviderFactory providerFactory;
 
    public ClientConfiguration(final ResteasyProviderFactory factory)
    {
-      if (factory instanceof ThreadLocalResteasyProviderFactory)
+      ResteasyProviderFactory f = factory;
+      if (f instanceof ThreadLocalResteasyProviderFactory)
       {
-         this.providerFactory = new LocalResteasyProviderFactory(((ThreadLocalResteasyProviderFactory)factory).getDelegate());
-      } else {
-         this.providerFactory = new LocalResteasyProviderFactory(factory);
+         f = ((ThreadLocalResteasyProviderFactory)f).getDelegate();
       }
+      this.providerFactory = new DelegateLazyResteasyProviderFactory(f, RuntimeType.CLIENT);
    }
 
    public ClientConfiguration(final ClientConfiguration parent)
@@ -57,7 +58,10 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public void setProperties(Map<String, Object> newProps)
    {
-      providerFactory.setProperties(newProps);
+      if (newProps != null && !newProps.isEmpty())
+      {
+         providerFactory.setProperties(newProps);
+      }
    }
 
    protected ResteasyProviderFactory getProviderFactory()

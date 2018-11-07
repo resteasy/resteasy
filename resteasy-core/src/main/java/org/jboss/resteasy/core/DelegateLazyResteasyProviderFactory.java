@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -29,56 +31,69 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ContextInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.LazyResteasyProviderFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.util.ThreadLocalStack;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 
-/**
- * Allow applications to push/pop provider factories onto the stack.
- *
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-//TODO extend ResteasyProviderFactoryDelegate and check/verify getConcreteMediaTypeFromMessageBodyWriters which is relying on super (WHY?)
 @SuppressWarnings("rawtypes")
-public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactoryImpl implements ProviderFactoryDelegate
+public class DelegateLazyResteasyProviderFactory extends ResteasyProviderFactory implements ProviderFactoryDelegate, LazyResteasyProviderFactory
 {
-   private static final ThreadLocalStack<ResteasyProviderFactory> delegate = new ThreadLocalStack<ResteasyProviderFactory>();
+   private boolean referenceMode = true;
+   private ResteasyProviderFactory delegate;
+   private final RuntimeType runtimeType;
 
-   private final ResteasyProviderFactory defaultFactory;
-
-
-   public ThreadLocalResteasyProviderFactory(final ResteasyProviderFactory defaultFactory)
+   public DelegateLazyResteasyProviderFactory(final ResteasyProviderFactory delegate)
    {
-      this.defaultFactory = defaultFactory;
+      this(delegate, null);
    }
 
-   public ResteasyProviderFactory getDelegate()
+   public DelegateLazyResteasyProviderFactory(final ResteasyProviderFactory delegate, final RuntimeType runtimeType)
    {
-      ResteasyProviderFactory factory = delegate.get();
-      if (factory == null) return defaultFactory;
-      return factory;
+      this.delegate = delegate;
+      this.delegate.registerListener(this);
+      this.runtimeType = runtimeType;
+   }
+
+   public synchronized ResteasyProviderFactory getDelegate()
+   {
+      return delegate;
    }
 
    @Override
-   protected void initialize()
+   public synchronized void onChange()
    {
-
+      if (referenceMode)
+      {
+         ResteasyProviderFactory parent = delegate;
+         while (parent instanceof DelegateLazyResteasyProviderFactory) {
+            parent = ((ProviderFactoryDelegate)parent).getDelegate();
+         }
+         this.delegate = runtimeType == null ? new ResteasyProviderFactoryImpl(parent, true) : new ResteasyProviderFactoryImpl(parent, true) {
+            @Override
+            public RuntimeType getRuntimeType()
+            {
+               return runtimeType;
+            }
+         };
+         referenceMode = false;
+      }
    }
 
    @Override
    public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return super.getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
+      //return super.getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
+      return getDelegate().getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
    }
 
    @Override
@@ -97,16 +112,6 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
       getDelegate().injectProperties(obj, request, response);
-   }
-
-   public static void push(ResteasyProviderFactory factory)
-   {
-      delegate.push(factory);
-   }
-
-   public static void pop()
-   {
-      delegate.pop();
    }
 
    @Override
@@ -142,13 +147,18 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public void setBuiltinsRegistered(boolean builtinsRegistered)
    {
+      notifyListenersAndCleanUp();
+      onChange();
       getDelegate().setBuiltinsRegistered(builtinsRegistered);
    }
 
    @Override
    public ResteasyProviderFactory register(Class<?> providerClass)
    {
-      return getDelegate().register(providerClass);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(providerClass);
+      return this;
    }
 
    @Override
@@ -160,7 +170,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
-      return getDelegate().register(componentClass, contracts);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(componentClass, contracts);
+      return this;
    }
 
    @Override
@@ -208,7 +221,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, int priority)
    {
-      return getDelegate().register(componentClass, priority);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(componentClass, priority);
+      return this;
    }
 
    @Override
@@ -220,15 +236,14 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      MessageBodyReader<T> reader = getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
-      if (reader!=null)
-         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
-      return reader;
+      return getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
    }
 
    @Override
    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
+      notifyListenersAndCleanUp();
+      onChange();
       getDelegate().registerProvider(provider, priorityOverride, isBuiltin, contracts);
    }
 
@@ -241,7 +256,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Object component, Map<Class<?>, Integer> contracts)
    {
-      return getDelegate().register(component, contracts);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(component, contracts);
+      return this;
    }
 
    @Override
@@ -259,13 +277,18 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public void setRegisterBuiltins(boolean registerBuiltins)
    {
+      notifyListenersAndCleanUp(); //TODO maybe check if the new value for registerBuiltins is different from current one before notifying
+      onChange();
       getDelegate().setRegisterBuiltins(registerBuiltins);
    }
 
    @Override
    public ResteasyProviderFactory register(Object component, int priority)
    {
-      return getDelegate().register(component, priority);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(component, priority);
+      return this;
    }
 
    @Override
@@ -283,7 +306,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Object provider)
    {
-      return getDelegate().register(provider);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(provider);
+      return this;
    }
 
    @Override
@@ -307,6 +333,8 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public Map<String, Object> getMutableProperties()
    {
+      notifyListenersAndCleanUp();
+      onChange();
       return getDelegate().getMutableProperties();
    }
 
@@ -337,7 +365,12 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory setProperties(Map<String, ?> properties)
    {
-      return getDelegate().setProperties(properties);
+      if (properties != null && !properties.isEmpty()) {
+         notifyListenersAndCleanUp();
+         onChange();
+         getDelegate().setProperties(properties);
+      }
+      return this;
    }
 
    @Override
@@ -349,7 +382,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, Class<?>... contracts)
    {
-      return getDelegate().register(componentClass, contracts);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(componentClass, contracts);
+      return this;
    }
 
    @Override
@@ -361,7 +397,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public RuntimeType getRuntimeType()
    {
-      return getDelegate().getRuntimeType();
+      return runtimeType != null ? runtimeType : getDelegate().getRuntimeType();
    }
 
    @Override
@@ -373,7 +409,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory property(String name, Object value)
    {
-      return getDelegate().property(name, value);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().property(name, value);
+      return this;
    }
 
    @Override
@@ -409,7 +448,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public ResteasyProviderFactory register(Object component, Class<?>... contracts)
    {
-      return getDelegate().register(component, contracts);
+      notifyListenersAndCleanUp();
+      onChange();
+      getDelegate().register(component, contracts);
+      return this;
    }
 
    @Override
@@ -427,18 +469,24 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public void registerProvider(Class provider)
    {
+      notifyListenersAndCleanUp();
+      onChange();
       getDelegate().registerProvider(provider);
    }
 
    @Override
    public void addHeaderDelegate(Class clazz, HeaderDelegate header)
    {
+      notifyListenersAndCleanUp();
+      onChange();
       getDelegate().addHeaderDelegate(clazz, header);
    }
 
    @Override
    public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer defaultPriority, boolean builtIn)
    {
+      notifyListenersAndCleanUp();
+      onChange();
       getDelegate().registerProviderInstance(provider, contracts, defaultPriority, builtIn);
    }
 
@@ -487,16 +535,13 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public Configuration getConfiguration()
    {
-      return getDelegate().getConfiguration();
+      return this;
    }
 
    @Override
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      MessageBodyWriter<T> writer = getDelegate().getMessageBodyWriter(type, genericType, annotations, mediaType);
-      if (writer!=null)
-         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-      return writer;
+      return getDelegate().getMessageBodyWriter(type, genericType, annotations, mediaType);
    }
 
    @Override
@@ -505,7 +550,8 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
       return getDelegate().getExceptionMapper(type);
    }
 
-   @Override
+//   @Override
+   //TODO!!
    public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       return ((ResteasyProviderFactoryImpl)getDelegate()).getExceptionMappers();
@@ -562,19 +608,84 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    @Override
    public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      MessageBodyWriter<T> writer = getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
-      if (writer!=null)
-         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-      return writer;
+      return getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
    }
 
    @Override
    public <T> MessageBodyReader<T> getClientMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      MessageBodyReader<T> reader = getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
-      if (reader!=null)
-         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
-      return reader;
+      return getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
+   }
+
+   @Override
+   public Map<Class<?>, AsyncClientResponseProvider> getAsyncClientResponseProviders()
+   {
+      return getDelegate().getAsyncClientResponseProviders();
+   }
+
+   @Override
+   public <T> T getContextData(Class<T> type)
+   {
+      return getDelegate().getContextData(type);
+   }
+
+   @Override
+   public <T> AsyncClientResponseProvider<T> getAsyncClientResponseProvider(Class<T> type)
+   {
+      return getDelegate().getAsyncClientResponseProvider(type);
+   }
+
+   @Override
+   public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType,
+         Annotation[] annotations, MediaType accept)
+   {
+      return getDelegate().getPossibleMessageBodyWritersMap(type, genericType, annotations, accept);
+   }
+
+   @Override
+   public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
+   {
+      return getDelegate().getRxInvokerProvider(clazz);
+   }
+
+   @Override
+   public RxInvokerProvider<?> getRxInvokerProviderFromReactiveClass(Class<?> clazz)
+   {
+      return getDelegate().getRxInvokerProviderFromReactiveClass(clazz);
+   }
+
+   @Override
+   public boolean isReactive(Class<?> clazz)
+   {
+      return getDelegate().isReactive(clazz);
+   }
+
+   @Override
+   public ResourceBuilder getResourceBuilder()
+   {
+      return getDelegate().getResourceBuilder();
+   }
+
+   @Override
+   protected void registerBuiltin()
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   @Deprecated
+   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
+         MediaType mediaType)
+   {
+      return getDelegate().getServerMessageBodyReader(type, genericType, annotations, mediaType);
+   }
+
+   @Override
+   @Deprecated
+   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
+         MediaType mediaType)
+   {
+      return getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
    }
 
 }

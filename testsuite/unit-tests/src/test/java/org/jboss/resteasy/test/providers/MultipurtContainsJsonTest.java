@@ -7,12 +7,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
+import org.jboss.resteasy.core.DelegateLazyResteasyProviderFactory;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
@@ -43,7 +44,7 @@ public class MultipurtContainsJsonTest {
    }
 
    public static MessageBodyWriter<MultipartFormDataOutput> getWriter() {
-      ResteasyProviderFactory factory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
+      ResteasyProviderFactory factory = new DelegateLazyResteasyProviderFactory(ResteasyProviderFactory.newInstance(), RuntimeType.CLIENT);
       RegisterBuiltin.register(factory);
       factory.registerProviderInstance(new ProviderFactoryPrecendencePlainTextWriter());
       factory.registerProviderInstance(new ProviderFactoryPrecedenceIntegerPlainTextWriter());

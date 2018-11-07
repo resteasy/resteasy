@@ -8,12 +8,14 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.core.DelegateLazyResteasyProviderFactory;
 import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Configuration;
 
 import java.security.KeyStore;
@@ -315,8 +317,9 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       if (providerFactory == null)
       {
          // create a new one
-         providerFactory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
-         RegisterBuiltin.register(providerFactory);
+         providerFactory = new DelegateLazyResteasyProviderFactory(
+               RegisterBuiltin.getClientInitializedResteasyProviderFactory(Thread.currentThread().getContextClassLoader()),
+               RuntimeType.CLIENT);
       }
       return providerFactory;
    }
@@ -419,7 +422,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public ResteasyClientBuilderImpl withConfig(Configuration config)
    {
-      providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactoryImpl());
+      providerFactory = new DelegateLazyResteasyProviderFactory(new ResteasyProviderFactoryImpl());
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {

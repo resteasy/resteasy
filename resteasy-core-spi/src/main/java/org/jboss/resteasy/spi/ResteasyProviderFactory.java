@@ -1,7 +1,10 @@
 package org.jboss.resteasy.spi;
 
 import java.lang.annotation.Annotation;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,8 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    private static volatile ResteasyProviderFactory instance;
 
    private static boolean registerBuiltinByDefault = true;
+
+   private List<WeakReference<LazyResteasyProviderFactory>> listeners = new ArrayList<>();
 
    public abstract Set<DynamicFeature> getServerDynamicFeatures();
 
@@ -312,5 +317,38 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract boolean isReactive(Class<?> clazz);
 
    public abstract ResourceBuilder getResourceBuilder();
+
+   public Reference<LazyResteasyProviderFactory> registerListener(LazyResteasyProviderFactory l)
+   {
+      synchronized (listeners)
+      {
+         WeakReference<LazyResteasyProviderFactory> ref = new WeakReference<LazyResteasyProviderFactory>(l);
+         listeners.add(ref);
+         return ref;
+      }
+   }
+
+   public boolean removeListener(Reference<LazyResteasyProviderFactory> ref)
+   {
+      synchronized (listeners)
+      {
+         return listeners.remove(ref);
+      }
+   }
+
+   protected void notifyListenersAndCleanUp()
+   {
+      synchronized (listeners)
+      {
+         if (listeners.isEmpty()) return;
+         for (Reference<LazyResteasyProviderFactory> r : listeners) {
+            LazyResteasyProviderFactory lrpf = r.get();
+            if (lrpf != null) {
+               lrpf.onChange();
+            }
+         }
+         listeners.clear();
+      }
+   }
 
 }
