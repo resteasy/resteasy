@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -55,7 +56,9 @@ public class ChunkedTransferEncodingUnitTest
    static {
       testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingUnitTest.class, "ChunkedTransferEncodingUnitTestFile");
    }
-   
+
+   private String fakeServerHostAndPort;
+
    //////////////////////////////////////////////////////////////////////////////
    
    @Before
@@ -66,7 +69,8 @@ public class ChunkedTransferEncodingUnitTest
       t = new Thread() {
          public void run() {
             try {
-               ss = new ServerSocket(8081);
+               ss = new ServerSocket(0, 0, Inet4Address.getLocalHost());
+               fakeServerHostAndPort = ss.getInetAddress().getHostAddress() + ":" + ss.getLocalPort();
                s = ss.accept();
                InputStream is = s.getInputStream();
                int j = 0;
@@ -134,7 +138,7 @@ public class ChunkedTransferEncodingUnitTest
    @Test
    public void testChunkedTarget() throws Exception {
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      ResteasyWebTarget target = client.target("http://" + fakeServerHostAndPort + "/test");
       target.setChunked(true);
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       File file = new File(testFilePath);
@@ -149,7 +153,7 @@ public class ChunkedTransferEncodingUnitTest
    @Test
    public void testChunkedRequest() throws Exception {
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      ResteasyWebTarget target = client.target("http://" + fakeServerHostAndPort + "/test");
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       request.setChunked(true);
       File file = new File(testFilePath);

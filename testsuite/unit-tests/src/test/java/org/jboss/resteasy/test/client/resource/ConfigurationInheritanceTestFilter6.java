@@ -4,7 +4,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
 
-public class ConfigurationInheritenceTestFilter2 implements ClientRequestFilter {
+public class ConfigurationInheritanceTestFilter6 implements ClientRequestFilter {
    @Override
    public void filter(ClientRequestContext requestContext) throws IOException {
    }

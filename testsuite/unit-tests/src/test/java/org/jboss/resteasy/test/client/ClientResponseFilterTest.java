@@ -1,21 +1,8 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.test.client.resource.NullStringBeanRuntimeDelegate;
-import org.jboss.resteasy.test.client.resource.StringBean;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterAbortWith;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterNullHeaderString;
-import org.jboss.resteasy.test.client.resource.StringBeanRuntimeDelegate;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterLength;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterAllowed;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterHeaders;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterStatusOverride;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterInterceptorReaderOne;
-import org.jboss.resteasy.test.client.resource.ClientResponseFilterInterceptorReaderTwo;
+import org.jboss.resteasy.test.client.resource.*;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -32,6 +19,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 public class ClientResponseFilterTest {
 
    static Client client;
+
    String dummyUrl = "dummyUrl";
 
    @BeforeClass
