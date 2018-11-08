@@ -15,7 +15,7 @@ import java.util.Locale;
  *
  * Copyright Aug 24, 2015
  */
-abstract public class TestMessagesAbstract extends TestMessagesParent
+public abstract class TestMessagesAbstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected final String dir = "org/jboss/resteasy/providers/jaxb/json/i18n/Messages.i18n_";
@@ -43,5 +43,5 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       return Messages.class.getDeclaredMethods().length;
    }
 
-   abstract protected Locale getLocale();
+   protected abstract Locale getLocale();
 }

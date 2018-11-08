@@ -41,7 +41,7 @@ public class PublisherResponseNoStreamTest {
 
    Client client;
 
-   private final static Logger logger = Logger.getLogger(PublisherResponseNoStreamTest.class);
+   private static final Logger logger = Logger.getLogger(PublisherResponseNoStreamTest.class);
 
    @Deployment
    public static Archive<?> deploy() {

@@ -57,14 +57,14 @@ public class Rx2FlowableServerAsyncTest {
 
    private static ResteasyClient client;
 
-   private final static List<String> xStringList = new ArrayList<String>();
-   private final static List<String> aStringList = new ArrayList<String>();
-   private final static List<Thing>  xThingList =  new ArrayList<Thing>();
-   private final static List<Thing>  aThingList =  new ArrayList<Thing>();
-   private final static List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
-   private final static List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
-   private final static Entity<String> aEntity = Entity.entity("a", MediaType.TEXT_PLAIN_TYPE);
-   private final static Entity<String> threeEntity = Entity.entity("3", MediaType.TEXT_PLAIN_TYPE);
+   private static final List<String> xStringList = new ArrayList<String>();
+   private static final List<String> aStringList = new ArrayList<String>();
+   private static final List<Thing>  xThingList =  new ArrayList<Thing>();
+   private static final List<Thing>  aThingList =  new ArrayList<Thing>();
+   private static final List<List<Thing>> xThingListList = new ArrayList<List<Thing>>();
+   private static final List<List<Thing>> aThingListList = new ArrayList<List<Thing>>();
+   private static final Entity<String> aEntity = Entity.entity("a", MediaType.TEXT_PLAIN_TYPE);
+   private static final Entity<String> threeEntity = Entity.entity("3", MediaType.TEXT_PLAIN_TYPE);
 
    private static ArrayList<String> stringList = new ArrayList<String>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();

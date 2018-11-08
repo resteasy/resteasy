@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class QueryParameterPopulatorRegistery {
 
-   private final static HashMap<Class<?>, QueryParameterPopulator<?>> QUERY_PARAMETER_POPULATORS = new HashMap<Class<?>, QueryParameterPopulator<?>>();
+   private static final HashMap<Class<?>, QueryParameterPopulator<?>> QUERY_PARAMETER_POPULATORS = new HashMap<Class<?>, QueryParameterPopulator<?>>();
 
    static{
       addTypePopulator(new UUIDPopulator());

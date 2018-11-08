@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-abstract public class Parameter
+public abstract class Parameter
 {
    public enum ParamType
    {

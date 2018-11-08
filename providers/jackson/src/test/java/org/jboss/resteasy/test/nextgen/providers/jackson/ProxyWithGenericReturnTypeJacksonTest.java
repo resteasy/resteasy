@@ -132,7 +132,7 @@ public class ProxyWithGenericReturnTypeJacksonTest
    }
 
    @Path("/")
-   static public class TestResource
+   public static class TestResource
    {
       @Produces("text/plain")
       @Path("test")

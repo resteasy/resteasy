@@ -50,7 +50,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    private List<ResteasyConstraintViolation> allViolations;
    private List<List<ResteasyConstraintViolation>> violationLists;
 
-   transient private ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
+   private transient ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
    private boolean suppressPath;
 
    /**
@@ -406,7 +406,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       return new ResteasyConstraintViolation(ct, path, violation.getMessage(), convertArrayToString(violation.getInvalidValue()));
    }
 
-   static protected String convertArrayToString(Object o)
+   protected static String convertArrayToString(Object o)
    {
       String result = null;
       if (o instanceof Object[])
@@ -459,7 +459,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       }
    }
 
-   static protected List<CloneableMediaType> toCloneableMediaTypeList(List<MediaType> list)
+   protected static List<CloneableMediaType> toCloneableMediaTypeList(List<MediaType> list)
    {
       List<CloneableMediaType> cloneableList = new ArrayList<CloneableMediaType>();
       for (Iterator<MediaType> it = list.iterator(); it.hasNext(); )
@@ -469,7 +469,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       return cloneableList;
    }
 
-   static protected List<MediaType> toMediaTypeList(List<CloneableMediaType> cloneableList)
+   protected static List<MediaType> toMediaTypeList(List<CloneableMediaType> cloneableList)
    {
       List<MediaType> list = new ArrayList<MediaType>();
       for (Iterator<CloneableMediaType> it = cloneableList.iterator(); it.hasNext(); )

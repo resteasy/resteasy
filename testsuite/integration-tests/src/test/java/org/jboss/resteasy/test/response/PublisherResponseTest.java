@@ -52,7 +52,7 @@ public class PublisherResponseTest {
 
    Client client;
 
-   private final static Logger logger = Logger.getLogger(PublisherResponseTest.class);
+   private static final Logger logger = Logger.getLogger(PublisherResponseTest.class);
    private static CountDownLatch latch;
 
    @Deployment

@@ -85,27 +85,27 @@ public class SSLAcceptor implements Acceptor
    /**
     * Certificate encoding algorithm to be used.
     */
-   public final static String SUNX509 = "SunX509";
+   public static final String SUNX509 = "SunX509";
 
    /**
     * default SSL port
     */
-   public final static int PORT = 8443;
+   public static final int PORT = 8443;
 
    /**
     * default backlog
     */
-   public final static int BACKLOG = 1000;
+   public static final int BACKLOG = 1000;
 
    /**
     * Storage type of the key store file to be used.
     */
-   public final static String KEYSTORETYPE = "JKS";
+   public static final String KEYSTORETYPE = "JKS";
 
    /**
     * SSL protocol variant to use.
     */
-   public final static String TLS = "TLS";
+   public static final String TLS = "TLS";
 
    /**
     * SSL protocol variant to use.

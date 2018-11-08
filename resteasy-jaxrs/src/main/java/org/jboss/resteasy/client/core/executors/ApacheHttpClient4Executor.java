@@ -67,7 +67,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       ApacheHttpClient4Executor.processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
    }
 
-   static synchronized private void checkClientExceptionMapper()
+   private static synchronized void checkClientExceptionMapper()
    {
       if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
       {

@@ -130,19 +130,19 @@ public class ServerCookie implements Serializable
    /**
     * US locale - all HTTP dates are in english
     */
-   private final static Locale LOCALE_US = Locale.US;
+   private static final Locale LOCALE_US = Locale.US;
 
    /**
     * GMT timezone - all HTTP dates are on GMT
     */
-   public final static TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+   public static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
    /**
     * Pattern used for old cookies
     */
-   private final static String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
+   private static final String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
 
-   private final static DateFormat oldCookieFormat = new SimpleDateFormat(OLD_COOKIE_PATTERN, LOCALE_US);
+   private static final DateFormat oldCookieFormat = new SimpleDateFormat(OLD_COOKIE_PATTERN, LOCALE_US);
 
    public static String formatOldCookie(Date d)
    {

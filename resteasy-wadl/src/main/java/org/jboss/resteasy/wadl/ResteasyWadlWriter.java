@@ -310,7 +310,7 @@ public class ResteasyWadlWriter {
        public void includeGrammars(String grammarFileName) {
            externalSchemas.clear();
 
-           try (final InputStream is = loader.getResourceAsStream(grammarFileName)) {
+           try (InputStream is = loader.getResourceAsStream(grammarFileName)) {
                if (is != null) {
                    Grammars grammars = unmarshall(is);
                    List<Include> includes = grammars.getInclude();

@@ -147,7 +147,7 @@ public class ChunkedEmptyEntityTest
    }
 
    @Path("/")
-   static public class SimpleResource
+   public static class SimpleResource
    {
       @HEAD
       @Path("/head")

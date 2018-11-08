@@ -15,7 +15,7 @@ import org.junit.Test;
  *
  * Copyright Aug 26, 2015
  */
-abstract public class TestMessagesAbstract extends TestMessagesParent
+public abstract class TestMessagesAbstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
@@ -40,5 +40,5 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       return Messages.class.getDeclaredMethods().length;
    }
 
-   abstract protected Locale getLocale();
+   protected abstract Locale getLocale();
 }

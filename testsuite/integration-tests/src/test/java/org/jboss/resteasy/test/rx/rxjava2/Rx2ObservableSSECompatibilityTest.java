@@ -50,7 +50,7 @@ import io.reactivex.Observable;
 public class Rx2ObservableSSECompatibilityTest {
 
    private static ResteasyClient client;
-   private final static List<Thing>  eThingList =  new ArrayList<Thing>();
+   private static final List<Thing>  eThingList =  new ArrayList<Thing>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
 
    static {

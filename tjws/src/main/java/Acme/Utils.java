@@ -96,7 +96,7 @@ public class Utils
 
    public static final int COPY_BUF_SIZE = 4096 * 2;
 
-   public final static String ISO_8859_1 = "ISO-8859-1";
+   public static final String ISO_8859_1 = "ISO-8859-1";
 
    public static final Class[] EMPTY_CLASSES = {};
 
@@ -785,7 +785,7 @@ public class Utils
             out.write(new String(buf, 0, len).getBytes(charSet));
    }
 
-   protected final static char BASE64ARRAY[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+   protected static final char BASE64ARRAY[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
       'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
       'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
       '4', '5', '6', '7', '8', '9', '+', '/'};
@@ -798,7 +798,7 @@ public class Utils
     * @return String result of encoding as iso-8859-1 string<br>
     *         return null in case of invalid encoding or original string null
     */
-   public final static String base64Encode(String _s, String _enc)
+   public static final String base64Encode(String _s, String _enc)
    {
       if (_s == null)
          return null;
@@ -822,7 +822,7 @@ public class Utils
     * @return String result of encoding as iso-8859-1 string
     * @throws NullPointerException if input parameter is null
     */
-   public final static String base64Encode(byte[] _bytes)
+   public static final String base64Encode(byte[] _bytes)
    {
       StringBuffer encodedBuffer = new StringBuffer((int) (_bytes.length * 1.5));
       int i = 0;
@@ -873,7 +873,7 @@ public class Utils
    /**
     * Translates a Base64 value to either its 6-bit reconstruction value or a negative number indicating some other meaning.
     */
-   protected final static byte[] DECODABET = {-9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 0 - 8
+   protected static final byte[] DECODABET = {-9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 0 - 8
       -5, -5, // Whitespace: Tab and Linefeed
       -9, -9, // Decimal 11 - 12
       -5, // Whitespace: Carriage Return
@@ -901,18 +901,18 @@ public class Utils
       -9, -9, -9, -9 // Decimal 123 - 126
    };
 
-   protected final static byte WHITE_SPACE_ENC = -5; // Indicates white space
+   protected static final byte WHITE_SPACE_ENC = -5; // Indicates white space
 
    // in encoding
 
-   protected final static byte EQUALS_SIGN_ENC = -1; // Indicates equals sign
+   protected static final byte EQUALS_SIGN_ENC = -1; // Indicates equals sign
 
    // in encoding
 
    /**
     * The equals sign (=) as a byte.
     */
-   protected final static byte EQUALS_SIGN = (byte) '=';
+   protected static final byte EQUALS_SIGN = (byte) '=';
 
    /**
     * base 64 decoding
@@ -921,7 +921,7 @@ public class Utils
     * @param _enc used to get string bytes
     * @return result of encoding, or null if encoding invalid or string null, or string is invalid base 64 encoding
     */
-   public final static String base64Decode(String _s, String _enc)
+   public static final String base64Decode(String _s, String _enc)
    {
       if (_s == null)
          return null;
@@ -1166,7 +1166,7 @@ public class Utils
     * @param cl class loader
     * @return class path in string
     */
-   static public String calculateClassPath(ClassLoader cl)
+   public static String calculateClassPath(ClassLoader cl)
    {
       // scan cl chain to find
       StringBuffer classPath = new StringBuffer();
@@ -1389,7 +1389,7 @@ public class Utils
             return delegateThread.isAlive();
          }
 
-         synchronized public void run()
+         public synchronized  void run()
          {
             do
             {
@@ -1437,7 +1437,7 @@ public class Utils
             } while (!quit);
          }
 
-         synchronized public void interrupt()
+         public synchronized  void interrupt()
          {
             quit = true;
             delegateThread.interrupt();

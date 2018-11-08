@@ -770,7 +770,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return instance;
    }
 
-   public synchronized static void clearInstanceIfEqual(ResteasyProviderFactory factory)
+   public static synchronized void clearInstanceIfEqual(ResteasyProviderFactory factory)
    {
       if (instance == factory)
       {
@@ -779,7 +779,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-   public synchronized static void setInstance(ResteasyProviderFactory factory)
+   public static synchronized void setInstance(ResteasyProviderFactory factory)
    {
       synchronized (RD_LOCK)
       {
@@ -788,7 +788,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       RuntimeDelegate.setInstance(factory);
    }
 
-   final static Object RD_LOCK = new Object();
+   static final Object RD_LOCK = new Object();
 
    /**
     * Initializes ResteasyProviderFactory singleton if not set.

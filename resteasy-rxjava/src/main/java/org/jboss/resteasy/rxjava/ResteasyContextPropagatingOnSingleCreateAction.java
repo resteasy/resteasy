@@ -30,7 +30,7 @@ public class ResteasyContextPropagatingOnSingleCreateAction implements Func1<OnS
       return new ContextCapturerSingle<>(t);
    }
 
-   final static class ContextCapturerSingle<T> implements Single.OnSubscribe<T>
+   static final class ContextCapturerSingle<T> implements Single.OnSubscribe<T>
    {
 
       final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();

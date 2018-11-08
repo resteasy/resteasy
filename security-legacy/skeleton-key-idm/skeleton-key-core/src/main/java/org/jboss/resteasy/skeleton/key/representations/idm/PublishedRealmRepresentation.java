@@ -31,7 +31,7 @@ public class PublishedRealmRepresentation
    protected String grantUrl;
 
    @JsonIgnore
-   protected volatile transient PublicKey publicKey;
+   protected transient volatile PublicKey publicKey;
 
 
    public String getRealm()

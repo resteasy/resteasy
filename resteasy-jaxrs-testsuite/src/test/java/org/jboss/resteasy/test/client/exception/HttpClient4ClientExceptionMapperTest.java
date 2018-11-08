@@ -504,7 +504,7 @@ public class HttpClient4ClientExceptionMapperTest
       }
    }
 
-   static private void traverseException(Throwable t)
+   private static void traverseException(Throwable t)
    {
       String indent = "";
       while (t instanceof Throwable)
@@ -515,7 +515,7 @@ public class HttpClient4ClientExceptionMapperTest
       }
    }
 
-   static public class TestApplication extends Application
+   public static class TestApplication extends Application
    {
       public Set<Class<?>> getClasses()
       {
@@ -572,7 +572,7 @@ public class HttpClient4ClientExceptionMapperTest
    }
 
    @Provider
-   static public class TestClientExceptionMapper implements ClientExceptionMapper<Exception>
+   public static class TestClientExceptionMapper implements ClientExceptionMapper<Exception>
    {
       @Override
       public RuntimeException toException(Exception exception)

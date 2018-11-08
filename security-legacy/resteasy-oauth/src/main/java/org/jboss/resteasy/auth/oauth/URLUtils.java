@@ -15,7 +15,7 @@ public class URLUtils {
    /**
     * gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
     */
-   public final static BitSet GEN_DELIMS = new BitSet();
+   public static final BitSet GEN_DELIMS = new BitSet();
    static {
       GEN_DELIMS.set(':');
       GEN_DELIMS.set('/');
@@ -29,7 +29,7 @@ public class URLUtils {
    /**
     * sub-delims = "!" / "$" / "{@literal &}" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
     */
-   public final static BitSet SUB_DELIMS = new BitSet();
+   public static final BitSet SUB_DELIMS = new BitSet();
    static {
       SUB_DELIMS.set('!');
       SUB_DELIMS.set('$');
@@ -47,7 +47,7 @@ public class URLUtils {
    /**
     * reserved = gen-delims | sub-delims
     */
-   public final static BitSet RESERVED = new BitSet();
+   public static final BitSet RESERVED = new BitSet();
    static {
       RESERVED.or(GEN_DELIMS);
       RESERVED.or(SUB_DELIMS);
@@ -57,7 +57,7 @@ public class URLUtils {
     * lowalpha = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" |
     * "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
     */
-   public final static BitSet LOW_ALPHA = new BitSet();
+   public static final BitSet LOW_ALPHA = new BitSet();
    static {
       LOW_ALPHA.set('a');
       LOW_ALPHA.set('b');
@@ -91,7 +91,7 @@ public class URLUtils {
     * upalpha = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" |
     * "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
     */
-   public final static BitSet UP_ALPHA = new BitSet();
+   public static final BitSet UP_ALPHA = new BitSet();
    static {
       UP_ALPHA.set('A');
       UP_ALPHA.set('B');
@@ -124,7 +124,7 @@ public class URLUtils {
    /**
     * alpha = lowalpha | upalpha
     */
-   public final static BitSet ALPHA = new BitSet();
+   public static final BitSet ALPHA = new BitSet();
    static {
       ALPHA.or(LOW_ALPHA);
       ALPHA.or(UP_ALPHA);
@@ -133,7 +133,7 @@ public class URLUtils {
    /**
     * digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
     */
-   public final static BitSet DIGIT = new BitSet();
+   public static final BitSet DIGIT = new BitSet();
    static {
       DIGIT.set('0');
       DIGIT.set('1');
@@ -150,7 +150,7 @@ public class URLUtils {
    /**
     * alphanum = alpha | digit
     */
-   public final static BitSet ALPHANUM = new BitSet();
+   public static final BitSet ALPHANUM = new BitSet();
    static {
       ALPHANUM.or(ALPHA);
       ALPHANUM.or(DIGIT);
@@ -159,7 +159,7 @@ public class URLUtils {
    /**
     * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
     */
-   public final static BitSet UNRESERVED = new BitSet();
+   public static final BitSet UNRESERVED = new BitSet();
    static {
       UNRESERVED.or(ALPHA);
       UNRESERVED.or(DIGIT);
@@ -175,7 +175,7 @@ public class URLUtils {
     * Note: we don't allow escaped here since we will escape it ourselves, so we don't want to allow them in the
     * unescaped sequences
     */
-   public final static BitSet PCHAR = new BitSet();
+   public static final BitSet PCHAR = new BitSet();
    static {
       PCHAR.or(UNRESERVED);
       PCHAR.or(SUB_DELIMS);
@@ -186,7 +186,7 @@ public class URLUtils {
    /**
     * path_segment = pchar {@literal <without>} ";"
     */
-   public final static BitSet PATH_SEGMENT = new BitSet();
+   public static final BitSet PATH_SEGMENT = new BitSet();
    static {
       PATH_SEGMENT.or(PCHAR);
       // deviate from the RFC in order to disallow the path param separator
@@ -196,7 +196,7 @@ public class URLUtils {
    /**
     * path_param_name = pchar {@literal <without>} ";" | "="
     */
-   public final static BitSet PATH_PARAM_NAME = new BitSet();
+   public static final BitSet PATH_PARAM_NAME = new BitSet();
    static {
       PATH_PARAM_NAME.or(PCHAR);
       // deviate from the RFC in order to disallow the path param separators
@@ -207,7 +207,7 @@ public class URLUtils {
    /**
     * path_param_value = pchar {@literal <without>} ";"
     */
-   public final static BitSet PATH_PARAM_VALUE = new BitSet();
+   public static final BitSet PATH_PARAM_VALUE = new BitSet();
    static {
       PATH_PARAM_VALUE.or(PCHAR);
       // deviate from the RFC in order to disallow the path param separator
@@ -217,7 +217,7 @@ public class URLUtils {
    /**
     * query = pchar / "/" / "?"
     */
-   public final static BitSet QUERY = new BitSet();
+   public static final BitSet QUERY = new BitSet();
    static {
       QUERY.or(PCHAR);
       QUERY.set('/');
@@ -232,7 +232,7 @@ public class URLUtils {
    /**
     * fragment = pchar / "/" / "?"
     */
-   public final static BitSet FRAGMENT = new BitSet();
+   public static final BitSet FRAGMENT = new BitSet();
    static {
       FRAGMENT.or(PCHAR);
       FRAGMENT.set('/');

@@ -35,8 +35,8 @@ public class JaxrsInterceptorRegistry<T>
          this.order = order;
       }
 
-      final public Object interceptor;
-      final public int order;
+      public final Object interceptor;
+      public final int order;
    }
 
    public interface InterceptorFactory

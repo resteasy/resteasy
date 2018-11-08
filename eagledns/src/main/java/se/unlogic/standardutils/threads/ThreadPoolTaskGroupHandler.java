@@ -35,7 +35,7 @@ public class ThreadPoolTaskGroupHandler<T extends TaskGroup> implements TaskGrou
 
    protected final ArrayList<Thread> threads = new ArrayList<Thread>();
 
-   private final static Logger logger = Logger.getLogger(ThreadPoolTaskGroupHandler.class);
+   private static final Logger logger = Logger.getLogger(ThreadPoolTaskGroupHandler.class);
 
    public ThreadPoolTaskGroupHandler(final int poolSize, final boolean daemon){
 

@@ -52,7 +52,7 @@ import rx.Observable;
 public class RxObservableSSECompatibilityTest {
 
    private static ResteasyClient client;
-   private final static List<Thing>  eThingList =  new ArrayList<Thing>();
+   private static final List<Thing>  eThingList =  new ArrayList<Thing>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
 
    static {

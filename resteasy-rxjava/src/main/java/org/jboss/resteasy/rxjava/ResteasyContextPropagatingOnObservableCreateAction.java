@@ -29,7 +29,7 @@ public class ResteasyContextPropagatingOnObservableCreateAction implements Func1
       return new ContextCapturerObservable<>(t);
    }
 
-   final static class ContextCapturerObservable<T> implements OnSubscribe<T>
+   static final class ContextCapturerObservable<T> implements OnSubscribe<T>
    {
 
       final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();

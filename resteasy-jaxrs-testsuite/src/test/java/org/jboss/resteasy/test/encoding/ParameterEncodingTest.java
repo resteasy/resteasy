@@ -41,7 +41,7 @@ public class ParameterEncodingTest
    protected static ResteasyDeployment deployment;
 
    @Path("/")
-   static public class TestResource
+   public static class TestResource
    {
       @GET
       @Produces("text/plain")

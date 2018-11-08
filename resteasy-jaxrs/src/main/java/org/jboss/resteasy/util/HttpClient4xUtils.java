@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 public class HttpClient4xUtils
 {
 
-   static public void consumeEntity(HttpResponse response)
+   public static void consumeEntity(HttpResponse response)
    {
       try
       {
@@ -29,7 +29,7 @@ public class HttpClient4xUtils
       }
    }
 
-   static public String updateQuery(String uriString, String query)
+   public static String updateQuery(String uriString, String query)
    {
       try
       {

@@ -23,7 +23,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-   private final static QName _FavoriteMovie_QNAME = new QName("", "favoriteMovie");
+   private static final QName _FavoriteMovie_QNAME = new QName("", "favoriteMovie");
 
    /**
     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: generated

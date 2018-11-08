@@ -19,7 +19,7 @@ public class ResteasyContextPropagatingOnSingleCreateAction implements BiFunctio
       return new ContextCapturerObserver<>(t2);
    }
 
-   final static class ContextCapturerObserver<T> implements SingleObserver<T>
+   static final class ContextCapturerObserver<T> implements SingleObserver<T>
    {
 
       final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();

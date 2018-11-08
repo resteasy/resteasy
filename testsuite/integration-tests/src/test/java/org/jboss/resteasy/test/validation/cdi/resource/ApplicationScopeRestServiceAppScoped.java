@@ -7,7 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ApplicationScopeRestServiceAppScoped implements ApplicationScopeIRestServiceAppScoped {
 
-   private final static Logger logger = Logger.getLogger(ApplicationScopeRestServiceAppScoped.class);
+   private static final Logger logger = Logger.getLogger(ApplicationScopeRestServiceAppScoped.class);
 
    public String sendDto(ApplicationScopeMyDto myDto) {
       if (logger.isDebugEnabled())

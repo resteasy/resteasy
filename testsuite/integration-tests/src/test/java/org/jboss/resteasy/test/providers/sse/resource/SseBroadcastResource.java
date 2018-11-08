@@ -24,7 +24,7 @@ public class SseBroadcastResource {
    private volatile boolean onErrorCalled = false;
    private volatile boolean onCloseCalled = false;
 
-   private final static Logger logger = Logger.getLogger(SseBroadcastResource.class);
+   private static final Logger logger = Logger.getLogger(SseBroadcastResource.class);
 
    @GET
    @Path("/subscribe")

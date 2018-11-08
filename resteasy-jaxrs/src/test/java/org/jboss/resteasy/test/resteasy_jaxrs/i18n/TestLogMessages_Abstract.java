@@ -22,7 +22,7 @@ import org.junit.Test;
 public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestLogMessages_Abstract.class);
-   static protected Locale savedLocale;
+   protected static Locale savedLocale;
    protected static final String BASE = "002";
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -216,5 +216,5 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       return LogMessages.class.getDeclaredMethods().length;
    }
 
-   abstract protected Locale getLocale();
+   protected abstract Locale getLocale();
 }
