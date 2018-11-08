@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * This interface is used to dynamicly load zones from different type of zone providers in runtime
  * enabling zones to be added, updated and removed in runtime without restarting the EagleDNS dns server itself.
- * 
+ *
  * @author Unlogic
  *
  */

@@ -28,13 +28,13 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          throw new RuntimeException(Messages.MESSAGES.unknownObjectPassedAsConstraintViolation(o));
       }
       ConstraintViolation<?> v = ConstraintViolation.class.cast(o);
-      
+
       Iterator<Node> nodes = v.getPropertyPath().iterator();
       Node firstNode = nodes.next();
       if (firstNode.getKind() == ElementKind.METHOD)
       {
          Node secondNode = nodes.next();
-         
+
          if (secondNode.getKind() == ElementKind.PARAMETER ||
             secondNode.getKind() == ElementKind.CROSS_PARAMETER)
          {
@@ -54,7 +54,7 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       {
          return ConstraintType.Type.CLASS;
       }
-      
+
       if (firstNode.getKind() == ElementKind.PROPERTY)
       {
          String fieldName = firstNode.getName();
@@ -85,10 +85,10 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
             }
          }
       }
-      
+
       throw new RuntimeException(Messages.MESSAGES.unexpectedPathNode(firstNode.getKind()));
    }
-   
+
    private static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException
    {
       Method method = null;

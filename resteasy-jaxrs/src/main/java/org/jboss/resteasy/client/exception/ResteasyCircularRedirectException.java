@@ -23,7 +23,7 @@ public class ResteasyCircularRedirectException extends ResteasyRedirectException
    {
       super(message, cause);
    }
-    
+
    public ResteasyCircularRedirectException(Throwable cause)
    {
       super(cause);

@@ -199,7 +199,7 @@ public class ExceptionHandler
 
    protected Response handleWebApplicationException(WebApplicationException wae)
    {
-      if (wae instanceof NotFoundException) 
+      if (wae instanceof NotFoundException)
       {
          LogMessages.LOGGER.failedToExecuteDebug(wae);
       }

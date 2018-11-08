@@ -70,7 +70,7 @@ public class UndertowParameterTest {
             return Response.status(400).build();
          }
       }
-      
+
       @GET
       @Path("init")
       public Response init(@Context ServletConfig config) {
@@ -109,7 +109,7 @@ public class UndertowParameterTest {
       server.deploy(deployment, "/", contextParams, initParams);
       client = new ResteasyClientBuilder().build();
    }
-   
+
    @AfterClass
    public static void afterClass() throws Exception
    {
@@ -122,9 +122,9 @@ public class UndertowParameterTest {
    {
       Response response = client.target("http://localhost:8081/context").request().get(Response.class);
       Assert.assertEquals(200, response.getStatus());
-      response.close(); 
+      response.close();
    }
-   
+
    @Test
    public void testInitParameters() throws Exception
    {

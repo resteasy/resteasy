@@ -23,7 +23,7 @@ public class ResteasyMethodNotSupportedException extends ResteasyHttpException
    {
       super(message, cause);
    }
-    
+
    public ResteasyMethodNotSupportedException(Throwable cause)
    {
       super(cause);

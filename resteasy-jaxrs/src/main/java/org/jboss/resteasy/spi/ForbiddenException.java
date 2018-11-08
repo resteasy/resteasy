@@ -4,9 +4,9 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Unauthorized (403) is encountered
- * 
+ *
  * @deprecated Replaced by javax.ws.rs.ForbiddenException in jaxrs-api module.
- * 
+ *
  * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.ForbiddenException
  */

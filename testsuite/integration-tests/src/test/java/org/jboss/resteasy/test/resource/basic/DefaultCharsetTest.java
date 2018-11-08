@@ -42,14 +42,14 @@ public class DefaultCharsetTest {
       war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_true.xml", "web.xml");
       return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
    }
-    
+
    @Deployment(name = "false") // "resteasy.add.charset" set to false
    public static Archive<?> deploy_nocharset() {
       WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_false");
       war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_false.xml", "web.xml");
       return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
    }
-    
+
    @Deployment(name = "default") // "resteasy.add.charset" not set
    public static Archive<?> deploy_default() {
       WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_default");
@@ -71,7 +71,7 @@ public class DefaultCharsetTest {
    private String generateURL(String suffix, String context, String path) {
       return PortProviderUtil.generateURL(context + path, DefaultCharsetTest.class.getSimpleName() + suffix);
    }
-    
+
    @Test
    @Category(NotForForwardCompatibility.class)
    public void testCharset() throws Exception {

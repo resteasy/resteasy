@@ -44,7 +44,7 @@ import org.jboss.resteasy.util.GetRestful;
 public class ResteasyCdiExtension implements Extension
 {
    private static boolean active;
-   
+
    private BeanManager beanManager;
    private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
    private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
@@ -66,7 +66,7 @@ public class ResteasyCdiExtension implements Extension
    {
       return active;
    }
-   
+
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
 
    /**

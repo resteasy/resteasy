@@ -149,7 +149,7 @@ public class ProviderFactoryTest {
          ResteasyProviderFactory.setInstance(orig);
       }
    }
-   
+
    @Test
    public void testProviderFactoryAsJaxRsConfiguration()
    {
@@ -215,7 +215,7 @@ public class ProviderFactoryTest {
       Assert.assertFalse(emptyResteasyProviderFactory.isEnabled(MyFeature.class));
       Assert.assertTrue(resteasyProviderFactory.isEnabled(MyFeature.class));
    }
-   
+
    @Provider
    public static class MyFeature implements Feature
    {
@@ -232,20 +232,20 @@ public class ProviderFactoryTest {
          });
          return true;
       }
-      
+
       @Override
       public int hashCode()
       {
          return MyFeature.class.hashCode();
       }
-      
+
       @Override
       public boolean equals(Object obj)
       {
          return obj instanceof MyFeature;
       }
-      
-   } 
+
+   }
 
    @Provider
    public static class MyInterceptor implements ReaderInterceptor

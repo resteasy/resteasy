@@ -29,7 +29,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-737
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -39,7 +39,7 @@ public class ParameterEncodingTest
 {
    private static final Logger LOG = Logger.getLogger(ParameterEncodingTest.class);
    protected static ResteasyDeployment deployment;
-   
+
    @Path("/")
    static public class TestResource
    {
@@ -51,7 +51,7 @@ public class ParameterEncodingTest
          LOG.info("getEncodedPathParam(): encoded: " + pathParam);
          return pathParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("decoded/pathparam/{pathParam}")
@@ -60,7 +60,7 @@ public class ParameterEncodingTest
          LOG.info("getDecodedPathParam(): decoded: " + pathParam);
          return pathParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("encoded/matrix")
@@ -69,7 +69,7 @@ public class ParameterEncodingTest
          LOG.info("getEncodedMatrixParam(): encoded: " + matrixParam);
          return matrixParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("decoded/matrix")
@@ -78,7 +78,7 @@ public class ParameterEncodingTest
          LOG.info("getDecodedMatrixParam(): decoded: " + matrixParam);
          return matrixParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("encoded/query")
@@ -87,7 +87,7 @@ public class ParameterEncodingTest
          LOG.info("getEncodedQueryParam(): encoded: " + queryParam);
          return queryParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("decoded/query")
@@ -96,7 +96,7 @@ public class ParameterEncodingTest
          LOG.info("getDecodedQueryParam(): decoded: " + queryParam);
          return queryParam;
       }
-      
+
       @POST
       @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
       @Produces("text/plain")
@@ -106,7 +106,7 @@ public class ParameterEncodingTest
          LOG.info("getEncodedFormParamPost(): encoded: " + formParam);
          return formParam;
       }
-      
+
       @POST
       @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
       @Produces("text/plain")
@@ -116,7 +116,7 @@ public class ParameterEncodingTest
          LOG.info("getDecodedFormParamPost(): decoded: " + formParam);
          return formParam;
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("encoded/segment/{pathParam}")
@@ -125,7 +125,7 @@ public class ParameterEncodingTest
          LOG.info("getEncodedSegmentPathParam(): encoded segment: " + segment.getPath());
          return segment.getPath();
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("decoded/segment/{pathParam}")
@@ -134,7 +134,7 @@ public class ParameterEncodingTest
          LOG.info("getDecodedSegmentPathParam(): decoded segment: " + segment.getPath());
          return segment.getPath();
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("encoded/segment/matrix/{params}")
@@ -152,7 +152,7 @@ public class ParameterEncodingTest
          }
          return builder.toString();
       }
-      
+
       @GET
       @Produces("text/plain")
       @Path("decoded/segment/matrix/{params}")
@@ -171,7 +171,7 @@ public class ParameterEncodingTest
          return builder.toString();
       }
    }
-   
+
    @BeforeClass
    public static void setup() throws Exception
    {
@@ -191,7 +191,7 @@ public class ParameterEncodingTest
    {
       ClientRequest request = null;
       ClientResponse<String> response = null;
-            
+
       request = new ClientRequest("http://localhost:8081/encoded/pathparam/bee bop");
       response = request.get(String.class);
       LOG.info("Received encoded path param: " + response.getEntity());

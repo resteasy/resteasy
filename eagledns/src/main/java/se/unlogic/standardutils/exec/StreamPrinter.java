@@ -20,9 +20,9 @@ import java.io.PrintWriter;
 
 /**
  * A simple buffered {@link StreamHandler} implementation that prints the input from the {@link InputStream} to the given {@link OutputStream}. If no {@link OutputStream} is given it defaults to System.out.<p>
- * 
+ *
  * This implementation inputStream based on the {@link PrintWriter}, {@link InputStreamReader} and {@link BufferedReader} classes.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

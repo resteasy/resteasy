@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated See resteasy-undertow module.
  */
 @Deprecated

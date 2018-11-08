@@ -49,8 +49,8 @@ import rx.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
- * 
- * In these tests, the server resource methods create and return objects of type Single<T>. 
+ *
+ * In these tests, the server resource methods create and return objects of type Single<T>.
  * The client uses a SingleRxInvoker to get objects of type Single<T>.
  */
 @RunWith(Arquillian.class)
@@ -435,7 +435,7 @@ public class RxSingleTest {
       ResteasyClient client1 = new ResteasyClientBuilder().build();
       client1.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       ResteasyClient client2 = new ResteasyClientBuilder().build();
       client2.register(SingleRxInvokerProvider.class);
@@ -459,7 +459,7 @@ public class RxSingleTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       SingleRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       SingleRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single2 = (Single<Response>) invoker2.get();
@@ -481,7 +481,7 @@ public class RxSingleTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       SingleRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker.get();      
+      Single<Response> single1 = (Single<Response>) invoker.get();
       Single<Response> single2 = (Single<Response>) invoker.get();
 
       single1.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});

@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,12 +34,12 @@ import java.util.List;
  * either "yes" or "no", indicating whether the list of categories is a fixed or
  * an open set. The absence of the "fixed" attribute is equivalent to the
  * presence of a "fixed" attribute with a value of "no".
- * 
+ *
  * Alternatively, the app:categories element MAY contain an "href" attribute,
  * whose value MUST be an IRI reference identifying a Category Document. If the
  * "href" attribute is provided, the app: categories element MUST be empty and
  * MUST NOT have the "fixed" or "scheme" attributes.
- * 
+ *
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
  * @version $Revision: 1 $
  */
@@ -65,7 +65,7 @@ public class AppCategories extends AppCommonAttributes {
    protected String href;
 
    public AppCategories() {}
-    
+
    public AppCategories(List<Category> category, Boolean fixed, String scheme,
          String href) {
       super();
@@ -127,7 +127,7 @@ public class AppCategories extends AppCommonAttributes {
    public void setFixed(Boolean value) {
       this.fixed = value;
    }
-    
+
    /**
     * Gets the value of the scheme property.
     *
@@ -148,7 +148,7 @@ public class AppCategories extends AppCommonAttributes {
    public void setScheme(String value) {
       this.scheme = value;
    }
-    
+
    /**
     * Gets the value of the href property.
     *

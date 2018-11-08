@@ -16,7 +16,7 @@ import java.security.interfaces.RSAPublicKey;
 
 
 /**
- * RSAES OAEP methods for Content Encryption Key (CEK) encryption and 
+ * RSAES OAEP methods for Content Encryption Key (CEK) encryption and
  * decryption. Uses the BouncyCastle.org provider.
  *
  * @author Vladimir Dzhuvinov

@@ -9,29 +9,29 @@ import org.apache.log4j.Logger;
  * <p>
  * Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.
  * </p>
- * 
+ *
  * <p>
  * Example:
  * </p>
- * 
+ *
  * <code>String encoded = Base64.encode( myByteArray );</code> <br />
  * <code>byte[] myByteArray = Base64.decode( encoded );</code>
- * 
+ *
  * <p>
  * The <tt>options</tt> parameter, which appears in a few places, is used to pass several pieces of information to the encoder. In the "higher level" methods
  * such as encodeBytes( bytes, options ) the options parameter can be used to indicate such things as first gzipping the bytes before encoding them, not
  * inserting linefeeds, and encoding using the URL-safe and Ordered dialects.
  * </p>
- * 
+ *
  * <p>
  * Note, according to <a href="http://www.faqs.org/rfcs/rfc3548.html">RFC3548</a>, Section 2.1, implementations should not add line feeds unless explicitly told
  * to do so. I've got Base64 set to this behavior now, although earlier versions broke lines by default.
  * </p>
- * 
+ *
  * <p>
  * The constants defined in Base64 can be OR-ed together to combine options, so you might make a call like this:
  * </p>
- * 
+ *
  * <code>String encoded = Base64.encodeBytes( mybytes, Base64.GZIP | Base64.DO_BREAK_LINES );</code>
  * <p>
  * to compress the data before encoding it and then making the output have newline characters.
@@ -40,9 +40,9 @@ import org.apache.log4j.Logger;
  * Also...
  * </p>
  * <code>String encoded = Base64.encodeBytes( crazyString.getBytes() );</code>
- * 
- * 
- * 
+ *
+ *
+ *
  * <p>
  * Change Log:
  * </p>
@@ -88,7 +88,7 @@ import org.apache.log4j.Logger;
  * http://www.faqs.org/qa/rfcc-1940.html</li>
  * </ol>
  * Special thanks to Jim Kellerman at <a href="http://www.powerset.com/">http://www.powerset.com/</a> for contributing the new Base64 dialects.</li>
- * 
+ *
  * <li>v2.1 - Cleaned up javadoc comments and unused variables and methods. Added some convenience methods for reading and writing to and from files.</li>
  * <li>v2.0.2 - Now specifies UTF-8 encoding in places where the code fails on systems with other encodings (like EBCDIC).</li>
  * <li>v2.0.1 - Fixed an error when decoding a single byte, that is, when the encoded data was a single byte.</li>
@@ -105,12 +105,12 @@ import org.apache.log4j.Logger;
  * <li>v1.3.4 - Fixed when "improperly padded stream" error was thrown at the wrong time.</li>
  * <li>v1.3.3 - Fixed I/O streams which were totally messed up.</li>
  * </ul>
- * 
+ *
  * <p>
  * I am placing this code in the Public Domain. Do with it as you will. This software comes with no guarantees or warranties but with plenty of well-wishing
  * instead! Please visit <a href="http://iharder.net/base64">http://iharder.net/base64</a> periodically to check for updates or to contribute improvements.
  * </p>
- * 
+ *
  * @author Robert Harder
  * @author rob@iharder.net
  * @version 2.3.7

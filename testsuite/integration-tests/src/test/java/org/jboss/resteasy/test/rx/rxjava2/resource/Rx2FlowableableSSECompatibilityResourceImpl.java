@@ -37,7 +37,7 @@ public class Rx2FlowableableSSECompatibilityResourceImpl {
          }
       });
    }
-   
+
    @GET
    @Path("flowable/thing")
    @Produces("text/event-stream")

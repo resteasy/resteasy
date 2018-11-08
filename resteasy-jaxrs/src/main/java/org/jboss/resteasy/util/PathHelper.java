@@ -109,8 +109,8 @@ public class PathHelper
       }
       return cs;
    }
-   
-   
+
+
    public static String recoverEnclosedCurlyBraces(String str)
    {
       return str.replace(openCurlyReplacement, '{').replace(closeCurlyReplacement, '}');

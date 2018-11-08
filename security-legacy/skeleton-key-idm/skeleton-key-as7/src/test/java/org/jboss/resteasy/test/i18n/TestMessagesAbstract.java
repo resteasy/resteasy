@@ -9,7 +9,7 @@ import org.jboss.resteasy.skeleton.key.as7.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -22,7 +22,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/skeleton/key/as7/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -30,19 +30,19 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "000", "accessCodeExpired"), Messages.MESSAGES.accessCodeExpired());
       Assert.assertEquals(getExpected(BASE + "020", "authenticateUserSession", "name"), Messages.MESSAGES.authenticateUserSession("name"));
       Assert.assertEquals(getExpected(BASE + "030", "beginOauthAuthenticate"), Messages.MESSAGES.beginOauthAuthenticate());
       Assert.assertEquals(getExpected(BASE + "240", "remoteLogout"), Messages.MESSAGES.remoteLogout());
-      Assert.assertEquals(getExpected(BASE + "300", "verificationSucceeded"), Messages.MESSAGES.verificationSucceeded());      
+      Assert.assertEquals(getExpected(BASE + "300", "verificationSucceeded"), Messages.MESSAGES.verificationSucceeded());
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

@@ -61,7 +61,7 @@ public class JsonpResource {
             obj.getJsonString("name").getString(), "Bill");
       return obj;
    }
-    
+
 
    @Path("number")
    @POST
@@ -78,5 +78,5 @@ public class JsonpResource {
    public JsonString testString(JsonString string) {
       return Json.createValue("Hello " + string.getString());
    }
-    
+
 }

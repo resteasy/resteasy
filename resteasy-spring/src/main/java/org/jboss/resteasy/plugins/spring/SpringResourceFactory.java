@@ -14,7 +14,7 @@ import org.springframework.beans.factory.BeanFactory;
  * @version $Revision: 1 $
  */
 
-public class SpringResourceFactory implements ResourceFactory 
+public class SpringResourceFactory implements ResourceFactory
 {
 
    protected BeanFactory beanFactory;
@@ -59,17 +59,17 @@ public class SpringResourceFactory implements ResourceFactory
    public void unregistered()
    {
    }
-   
+
    public String getBeanName()
    {
       return beanName;
    }
-   
+
    public void setContext(String context)
    {
       this.context = context;
    }
-   
+
    public String getContext()
    {
       return context;

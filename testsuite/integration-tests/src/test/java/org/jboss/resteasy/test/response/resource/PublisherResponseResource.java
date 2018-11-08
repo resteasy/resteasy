@@ -21,7 +21,7 @@ public class PublisherResponseResource {
 
    private static boolean terminated = false;
    private static final Logger LOG = Logger.getLogger(PublisherResponseResource.class);
-   
+
    @GET
    @Path("text")
    @Produces("application/json")

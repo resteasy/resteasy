@@ -79,7 +79,7 @@ public class ClientInvocation implements Invocation
    protected URI uri;
 
    protected boolean chunked;
-   
+
    protected ClientInvoker clientInvoker;
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing this request.
    // That is problematic for wrapping the output stream in e.g. a RequestFilter for transparent compressing.
@@ -556,7 +556,7 @@ public class ClientInvocation implements Invocation
    public void setClientInvoker(ClientInvoker clientInvoker) {
       this.clientInvoker = clientInvoker;
    }
-   
+
    // internals
 
    private Providers pushProvidersContext()

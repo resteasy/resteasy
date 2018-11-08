@@ -23,7 +23,7 @@ public class ResteasyCredentialsNotAvailableException extends ResteasyAuthentica
    {
       super(message, cause);
    }
-    
+
    public ResteasyCredentialsNotAvailableException(Throwable cause)
    {
       super(cause);

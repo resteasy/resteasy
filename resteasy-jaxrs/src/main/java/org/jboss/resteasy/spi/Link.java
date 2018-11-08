@@ -14,9 +14,9 @@ import java.util.Map;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated Replaced by javax.ws.rs.core.Link in jaxrs-api module.
- * 
+ *
  * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.core.Link
  */

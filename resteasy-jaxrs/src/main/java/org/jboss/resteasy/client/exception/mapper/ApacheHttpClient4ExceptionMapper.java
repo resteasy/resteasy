@@ -49,7 +49,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -108,7 +108,7 @@ public class ApacheHttpClient4ExceptionMapper implements ClientExceptionMapper<E
       }
       return new ResteasyIOException("IOException", e);
    }
-   
+
    private ResteasyClientException mapHttpException(HttpException e)
    {
       if (AuthenticationException.class.equals(e.getClass()))

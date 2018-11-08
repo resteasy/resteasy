@@ -15,15 +15,15 @@ public class AsyncResponseCallback implements CompletionCallback {
       latch = new CountDownLatch(1);
       error = null;
    }
-   
+
    @Override
    public void onComplete(Throwable throwable)
    {
       latch.countDown();
       error = throwable;
    }
-   
-   public static void assertCalled(boolean withError) 
+
+   public static void assertCalled(boolean withError)
    {
       boolean called = false;
       try {

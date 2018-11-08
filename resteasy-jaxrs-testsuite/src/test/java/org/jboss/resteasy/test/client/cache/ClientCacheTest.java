@@ -149,7 +149,7 @@ public class ClientCacheTest extends BaseResourceTest
    {
       MyProxy proxy = ProxyFactory.create(MyProxy.class, generateBaseUrl());
       CacheFactory.makeCacheable(proxy);
-      
+
       count = 0;
       String rtn = null;
       rtn = proxy.get();

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * ResteasyHttpServletResponseWrapper is introduced to support the use of
  * RequestDispatcher.forward() and RequestDispatcher.include(), which need
  * to be able to retrieve the orginal HttpServletResponse.
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -25,25 +25,25 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
 {
    private HttpServletResponse response;
    private HttpServletResponse proxy;
-   
+
    public ResteasyHttpServletResponseWrapper(HttpServletResponse response, HttpServletResponse proxy)
    {
       super(response);
       this.proxy = proxy;
       this.response = response;
    }
-   
+
    public HttpServletResponse getHttpServletResponse()
    {
       return response;
-   }  
-   
+   }
+
    @Override
    public ServletResponse getResponse()
    {
       return response;
-   } 
-   
+   }
+
    @Override
    public String getCharacterEncoding()
    {
@@ -289,5 +289,5 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
       // TODO Auto-generated method stub
       return null;
    }
-   
+
 }

@@ -172,7 +172,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       {
          try {
             MimeStreamParser parser = new MimeStreamParser(null);
-            
+
             StorageProvider storageProvider;
             if (System.getProperty(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY) != null) {
                storageProvider = DefaultStorageProvider.getInstance();
@@ -222,7 +222,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
       }
    }
-   
+
    public MultipartInputImpl(Multipart multipart, Providers workers) throws IOException
    {
       for (BodyPart bodyPart : multipart.getBodyParts())
@@ -330,7 +330,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             if (savedProviders != null)
             {
-               ResteasyProviderFactory.pushContext(Providers.class, savedProviders);  
+               ResteasyProviderFactory.pushContext(Providers.class, savedProviders);
             }
             MessageBodyReader<T> reader = workers.getMessageBodyReader(type, genericType, empty, contentType);
             if (reader == null)
@@ -481,7 +481,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       }
       return null;
    }
-   
+
    private MediaType getMediaTypeWithDefaultCharset(MediaType mediaType)
    {
       String charset = defaultPartCharset;
@@ -635,5 +635,5 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
       }
    }
-   
+
 }

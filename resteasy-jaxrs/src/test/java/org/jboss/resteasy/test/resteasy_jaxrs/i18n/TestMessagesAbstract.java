@@ -13,7 +13,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -26,7 +26,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -34,15 +34,15 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-   
+
       Assert.assertEquals(getExpected(BASE + "000", "alwaysMarkedAtIndex0"), Messages.MESSAGES.alwaysMarkedAtIndex0());
       Assert.assertEquals(getExpected(BASE + "005", "ambiguousInheritedAnnotations", getClass().getMethod("testLocale")), Messages.MESSAGES.ambiguousInheritedAnnotations(getClass().getMethod("testLocale")));
       Assert.assertEquals(getExpected(BASE + "025", "badBase64Character", 17, 29), Messages.MESSAGES.badBase64Character(17, 29));
       Assert.assertEquals(getExpected(BASE + "045", "cacheControlMaxAgeHeader", "header"), Messages.MESSAGES.cacheControlMaxAgeHeader("header"));
       Assert.assertEquals(getExpected(BASE + "085", "cannotHaveOffset", 17, 29, 37), Messages.MESSAGES.cannotHaveOffset(17, 29, 37));
       Assert.assertEquals(getExpected(BASE + "135", "classMustBeAnnotatedWithPath"), Messages.MESSAGES.classMustBeAnnotatedWithPath());
-      Assert.assertEquals(getExpected(BASE + "145", "clientResponseFailureMediaType", new MediaType("xx", "yy"), getClass()), Messages.MESSAGES.clientResponseFailureMediaType(new MediaType("xx", "yy"), getClass()));  
-      Assert.assertEquals(getExpected(BASE + "150", "clientResponseFailureStatus", Status.GONE.getStatusCode(), Status.GONE), Messages.MESSAGES.clientResponseFailureStatus(Status.GONE.getStatusCode(), Status.GONE));      
+      Assert.assertEquals(getExpected(BASE + "145", "clientResponseFailureMediaType", new MediaType("xx", "yy"), getClass()), Messages.MESSAGES.clientResponseFailureMediaType(new MediaType("xx", "yy"), getClass()));
+      Assert.assertEquals(getExpected(BASE + "150", "clientResponseFailureStatus", Status.GONE.getStatusCode(), Status.GONE), Messages.MESSAGES.clientResponseFailureStatus(Status.GONE.getStatusCode(), Status.GONE));
       Assert.assertEquals(getExpected(BASE + "200", "couldNotFindMessageBodyReader", getClass().getGenericSuperclass(), new MediaType("xx", "yy")), Messages.MESSAGES.couldNotFindMessageBodyReader(getClass().getGenericSuperclass(), new MediaType("xx", "yy")));
       Assert.assertEquals(getExpected(BASE + "210", "couldNotFindResourceForFullPath", new URI("http://localhost")), Messages.MESSAGES.couldNotFindResourceForFullPath(new URI("http://localhost")));
       Assert.assertEquals(getExpected(BASE + "285", "entityAlreadyRead", getClass()), Messages.MESSAGES.entityAlreadyRead(getClass()));
@@ -58,12 +58,12 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       Assert.assertEquals(getExpected(    "004000", "unsupportedCollectionType", getClass()), Messages.MESSAGES.unsupportedCollectionType(getClass()));
       Assert.assertEquals(getExpected(    "004070", "wrongPassword", "user"), Messages.MESSAGES.wrongPassword("user"));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

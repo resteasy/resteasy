@@ -72,7 +72,7 @@ public class RealmFactoryTest
    {
       deployment.getRegistry().addPerRequestResource(resource);
    }
-   
+
    @Test
    public void testGoodRealmCreation() throws Exception
    {

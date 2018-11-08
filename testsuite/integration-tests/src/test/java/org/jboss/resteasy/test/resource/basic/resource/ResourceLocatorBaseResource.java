@@ -33,7 +33,7 @@ public class ResourceLocatorBaseResource {
       Assert.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0).getClass());
       return new ResourceLocatorSubresource();
    }
-   
+
    @Path("proxy")
    public ResourceLocatorSubresource3Interface sub3() {
       return (ResourceLocatorSubresource3Interface) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{ResourceLocatorSubresource3Interface.class}, new InvocationHandler()

@@ -35,7 +35,7 @@ import org.wildfly.extras.creaper.core.online.operations.Operations;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
 /**
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @date March 9, 2016
@@ -46,7 +46,7 @@ public class RxInvokerTest extends ClientTestBase
 {
    private static final GenericType<String> STRING_TYPE = new GenericType<String>() {};
    private static final Address ADDRESS = Address.subsystem("undertow").and("server", "default-server").and("http-listener", "default");
-   
+
    private static ModelNode origDisallowedMethodsValue;
 
    @Deployment
@@ -84,7 +84,7 @@ public class RxInvokerTest extends ClientTestBase
       admin.reload();
       mgmtClient.close();
    }
-   
+
    public static class TestRxInvokerProvider implements RxInvokerProvider<TestRxInvoker>
    {
 
@@ -101,24 +101,24 @@ public class RxInvokerTest extends ClientTestBase
       }
 
    }
-   
+
    public static class TestRxInvoker extends CompletionStageRxInvokerImpl
    {
       public static volatile boolean used;
-      
+
       public TestRxInvoker(SyncInvoker builder)
       {
          super(builder);
          used = true;
       }
-      
+
       public TestRxInvoker(SyncInvoker builder, ExecutorService executor)
       {
          super(builder, executor);
          used = true;
       }
    }
-   
+
    static Client newClient(boolean useCustomInvoker) {
       TestRxInvoker.used = false;
       final Client client;
@@ -136,7 +136,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientGet(false);
       doTestRxClientGet(true);
    }
-   
+
    void doTestRxClientGet(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -156,7 +156,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientGetClass(false);
       doTestRxClientGetClass(true);
    }
-   
+
    void doTestRxClientGetClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -167,14 +167,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientGetGenericType() throws Exception
    {
       doTestRxClientGetGenericType(false);
       doTestRxClientGetGenericType(true);
    }
-   
+
    void doTestRxClientGetGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -185,14 +185,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPut() throws Exception
    {
       doTestRxClientPut(false);
       doTestRxClientPut(true);
    }
-   
+
    void doTestRxClientPut(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -204,16 +204,16 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPutClass() throws Exception
    {
       doTestRxClientPutClass(false);
       doTestRxClientPutClass(true);
    }
-   
+
    void doTestRxClientPutClass(boolean useCustomInvoker) throws Exception
-   {   
+   {
       final Client client = newClient(useCustomInvoker);
       Builder builder = client.target(generateURL("/put")).request();
       RxInvoker<?> invoker = useCustomInvoker ? builder.rx(TestRxInvoker.class) : builder.rx();
@@ -223,14 +223,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPutGenericType() throws Exception
    {
       doTestRxClientPutGenericType(false);
       doTestRxClientPutGenericType(true);
    }
-   
+
    void doTestRxClientPutGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -242,14 +242,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPost() throws Exception
    {
       doTestRxClientPost(false);
       doTestRxClientPost(true);
    }
-   
+
    void doTestRxClientPost(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -261,7 +261,7 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPostClass() throws Exception
    {
@@ -280,14 +280,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientPostGenericType() throws Exception
    {
       dotestRxClientPostGenericType(false);
       dotestRxClientPostGenericType(true);
    }
-   
+
    void dotestRxClientPostGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -299,14 +299,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientDelete() throws Exception
    {
       doTestRxClientDelete(false);
       doTestRxClientDelete(true);
    }
-   
+
    void doTestRxClientDelete(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -325,7 +325,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientDeleteClass(false);
       doTestRxClientDeleteClass(true);
    }
-   
+
    void doTestRxClientDeleteClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -336,14 +336,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientDeleteGenericType() throws Exception
    {
       doTestRxClientDeleteGenericType(false);
       doTestRxClientDeleteGenericType(true);
    }
-   
+
    void doTestRxClientDeleteGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -354,14 +354,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientHead() throws Exception
    {
       doTestRxClientHead(false);
       doTestRxClientHead(true);
    }
-   
+
    void doTestRxClientHead(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -374,14 +374,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientOptions() throws Exception
    {
       doTestRxClientOptions(false);
       doTestRxClientOptions(true);
    }
-   
+
    void doTestRxClientOptions(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -400,7 +400,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientOptionsClass(false);
       doTestRxClientOptionsClass(true);
    }
-   
+
    void doTestRxClientOptionsClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -411,14 +411,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientOptionsGenericType() throws Exception
    {
       doTestRxClientOptionsGenericType(false);
       doTestRxClientOptionsGenericType(true);
    }
-   
+
    void doTestRxClientOptionsGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -429,14 +429,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientTrace() throws Exception
    {
       doTestRxClientTrace(false);
       doTestRxClientTrace(true);
    }
-   
+
    void doTestRxClientTrace(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -455,7 +455,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientTraceClass(false);
       doTestRxClientTraceClass(true);
    }
-   
+
    void doTestRxClientTraceClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -466,14 +466,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientTraceGenericType() throws Exception
    {
       doTestRxClientTraceGenericType(false);
       doTestRxClientTraceGenericType(true);
    }
-   
+
    void doTestRxClientTraceGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -484,14 +484,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientMethod() throws Exception
    {
       doTestRxClientMethod(false);
       doTestRxClientMethod(true);
    }
-   
+
    void doTestRxClientMethod(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -510,7 +510,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodClass(false);
       doTestRxClientMethodClass(true);
    }
-   
+
    void doTestRxClientMethodClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -521,14 +521,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientMethodGenericType() throws Exception
    {
       doTestRxClientMethodGenericType(false);
       doTestRxClientMethodGenericType(true);
    }
-   
+
    void doTestRxClientMethodGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -539,14 +539,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientMethodEntity() throws Exception
    {
       doTestRxClientMethodEntity(false);
       doTestRxClientMethodEntity(true);
    }
-   
+
    void doTestRxClientMethodEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -558,14 +558,14 @@ public class RxInvokerTest extends ClientTestBase
       Assert.assertEquals(useCustomInvoker, invoker instanceof TestRxInvoker && TestRxInvoker.used);
       client.close();
    }
-   
+
    @Test
    public void testRxClientMethodClassEntity() throws Exception
    {
       doTestRxClientMethodClassEntity(false);
       doTestRxClientMethodClassEntity(true);
    }
-   
+
    void doTestRxClientMethodClassEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);

@@ -14,7 +14,7 @@ import io.reactivex.disposables.Disposable;
 public class SingleProvider implements AsyncResponseProvider<Single<?>>
 {
 
-   private static class SingleAdaptor<T> extends CompletableFuture<T> 
+   private static class SingleAdaptor<T> extends CompletableFuture<T>
    {
       private Disposable subscription;
 
@@ -22,7 +22,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
       {
          this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
       }
-      
+
       @Override
       public boolean cancel(boolean mayInterruptIfRunning)
       {
@@ -30,7 +30,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
          return super.cancel(mayInterruptIfRunning);
       }
    }
-   
+
    @Override
    public CompletionStage toCompletionStage(Single<?> asyncResponse)
    {

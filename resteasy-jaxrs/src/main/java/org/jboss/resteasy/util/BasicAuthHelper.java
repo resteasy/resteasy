@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class BasicAuthHelper
 {
-   public static String createHeader(String username, String password) 
+   public static String createHeader(String username, String password)
    {
       StringBuffer buf = new StringBuffer(username);
       buf.append(':').append(password);

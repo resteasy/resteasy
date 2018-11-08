@@ -23,7 +23,7 @@ public class ResteasyTunnelRefusedException extends ResteasyProtocolException
    {
       super(message, cause);
    }
-    
+
    public ResteasyTunnelRefusedException(Throwable cause)
    {
       super(cause);

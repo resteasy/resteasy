@@ -22,21 +22,21 @@ import static org.junit.Assert.fail;
 
 /**
  * Unit tests for https://issues.jboss.org/browse/RESTEASY-621.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
 public class ClientExecutorShutdownTest extends BaseResourceTest
 {
    private static Logger log = Logger.getLogger(ClientExecutorShutdownTest.class);
-   
+
    @Path("/test")
    public interface TestService
-   {  
+   {
       @POST
       ClientResponse<String> post();
    }
-   
+
    @Path("/test")
    public static class TestServiceImpl
    {
@@ -75,7 +75,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
       executor1.close();
 
    }
-   
+
    /**
     * Verify that ClientRequest uses the ClientExecutor
     * supplied through a constructor.
@@ -96,7 +96,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
       Assert.assertSame(executor, executor2);
       executor.close();
    }
-   
+
    /**
     * Verify that if ApacheHttpClient4Executor creates its own HttpClient,
     * then ApacheHttpClient4Executor.finalize() will close the HttpClient's
@@ -122,7 +122,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
          log.info("Got expected IllegalStateException");
       }
    }
-   
+
    /**
     * Verify that if ApacheHttpClient4Executor creates its own HttpClient,
     * then ApacheHttpClient4Executor.close() will close the HttpClient's
@@ -148,7 +148,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
          log.info("Got expected IllegalStateException");
       }
    }
-   
+
    /**
     * Verify that if ApacheHttpClient4Executor receives an HttpClient through
     * a constructor, then ApacheHttpClient4Executor.finalize() will not close the
@@ -169,7 +169,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
       Assert.assertEquals(204, httpResponse.getStatusLine().getStatusCode());
       httpClient.getConnectionManager().shutdown();
    }
-   
+
    /**
     * Verify that if ApacheHttpClient4Executor receives an HttpClient through
     * a constructor, then ApacheHttpClient4Executor.close() will not close the

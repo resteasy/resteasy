@@ -9,7 +9,7 @@ import org.springframework.beans.factory.FactoryBean;
 
 /**
  * This resovles optional
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  */

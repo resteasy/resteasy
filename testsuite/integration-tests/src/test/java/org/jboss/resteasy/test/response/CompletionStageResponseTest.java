@@ -46,7 +46,7 @@ public class CompletionStageResponseTest {
       war.addClass(CompletionStageProxy.class);
       war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
             + "Dependencies: org.jboss.resteasy.resteasy-rxjava2, org.reactivestreams\n"));
-      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, 
+      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class,
             CompletionStageResponseResource.class, SingleProvider.class,
             AsyncResponseCallback.class);
    }
@@ -58,8 +58,8 @@ public class CompletionStageResponseTest {
    @BeforeClass
    public static void setup() throws Exception {
       client = new ResteasyClientBuilder().build();
-      
-      // Undertow's default behavior is to send an HTML error page only if the client and 
+
+      // Undertow's default behavior is to send an HTML error page only if the client and
       // server are communicating on a loopback connection. Otherwise, it returns "".
       Invocation.Builder request = client.target(generateURL("/host")).request();
       Response response = request.get();
@@ -217,7 +217,7 @@ public class CompletionStageResponseTest {
       String entity = response.readEntity(String.class);
       Assert.assertEquals(500, response.getStatus());
       response.close();
-      
+
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();

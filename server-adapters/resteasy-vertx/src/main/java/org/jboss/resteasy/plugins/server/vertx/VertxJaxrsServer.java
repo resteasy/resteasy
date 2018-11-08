@@ -135,7 +135,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
       DeploymentOptions deploymentOptions = new DeploymentOptions()
             .setInstances(vertxOptions.getEventLoopPoolSize())
             .setConfig(new JsonObject().put("helper", key));
-      
+
       vertx.deployVerticle(Verticle.class.getName(), deploymentOptions, new Handler<AsyncResult<String>>()
       {
          @Override

@@ -87,7 +87,7 @@ public abstract class ClientResponse extends BuiltResponse
       }
       return getEntityStream();
    }
-   
+
    @Override
    public Class<?> getEntityClass()
    {
@@ -164,16 +164,16 @@ public abstract class ClientResponse extends BuiltResponse
       InputStream is = getInputStream();
       return is != null ? new InputStreamWrapper(is, this) : null;
    }
-   
+
    private static class InputStreamWrapper extends FilterInputStream {
-      
+
       private ClientResponse response;
-      
+
       protected InputStreamWrapper(InputStream in, ClientResponse response) {
          super(in);
          this.response = response;
       }
-      
+
       public int read() throws IOException
       {
          return checkEOF(super.read());
@@ -333,7 +333,7 @@ public abstract class ClientResponse extends BuiltResponse
                  useGeneric, annotations, media, getStringHeaders(), is, properties)
                  .proceed();
          obj = finalObj;
-         
+
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -419,5 +419,5 @@ public abstract class ClientResponse extends BuiltResponse
    {
       if (bufferedEntity == null) super.abortIfClosed();
    }
-   
+
 }

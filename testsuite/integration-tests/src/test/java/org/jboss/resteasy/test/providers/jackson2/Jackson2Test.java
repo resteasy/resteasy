@@ -55,7 +55,7 @@ public class Jackson2Test {
    private static final String JETTISON_DEPLOYMENT = "jettison";
    private static final String JSONP_ENABLED = "JSONP_enabled";
    private static final String JSONP_DISABLED = "JSONP_disabled";
-    
+
    @Path("/products")
    public interface Jackson2Proxy {
       @GET
@@ -86,7 +86,7 @@ public class Jackson2Test {
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
    }
-    
+
    @Deployment(name = "JSONPenabled")
    public static Archive<?> deployJSONPenabled() {
       WebArchive war = TestUtil.prepareArchive(JSONP_ENABLED);
@@ -98,7 +98,7 @@ public class Jackson2Test {
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
    }
-    
+
    @Deployment(name = "JSONPdisabled")
    public static Archive<?> deployJSONPdisabled() {
       WebArchive war = TestUtil.prepareArchive(JSONP_DISABLED);
@@ -185,7 +185,7 @@ public class Jackson2Test {
       Assert.assertEquals("The response entity content doesn't match the expected", "foo({\"name\":\"Iphone\",\"id\":333})", entity);
       response.close();
    }
-    
+
    /**
     * @tpTestDetails Client sends GET request for Json resource. The request url contains 'callback' keyword which should
     * trigger processing of the response in the format callbackvalue("key":"value"). However, Jackson2JsonpInterceptor is disabled.
@@ -204,7 +204,7 @@ public class Jackson2Test {
       Assert.assertEquals("Jackson2JsonpInterceptor should be disabled", "{\"name\":\"Iphone\",\"id\":333}", entity);
       response.close();
    }
-    
+
    /**
     * @tpTestDetails Client sends GET request for Json resource. The request url contains 'callback' keyword which should
     * trigger processing of the response in the format callbackvalue("key":"value")

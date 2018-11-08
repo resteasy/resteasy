@@ -27,7 +27,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Unit tests for RESTEASY-1103.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date September 1, 2014
  */
@@ -36,7 +36,7 @@ public class TestSecureProcessing
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
    protected enum MapInclusion {DEFAULT, FALSE, TRUE};
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    protected static String bigExpansionDoc =
          "<!DOCTYPE foodocument [" +
@@ -49,7 +49,7 @@ public class TestSecureProcessing
                "<!ENTITY foo6 '&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;'>" +
                "]>" +
                "<element>&foo5;</element>";
-   
+
    protected static String bigAttributeDoc;
    static
    {
@@ -57,31 +57,31 @@ public class TestSecureProcessing
       sb.append("<element ");
       for (int i = 0; i < 12000; i++)
       {
-         sb.append("attr" + i + "=\"x\" ");  
+         sb.append("attr" + i + "=\"x\" ");
       }
       sb.append(">bar</element>");
       bigAttributeDoc = sb.toString();
    }
-   
+
    String smallDtd = "<!DOCTYPE bardocument [<!ELEMENT bar (ALL)>]><bar>bar</bar>";
-   
+
    protected static String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
    protected static String externalEntityDoc =
          "<?xml version=\"1.0\"?>\r" +
          "<!DOCTYPE foo\r" +
          "[<!ENTITY xxe SYSTEM \"" + filename + "\">\r" +
-         "]>\r" + 
+         "]>\r" +
          "<element>&xxe;</element>";
-   
+
    public static class TestExceptionMapper implements ExceptionMapper<ReaderException>
    {
       @Override
       public Response toResponse(ReaderException exception)
-      {  
+      {
          return Response.status(400).entity(exception.getMessage()).build();
-      } 
+      }
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    @Path("/")
    public static class TestResource
@@ -102,7 +102,7 @@ public class TestSecureProcessing
          return text;
       }
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    public static void before(Hashtable<String, String> contextParams) throws Exception
    {
@@ -112,7 +112,7 @@ public class TestSecureProcessing
       deployment.getRegistry().addPerRequestResource(TestResource.class);
       deployment.getProviderFactory().register(TestExceptionMapper.class);
    }
-   
+
    @After
    public void after() throws Exception
    {
@@ -121,7 +121,7 @@ public class TestSecureProcessing
       dispatcher = null;
       deployment = null;
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    @Test
    public void testSecurityDefaultDTDsDefaultExpansionDefault() throws Exception
@@ -136,21 +136,21 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.DEFAULT, MapInclusion.FALSE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityDefaultDTDsDefaultExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.DEFAULT, MapInclusion.TRUE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityDefaultDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.DEFAULT));
       doTestFailsFailsPassesFails();
    }
-   
+
    @Test
    public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception
    {
@@ -164,14 +164,14 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.TRUE));
       doTestFailsFailsPassesPasses();
    }
-   
+
    @Test
    public void testSecurityDefaultDTDsTrueExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.TRUE, MapInclusion.DEFAULT));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityDefaultDTDsTrueExpansionFalse() throws Exception
    {
@@ -185,70 +185,70 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.TRUE, MapInclusion.TRUE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsDefaultExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.DEFAULT, MapInclusion.DEFAULT));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsDefaultExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.DEFAULT, MapInclusion.FALSE));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsDefaultExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.DEFAULT, MapInclusion.TRUE));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.FALSE, MapInclusion.DEFAULT));
       doTestPassesPassesPassesFails();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsFalseExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.FALSE, MapInclusion.FALSE));
       doTestPassesPassesPassesFails();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsFalseExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.FALSE, MapInclusion.TRUE));
       doTestPassesPassesPassesPasses();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsTrueExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.TRUE, MapInclusion.DEFAULT));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsTrueExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.TRUE, MapInclusion.FALSE));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityFalseDTDsTrueExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.TRUE, MapInclusion.TRUE));
       doTestSkipPassesFailsSkip();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsDefaultExpansionDefault() throws Exception
    {
@@ -262,28 +262,28 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.DEFAULT, MapInclusion.FALSE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsDefaultExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.DEFAULT, MapInclusion.TRUE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.FALSE, MapInclusion.DEFAULT));
       doTestFailsFailsPassesFails();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsFalseExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.FALSE, MapInclusion.FALSE));
       doTestFailsFailsPassesFails();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsFalseExpansionTrue() throws Exception
    {
@@ -297,28 +297,28 @@ public class TestSecureProcessing
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.TRUE, MapInclusion.DEFAULT));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsTrueExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.TRUE, MapInclusion.FALSE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    @Test
    public void testSecurityTrueDTDsTrueExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.TRUE, MapInclusion.TRUE));
       doTestSkipFailsFailsSkip();
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    void doTestSkipFailsFailsSkip() throws Exception
    {
       doMaxAttributesFails();
       doDTDFails();
    }
-   
+
    void doTestSkipPassesFailsSkip() throws Exception
    {
       doMaxAttributesPasses();
@@ -356,7 +356,7 @@ public class TestSecureProcessing
       doDTDPasses();
       doExternalEntityExpansionPasses();
    }
-   
+
    void doEntityExpansionFails() throws Exception
    {
       //System.out.println("entering doEntityExpansionFails()");
@@ -369,7 +369,7 @@ public class TestSecureProcessing
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
    }
-   
+
    void doEntityExpansionPasses() throws Exception
    {
       //System.out.println("entering doEntityExpansionFails()");
@@ -383,7 +383,7 @@ public class TestSecureProcessing
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(countFoos(entity) > 64000);
    }
-   
+
    void doMaxAttributesFails() throws Exception
    {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -422,7 +422,7 @@ public class TestSecureProcessing
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
    }
-   
+
    void doDTDFails() throws Exception
    {
       //System.out.println("entering doDTDFails()");
@@ -438,7 +438,7 @@ public class TestSecureProcessing
       Assert.assertTrue(entity.contains("http://apache.org/xml/features/disallow-doctype-decl"));
       Assert.assertTrue(entity.contains("true"));
    }
-   
+
    void doDTDPasses() throws Exception
    {
       //System.out.println("entering doDTDPasses()");
@@ -451,7 +451,7 @@ public class TestSecureProcessing
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
    }
-   
+
    void doExternalEntityExpansionFails() throws Exception
    {
       //System.out.println("entering doExternalEntityExpansionFails()");
@@ -464,7 +464,7 @@ public class TestSecureProcessing
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("", entity);
    }
-   
+
    void doExternalEntityExpansionPasses() throws Exception
    {
       //System.out.println("entering doExternalEntityExpansionPasses()");
@@ -478,7 +478,7 @@ public class TestSecureProcessing
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////////////////////////
    private static Hashtable<String, String> getParameterMap(MapInclusion securityFeature, MapInclusion disableDTDs, MapInclusion expandEntities)
    {
@@ -487,11 +487,11 @@ public class TestSecureProcessing
       {
          case DEFAULT:
             break;
-            
+
          case FALSE:
             map.put("resteasy.document.secure.processing.feature", "false");
             break;
-            
+
          case TRUE:
             map.put("resteasy.document.secure.processing.feature", "true");
             break;
@@ -500,11 +500,11 @@ public class TestSecureProcessing
       {
          case DEFAULT:
             break;
-            
+
          case FALSE:
             map.put("resteasy.document.secure.disableDTDs", "false");
             break;
-            
+
          case TRUE:
             map.put("resteasy.document.secure.disableDTDs", "true");
             break;
@@ -513,23 +513,23 @@ public class TestSecureProcessing
       {
          case DEFAULT:
             break;
-            
+
          case FALSE:
             map.put("resteasy.document.expand.entity.references", "false");
             break;
-            
+
          case TRUE:
             map.put("resteasy.document.expand.entity.references", "true");
             break;
       }
       return map;
    }
-   
+
    private static int countFoos(String s)
    {
       int count = 0;
       int pos = 0;
-      
+
       while (pos >= 0)
       {
          pos = s.indexOf("foo", pos);

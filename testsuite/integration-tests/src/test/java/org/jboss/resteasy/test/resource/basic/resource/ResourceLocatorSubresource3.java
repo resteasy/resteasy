@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.Assert;
 
 public class ResourceLocatorSubresource3 implements ResourceLocatorSubresource3Interface {
-   
+
    @SuppressWarnings("unused")
    @Override
    public String get(List<Double> params)

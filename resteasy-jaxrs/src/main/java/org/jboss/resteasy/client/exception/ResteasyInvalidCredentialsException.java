@@ -23,7 +23,7 @@ public class ResteasyInvalidCredentialsException extends ResteasyAuthenticationE
    {
       super(message, cause);
    }
-    
+
    public ResteasyInvalidCredentialsException(Throwable cause)
    {
       super(cause);

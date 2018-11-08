@@ -58,7 +58,7 @@ public class HeaderParamsAsPrimitivesResourcePrimitives implements HeaderParamsA
       Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265358979d, v, 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGet(@HeaderParam("char") char v) {

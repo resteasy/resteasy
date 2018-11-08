@@ -52,7 +52,7 @@ public class SseResource
    private volatile boolean sending = true;
 
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
-   
+
    private AtomicInteger noContentCount = new AtomicInteger();
 
    private final static Logger logger = Logger.getLogger(SseResource.class);
@@ -308,7 +308,7 @@ public class SseResource
          eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
       }
    }
-   
+
    @GET
    @Path("/closeAfterSent")
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -320,7 +320,7 @@ public class SseResource
       {
          public void run()
          {
-            try (SseEventSink sink = eventSink) 
+            try (SseEventSink sink = eventSink)
             {
                logger.info("sending 3 events");
                eventSink.send(builder.data("thing1").build());

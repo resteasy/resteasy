@@ -3,10 +3,10 @@ package se.unlogic.eagledns;
 
 /**
  * Interface that tells Eagle DNS that a {@link ZoneProvider} can trigger a zone reload.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  * @author Michael Neale, Red Hat (JBoss division)
- * 
+ *
  */
 public interface ZoneProviderUpdatable {
 

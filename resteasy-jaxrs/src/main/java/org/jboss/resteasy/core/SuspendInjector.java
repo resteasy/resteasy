@@ -12,9 +12,9 @@ import javax.ws.rs.core.Response;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated Replaced by org.jboss.resteasy.core.AsynchronousResponseInjector
- * 
+ *
  * @see org.jboss.resteasy.core.AsynchronousResponseInjector
  */
 @Deprecated

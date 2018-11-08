@@ -65,12 +65,12 @@ public class RESTEasyParamBasicCustomValuesResource
       this.pathParam0Updated = pathParam0Updated;
       this.queryParam0Updated = queryParam0Updated;
    }
-   
+
    public String getCookieParam2Updated()
    {
       return cookieParam2Updated;
    }
-   
+
    @CookieParam("cookieParam2")
    public void setCookieParam2Updated(String cookieParam2Updated)
    {
@@ -81,40 +81,40 @@ public class RESTEasyParamBasicCustomValuesResource
    {
       return formParam2Updated;
    }
-   
+
    @FormParam("formParam2")
    public void setFormParam2Updated(String formParam2Updated)
    {
       this.formParam2Updated = formParam2Updated;
    }
-   
+
    public String getPathParam2Updated()
    {
       return pathParam2Updated;
    }
-   
+
    public String getHeaderParam2Updated()
    {
       return headerParam2Updated;
    }
-   
+
    @HeaderParam("headerParam2")
    public void setHeaderParam2Updated(String headerParam2Updated)
    {
       this.headerParam2Updated = headerParam2Updated;
    }
-   
+
    public String getMatrixParam2Updated()
    {
       return matrixParam2Updated;
    }
-   
+
    @MatrixParam("matrixParam2")
    public void setMatrixParam2Updated(String matrixParam2Updated)
    {
       this.matrixParam2Updated = matrixParam2Updated;
    }
-   
+
    @PathParam("pathParam2")
    public void setPathParam2Updated(String pathParam2Updated)
    {
@@ -125,7 +125,7 @@ public class RESTEasyParamBasicCustomValuesResource
    {
       return queryParam2Updated;
    }
-   
+
    @QueryParam("queryParam2")
    public void setQueryParam2Updated(String queryParam2Updated)
    {

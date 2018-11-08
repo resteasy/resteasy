@@ -9,7 +9,7 @@ import java.util.Hashtable;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated See resteasy-undertow module.
  */
 @Deprecated
@@ -57,12 +57,12 @@ public class EmbeddedContainer
    {
       return start("/", (Hashtable<String,String>) null);
    }
-   
+
    public static ResteasyDeployment start(String bindPath) throws Exception
    {
       return start(bindPath, null, null);
    }
-   
+
    public static ResteasyDeployment start(Hashtable<String,String> initParams) throws Exception
    {
       return start("/", initParams);
@@ -72,7 +72,7 @@ public class EmbeddedContainer
    {
       return start("/", initParams, contextParams);
    }
-   
+
    public static ResteasyDeployment start(String bindPath, Hashtable<String,String> initParams) throws Exception
    {
       Method start = bootstrap.getMethod("start", String.class, Hashtable.class);
@@ -84,7 +84,7 @@ public class EmbeddedContainer
       Method start = bootstrap.getMethod("start", String.class, Hashtable.class, Hashtable.class);
       return (ResteasyDeployment) start.invoke(null, bindPath, initParams, contextParams);
    }
-   
+
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain) throws Exception
    {
       Method start = bootstrap.getMethod("start", String.class, SecurityDomain.class);

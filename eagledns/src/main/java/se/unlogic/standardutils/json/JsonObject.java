@@ -14,9 +14,9 @@ import java.util.Map.Entry;
 
 /**
  * A JSON object component having children
- * 
+ *
  * Equalizes the "composite" of the "composite pattern" design pattern.
- *  
+ *
  * @author sikstromj
  *
  */

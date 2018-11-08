@@ -410,7 +410,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
-   
+
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
       return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
    }

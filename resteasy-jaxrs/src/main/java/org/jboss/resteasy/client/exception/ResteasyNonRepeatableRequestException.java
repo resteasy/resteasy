@@ -23,7 +23,7 @@ public class ResteasyNonRepeatableRequestException extends ResteasyProtocolExcep
    {
       super(message, cause);
    }
-    
+
    public ResteasyNonRepeatableRequestException(Throwable cause)
    {
       super(cause);

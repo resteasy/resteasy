@@ -100,7 +100,7 @@ public class UndertowTest
    }
 
    @Test
-   public void testAddResourcePrefixPath() throws Exception 
+   public void testAddResourcePrefixPath() throws Exception
    {
       File staticFile = File.createTempFile("tmp", "index.html");
       staticFile.deleteOnExit();

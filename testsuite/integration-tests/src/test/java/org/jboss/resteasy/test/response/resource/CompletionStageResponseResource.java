@@ -19,10 +19,10 @@ import io.reactivex.Single;
 
 @Path("")
 public class CompletionStageResponseResource {
-   
+
    public static final String HELLO = "Hello CompletionStage world!";
    public static final String EXCEPTION = "CompletionStage exception";
-   
+
    @GET
    @Path("text")
    @Produces("text/plain")
@@ -82,7 +82,7 @@ public class CompletionStageResponseResource {
             });
       return cs;
    }
-   
+
    @GET
    @Path("responsetestclass")
    public CompletionStage<Response> responseTestClass() {
@@ -163,7 +163,7 @@ public class CompletionStageResponseResource {
       AsyncResponseCallback.assertCalled(true);
       return "OK";
    }
-   
+
    @GET
    @Path("host")
    public String getHost(@Context UriInfo uri) {

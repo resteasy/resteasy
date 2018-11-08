@@ -81,7 +81,7 @@ public interface Registry
    void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz);
 
    void addResourceFactory(ResourceFactory ref, String base, Class<?>[] classes);
-   
+
    void removeRegistrations(Class<?> clazz);
 
    void removeRegistrations(Class<?> clazz, String base);

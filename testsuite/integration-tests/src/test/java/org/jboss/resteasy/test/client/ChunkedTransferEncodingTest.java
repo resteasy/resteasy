@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ChunkedTransferEncodingTest {
-   
+
    static ResteasyClient clientDefault;
    static ResteasyClient clientEngine43;
    static ResteasyClient clientEngine4;
@@ -46,7 +46,7 @@ public class ChunkedTransferEncodingTest {
    static {
       testFilePath = TestUtil.getResourcePath(ChunkedTransferEncodingTest.class, "ChunkedTransferEncodingTestFile");
    }
-    
+
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ChunkedTransferEncodingTest.class.getSimpleName());
@@ -91,7 +91,7 @@ public class ChunkedTransferEncodingTest {
       doTestTarget(clientEngine4, Boolean.FALSE, "null " + fileLength);
       doTestTarget(clientEngine4,null, "null " + fileLength);
    }
-    
+
    public void doTestTarget(ResteasyClient client, Boolean b, String expected) throws Exception
    {
       ResteasyWebTarget target = client.target(generateURL("/test"));
@@ -123,7 +123,7 @@ public class ChunkedTransferEncodingTest {
       doTestRequest(clientEngine4, Boolean.FALSE, "null " + fileLength);
       doTestRequest(clientEngine4, null, "null " + fileLength);
    }
-    
+
    protected void doTestRequest(ResteasyClient client, Boolean b, String expected) throws Exception
    {
       ResteasyWebTarget target = client.target(generateURL("/test"));

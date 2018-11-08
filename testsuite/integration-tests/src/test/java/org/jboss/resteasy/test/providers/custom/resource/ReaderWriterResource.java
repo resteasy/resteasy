@@ -69,5 +69,5 @@ public class ReaderWriterResource {
       cust.setName("resteasy");
       return Response.ok(cust).build();
    }
-    
+
 }

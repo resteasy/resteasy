@@ -4,7 +4,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 /**
  * Suspendable request context, which allows the users to suspend execution of the filter
- * chain until it is resumed normally, or abnormally with a {@link Throwable}. 
+ * chain until it is resumed normally, or abnormally with a {@link Throwable}.
  *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
@@ -19,13 +19,13 @@ public interface SuspendableContainerRequestContext extends ContainerRequestCont
     * {@link #abortWith(javax.ws.rs.core.Response)}.
     */
    void suspend();
-   
+
    /**
     * Resumes the current request, and proceeds to the next request filter, if any,
     * or to the resource method.
     */
    void resume();
-   
+
    /**
     * Aborts the current request with the given exception. This behaves as if the request
     * filter threw this exception synchronously, which means exceptions may be mapped via

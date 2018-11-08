@@ -19,10 +19,10 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
- *  
+ *
  *  Visit http://tjws.sourceforge.net to get the latest information
- *  about Rogatkin's products.                                                        
- *  $Id: SSLAcceptor.java,v 1.5 2009/12/10 04:30:51 dmitriy Exp $                
+ *  about Rogatkin's products.
+ *  $Id: SSLAcceptor.java,v 1.5 2009/12/10 04:30:51 dmitriy Exp $
  *  Created on Feb 21, 2007
  *  @author dmitriy
  */

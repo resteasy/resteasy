@@ -67,7 +67,7 @@ public class NettyHttpResponse implements HttpResponse
    {
       return status;
    }
-   
+
    @Override
    public void setStatus(int status)
    {
@@ -101,11 +101,11 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void sendError(int status, String message) throws IOException
    {
-      if (committed) 
+      if (committed)
       {
          throw new IllegalStateException();
       }
-      
+
       HttpResponseStatus responseStatus = null;
       if (message != null)
       {
@@ -136,7 +136,7 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void reset()
    {
-      if (committed) 
+      if (committed)
       {
          throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
       }
@@ -144,7 +144,7 @@ public class NettyHttpResponse implements HttpResponse
       underlyingOutputStream.buffer().clear();
       outputHeaders.clear();
    }
-   
+
    public boolean isKeepAlive() {
       return keepAlive;
    }

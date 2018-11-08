@@ -49,7 +49,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 /**
  * Based on org.jboss.resteasy.test.security.BasicAuthTest, but with JAX-RS 2.0
  * client framework.
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
@@ -234,7 +234,7 @@ public class BasicAuthTest
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
       ResteasyClient unauthorizedClient = new ResteasyClientBuilder().build();
-      
+
       {
          WebTarget target = authorizedClient.target(generateURL("/secured"));
          Response response = target.request().get();
@@ -245,7 +245,7 @@ public class BasicAuthTest
          WebTarget target = authorizedClient.target(generateURL("/secured/authorized"));
          Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.readEntity(String.class));  
+         Assert.assertEquals("authorized", response.readEntity(String.class));
       }
       {
          WebTarget target = authorizedClient.target(generateURL("/secured/deny"));
@@ -312,9 +312,9 @@ public class BasicAuthTest
          WebTarget target = authorizedClient.target(generateURL("/secured/authorized"));
          Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.readEntity(String.class));  
+         Assert.assertEquals("authorized", response.readEntity(String.class));
       }
-      
+
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("mo", "password");
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
@@ -330,12 +330,12 @@ public class BasicAuthTest
    /**
     * Create a ClientExecutor which does preemptive authentication.
     */
-   
+
    static private ClientExecutor createAuthenticatingExecutor(DefaultHttpClient client)
    {
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
-      
+
       // Generate BASIC scheme object and add it to the local auth cache
       BasicScheme basicAuth = new BasicScheme();
       HttpHost targetHost = new HttpHost("localhost", 8081);
@@ -344,17 +344,17 @@ public class BasicAuthTest
       // Add AuthCache to the execution context
       BasicHttpContext localContext = new BasicHttpContext();
       localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-      
+
       // Create ClientExecutor.
       ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(client, localContext);
       return executor;
    }
-   
+
    static private ClientHttpEngine createAuthenticatingEngine(DefaultHttpClient client)
    {
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
-      
+
       // Generate BASIC scheme object and add it to the local auth cache
       BasicScheme basicAuth = new BasicScheme();
       HttpHost targetHost = new HttpHost("localhost", 8081);
@@ -363,7 +363,7 @@ public class BasicAuthTest
       // Add AuthCache to the execution context
       BasicHttpContext localContext = new BasicHttpContext();
       localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-      
+
       // Create ClientHttpEngine
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client, localContext);
       return engine;

@@ -23,7 +23,7 @@ public class ResteasyNTLMEngineException extends ResteasyAuthenticationException
    {
       super(message, cause);
    }
-    
+
    public ResteasyNTLMEngineException(Throwable cause)
    {
       super(cause);

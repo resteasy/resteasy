@@ -139,7 +139,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             deployment.start();
          }
 
-         else 
+         else
          {
             SpringResourceFactory resourceFactory = resourceFactories.get(beanName);
             if (resourceFactory != null)
@@ -325,7 +325,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    }
 
    public String getPropertyValue(
-      MutablePropertyValues registrationPropertyValues, String propertyName) 
+      MutablePropertyValues registrationPropertyValues, String propertyName)
    {
       if(registrationPropertyValues == null)
       {
@@ -512,7 +512,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          getRegistry().removeRegistrations(resourceFactory.getScannableClass());
       }
-      
+
 //  The following code would re-process the bean factory, in case the configuration changed.
 //  However, it needs work.
 //      if (event.getSource() instanceof XmlWebApplicationContext)

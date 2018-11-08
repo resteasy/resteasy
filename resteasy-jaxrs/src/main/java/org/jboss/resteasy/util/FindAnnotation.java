@@ -87,7 +87,7 @@ public final class FindAnnotation
       return result.toArray(findJaxRSAnnotations_TYPE);
 
    }
-   
+
    /**
     * Returns an array of annotations the specified method of
     * a resource class.

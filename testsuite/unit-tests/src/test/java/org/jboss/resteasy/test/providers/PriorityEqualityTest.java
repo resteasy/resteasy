@@ -53,14 +53,14 @@ public class PriorityEqualityTest {
       public Foo(String foo) {this.foo = foo;}
       public String getFoo() {return foo;}
    }
-   
+
    public static class FooParamConverter implements ParamConverter<Foo> {
       private String foo;
-      
+
       public FooParamConverter(String foo) {
          this.foo = foo;
       }
-      
+
       @Override
       public Foo fromString(String value)
       {
@@ -73,7 +73,7 @@ public class PriorityEqualityTest {
          return value.getFoo();
       }
    }
-   
+
    @Provider
    @Priority(20)
    public static class ParamConverterProvider1 implements ParamConverterProvider {
@@ -84,7 +84,7 @@ public class PriorityEqualityTest {
          return (ParamConverter<T>) new FooParamConverter("1");
       }
    }
-   
+
    @Provider
    @Priority(20)
    public static class ParamConverterProvider2 implements ParamConverterProvider {
@@ -130,7 +130,7 @@ public class PriorityEqualityTest {
       factory.registerProviderInstance(new ParamConverterProvider1());
       factory.registerProviderInstance(new ParamConverterProvider2());
       Assert.assertEquals(2, factory.getParamConverterProviders().size());
-      
+
       ResteasyProviderFactory.clearInstanceIfEqual(factory);
    }
 
@@ -146,7 +146,7 @@ public class PriorityEqualityTest {
       factory.register(ExceptionMapper2.class);
       Assert.assertEquals(1, factory.getExceptionMappers().size());
    }
-   
+
    /**
     * @tpTestDetails ResteasyProviderFactory should store a single ExceptionMapper for
     *                a given Exception and @Priority.

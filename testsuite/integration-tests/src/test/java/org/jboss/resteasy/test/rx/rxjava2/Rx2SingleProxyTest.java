@@ -43,8 +43,8 @@ import io.reactivex.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
- * 
- * In these tests, the server resource methods create and return objects of type Single<T>. 
+ *
+ * In these tests, the server resource methods create and return objects of type Single<T>.
  * The client uses a proxy that uses a SingleRxInvoker to get objects of type Single<T>.
  */
 @RunWith(Arquillian.class)
@@ -359,7 +359,7 @@ public class Rx2SingleProxyTest {
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       Rx2SingleResource proxy1 = client.target(generateURL("/")).proxy(Rx2SingleResource.class);
-      Single<String> single1 = proxy1.get();   
+      Single<String> single1 = proxy1.get();
 
       Rx2SingleResource proxy2 = client.target(generateURL("/")).proxy(Rx2SingleResource.class);
       Single<String> single2 = proxy2.get();
@@ -382,7 +382,7 @@ public class Rx2SingleProxyTest {
 
       Single<String> single1 = proxy.get();
       Single<String> single2 = proxy.get();
-      
+
       single1.subscribe((String s) -> {list.add(s); cdl.countDown();});
       single2.subscribe((String s) -> {list.add(s); cdl.countDown();});
 

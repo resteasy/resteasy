@@ -7,7 +7,7 @@ import javax.ws.rs.core.UriInfo;
 import org.junit.Assert;
 
 public class ProgrammaticResource {
-   
+
    private UriInfo uriInfo;
 
    public int counter;

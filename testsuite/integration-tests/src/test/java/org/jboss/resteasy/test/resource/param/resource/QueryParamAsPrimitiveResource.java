@@ -58,7 +58,7 @@ public class QueryParamAsPrimitiveResource implements QueryParamAsPrimitiveResou
       Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v, 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGet(@QueryParam("char") char v) {

@@ -23,7 +23,7 @@ public class ResteasyConnectionClosedException extends ResteasyIOException
    {
       super(message, cause);
    }
-    
+
    public ResteasyConnectionClosedException(Throwable cause)
    {
       super(cause);

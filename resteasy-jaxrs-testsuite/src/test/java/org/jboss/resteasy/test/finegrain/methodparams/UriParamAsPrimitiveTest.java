@@ -242,7 +242,7 @@ public class UriParamAsPrimitiveTest
             throw new RuntimeException(e);
          }
       }
-      
+
       {
          ClientRequest request = new ClientRequest(generateURL("/" + type + "/wrapper/" + value));
          try

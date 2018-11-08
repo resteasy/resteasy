@@ -19,10 +19,10 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
- *  
+ *
  *  Visit http://tjws.sourceforge.net to get the latest information
- *  about Rogatkin's products.                                                        
- *  $Id: SelectorAcceptor.java,v 1.8 2008/01/18 10:05:23 dmitriy Exp $                
+ *  about Rogatkin's products.
+ *  $Id: SelectorAcceptor.java,v 1.8 2008/01/18 10:05:23 dmitriy Exp $
  *  Created on Feb 21, 2007
  *  @author dmitriy
  */

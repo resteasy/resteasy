@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to annotate fields that are to be populated by the {@link se.unlogic.webutils.populators.annotated.AnnotatedRequestPopulator}.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

@@ -387,14 +387,14 @@ public class HttpServletRequestDelegate implements HttpServletRequest
    public void login(String username, String password) throws ServletException
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
    public void logout() throws ServletException
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
@@ -417,5 +417,5 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       // TODO Auto-generated method stub
       return null;
    }
-   
+
 }

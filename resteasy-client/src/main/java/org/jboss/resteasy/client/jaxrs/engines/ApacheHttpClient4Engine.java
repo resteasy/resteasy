@@ -563,7 +563,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       super.finalize();
    }
 
-   
+
    public boolean isChunked()
    {
       return chunked;
@@ -573,7 +573,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    {
       this.chunked = chunked;
    }
-   
+
    public boolean isFollowRedirects()
    {
       return followRedirects;
@@ -642,7 +642,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
       if (request.isChunked())
       {
-         entityToBuild.setChunked(true);  
+         entityToBuild.setChunked(true);
       }
       return (HttpEntity) entityToBuild;
    }

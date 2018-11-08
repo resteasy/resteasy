@@ -9,32 +9,32 @@ import javax.servlet.ServletContext;
 /**
  * Provides access to RESTEasy's SpringContextLoader implementation without having
  * to extend {@link org.springframework.web.context.ContextLoader}.  This is useful
- * if you have your own SpringContextLoaderListener and dont' want to 
+ * if you have your own SpringContextLoaderListener and dont' want to
  * return RESTEasy's {@link SpringContextLoader}.
  *
  * Usage:
  * <pre>
- * public class MyCustomSpringContextLoader extends ContextLoader 
+ * public class MyCustomSpringContextLoader extends ContextLoader
  * {
- *    private SpringContextLoaderSupport springContextLoaderSupport = 
+ *    private SpringContextLoaderSupport springContextLoaderSupport =
  *       new SpringContextLoaderSupport();
  *
  *     protected void customizeContext(
- *        ServletContext servletContext, 
+ *        ServletContext servletContext,
  *        ConfigurableWebApplicationContext configurableWebApplicationContext)
  *    {
  *       super.customizeContext(servletContext, configurableWebApplicationContext);
  *
- *       // Your custom code 
+ *       // Your custom code
  *
  *       this.springContextLoaderSupport.customizeContext(servletContext.configurableWebApplicationContext);
  *
- *       // Your custom code 
+ *       // Your custom code
  *    }
  * }
  * </pre>
  */
-public class SpringContextLoaderSupport 
+public class SpringContextLoaderSupport
 {
    public void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext)
    {

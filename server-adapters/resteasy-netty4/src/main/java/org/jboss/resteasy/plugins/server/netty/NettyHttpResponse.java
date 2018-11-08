@@ -204,7 +204,7 @@ public class NettyHttpResponse implements HttpResponse
       } else {
          future = ctx.writeAndFlush(getEmptyHttpResponse());
       }
-      
+
       if(!isKeepAlive()) {
          future.addListener(ChannelFutureListener.CLOSE);
       }

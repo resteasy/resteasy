@@ -21,7 +21,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
    private String name;
    private String callbackException;
    private static final Logger LOG = Logger.getLogger(AsyncRequestFilter.class);
-   
+
    public AsyncRequestFilter(String name)
    {
       this.name = name;
@@ -81,5 +81,5 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
       }
       LOG.error("Filter request for "+name+" with action: "+action+" done");
    }
-   
+
 }

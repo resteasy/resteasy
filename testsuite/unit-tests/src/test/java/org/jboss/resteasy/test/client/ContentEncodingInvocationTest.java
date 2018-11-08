@@ -41,9 +41,9 @@ public class ContentEncodingInvocationTest
       LOG.info("encoding: " + contentEncoding);
       LOG.info("count: " + countEncoding(contentEncoding));
       Assert.assertEquals(1, countEncoding(contentEncoding));
-      
+
    }
-   
+
    private int countEncoding(String s)
    {
       int i = 0;

@@ -134,7 +134,7 @@ public class AbderaTest extends BaseResourceTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String str = response.getEntity();
-      
+
       request.body(MediaType.APPLICATION_ATOM_XML, str);
       response = request.put(String.class);
       Assert.assertEquals(204, response.getStatus());
@@ -148,7 +148,7 @@ public class AbderaTest extends BaseResourceTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String str = response.getEntity();
-      
+
       request.body(MediaType.APPLICATION_ATOM_XML, str);
       response = request.put(String.class);
       Assert.assertEquals(204, response.getStatus());

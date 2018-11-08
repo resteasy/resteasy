@@ -22,7 +22,7 @@ import java.util.List;
 public class MatrixParamInjector extends StringParameterInjector implements ValueInjector
 {
    private boolean encode;
-   
+
    public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
    {
       super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);

@@ -15,7 +15,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */

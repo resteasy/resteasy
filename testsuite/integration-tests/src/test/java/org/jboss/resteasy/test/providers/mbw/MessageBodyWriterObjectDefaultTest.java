@@ -35,7 +35,7 @@ public class MessageBodyWriterObjectDefaultTest {
    @BeforeClass
    public static void before() throws Exception {
       client = ClientBuilder.newClient();
-      
+
    }
 
    @Deployment
@@ -53,7 +53,7 @@ public class MessageBodyWriterObjectDefaultTest {
    public static void close() {
       client.close();
    }
-   
+
    @Test
    public void testDefault() throws Exception {
       Invocation.Builder request = client.target(generateURL("/test")).request();

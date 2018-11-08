@@ -13,7 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
  *      NotAllowGzipOnServerNotAllowGzipOnClientTest
  */
 public class NotAllowGzipOnServerAbstractTestBase extends GzipAbstractTestBase {
-   
+
    /**
     * Deployment with javax.ws.rs.ext.Providers file, that contains gzip interceptor definition
     */

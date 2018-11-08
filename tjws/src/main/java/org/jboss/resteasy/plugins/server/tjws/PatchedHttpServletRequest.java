@@ -13,10 +13,10 @@ import java.net.URL;
 /**
  * fix bug in non-encoded getRequestURI and URL
  * as well as the correct context Path.
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated See resteasy-undertow module.
  */
 @Deprecated

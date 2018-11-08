@@ -21,13 +21,13 @@ import org.jboss.resteasy.util.GetRestful;
 /**
  * This implementation of InjectionTarget is a wrapper that allows JAX-RS
  * property injection to be performed just after CDI injection.
- * 
+ *
  * @author Jozef Hartinger
- * 
+ *
  */
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
-   
+
    private InjectionTarget<T> delegate;
    private Class<T> clazz;
    private PropertyInjector propertyInjector;
@@ -61,7 +61,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       {
          propertyInjector.inject(instance);
       }
-      
+
       if (request != null)
       {
          validate(request, instance);
@@ -101,7 +101,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    {
       return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
    }
-   
+
    private void validate(HttpRequest request, T instance)
    {
       if (GetRestful.isRootResource(clazz))

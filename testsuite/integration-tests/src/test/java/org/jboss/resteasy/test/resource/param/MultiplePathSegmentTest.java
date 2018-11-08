@@ -52,7 +52,7 @@ public class MultiplePathSegmentTest {
    public static void cleanup() {
       client.close();
    }
-   
+
    /**
     * @tpTestDetails Array of PathSegments captured by wildcard
     * @tpSince RESTEasy 3.0.23.Final

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
  * @version $Revision: 1 $
- * 
+ *
  */
 
 @Target(

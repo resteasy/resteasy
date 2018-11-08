@@ -60,7 +60,7 @@ public class HttpContextTest
          ClientResponse<?> response = request.put();
          Assert.assertEquals(204, response.getStatus());
       }
-      
+
       {
          ClientRequest request = new ClientRequest(generateURL("/queryParam"));
          request.queryParameter("param", "hello world");
@@ -73,7 +73,7 @@ public class HttpContextTest
          ClientRequest request = new ClientRequest(generateURL("/uriParam/1234"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(200, response.getStatus());
-         Assert.assertEquals("1234", response.getEntity());         
+         Assert.assertEquals("1234", response.getEntity());
       }
    }
 

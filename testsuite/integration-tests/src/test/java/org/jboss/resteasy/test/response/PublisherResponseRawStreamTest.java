@@ -92,11 +92,11 @@ public class PublisherResponseRawStreamTest {
    {
       Invocation.Builder request = client.target(generateURL("/chunked-infinite")).request();
       Future<Response> futureResponse = request.async().get();
-      try 
+      try
       {
          futureResponse.get(2, TimeUnit.SECONDS);
       }
-      catch(TimeoutException x) 
+      catch(TimeoutException x)
       {
       }
       close();

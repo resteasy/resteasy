@@ -23,7 +23,7 @@ public class ResteasyUnsupportedHttpVersionException extends ResteasyProtocolExc
    {
       super(message, cause);
    }
-    
+
    public ResteasyUnsupportedHttpVersionException(Throwable cause)
    {
       super(cause);

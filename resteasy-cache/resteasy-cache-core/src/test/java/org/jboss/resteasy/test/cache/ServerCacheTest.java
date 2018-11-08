@@ -102,7 +102,7 @@ public class ServerCacheTest
 
       return builder.toString();
    }
-   
+
    @Path("/cache")
    public static class MyService
    {

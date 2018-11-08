@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 public class ApplicationConfigWithInterceptorTest
 {
    private static Client client;
-   
+
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(ApplicationConfigWithInterceptorTest.class.getSimpleName());

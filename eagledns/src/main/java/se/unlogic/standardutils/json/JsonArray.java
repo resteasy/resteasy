@@ -13,9 +13,9 @@ import java.util.List;
 
 /**
  * A JSON array component having children
- * 
+ *
  * Equalizes the "composite" of the "composite pattern" design pattern.
- *  
+ *
  * @author sikstromj
  *
  */

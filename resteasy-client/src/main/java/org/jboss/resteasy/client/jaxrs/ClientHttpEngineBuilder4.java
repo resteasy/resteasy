@@ -145,7 +145,7 @@ public class ClientHttpEngineBuilder4 implements ClientHttpEngineBuilder {
          throw new RuntimeException(e);
       }
    }
-    
+
    protected ClientHttpEngine createEngine(ClientConnectionManager cm, BasicHttpParams params,
          X509HostnameVerifier verifier, SSLContext theContext, int responseBufferSize)
    {

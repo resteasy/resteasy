@@ -194,7 +194,7 @@ public class ClientErrorTest
       catch (Exception e)
       {
          throw new RuntimeException(e);
-      }  
+      }
    }
 
    @Test
@@ -275,7 +275,7 @@ public class ClientErrorTest
          consumeEntity(response);
       }
    }
-   
+
    static class TestMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate
    {
       public static MediaType parse(String type)

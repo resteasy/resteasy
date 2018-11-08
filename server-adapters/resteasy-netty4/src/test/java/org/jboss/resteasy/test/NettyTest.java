@@ -92,7 +92,7 @@ public class NettyTest
       public String context(@Context ChannelHandlerContext context) {
          return context.channel().toString();
       }
-      
+
       @POST
       @Path("/post")
       @Produces("text/plain")
@@ -136,7 +136,7 @@ public class NettyTest
       }
       NettyContainer.stop();
    }
-   
+
    @Test
    public void testHeadContentLength() throws Exception
    {
@@ -227,7 +227,7 @@ public class NettyTest
       Assert.assertNotNull(val);
       Assert.assertFalse(val.isEmpty());
    }
-   
+
    @Test
    public void testPost() {
       WebTarget target = client.target(generateURL("/post"));

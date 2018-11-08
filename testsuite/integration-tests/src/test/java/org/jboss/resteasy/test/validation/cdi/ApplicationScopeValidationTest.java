@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ApplicationScopeValidationTest {
-   
+
    @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
@@ -55,7 +55,7 @@ public class ApplicationScopeValidationTest {
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, ApplicationScopeValidationTest.class.getSimpleName());
    }
-   
+
    @Test
    @Category({NotForForwardCompatibility.class})
    public void testValidationApplicationScope()
@@ -68,19 +68,19 @@ public class ApplicationScopeValidationTest {
       Response response = target.request().post(Entity.entity(dto, MediaType.APPLICATION_JSON));
       Assert.assertEquals(200, response.getStatus());
       response.close();
-      
+
       response = target.request().post(Entity.entity(null, MediaType.APPLICATION_JSON));
       Assert.assertEquals(400, response.getStatus());
       Object header = response.getHeaders().getFirst(org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER);
       Assert.assertTrue(header instanceof String);
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       ViolationReport report = response.readEntity(ViolationReport.class);
-      
+
       // Show that server didn't call resource method, which would have caused a return value violation.
       countViolations(report, 0, 0, 0, 1, 0);
       response.close();
    }
-   
+
    @Test
    public void testValidationRequestScope()
    {
@@ -92,19 +92,19 @@ public class ApplicationScopeValidationTest {
       Response response = target.request().post(Entity.entity(dto, MediaType.APPLICATION_JSON));
       Assert.assertEquals(200, response.getStatus());
       response.close();
-      
+
       response = target.request().post(Entity.entity(null, MediaType.APPLICATION_JSON));
       Assert.assertEquals(400, response.getStatus());
       Object header = response.getHeaders().getFirst(org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER);
       Assert.assertTrue(header instanceof String);
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       ViolationReport report = response.readEntity(ViolationReport.class);
-      
+
       // Show that server didn't call resource method, which would have caused a return value violation.
       countViolations(report, 0, 0, 0, 1, 0);
       response.close();
    }
-   
+
    private void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
       Assert.assertEquals(fieldCount, e.getFieldViolations().size());

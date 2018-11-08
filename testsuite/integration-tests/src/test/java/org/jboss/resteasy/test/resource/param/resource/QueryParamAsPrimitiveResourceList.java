@@ -73,7 +73,7 @@ public class QueryParamAsPrimitiveResourceList implements QueryParamAsPrimitiveR
       Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v.get(2).doubleValue(), 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@QueryParam("char")List<Character> v) {

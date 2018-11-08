@@ -19,7 +19,7 @@ public class FileExtensionMappingResource {
       LOG.info(uriInfo.getRequestUri());
       return "plain: " + query;
    }
-   
+
    @GET
    @Produces("text/html")
    public String testHtml(@Context UriInfo uriInfo, @QueryParam("query") String query) {

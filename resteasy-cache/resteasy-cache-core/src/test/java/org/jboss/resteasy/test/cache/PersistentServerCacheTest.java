@@ -29,11 +29,11 @@ import org.junit.Test;
 
 /**
  * RESTEASY-1105
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1 $
- * 
+ *
  *  * Copyright Mar 25, 2015
  */
 public class PersistentServerCacheTest
@@ -41,7 +41,7 @@ public class PersistentServerCacheTest
    private static int count = 0;
    private static int plainCount = 0;
    private static int htmlCount = 0;
-   
+
    private static NettyJaxrsServer server;
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
@@ -113,13 +113,13 @@ public class PersistentServerCacheTest
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       contextParams.put("server.request.cache.infinispan.config.file", "infinispan.xml");
       contextParams.put("server.request.cache.infinispan.cache.name", "TestCache");
-      
+
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
       server.start();
       deployment = server.getDeployment();
-      
+
       dispatcher = deployment.getDispatcher();
       deployment.getProviderFactory().property("server.request.cache.infinispan.config.file", "infinispan.xml");
       deployment.getProviderFactory().property("server.request.cache.infinispan.cache.name", "TestCache");
@@ -136,7 +136,7 @@ public class PersistentServerCacheTest
       dispatcher = null;
       deployment = null;
    }
-   
+
    @Test
    public void testNoCacheHitValidation() throws Exception
    {

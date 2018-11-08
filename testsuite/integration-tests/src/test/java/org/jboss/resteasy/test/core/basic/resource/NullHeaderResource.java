@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 
 @Path("test")
 public class NullHeaderResource {
-   
+
    @GET
    public Response get(@Context HttpHeaders headers) {
       String clientHeader = headers.getRequestHeader("X-Client-Header").get(0);

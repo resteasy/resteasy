@@ -18,7 +18,7 @@ public class StreamRawObservableRxJava2Resource {
    public Observable<Byte> aByteDefault() {
       return Observable.fromArray((byte) 0, (byte) 1, (byte) 2);
    }
-   
+
    @GET
    @Path("byte/false")
    @Produces("application/octet-stream;x=y")
@@ -26,7 +26,7 @@ public class StreamRawObservableRxJava2Resource {
    public Observable<Byte> aByteFalse() {
       return Observable.fromArray((byte) 0, (byte) 1, (byte) 2);
    }
-   
+
    @GET
    @Path("byte/true")
    @Produces("application/octet-stream;x=y")
@@ -68,7 +68,7 @@ public class StreamRawObservableRxJava2Resource {
    public Observable<Character> aCharDefault() {
       return Observable.fromArray('a', 'b', 'c');
    }
-   
+
    @GET
    @Path("char/false")
    @Produces("text/plain;charset=UTF-8")
@@ -76,7 +76,7 @@ public class StreamRawObservableRxJava2Resource {
    public Observable<Character> aCharFalse() {
       return Observable.fromArray('a', 'b', 'c');
    }
-   
+
    @GET
    @Path("char/true")
    @Produces("text/plain;charset=UTF-8")
@@ -93,7 +93,7 @@ public class StreamRawObservableRxJava2Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Observable.fromArray(chars, chars, chars);
    }
-   
+
    @GET
    @Path("chars/false")
    @Produces("text/plain;charset=UTF-8")
@@ -102,7 +102,7 @@ public class StreamRawObservableRxJava2Resource {
       Character[] chars = new Character[] {'a', 'b', 'c'};
       return Observable.fromArray(chars, chars, chars);
    }
-   
+
    @GET
    @Path("chars/true")
    @Produces("text/plain;charset=UTF-8")

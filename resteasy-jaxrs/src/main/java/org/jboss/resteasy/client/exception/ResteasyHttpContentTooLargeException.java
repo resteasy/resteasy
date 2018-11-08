@@ -23,7 +23,7 @@ public class ResteasyHttpContentTooLargeException extends ResteasyHttpException
    {
       super(message, cause);
    }
-    
+
    public ResteasyHttpContentTooLargeException(Throwable cause)
    {
       super(cause);

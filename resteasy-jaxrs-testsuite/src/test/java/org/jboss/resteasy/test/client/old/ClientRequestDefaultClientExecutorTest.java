@@ -16,7 +16,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * Unit test for https://issues.jboss.org/browse/RESTEASY-623.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
@@ -27,11 +27,11 @@ public class ClientRequestDefaultClientExecutorTest extends BaseResourceTest
 
    @Path("/test")
    public interface TestService
-   {  
+   {
       @POST
       ClientResponse<String> post();
    }
-   
+
    @Path("/test")
    public static class TestServiceImpl
    {
@@ -62,7 +62,7 @@ public class ClientRequestDefaultClientExecutorTest extends BaseResourceTest
       Assert.assertTrue(request.getExecutor() instanceof TestClientExecutor);
       response.releaseConnection();
    }
-   
+
    public static class TestClientExecutor extends ApacheHttpClient4Executor
    {
    }

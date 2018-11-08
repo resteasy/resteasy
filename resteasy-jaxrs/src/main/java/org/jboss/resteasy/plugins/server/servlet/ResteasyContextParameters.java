@@ -38,7 +38,7 @@ public interface ResteasyContextParameters
    String RESTEASY_SECURE_RANDOM_MAX_USE = "resteasy.secure.random.max.use";
    String RESTEASY_ADD_CHARSET = "resteasy.add.charset";
    String RESTEASY_DISABLE_HTML_SANITIZER = "resteasy.disable.html.sanitizer";
-   
+
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";
@@ -49,6 +49,6 @@ public interface ResteasyContextParameters
    String RESTEASY_SERVLET_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
    String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
    String JAX_RS_2_0_REQUEST_MATCHING = "jaxrs.2.0.request.matching";
-   
+
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
 }

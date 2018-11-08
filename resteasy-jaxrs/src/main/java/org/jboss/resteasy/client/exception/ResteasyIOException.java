@@ -23,7 +23,7 @@ public class ResteasyIOException extends ResteasyClientException
    {
       super(message, cause);
    }
-    
+
    public ResteasyIOException(Throwable cause)
    {
       super(cause);

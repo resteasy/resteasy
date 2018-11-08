@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated See resteasy-undertow module.
  */
 @Deprecated
@@ -41,7 +41,7 @@ public class TJWSServletContainer
    {
       return start(bindPath, null, initParams, contextParams);
    }
-   
+
    public static void start(ResteasyDeployment deployment) throws Exception
    {
       LOG.info("[Embedded Container Start]");
@@ -58,7 +58,7 @@ public class TJWSServletContainer
    {
       return start(bindPath, domain, null, null);
    }
-   
+
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain, Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
@@ -82,7 +82,7 @@ public class TJWSServletContainer
       }
       if (applicationClass == null && initParams != null)
       {
-         applicationClass = initParams.get("javax.ws.rs.Application"); 
+         applicationClass = initParams.get("javax.ws.rs.Application");
       }
       if (applicationClass != null)
       {

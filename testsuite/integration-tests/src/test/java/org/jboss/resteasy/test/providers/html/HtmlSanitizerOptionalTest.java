@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * @tpSubChapter 
+ * @tpSubChapter
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-2034
 
@@ -34,7 +34,7 @@ public class HtmlSanitizerOptionalTest {
    private static final String ENABLED  = "_enabled";
    private static final String DISABLED = "_disabled";
    private static final String DEFAULT  = "_default";
-   
+
    static public  final String input = "<html &lt;\"abc\" 'xyz'&gt;/>";
    static private final String output = "&lt;html &amp;lt;&quot;abc&quot; &#x27;xyz&#x27;&amp;gt;&#x2F;&gt;";
 
@@ -51,7 +51,7 @@ public class HtmlSanitizerOptionalTest {
       war.addAsWebInfResource(HtmlSanitizerOptionalTest.class.getPackage(), "HtmlSanitizerOptional_Disabled_web.xml", "web.xml");
       return TestUtil.finishContainerPrepare(war, null, HtmlSanitizerOptionalResource.class);
    }
-   
+
    @Deployment(name = DEFAULT, order = 3)
    public static Archive<?> createTestArchive3() {
       WebArchive war = TestUtil.prepareArchive(HtmlSanitizerOptionalTest.class.getSimpleName() + DEFAULT);
@@ -62,7 +62,7 @@ public class HtmlSanitizerOptionalTest {
    private String generateURL(String path, String version) {
       return PortProviderUtil.generateURL(path, HtmlSanitizerOptionalTest.class.getSimpleName() + version);
    }
-   
+
    @Before
    public void init() {
       client = (ResteasyClient)ClientBuilder.newClient();
@@ -94,7 +94,7 @@ public class HtmlSanitizerOptionalTest {
       Response response = client.target(generateURL("/test", ENABLED)).request().get();
       Assert.assertEquals(output, response.readEntity(String.class));
    }
-   
+
    /**
     * @tpTestDetails Context parameter "resteasy.disable.html.sanitizer" is not set.
     * @tpPassCrit Input string should be sanitized.

@@ -6,7 +6,7 @@ import java.util.BitSet;
 
 /**
  * URL-encoding utility for each URL part according to the RFC specs
- * 
+ *
  * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">URI Generic Syntax</a>
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */

@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * or
  * {@literal @}GET
  * {@literal @}Wrapped public User[] getUsers();
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

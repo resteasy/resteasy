@@ -13,25 +13,25 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 @Path("/")
 public class MultipleEndpointsWarningResource {
-   
+
    @SuppressWarnings("unused")
    private static String MESSAGE_CODE = "RESTEASY002142";
    private LogHandler logHandler = new LogHandler();
-   
+
    @Path("setup")
    @GET
    public void setup()
    {
       LogManager.getLogManager().getLogger(LogMessages.LOGGER.getClass().getPackage().getName()).addHandler(logHandler);
    }
-   
+
    @Path("teardown")
    @GET
    public void teardown()
    {
       LogManager.getLogManager().getLogger(LogMessages.LOGGER.getClass().getPackage().getName()).removeHandler(logHandler);
    }
-   
+
    @Path("unique")
    @GET
    @Produces("text/plain")
@@ -71,7 +71,7 @@ public class MultipleEndpointsWarningResource {
    public int duplicate2() throws Exception {
       return logHandler.getMessagesLogged();
    }
-   
+
    @GET
    @Path("{id}")
    public int withId(@PathParam("id") Integer id) {

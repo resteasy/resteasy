@@ -22,13 +22,13 @@ public class AnotherSseResource
 
    @Context
    private Sse sse;
-   
+
    private volatile SseEventSink eventSink;
 
    private volatile SseBroadcaster sseBroadcaster;
-   
+
    private final SseResource sseResource;
-   
+
    public AnotherSseResource(SseResource sseResource) {
       this.sseResource = sseResource;
    }
@@ -54,7 +54,7 @@ public class AnotherSseResource
       this.sseResource.subscribe(sink);
       sseBroadcaster.register(sink);
    }
-   
+
    @POST
    @Path("/broadcast")
    public void broadcast(String message) throws IOException

@@ -57,7 +57,7 @@ public class SegmentNode
    protected List<MethodExpression> targets = new ArrayList<MethodExpression>();
    protected boolean requestMatchingSet = false;
    protected boolean isJaxrs_2_0_RequestMatching = false;
-   
+
    public SegmentNode(String segment)
    {
       this.segment = segment;
@@ -148,11 +148,11 @@ public class SegmentNode
                   if (matchedExpression == null)
                   {
                      matchedExpression = expression;
-                     matches.add(new Match(expression, matcher));   
+                     matches.add(new Match(expression, matcher));
                   }
                   else if (matchedExpression.compareTo(expression) == 0)
                   {
-                     matches.add(new Match(expression, matcher));  
+                     matches.add(new Match(expression, matcher));
                   }
                   else
                   {
@@ -346,7 +346,7 @@ public class SegmentNode
          }
          if (hasProduces)
          {
-            params.put(RESTEASY_SERVER_HAS_PRODUCES, "true"); 
+            params.put(RESTEASY_SERVER_HAS_PRODUCES, "true");
          }
          return new MediaType(produces.type, produces.subtype, params);
       }
@@ -451,14 +451,14 @@ public class SegmentNode
                allowHeaders.append(allow);
             }
             String allowHeaderValue = allowHeaders.toString();
-            
+
             if (httpMethod.equals("OPTIONS"))
             {
-            
+
                ResponseBuilder resBuilder =  Response.ok(allowHeaderValue.toString(),  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue.toString());
-               
+
                if (allowed.contains("PATCH"))
-               {  
+               {
                   Set<MediaType> patchAccepts = new HashSet<MediaType>(8);
                   for (Match match : matches)
                   {

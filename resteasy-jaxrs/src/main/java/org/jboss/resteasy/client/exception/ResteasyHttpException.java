@@ -23,7 +23,7 @@ public class ResteasyHttpException extends ResteasyClientException
    {
       super(message, cause);
    }
-    
+
    public ResteasyHttpException(Throwable cause)
    {
       super(cause);

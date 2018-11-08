@@ -84,7 +84,7 @@ public class RxTest
       latch.await();
       assertEquals("got it", value.get());
    }
-   
+
    @Test
    public void testSingleContext() throws Exception
    {
@@ -108,7 +108,7 @@ public class RxTest
       latch.await();
       assertArrayEquals(new String[] {"one", "two"}, data.toArray());
    }
-   
+
    @Test
    @SuppressWarnings({ "unchecked", "deprecation" })
    public void testObservableContext() throws Exception

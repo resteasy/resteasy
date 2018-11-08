@@ -4,7 +4,7 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -18,7 +18,7 @@ public interface Messages
 
    @Message(id = BASE + 0, value = "Failed to decode Yaml")
    String failedToDecodeYaml();
-   
+
    @Message(id = BASE + 5, value = "Failed to decode Yaml: %s")
    String failedToDecodeYamlMessage(String message);
 

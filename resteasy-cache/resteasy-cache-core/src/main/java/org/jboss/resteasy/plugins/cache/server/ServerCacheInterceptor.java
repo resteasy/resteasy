@@ -137,7 +137,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
          {
             etag = etagObject.toString();
          }
-         
+
          if (!cc.isPrivate() && !cc.isNoStore()) {
             cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
          }

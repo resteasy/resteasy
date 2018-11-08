@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 public class NoStreamRx2Test
 {
    private static ResteasyClient client;
-   
+
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName());

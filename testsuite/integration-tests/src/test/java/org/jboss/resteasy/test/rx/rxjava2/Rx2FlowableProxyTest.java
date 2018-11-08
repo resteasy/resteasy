@@ -46,10 +46,10 @@ import io.reactivex.Flowable;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
- * 
+ *
  * In these tests, the server uses Flowables to create results asynchronously and streams the elements
  * of the Flowables as they are created.
- * 
+ *
  * The client uses a proxy that calls an FlowableRxInvoker.
  */
 @RunWith(Arquillian.class)

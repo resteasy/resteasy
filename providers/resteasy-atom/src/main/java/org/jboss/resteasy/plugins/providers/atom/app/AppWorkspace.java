@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,14 @@ import java.util.List;
  * specification.  This specification assigns no meaning to Workspaces;
  * that is, a Workspace does not imply any specific processing
  * assumptions.
- * 
+ *
  * There is no requirement that a server support multiple Workspaces.
  * In addition, a Collection MAY appear in more than one Workspace.
- * 
+ *
  * Workspaces are server-defined groups of Collections.  The "app:
  * workspace" element contains zero or more app:collection elements
  * describing the Collections of Resources available for editing.
- * 
+ *
  * appWorkspace =
  *    element app:workspace {
  *       appCommonAttributes,
@@ -44,7 +44,7 @@ import java.util.List;
  *         {@literal &} appCollection*
  *         {@literal &} extensionSansTitleElement* )
  *    }
- * 
+ *
  * atomTitle = element atom:title { atomTextConstruct }
  *
  * </pre>
@@ -58,7 +58,7 @@ public class AppWorkspace extends AppCommonAttributes
    private static final long serialVersionUID = -2595744438212041512L;
    @XmlElement(namespace = "http://www.w3.org/2005/Atom", required = true)
    protected String title;
-    
+
    protected List<AppCollection> collection;
    @XmlAnyElement(lax = true)
    protected List<Object> any;

@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 /**
  * This annotation is used in conjunction with the {@link OneToMany} annotation to indicate the annotated field
  * is a relation to a table containing only two columns, key and value and therefore doesn't require a separate bean class.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

@@ -50,7 +50,7 @@ public class ClientRequestHeaders
 
    public void setLanguage(Locale language)
    {
-      //if this already set by HeaderParamProcessor 
+      //if this already set by HeaderParamProcessor
       if (this.getHeader(HttpHeaders.CONTENT_LANGUAGE) != null)
       {
          return;

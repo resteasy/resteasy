@@ -13,7 +13,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * An interface that is meant to wrap the raw {@link Templates} object and provide extra functionality such as reloading the stylesheet.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

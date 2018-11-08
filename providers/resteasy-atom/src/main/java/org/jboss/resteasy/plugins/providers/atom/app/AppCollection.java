@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,18 +30,18 @@ import java.util.List;
  * <p>
  * Per RFC5023:
  * </p>
- * 
+ *
  * <pre>
  * The "app:collection" element describes a Collection.  The app:
  *    collection element MUST contain one atom:title element.
- * 
+ *
  *    The app:collection element MAY contain any number of app:accept
  *    elements, indicating the types of representations accepted by the
  *    Collection.  The order of such elements is not significant.
- * 
+ *
  *    The app:collection element MAY contain any number of app:categories
  *    elements.
- * 
+ *
  *    appCollection =
  *       element app:collection {
  *          appCommonAttributes,
@@ -52,7 +52,7 @@ import java.util.List;
  *            {@literal &} extensionSansTitleElement* )
  *       }
  * </pre>
- * 
+ *
  * @author <a href="mailto:kurt.stam@gmail.com">Kurt Stam</a>
  * @version $Revision: 1 $
  */
@@ -72,9 +72,9 @@ public class AppCollection extends AppCommonAttributes {
    @XmlAnyElement(lax = true)
    protected List<Object> any;
 
- 
+
    public AppCollection() {}
-    
+
    public AppCollection(String href, String title) {
       super();
       this.href = href;

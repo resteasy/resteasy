@@ -23,7 +23,7 @@ public class ResteasyInvalidRedirectLocationException extends ResteasyRedirectEx
    {
       super(message, cause);
    }
-    
+
    public ResteasyInvalidRedirectLocationException(Throwable cause)
    {
       super(cause);

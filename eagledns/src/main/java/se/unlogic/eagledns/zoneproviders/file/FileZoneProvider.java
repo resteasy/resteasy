@@ -24,7 +24,7 @@ import java.util.Timer;
  * This class loads primary zones from zone files in the file system.
  * The zone files have to formated accordingly to RFC 1035 (http://tools.ietf.org/html/rfc1035)
  * and RFC 1034 (http://tools.ietf.org/html/rfc1034).
- * 
+ *
  * @author Robert "Unlogic" Olofsson
  * @author Michael Neale, Red Hat (JBoss division)
  *

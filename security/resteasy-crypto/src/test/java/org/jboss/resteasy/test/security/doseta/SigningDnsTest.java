@@ -65,8 +65,8 @@ public class SigningDnsTest
    public static void addPerRequestResource(Class<?> resource)
    {
       deployment.getRegistry().addPerRequestResource(resource);
-   }   
-   
+   }
+
    @BeforeClass
    public static void setup() throws Exception
    {
@@ -75,7 +75,7 @@ public class SigningDnsTest
       server.setRootResourcePath("/");
       server.start();
       deployment = server.getDeployment();
-      
+
       clientRepository = new DosetaKeyRepository();
       clientRepository.setKeyStorePath("test1.jks");
       clientRepository.setKeyStorePassword("password");

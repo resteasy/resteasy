@@ -6,7 +6,7 @@ import javax.ws.rs.Produces;
 
 /**
  * A PartialAnnotationResource.
- * 
+ *
  * @author pjurak
  */
 @Path("/test")

@@ -36,50 +36,50 @@ public class ProxyWithGenericReturnTypeJacksonTest
 {
    private static final Logger LOG = Logger.getLogger(ProxyWithGenericReturnTypeJacksonTest.class);
    protected ResteasyDeployment deployment;
-   
+
    @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
    @JsonSubTypes({
          @JsonSubTypes.Type(value = Type1.class, name = "type1"),
          @JsonSubTypes.Type(value = Type2.class, name = "type2")})
    public abstract static class AbstractParent {
-      
+
       protected long id;
-   
+
       public long getId() {
          return id;
       }
-   
+
       public void setId(long id) {
          this.id = id;
       }
    }
-   
+
    public static class Type1 extends AbstractParent {
-   
+
       protected String name;
-   
+
       public String getName() {
          return name;
       }
-   
+
       public void setName(String name) {
          this.name = name;
       }
    }
-   
+
    public static class Type2 extends AbstractParent {
-   
+
       protected String note;
-   
+
       public String getNote() {
          return note;
       }
-   
+
       public void setNote(String note) {
          this.note = note;
       }
    }
-   
+
    public interface TestSubResourceIntf
    {
       @GET
@@ -92,11 +92,11 @@ public class ProxyWithGenericReturnTypeJacksonTest
       @Produces("application/*+json")
       AbstractParent resourceMethodOne();
    }
-   
+
    public interface TestSubResourceSubIntf extends TestSubResourceIntf
    {
    }
-   
+
    static class TestInvocationHandler implements InvocationHandler
    {
       @Override
@@ -112,40 +112,40 @@ public class ProxyWithGenericReturnTypeJacksonTest
             first.setId(1);
             first.setName("MyName");
             l.add(first);
-            
+
             Type2 second = new Type2();
             second.setId(2);
             second.setNote("MyNote");
             l.add(second);
             return l;
          }
-         
+
          if ("resourceMethodOne".equals(method.getName())) {
             Type1 first = new Type1();
             first.setId(1);
             first.setName("MyName");
             return first;
          }
-         
+
          return null;
       }
    }
-   
+
    @Path("/")
    static public class TestResource
-   {  
+   {
       @Produces("text/plain")
       @Path("test")
       public TestSubResourceSubIntf resourceLocator()
       {
          Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                                               new Class[]{TestSubResourceSubIntf.class}, 
+                                               new Class[]{TestSubResourceSubIntf.class},
                                                new TestInvocationHandler());
-         
+
          return TestSubResourceSubIntf.class.cast(proxy);
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {

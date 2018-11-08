@@ -22,6 +22,6 @@ public interface ResteasyClientProxy
    Collection<ClientInvoker> getResteasyClientInvokers();
 
    void applyClientInvokerModifier(ClientInvokerModifier modifier);
-   
+
    <T> T as(Class<T> iface);
 }

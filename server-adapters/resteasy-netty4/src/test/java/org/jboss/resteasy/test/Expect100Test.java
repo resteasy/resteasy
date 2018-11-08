@@ -24,7 +24,7 @@ import org.junit.Test;
  * @version $Revision: 1 $
  */
 public class Expect100Test
-{  
+{
    @Path("/")
    public static class Resource
    {

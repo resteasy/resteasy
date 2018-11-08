@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
+ * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by
  * caching in the JAX-RS 2.0 compliant resteasy-client module.
- * 
+ *
  * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  * @see org.jboss.resteasy.client.jaxrs.cache.MapCache
  */

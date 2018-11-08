@@ -32,7 +32,7 @@ public class AsyncBenchTest extends ClientTestBase
    static Client client;
 
    static Client nioClient;
-   
+
    static final int ITERATIONS = 4000;
    static final int MAX_CONNECTIONS = 200;
 
@@ -76,7 +76,7 @@ public class AsyncBenchTest extends ClientTestBase
          System.clearProperty("http.maxConnections");
       }
    }
-   
+
    @Test
    public void testPost() throws Exception
    {
@@ -87,7 +87,7 @@ public class AsyncBenchTest extends ClientTestBase
       long end = System.currentTimeMillis() - start;
       LOG.info("TEST BLOCKING IO - " + ITERATIONS + " iterations took " + end + "ms");
    }
-   
+
    private void runCallback(WebTarget wt, String msg) throws Exception
    {
       CountDownLatch latch = new CountDownLatch(ITERATIONS);
@@ -102,14 +102,14 @@ public class AsyncBenchTest extends ClientTestBase
                Assert.assertEquals("post " + m, entity);
                latch.countDown();
             }
-   
+
             @Override
             public void failed(Throwable error)
             {
-               throw new RuntimeException(error);               
+               throw new RuntimeException(error);
             }
          });
       }
       latch.await();
-   }   
+   }
 }

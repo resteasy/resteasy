@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -31,7 +31,7 @@ public class FileExtensionMappingTest
 {
    private static final Logger LOG = Logger.getLogger(FileExtensionMappingTest.class);
    protected ResteasyDeployment deployment;
-   
+
    @Path("/test")
    static public class TestResource
    {
@@ -42,7 +42,7 @@ public class FileExtensionMappingTest
          LOG.info(uriInfo.getRequestUri());
          return "plain: " + query;
       }
-      
+
       @GET
       @Produces("text/html")
       public String testHtml(@Context UriInfo uriInfo, @QueryParam("query") String query)
@@ -51,7 +51,7 @@ public class FileExtensionMappingTest
          return "html: " + query;
       }
    }
-   
+
    @Provider
    static public class TestApplication extends Application
    {
@@ -62,7 +62,7 @@ public class FileExtensionMappingTest
          return classes;
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {
@@ -79,7 +79,7 @@ public class FileExtensionMappingTest
       EmbeddedContainer.stop();
       deployment = null;
    }
-   
+
    @Test
    public void testFileExtensionMappingPlain() throws Exception
    {
@@ -90,7 +90,7 @@ public class FileExtensionMappingTest
 //      Assert.assertEquals(200, response.getStatus());
 //      Assert.assertEquals("plain: whosOnFirst", response.getEntity());
    }
-   
+
 
    @Test
    public void testFileExtensionMappingHtml() throws Exception

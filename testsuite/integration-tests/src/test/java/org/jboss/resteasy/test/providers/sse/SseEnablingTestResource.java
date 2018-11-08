@@ -11,7 +11,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */

@@ -28,7 +28,7 @@ public class EJBCDIValidationStatelessResource {
    public void post(@Min(1) long id, String from, String to) {
       // nothing to do
    }
-   
+
    @GET
    @Path("set/{name}")
    public void get() {

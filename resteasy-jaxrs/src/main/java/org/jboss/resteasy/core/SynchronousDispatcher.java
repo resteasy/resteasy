@@ -52,7 +52,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
-   
+
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
@@ -130,7 +130,7 @@ public class SynchronousDispatcher implements Dispatcher
             preprocessor.preProcess(request);
          }
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
-         requestContext = new PreMatchContainerRequestContext(request, requestFilters, 
+         requestContext = new PreMatchContainerRequestContext(request, requestFilters,
             () -> {
                continuation.run();
                return null;
@@ -295,7 +295,7 @@ public class SynchronousDispatcher implements Dispatcher
       LogMessages.LOGGER.pathInfo(request.getUri().getPath());
       if (!request.isInitial())
       {
-         throw new InternalServerErrorException(Messages.MESSAGES.isNotInitialRequest(request.getUri().getPath())); 
+         throw new InternalServerErrorException(Messages.MESSAGES.isNotInitialRequest(request.getUri().getPath()));
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
@@ -494,7 +494,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
       }
    }
-   
+
    @Deprecated
    public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception)
    {

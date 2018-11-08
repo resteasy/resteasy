@@ -58,12 +58,12 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
       withInjector(injector);
       processor.processInjector(injector);
-      
+
       //load parent injectors
       while (injector.getParent() != null) {
          injector = injector.getParent();
          processor.processInjector(injector);
-      }      
+      }
       this.modules = modules;
       triggerAnnotatedMethods(PostConstruct.class);
    }

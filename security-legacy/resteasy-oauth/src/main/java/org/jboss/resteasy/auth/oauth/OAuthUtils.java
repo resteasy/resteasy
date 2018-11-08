@@ -226,7 +226,7 @@ public class OAuthUtils {
       OAuthAccessor accessor = new OAuthAccessor(_consumer);
       accessor.accessToken = accessToken.getToken();
       accessor.tokenSecret = accessToken.getSecret();
-        
+
       // validate the message
       validator.validateMessage(message, accessor, accessToken);
       if (!OAuthUtils.validateUriScopes(request.getRequestURL().toString(), accessToken.getScopes())) {
@@ -276,6 +276,6 @@ public class OAuthUtils {
             return true;
          }
       }
-      return false; 
+      return false;
    }
 }

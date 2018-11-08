@@ -24,7 +24,7 @@ public class SseEventInputImpl implements EventInput, Closeable
    private Annotation[] annotations;
 
    private MediaType mediaType;
-   
+
    private boolean textLike;
 
    private MultivaluedMap<String, String> httpHeaders;
@@ -34,9 +34,9 @@ public class SseEventInputImpl implements EventInput, Closeable
    private volatile boolean isClosed = false;
 
    private boolean lastFieldWasData;
-   
+
    private boolean escape = false;
-   
+
    private Providers providers;
 
    private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
@@ -82,14 +82,14 @@ public class SseEventInputImpl implements EventInput, Closeable
          try
          {
             close();
-            
+
          }
          catch (IOException e)
          {
             //TODO: add a log message
          }
          throw e1;
-        
+
       }
 
       final ByteArrayInputStream entityStream = new ByteArrayInputStream(chunk);
@@ -292,7 +292,7 @@ public class SseEventInputImpl implements EventInput, Closeable
          {
             return buffer.getEventPayLoad();
          }
-         //if it's emtpy 
+         //if it's emtpy
          if (boundary && buffer.size() == pos)
          {
             pos = 0;

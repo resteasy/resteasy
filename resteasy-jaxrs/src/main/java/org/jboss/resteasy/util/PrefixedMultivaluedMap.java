@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * {@link javax.ws.rs.core.MultivaluedMap} implementation that wraps another instance and only returns values that are prefixed with the given {@link #prefixWithDot}.
- * 
+ *
  * @param <V> The type of the values in the lists in the map.
  */
 public class PrefixedMultivaluedMap<V> extends DelegatingMultivaluedMap<String, V>

@@ -60,7 +60,7 @@ public class ClientResponseFilterExceptionTest {
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, ClientResponseFilterExceptionTest.class.getSimpleName());
    }
-   
+
    @Before
    public void before() {
       RequestConfig requestConfig = RequestConfig.custom()
@@ -133,7 +133,7 @@ public class ClientResponseFilterExceptionTest {
             (Single<String> single) -> single.subscribe(o -> {}, t -> incr(t))
             ));
    }
-      
+
    /**
     * @tpTestDetails test asynchronous call: Observable
     * @tpSince RESTEasy 3.6.1

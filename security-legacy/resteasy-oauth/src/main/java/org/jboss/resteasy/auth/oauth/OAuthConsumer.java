@@ -10,21 +10,21 @@ import java.util.Set;
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthConsumer {
-    
+
    private String key;
    private String secret;
    private String displayName;
    private String connectURI;
    private Set<String> scopes;
    private String[] permissions;
-    
+
    public OAuthConsumer(String key, String secret, String displayName, String connectURI) {
       this.key = key;
       this.secret =  secret;
       this.displayName = displayName;
       this.connectURI = connectURI;
    }
-    
+
    public OAuthConsumer(String key, String secret, String displayName, String connectURI,
                          String[] perms) {
       this.key = key;
@@ -33,7 +33,7 @@ public class OAuthConsumer {
       this.connectURI = connectURI;
       this.permissions = perms;
    }
-    
+
    /**
     * Returns the OAuth Consumer's key.
     * @return OAuth Consumer's key
@@ -57,7 +57,7 @@ public class OAuthConsumer {
    public String getDisplayName() {
       return displayName;
    }
-    
+
    /**
     * Returns the OAuth Consumer's connect URI.
     * If provided then it will be used to validate callback URLs which consumer
@@ -68,7 +68,7 @@ public class OAuthConsumer {
    public String getConnectURI() {
       return connectURI;
    }
-    
+
    /**
     * Returns the OAuth Consumer's scopes. These are the scopes the consumer
     * will be able to access directly.
@@ -76,18 +76,18 @@ public class OAuthConsumer {
     * @return OAuth Consumer's scopes
     */
    public String[] getScopes() {
-        
+
       synchronized (this) {
          return scopes != null ? scopes.toArray(new String[]{}) : null;
       }
    }
-    
+
    public void setScopes(String[] scopes) {
       synchronized (this) {
          this.scopes = new HashSet<String>(Arrays.asList(scopes));
       }
    }
-    
+
 
    public String[] getPermissions() {
       return permissions;

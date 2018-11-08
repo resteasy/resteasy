@@ -8,9 +8,9 @@ import java.sql.Timestamp;
 
 /**
  * This class is used to hold data secondary zones when they are loaded from ZoneProviders. The actual Zone field may be left blank if the ZoneProvider has no previously stored copy of the zoneBackup.
- * 
+ *
  * @author Robert "Unlogic" Olofsson
- * 
+ *
  */
 public class SecondaryZone {
 

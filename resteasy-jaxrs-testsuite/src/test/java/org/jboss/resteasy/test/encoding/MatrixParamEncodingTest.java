@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-729
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -30,7 +30,7 @@ public class MatrixParamEncodingTest
 {
    private static final Logger LOG = Logger.getLogger(MatrixParamEncodingTest.class);
    protected static ResteasyDeployment deployment;
-   
+
    @Path("/")
    static public class TestResource
    {
@@ -42,7 +42,7 @@ public class MatrixParamEncodingTest
          LOG.info("matrixParamDecoded() received: " + param);
          return param;
       }
-      
+
       @GET
       @Path("encoded")
       @Produces("text/plain")
@@ -52,14 +52,14 @@ public class MatrixParamEncodingTest
          return param;
       }
    }
-   
+
    @BeforeClass
    public static void setup() throws Exception
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
 
    @AfterClass
    public static void shutdown() throws Exception
@@ -80,7 +80,7 @@ public class MatrixParamEncodingTest
       Assert.assertEquals("ac/dc", response.getEntity());
       response.releaseConnection();
    }
-   
+
    @Test
    public void testMatrixParamRequestEncoded() throws Exception
    {
@@ -93,7 +93,7 @@ public class MatrixParamEncodingTest
       Assert.assertEquals("ac%2Fdc", response.getEntity());
       response.releaseConnection();
    }
-   
+
    @Test
    public void testMatrixParamUriBuilderDecoded() throws Exception
    {
@@ -107,7 +107,7 @@ public class MatrixParamEncodingTest
       Assert.assertEquals("ac/dc", response.getEntity());
       response.releaseConnection();
    }
-   
+
    @Test
    public void testMatrixParamUriBuilderEncoded() throws Exception
    {
