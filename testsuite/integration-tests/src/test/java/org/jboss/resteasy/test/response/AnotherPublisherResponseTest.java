@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class AnotherPublisherResponseTest {
-   private final static Logger logger = Logger.getLogger(AnotherPublisherResponseTest.class);
+   private static final Logger logger = Logger.getLogger(AnotherPublisherResponseTest.class);
 
    @Deployment
    public static Archive<?> deploy() {

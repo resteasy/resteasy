@@ -84,7 +84,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
 
    protected abstract MessageBodyReader resolveReader(MediaType mediaType);
 
-   abstract protected void throwReaderNotFound();
+   protected abstract void throwReaderNotFound();
 
    @Override
    public InputStream getInputStream()

@@ -20,7 +20,7 @@ public class ResteasyContextPropagatingOnObservableCreateAction implements BiFun
       return new ContextCapturerObserver<>(t2);
    }
 
-   final static class ContextCapturerObserver<T> implements Observer<T>
+   static final class ContextCapturerObserver<T> implements Observer<T>
    {
 
       final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();

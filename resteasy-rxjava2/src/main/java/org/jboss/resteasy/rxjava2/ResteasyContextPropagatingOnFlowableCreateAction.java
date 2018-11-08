@@ -20,7 +20,7 @@ public class ResteasyContextPropagatingOnFlowableCreateAction implements BiFunct
       return new ContextCapturerSubscriber<>(t2);
    }
 
-   final static class ContextCapturerSubscriber<T> implements Subscriber<T>
+   static final class ContextCapturerSubscriber<T> implements Subscriber<T>
    {
 
       final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();

@@ -612,7 +612,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    @Override
    // this is synchronized to protect against premature finalize called by the GC
-   protected synchronized final void finalize() throws Throwable
+   protected final synchronized void finalize() throws Throwable
    {
       releaseConnection();
    }

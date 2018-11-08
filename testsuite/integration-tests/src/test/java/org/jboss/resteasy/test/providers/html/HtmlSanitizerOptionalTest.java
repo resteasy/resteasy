@@ -35,8 +35,8 @@ public class HtmlSanitizerOptionalTest {
    private static final String DISABLED = "_disabled";
    private static final String DEFAULT  = "_default";
 
-   static public  final String input = "<html &lt;\"abc\" 'xyz'&gt;/>";
-   static private final String output = "&lt;html &amp;lt;&quot;abc&quot; &#x27;xyz&#x27;&amp;gt;&#x2F;&gt;";
+   public static final String input = "<html &lt;\"abc\" 'xyz'&gt;/>";
+   private static final String output = "&lt;html &amp;lt;&quot;abc&quot; &#x27;xyz&#x27;&amp;gt;&#x2F;&gt;";
 
    @Deployment(name = ENABLED, order = 1)
    public static Archive<?> createTestArchive1() {

@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 public class SseTest
 {
 
-   private final static Logger logger = Logger.getLogger(SseTest.class);
+   private static final Logger logger = Logger.getLogger(SseTest.class);
 
    @Deployment
    public static Archive<?> deploy()

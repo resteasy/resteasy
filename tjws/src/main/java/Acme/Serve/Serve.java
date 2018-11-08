@@ -1654,7 +1654,7 @@ public class Serve implements ServletContext, Serializable
       }
    }
 
-   final static class Identification
+   static final class Identification
    {
       public static final String serverName = "D. Rogatkin's TJWS based on Acme.Serve";
 
@@ -1742,33 +1742,33 @@ public class Serve implements ServletContext, Serializable
 
       private String scheme;
 
-      public final static String WWWFORMURLENCODE = "application/x-www-form-urlencoded";
+      public static final String WWWFORMURLENCODE = "application/x-www-form-urlencoded";
 
-      public final static String TRANSFERENCODING = "transfer-encoding".toLowerCase();
+      public static final String TRANSFERENCODING = "transfer-encoding".toLowerCase();
 
-      public final static String KEEPALIVE = "Keep-Alive".toLowerCase();
+      public static final String KEEPALIVE = "Keep-Alive".toLowerCase();
 
-      public final static String CONTENT_ENCODING = "Content-Encoding".toLowerCase();
+      public static final String CONTENT_ENCODING = "Content-Encoding".toLowerCase();
 
-      public final static String CONNECTION = "Connection".toLowerCase();
+      public static final String CONNECTION = "Connection".toLowerCase();
 
-      public final static String CHUNKED = "chunked";
+      public static final String CHUNKED = "chunked";
 
-      public final static String CONTENTLENGTH = "Content-Length".toLowerCase();
+      public static final String CONTENTLENGTH = "Content-Length".toLowerCase();
 
-      public final static String CONTENTTYPE = "Content-Type".toLowerCase();
+      public static final String CONTENTTYPE = "Content-Type".toLowerCase();
 
-      public final static String SETCOOKIE = "Set-Cookie".toLowerCase();
+      public static final String SETCOOKIE = "Set-Cookie".toLowerCase();
 
-      public final static String HOST = "Host".toLowerCase();
+      public static final String HOST = "Host".toLowerCase();
 
-      public final static String COOKIE = "Cookie".toLowerCase();
+      public static final String COOKIE = "Cookie".toLowerCase();
 
-      public final static String ACCEPT_LANGUAGE = "Accept-Language".toLowerCase();
+      public static final String ACCEPT_LANGUAGE = "Accept-Language".toLowerCase();
 
-      public final static String SESSION_COOKIE_NAME = "JSESSIONID";
+      public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-      public final static String SESSION_URL_NAME = ";$sessionid$"; // ;jsessionid=
+      public static final String SESSION_URL_NAME = ";$sessionid$"; // ;jsessionid=
 
       private static final Map EMPTYHASHTABLE = new Hashtable();
 
@@ -4357,9 +4357,9 @@ public class Serve implements ServletContext, Serializable
 
    public static class ServeInputStream extends ServletInputStream
    {
-      private final static Logger LOG = Logger.getLogger(ServeInputStream.class.getName());
+      private static final Logger LOG = Logger.getLogger(ServeInputStream.class.getName());
 
-      private final static boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
+      private static final boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
 
       /**
        * The actual input stream (buffered).
@@ -4760,7 +4760,7 @@ public class Serve implements ServletContext, Serializable
 
       private static final Logger LOG = Logger.getLogger(ServeOutputStream.class.getName());
 
-      private final static boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
+      private static final boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
 
       private boolean chunked;
 

@@ -26,7 +26,7 @@ import java.util.Set;
 @HandlesTypes({Application.class, Path.class, Provider.class})
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
-   final static Set<String> ignoredPackages = new HashSet<String>();
+   static final Set<String> ignoredPackages = new HashSet<String>();
 
    static
    {

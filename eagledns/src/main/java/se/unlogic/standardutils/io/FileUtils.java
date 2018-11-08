@@ -34,7 +34,7 @@ public class FileUtils {
       return string.replaceAll("[^0-9a-�A-�-+. ()-+!@�&%$�=�]", "_");
    }
 
-   public final static byte[] getRawBytes(File f) throws IOException {
+   public static final byte[] getRawBytes(File f) throws IOException {
       FileInputStream fin = new FileInputStream(f);
       byte[] buffer = new byte[(int) f.length()];
       fin.read(buffer);

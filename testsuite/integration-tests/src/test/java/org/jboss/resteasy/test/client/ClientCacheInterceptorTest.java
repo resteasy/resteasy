@@ -99,13 +99,13 @@ public class ClientCacheInterceptorTest
    }
 
    private static Client client;
-   public final static String XML_WITH_CHARSET = "application/xml;charset=UTF-8";
-   public final static String JSON_WITH_CHARSET = "application/json;charset=UTF-8";
-   public final static String XML_NO_CHARSET = "application/xml";
-   public final static String JSON_NO_CHARSET = "application/json";
-   public final static String TEXT_WILDCARD = "text/*";
-   public final static String TEXT_XML_WITH_CHARSET = "text/xml;charset=UTF-8";
-   public final static String TEXT_XML_NO_CHARSET = "text/xml";
+   public static final String XML_WITH_CHARSET = "application/xml;charset=UTF-8";
+   public static final String JSON_WITH_CHARSET = "application/json;charset=UTF-8";
+   public static final String XML_NO_CHARSET = "application/xml";
+   public static final String JSON_NO_CHARSET = "application/json";
+   public static final String TEXT_WILDCARD = "text/*";
+   public static final String TEXT_XML_WITH_CHARSET = "text/xml;charset=UTF-8";
+   public static final String TEXT_XML_NO_CHARSET = "text/xml";
    private static final String DEP = "ClientCacheInterceptorTest";
 
    @Deployment

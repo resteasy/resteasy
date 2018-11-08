@@ -33,7 +33,7 @@ public class FileExtensionMappingTest
    protected ResteasyDeployment deployment;
 
    @Path("/test")
-   static public class TestResource
+   public static class TestResource
    {
       @GET
       @Produces("text/plain")
@@ -53,7 +53,7 @@ public class FileExtensionMappingTest
    }
 
    @Provider
-   static public class TestApplication extends Application
+   public static class TestApplication extends Application
    {
       public Set<Class<?>> getClasses()
       {

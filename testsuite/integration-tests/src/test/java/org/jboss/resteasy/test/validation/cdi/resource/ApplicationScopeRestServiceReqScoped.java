@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 @RequestScoped
 public class ApplicationScopeRestServiceReqScoped implements ApplicationScopeIRestServiceReqScoped {
 
-   private final static Logger logger = Logger.getLogger(ApplicationScopeRestServiceReqScoped.class);
+   private static final Logger logger = Logger.getLogger(ApplicationScopeRestServiceReqScoped.class);
 
    public Response sendDto(ApplicationScopeMyDto myDto) {
       if (logger.isDebugEnabled())

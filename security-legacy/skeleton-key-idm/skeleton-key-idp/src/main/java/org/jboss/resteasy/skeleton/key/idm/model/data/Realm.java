@@ -26,8 +26,8 @@ public class Realm implements Serializable
    protected boolean cookieLoginAllowed;
    protected String publicKeyPem;
    protected String privateKeyPem;
-   protected volatile transient PublicKey publicKey;
-   protected volatile transient PrivateKey privateKey;
+   protected transient volatile PublicKey publicKey;
+   protected transient volatile PrivateKey privateKey;
 
    public String getId()
    {

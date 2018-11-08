@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class BeanStringPopulatorRegistery {
 
-   private final static HashMap<Class<?>, BeanStringPopulator<?>> TYPE_POPULATORS = new HashMap<Class<?>, BeanStringPopulator<?>>();
+   private static final HashMap<Class<?>, BeanStringPopulator<?>> TYPE_POPULATORS = new HashMap<Class<?>, BeanStringPopulator<?>>();
 
    static{
       addTypePopulator(new UUIDPopulator());

@@ -35,42 +35,42 @@ public class OAuthServlet extends HttpServlet {
    /**
     * Servlet context parameter name for the Consumer Registration URL
     */
-   final static String PARAM_CONSUMER_REGISTRATION_URL = "oauth.provider.consumer.registration";
+   static final String PARAM_CONSUMER_REGISTRATION_URL = "oauth.provider.consumer.registration";
 
    /**
     * Servlet context parameter name for the Request Token distribution URL
     */
-   final static String PARAM_REQUEST_TOKEN_URL = "oauth.provider.tokens.request";
+   static final String PARAM_REQUEST_TOKEN_URL = "oauth.provider.tokens.request";
 
    /**
     * Servlet context parameter name for the Request Token authorization URL
     */
-   final static String PARAM_TOKEN_AUTHORIZATION_URL = "oauth.provider.tokens.authorization";
+   static final String PARAM_TOKEN_AUTHORIZATION_URL = "oauth.provider.tokens.authorization";
 
    /**
     * Servlet context parameter name for the Request Token echange URL
     */
-   final static String PARAM_ACCESS_TOKEN_URL = "oauth.provider.tokens.access";
+   static final String PARAM_ACCESS_TOKEN_URL = "oauth.provider.tokens.access";
 
    /**
     * Servlet context parameter name for the OAuthProvider class name
     */
-   final static String PARAM_PROVIDER_CLASS = "oauth.provider.provider-class";
+   static final String PARAM_PROVIDER_CLASS = "oauth.provider.provider-class";
 
    /**
     * Relative path for the token authorization confirmation URL
     */
-   final static String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer/scopes";
+   static final String CONSUMER_SCOPES_REGISTRATION_URL = "/consumer/scopes";
 
    /**
     * Relative path for the token authorization confirmation URL
     */
-   final static String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
+   static final String TOKEN_AUTHORIZATION_CONFIRM_URL = "/authorization/confirm";
 
    /**
     * Default token authorization HTML resource
     */
-   final static String DEFAULT_TOKEN_HTML_RESOURCE = "/token_authorization.jsp";
+   static final String DEFAULT_TOKEN_HTML_RESOURCE = "/token_authorization.jsp";
 
    private String requestTokenURL, accessTokenURL, consumerRegistrationURL, authorizationURL;
    private OAuthProvider provider;

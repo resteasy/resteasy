@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseEventSourceTest {
-   private final static Logger logger = Logger.getLogger(SseEventSourceTest.class);
+   private static final Logger logger = Logger.getLogger(SseEventSourceTest.class);
 
    @Deployment
    public static Archive<?> deploy() {

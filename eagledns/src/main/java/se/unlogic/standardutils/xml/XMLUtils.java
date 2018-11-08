@@ -40,7 +40,7 @@ public class XMLUtils {
 
    private static DocumentBuilder documentBuilder;
    private static DocumentBuilder namespaceAwareDocumentBuilder;
-   private final static Logger logger = Logger.getLogger(XMLUtils.class);
+   private static final Logger logger = Logger.getLogger(XMLUtils.class);
 
    static {
       try {

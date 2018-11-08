@@ -24,11 +24,11 @@ public class HTTPClientVersionCheck {
       newHTTPClientAvailable = res;
    }
 
-   static public boolean isUseOldHTTPClient () {
+   public static boolean isUseOldHTTPClient () {
       return useOldHTTPClient;
    }
 
-   static public boolean isNewHTTPClientAvailable() {
+   public static boolean isNewHTTPClientAvailable() {
       return newHTTPClientAvailable;
    }
 }

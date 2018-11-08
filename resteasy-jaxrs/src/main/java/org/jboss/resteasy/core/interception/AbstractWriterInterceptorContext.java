@@ -149,7 +149,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    }
 
-   abstract protected MessageBodyWriter resolveWriter();
+   protected abstract MessageBodyWriter resolveWriter();
 
    abstract void throwWriterNotFoundException();
 }

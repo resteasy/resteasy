@@ -36,7 +36,7 @@ public class EntityBufferingInFileTest
    protected ResteasyDeployment deployment;
 
    @Path("/")
-   static public class TestResource
+   public static class TestResource
    {
       @POST
       @Produces("text/plain")

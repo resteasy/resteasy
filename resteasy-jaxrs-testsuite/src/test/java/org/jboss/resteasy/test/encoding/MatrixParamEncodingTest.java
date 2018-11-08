@@ -32,7 +32,7 @@ public class MatrixParamEncodingTest
    protected static ResteasyDeployment deployment;
 
    @Path("/")
-   static public class TestResource
+   public static class TestResource
    {
       @GET
       @Path("decoded")

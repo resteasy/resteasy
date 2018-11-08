@@ -1608,7 +1608,7 @@ public class QueryParamAsPrimitiveTest
       String doGetDouble(@QueryParam("double") double[] v);
    }
 
-   static private void shutdown(ClientRequest request) throws Exception
+   private static void shutdown(ClientRequest request) throws Exception
    {
 //      request.getExecutor().close();
       ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();

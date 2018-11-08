@@ -315,7 +315,7 @@ public class ResourceLocatorTest
       String post(String s);
    }
 
-   public static abstract class AbstractAnnotationFreeResouce implements RootInterface
+   public abstract static class AbstractAnnotationFreeResouce implements RootInterface
    {
       public String get()
       {
