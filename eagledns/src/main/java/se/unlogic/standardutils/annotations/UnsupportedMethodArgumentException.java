@@ -12,7 +12,7 @@ public class UnsupportedMethodArgumentException extends RuntimeException {
    private final Class<? extends Annotation> annotation;
    private final Method method;
 
-   public UnsupportedMethodArgumentException(String message, Method method, Class<? extends Annotation> annotation, Class<?> beanClass) {
+   public UnsupportedMethodArgumentException(final String message, final Method method, final Class<? extends Annotation> annotation, final Class<?> beanClass) {
       super(message);
 
       this.beanClass = beanClass;

@@ -24,7 +24,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    protected Object responseLock = new Object();
    protected ResteasyAsynchronousResponse asynchronousResponse;
 
-   public SynchronousExecutionContext(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
+   public SynchronousExecutionContext(final SynchronousDispatcher dispatcher, final HttpRequest request, final HttpResponse response)
    {
       super(dispatcher, request, response);
    }
@@ -66,7 +66,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
    {
       protected boolean cancelled;
 
-      public SynchronousAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
+      public SynchronousAsynchronousResponse(final SynchronousDispatcher dispatcher, final HttpRequest request, final HttpResponse response)
       {
          super(dispatcher, request, response);
       }

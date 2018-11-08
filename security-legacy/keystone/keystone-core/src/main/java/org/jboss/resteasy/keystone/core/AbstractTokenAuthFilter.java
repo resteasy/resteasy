@@ -28,7 +28,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
 {
    protected X509Certificate certificate;
 
-   protected AbstractTokenAuthFilter(X509Certificate certificate)
+   protected AbstractTokenAuthFilter(final X509Certificate certificate)
    {
       this.certificate = certificate;
    }

@@ -17,7 +17,7 @@ public class UnsupportedFieldTypeException extends RuntimeException {
    private final Class<? extends Annotation> annotation;
    private final Field field;
 
-   public UnsupportedFieldTypeException(String message, Field field, Class<? extends Annotation> annotation, Class<?> beanClass) {
+   public UnsupportedFieldTypeException(final String message, final Field field, final Class<? extends Annotation> annotation, final Class<?> beanClass) {
       super(message);
 
       this.beanClass = beanClass;

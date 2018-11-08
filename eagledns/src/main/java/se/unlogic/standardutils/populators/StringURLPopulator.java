@@ -13,11 +13,11 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class StringURLPopulator extends BaseStringPopulator<String> implements BeanStringPopulator<String> {
 
-   public StringURLPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public StringURLPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public StringURLPopulator(String populatorID) {
+   public StringURLPopulator(final String populatorID) {
       super(populatorID);
    }
 

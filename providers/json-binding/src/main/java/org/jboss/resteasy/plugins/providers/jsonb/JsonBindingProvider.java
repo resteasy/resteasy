@@ -94,7 +94,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       boolean read = false;
       boolean empty = false;
 
-      EmptyCheckInputStream(InputStream proxy)
+      EmptyCheckInputStream(final InputStream proxy)
       {
          super(proxy);
       }

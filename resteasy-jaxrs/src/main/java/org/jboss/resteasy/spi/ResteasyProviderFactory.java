@@ -136,21 +136,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
       public int priority = Priorities.USER;
 
-      protected SortedKey(Class<?> intf, T reader, Class<?> readerClass, int priority, boolean isBuiltin)
+      protected SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final int priority, final boolean isBuiltin)
       {
          this(intf, reader, readerClass);
          this.priority = priority;
          this.isBuiltin = isBuiltin;
       }
 
-      protected SortedKey(Class<?> intf, T reader, Class<?> readerClass, boolean isBuiltin)
+      protected SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final boolean isBuiltin)
       {
          this(intf, reader, readerClass);
          this.isBuiltin = isBuiltin;
       }
 
 
-      protected SortedKey(Class<?> intf, T reader, Class<?> readerClass)
+      protected SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass)
       {
          this.readerClass = readerClass;
          this.obj = reader;
@@ -194,17 +194,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected static class ExtSortedKey<T> extends SortedKey<T>
    {
-      protected ExtSortedKey(Class<?> intf, T reader, Class<?> readerClass, int priority, boolean isBuiltin)
+      protected ExtSortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final int priority, final boolean isBuiltin)
       {
          super(intf, reader, readerClass, priority, isBuiltin);
       }
 
-      protected ExtSortedKey(Class<?> intf, T reader, Class<?> readerClass, boolean isBuiltin)
+      protected ExtSortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final boolean isBuiltin)
       {
          super(intf, reader, readerClass, isBuiltin);
       }
 
-      protected ExtSortedKey(Class<?> intf, T reader, Class<?> readerClass)
+      protected ExtSortedKey(final Class<?> intf, final T reader, final Class<?> readerClass)
       {
          super(intf, reader, readerClass);
       }
@@ -299,7 +299,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     *
     * @param parent provider factory
     */
-   public ResteasyProviderFactory(ResteasyProviderFactory parent)
+   public ResteasyProviderFactory(final ResteasyProviderFactory parent)
    {
       this(parent, false);
    }
@@ -310,7 +310,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param parent provider factory
     * @param local local
     */
-   public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
+   public ResteasyProviderFactory(final ResteasyProviderFactory parent, final boolean local)
    {
       if (local || parent == null)
       {

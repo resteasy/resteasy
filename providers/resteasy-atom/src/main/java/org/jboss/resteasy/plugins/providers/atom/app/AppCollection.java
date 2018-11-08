@@ -75,7 +75,7 @@ public class AppCollection extends AppCommonAttributes {
 
    public AppCollection() {}
 
-   public AppCollection(String href, String title) {
+   public AppCollection(final String href, final String title) {
       super();
       this.href = href;
       this.title = title;

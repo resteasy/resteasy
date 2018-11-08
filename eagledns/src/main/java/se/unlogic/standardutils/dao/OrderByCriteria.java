@@ -14,7 +14,7 @@ public class OrderByCriteria<T> {
    private Order order;
    private Column<T, ?> column;
 
-   public OrderByCriteria(Order order, Column<T, ?> column) {
+   public OrderByCriteria(final Order order, final Column<T, ?> column) {
 
       super();
       this.order = order;

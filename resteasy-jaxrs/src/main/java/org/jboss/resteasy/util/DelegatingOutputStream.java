@@ -15,7 +15,7 @@ public class DelegatingOutputStream extends OutputStream
    {
    }
 
-   public DelegatingOutputStream(OutputStream delegate)
+   public DelegatingOutputStream(final OutputStream delegate)
    {
       this.delegate = delegate;
    }

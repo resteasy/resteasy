@@ -66,7 +66,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private boolean suppressPath;
    private boolean cdiActive;
 
-   public GeneralValidatorImpl(ValidatorFactory validatorFactory, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
+   public GeneralValidatorImpl(final ValidatorFactory validatorFactory, final boolean isExecutableValidationEnabled, final Set<ExecutableType> defaultValidatedExecutableTypes)
    {
       this.validatorFactory = validatorFactory;
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
@@ -637,7 +637,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       private final Method method1;
       private final Method method2;
 
-      private SimpleMethodFilter(Method method1, Method method2)
+      private SimpleMethodFilter(final Method method1, final Method method2)
       {
          this.method1 = method1;
          this.method2 = method2;

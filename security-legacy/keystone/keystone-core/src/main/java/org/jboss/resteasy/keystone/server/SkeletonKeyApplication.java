@@ -44,7 +44,7 @@ public class SkeletonKeyApplication
    protected UsersService users;
    protected TokenService tokenService;
    protected Cache cache;
-   public SkeletonKeyApplication(@Context Configurable confgurable)
+   public SkeletonKeyApplication(final @Context Configurable confgurable)
    {
       this.configurable = confgurable;
       String exp = getConfigProperty("skeleton.key.token.expiration");

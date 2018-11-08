@@ -31,7 +31,7 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       private Class[] classes;
       private int hashCode;
 
-      public CacheKey(Class[] classes)
+      public CacheKey(final Class[] classes)
       {
          this.classes = classes;
          for (Class clazz : classes) hashCode += clazz.hashCode();

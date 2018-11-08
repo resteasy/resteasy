@@ -10,7 +10,7 @@ public class NotImplementedYetException extends RuntimeException
    {
    }
 
-   public NotImplementedYetException(String s)
+   public NotImplementedYetException(final String s)
    {
       super(s);
    }

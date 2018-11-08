@@ -23,19 +23,19 @@ public class ExtendedThreadPoolExecutor extends ThreadPoolExecutor {
    private final Condition unpaused = pauseLock.newCondition();
    private final ConcurrentLinkedQueue<ThreadPoolListener> listeners = new ConcurrentLinkedQueue<ThreadPoolListener>();
 
-   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
+   public ExtendedThreadPoolExecutor(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit,   final BlockingQueue<Runnable> workQueue, final RejectedExecutionHandler handler) {
       super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
    }
 
-   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,   RejectedExecutionHandler handler) {
+   public ExtendedThreadPoolExecutor(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit,   final BlockingQueue<Runnable> workQueue, final ThreadFactory threadFactory,   final RejectedExecutionHandler handler) {
       super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
    }
 
-   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,   BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+   public ExtendedThreadPoolExecutor(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit,   final BlockingQueue<Runnable> workQueue, final ThreadFactory threadFactory) {
       super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
    }
 
-   public ExtendedThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+   public ExtendedThreadPoolExecutor(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit, final BlockingQueue<Runnable> workQueue) {
       super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
    }
 

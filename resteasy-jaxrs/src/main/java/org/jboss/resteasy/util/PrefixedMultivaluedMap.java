@@ -20,7 +20,7 @@ public class PrefixedMultivaluedMap<V> extends DelegatingMultivaluedMap<String, 
     * @param prefix prefix
     * @param delegate delegate map
     */
-   public PrefixedMultivaluedMap(String prefix, MultivaluedMap<String, V> delegate)
+   public PrefixedMultivaluedMap(final String prefix, final MultivaluedMap<String, V> delegate)
    {
       super(delegate);
       this.prefixWithDot = prefix + ".";

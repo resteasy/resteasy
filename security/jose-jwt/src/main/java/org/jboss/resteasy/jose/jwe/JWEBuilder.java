@@ -41,7 +41,7 @@ public class JWEBuilder
       this(ResteasyProviderFactory.getInstance());
    }
 
-   public JWEBuilder(Providers providers)
+   public JWEBuilder(final Providers providers)
    {
       this.providers = providers;
    }

@@ -14,17 +14,17 @@ public class ResteasyURIException extends ResteasyHttpException
    {
    }
 
-   public ResteasyURIException(String message)
+   public ResteasyURIException(final String message)
    {
       super(message);
    }
 
-   public ResteasyURIException(String message, Throwable cause)
+   public ResteasyURIException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyURIException(Throwable cause)
+   public ResteasyURIException(final Throwable cause)
    {
       super(cause);
    }

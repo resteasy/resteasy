@@ -17,7 +17,7 @@ public class ContainerRequestFilterRegistry extends JaxrsInterceptorRegistry<Con
 {
    protected LegacyPrecedence precedence;
 
-   public ContainerRequestFilterRegistry(ResteasyProviderFactory providerFactory, LegacyPrecedence precedence)
+   public ContainerRequestFilterRegistry(final ResteasyProviderFactory providerFactory, final LegacyPrecedence precedence)
    {
       super(providerFactory, ContainerRequestFilter.class);
       this.precedence = precedence;
@@ -34,7 +34,7 @@ public class ContainerRequestFilterRegistry extends JaxrsInterceptorRegistry<Con
    {
       protected final PreProcessInterceptor interceptor;
 
-      private ContainerRequestFilterFacade(PreProcessInterceptor interceptor)
+      private ContainerRequestFilterFacade(final PreProcessInterceptor interceptor)
       {
          this.interceptor = interceptor;
       }

@@ -29,12 +29,12 @@ public class MultivaluedTreeMap<K, V> implements MultivaluedMap<K, V>, Serializa
     * @param keyComparator key comparator
     */
 
-   public MultivaluedTreeMap(Comparator<K> keyComparator)
+   public MultivaluedTreeMap(final Comparator<K> keyComparator)
    {
       map = new TreeMap<K, List<V>>(keyComparator);
    }
 
-   public MultivaluedTreeMap(Map<K, V> map)
+   public MultivaluedTreeMap(final Map<K, V> map)
    {
       this();
       for (K key : map.keySet())

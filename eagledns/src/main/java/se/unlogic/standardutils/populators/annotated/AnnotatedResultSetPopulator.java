@@ -39,16 +39,16 @@ public class AnnotatedResultSetPopulator<T> implements BeanResultSetPopulator<T>
    protected Class<T> beanClass;
    protected HashMap<Field,ResultSetField> resultSetFieldMap = new HashMap<Field,ResultSetField>();
 
-   public AnnotatedResultSetPopulator(Class<T> beanClass) throws UnsupportedFieldTypeException{
+   public AnnotatedResultSetPopulator(final Class<T> beanClass) throws UnsupportedFieldTypeException{
       this(beanClass, (List<BeanStringPopulator<?>>)null);
    }
 
-   public AnnotatedResultSetPopulator(Class<T> beanClass, BeanStringPopulator<?>... populators) throws UnsupportedFieldTypeException{
+   public AnnotatedResultSetPopulator(final Class<T> beanClass, final BeanStringPopulator<?>... populators) throws UnsupportedFieldTypeException{
       this(beanClass,Arrays.asList(populators));
    }
 
    @SuppressWarnings("unchecked")
-   public AnnotatedResultSetPopulator(Class<T> beanClass, List<? extends BeanStringPopulator<?>> populators) throws UnsupportedFieldTypeException{
+   public AnnotatedResultSetPopulator(final Class<T> beanClass, final List<? extends BeanStringPopulator<?>> populators) throws UnsupportedFieldTypeException{
 
       this.beanClass = beanClass;
 

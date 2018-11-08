@@ -48,12 +48,12 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    protected Map<String, Object> attributes = new HashMap<String, Object>();
 
 
-   public ClientInvoker(URI baseUri, Class declaring, Method method, ResteasyProviderFactory providerFactory, ClientExecutor executor, EntityExtractorFactory extractorFactory)
+   public ClientInvoker(final URI baseUri, final Class declaring, final Method method, final ResteasyProviderFactory providerFactory, final ClientExecutor executor, final EntityExtractorFactory extractorFactory)
    {
       this(baseUri, declaring, method, new ProxyConfig(null, executor, providerFactory, extractorFactory, null, null, null));
    }
 
-   public ClientInvoker(URI baseUri, Class declaring, Method method, ProxyConfig config)
+   public ClientInvoker(final URI baseUri, final Class declaring, final Method method, final ProxyConfig config)
    {
       this.declaring = declaring;
       this.method = method;

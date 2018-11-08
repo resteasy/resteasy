@@ -114,7 +114,7 @@ public class SseEventSourceImpl implements SseEventSource
       this(target, null, RECONNECT_DEFAULT, open, null);
    }
 
-   private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean open, ScheduledExecutorService executor)
+   private SseEventSourceImpl(final WebTarget target, final String name, final long reconnectDelay, final boolean open, final ScheduledExecutorService executor)
    {
       if (target == null)
       {
@@ -286,7 +286,7 @@ public class SseEventSourceImpl implements SseEventSource
       private Entity<?> entity;
       private MediaType[] mediaTypes;
 
-      EventHandler(final long reconnectDelay, final String lastEventId, String verb, Entity<?> entity, MediaType... mediaTypes)
+      EventHandler(final long reconnectDelay, final String lastEventId, final String verb, final Entity<?> entity, final MediaType... mediaTypes)
       {
          this.connectedLatch = new CountDownLatch(1);
          this.reconnectDelay = reconnectDelay;

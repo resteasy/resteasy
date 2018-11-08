@@ -18,7 +18,7 @@ class AuthenticatedHttpServletRequest extends PatchedHttpServletRequest
    private Principal user;
    private String authType;
 
-   AuthenticatedHttpServletRequest(HttpServletRequest delegate, SecurityDomain domain, Principal user, String authType, String contextPath)
+   AuthenticatedHttpServletRequest(final HttpServletRequest delegate, final SecurityDomain domain, final Principal user, final String authType, final String contextPath)
    {
       super(delegate, contextPath);
       this.domain = domain;

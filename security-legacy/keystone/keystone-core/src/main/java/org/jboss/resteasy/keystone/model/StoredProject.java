@@ -20,7 +20,7 @@ public class StoredProject implements Serializable
    {
    }
 
-   public StoredProject(Project project)
+   public StoredProject(final Project project)
    {
       this.project = project;
    }

@@ -531,7 +531,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       private Exception e;
 
-      TestClientExecutor(Exception e)
+      TestClientExecutor(final Exception e)
       {
          this.e = e;
          if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
@@ -565,7 +565,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       private static final long serialVersionUID = -7825447948319726641L;
 
-      TestException(Exception e)
+      TestException(final Exception e)
       {
          super(e);
       }

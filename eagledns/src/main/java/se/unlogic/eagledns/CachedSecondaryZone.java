@@ -18,7 +18,7 @@ public class CachedSecondaryZone {
    protected ZoneProvider zoneProvider;
    private SecondaryZone secondaryZone;
 
-   public CachedSecondaryZone(ZoneProvider zoneProvider, SecondaryZone secondaryZone) {
+   public CachedSecondaryZone(final ZoneProvider zoneProvider, final SecondaryZone secondaryZone) {
 
       this.zoneProvider = zoneProvider;
       this.secondaryZone = secondaryZone;

@@ -16,12 +16,12 @@ public class EndsWithFileFilter extends javax.swing.filechooser.FileFilter imple
    protected String suffix;
    protected boolean allowFolders;
 
-   public EndsWithFileFilter(String suffix) {
+   public EndsWithFileFilter(final String suffix) {
       super();
       this.suffix = suffix;
    }
 
-   public EndsWithFileFilter(String suffix, boolean allowFolders) {
+   public EndsWithFileFilter(final String suffix, final boolean allowFolders) {
 
       super();
       this.suffix = suffix;

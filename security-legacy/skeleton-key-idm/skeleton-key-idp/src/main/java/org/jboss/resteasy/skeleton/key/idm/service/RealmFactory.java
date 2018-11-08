@@ -48,7 +48,7 @@ public class RealmFactory
    @Context
    protected UriInfo uriInfo;
 
-   public RealmFactory(IdentityManager identityManager)
+   public RealmFactory(final IdentityManager identityManager)
    {
       this.identityManager = identityManager;
    }

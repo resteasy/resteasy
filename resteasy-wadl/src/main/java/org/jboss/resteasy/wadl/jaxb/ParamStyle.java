@@ -47,7 +47,7 @@ public enum ParamStyle {
    TEMPLATE("template");
    private final String value;
 
-   ParamStyle(String v) {
+   ParamStyle(final String v) {
       value = v;
    }
 

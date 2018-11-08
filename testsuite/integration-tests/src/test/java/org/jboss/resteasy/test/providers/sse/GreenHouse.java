@@ -12,7 +12,7 @@ public class GreenHouse
    {
    }
 
-   public GreenHouse(long timestamp, int temperature, int humidity)
+   public GreenHouse(final long timestamp, final int temperature, final int humidity)
    {
       this.timestamp = timestamp;
       this.temperature = temperature;

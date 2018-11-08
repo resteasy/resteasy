@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class CatalinaManagedResourceConfigLoader extends ManagedResourceConfigLoader
 {
 
-   public CatalinaManagedResourceConfigLoader(Context context)
+   public CatalinaManagedResourceConfigLoader(final Context context)
    {
       InputStream is = null;
       String path = context.getServletContext().getInitParameter("skeleton.key.config.file");

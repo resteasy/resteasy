@@ -15,7 +15,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class LocalResteasyProviderFactory extends ResteasyProviderFactory
 {
 
-   public LocalResteasyProviderFactory(ResteasyProviderFactory factory)
+   public LocalResteasyProviderFactory(final ResteasyProviderFactory factory)
    {
       super(factory, true);
    }

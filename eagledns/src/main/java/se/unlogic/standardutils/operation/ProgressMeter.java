@@ -18,18 +18,18 @@ public class ProgressMeter {
    private long endTime;
    public ProgressMeter(){};
 
-   public ProgressMeter(long start, long finish){
+   public ProgressMeter(final long start, final long finish){
       this.start = start;
       this.finish = finish;
    }
 
-   public ProgressMeter(boolean setStartTime){
+   public ProgressMeter(final boolean setStartTime){
       if(setStartTime){
          this.setStartTime();
       }
    }
 
-   public ProgressMeter(int start, int finish, int currentPosition){
+   public ProgressMeter(final int start, final int finish, final int currentPosition){
       this.start = start;
       this.finish = finish;
       this.currentPosition = currentPosition;

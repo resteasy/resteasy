@@ -7,7 +7,7 @@ public class Thing {
    public Thing() {
    }
 
-   public Thing(String name) {
+   public Thing(final String name) {
       this.name = name;
    }
 

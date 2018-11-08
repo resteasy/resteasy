@@ -17,7 +17,7 @@ public class CustomQueryParameter<T>{
    private Method queryMethod;
    private Object paramValue;
 
-   public CustomQueryParameter(Column<T,?> column , T bean) {
+   public CustomQueryParameter(final Column<T,?> column , final T bean) {
 
       super();
       this.queryParameterPopulator = column.getQueryParameterPopulator();

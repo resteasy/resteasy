@@ -16,7 +16,7 @@ public class StartsEndsWithFileFilter implements FileFilter {
    private String prefix;
    private String suffix;
 
-   public StartsEndsWithFileFilter(String prefix, String suffix) {
+   public StartsEndsWithFileFilter(final String prefix, final String suffix) {
 
       super();
       this.prefix = prefix;

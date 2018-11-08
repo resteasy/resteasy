@@ -13,7 +13,7 @@ public class Jackson2Person {
    public Jackson2Person() {
    }
 
-   public Jackson2Person(String name, int id, String address, PersonType personType) {
+   public Jackson2Person(final String name, final int id, final String address, final PersonType personType) {
       this.name = name;
       this.id = id;
       this.address = address;

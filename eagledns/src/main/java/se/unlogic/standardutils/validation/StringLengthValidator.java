@@ -6,7 +6,7 @@ public class StringLengthValidator implements StringFormatValidator {
    protected final Integer maxLength;
    protected final Integer minLength;
 
-   public StringLengthValidator(Integer minLength, Integer maxLength) {
+   public StringLengthValidator(final Integer minLength, final Integer maxLength) {
 
       super();
       this.minLength = minLength;

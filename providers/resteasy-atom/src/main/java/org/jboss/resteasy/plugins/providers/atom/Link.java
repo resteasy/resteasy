@@ -50,33 +50,33 @@ public class Link extends CommonAttributes
    {
    }
 
-   public Link(String rel, URI href)
+   public Link(final String rel, final URI href)
    {
       this.rel = rel;
       this.href = href;
    }
 
-   public Link(String rel, URI href, MediaType type)
+   public Link(final String rel, final URI href, final MediaType type)
    {
       this.rel = rel;
       this.href = href;
       this.type = type;
    }
 
-   public Link(String rel, String href)
+   public Link(final String rel, final String href)
    {
       this.rel = rel;
       this.href = URI.create(href);
    }
 
-   public Link(String rel, String href, MediaType type)
+   public Link(final String rel, final String href, final MediaType type)
    {
       this.rel = rel;
       this.href = URI.create(href);
       this.type = type;
    }
 
-   public Link(String rel, String href, String type)
+   public Link(final String rel, final String href, final String type)
    {
       this.rel = rel;
       this.href = URI.create(href);

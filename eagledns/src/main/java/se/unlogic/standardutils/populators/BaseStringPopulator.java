@@ -14,13 +14,13 @@ public abstract class BaseStringPopulator<T> implements BeanStringPopulator<T> {
    private final String populatorID;
    private final StringFormatValidator formatValidator;
 
-   public BaseStringPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public BaseStringPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super();
       this.populatorID = populatorID;
       this.formatValidator = formatValidator;
    }
 
-   public BaseStringPopulator(String populatorID) {
+   public BaseStringPopulator(final String populatorID) {
       super();
       this.populatorID = populatorID;
       this.formatValidator = null;

@@ -25,7 +25,7 @@ public class TJWSSpringMVCDispatcher extends DispatcherServlet
       this.requestPreProcessor = new TJWSRequestPreProcessor();
    }
 
-   public TJWSSpringMVCDispatcher(SecurityDomain domain)
+   public TJWSSpringMVCDispatcher(final SecurityDomain domain)
    {
       this.requestPreProcessor = new TJWSRequestPreProcessor(domain);
    }

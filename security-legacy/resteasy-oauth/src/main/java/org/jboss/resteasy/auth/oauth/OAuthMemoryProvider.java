@@ -22,7 +22,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
       this("default");
    }
 
-   public OAuthMemoryProvider(String realm){
+   public OAuthMemoryProvider(final String realm){
       this.realm = realm;
    }
 

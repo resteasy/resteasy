@@ -17,14 +17,14 @@ public class QueryParameter<BeanType,ColumnType> {
    private Column<BeanType, ? super ColumnType> column;
    private String operator = QueryOperators.EQUALS.getOperator();
 
-   QueryParameter(Column<BeanType,? super ColumnType> column, ColumnType value) {
+   QueryParameter(final Column<BeanType,? super ColumnType> column, final ColumnType value) {
       super();
       this.column = column;
       this.value = value;
       this.values = null;
    }
 
-   QueryParameter(Column<BeanType,? super ColumnType> column, ColumnType value, String operator) {
+   QueryParameter(final Column<BeanType,? super ColumnType> column, final ColumnType value, final String operator) {
       super();
       this.column = column;
       this.value = value;
@@ -32,7 +32,7 @@ public class QueryParameter<BeanType,ColumnType> {
       this.values = null;
    }
 
-   QueryParameter(Column<BeanType,? super ColumnType> column, String operator) {
+   QueryParameter(final Column<BeanType,? super ColumnType> column, final String operator) {
       super();
       this.column = column;
       this.operator = operator;
@@ -40,7 +40,7 @@ public class QueryParameter<BeanType,ColumnType> {
       this.values = null;
    }
 
-   QueryParameter(Column<BeanType, ? super ColumnType> column, Collection<ColumnType> values, String operator) {
+   QueryParameter(final Column<BeanType, ? super ColumnType> column, final Collection<ColumnType> values, final String operator) {
 
       this.column = column;
       this.operator = operator;

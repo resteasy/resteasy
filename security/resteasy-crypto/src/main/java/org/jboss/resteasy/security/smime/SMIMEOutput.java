@@ -17,14 +17,14 @@ public class SMIMEOutput
    protected MediaType mediaType;
    protected X509Certificate certificate;
 
-   public SMIMEOutput(Object obj, String mediaType)
+   public SMIMEOutput(final Object obj, final String mediaType)
    {
       this.entity = obj;
       this.type = obj.getClass();
       setMediaType(mediaType);
    }
 
-   public SMIMEOutput(Object obj, MediaType mediaType)
+   public SMIMEOutput(final Object obj, final MediaType mediaType)
    {
       this.entity = obj;
       this.type = obj.getClass();

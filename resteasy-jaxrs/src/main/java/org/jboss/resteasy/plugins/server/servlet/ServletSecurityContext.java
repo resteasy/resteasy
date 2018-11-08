@@ -12,7 +12,7 @@ public class ServletSecurityContext implements SecurityContext
 {
    private HttpServletRequest request;
 
-   public ServletSecurityContext(HttpServletRequest request)
+   public ServletSecurityContext(final HttpServletRequest request)
    {
       this.request = request;
    }

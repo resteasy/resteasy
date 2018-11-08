@@ -27,7 +27,7 @@ class SseEventSourceScheduler
 
       private final String namePrefix;
 
-      DaemonThreadFactory(String name)
+      DaemonThreadFactory(final String name)
       {
          SecurityManager s = System.getSecurityManager();
          group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
@@ -51,7 +51,7 @@ class SseEventSourceScheduler
 
    private final AtomicBoolean closed;
 
-   SseEventSourceScheduler(ScheduledExecutorService scheduledExecutorService, String threadName)
+   SseEventSourceScheduler(final ScheduledExecutorService scheduledExecutorService, final String threadName)
    {
       this.scheduledExecutorService = scheduledExecutorService == null
             ? Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(threadName))

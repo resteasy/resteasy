@@ -33,7 +33,7 @@ public class RealmResource
    @Context
    protected UriInfo uriInfo;
 
-   public RealmResource(IdentityManager identityManager)
+   public RealmResource(final IdentityManager identityManager)
    {
       this.identityManager = identityManager;
    }

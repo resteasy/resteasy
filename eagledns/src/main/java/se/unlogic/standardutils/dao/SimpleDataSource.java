@@ -23,7 +23,7 @@ public class SimpleDataSource implements DataSource {
    private String username;
    private String password;
 
-   public SimpleDataSource(String driver, String url, String username, String password) throws ClassNotFoundException {
+   public SimpleDataSource(final String driver, final String url, final String username, final String password) throws ClassNotFoundException {
 
       super();
       this.url = url;

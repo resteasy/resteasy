@@ -11,7 +11,7 @@ public class MutexKey<T> {
 
    private final T value;
 
-   public MutexKey(T value) {
+   public MutexKey(final T value) {
       super();
       this.value = value;
    }

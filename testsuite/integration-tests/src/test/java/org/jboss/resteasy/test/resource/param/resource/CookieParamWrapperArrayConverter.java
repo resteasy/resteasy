@@ -14,7 +14,7 @@ public class CookieParamWrapperArrayConverter implements ParamConverter<CookiePa
 
    private final ParamConverter<Object> paramConverter;
 
-   public CookieParamWrapperArrayConverter(ParamConverter<Object> paramConverter) {
+   public CookieParamWrapperArrayConverter(final ParamConverter<Object> paramConverter) {
       this.paramConverter = paramConverter;
    }
 

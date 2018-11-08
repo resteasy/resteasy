@@ -54,7 +54,7 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
       super(httpClient, httpContext);
    }
 
-   public ApacheHttpClient43Engine(HttpClient httpClient, HttpContextProvider httpContextProvider)
+   public ApacheHttpClient43Engine(final HttpClient httpClient, final HttpContextProvider httpContextProvider)
    {
       this.httpClient = httpClient;
       this.httpContextProvider = httpContextProvider;

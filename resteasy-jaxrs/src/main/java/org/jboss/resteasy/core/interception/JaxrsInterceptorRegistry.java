@@ -29,7 +29,7 @@ public class JaxrsInterceptorRegistry<T>
 {
    public static class Match
    {
-      public Match(Object interceptor, int order)
+      public Match(final Object interceptor, final int order)
       {
          this.interceptor = interceptor;
          this.order = order;
@@ -74,7 +74,7 @@ public class JaxrsInterceptorRegistry<T>
       protected volatile boolean initialized;
       protected boolean ignorePrematch;
 
-      public AbstractInterceptorFactory(Class declaring)
+      public AbstractInterceptorFactory(final Class declaring)
       {
          this.declaring = getNonSyntheticClass(declaring);
       }
@@ -176,7 +176,7 @@ public class JaxrsInterceptorRegistry<T>
    {
       protected volatile Object interceptor;
 
-      public OnDemandInterceptorFactory(Class declaring)
+      public OnDemandInterceptorFactory(final Class declaring)
       {
          super(declaring);
          setPrecedence(declaring);
@@ -220,7 +220,7 @@ public class JaxrsInterceptorRegistry<T>
    {
       protected Object interceptor;
 
-      public SingletonInterceptorFactory(Class declaring, Object interceptor)
+      public SingletonInterceptorFactory(final Class declaring, final Object interceptor)
       {
          super(declaring);
          this.interceptor = interceptor;
@@ -246,7 +246,7 @@ public class JaxrsInterceptorRegistry<T>
    {
       protected LegacyPrecedence precedence;
 
-      protected AbstractLegacyInterceptorFactory(Class declaring, LegacyPrecedence precedence)
+      protected AbstractLegacyInterceptorFactory(final Class declaring, final LegacyPrecedence precedence)
       {
          super(declaring);
          this.precedence = precedence;
@@ -288,7 +288,7 @@ public class JaxrsInterceptorRegistry<T>
    {
       protected Object interceptor;
 
-      public LegacySingletonInterceptorFactory(Class declaring, Object interceptor, LegacyPrecedence precedence)
+      public LegacySingletonInterceptorFactory(final Class declaring, final Object interceptor, final LegacyPrecedence precedence)
       {
          super(declaring, precedence);
          this.interceptor = interceptor;
@@ -312,7 +312,7 @@ public class JaxrsInterceptorRegistry<T>
    protected class LegacyPerMethodInterceptorFactory extends AbstractLegacyInterceptorFactory
    {
 
-      public LegacyPerMethodInterceptorFactory(Class declaring, LegacyPrecedence precedence)
+      public LegacyPerMethodInterceptorFactory(final Class declaring, final LegacyPrecedence precedence)
       {
          super(declaring, precedence);
          setPrecedence(declaring);
@@ -338,7 +338,7 @@ public class JaxrsInterceptorRegistry<T>
    protected Class<T> intf;
    protected volatile T[] cachedPreMatch;
 
-   public JaxrsInterceptorRegistry(ResteasyProviderFactory providerFactory, Class<T> intf)
+   public JaxrsInterceptorRegistry(final ResteasyProviderFactory providerFactory, final Class<T> intf)
    {
       this.providerFactory = providerFactory;
       this.intf = intf;

@@ -14,17 +14,17 @@ public class ResteasyTunnelRefusedException extends ResteasyProtocolException
    {
    }
 
-   public ResteasyTunnelRefusedException(String message)
+   public ResteasyTunnelRefusedException(final String message)
    {
       super(message);
    }
 
-   public ResteasyTunnelRefusedException(String message, Throwable cause)
+   public ResteasyTunnelRefusedException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyTunnelRefusedException(Throwable cause)
+   public ResteasyTunnelRefusedException(final Throwable cause)
    {
       super(cause);
    }

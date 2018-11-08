@@ -24,7 +24,7 @@ public class ProxyConfig
    private final MediaType serverConsumes;
    private final MediaType serverProduces;
 
-   public ProxyConfig(ClassLoader loader, ClientExecutor executor, ResteasyProviderFactory providerFactory, EntityExtractorFactory extractorFactory, Map<String, Object> requestAttributes, MediaType serverConsumes, MediaType serverProduces)
+   public ProxyConfig(final ClassLoader loader, final ClientExecutor executor, final ResteasyProviderFactory providerFactory, final EntityExtractorFactory extractorFactory, final Map<String, Object> requestAttributes, final MediaType serverConsumes, final MediaType serverProduces)
    {
       super();
       this.loader = loader;

@@ -32,14 +32,14 @@ public class JettisonMappedMarshaller extends BaseMarshaller
 {
    private MappedNamespaceConvention convention;
 
-   public JettisonMappedMarshaller(JAXBContext context, Map<String, String> xmlToJSON, List<String> attributeMapping, List<String> ignoredElements) throws JAXBException
+   public JettisonMappedMarshaller(final JAXBContext context, final Map<String, String> xmlToJSON, final List<String> attributeMapping, final List<String> ignoredElements) throws JAXBException
    {
       marshaller = context.createMarshaller();
       Configuration config = new Configuration(xmlToJSON, attributeMapping, ignoredElements);
       convention = new MappedNamespaceConvention(config);
    }
 
-   public JettisonMappedMarshaller(JAXBContext context, MappedNamespaceConvention convention) throws JAXBException
+   public JettisonMappedMarshaller(final JAXBContext context, final MappedNamespaceConvention convention) throws JAXBException
    {
       marshaller = context.createMarshaller();
       this.convention = convention;

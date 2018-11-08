@@ -13,7 +13,7 @@ public class JettisonCustomerList {
    public JettisonCustomerList() {
    }
 
-   public JettisonCustomerList(Collection<JettisonCustomer> customers) {
+   public JettisonCustomerList(final Collection<JettisonCustomer> customers) {
       this.customers = customers;
    }
 

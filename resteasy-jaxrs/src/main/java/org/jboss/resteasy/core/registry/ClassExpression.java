@@ -9,7 +9,7 @@ public class ClassExpression extends Expression
    protected RootNode root = new RootNode();
    protected ClassNode parent;
 
-   public ClassExpression(String segment)
+   public ClassExpression(final String segment)
    {
       super(segment, "".equals(segment) ? "(.*)" : "(/.+)?");
    }

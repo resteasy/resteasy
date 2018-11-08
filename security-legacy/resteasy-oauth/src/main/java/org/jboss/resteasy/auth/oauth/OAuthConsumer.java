@@ -18,15 +18,15 @@ public class OAuthConsumer {
    private Set<String> scopes;
    private String[] permissions;
 
-   public OAuthConsumer(String key, String secret, String displayName, String connectURI) {
+   public OAuthConsumer(final String key, final String secret, final String displayName, final String connectURI) {
       this.key = key;
       this.secret =  secret;
       this.displayName = displayName;
       this.connectURI = connectURI;
    }
 
-   public OAuthConsumer(String key, String secret, String displayName, String connectURI,
-                         String[] perms) {
+   public OAuthConsumer(final String key, final String secret, final String displayName, final String connectURI,
+                        final String[] perms) {
       this.key = key;
       this.secret =  secret;
       this.displayName = displayName;

@@ -13,7 +13,7 @@ public class MapTagSource implements TagSource {
       tagMap = new HashMap<String,String>();
    }
 
-   public MapTagSource(HashMap<String, String> tagMap) {
+   public MapTagSource(final HashMap<String, String> tagMap) {
 
       super();
       this.tagMap = tagMap;

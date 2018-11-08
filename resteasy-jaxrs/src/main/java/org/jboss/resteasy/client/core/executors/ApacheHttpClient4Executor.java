@@ -115,12 +115,12 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       this.createdHttpClient = true;
    }
 
-   public ApacheHttpClient4Executor(HttpClient httpClient)
+   public ApacheHttpClient4Executor(final HttpClient httpClient)
    {
       this(httpClient, null);
    }
 
-   public ApacheHttpClient4Executor(HttpClient httpClient, HttpContext httpContext)
+   public ApacheHttpClient4Executor(final HttpClient httpClient, final HttpContext httpContext)
    {
       this.httpClient = httpClient;
       this.httpContext = httpContext;
@@ -190,7 +190,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    {
       BaseClientResponse response;
 
-      ResponseStream(InputStream in, BaseClientResponse response)
+      ResponseStream(final InputStream in, final BaseClientResponse response)
       {
          super(in);
          // Keep a reference to the response object to prevent it being finalized prematurely
@@ -590,7 +590,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
        * @param pFile        -
        * @param pContentType -
        */
-      FileExposingFileEntity(File pFile, String pContentType)
+      FileExposingFileEntity(final File pFile, final String pContentType)
       {
          super(pFile, pContentType);
       }

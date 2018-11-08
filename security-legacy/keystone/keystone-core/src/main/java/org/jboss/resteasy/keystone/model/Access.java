@@ -26,7 +26,7 @@ public class Access implements Serializable {
       {
       }
 
-      public Token(String id, Calendar expires, Project project)
+      public Token(final String id, final Calendar expires, final Project project)
       {
          this.id = id;
          this.expires = expires;
@@ -177,7 +177,7 @@ public class Access implements Serializable {
       {
       }
 
-      public User(String id, String name, String username, Set<Role> roles)
+      public User(final String id, final String name, final String username, final Set<Role> roles)
       {
          this.id = id;
          this.name = name;
@@ -247,7 +247,7 @@ public class Access implements Serializable {
    {
    }
 
-   public Access(Token token, List<Service> serviceCatalog, User user, Map<String, Object> metadata)
+   public Access(final Token token, final List<Service> serviceCatalog, final User user, final Map<String, Object> metadata)
    {
       this.token = token;
       this.serviceCatalog = serviceCatalog;

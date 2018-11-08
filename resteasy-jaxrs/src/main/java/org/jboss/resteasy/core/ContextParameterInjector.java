@@ -31,7 +31,7 @@ public class ContextParameterInjector implements ValueInjector
    private Class proxy;
    private ResteasyProviderFactory factory;
 
-   public ContextParameterInjector(Class proxy, Class type, ResteasyProviderFactory factory)
+   public ContextParameterInjector(final Class proxy, final Class type, final ResteasyProviderFactory factory)
    {
       this.type = type;
       this.proxy = proxy;

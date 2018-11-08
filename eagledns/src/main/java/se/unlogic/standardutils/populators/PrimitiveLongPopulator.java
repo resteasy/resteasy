@@ -16,11 +16,11 @@ public class PrimitiveLongPopulator extends LongPopulator {
       super();
    }
 
-   public PrimitiveLongPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public PrimitiveLongPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public PrimitiveLongPopulator(String populatorID) {
+   public PrimitiveLongPopulator(final String populatorID) {
       super(populatorID);
    }
 

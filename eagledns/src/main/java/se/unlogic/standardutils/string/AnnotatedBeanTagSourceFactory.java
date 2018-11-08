@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AnnotatedBeanTagSourceFactory<T> extends BeanTagSourceFactory<T> {
 
-   public AnnotatedBeanTagSourceFactory(Class<T> beanClass, String defaultPrefix) {
+   public AnnotatedBeanTagSourceFactory(final Class<T> beanClass, final String defaultPrefix) {
 
       super(beanClass);
 

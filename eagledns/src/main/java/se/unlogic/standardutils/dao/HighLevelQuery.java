@@ -29,25 +29,25 @@ public class HighLevelQuery<T> extends RelationQuery{
 
    public HighLevelQuery() {}
 
-   public HighLevelQuery(List<QueryParameter<T, ?>> parameters, List<OrderByCriteria<T>> orderByCriterias) {
+   public HighLevelQuery(final List<QueryParameter<T, ?>> parameters, final List<OrderByCriteria<T>> orderByCriterias) {
 
       super();
       this.parameters = parameters;
       this.orderByCriterias = orderByCriterias;
    }
 
-   public HighLevelQuery(Field... relations) {
+   public HighLevelQuery(final Field... relations) {
 
       this.addRelations(relations);
    }
 
-   public HighLevelQuery(QueryParameter<T, ?> parameter, Field... relations) {
+   public HighLevelQuery(final QueryParameter<T, ?> parameter, final Field... relations) {
 
       this.addParameter(parameter);
       this.addRelations(relations);
    }
 
-   public HighLevelQuery(QueryParameter<T, ?>... queryParameters) {
+   public HighLevelQuery(final QueryParameter<T, ?>... queryParameters) {
 
       this.addParameter(queryParameters);
    }

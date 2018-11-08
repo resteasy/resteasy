@@ -200,12 +200,12 @@ public enum Language {
    private final String code;
    private final String localName;
 
-   Language(String code) {
+   Language(final String code) {
 
       this(code, null);
    }
 
-   Language(String code, String localName) {
+   Language(final String code, final String localName) {
 
       this.code = code;
       this.localName = localName;

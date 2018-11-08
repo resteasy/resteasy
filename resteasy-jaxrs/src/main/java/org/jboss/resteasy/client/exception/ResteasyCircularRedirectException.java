@@ -14,17 +14,17 @@ public class ResteasyCircularRedirectException extends ResteasyRedirectException
    {
    }
 
-   public ResteasyCircularRedirectException(String message)
+   public ResteasyCircularRedirectException(final String message)
    {
       super(message);
    }
 
-   public ResteasyCircularRedirectException(String message, Throwable cause)
+   public ResteasyCircularRedirectException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyCircularRedirectException(Throwable cause)
+   public ResteasyCircularRedirectException(final Throwable cause)
    {
       super(cause);
    }

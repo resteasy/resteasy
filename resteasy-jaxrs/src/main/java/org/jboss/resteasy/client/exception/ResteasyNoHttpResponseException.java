@@ -14,17 +14,17 @@ public class ResteasyNoHttpResponseException extends ResteasyIOException
    {
    }
 
-   public ResteasyNoHttpResponseException(String message)
+   public ResteasyNoHttpResponseException(final String message)
    {
       super(message);
    }
 
-   public ResteasyNoHttpResponseException(String message, Throwable cause)
+   public ResteasyNoHttpResponseException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyNoHttpResponseException(Throwable cause)
+   public ResteasyNoHttpResponseException(final Throwable cause)
    {
       super(cause);
    }

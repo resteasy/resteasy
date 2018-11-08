@@ -18,7 +18,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
    {
       private Disposable subscription;
 
-      SingleAdaptor(Single<T> observable)
+      SingleAdaptor(final Single<T> observable)
       {
          this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
       }

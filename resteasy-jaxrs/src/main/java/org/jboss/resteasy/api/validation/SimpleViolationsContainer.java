@@ -15,12 +15,12 @@ public class SimpleViolationsContainer implements Serializable
    private Object target;
    private boolean fieldsValidated;
 
-   public SimpleViolationsContainer(Object target)
+   public SimpleViolationsContainer(final Object target)
    {
       this.target = target;
    }
 
-   public SimpleViolationsContainer(Set<ConstraintViolation<Object>> cvs)
+   public SimpleViolationsContainer(final Set<ConstraintViolation<Object>> cvs)
    {
       addViolations(cvs);
    }

@@ -14,17 +14,17 @@ public class ResteasyAuthenticationException extends ResteasyProtocolException
    {
    }
 
-   public ResteasyAuthenticationException(String message)
+   public ResteasyAuthenticationException(final String message)
    {
       super(message);
    }
 
-   public ResteasyAuthenticationException(String message, Throwable cause)
+   public ResteasyAuthenticationException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyAuthenticationException(Throwable cause)
+   public ResteasyAuthenticationException(final Throwable cause)
    {
       super(cause);
    }

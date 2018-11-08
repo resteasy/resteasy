@@ -97,23 +97,23 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       }
    }
 
-   public ClientRequest(String uriTemplate)
+   public ClientRequest(final String uriTemplate)
    {
       this(uriTemplate, getDefaultExecutor());
    }
 
-   public ClientRequest(String uriTemplate, ClientExecutor executor)
+   public ClientRequest(final String uriTemplate, final ClientExecutor executor)
    {
       this(getBuilder(uriTemplate), executor);
    }
 
-   public ClientRequest(UriBuilder uri, ClientExecutor executor)
+   public ClientRequest(final UriBuilder uri, final ClientExecutor executor)
    {
       this(uri, executor, ResteasyProviderFactory.getInstance());
    }
 
-   public ClientRequest(UriBuilder uri, ClientExecutor executor,
-                        ResteasyProviderFactory providerFactory)
+   public ClientRequest(final UriBuilder uri, final ClientExecutor executor,
+                        final ResteasyProviderFactory providerFactory)
    {
       this.uri = (ResteasyUriBuilder) uri;
       this.executor = executor;

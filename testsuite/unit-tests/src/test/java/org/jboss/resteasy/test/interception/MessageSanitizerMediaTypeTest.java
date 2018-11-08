@@ -24,7 +24,7 @@ public class MessageSanitizerMediaTypeTest {
    static private final String output = "&lt;html &amp;lt;&quot;abc&quot; &#x27;xyz&#x27;&amp;gt;&#x2F;&gt;";
 
    public static class TestContainerResponseContext extends  ContainerResponseContextImpl {
-      public TestContainerResponseContext(BuiltResponse builtResponse) {
+      public TestContainerResponseContext(final BuiltResponse builtResponse) {
          super(null, null, builtResponse, null, null, null, null);
       }
    }

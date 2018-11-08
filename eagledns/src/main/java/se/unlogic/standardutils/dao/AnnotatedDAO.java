@@ -88,23 +88,23 @@ public class AnnotatedDAO<T> {
    protected String getSQL;
    protected String defaultSortingCriteria;
 
-   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory) {
+   public AnnotatedDAO(final DataSource dataSource, final Class<T> beanClass, final AnnotatedDAOFactory daoFactory) {
 
       this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass), null, null);
    }
 
-   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator, QueryParameterPopulator<?>... queryParameterPopulators) {
+   public AnnotatedDAO(final DataSource dataSource, final Class<T> beanClass, final AnnotatedDAOFactory daoFactory, final AnnotatedResultSetPopulator<T> populator, final QueryParameterPopulator<?>... queryParameterPopulators) {
 
       this(dataSource, beanClass, daoFactory, populator, Arrays.asList(queryParameterPopulators), null);
    }
 
-   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
+   public AnnotatedDAO(final DataSource dataSource, final Class<T> beanClass, final AnnotatedDAOFactory daoFactory, final List<? extends QueryParameterPopulator<?>> queryParameterPopulators, final List<? extends BeanStringPopulator<?>> typePopulators) {
 
       this(dataSource, beanClass, daoFactory, new AnnotatedResultSetPopulator<T>(beanClass, typePopulators), queryParameterPopulators, typePopulators);
    }
 
-   public AnnotatedDAO(DataSource dataSource, Class<T> beanClass, AnnotatedDAOFactory daoFactory, AnnotatedResultSetPopulator<T> populator,
-         List<? extends QueryParameterPopulator<?>> queryParameterPopulators, List<? extends BeanStringPopulator<?>> typePopulators) {
+   public AnnotatedDAO(final DataSource dataSource, final Class<T> beanClass, final AnnotatedDAOFactory daoFactory, final AnnotatedResultSetPopulator<T> populator,
+                       final List<? extends QueryParameterPopulator<?>> queryParameterPopulators, final List<? extends BeanStringPopulator<?>> typePopulators) {
 
       super();
       this.populator = populator;

@@ -22,7 +22,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
 {
    protected final ClientResponse response;
 
-   public ClientResponseContextImpl(ClientResponse response)
+   public ClientResponseContextImpl(final ClientResponse response)
    {
       this.response = response;
    }

@@ -14,17 +14,17 @@ public class ResteasyInvalidRedirectLocationException extends ResteasyRedirectEx
    {
    }
 
-   public ResteasyInvalidRedirectLocationException(String message)
+   public ResteasyInvalidRedirectLocationException(final String message)
    {
       super(message);
    }
 
-   public ResteasyInvalidRedirectLocationException(String message, Throwable cause)
+   public ResteasyInvalidRedirectLocationException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyInvalidRedirectLocationException(Throwable cause)
+   public ResteasyInvalidRedirectLocationException(final Throwable cause)
    {
       super(cause);
    }

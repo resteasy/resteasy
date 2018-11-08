@@ -21,7 +21,7 @@ public class DefaultResourceLocator implements ResourceLocator
    protected String fullpath;
    protected String path;
 
-   public DefaultResourceLocator(ResourceClass resourceClass, Method method, Method annotatedMethod)
+   public DefaultResourceLocator(final ResourceClass resourceClass, final Method method, final Method annotatedMethod)
    {
       this.resourceClass = resourceClass;
       this.annotatedMethod = annotatedMethod;

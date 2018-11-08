@@ -14,17 +14,17 @@ public class ResteasyClientProtocolException extends ResteasyIOException
    {
    }
 
-   public ResteasyClientProtocolException(String message)
+   public ResteasyClientProtocolException(final String message)
    {
       super(message);
    }
 
-   public ResteasyClientProtocolException(String message, Throwable cause)
+   public ResteasyClientProtocolException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyClientProtocolException(Throwable cause)
+   public ResteasyClientProtocolException(final Throwable cause)
    {
       super(cause);
    }

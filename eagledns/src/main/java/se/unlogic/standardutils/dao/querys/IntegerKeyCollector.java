@@ -18,7 +18,7 @@ public class IntegerKeyCollector implements GeneratedKeyCollector {
 
    public IntegerKeyCollector() {}
 
-   public IntegerKeyCollector(int columnIndex) {
+   public IntegerKeyCollector(final int columnIndex) {
       super();
       this.columnIndex = columnIndex;
    }

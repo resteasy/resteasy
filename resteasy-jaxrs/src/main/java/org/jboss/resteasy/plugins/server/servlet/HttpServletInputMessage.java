@@ -50,7 +50,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
    protected boolean wasForwarded;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpServletResponse servletResponse, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(final HttpServletRequest request, final HttpServletResponse servletResponse, final ServletContext servletContext, final HttpResponse httpResponse, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher)
    {
       super(uri);
       this.request = request;

@@ -19,7 +19,7 @@ public enum QueryOperators {
 
    private String value;
 
-   QueryOperators (String value){
+   QueryOperators (final String value){
       this.value = value;
    }
 

@@ -31,7 +31,7 @@ public class MethodInjectorImpl implements MethodInjector
    protected Method interfaceBasedMethod;
    protected boolean expectsBody;
 
-   public MethodInjectorImpl(ResourceLocator resourceMethod, ResteasyProviderFactory factory)
+   public MethodInjectorImpl(final ResourceLocator resourceMethod, final ResteasyProviderFactory factory)
    {
       this.factory = factory;
       this.method = resourceMethod;

@@ -19,7 +19,7 @@ public class AcceptParser
       private String value;
       private float q = 1.0F;
 
-      private Charset(String value, float q)
+      private Charset(final String value, final float q)
       {
          this.value = value;
          this.q = q;

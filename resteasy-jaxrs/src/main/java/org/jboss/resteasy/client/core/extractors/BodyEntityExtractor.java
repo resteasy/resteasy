@@ -26,7 +26,7 @@ public class BodyEntityExtractor implements EntityExtractor
 {
    private final Method method;
 
-   public BodyEntityExtractor(Method method)
+   public BodyEntityExtractor(final Method method)
    {
       this.method = method;
    }

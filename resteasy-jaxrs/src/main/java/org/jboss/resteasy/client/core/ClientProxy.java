@@ -20,7 +20,7 @@ public class ClientProxy implements InvocationHandler
    private final URI base;
    private final ProxyConfig config;
 
-   public ClientProxy(Map<Method, MethodInvoker> methodMap, URI base, ProxyConfig config)
+   public ClientProxy(final Map<Method, MethodInvoker> methodMap, final URI base, final ProxyConfig config)
    {
       super();
       this.methodMap = methodMap;

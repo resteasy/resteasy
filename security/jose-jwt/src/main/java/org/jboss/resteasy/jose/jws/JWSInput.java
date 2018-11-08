@@ -36,12 +36,12 @@ public class JWSInput
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
    }
 
-   public JWSInput(String wire)
+   public JWSInput(final String wire)
    {
       this(wire, null);
    }
 
-   public JWSInput(String wire, Providers providers)
+   public JWSInput(final String wire, final Providers providers)
    {
       this.providers = providers;
       this.wireString = wire;

@@ -29,21 +29,21 @@ public class TimeStampPopulator extends BaseStringPopulator<Timestamp> implement
       this.dateFormat = null;
    }
 
-   public TimeStampPopulator(DateFormat dateFormat) {
+   public TimeStampPopulator(final DateFormat dateFormat) {
 
       super();
 
       this.dateFormat = dateFormat;
    }
 
-   public TimeStampPopulator(String populatorID, DateFormat dateFormat) {
+   public TimeStampPopulator(final String populatorID, final DateFormat dateFormat) {
 
       super(populatorID);
 
       this.dateFormat = dateFormat;
    }
 
-   public TimeStampPopulator(String populatorID, DateFormat dateFormat, StringFormatValidator formatValidator) {
+   public TimeStampPopulator(final String populatorID, final DateFormat dateFormat, final StringFormatValidator formatValidator) {
 
       super(populatorID,formatValidator);
       this.dateFormat = dateFormat;

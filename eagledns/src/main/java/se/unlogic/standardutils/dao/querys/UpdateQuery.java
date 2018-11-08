@@ -20,12 +20,12 @@ public class UpdateQuery extends PreparedStatementQuery {
 
    private Integer affectedRows;
 
-   public UpdateQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
+   public UpdateQuery(final Connection connection, final boolean closeConnectionOnExit, final String query) throws SQLException {
 
       super(connection, closeConnectionOnExit, query);
    }
 
-   public UpdateQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
+   public UpdateQuery(final DataSource dataSource, final boolean closeConnectionOnExit, final String query) throws SQLException {
 
       super(dataSource, closeConnectionOnExit, query);
    }

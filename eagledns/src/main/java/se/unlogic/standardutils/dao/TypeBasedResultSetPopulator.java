@@ -18,7 +18,7 @@ public class TypeBasedResultSetPopulator<Type> implements BeanResultSetPopulator
    private BeanStringPopulator<Type> beanStringPopulator;
    private String columnName;
 
-   public TypeBasedResultSetPopulator(BeanStringPopulator<Type> typePopulator, String columnName) {
+   public TypeBasedResultSetPopulator(final BeanStringPopulator<Type> typePopulator, final String columnName) {
 
       this.beanStringPopulator = typePopulator;
       this.columnName = columnName;

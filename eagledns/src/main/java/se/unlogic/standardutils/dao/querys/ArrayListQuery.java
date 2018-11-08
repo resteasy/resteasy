@@ -19,11 +19,11 @@ import java.util.ArrayList;
 
 public class ArrayListQuery<ReturnType> extends PopulatedQuery<ReturnType> {
 
-   public ArrayListQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+   public ArrayListQuery(final Connection connection, final boolean closeConnectionOnExit, final String query, final BeanResultSetPopulator<ReturnType> bp) throws SQLException {
       super(connection, closeConnectionOnExit, query, bp);
    }
 
-   public ArrayListQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<ReturnType> bp) throws SQLException {
+   public ArrayListQuery(final DataSource dataSource, final boolean closeConnectionOnExit, final String query, final BeanResultSetPopulator<ReturnType> bp) throws SQLException {
       super(dataSource, closeConnectionOnExit, query, bp);
    }
 

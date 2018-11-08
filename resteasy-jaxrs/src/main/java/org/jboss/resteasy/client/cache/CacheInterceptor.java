@@ -47,7 +47,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
    {
       BrowserCache.Entry entry;
 
-      CachedStreamFactory(BrowserCache.Entry entry)
+      CachedStreamFactory(final BrowserCache.Entry entry)
       {
          this.entry = entry;
       }
@@ -62,7 +62,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       }
    }
 
-   public CacheInterceptor(BrowserCache cache)
+   public CacheInterceptor(final BrowserCache cache)
    {
       this.cache = cache;
    }

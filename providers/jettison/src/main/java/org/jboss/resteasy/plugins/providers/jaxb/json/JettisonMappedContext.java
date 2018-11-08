@@ -26,12 +26,12 @@ public class JettisonMappedContext extends JAXBContext
    private JAXBContext context;
    private MappedNamespaceConvention convention;
 
-   public JettisonMappedContext(Class... classes)
+   public JettisonMappedContext(final Class... classes)
    {
       this(new HashMap<String, String>(), new ArrayList<QName>(), new ArrayList<QName>(), classes);
    }
 
-   public JettisonMappedContext(Mapped mapped, Class... classes)
+   public JettisonMappedContext(final Mapped mapped, final Class... classes)
    {
       createConvention(mapped);
 
@@ -45,7 +45,7 @@ public class JettisonMappedContext extends JAXBContext
       }
    }
 
-   public JettisonMappedContext(Mapped mapped, String contextPath)
+   public JettisonMappedContext(final Mapped mapped, final String contextPath)
    {
       createConvention(mapped);
 
@@ -79,7 +79,7 @@ public class JettisonMappedContext extends JAXBContext
       convention = new MappedConvention(config);
    }
 
-   public JettisonMappedContext(Map<String, String> xmlnsToJson, List<QName> attributesAsElements, List<QName> ignoredElements, Class... classes)
+   public JettisonMappedContext(final Map<String, String> xmlnsToJson, final List<QName> attributesAsElements, final List<QName> ignoredElements, final Class... classes)
    {
       Configuration config = new Configuration(xmlnsToJson, attributesAsElements, ignoredElements);
       convention = new MappedNamespaceConvention(config);
@@ -94,7 +94,7 @@ public class JettisonMappedContext extends JAXBContext
       }
    }
 
-   public JettisonMappedContext(MappedNamespaceConvention convention, Class... classes)
+   public JettisonMappedContext(final MappedNamespaceConvention convention, final Class... classes)
    {
       this.convention = convention;
       try

@@ -13,7 +13,7 @@ public class PathParamMarshaller implements Marshaller
    private boolean encoded;
    private ResteasyProviderFactory factory;
 
-   public PathParamMarshaller(String paramName, boolean encoded, ResteasyProviderFactory factory)
+   public PathParamMarshaller(final String paramName, final boolean encoded, final ResteasyProviderFactory factory)
    {
       this.paramName = paramName;
       this.encoded = encoded;

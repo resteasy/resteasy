@@ -23,7 +23,7 @@ public class WriterInterceptorRegistry extends JaxrsInterceptorRegistry<WriterIn
 {
    protected LegacyPrecedence precedence;
 
-   public WriterInterceptorRegistry(ResteasyProviderFactory providerFactory, LegacyPrecedence precedence)
+   public WriterInterceptorRegistry(final ResteasyProviderFactory providerFactory, final LegacyPrecedence precedence)
    {
       super(providerFactory, WriterInterceptor.class);
       this.precedence = precedence;
@@ -40,7 +40,7 @@ public class WriterInterceptorRegistry extends JaxrsInterceptorRegistry<WriterIn
    {
       protected final WriterInterceptorContext writerInterceptorContext;
 
-      private MessageBodyWriterContextFacade(WriterInterceptorContext writerInterceptorContext)
+      private MessageBodyWriterContextFacade(final WriterInterceptorContext writerInterceptorContext)
       {
          this.writerInterceptorContext = writerInterceptorContext;
       }
@@ -152,7 +152,7 @@ public class WriterInterceptorRegistry extends JaxrsInterceptorRegistry<WriterIn
    {
       protected final MessageBodyWriterInterceptor interceptor;
 
-      public WriterInterceptorFacade(MessageBodyWriterInterceptor interceptor)
+      public WriterInterceptorFacade(final MessageBodyWriterInterceptor interceptor)
       {
          this.interceptor = interceptor;
       }

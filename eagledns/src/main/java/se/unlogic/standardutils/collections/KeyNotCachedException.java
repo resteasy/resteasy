@@ -15,7 +15,7 @@ public class KeyNotCachedException extends RuntimeException {
    private static final long serialVersionUID = 1833583474702621444L;
    private Object key;
 
-   public KeyNotCachedException(Object key) {
+   public KeyNotCachedException(final Object key) {
       this.key = key;
    }
 

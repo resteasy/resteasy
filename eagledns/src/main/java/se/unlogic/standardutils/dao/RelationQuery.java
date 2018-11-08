@@ -22,17 +22,17 @@ public class RelationQuery {
 
    public RelationQuery() {}
 
-   public RelationQuery(List<Field> relations) {
+   public RelationQuery(final List<Field> relations) {
 
       this.relations = relations;
    }
 
-   public RelationQuery(Field... relations) {
+   public RelationQuery(final Field... relations) {
 
       this.addRelations(relations);
    }
 
-   public RelationQuery(RelationQuery relationQuery) {
+   public RelationQuery(final RelationQuery relationQuery) {
 
       this.addRelations(relationQuery);
    }

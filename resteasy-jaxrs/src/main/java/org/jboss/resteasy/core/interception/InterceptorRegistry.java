@@ -104,7 +104,7 @@ public class InterceptorRegistry<T>
    {
       private Object interceptor;
 
-      public SingletonInterceptorFactory(Object interceptor)
+      public SingletonInterceptorFactory(final Object interceptor)
       {
          this.interceptor = interceptor;
          setPrecedence(interceptor.getClass());
@@ -129,7 +129,7 @@ public class InterceptorRegistry<T>
    {
       private ConstructorInjector constructorInjector;
 
-      public PerMethodInterceptorFactory(Class clazz)
+      public PerMethodInterceptorFactory(final Class clazz)
       {
          constructorInjector = providerFactory.createConstructorInjector(clazz);
          setPrecedence(clazz);
@@ -183,7 +183,7 @@ public class InterceptorRegistry<T>
       return intf;
    }
 
-   public InterceptorRegistry(Class<T> intf, ResteasyProviderFactory providerFactory)
+   public InterceptorRegistry(final Class<T> intf, final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.intf = intf;

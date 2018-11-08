@@ -13,7 +13,7 @@ public class Log4jLogger extends org.jboss.resteasy.logging.Logger
    private transient Logger delegate;
    private String classname;
 
-   public Log4jLogger(String classname)
+   public Log4jLogger(final String classname)
    {
       this.classname = classname;
       delegate = Logger.getLogger(classname);

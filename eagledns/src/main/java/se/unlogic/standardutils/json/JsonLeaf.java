@@ -24,7 +24,7 @@ public class JsonLeaf implements JsonNode {
    private static final long serialVersionUID = 1198871458505471824L;
    private String value;
 
-   public JsonLeaf(String value) {
+   public JsonLeaf(final String value) {
       this.value = value;
    }
 

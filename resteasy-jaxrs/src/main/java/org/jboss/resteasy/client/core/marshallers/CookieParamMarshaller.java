@@ -12,7 +12,7 @@ public class CookieParamMarshaller implements Marshaller
 {
    private String cookieName;
 
-   public CookieParamMarshaller(String cookieName)
+   public CookieParamMarshaller(final String cookieName)
    {
       this.cookieName = cookieName;
    }

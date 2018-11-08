@@ -20,7 +20,7 @@ public class CachedXSLTResourceStream extends CachedXSLTBase{
    private Class<?> resourceClass;
    private String path;
 
-   public CachedXSLTResourceStream(Class<?> resourceClass, String path) throws TransformerConfigurationException {
+   public CachedXSLTResourceStream(final Class<?> resourceClass, final String path) throws TransformerConfigurationException {
       this.cacheStyleSheet(resourceClass, path);
    }
 

@@ -40,7 +40,7 @@ public class BadgerUnmarshaller implements Unmarshaller
 {
    private Unmarshaller unmarshaller;
 
-   public BadgerUnmarshaller(JAXBContext context) throws JAXBException
+   public BadgerUnmarshaller(final JAXBContext context) throws JAXBException
    {
       unmarshaller = context.createUnmarshaller();
    }

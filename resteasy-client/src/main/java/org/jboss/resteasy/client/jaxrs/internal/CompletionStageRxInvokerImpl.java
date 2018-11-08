@@ -24,12 +24,12 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
 
    private final ExecutorService executor;
 
-   public CompletionStageRxInvokerImpl(SyncInvoker builder)
+   public CompletionStageRxInvokerImpl(final SyncInvoker builder)
    {
       this(builder, null);
    }
 
-   public CompletionStageRxInvokerImpl(SyncInvoker builder, ExecutorService executor)
+   public CompletionStageRxInvokerImpl(final SyncInvoker builder, final ExecutorService executor)
    {
       this.builder = builder;
       this.executor = executor;

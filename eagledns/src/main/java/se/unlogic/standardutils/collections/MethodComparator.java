@@ -12,7 +12,7 @@ public class MethodComparator<T> implements Comparator<T> {
    protected Method method;
    protected final Order order;
 
-   public MethodComparator(Class<? extends T> clazz, String methodName, Order order){
+   public MethodComparator(final Class<? extends T> clazz, final String methodName, final Order order){
 
       Method[] methods = clazz.getDeclaredMethods();
 

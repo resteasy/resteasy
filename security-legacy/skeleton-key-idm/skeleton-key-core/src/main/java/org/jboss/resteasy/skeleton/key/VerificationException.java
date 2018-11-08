@@ -10,17 +10,17 @@ public class VerificationException extends Exception
    {
    }
 
-   public VerificationException(String message)
+   public VerificationException(final String message)
    {
       super(message);
    }
 
-   public VerificationException(String message, Throwable cause)
+   public VerificationException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public VerificationException(Throwable cause)
+   public VerificationException(final Throwable cause)
    {
       super(cause);
    }

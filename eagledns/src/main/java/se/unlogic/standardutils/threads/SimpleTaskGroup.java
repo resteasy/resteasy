@@ -14,7 +14,7 @@ public class SimpleTaskGroup implements TaskGroup {
 
    private BlockingQueue<? extends Runnable> queue;
 
-   public SimpleTaskGroup(BlockingQueue<? extends Runnable> queue) {
+   public SimpleTaskGroup(final BlockingQueue<? extends Runnable> queue) {
 
       this.queue = queue;
    }

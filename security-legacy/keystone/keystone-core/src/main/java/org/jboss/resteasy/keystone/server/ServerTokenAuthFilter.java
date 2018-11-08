@@ -19,7 +19,7 @@ public class ServerTokenAuthFilter extends AbstractTokenAuthFilter
 {
    protected TokenService tokenService;
 
-   public ServerTokenAuthFilter(TokenService tokenService)
+   public ServerTokenAuthFilter(final TokenService tokenService)
    {
       super(tokenService.getCertificate());
       this.tokenService = tokenService;

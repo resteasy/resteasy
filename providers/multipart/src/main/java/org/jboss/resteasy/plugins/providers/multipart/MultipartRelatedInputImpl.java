@@ -26,7 +26,7 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
    private String type;
    private InputPart rootPart;
 
-   public MultipartRelatedInputImpl(MediaType contentType, Providers workers) {
+   public MultipartRelatedInputImpl(final MediaType contentType, final Providers workers) {
       super(contentType, workers);
    }
 

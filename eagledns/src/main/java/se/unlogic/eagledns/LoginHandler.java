@@ -13,7 +13,7 @@ public class LoginHandler implements EagleLogin {
    private EagleManager eagleManager;
    private String password;
 
-   public LoginHandler(EagleManager eagleManager, String password) {
+   public LoginHandler(final EagleManager eagleManager, final String password) {
       super();
       this.eagleManager = eagleManager;
       this.password = password;

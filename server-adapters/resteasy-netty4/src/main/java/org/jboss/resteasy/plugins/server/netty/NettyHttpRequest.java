@@ -55,7 +55,7 @@ public class NettyHttpRequest extends BaseHttpRequest
    private volatile boolean flushed;
    private ByteBuf content;
 
-   public NettyHttpRequest(ChannelHandlerContext ctx, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse response, boolean is100ContinueExpected)
+   public NettyHttpRequest(final ChannelHandlerContext ctx, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher, final NettyHttpResponse response, final boolean is100ContinueExpected)
    {
       super(uri);
       this.is100ContinueExpected = is100ContinueExpected;
@@ -199,7 +199,7 @@ public class NettyHttpRequest extends BaseHttpRequest
       protected volatile boolean wasSuspended;
       protected NettyHttpAsyncResponse asyncResponse;
 
-      NettyExecutionContext(NettyHttpRequest request, NettyHttpResponse response, SynchronousDispatcher dispatcher)
+      NettyExecutionContext(final NettyHttpRequest request, final NettyHttpResponse response, final SynchronousDispatcher dispatcher)
       {
          super(dispatcher, request, response);
          this.request = request;
@@ -247,7 +247,7 @@ public class NettyHttpRequest extends BaseHttpRequest
          private final Object responseLock = new Object();
          protected ScheduledFuture timeoutFuture;
          private NettyHttpResponse nettyResponse;
-         NettyHttpAsyncResponse(SynchronousDispatcher dispatcher, NettyHttpRequest request, NettyHttpResponse response) {
+         NettyHttpAsyncResponse(final SynchronousDispatcher dispatcher, final NettyHttpRequest request, final NettyHttpResponse response) {
             super(dispatcher, request, response);
             this.nettyResponse = response;
          }

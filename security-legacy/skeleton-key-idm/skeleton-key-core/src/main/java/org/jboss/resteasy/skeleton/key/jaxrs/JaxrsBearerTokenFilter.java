@@ -31,7 +31,7 @@ public class JaxrsBearerTokenFilter implements ContainerRequestFilter
 {
    protected ResourceMetadata resourceMetadata;
 
-   public JaxrsBearerTokenFilter(ResourceMetadata resourceMetadata)
+   public JaxrsBearerTokenFilter(final ResourceMetadata resourceMetadata)
    {
       this.resourceMetadata = resourceMetadata;
    }

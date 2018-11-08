@@ -35,17 +35,17 @@ public class View implements Renderable
     *           will be dispatched to using the servlet container; it should
     *           have a leading /.
     */
-   public View(String path)
+   public View(final String path)
    {
       this(path, null, null);
    }
 
-   public View(String path, Object model)
+   public View(final String path, final Object model)
    {
       this(path, model, DEFAULT_MODEL_NAME);
    }
 
-   public View(String path, Object model, String modelName)
+   public View(final String path, final Object model, final String modelName)
    {
       this.path = path;
       if(modelName != null)

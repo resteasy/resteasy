@@ -15,32 +15,32 @@ import javax.ws.rs.core.Response;
 public class MethodNotAllowedException extends LoggableFailure
 {
 
-   public MethodNotAllowedException(String s)
+   public MethodNotAllowedException(final String s)
    {
       super(s, 405);
    }
 
-   public MethodNotAllowedException(String s, Response response)
+   public MethodNotAllowedException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public MethodNotAllowedException(String s, Throwable throwable, Response response)
+   public MethodNotAllowedException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public MethodNotAllowedException(String s, Throwable throwable)
+   public MethodNotAllowedException(final String s, final Throwable throwable)
    {
       super(s, throwable, 405);
    }
 
-   public MethodNotAllowedException(Throwable throwable)
+   public MethodNotAllowedException(final Throwable throwable)
    {
       super(throwable, 405);
    }
 
-   public MethodNotAllowedException(Throwable throwable, Response response)
+   public MethodNotAllowedException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

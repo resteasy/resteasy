@@ -47,7 +47,7 @@ public class DefaultManyToManyRelation<LocalType,RemoteType> implements ManyToMa
 
    private boolean initialized;
 
-   public DefaultManyToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged) {
+   public DefaultManyToManyRelation(final Class<LocalType> beanClass, final Class<RemoteType> remoteClass, final Field field, final AnnotatedDAOFactory daoFactory, final DAOManaged daoManaged) {
       super();
       this.beanClass = beanClass;
       this.remoteClass = remoteClass;

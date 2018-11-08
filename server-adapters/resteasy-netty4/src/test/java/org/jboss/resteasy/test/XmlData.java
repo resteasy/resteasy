@@ -11,7 +11,7 @@ public class XmlData
 {
    protected String name;
 
-   public XmlData(String data)
+   public XmlData(final String data)
    {
       this.name = data;
    }

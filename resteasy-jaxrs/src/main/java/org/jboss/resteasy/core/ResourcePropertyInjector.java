@@ -27,7 +27,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       public FieldParameter param;
       public ValueInjector injector;
 
-      private FieldInjector(FieldParameter param, ValueInjector injector)
+      private FieldInjector(final FieldParameter param, final ValueInjector injector)
       {
          this.param = param;
          this.injector = injector;
@@ -39,7 +39,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       public SetterParameter param;
       public ValueInjector injector;
 
-      private SetterInjector(SetterParameter param, ValueInjector injector)
+      private SetterInjector(final SetterParameter param, final ValueInjector injector)
       {
          this.param = param;
          this.injector = injector;
@@ -52,7 +52,7 @@ public class ResourcePropertyInjector implements PropertyInjector
    protected ResteasyProviderFactory factory;
 
 
-   public ResourcePropertyInjector(ResourceClass resourceClass, ResteasyProviderFactory factory)
+   public ResourcePropertyInjector(final ResourceClass resourceClass, final ResteasyProviderFactory factory)
    {
       this.resourceClass = resourceClass;
       this.factory = factory;

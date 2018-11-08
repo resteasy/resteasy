@@ -65,7 +65,7 @@ public class TestLinksInvalidEL
    private BookStoreService client;
    private HttpClient httpClient;
 
-   public TestLinksInvalidEL(Class<?> resourceType){
+   public TestLinksInvalidEL(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

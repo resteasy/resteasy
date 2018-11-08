@@ -40,7 +40,7 @@ abstract public class Parameter
    protected String defaultValue;
    protected long suspendTimeout; // deprecated
 
-   protected Parameter(ResourceClass resourceClass, Class<?> type, Type genericType)
+   protected Parameter(final ResourceClass resourceClass, final Class<?> type, final Type genericType)
    {
       this.resourceClass = resourceClass;
       this.genericType = Types.resolveTypeVariables(resourceClass.getClazz(), genericType);

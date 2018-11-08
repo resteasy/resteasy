@@ -16,7 +16,7 @@ public class UDPConnection implements Runnable {
    private final DatagramSocket socket;
    private final DatagramPacket inDataPacket;
 
-   public UDPConnection(EagleDNS eagleDNS, DatagramSocket socket, DatagramPacket inDataPacket) {
+   public UDPConnection(final EagleDNS eagleDNS, final DatagramSocket socket, final DatagramPacket inDataPacket) {
       super();
       this.eagleDNS = eagleDNS;
       this.socket = socket;

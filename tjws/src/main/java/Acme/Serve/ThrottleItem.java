@@ -43,7 +43,7 @@ public class ThrottleItem
    private long maxBps;
 
    // / Constructor.
-   public ThrottleItem(long maxBps)
+   public ThrottleItem(final long maxBps)
    {
       this.maxBps = maxBps;
    }

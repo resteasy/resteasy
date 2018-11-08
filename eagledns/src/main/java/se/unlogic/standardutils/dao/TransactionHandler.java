@@ -28,14 +28,14 @@ public class TransactionHandler {
    private boolean aborted;
    private boolean commited;
 
-   public TransactionHandler(DataSource dataSource) throws SQLException {
+   public TransactionHandler(final DataSource dataSource) throws SQLException {
 
       super();
       this.connection = dataSource.getConnection();
       connection.setAutoCommit(false);
    }
 
-   public TransactionHandler(Connection connection) throws SQLException {
+   public TransactionHandler(final Connection connection) throws SQLException {
 
       super();
       this.connection = connection;

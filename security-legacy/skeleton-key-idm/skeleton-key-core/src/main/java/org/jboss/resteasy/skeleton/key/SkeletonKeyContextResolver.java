@@ -23,7 +23,7 @@ public class SkeletonKeyContextResolver implements ContextResolver<ObjectMapper>
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
    }
 
-   public SkeletonKeyContextResolver(boolean indent)
+   public SkeletonKeyContextResolver(final boolean indent)
    {
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       if (indent)

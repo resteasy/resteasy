@@ -108,7 +108,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    boolean enableSecureProcessingFeature;
    boolean disableDTDs;
 
-   public SecureUnmarshaller(Unmarshaller delegate, boolean disableExternalEntities, boolean enableSecureProcessingFeature, boolean disableDTDs) {
+   public SecureUnmarshaller(final Unmarshaller delegate, final boolean disableExternalEntities, final boolean enableSecureProcessingFeature, final boolean disableDTDs) {
       this.delegate = delegate;
       this.disableExternalEntities = disableExternalEntities;
       this.enableSecureProcessingFeature = enableSecureProcessingFeature;

@@ -8,32 +8,32 @@ import javax.ws.rs.core.Response;
 public class BadRequestException extends Failure
 {
 
-   public BadRequestException(String s)
+   public BadRequestException(final String s)
    {
       super(s, 400);
    }
 
-   public BadRequestException(String s, Response response)
+   public BadRequestException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public BadRequestException(String s, Throwable throwable, Response response)
+   public BadRequestException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public BadRequestException(String s, Throwable throwable)
+   public BadRequestException(final String s, final Throwable throwable)
    {
       super(s, throwable, 400);
    }
 
-   public BadRequestException(Throwable throwable)
+   public BadRequestException(final Throwable throwable)
    {
       super(throwable, 400);
    }
 
-   public BadRequestException(Throwable throwable, Response response)
+   public BadRequestException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

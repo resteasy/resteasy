@@ -15,7 +15,7 @@ public class FastinfoSetContext extends JAXBContext
 {
    private JAXBContext context;
 
-   public FastinfoSetContext(Class... clazz)
+   public FastinfoSetContext(final Class... clazz)
    {
       try
       {
@@ -27,7 +27,7 @@ public class FastinfoSetContext extends JAXBContext
       }
    }
 
-   public FastinfoSetContext(String contextPath)
+   public FastinfoSetContext(final String contextPath)
    {
       try
       {

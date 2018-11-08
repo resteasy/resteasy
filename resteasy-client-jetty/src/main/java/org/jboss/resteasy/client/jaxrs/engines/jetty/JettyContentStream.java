@@ -16,7 +16,7 @@ class JettyContentStream extends OutputStream {
 
    private ByteBuffer buf;
 
-   JettyContentStream(ByteBufferPool bufs, DeferredContentProvider out) {
+   JettyContentStream(final ByteBufferPool bufs, final DeferredContentProvider out) {
       this.bufs = bufs;
       this.out = out;
       buf = acquire();
@@ -85,7 +85,7 @@ class ReleaseCallback implements Callback {
    private final ByteBufferPool bufs;
    private final ByteBuffer buf;
 
-   ReleaseCallback(ByteBufferPool bufs, ByteBuffer buf) {
+   ReleaseCallback(final ByteBufferPool bufs, final ByteBuffer buf) {
       this.bufs = bufs;
       this.buf = buf;
    }

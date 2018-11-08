@@ -188,7 +188,7 @@ public class GuiceContextTest
 
       public Intarray() {}
 
-      public Intarray(int[] values)
+      public Intarray(final int[] values)
       {
          this.values = values;
       }

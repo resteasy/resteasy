@@ -24,7 +24,7 @@ public class ProfilingTest
       private String first;
       private String last;
 
-      public Customer(String first, String last)
+      public Customer(final String first, final String last)
       {
          this.first = first;
          this.last = last;

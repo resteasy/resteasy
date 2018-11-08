@@ -12,7 +12,7 @@ public class HeaderParamMarshaller implements Marshaller
 {
    private String paramName;
 
-   public HeaderParamMarshaller(String paramName)
+   public HeaderParamMarshaller(final String paramName)
    {
       this.paramName = paramName;
    }

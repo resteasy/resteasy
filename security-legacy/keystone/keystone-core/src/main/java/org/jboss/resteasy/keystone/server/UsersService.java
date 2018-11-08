@@ -35,7 +35,7 @@ public class UsersService
 {
    private Cache cache;
 
-   public UsersService(Cache cache)
+   public UsersService(final Cache cache)
    {
       this.cache = cache;
    }

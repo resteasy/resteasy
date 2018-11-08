@@ -14,17 +14,17 @@ public class ResteasyRedirectException extends ResteasyNonRepeatableRequestExcep
    {
    }
 
-   public ResteasyRedirectException(String message)
+   public ResteasyRedirectException(final String message)
    {
       super(message);
    }
 
-   public ResteasyRedirectException(String message, Throwable cause)
+   public ResteasyRedirectException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyRedirectException(Throwable cause)
+   public ResteasyRedirectException(final Throwable cause)
    {
       super(cause);
    }

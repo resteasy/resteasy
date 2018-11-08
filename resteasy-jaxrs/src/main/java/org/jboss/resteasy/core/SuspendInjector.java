@@ -22,7 +22,7 @@ public class SuspendInjector implements ValueInjector
 {
    private long suspend;
 
-   public SuspendInjector(long suspend, Class type)
+   public SuspendInjector(final long suspend, final Class type)
    {
       if (!type.equals(AsynchronousResponse.class))
          throw new IllegalArgumentException(Messages.MESSAGES.notValidInjectableType(type.getName()));

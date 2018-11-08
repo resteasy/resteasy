@@ -22,7 +22,7 @@ public class BasicAuthentication implements ClientRequestFilter
     * @param username user name
     * @param password password
     */
-   public BasicAuthentication(String username, String password)
+   public BasicAuthentication(final String username, final String password)
    {
       authHeader = BasicAuthHelper.createHeader(username, password);
    }

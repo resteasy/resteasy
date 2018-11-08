@@ -32,7 +32,7 @@ public abstract class PreparedStatementQuery {
    protected PreparedStatement pstmt;
    protected boolean closed;
 
-   public PreparedStatementQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
+   public PreparedStatementQuery(final Connection connection, final boolean closeConnectionOnExit, final String query) throws SQLException {
       this.closeConnectionOnExit = closeConnectionOnExit;
       this.connection = connection;
 
@@ -51,7 +51,7 @@ public abstract class PreparedStatementQuery {
       return connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
    }
 
-   public PreparedStatementQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
+   public PreparedStatementQuery(final DataSource dataSource, final boolean closeConnectionOnExit, final String query) throws SQLException {
       this(dataSource.getConnection(), closeConnectionOnExit, query);
    }
 

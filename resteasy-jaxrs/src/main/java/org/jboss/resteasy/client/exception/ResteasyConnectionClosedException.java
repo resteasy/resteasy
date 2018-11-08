@@ -14,17 +14,17 @@ public class ResteasyConnectionClosedException extends ResteasyIOException
    {
    }
 
-   public ResteasyConnectionClosedException(String message)
+   public ResteasyConnectionClosedException(final String message)
    {
       super(message);
    }
 
-   public ResteasyConnectionClosedException(String message, Throwable cause)
+   public ResteasyConnectionClosedException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyConnectionClosedException(Throwable cause)
+   public ResteasyConnectionClosedException(final Throwable cause)
    {
       super(cause);
    }

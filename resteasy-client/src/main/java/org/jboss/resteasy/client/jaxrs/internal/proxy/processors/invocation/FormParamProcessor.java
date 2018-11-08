@@ -13,7 +13,7 @@ import javax.ws.rs.core.Form;
 public class FormParamProcessor extends AbstractInvocationCollectionProcessor
 {
 
-   public FormParamProcessor(String paramName)
+   public FormParamProcessor(final String paramName)
    {
       super(paramName);
    }

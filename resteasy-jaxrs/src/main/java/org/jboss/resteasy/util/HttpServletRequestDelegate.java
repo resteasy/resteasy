@@ -42,7 +42,7 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getUserPrincipal();
    }
 
-   public HttpServletRequestDelegate(HttpServletRequest delegate)
+   public HttpServletRequestDelegate(final HttpServletRequest delegate)
    {
       this.delegate = delegate;
    }

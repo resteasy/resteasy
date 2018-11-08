@@ -10,17 +10,17 @@ public class ArrayCharSequence implements CharSequence
    private final int offset;
    private final int count;
 
-   public ArrayCharSequence(char[] buff)
+   public ArrayCharSequence(final char[] buff)
    {
       this(buff, 0, buff.length);
    }
 
-   public ArrayCharSequence(char[] buff, int count)
+   public ArrayCharSequence(final char[] buff, final int count)
    {
       this(buff, 0, count);
    }
 
-   public ArrayCharSequence(char[] buff, int offset, int count)
+   public ArrayCharSequence(final char[] buff, final int offset, final int count)
    {
       this.buf = buff;
       this.offset = offset;

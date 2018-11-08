@@ -14,17 +14,17 @@ public class ResteasyHttpContentTooLargeException extends ResteasyHttpException
    {
    }
 
-   public ResteasyHttpContentTooLargeException(String message)
+   public ResteasyHttpContentTooLargeException(final String message)
    {
       super(message);
    }
 
-   public ResteasyHttpContentTooLargeException(String message, Throwable cause)
+   public ResteasyHttpContentTooLargeException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyHttpContentTooLargeException(Throwable cause)
+   public ResteasyHttpContentTooLargeException(final Throwable cause)
    {
       super(cause);
    }

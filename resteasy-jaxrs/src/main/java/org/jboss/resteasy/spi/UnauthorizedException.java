@@ -18,32 +18,32 @@ public class UnauthorizedException extends LoggableFailure
       super(401);
    }
 
-   public UnauthorizedException(String s)
+   public UnauthorizedException(final String s)
    {
       super(s, 401);
    }
 
-   public UnauthorizedException(String s, Response response)
+   public UnauthorizedException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public UnauthorizedException(String s, Throwable throwable, Response response)
+   public UnauthorizedException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public UnauthorizedException(String s, Throwable throwable)
+   public UnauthorizedException(final String s, final Throwable throwable)
    {
       super(s, throwable, 401);
    }
 
-   public UnauthorizedException(Throwable throwable)
+   public UnauthorizedException(final Throwable throwable)
    {
       super(throwable, 401);
    }
 
-   public UnauthorizedException(Throwable throwable, Response response)
+   public UnauthorizedException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

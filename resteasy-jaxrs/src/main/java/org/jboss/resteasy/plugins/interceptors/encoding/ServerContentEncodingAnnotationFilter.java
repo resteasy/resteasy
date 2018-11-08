@@ -28,7 +28,7 @@ public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
 
    Set<String> encodings;
 
-   public ServerContentEncodingAnnotationFilter(Set<String> encodings)
+   public ServerContentEncodingAnnotationFilter(final Set<String> encodings)
    {
       this.encodings = encodings;
    }

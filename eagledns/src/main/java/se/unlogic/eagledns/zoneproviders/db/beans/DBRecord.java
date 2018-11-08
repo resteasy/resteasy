@@ -53,7 +53,7 @@ public class DBRecord implements Elementable {
 
    public DBRecord(){}
 
-   public DBRecord(Record record, Name origin, long zoneTTL) {
+   public DBRecord(final Record record, final Name origin, final long zoneTTL) {
 
       this.name = record.getName().relativize(origin).toString();
       this.type = Type.string(record.getType());

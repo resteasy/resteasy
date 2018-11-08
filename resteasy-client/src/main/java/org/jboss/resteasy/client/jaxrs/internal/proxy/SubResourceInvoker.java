@@ -20,7 +20,7 @@ public class SubResourceInvoker implements MethodInvoker
    String[] pathParams;
    boolean hasPathParams;
 
-   public SubResourceInvoker(ResteasyWebTarget parent, Method method, ProxyConfig config)
+   public SubResourceInvoker(final ResteasyWebTarget parent, final Method method, final ProxyConfig config)
    {
       this.config = config;
       this.method = method;

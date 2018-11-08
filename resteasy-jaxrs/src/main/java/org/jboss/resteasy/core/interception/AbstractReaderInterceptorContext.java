@@ -32,7 +32,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    protected InputStream inputStream;
    protected int index = 0;
 
-   public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
+   public AbstractReaderInterceptorContext(final MediaType mediaType, final ResteasyProviderFactory providerFactory, final Annotation[] annotations, final ReaderInterceptor[] interceptors, final MultivaluedMap<String, String> headers, final Type genericType, final Class type, final InputStream inputStream)
    {
       this.mediaType = mediaType;
       this.annotations = annotations;

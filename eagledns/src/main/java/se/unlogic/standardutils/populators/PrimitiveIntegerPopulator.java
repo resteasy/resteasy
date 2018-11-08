@@ -15,11 +15,11 @@ public class PrimitiveIntegerPopulator extends IntegerPopulator{
       super();
    }
 
-   public PrimitiveIntegerPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public PrimitiveIntegerPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public PrimitiveIntegerPopulator(String populatorID) {
+   public PrimitiveIntegerPopulator(final String populatorID) {
       super(populatorID);
    }
 

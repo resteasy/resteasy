@@ -263,7 +263,7 @@ public class TestFormResource extends BaseResourceTest
       public String key;
       public String value;
 
-      StringPair(String key, String value)
+      StringPair(final String key, final String value)
       {
          this.key = key;
          this.value = value;

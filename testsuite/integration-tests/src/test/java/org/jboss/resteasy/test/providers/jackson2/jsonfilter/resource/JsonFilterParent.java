@@ -11,7 +11,7 @@ public class JsonFilterParent {
 
    }
 
-   public JsonFilterParent(String name, int id) {
+   public JsonFilterParent(final String name, final int id) {
       this.name = name;
       this.id = id;
    }

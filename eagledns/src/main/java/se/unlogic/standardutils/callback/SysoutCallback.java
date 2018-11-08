@@ -10,7 +10,7 @@ public class SysoutCallback<T> implements Callback<T> {
 
    private static final Logger LOG = Logger.getLogger(SysoutCallback.class);
 
-   public SysoutCallback(String prefix, String suffix) {
+   public SysoutCallback(final String prefix, final String suffix) {
 
       super();
       this.prefix = prefix;

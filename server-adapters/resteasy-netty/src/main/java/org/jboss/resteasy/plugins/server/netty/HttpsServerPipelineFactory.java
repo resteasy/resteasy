@@ -20,7 +20,7 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
 
    private final SSLContext context;
 
-   public HttpsServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive, List<ChannelHandler> additionalChannelHandlers, SSLContext context)
+   public HttpsServerPipelineFactory(final RequestDispatcher dispatcher, final String root, final int executorThreadCount, final int maxRequestSize, final boolean isKeepAlive, final List<ChannelHandler> additionalChannelHandlers, final SSLContext context)
    {
       super(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, additionalChannelHandlers);
       this.context = context;

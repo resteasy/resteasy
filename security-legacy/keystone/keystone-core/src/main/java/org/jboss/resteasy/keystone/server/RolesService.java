@@ -30,7 +30,7 @@ public class RolesService
 {
    private Cache cache;
 
-   public RolesService(Cache cache)
+   public RolesService(final Cache cache)
    {
       this.cache = cache;
    }

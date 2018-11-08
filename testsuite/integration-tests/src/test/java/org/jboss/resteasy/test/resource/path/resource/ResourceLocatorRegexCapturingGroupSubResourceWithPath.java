@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 public class ResourceLocatorRegexCapturingGroupSubResourceWithPath {
    private String name;
 
-   public ResourceLocatorRegexCapturingGroupSubResourceWithPath(String name) {
+   public ResourceLocatorRegexCapturingGroupSubResourceWithPath(final String name) {
       this.name = name;
    }
 

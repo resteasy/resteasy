@@ -7,7 +7,7 @@ public class CachedPrimaryZone {
    protected Zone zone;
    protected ZoneProvider zoneProvider;
 
-   public CachedPrimaryZone(Zone zone, ZoneProvider zoneProvider) {
+   public CachedPrimaryZone(final Zone zone, final ZoneProvider zoneProvider) {
 
       super();
       this.zone = zone;

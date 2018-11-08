@@ -18,7 +18,7 @@ public class TCPSocketMonitor extends Thread {
    private final int port;
    private final ServerSocket serverSocket;
 
-   public TCPSocketMonitor(EagleDNS eagleDNS, final InetAddress addr, final int port) throws IOException {
+   public TCPSocketMonitor(final EagleDNS eagleDNS, final InetAddress addr, final int port) throws IOException {
       super();
       this.eagleDNS = eagleDNS;
       this.addr = addr;

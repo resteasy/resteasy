@@ -22,7 +22,7 @@ public class MySQLScriptDAO implements ScriptDAO {
 
    protected final DataSource dataSource;
 
-   public MySQLScriptDAO(DataSource dataSource) {
+   public MySQLScriptDAO(final DataSource dataSource) {
       this.dataSource = dataSource;
    }
 

@@ -83,7 +83,7 @@ public class TestSecureLinks
    private String url;
    private BookStoreService client;
    private DefaultHttpClient httpClient;
-   public TestSecureLinks(Class<?> resourceType){
+   public TestSecureLinks(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

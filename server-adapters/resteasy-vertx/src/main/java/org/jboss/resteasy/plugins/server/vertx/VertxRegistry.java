@@ -17,7 +17,7 @@ public class VertxRegistry implements Registry
    private final Registry delegate;
    private final ResourceBuilder resourceBuilder;
 
-   public VertxRegistry(Registry delegate, ResourceBuilder resourceBuilder)
+   public VertxRegistry(final Registry delegate, final ResourceBuilder resourceBuilder)
    {
       this.delegate = delegate;
       this.resourceBuilder = resourceBuilder;

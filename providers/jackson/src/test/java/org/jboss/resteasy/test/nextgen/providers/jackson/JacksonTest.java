@@ -55,7 +55,7 @@ public class JacksonTest extends BaseResourceTest
       {
       }
 
-      public Product(int id, String name)
+      public Product(final int id, final String name)
       {
          this.id = id;
          this.name = name;
@@ -97,7 +97,7 @@ public class JacksonTest extends BaseResourceTest
       {
       }
 
-      public XmlProduct(int id, String name)
+      public XmlProduct(final int id, final String name)
       {
          this.id = id;
          this.name = name;

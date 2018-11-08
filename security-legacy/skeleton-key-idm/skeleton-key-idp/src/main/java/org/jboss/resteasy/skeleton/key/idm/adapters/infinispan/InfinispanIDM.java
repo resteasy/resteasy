@@ -34,7 +34,7 @@ public class InfinispanIDM implements IdentityManager
 
    protected Cache cache;
 
-   public InfinispanIDM(Cache cache)
+   public InfinispanIDM(final Cache cache)
    {
       this.cache = cache;
    }

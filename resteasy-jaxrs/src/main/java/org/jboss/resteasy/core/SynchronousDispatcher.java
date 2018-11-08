@@ -53,7 +53,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
 
-   public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
+   public SynchronousDispatcher(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
@@ -63,7 +63,7 @@ public class SynchronousDispatcher implements Dispatcher
       defaultContextObjects.put(InternalDispatcher.class, InternalDispatcher.getInstance());
    }
 
-   public SynchronousDispatcher(ResteasyProviderFactory providerFactory, ResourceMethodRegistry registry)
+   public SynchronousDispatcher(final ResteasyProviderFactory providerFactory, final ResourceMethodRegistry registry)
    {
       this(providerFactory);
       this.registry = registry;

@@ -19,7 +19,7 @@ class ProxyInvocationHandler implements InvocationHandler
 
    private Set<Object> providerInstances;
 
-   ProxyInvocationHandler(Object target, Set<Object> providerInstances)
+   ProxyInvocationHandler(final Object target, final Set<Object> providerInstances)
    {
       this.target = target;
       this.providerInstances = providerInstances;

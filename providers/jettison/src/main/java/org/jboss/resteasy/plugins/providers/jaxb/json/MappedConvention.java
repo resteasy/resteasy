@@ -16,7 +16,7 @@ public class MappedConvention extends MappedNamespaceConvention
    {
    }
 
-   public MappedConvention(Configuration configuration)
+   public MappedConvention(final Configuration configuration)
    {
       super(configuration);
    }

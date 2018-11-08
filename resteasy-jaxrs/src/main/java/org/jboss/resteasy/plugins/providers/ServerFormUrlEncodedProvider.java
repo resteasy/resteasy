@@ -28,7 +28,7 @@ public class ServerFormUrlEncodedProvider extends FormUrlEncodedProvider
 {
    protected boolean useContainerParams;
 
-   public ServerFormUrlEncodedProvider(boolean useContainerParams)
+   public ServerFormUrlEncodedProvider(final boolean useContainerParams)
    {
       this.useContainerParams = useContainerParams;
    }

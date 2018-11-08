@@ -69,7 +69,7 @@ public class ResourceBuilder
       List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
       List<ResourceLocator> resourceLocators = new ArrayList<ResourceLocator>();
 
-      public ResourceClassBuilder(Class<?> root, String path)
+      public ResourceClassBuilder(final Class<?> root, final String path)
       {
          this.resourceClass = new DefaultResourceClass(root, path);
       }
@@ -126,7 +126,7 @@ public class ResourceBuilder
    {
       final Parameter parameter;
 
-      public ParameterBuilder(Parameter parameter)
+      public ParameterBuilder(final Parameter parameter)
       {
          this.parameter = parameter;
       }
@@ -396,7 +396,7 @@ public class ResourceBuilder
       final ResourceConstructorBuilder constructor;
       final ConstructorParameter param;
 
-      public ConstructorParameterBuilder(ResourceConstructorBuilder builder, ConstructorParameter param)
+      public ConstructorParameterBuilder(final ResourceConstructorBuilder builder, final ConstructorParameter param)
       {
          super(param);
          this.constructor = builder;
@@ -420,7 +420,7 @@ public class ResourceBuilder
       final ResourceLocatorBuilder locator;
       final MethodParameter param;
 
-      public LocatorMethodParameterBuilder(ResourceLocatorBuilder method, MethodParameter param)
+      public LocatorMethodParameterBuilder(final ResourceLocatorBuilder method, final MethodParameter param)
       {
          super(param);
          this.locator = method;
@@ -443,7 +443,7 @@ public class ResourceBuilder
    {
       final ResourceMethodBuilder method;
 
-      public ResourceMethodParameterBuilder(ResourceMethodBuilder method, MethodParameter param)
+      public ResourceMethodParameterBuilder(final ResourceMethodBuilder method, final MethodParameter param)
       {
          super(method, param);
          this.method = method;
@@ -486,7 +486,7 @@ public class ResourceBuilder
       ResourceConstructor constructor;
       ResourceClassBuilder resourceClassBuilder;
 
-      public ResourceConstructorBuilder(ResourceClassBuilder resourceClassBuilder, Constructor constructor)
+      public ResourceConstructorBuilder(final ResourceClassBuilder resourceClassBuilder, final Constructor constructor)
       {
          this.resourceClassBuilder = resourceClassBuilder;
          this.constructor = new DefaultResourceConstructor(resourceClassBuilder.resourceClass, constructor);
@@ -513,7 +513,7 @@ public class ResourceBuilder
       {
       }
 
-      public ResourceLocatorBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
+      public ResourceLocatorBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
       {
          this.resourceClassBuilder = resourceClassBuilder;
          this.locator = new DefaultResourceLocator(resourceClassBuilder.resourceClass, method, annotatedMethod);
@@ -571,7 +571,7 @@ public class ResourceBuilder
    {
       DefaultResourceMethod method;
 
-      ResourceMethodBuilder(ResourceClassBuilder resourceClassBuilder, Method method, Method annotatedMethod)
+      ResourceMethodBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
       {
          this.method = new DefaultResourceMethod(resourceClassBuilder.resourceClass, method, annotatedMethod);
          this.locator = this.method;
@@ -700,7 +700,7 @@ public class ResourceBuilder
    {
       FieldParameter field;
       ResourceClassBuilder resourceClassBuilder;
-      FieldParameterBuilder(ResourceClassBuilder resourceClassBuilder, FieldParameter parameter)
+      FieldParameterBuilder(final ResourceClassBuilder resourceClassBuilder, final FieldParameter parameter)
       {
          super(parameter);
          this.field = parameter;
@@ -719,7 +719,7 @@ public class ResourceBuilder
    {
       SetterParameter setter;
       ResourceClassBuilder resourceClassBuilder;
-      SetterParameterBuilder(ResourceClassBuilder resourceClassBuilder, SetterParameter parameter)
+      SetterParameterBuilder(final ResourceClassBuilder resourceClassBuilder, final SetterParameter parameter)
       {
          super(parameter);
          this.setter = parameter;

@@ -10,7 +10,7 @@ public class SimplePrincipal implements Principal
 {
    private String username;
 
-   public SimplePrincipal(String username)
+   public SimplePrincipal(final String username)
    {
       this.username = username;
    }

@@ -16,52 +16,52 @@ import javax.ws.rs.core.Response;
  */
 public class WriterException extends LoggableFailure
 {
-   public WriterException(String s, Response response)
+   public WriterException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public WriterException(String s, Throwable throwable, Response response)
+   public WriterException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public WriterException(Throwable throwable, Response response)
+   public WriterException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }
 
-   public WriterException(String s, Throwable throwable)
+   public WriterException(final String s, final Throwable throwable)
    {
       super(s, throwable, -1);
    }
 
-   public WriterException(Throwable throwable)
+   public WriterException(final Throwable throwable)
    {
       super(throwable, -1);
    }
 
-   public WriterException(String s)
+   public WriterException(final String s)
    {
       super(s, -1);
    }
 
-   public WriterException(int errorCode)
+   public WriterException(final int errorCode)
    {
       super(errorCode);
    }
 
-   public WriterException(String s, int errorCode)
+   public WriterException(final String s, final int errorCode)
    {
       super(s, errorCode);
    }
 
-   public WriterException(String s, Throwable throwable, int errorCode)
+   public WriterException(final String s, final Throwable throwable, final int errorCode)
    {
       super(s, throwable, errorCode);
    }
 
-   public WriterException(Throwable throwable, int errorCode)
+   public WriterException(final Throwable throwable, final int errorCode)
    {
       super(throwable, errorCode);
    }

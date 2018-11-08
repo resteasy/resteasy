@@ -74,13 +74,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected ClientExecutor executor;
    protected Map<String, Object> attributes;
 
-   public BaseClientResponse(BaseClientResponseStreamFactory streamFactory, ClientExecutor executor)
+   public BaseClientResponse(final BaseClientResponseStreamFactory streamFactory, final ClientExecutor executor)
    {
       this.streamFactory = streamFactory;
       this.executor = executor;
    }
 
-   public BaseClientResponse(BaseClientResponseStreamFactory streamFactory)
+   public BaseClientResponse(final BaseClientResponseStreamFactory streamFactory)
    {
       this.streamFactory = streamFactory;
    }
@@ -493,7 +493,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    private static class InputStreamWrapper extends FilterInputStream {
-      protected InputStreamWrapper(InputStream in) {
+      protected InputStreamWrapper(final InputStream in) {
          super(in);
       }
 

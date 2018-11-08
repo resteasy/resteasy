@@ -41,7 +41,7 @@ public class ClientDigitalSigningHeaderDecoratorFeature implements DynamicFeatur
    @Priority(Priorities.HEADER_DECORATOR)
    public static class DigitalSigningHeaderDecorator extends AbstractDigitalSigningHeaderDecorator implements ClientRequestFilter
    {
-      public DigitalSigningHeaderDecorator(Signed signed)
+      public DigitalSigningHeaderDecorator(final Signed signed)
       {
          this.signed = signed;
       }

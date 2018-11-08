@@ -34,13 +34,13 @@ public class StreamPrinter extends Thread implements StreamHandler {
 
    private boolean terminated = false;
 
-   public StreamPrinter(String prefix, OutputStream os) {
+   public StreamPrinter(final String prefix, final OutputStream os) {
       super();
       this.outputStream = os;
       this.prefix = prefix;
    }
 
-   public StreamPrinter(OutputStream os) {
+   public StreamPrinter(final OutputStream os) {
       super();
       this.outputStream = os;
    }

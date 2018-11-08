@@ -27,7 +27,7 @@ public class ResteasyContextPropagatingOnFlowableCreateAction implements BiFunct
 
       final Subscriber<T> actual;
 
-      ContextCapturerSubscriber(Subscriber<T> actual)
+      ContextCapturerSubscriber(final Subscriber<T> actual)
       {
          this.actual = actual;
       }

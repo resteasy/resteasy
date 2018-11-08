@@ -70,8 +70,8 @@ public abstract class ReaderUtility
       this(ResteasyProviderFactory.getInstance(), null);
    }
 
-   public ReaderUtility(ResteasyProviderFactory factory,
-                        ReaderInterceptor[] interceptors)
+   public ReaderUtility(final ResteasyProviderFactory factory,
+                        final ReaderInterceptor[] interceptors)
    {
       this.factory = factory;
       this.interceptors = interceptors;

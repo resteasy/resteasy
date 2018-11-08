@@ -12,14 +12,14 @@ public class ServerResponse extends BuiltResponse
    {
    }
 
-   public ServerResponse(Object entity, int status, Headers<Object> metadata)
+   public ServerResponse(final Object entity, final int status, final Headers<Object> metadata)
    {
       this.setEntity(entity);
       this.status = status;
       this.metadata = metadata;
    }
 
-   public ServerResponse(BuiltResponse response)
+   public ServerResponse(final BuiltResponse response)
    {
       this.setEntity(response.getEntity());
       this.setAnnotations(response.getAnnotations());

@@ -15,7 +15,7 @@ import java.net.URI;
  */
 public class ResponseContainerRequestContext extends PreMatchContainerRequestContext
 {
-   public ResponseContainerRequestContext(HttpRequest request)
+   public ResponseContainerRequestContext(final HttpRequest request)
    {
       super(request, null, null);
    }

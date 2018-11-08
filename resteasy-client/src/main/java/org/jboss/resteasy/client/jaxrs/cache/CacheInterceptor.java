@@ -28,7 +28,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 {
    protected BrowserCache cache;
 
-   public CacheInterceptor(BrowserCache cache)
+   public CacheInterceptor(final BrowserCache cache)
    {
       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : CacheInterceptor", getClass().getName());
       this.cache = cache;

@@ -11,7 +11,7 @@ import java.io.File;
  */
 public class FileRangeException extends WebApplicationException
 {
-   public FileRangeException(MediaType mediaType, File file, long begin, long end)
+   public FileRangeException(final MediaType mediaType, final File file, final long begin, final long end)
    {
       super(Response.status(206).entity(new FileRange(file, begin, end)).type(mediaType).build());
    }

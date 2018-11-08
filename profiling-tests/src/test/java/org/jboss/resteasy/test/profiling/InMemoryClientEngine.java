@@ -45,7 +45,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
       dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
    }
 
-   public InMemoryClientEngine(Dispatcher dispatcher)
+   public InMemoryClientEngine(final Dispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }
@@ -185,7 +185,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
    {
       private InputStream stream;
 
-      protected InMemoryClientResponse(ClientConfiguration configuration, InputStream is)
+      protected InMemoryClientResponse(final ClientConfiguration configuration, final InputStream is)
       {
          super(configuration);
          stream = is;

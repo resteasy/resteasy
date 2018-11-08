@@ -19,7 +19,7 @@ public class TJWSRequestPreProcessor
    private SecurityDomain domain;
    private String contextPath = "";
 
-   public TJWSRequestPreProcessor(SecurityDomain domain)
+   public TJWSRequestPreProcessor(final SecurityDomain domain)
    {
       this.domain = domain;
    }

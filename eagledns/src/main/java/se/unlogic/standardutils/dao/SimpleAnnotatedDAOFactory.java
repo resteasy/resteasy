@@ -21,7 +21,7 @@ public class SimpleAnnotatedDAOFactory implements AnnotatedDAOFactory{
    private final DataSource dataSource;
    private final HashMap<Class<?>, AnnotatedDAO<?>> daoMap = new HashMap<Class<?>, AnnotatedDAO<?>>();
 
-   public SimpleAnnotatedDAOFactory(DataSource dataSource) {
+   public SimpleAnnotatedDAOFactory(final DataSource dataSource) {
 
       super();
       this.dataSource = dataSource;

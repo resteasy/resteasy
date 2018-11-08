@@ -14,7 +14,7 @@ public class Slf4jLogger extends org.jboss.resteasy.logging.Logger
    private transient Logger delegate;
    private String classname;
 
-   public Slf4jLogger(String classname)
+   public Slf4jLogger(final String classname)
    {
       delegate = LoggerFactory.getLogger(classname);
       this.classname = classname;

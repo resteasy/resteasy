@@ -14,17 +14,17 @@ public class ResteasyUnsupportedHttpVersionException extends ResteasyProtocolExc
    {
    }
 
-   public ResteasyUnsupportedHttpVersionException(String message)
+   public ResteasyUnsupportedHttpVersionException(final String message)
    {
       super(message);
    }
 
-   public ResteasyUnsupportedHttpVersionException(String message, Throwable cause)
+   public ResteasyUnsupportedHttpVersionException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyUnsupportedHttpVersionException(Throwable cause)
+   public ResteasyUnsupportedHttpVersionException(final Throwable cause)
    {
       super(cause);
    }

@@ -43,8 +43,8 @@ public class ServiceRegistry
       return parent;
    }
 
-   public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry,
-         ResteasyProviderFactory providerFactory, ResourceLocatorInvoker invoker) throws Exception {
+   public ServiceRegistry(final ServiceRegistry parent, final ResourceMethodRegistry registry,
+                          final ResteasyProviderFactory providerFactory, final ResourceLocatorInvoker invoker) throws Exception {
       this.parent = parent;
       this.registry = registry;
       this.providerFactory = providerFactory;

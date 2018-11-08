@@ -18,21 +18,21 @@ public class DatePopulator extends BaseStringPopulator<Date> {
 
    private final SimpleDateFormat dateFormat;
 
-   public DatePopulator(SimpleDateFormat dateFormat) {
+   public DatePopulator(final SimpleDateFormat dateFormat) {
 
       super();
 
       this.dateFormat = dateFormat;
    }
 
-   public DatePopulator(String populatorID, SimpleDateFormat dateFormat) {
+   public DatePopulator(final String populatorID, final SimpleDateFormat dateFormat) {
 
       super(populatorID);
 
       this.dateFormat = dateFormat;
    }
 
-   public DatePopulator(String populatorID, SimpleDateFormat dateFormat, StringFormatValidator formatValidator) {
+   public DatePopulator(final String populatorID, final SimpleDateFormat dateFormat, final StringFormatValidator formatValidator) {
 
       super(populatorID,formatValidator);
       this.dateFormat = dateFormat;

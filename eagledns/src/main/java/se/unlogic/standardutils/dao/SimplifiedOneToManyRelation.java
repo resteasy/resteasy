@@ -56,7 +56,7 @@ public class SimplifiedOneToManyRelation<LocalType, RemoteType> implements OneTo
    private boolean initialized;
 
    @SuppressWarnings("unchecked")
-   public SimplifiedOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAO<LocalType> localDAO, List<? extends BeanStringPopulator<?>> typePopulators, List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
+   public SimplifiedOneToManyRelation(final Class<LocalType> beanClass, final Class<RemoteType> remoteClass, final Field field, final AnnotatedDAO<LocalType> localDAO, final List<? extends BeanStringPopulator<?>> typePopulators, final List<? extends QueryParameterPopulator<?>> queryParameterPopulators) {
 
       super();
       this.localDAO = localDAO;

@@ -12,12 +12,12 @@ package org.jboss.resteasy.spi;
  */
 public final class ApplicationException extends RuntimeException
 {
-   public ApplicationException(String s, Throwable throwable)
+   public ApplicationException(final String s, final Throwable throwable)
    {
       super(s, throwable);
    }
 
-   public ApplicationException(Throwable throwable)
+   public ApplicationException(final Throwable throwable)
    {
       super(throwable);
    }

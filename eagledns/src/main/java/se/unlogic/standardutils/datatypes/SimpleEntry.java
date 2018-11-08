@@ -14,7 +14,7 @@ public class SimpleEntry<KeyType, ValueType> implements Entry<KeyType,ValueType>
 
    private static final long serialVersionUID = 2017770345032632182L;
 
-   public SimpleEntry(KeyType key, ValueType value) {
+   public SimpleEntry(final KeyType key, final ValueType value) {
       super();
       this.key = key;
       this.value = value;

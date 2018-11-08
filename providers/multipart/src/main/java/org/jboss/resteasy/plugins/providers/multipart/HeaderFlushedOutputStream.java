@@ -15,8 +15,8 @@ public class HeaderFlushedOutputStream extends OutputStream {
    private OutputStream stream;
    private boolean headersFlushed = false;
 
-   public HeaderFlushedOutputStream(MultivaluedMap<String, Object> headers,
-         OutputStream delegate) {
+   public HeaderFlushedOutputStream(final MultivaluedMap<String, Object> headers,
+                                    final OutputStream delegate) {
       this.headers = headers;
       this.stream = delegate;
    }

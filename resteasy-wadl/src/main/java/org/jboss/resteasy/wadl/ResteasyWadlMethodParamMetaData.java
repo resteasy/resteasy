@@ -17,8 +17,8 @@ public class ResteasyWadlMethodParamMetaData {
    private MethodParamType paramType;
    private String paramName;
 
-   public ResteasyWadlMethodParamMetaData(Class<?> type, Annotation[] annotations,
-                                           MethodParamType paramType, String paramName) {
+   public ResteasyWadlMethodParamMetaData(final Class<?> type, final Annotation[] annotations,
+                                          final MethodParamType paramType, final String paramName) {
       super();
       this.type = type;
       this.annotations = annotations;

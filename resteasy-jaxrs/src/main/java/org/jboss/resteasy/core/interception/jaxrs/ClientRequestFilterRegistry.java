@@ -13,7 +13,7 @@ public class ClientRequestFilterRegistry extends JaxrsInterceptorRegistry<Client
 
    //private static final Logger LOGGER = Logger.getLogger(ClientRequestFilterRegistry.class.getName());
 
-   public ClientRequestFilterRegistry(ResteasyProviderFactory providerFactory)
+   public ClientRequestFilterRegistry(final ResteasyProviderFactory providerFactory)
    {
       super(providerFactory, ClientRequestFilter.class);
    }

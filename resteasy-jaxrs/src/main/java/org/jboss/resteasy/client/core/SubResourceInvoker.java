@@ -17,7 +17,7 @@ public class SubResourceInvoker implements MethodInvoker
    final String base;
    final String format;
 
-   public SubResourceInvoker(URI uri, Method method, ProxyConfig config)
+   public SubResourceInvoker(final URI uri, final Method method, final ProxyConfig config)
    {
       String base = uri.toString();
       if (!base.endsWith("/"))

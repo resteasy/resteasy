@@ -14,17 +14,17 @@ public class ResteasyMalformedCookieException extends ResteasyProtocolException
    {
    }
 
-   public ResteasyMalformedCookieException(String message)
+   public ResteasyMalformedCookieException(final String message)
    {
       super(message);
    }
 
-   public ResteasyMalformedCookieException(String message, Throwable cause)
+   public ResteasyMalformedCookieException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyMalformedCookieException(Throwable cause)
+   public ResteasyMalformedCookieException(final Throwable cause)
    {
       super(cause);
    }

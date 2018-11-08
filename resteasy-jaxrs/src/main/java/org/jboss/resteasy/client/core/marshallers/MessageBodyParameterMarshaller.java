@@ -17,7 +17,7 @@ public class MessageBodyParameterMarshaller implements Marshaller
    private Type genericType;
    private Annotation[] annotations;
 
-   public MessageBodyParameterMarshaller(MediaType mediaType, Class type, Type genericType, Annotation[] annotations)
+   public MessageBodyParameterMarshaller(final MediaType mediaType, final Class type, final Type genericType, final Annotation[] annotations)
    {
       this.type = type;
       this.mediaType = mediaType;

@@ -17,7 +17,7 @@ public class StrictTreeMap<Key, Value> implements StrictMap<Key, Value> {
 
    protected final TreeMap<Key, Value> treeMap;
 
-   public StrictTreeMap (Comparator<Key> comparator){
+   public StrictTreeMap (final Comparator<Key> comparator){
 
       treeMap = new TreeMap<Key, Value>(comparator);
    }

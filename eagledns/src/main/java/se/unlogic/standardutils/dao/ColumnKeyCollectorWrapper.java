@@ -19,7 +19,7 @@ public class ColumnKeyCollectorWrapper<T> implements GeneratedKeyCollector {
    private ArrayList<ColumnKeyCollector<T>> columnKeyCollectors;
    private T bean;
 
-   public ColumnKeyCollectorWrapper(ArrayList<ColumnKeyCollector<T>> columnKeyCollectors, T bean) {
+   public ColumnKeyCollectorWrapper(final ArrayList<ColumnKeyCollector<T>> columnKeyCollectors, final T bean) {
 
       this.columnKeyCollectors = columnKeyCollectors;
       this.bean = bean;

@@ -24,7 +24,7 @@ public class DomainToken implements Serializable {
       {
       }
 
-      public ProjectRoles(String pid)
+      public ProjectRoles(final String pid)
       {
          this.pid = pid;
       }

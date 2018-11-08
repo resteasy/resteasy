@@ -18,7 +18,7 @@ public class MethodBasedResultSetPopulator<Type> implements BeanResultSetPopulat
    private Method method;
    private String columnName;
 
-   public MethodBasedResultSetPopulator(Method method, String columnName) {
+   public MethodBasedResultSetPopulator(final Method method, final String columnName) {
 
       this.method = method;
       this.columnName = columnName;

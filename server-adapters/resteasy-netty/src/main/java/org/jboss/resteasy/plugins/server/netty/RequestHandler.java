@@ -34,7 +34,7 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
 {
    protected final RequestDispatcher dispatcher;
 
-   public RequestHandler(RequestDispatcher dispatcher)
+   public RequestHandler(final RequestDispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }

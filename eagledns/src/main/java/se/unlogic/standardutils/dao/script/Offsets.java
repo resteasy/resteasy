@@ -16,7 +16,7 @@ public class Offsets {
    private final Integer start;
    private final Integer end;
 
-   public Offsets(Integer start, Integer end) {
+   public Offsets(final Integer start, final Integer end) {
       super();
       this.start = start;
       this.end = end;

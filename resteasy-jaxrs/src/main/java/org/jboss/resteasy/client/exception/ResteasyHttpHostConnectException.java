@@ -14,17 +14,17 @@ public class ResteasyHttpHostConnectException extends ResteasyIOException
    {
    }
 
-   public ResteasyHttpHostConnectException(String message)
+   public ResteasyHttpHostConnectException(final String message)
    {
       super(message);
    }
 
-   public ResteasyHttpHostConnectException(String message, Throwable cause)
+   public ResteasyHttpHostConnectException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyHttpHostConnectException(Throwable cause)
+   public ResteasyHttpHostConnectException(final Throwable cause)
    {
       super(cause);
    }

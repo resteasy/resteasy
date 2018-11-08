@@ -14,7 +14,7 @@ public class ResourceIdsMethodBook extends IdBook{
    public ResourceIdsMethodBook() {
    }
 
-   public ResourceIdsMethodBook(String namea, String nameb) {
+   public ResourceIdsMethodBook(final String namea, final String nameb) {
       this._namea = namea;
       this._nameb = nameb;
    }

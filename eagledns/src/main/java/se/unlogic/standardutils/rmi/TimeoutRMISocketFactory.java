@@ -11,7 +11,7 @@ public class TimeoutRMISocketFactory extends RMISocketFactory{
    protected int readTimeout;
    protected int connectionTimeout;
 
-   public TimeoutRMISocketFactory(int readTimeout, int connectionTimeout) {
+   public TimeoutRMISocketFactory(final int readTimeout, final int connectionTimeout) {
 
       super();
       this.readTimeout = readTimeout;
