@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.validation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
