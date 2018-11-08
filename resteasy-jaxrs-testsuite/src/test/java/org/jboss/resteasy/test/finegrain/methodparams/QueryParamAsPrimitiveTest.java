@@ -192,7 +192,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/long")
       public String doGet(@QueryParam("long") long v)
       {
-         Assert.assertEquals(0l, v);
+         Assert.assertEquals(0L, v);
          return "content";
       }
 

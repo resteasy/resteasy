@@ -100,7 +100,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].start();
       for (int i = 0; i < 3; i++) threads[i].join();
 
-      Assert.assertEquals(30l, counter.get());
+      Assert.assertEquals(30L, counter.get());
    }
 
    @Test
@@ -130,7 +130,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].start();
       for (int i = 0; i < 3; i++) threads[i].join();
 
-      Assert.assertEquals(30l, counter.get());
+      Assert.assertEquals(30L, counter.get());
    }
 
    @Test
@@ -166,7 +166,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].start();
       for (int i = 0; i < 3; i++) threads[i].join();
 
-      Assert.assertEquals(30l, counter.get());
+      Assert.assertEquals(30L, counter.get());
    }
 
    @Test
@@ -201,7 +201,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].start();
       for (int i = 0; i < 3; i++) threads[i].join();
 
-      Assert.assertEquals(30l, counter.get());
+      Assert.assertEquals(30L, counter.get());
    }
 
    @Test
@@ -245,7 +245,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       for (int i = 0; i < 3; i++) threads[i].start();
       for (int i = 0; i < 3; i++) threads[i].join();
 
-      Assert.assertEquals(30l, counter.get());
+      Assert.assertEquals(30L, counter.get());
    }
 
    private void callProxy(MyResource proxy)
