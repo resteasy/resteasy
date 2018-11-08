@@ -42,10 +42,10 @@ public class SubResourceInvoker implements MethodInvoker
       }
       if (method.isAnnotationPresent(Path.class))
       {
-         parent = parent.path(method.getAnnotation(Path.class).value());
+         this.parent = parent.path(method.getAnnotation(Path.class).value());
+      } else {
+         this.parent = parent;
       }
-      this.parent = parent;
-
    }
 
    @Override

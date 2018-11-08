@@ -39,4 +39,4 @@ public class JAXBUnmarshalException extends ReaderException
    {
       super(throwable, response);
    }
-}final
+}
