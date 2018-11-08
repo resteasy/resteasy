@@ -34,7 +34,7 @@ public class PrimitiveLongPopulator extends LongPopulator {
    public Long getValue(String value) {
 
       if(value == null){
-         return 0l;
+         return 0L;
       }
 
       return super.getValue(value);

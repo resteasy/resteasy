@@ -4151,7 +4151,7 @@ public class Serve implements ServletContext, Serializable
                   if (cc.getMaxAge() >= 0)
                   {
                      sb.append("; expires=");
-                     sb.append(expdatefmt.format(new Date(new Date().getTime() + 1000l * cc.getMaxAge())));
+                     sb.append(expdatefmt.format(new Date(new Date().getTime() + 1000L * cc.getMaxAge())));
                   }
                   if (cc.getPath() != null && cc.getPath().length() > 0)
                   {

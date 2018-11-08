@@ -54,7 +54,7 @@ public class DosetaKeyRepository implements KeyRepository
    protected boolean useDns = false;
    protected boolean userPrincipalAsPrivateSelector = false;
    protected String dnsUri;
-   protected long cacheTimeout = 3600000l; // 1 hour
+   protected long cacheTimeout = 3600000L; // 1 hour
    protected String keyStorePath;
    protected String keyStoreFile;
    protected String keyStorePassword;

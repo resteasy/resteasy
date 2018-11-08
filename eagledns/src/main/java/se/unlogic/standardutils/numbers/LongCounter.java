@@ -18,7 +18,7 @@ public class LongCounter {
 
    public LongCounter() {
       super();
-      this.value = 0l;
+      this.value = 0L;
    }
 
    public Long getValue() {
