@@ -142,7 +142,7 @@ public class ThrottledOutputStream extends FilterOutputStream
    // @param off the start offset in the data
    // @param len the number of bytes that are written
    // @exception IOException if an I/O error has occurred
-   public void write(byte b[], int off, int len) throws IOException
+   public void write(byte[] b, int off, int len) throws IOException
    {
       // Check the throttle.
       bytes += len;

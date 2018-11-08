@@ -42,7 +42,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
    protected Request validation;
 
 
-   private static final String pseudo[] = {
+   private static final String[] pseudo = {
       "0", "1", "2",
       "3", "4", "5", "6", "7", "8",
       "9", "A", "B", "C", "D", "E",
@@ -79,7 +79,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
       try
       {
          MessageDigest messagedigest = MessageDigest.getInstance("MD5");
-         byte abyte0[] = messagedigest.digest(entity);
+         byte[] abyte0 = messagedigest.digest(entity);
          return byteArrayToHexString(abyte0);
       }
       catch (NoSuchAlgorithmException e)

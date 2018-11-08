@@ -4521,13 +4521,13 @@ public class Serve implements ServletContext, Serializable
       }
 
       /* ------------------------------------------------------------ */
-      public int read(byte b[]) throws IOException
+      public int read(byte[] b) throws IOException
       {
          return read(b, 0, b.length);
       }
 
       /* ------------------------------------------------------------ */
-      public synchronized int read(byte b[], int off, int len) throws IOException
+      public synchronized int read(byte[] b, int off, int len) throws IOException
       {
          if (closed)
             throw new IOException("The stream is already closed");

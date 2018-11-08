@@ -297,7 +297,7 @@ public class SSLAcceptor implements Acceptor
       SSLServerSocket socket = (SSLServerSocket) ssocket;
 
       // Enable all available cipher suites when the socket is connected
-      String cipherSuites[] = socket.getSupportedCipherSuites();
+      String[] cipherSuites = socket.getSupportedCipherSuites();
       socket.setEnabledCipherSuites(cipherSuites);
       // Set client authentication if necessary
       socket.setNeedClientAuth(clientAuth);
