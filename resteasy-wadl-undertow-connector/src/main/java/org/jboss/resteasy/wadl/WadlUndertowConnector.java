@@ -1,14 +1,11 @@
 package org.jboss.resteasy.wadl;
 
 import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.ServletInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-
-import static io.undertow.servlet.Servlets.servlet;
 
 /**
  * Created by weli on 7/26/16.
