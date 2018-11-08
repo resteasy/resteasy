@@ -20,10 +20,10 @@ public class CookieParser {
          String cookieName = null;
          String cookieValue = null;
 
-         String parts[] = cookieHeader.split("[;,]");
+         String[] parts = cookieHeader.split("[;,]");
          for (String part : parts)
          {
-            String nv[] = part.split("=", 2);
+            String[] nv = part.split("=", 2);
             String name = nv.length > 0 ? nv[0].trim() : "";
             String value = nv.length > 1 ? nv[1].trim() : "";
             if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1)

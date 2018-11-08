@@ -101,7 +101,7 @@ public class CgiServlet extends HttpServlet
       log("running " + path + "?" + queryString);
 
       // Make argument list.
-      String argList[] = (path + (queryString != null && queryString.indexOf("=") == -1 ? "+" + queryString : ""))
+      String[] argList = (path + (queryString != null && queryString.indexOf("=") == -1 ? "+" + queryString : ""))
             .split("\\+"); /* 1.4 */
 
       // Make environment list.
@@ -139,7 +139,7 @@ public class CgiServlet extends HttpServlet
             value = "";
          envVec.addElement(makeEnv("HTTP_" + name.toUpperCase().replace('-', '_'), value));
       }
-      String envList[] = makeList(envVec);
+      String[] envList = makeList(envVec);
 
       // Start the command.
       Process proc = Runtime.getRuntime().exec(argList, envList);
@@ -274,7 +274,7 @@ public class CgiServlet extends HttpServlet
 
    private static String[] makeList(Vector vec)
    {
-      String list[] = new String[vec.size()];
+      String[] list = new String[vec.size()];
       for (int i = 0; i < vec.size(); ++i)
          list[i] = (String) vec.elementAt(i);
       return list;
