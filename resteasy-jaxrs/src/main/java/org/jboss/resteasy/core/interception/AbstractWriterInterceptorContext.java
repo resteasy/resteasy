@@ -33,7 +33,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    protected int index = 0;
    protected ResteasyProviderFactory providerFactory;
 
-   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers)
+   public AbstractWriterInterceptorContext(final WriterInterceptor[] interceptors, final Annotation[] annotations, final Object entity, final Type genericType, final MediaType mediaType, final Class type, final OutputStream outputStream, final ResteasyProviderFactory providerFactory, final MultivaluedMap<String, Object> headers)
    {
       this.providerFactory = providerFactory;
       this.interceptors = interceptors;

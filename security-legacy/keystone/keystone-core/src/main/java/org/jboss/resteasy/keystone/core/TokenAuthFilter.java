@@ -21,7 +21,7 @@ public class TokenAuthFilter extends AbstractTokenAuthFilter
 {
    protected TokenVerifier tokenVerifier;
 
-   public TokenAuthFilter(X509Certificate certificate, TokenVerifier tokenVerifier)
+   public TokenAuthFilter(final X509Certificate certificate, final TokenVerifier tokenVerifier)
    {
       super(certificate);
       this.tokenVerifier = tokenVerifier;

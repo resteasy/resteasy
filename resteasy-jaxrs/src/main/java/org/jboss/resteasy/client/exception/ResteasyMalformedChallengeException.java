@@ -14,17 +14,17 @@ public class ResteasyMalformedChallengeException extends ResteasyProtocolExcepti
    {
    }
 
-   public ResteasyMalformedChallengeException(String message)
+   public ResteasyMalformedChallengeException(final String message)
    {
       super(message);
    }
 
-   public ResteasyMalformedChallengeException(String message, Throwable cause)
+   public ResteasyMalformedChallengeException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyMalformedChallengeException(Throwable cause)
+   public ResteasyMalformedChallengeException(final Throwable cause)
    {
       super(cause);
    }

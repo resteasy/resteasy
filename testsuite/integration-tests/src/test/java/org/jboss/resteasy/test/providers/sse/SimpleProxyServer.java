@@ -50,7 +50,7 @@ public class SimpleProxyServer
     * @param debugCommunication
     */
 
-   public SimpleProxyServer(String host, int remotePort, int localPort)
+   public SimpleProxyServer(final String host, final int remotePort, final int localPort)
    {
       this.host = host;
       this.remotePort = remotePort;
@@ -191,7 +191,7 @@ public class SimpleProxyServer
        * @param host
        * @param remotePort
        */
-      ProxyThread(Socket socket, String host, int remotePort, SimpleProxyServer controllableProxy)
+      ProxyThread(final Socket socket, final String host, final int remotePort, final SimpleProxyServer controllableProxy)
       {
          super("ProxyThread");
          this.clientSocket = socket;

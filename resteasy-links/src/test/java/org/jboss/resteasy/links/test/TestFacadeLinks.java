@@ -60,7 +60,7 @@ public class TestFacadeLinks
    private BookStoreService client;
    private HttpClient httpClient;
 
-   public TestFacadeLinks(Class<?> resourceType){
+   public TestFacadeLinks(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

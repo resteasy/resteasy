@@ -13,7 +13,7 @@ public class BasicJaxbObject {
       super();
    }
 
-   public BasicJaxbObject(String something, Date someDate) {
+   public BasicJaxbObject(final String something, final Date someDate) {
       super();
       this.something = something;
       this.someDate = someDate;

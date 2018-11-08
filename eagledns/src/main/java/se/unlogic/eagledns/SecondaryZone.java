@@ -20,7 +20,7 @@ public class SecondaryZone {
    private Timestamp downloaded;
    private Zone zoneCopy;
 
-   public SecondaryZone(String zoneName, String remoteServerAddress, String dclass) throws TextParseException {
+   public SecondaryZone(final String zoneName, final String remoteServerAddress, final String dclass) throws TextParseException {
 
       super();
       this.zoneName = Name.fromString(zoneName, Name.root);
@@ -28,7 +28,7 @@ public class SecondaryZone {
       this.dclass = dclass;
    }
 
-   public SecondaryZone(String zoneName, String remoteServerAddress, String dclass, Timestamp zoneDownloaded, Zone zone) throws TextParseException {
+   public SecondaryZone(final String zoneName, final String remoteServerAddress, final String dclass, final Timestamp zoneDownloaded, final Zone zone) throws TextParseException {
 
       this.zoneName = Name.fromString(zoneName, Name.root);
       this.remoteServerAddress = remoteServerAddress;

@@ -20,7 +20,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    {
       private final String name;
 
-      public Person(String name)
+      public Person(final String name)
       {
          this.name = name;
       }
@@ -53,7 +53,7 @@ public class SuperStringConverterTest extends BaseResourceTest
    {
       private final String name;
 
-      public Company(String name)
+      public Company(final String name)
       {
          this.name = name;
       }

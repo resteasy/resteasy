@@ -16,11 +16,11 @@ public class FloatPopulator extends BaseStringPopulator<Float> implements BeanSt
       super();
    }
 
-   public FloatPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public FloatPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public FloatPopulator(String populatorID) {
+   public FloatPopulator(final String populatorID) {
       super(populatorID);
    }
 

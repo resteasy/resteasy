@@ -15,7 +15,7 @@ public class SkeletonKeySession implements Serializable
    {
    }
 
-   public SkeletonKeySession(String token, ResourceMetadata metadata)
+   public SkeletonKeySession(final String token, final ResourceMetadata metadata)
    {
       this.token = token;
       this.metadata = metadata;

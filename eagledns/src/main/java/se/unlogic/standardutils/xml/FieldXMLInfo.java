@@ -24,7 +24,7 @@ public class FieldXMLInfo {
    private final String childName;
    private final Stringyfier valueFormatter;
 
-   public FieldXMLInfo(String name, Field field, FieldType fieldType, boolean cdata, boolean elementable, boolean list, boolean array, String childName, boolean skipSubElement, Stringyfier valueFormatter) {
+   public FieldXMLInfo(final String name, final Field field, final FieldType fieldType, final boolean cdata, final boolean elementable, final boolean list, final boolean array, final String childName, final boolean skipSubElement, final Stringyfier valueFormatter) {
 
       super();
       this.name = name;

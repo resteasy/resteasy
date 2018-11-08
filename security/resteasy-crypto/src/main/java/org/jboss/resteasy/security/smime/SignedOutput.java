@@ -11,12 +11,12 @@ public class SignedOutput extends SMIMEOutput
 {
    protected PrivateKey privateKey;
 
-   public SignedOutput(Object obj, String mediaType)
+   public SignedOutput(final Object obj, final String mediaType)
    {
       super(obj, mediaType);
    }
 
-   public SignedOutput(Object obj, MediaType mediaType)
+   public SignedOutput(final Object obj, final MediaType mediaType)
    {
       super(obj, mediaType);
    }

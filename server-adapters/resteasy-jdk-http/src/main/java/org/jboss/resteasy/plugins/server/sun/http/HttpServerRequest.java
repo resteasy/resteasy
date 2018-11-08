@@ -32,7 +32,7 @@ public class HttpServerRequest extends BaseHttpRequest
    protected String httpMethod;
 
 
-   public HttpServerRequest(SynchronousDispatcher dispatcher, HttpResponse httpResponse, HttpExchange exchange)
+   public HttpServerRequest(final SynchronousDispatcher dispatcher, final HttpResponse httpResponse, final HttpExchange exchange)
    {
       super(HttpExchangeUtil.extractUriInfo(exchange));
       this.dispatcher = dispatcher;

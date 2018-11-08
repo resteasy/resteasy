@@ -14,7 +14,7 @@ public class ClassXMLInfo {
    private String elementName;
    private List<FieldXMLInfo> fields;
 
-   public ClassXMLInfo(String elementName, List<FieldXMLInfo> field) {
+   public ClassXMLInfo(final String elementName, final List<FieldXMLInfo> field) {
       super();
       this.elementName = elementName;
       this.fields = field;

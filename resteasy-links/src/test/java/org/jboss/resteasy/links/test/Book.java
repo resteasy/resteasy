@@ -30,7 +30,7 @@ public class Book {
 
    private List<Comment> comments = new ArrayList<Comment>();
 
-   public Book(String title, String author) {
+   public Book(final String title, final String author) {
       this.author = author;
       this.title = title;
    }

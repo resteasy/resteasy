@@ -43,7 +43,7 @@ public class MediaTypeFromMessageBodyWriterTest {
       String path;
       String queryName;
       String queryValue;
-      Target(String path, String queryName, String queryValue) {
+      Target(final String path, final String queryName, final String queryValue) {
          this.path = path;
          this.queryName = queryName;
          this.queryValue = queryValue;

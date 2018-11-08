@@ -10,7 +10,7 @@ import javax.ws.rs.client.WebTarget;
  */
 public class QueryParamProcessor extends AbstractWebTargetCollectionProcessor
 {
-   public QueryParamProcessor(String paramName)
+   public QueryParamProcessor(final String paramName)
    {
       super(paramName);
    }

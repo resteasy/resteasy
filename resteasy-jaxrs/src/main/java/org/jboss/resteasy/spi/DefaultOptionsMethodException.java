@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
  */
 public class DefaultOptionsMethodException extends Failure
 {
-   public DefaultOptionsMethodException(String s, Response response)
+   public DefaultOptionsMethodException(final String s, final Response response)
    {
       super(s, response);
    }

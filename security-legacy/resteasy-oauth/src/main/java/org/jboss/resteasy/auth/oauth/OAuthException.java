@@ -16,7 +16,7 @@ public class OAuthException extends Exception {
     * @param httpCode the HTTP status code to return to the OAuth Client
     * @param message the message describing the problem, also returned to the OAuth Client
     */
-   public OAuthException(int httpCode, String message) {
+   public OAuthException(final int httpCode, final String message) {
       super(message);
       this.httpCode = httpCode;
    }

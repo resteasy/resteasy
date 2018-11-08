@@ -11,7 +11,7 @@ public class BaseELResolver extends ELResolver {
    private final ELResolver delegateResolver;
    private final Object base;
 
-   public BaseELResolver(Object base) {
+   public BaseELResolver(final Object base) {
       this.base = base;
       this.delegateResolver = new BeanELResolver(true);
    }

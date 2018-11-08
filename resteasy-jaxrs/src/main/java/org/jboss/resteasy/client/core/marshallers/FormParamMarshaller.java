@@ -12,7 +12,7 @@ public class FormParamMarshaller implements Marshaller
 {
    private String paramName;
 
-   public FormParamMarshaller(String paramName)
+   public FormParamMarshaller(final String paramName)
    {
       this.paramName = paramName;
    }

@@ -13,7 +13,7 @@ public class RunnableTimerTask extends TimerTask {
 
    private final Runnable runnable;
 
-   public RunnableTimerTask(Runnable runnable) {
+   public RunnableTimerTask(final Runnable runnable) {
       super();
       this.runnable = runnable;
    }

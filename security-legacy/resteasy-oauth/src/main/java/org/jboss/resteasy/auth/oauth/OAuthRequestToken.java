@@ -13,9 +13,9 @@ public class OAuthRequestToken extends OAuthToken {
    private String callback;
    private String verifier;
 
-   public OAuthRequestToken(String token, String secret, String callback,
-                             String[] scopes, String[] permissions,
-                             long timeToLive, OAuthConsumer consumer) {
+   public OAuthRequestToken(final String token, final String secret, final String callback,
+                            final String[] scopes, final String[] permissions,
+                            final long timeToLive, final OAuthConsumer consumer) {
       super(token, secret, scopes, permissions, timeToLive, consumer);
       this.callback = callback;
    }

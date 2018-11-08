@@ -16,7 +16,7 @@ public class QueryParameterFactory<Bean, Type> {
 
    private Column<Bean,? super Type> column;
 
-   QueryParameterFactory(Column<Bean,? super Type> column) {
+   QueryParameterFactory(final Column<Bean,? super Type> column) {
       super();
       this.column = column;
    }

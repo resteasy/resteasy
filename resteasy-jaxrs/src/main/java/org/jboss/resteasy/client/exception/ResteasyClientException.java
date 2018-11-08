@@ -14,17 +14,17 @@ public class ResteasyClientException extends RuntimeException
    {
    }
 
-   public ResteasyClientException(String message)
+   public ResteasyClientException(final String message)
    {
       super(message);
    }
 
-   public ResteasyClientException(String message, Throwable cause)
+   public ResteasyClientException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyClientException(Throwable cause)
+   public ResteasyClientException(final Throwable cause)
    {
       super(cause);
    }

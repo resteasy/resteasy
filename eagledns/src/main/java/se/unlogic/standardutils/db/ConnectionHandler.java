@@ -18,11 +18,11 @@ import java.sql.SQLException;
 public class ConnectionHandler {
    private DataSource datasource = null;
 
-   public ConnectionHandler(String datasource) throws NamingException{
+   public ConnectionHandler(final String datasource) throws NamingException{
       setDataSource(datasource);
    }
 
-   public ConnectionHandler(DataSource datasource){
+   public ConnectionHandler(final DataSource datasource){
       setDataSource(datasource);
    }
 

@@ -16,7 +16,7 @@ public class StringLongValidator extends StringNumberValidator<Long> {
       super(null, null);
    }
 
-   public StringLongValidator(Long minValue,Long maxValue) {
+   public StringLongValidator(final Long minValue,final Long maxValue) {
       super(minValue, maxValue);
    }
 

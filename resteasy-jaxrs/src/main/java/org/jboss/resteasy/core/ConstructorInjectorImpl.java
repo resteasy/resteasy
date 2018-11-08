@@ -28,7 +28,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    protected Constructor constructor;
    protected ValueInjector[] params;
 
-   public ConstructorInjectorImpl(ResourceConstructor constructor, ResteasyProviderFactory factory)
+   public ConstructorInjectorImpl(final ResourceConstructor constructor, final ResteasyProviderFactory factory)
    {
       this.constructor = constructor.getConstructor();
       params = new ValueInjector[constructor.getParams().length];
@@ -41,7 +41,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    }
 
 
-   public ConstructorInjectorImpl(Constructor constructor, ResteasyProviderFactory factory)
+   public ConstructorInjectorImpl(final Constructor constructor, final ResteasyProviderFactory factory)
    {
       this.constructor = constructor;
       params = new ValueInjector[constructor.getParameterTypes().length];

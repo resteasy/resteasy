@@ -23,14 +23,14 @@ public class EnumPopulator<EnumType extends Enum<EnumType>> extends BaseStringPo
    protected Class<EnumType> classType;
    protected String fieldName;
 
-   public EnumPopulator(Class<EnumType> classType) {
+   public EnumPopulator(final Class<EnumType> classType) {
       super();
 
       checkClass(classType);
       fieldName = classType.getSimpleName();
    }
 
-   public EnumPopulator(Class<EnumType> classType, String fieldName) {
+   public EnumPopulator(final Class<EnumType> classType, final String fieldName) {
 
       checkClass(classType);
 

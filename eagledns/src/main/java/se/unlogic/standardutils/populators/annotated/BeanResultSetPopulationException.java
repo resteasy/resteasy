@@ -15,7 +15,7 @@ public class BeanResultSetPopulationException extends RuntimeException {
    private static final long serialVersionUID = 3781653780279983974L;
    private final ResultSetField resultSetField;
 
-   public BeanResultSetPopulationException(ResultSetField resultSetField, Exception e) {
+   public BeanResultSetPopulationException(final ResultSetField resultSetField, final Exception e) {
       super(e);
       this.resultSetField = resultSetField;
    }

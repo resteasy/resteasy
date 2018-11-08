@@ -106,13 +106,13 @@ public class RxInvokerTest extends ClientTestBase
    {
       public static volatile boolean used;
 
-      public TestRxInvoker(SyncInvoker builder)
+      public TestRxInvoker(final SyncInvoker builder)
       {
          super(builder);
          used = true;
       }
 
-      public TestRxInvoker(SyncInvoker builder, ExecutorService executor)
+      public TestRxInvoker(final SyncInvoker builder, final ExecutorService executor)
       {
          super(builder, executor);
          used = true;

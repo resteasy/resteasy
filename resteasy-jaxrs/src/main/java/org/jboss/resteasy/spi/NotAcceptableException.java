@@ -14,32 +14,32 @@ import javax.ws.rs.core.Response;
 @Deprecated
 public class NotAcceptableException extends LoggableFailure
 {
-   public NotAcceptableException(String s)
+   public NotAcceptableException(final String s)
    {
       super(s, 406);
    }
 
-   public NotAcceptableException(String s, Response response)
+   public NotAcceptableException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public NotAcceptableException(String s, Throwable throwable, Response response)
+   public NotAcceptableException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public NotAcceptableException(String s, Throwable throwable)
+   public NotAcceptableException(final String s, final Throwable throwable)
    {
       super(s, throwable, 406);
    }
 
-   public NotAcceptableException(Throwable throwable)
+   public NotAcceptableException(final Throwable throwable)
    {
       super(throwable, 406);
    }
 
-   public NotAcceptableException(Throwable throwable, Response response)
+   public NotAcceptableException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

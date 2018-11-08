@@ -29,12 +29,12 @@ public class ExceptionAdapter extends RuntimeException
     *
     * @param e exception
     */
-   public ExceptionAdapter(Exception e)
+   public ExceptionAdapter(final Exception e)
    {
       this(e.getMessage(), e);
    }
 
-   public ExceptionAdapter(String message, Exception e)
+   public ExceptionAdapter(final String message, final Exception e)
    {
       super(new StringBuilder(message == null ? "" : message).append(" : ").append(e.getMessage()).toString());
       originalException = e;

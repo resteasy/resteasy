@@ -16,7 +16,7 @@ public class StringIntegerValidator extends StringNumberValidator<Integer> {
       super(null, null);
    }
 
-   public StringIntegerValidator(Integer minValue,Integer maxValue) {
+   public StringIntegerValidator(final Integer minValue,final Integer maxValue) {
       super(minValue,maxValue);
    }
 

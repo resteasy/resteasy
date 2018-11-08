@@ -10,7 +10,7 @@ public abstract class AbstractCollectionProcessor<T>
 {
    protected String paramName;
 
-   public AbstractCollectionProcessor(String paramName)
+   public AbstractCollectionProcessor(final String paramName)
    {
       this.paramName = paramName;
    }

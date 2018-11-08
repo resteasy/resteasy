@@ -14,17 +14,17 @@ public class ResteasyAuthChallengeException extends ResteasyAuthenticationExcept
    {
    }
 
-   public ResteasyAuthChallengeException(String message)
+   public ResteasyAuthChallengeException(final String message)
    {
       super(message);
    }
 
-   public ResteasyAuthChallengeException(String message, Throwable cause)
+   public ResteasyAuthChallengeException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyAuthChallengeException(Throwable cause)
+   public ResteasyAuthChallengeException(final Throwable cause)
    {
       super(cause);
    }

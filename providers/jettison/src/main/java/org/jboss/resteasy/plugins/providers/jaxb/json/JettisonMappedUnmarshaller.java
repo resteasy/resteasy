@@ -46,14 +46,14 @@ public class JettisonMappedUnmarshaller implements Unmarshaller
 
    private MappedNamespaceConvention convention;
 
-   public JettisonMappedUnmarshaller(JAXBContext context, Map<String, String> xmlToJSON, List<String> attributeMapping, List<String> ignoredElements) throws JAXBException
+   public JettisonMappedUnmarshaller(final JAXBContext context, final Map<String, String> xmlToJSON, final List<String> attributeMapping, final List<String> ignoredElements) throws JAXBException
    {
       unmarshaller = context.createUnmarshaller();
       Configuration config = new Configuration(xmlToJSON, attributeMapping, ignoredElements);
       convention = new MappedNamespaceConvention(config);
    }
 
-   public JettisonMappedUnmarshaller(JAXBContext context, MappedNamespaceConvention convention) throws JAXBException
+   public JettisonMappedUnmarshaller(final JAXBContext context, final MappedNamespaceConvention convention) throws JAXBException
    {
       unmarshaller = context.createUnmarshaller();
       this.convention = convention;

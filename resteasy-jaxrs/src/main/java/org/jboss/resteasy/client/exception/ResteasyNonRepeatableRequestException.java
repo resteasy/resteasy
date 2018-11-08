@@ -14,17 +14,17 @@ public class ResteasyNonRepeatableRequestException extends ResteasyProtocolExcep
    {
    }
 
-   public ResteasyNonRepeatableRequestException(String message)
+   public ResteasyNonRepeatableRequestException(final String message)
    {
       super(message);
    }
 
-   public ResteasyNonRepeatableRequestException(String message, Throwable cause)
+   public ResteasyNonRepeatableRequestException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyNonRepeatableRequestException(Throwable cause)
+   public ResteasyNonRepeatableRequestException(final Throwable cause)
    {
       super(cause);
    }

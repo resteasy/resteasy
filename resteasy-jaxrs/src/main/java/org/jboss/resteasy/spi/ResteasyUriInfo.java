@@ -51,7 +51,7 @@ public class ResteasyUriInfo implements UriInfo
    private String contextPath;
 
 
-   public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
+   public ResteasyUriInfo(final String absoluteUri, final String queryString, final String contextPath)
    {
       initialize(absoluteUri, queryString, contextPath);
    }
@@ -82,7 +82,7 @@ public class ResteasyUriInfo implements UriInfo
       processPath();
    }
 
-   public ResteasyUriInfo(URI base, URI relative)
+   public ResteasyUriInfo(final URI base, final URI relative)
    {
       String b = base.toString();
       if (!b.endsWith("/")) b += "/";
@@ -136,7 +136,7 @@ public class ResteasyUriInfo implements UriInfo
 
    }
 
-   public ResteasyUriInfo(URI requestURI)
+   public ResteasyUriInfo(final URI requestURI)
    {
       initializeFromRequest(requestURI);
 

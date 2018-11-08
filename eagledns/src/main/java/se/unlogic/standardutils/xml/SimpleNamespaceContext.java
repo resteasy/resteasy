@@ -17,7 +17,7 @@ public class SimpleNamespaceContext implements NamespaceContext {
    private String prefix;
    private String URI;
 
-   public SimpleNamespaceContext(String prefix, String URI) {
+   public SimpleNamespaceContext(final String prefix, final String URI) {
 
       super();
       this.prefix = prefix;

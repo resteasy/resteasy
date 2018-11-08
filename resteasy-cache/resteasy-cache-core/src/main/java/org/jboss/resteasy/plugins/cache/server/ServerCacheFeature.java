@@ -30,7 +30,7 @@ public class ServerCacheFeature implements Feature
    {
    }
 
-   public ServerCacheFeature(ServerCache cache)
+   public ServerCacheFeature(final ServerCache cache)
    {
       this.cache = cache;
    }

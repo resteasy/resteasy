@@ -50,7 +50,7 @@ public class TokenService
    private ProjectsService projects;
    private UsersService users;
 
-   public TokenService(Cache cache, long expiration, TimeUnit expirationUnit, ProjectsService projects, UsersService users)
+   public TokenService(final Cache cache, final long expiration, final TimeUnit expirationUnit, final ProjectsService projects, final UsersService users)
    {
       this.cache = cache;
       this.expiration = expiration;

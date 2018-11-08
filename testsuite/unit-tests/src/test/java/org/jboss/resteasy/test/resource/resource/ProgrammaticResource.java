@@ -24,7 +24,7 @@ public class ProgrammaticResource {
    public ProgrammaticResource() {
    }
 
-   public ProgrammaticResource(Configurable<?> configurable) {
+   public ProgrammaticResource(final Configurable<?> configurable) {
       this.configurable = configurable;
    }
 

@@ -25,12 +25,12 @@ import java.util.Map;
 public class CdiRequestDispatcher extends RequestDispatcher {
    private final Instance<Object> instance;
 
-   public CdiRequestDispatcher(SynchronousDispatcher dispatcher, ResteasyProviderFactory providerFactory,
-         SecurityDomain domain){
+   public CdiRequestDispatcher(final SynchronousDispatcher dispatcher, final ResteasyProviderFactory providerFactory,
+                               final SecurityDomain domain){
       this(dispatcher, providerFactory, domain, CDI.current());
    }
-   public CdiRequestDispatcher(SynchronousDispatcher dispatcher, ResteasyProviderFactory providerFactory,
-         SecurityDomain domain, Instance<Object> cdi){
+   public CdiRequestDispatcher(final SynchronousDispatcher dispatcher, final ResteasyProviderFactory providerFactory,
+                               final SecurityDomain domain, final Instance<Object> cdi){
       super(dispatcher, providerFactory, domain);
       this.instance = cdi;
    }

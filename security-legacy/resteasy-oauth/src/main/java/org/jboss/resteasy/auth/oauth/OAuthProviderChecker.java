@@ -13,7 +13,7 @@ public class OAuthProviderChecker implements OAuthProvider {
 
    private OAuthProvider provider;
 
-   public OAuthProviderChecker(OAuthProvider provider) {
+   public OAuthProviderChecker(final OAuthProvider provider) {
       this.provider = provider;
    }
 

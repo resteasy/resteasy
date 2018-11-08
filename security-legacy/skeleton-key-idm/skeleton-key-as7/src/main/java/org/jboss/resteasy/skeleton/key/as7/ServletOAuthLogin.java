@@ -37,7 +37,7 @@ public class ServletOAuthLogin
    protected String tokenString;
    protected SkeletonKeyToken token;
 
-   public ServletOAuthLogin(RealmConfiguration realmInfo, HttpServletRequest request, HttpServletResponse response, int redirectPort)
+   public ServletOAuthLogin(final RealmConfiguration realmInfo, final HttpServletRequest request, final HttpServletResponse response, final int redirectPort)
    {
       this.request = request;
       this.response = response;

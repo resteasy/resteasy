@@ -11,7 +11,7 @@ public class LongCounter {
 
    private Long value;
 
-   LongCounter(Long value) {
+   LongCounter(final Long value) {
       super();
       this.value = value;
    }

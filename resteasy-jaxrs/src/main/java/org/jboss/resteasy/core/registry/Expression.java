@@ -23,7 +23,7 @@ public abstract class Expression implements Comparable<Expression>
    protected int numCapturingGroups;
    protected int numNonDefaultGroups;
 
-   public Expression(String segment, String additionalRegex)
+   public Expression(final String segment, final String additionalRegex)
    {
       this.pathExpression = segment;
       CharSequence replacedCurlySegment = PathHelper.replaceEnclosedCurlyBracesCS(segment);
@@ -129,13 +129,13 @@ public abstract class Expression implements Comparable<Expression>
       String name;
       boolean storePathSegment;
 
-      protected Group(int group, String name)
+      protected Group(final int group, final String name)
       {
          this.group = group;
          this.name = name;
       }
 
-      protected Group(int group, String name, boolean storePathSegment)
+      protected Group(final int group, final String name, final boolean storePathSegment)
       {
          this.group = group;
          this.name = name;

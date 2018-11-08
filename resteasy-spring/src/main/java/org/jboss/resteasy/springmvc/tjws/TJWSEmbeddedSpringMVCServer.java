@@ -23,10 +23,10 @@ public class TJWSEmbeddedSpringMVCServer extends TJWSServletServer {
    public TJWSEmbeddedSpringMVCServer() {
    }
 
-   public TJWSEmbeddedSpringMVCServer(String applicationContext, int port) {
+   public TJWSEmbeddedSpringMVCServer(final String applicationContext, final int port) {
       this(applicationContext, port, "");
    }
-   public TJWSEmbeddedSpringMVCServer(String applicationContext, int port, String rootResourcePath) {
+   public TJWSEmbeddedSpringMVCServer(final String applicationContext, final int port, final String rootResourcePath) {
       setSpringConfigLocation(applicationContext);
       setPort(port);
       setRootResourcePath(rootResourcePath);

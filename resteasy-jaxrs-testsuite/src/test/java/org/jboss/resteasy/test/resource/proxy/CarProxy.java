@@ -14,7 +14,7 @@ public class CarProxy implements MethodHandler
 {
    private Car car;
 
-   public CarProxy(Car car)
+   public CarProxy(final Car car)
    {
       this.car = car;
    }

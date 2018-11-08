@@ -26,7 +26,7 @@ public class TJWSServletDispatcher extends HttpServletDispatcher
       this.requestPreProcessor = new TJWSRequestPreProcessor();
    }
 
-   public TJWSServletDispatcher(SecurityDomain domain)
+   public TJWSServletDispatcher(final SecurityDomain domain)
    {
       this.requestPreProcessor = new TJWSRequestPreProcessor(domain);
    }

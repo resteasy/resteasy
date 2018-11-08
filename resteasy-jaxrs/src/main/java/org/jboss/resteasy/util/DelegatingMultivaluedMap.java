@@ -18,7 +18,7 @@ public class DelegatingMultivaluedMap<K, V> implements MultivaluedMap<K, V>
 
    private final MultivaluedMap<K, V> delegate;
 
-   public DelegatingMultivaluedMap(MultivaluedMap<K, V> delegate)
+   public DelegatingMultivaluedMap(final MultivaluedMap<K, V> delegate)
    {
       this.delegate = delegate;
    }

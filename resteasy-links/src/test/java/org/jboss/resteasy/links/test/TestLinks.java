@@ -60,7 +60,7 @@ public class TestLinks
    private BookStoreService client;
    private HttpClient httpClient;
 
-   public TestLinks(Class<?> resourceType){
+   public TestLinks(final Class<?> resourceType){
       this.resourceType = resourceType;
    }
 

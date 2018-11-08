@@ -26,7 +26,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
    private HttpServletResponse response;
    private HttpServletResponse proxy;
 
-   public ResteasyHttpServletResponseWrapper(HttpServletResponse response, HttpServletResponse proxy)
+   public ResteasyHttpServletResponseWrapper(final HttpServletResponse response, final HttpServletResponse proxy)
    {
       super(response);
       this.proxy = proxy;

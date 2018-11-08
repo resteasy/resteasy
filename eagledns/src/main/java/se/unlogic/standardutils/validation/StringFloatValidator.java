@@ -16,7 +16,7 @@ public class StringFloatValidator extends StringNumberValidator<Float> {
       super(null, null);
    }
 
-   public StringFloatValidator(Float minValue, Float maxValue) {
+   public StringFloatValidator(final Float minValue, final Float maxValue) {
       super(minValue,maxValue);
    }
 

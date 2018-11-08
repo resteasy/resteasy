@@ -14,17 +14,17 @@ public class ResteasyConnectTimeoutException extends ResteasyIOException
    {
    }
 
-   public ResteasyConnectTimeoutException(String message)
+   public ResteasyConnectTimeoutException(final String message)
    {
       super(message);
    }
 
-   public ResteasyConnectTimeoutException(String message, Throwable cause)
+   public ResteasyConnectTimeoutException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyConnectTimeoutException(Throwable cause)
+   public ResteasyConnectTimeoutException(final Throwable cause)
    {
       super(cause);
    }

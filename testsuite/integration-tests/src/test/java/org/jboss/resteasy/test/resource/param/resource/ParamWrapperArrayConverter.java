@@ -14,7 +14,7 @@ public class ParamWrapperArrayConverter implements ParamConverter<ParamWrapper<O
 
    private final ParamConverter<Object> paramConverter;
 
-   public ParamWrapperArrayConverter(ParamConverter<Object> paramConverter) {
+   public ParamWrapperArrayConverter(final ParamConverter<Object> paramConverter) {
       this.paramConverter = paramConverter;
    }
 

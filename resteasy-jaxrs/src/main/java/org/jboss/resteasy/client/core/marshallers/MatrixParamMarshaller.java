@@ -13,7 +13,7 @@ public class MatrixParamMarshaller implements Marshaller
 {
    private String paramName;
 
-   public MatrixParamMarshaller(String paramName)
+   public MatrixParamMarshaller(final String paramName)
    {
       this.paramName = paramName;
    }

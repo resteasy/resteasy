@@ -14,17 +14,17 @@ public class ResteasyIOException extends ResteasyClientException
    {
    }
 
-   public ResteasyIOException(String message)
+   public ResteasyIOException(final String message)
    {
       super(message);
    }
 
-   public ResteasyIOException(String message, Throwable cause)
+   public ResteasyIOException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyIOException(Throwable cause)
+   public ResteasyIOException(final Throwable cause)
    {
       super(cause);
    }

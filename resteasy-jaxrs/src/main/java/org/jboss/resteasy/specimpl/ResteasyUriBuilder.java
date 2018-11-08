@@ -30,7 +30,7 @@ public class ResteasyUriBuilder extends UriBuilder
       private final Object[] parameterValues;
       private int index;
 
-      private URITemplateParametersMap(Object...parameterValues) {
+      private URITemplateParametersMap(final Object...parameterValues) {
          this.parameterValues=parameterValues;
       }
 

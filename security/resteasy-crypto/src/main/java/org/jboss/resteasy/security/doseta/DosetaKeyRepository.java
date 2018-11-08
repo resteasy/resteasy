@@ -36,7 +36,7 @@ public class DosetaKeyRepository implements KeyRepository
       public long time = System.currentTimeMillis();
       public T key;
 
-      protected CacheEntry(T key)
+      protected CacheEntry(final T key)
       {
          this.key = key;
       }

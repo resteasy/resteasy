@@ -25,7 +25,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    private HttpServletResponse response;
    private ResteasyProviderFactory factory;
 
-   public HttpServletResponseHeaders(HttpServletResponse response, ResteasyProviderFactory factory)
+   public HttpServletResponseHeaders(final HttpServletResponse response, final ResteasyProviderFactory factory)
    {
       this.response = response;
       this.factory = factory;

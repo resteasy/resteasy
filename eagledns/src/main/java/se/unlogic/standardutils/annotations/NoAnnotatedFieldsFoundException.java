@@ -15,7 +15,7 @@ public class NoAnnotatedFieldsFoundException extends RuntimeException {
    private final Class<?> beanClass;
    private final Class<? extends Annotation>[] annotations;
 
-   public NoAnnotatedFieldsFoundException(Class<?> beanClass,Class<? extends Annotation>... annotations) {
+   public NoAnnotatedFieldsFoundException(final Class<?> beanClass,final Class<? extends Annotation>... annotations) {
 
       super("No annotated fields found in class " + beanClass + " with annotations " + annotations);
 

@@ -13,7 +13,7 @@ public abstract class StringNumberValidator<T extends Number> implements StringF
    protected final T maxValue;
    protected final T minValue;
 
-   public StringNumberValidator(T minValue, T maxValue) {
+   public StringNumberValidator(final T minValue, final T maxValue) {
       super();
       this.maxValue = maxValue;
       this.minValue = minValue;

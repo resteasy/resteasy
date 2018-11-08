@@ -12,7 +12,7 @@ public class UserPrincipal implements Principal
 {
    protected Access.User user;
 
-   public UserPrincipal(Access.User user)
+   public UserPrincipal(final Access.User user)
    {
       this.user = user;
    }

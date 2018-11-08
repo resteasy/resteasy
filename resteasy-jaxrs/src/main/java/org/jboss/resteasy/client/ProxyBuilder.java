@@ -54,7 +54,7 @@ public class ProxyBuilder<T>
    private MediaType serverConsumes;
    private MediaType serverProduces;
 
-   private ProxyBuilder(Class<T> iface, URI base)
+   private ProxyBuilder(final Class<T> iface, final URI base)
    {
       this.iface = iface;
       this.baseUri = base;

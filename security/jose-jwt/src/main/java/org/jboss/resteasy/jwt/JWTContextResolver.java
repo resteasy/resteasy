@@ -21,7 +21,7 @@ public class JWTContextResolver implements ContextResolver<ObjectMapper>
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
    }
 
-   public JWTContextResolver(boolean indent)
+   public JWTContextResolver(final boolean indent)
    {
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       if (indent)

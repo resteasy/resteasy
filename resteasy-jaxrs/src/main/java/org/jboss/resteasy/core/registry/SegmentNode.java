@@ -58,7 +58,7 @@ public class SegmentNode
    protected boolean requestMatchingSet = false;
    protected boolean isJaxrs_2_0_RequestMatching = false;
 
-   public SegmentNode(String segment)
+   public SegmentNode(final String segment)
    {
       this.segment = segment;
    }
@@ -68,7 +68,7 @@ public class SegmentNode
       MethodExpression expression;
       Matcher matcher;
 
-      public Match(MethodExpression expression, Matcher matcher)
+      public Match(final MethodExpression expression, final Matcher matcher)
       {
          this.expression = expression;
          this.matcher = matcher;
@@ -302,7 +302,7 @@ public class SegmentNode
       SortFactor consumes;
       SortFactor produces;
 
-      public SortEntry(Match match, SortFactor consumes, SortFactor produces, MediaType serverProduce)
+      public SortEntry(final Match match, final SortFactor consumes, final SortFactor produces, final MediaType serverProduce)
       {
          this.serverProduce = serverProduce;
          this.match = match;

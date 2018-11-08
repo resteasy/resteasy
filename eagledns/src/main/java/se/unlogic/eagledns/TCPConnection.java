@@ -17,7 +17,7 @@ public class TCPConnection implements Runnable {
    private EagleDNS eagleDNS;
    private Socket socket;
 
-   public TCPConnection(EagleDNS eagleDNS, Socket socket) {
+   public TCPConnection(final EagleDNS eagleDNS, final Socket socket) {
       super();
       this.eagleDNS = eagleDNS;
       this.socket = socket;

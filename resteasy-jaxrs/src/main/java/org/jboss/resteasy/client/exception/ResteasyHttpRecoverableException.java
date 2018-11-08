@@ -14,17 +14,17 @@ public class ResteasyHttpRecoverableException extends ResteasyHttpException
    {
    }
 
-   public ResteasyHttpRecoverableException(String message)
+   public ResteasyHttpRecoverableException(final String message)
    {
       super(message);
    }
 
-   public ResteasyHttpRecoverableException(String message, Throwable cause)
+   public ResteasyHttpRecoverableException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyHttpRecoverableException(Throwable cause)
+   public ResteasyHttpRecoverableException(final Throwable cause)
    {
       super(cause);
    }

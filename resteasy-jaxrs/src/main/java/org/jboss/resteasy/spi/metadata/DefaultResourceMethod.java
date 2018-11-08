@@ -18,7 +18,7 @@ public class DefaultResourceMethod extends DefaultResourceLocator implements Res
    protected MediaType[] consumes = empty;
    protected boolean asynchronous;
 
-   public DefaultResourceMethod(ResourceClass declaredClass, Method method, Method annotatedMethod)
+   public DefaultResourceMethod(final ResourceClass declaredClass, final Method method, final Method annotatedMethod)
    {
       super(declaredClass, method, annotatedMethod);
    }

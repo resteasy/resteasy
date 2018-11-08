@@ -17,7 +17,7 @@ public class CdiNettyJaxrsServer extends NettyJaxrsServer {
    public CdiNettyJaxrsServer() {
       this.instance = CDI.current();
    }
-   public CdiNettyJaxrsServer(Instance<Object> instance) {
+   public CdiNettyJaxrsServer(final Instance<Object> instance) {
       this.instance = instance;
    }
    @Override

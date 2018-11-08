@@ -21,12 +21,12 @@ public class TagReplacer {
       tagSources = new ArrayList<TagSource>();
    }
 
-   public TagReplacer(List<TagSource> tagSources) {
+   public TagReplacer(final List<TagSource> tagSources) {
       super();
       this.tagSources = new ArrayList<TagSource>(tagSources);
    }
 
-   public TagReplacer(TagSource... tagSources) {
+   public TagReplacer(final TagSource... tagSources) {
       super();
       this.tagSources = new ArrayList<TagSource>(Arrays.asList(tagSources));
    }

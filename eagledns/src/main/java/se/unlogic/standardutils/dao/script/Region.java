@@ -16,7 +16,7 @@ public class Region {
    private final Symbol start;
    private final Symbol end;
 
-   public Region(Symbol start, Symbol end) {
+   public Region(final Symbol start, final Symbol end) {
       this.start = start;
       this.end = end;
    }

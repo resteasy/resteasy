@@ -24,7 +24,7 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
 {
    public static class EndableGZIPOutputStream extends GZIPOutputStream
    {
-      public EndableGZIPOutputStream(OutputStream os) throws IOException
+      public EndableGZIPOutputStream(final OutputStream os) throws IOException
       {
          super(os);
       }
@@ -39,7 +39,7 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
 
    public static class CommittedGZIPOutputStream extends CommitHeaderOutputStream
    {
-      protected CommittedGZIPOutputStream(OutputStream delegate, CommitCallback headers)
+      protected CommittedGZIPOutputStream(final OutputStream delegate, final CommitCallback headers)
       {
          super(delegate, headers);
       }

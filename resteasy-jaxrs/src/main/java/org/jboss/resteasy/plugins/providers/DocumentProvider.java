@@ -44,7 +44,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
 
-   public DocumentProvider(@Context ResteasyConfiguration config)
+   public DocumentProvider(final @Context ResteasyConfiguration config)
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : DocumentProvider", getClass().getName());
       this.documentBuilder = DocumentBuilderFactory.newInstance();

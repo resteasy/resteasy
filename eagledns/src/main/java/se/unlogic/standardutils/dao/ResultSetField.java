@@ -20,7 +20,7 @@ public class ResultSetField {
    private final BeanStringPopulator<?> beanStringPopulator;
    private final String alias;
 
-   public ResultSetField(Field beanField, Method resultSetColumnNameMethod, Method resultSetColumnIndexMethod, String alias , BeanStringPopulator<?> typePopulator) {
+   public ResultSetField(final Field beanField, final Method resultSetColumnNameMethod, final Method resultSetColumnIndexMethod, final String alias , final BeanStringPopulator<?> typePopulator) {
       super();
       this.beanField = beanField;
       this.resultSetColumnNameMethod = resultSetColumnNameMethod;

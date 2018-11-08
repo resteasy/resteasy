@@ -25,7 +25,7 @@ public class ViolationReport
    private ArrayList<ResteasyConstraintViolation> parameterViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
 
-   public ViolationReport(ResteasyViolationException exception)
+   public ViolationReport(final ResteasyViolationException exception)
    {
       Exception e = exception.getException();
       if (e != null)
@@ -39,7 +39,7 @@ public class ViolationReport
       this.returnValueViolations = (ArrayList<ResteasyConstraintViolation>) exception.getReturnValueViolations();
    }
 
-   public ViolationReport(String s)
+   public ViolationReport(final String s)
    {
       this(new ResteasyViolationException(s));
    }

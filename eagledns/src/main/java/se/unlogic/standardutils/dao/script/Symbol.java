@@ -13,7 +13,7 @@ import java.util.Comparator;
 
 public class Symbol {
 
-   public Symbol(String key, Offsets offsets) {
+   public Symbol(final String key, final Offsets offsets) {
       this.key = key;
       this.offsets = offsets;
    }

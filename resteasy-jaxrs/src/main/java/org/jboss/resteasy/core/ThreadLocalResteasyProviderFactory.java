@@ -60,7 +60,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    private ResteasyProviderFactory defaultFactory;
 
 
-   public ThreadLocalResteasyProviderFactory(ResteasyProviderFactory defaultFactory)
+   public ThreadLocalResteasyProviderFactory(final ResteasyProviderFactory defaultFactory)
    {
       this.defaultFactory = defaultFactory;
    }

@@ -32,7 +32,7 @@ public class CatalinaBearerTokenAuthenticator
    private Principal principal;
    protected boolean propagateToken;
 
-   public CatalinaBearerTokenAuthenticator(ResourceMetadata resourceMetadata, boolean propagateToken, boolean challenge)
+   public CatalinaBearerTokenAuthenticator(final ResourceMetadata resourceMetadata, final boolean propagateToken, final boolean challenge)
    {
       this.resourceMetadata = resourceMetadata;
       this.challenge = challenge;

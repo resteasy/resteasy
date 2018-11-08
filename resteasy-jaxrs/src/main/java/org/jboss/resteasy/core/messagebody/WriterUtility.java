@@ -64,8 +64,8 @@ public abstract class WriterUtility
       this(ResteasyProviderFactory.getInstance(), null);
    }
 
-   public WriterUtility(ResteasyProviderFactory factory,
-                        WriterInterceptor[] interceptors)
+   public WriterUtility(final ResteasyProviderFactory factory,
+                        final WriterInterceptor[] interceptors)
    {
       this.factory = factory;
       this.interceptors = interceptors;

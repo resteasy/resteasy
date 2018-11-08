@@ -28,7 +28,7 @@ public class DefaultOneToManyRelation<LocalType,RemoteType> implements OneToMany
    private final Class<RemoteType> remoteClass;
    private boolean initialized;
 
-   public DefaultOneToManyRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Field field, AnnotatedDAOFactory daoFactory, DAOManaged daoManaged) {
+   public DefaultOneToManyRelation(final Class<LocalType> beanClass, final Class<RemoteType> remoteClass, final Field field, final AnnotatedDAOFactory daoFactory, final DAOManaged daoManaged) {
       super();
       this.beanClass = beanClass;
       this.remoteClass = remoteClass;

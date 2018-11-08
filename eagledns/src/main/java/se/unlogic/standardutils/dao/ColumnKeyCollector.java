@@ -20,7 +20,7 @@ public class ColumnKeyCollector<T> {
    private final ResultSetField resultSetField;
    private final int columnIndex;
 
-   public ColumnKeyCollector(Field field, AnnotatedResultSetPopulator<T> populator, int columnIndex) {
+   public ColumnKeyCollector(final Field field, final AnnotatedResultSetPopulator<T> populator, final int columnIndex) {
 
       this.resultSetField = populator.getResultSetField(field);
       this.columnIndex = columnIndex;

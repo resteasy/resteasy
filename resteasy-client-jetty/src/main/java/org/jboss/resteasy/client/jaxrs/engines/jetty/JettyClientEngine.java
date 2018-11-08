@@ -52,7 +52,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
 
    private final HttpClient client;
 
-   public JettyClientEngine(HttpClient client) {
+   public JettyClientEngine(final HttpClient client) {
       if (!client.isStarted()) {
          try {
             client.start();
@@ -278,7 +278,7 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
    static class RequestFuture<T> extends CompletableFuture<T> {
       private final Request request;
 
-      RequestFuture(Request request) {
+      RequestFuture(final Request request) {
          this.request = request;
       }
 

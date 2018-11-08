@@ -10,7 +10,7 @@ public class BeanChainPopulator<T> implements BeanResultSetPopulator<T> {
    protected BeanResultSetPopulator<T> populator;
    protected List<ChainedResultSetPopulator<T>> chainedResultSetPopulators;
 
-   public BeanChainPopulator(List<ChainedResultSetPopulator<T>> chainedResultSetPopulators, BeanResultSetPopulator<T> populator) {
+   public BeanChainPopulator(final List<ChainedResultSetPopulator<T>> chainedResultSetPopulators, final BeanResultSetPopulator<T> populator) {
 
       super();
       this.populator = populator;

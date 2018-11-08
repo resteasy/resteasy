@@ -57,7 +57,7 @@ public class ResteasyViolationException extends ConstraintViolationException
     * New constructor
     * @param constraintViolations set of constraint violations
     */
-   public ResteasyViolationException(Set<? extends ConstraintViolation<?>> constraintViolations)
+   public ResteasyViolationException(final Set<? extends ConstraintViolation<?>> constraintViolations)
    {
       super(constraintViolations);
       checkSuppressPath();
@@ -71,7 +71,7 @@ public class ResteasyViolationException extends ConstraintViolationException
     * @param constraintViolations set of constraint violations
     * @param accept list of accept media types
     */
-   public ResteasyViolationException(Set<? extends ConstraintViolation<?>> constraintViolations, List<MediaType> accept)
+   public ResteasyViolationException(final Set<? extends ConstraintViolation<?>> constraintViolations, final List<MediaType> accept)
    {
       super(constraintViolations);
       checkSuppressPath();
@@ -83,7 +83,7 @@ public class ResteasyViolationException extends ConstraintViolationException
     *
     * @param container violation container
     */
-   public ResteasyViolationException(SimpleViolationsContainer container)
+   public ResteasyViolationException(final SimpleViolationsContainer container)
    {
       this(container.getViolations());
       setException(container.getException());
@@ -96,13 +96,13 @@ public class ResteasyViolationException extends ConstraintViolationException
     * @param accept list of accept media types
     */
 
-   public ResteasyViolationException(SimpleViolationsContainer container, List<MediaType> accept)
+   public ResteasyViolationException(final SimpleViolationsContainer container, final List<MediaType> accept)
    {
       this(container.getViolations(), accept);
       setException(container.getException());
    }
 
-   public ResteasyViolationException(ViolationsContainer<?> container)
+   public ResteasyViolationException(final ViolationsContainer<?> container)
    {
       super(null);
       convertToStrings(container);
@@ -111,7 +111,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       accept.add(CloneableMediaType.TEXT_PLAIN_TYPE);
    }
 
-   public ResteasyViolationException(ViolationsContainer<?> container, List<MediaType> accept)
+   public ResteasyViolationException(final ViolationsContainer<?> container, final List<MediaType> accept)
    {
       super(null);
       convertToStrings(container);
@@ -119,7 +119,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       this.accept = toCloneableMediaTypeList(accept);
    }
 
-   public ResteasyViolationException(String stringRep)
+   public ResteasyViolationException(final String stringRep)
    {
       super(null);
       checkSuppressPath();
@@ -440,14 +440,14 @@ public class ResteasyViolationException extends ConstraintViolationException
       private String subtype;
       private Map<String, String> parameters;
 
-      CloneableMediaType(MediaType mediaType)
+      CloneableMediaType(final MediaType mediaType)
       {
          type = mediaType.getType();
          subtype = mediaType.getSubtype();
          parameters = new HashMap<String, String>(mediaType.getParameters());
       }
 
-      CloneableMediaType(String type, String subtype)
+      CloneableMediaType(final String type, final String subtype)
       {
          this.type = type;
          this.subtype = subtype;

@@ -34,7 +34,7 @@ public class Link
    {
    }
 
-   public Link(String title, String relationship, String href, String type, MultivaluedMap<String, String> extensions)
+   public Link(final String title, final String relationship, final String href, final String type, final MultivaluedMap<String, String> extensions)
    {
       this.relationship = relationship;
       this.href = href;

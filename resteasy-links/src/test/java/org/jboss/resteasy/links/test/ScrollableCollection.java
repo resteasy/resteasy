@@ -36,8 +36,8 @@ public class ScrollableCollection implements ResourceFacade<Comment> {
 
    public ScrollableCollection() {}
 
-   public ScrollableCollection(String id, int start, int limit, int totalRecords,
-         List<Comment> comments, String query) {
+   public ScrollableCollection(final String id, final int start, final int limit, final int totalRecords,
+                               final List<Comment> comments, final String query) {
       this.id = id;
       this.start = start;
       this.limit = limit;

@@ -139,12 +139,12 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       this.createdHttpClient = true;
    }
 
-   public ApacheHttpClient4Engine(HttpClient httpClient)
+   public ApacheHttpClient4Engine(final HttpClient httpClient)
    {
       this.httpClient = httpClient;
    }
 
-   public ApacheHttpClient4Engine(HttpClient httpClient, boolean closeHttpClient)
+   public ApacheHttpClient4Engine(final HttpClient httpClient, final boolean closeHttpClient)
    {
       this.httpClient = httpClient;
       this.createdHttpClient = closeHttpClient;
@@ -163,13 +163,13 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
     * @param httpContext    The context to be used for executing requests
     */
    @Deprecated
-   public ApacheHttpClient4Engine(HttpClient httpClient, HttpContext httpContext)
+   public ApacheHttpClient4Engine(final HttpClient httpClient, final HttpContext httpContext)
    {
       this.httpClient = httpClient;
       this.httpContext = httpContext;
    }
 
-   public ApacheHttpClient4Engine(HttpClient httpClient, HttpContextProvider httpContextProvider)
+   public ApacheHttpClient4Engine(final HttpClient httpClient, final HttpContextProvider httpContextProvider)
    {
       this.httpClient = httpClient;
       this.httpContextProvider = httpContextProvider;
@@ -730,7 +730,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
        * @param pFile -
        * @param pContentType -
        */
-      FileExposingFileEntity(File pFile, String pContentType)
+      FileExposingFileEntity(final File pFile, final String pContentType)
       {
          super(pFile, pContentType);
       }

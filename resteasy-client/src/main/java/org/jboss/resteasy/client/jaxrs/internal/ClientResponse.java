@@ -43,7 +43,7 @@ public abstract class ClientResponse extends BuiltResponse
    protected byte[] bufferedEntity;
    protected boolean streamFullyRead;
 
-   protected ClientResponse(ClientConfiguration configuration)
+   protected ClientResponse(final ClientConfiguration configuration)
    {
       setClientConfiguration(configuration);
    }
@@ -169,7 +169,7 @@ public abstract class ClientResponse extends BuiltResponse
 
       private ClientResponse response;
 
-      protected InputStreamWrapper(InputStream in, ClientResponse response) {
+      protected InputStreamWrapper(final InputStream in, final ClientResponse response) {
          super(in);
          this.response = response;
       }

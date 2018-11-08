@@ -24,7 +24,7 @@ public class ClientResponseProxy implements InvocationHandler
    private Map<Method, EntityExtractor<?>> methodMap;
    private Class<?> clazz;
 
-   public ClientResponseProxy(ClientRequestContext context, Map<Method, EntityExtractor<?>> methodMap, Class<?> clazz)
+   public ClientResponseProxy(final ClientRequestContext context, final Map<Method, EntityExtractor<?>> methodMap, final Class<?> clazz)
    {
       super();
       this.methodMap = methodMap;

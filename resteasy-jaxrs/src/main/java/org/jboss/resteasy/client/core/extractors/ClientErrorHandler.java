@@ -19,7 +19,7 @@ public class ClientErrorHandler
 {
    private List<ClientErrorInterceptor> interceptors;
 
-   public ClientErrorHandler(List<ClientErrorInterceptor> interceptors)
+   public ClientErrorHandler(final List<ClientErrorInterceptor> interceptors)
    {
       this.interceptors = interceptors;
    }

@@ -23,7 +23,7 @@ public class ReaderInterceptorRegistry extends JaxrsInterceptorRegistry<ReaderIn
 {
    protected LegacyPrecedence precedence;
 
-   public ReaderInterceptorRegistry(ResteasyProviderFactory providerFactory, LegacyPrecedence precedence)
+   public ReaderInterceptorRegistry(final ResteasyProviderFactory providerFactory, final LegacyPrecedence precedence)
    {
       super(providerFactory, ReaderInterceptor.class);
       this.precedence = precedence;
@@ -40,7 +40,7 @@ public class ReaderInterceptorRegistry extends JaxrsInterceptorRegistry<ReaderIn
    {
       protected final ReaderInterceptorContext readerInterceptorContext;
 
-      private MessageBodyReaderContextFacade(ReaderInterceptorContext readerInterceptorContext)
+      private MessageBodyReaderContextFacade(final ReaderInterceptorContext readerInterceptorContext)
       {
          this.readerInterceptorContext = readerInterceptorContext;
       }
@@ -140,7 +140,7 @@ public class ReaderInterceptorRegistry extends JaxrsInterceptorRegistry<ReaderIn
    {
       protected final MessageBodyReaderInterceptor interceptor;
 
-      public ReaderInterceptorFacade(MessageBodyReaderInterceptor interceptor)
+      public ReaderInterceptorFacade(final MessageBodyReaderInterceptor interceptor)
       {
          this.interceptor = interceptor;
       }

@@ -42,7 +42,7 @@ public class InfinispanCache implements ServerCache
       private transient MultivaluedMap<String, Object> headers;
       private transient MediaType mediaType;
 
-      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MediaType mediaType)
+      private CacheEntry(final MultivaluedMap<String, Object> headers, final byte[] cached, final int expires, final String etag, final MediaType mediaType)
       {
          this.cached = cached;
          this.expires = expires;
@@ -101,7 +101,7 @@ public class InfinispanCache implements ServerCache
    protected Cache cache;
 
    @SuppressWarnings("rawtypes")
-   public InfinispanCache(Cache cache)
+   public InfinispanCache(final Cache cache)
    {
       this.cache = cache;
    }

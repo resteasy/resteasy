@@ -13,7 +13,7 @@ public class CookieParamProcessor implements InvocationProcessor
 {
    private String cookieName;
 
-   public CookieParamProcessor(String cookieName)
+   public CookieParamProcessor(final String cookieName)
    {
       this.cookieName = cookieName;
    }

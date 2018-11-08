@@ -18,13 +18,13 @@ public class CachedXSLTURI extends CachedXSLTBase {
    private URI uri;
    private URIResolver uriResolver;
 
-   public CachedXSLTURI(URI uri) throws TransformerConfigurationException {
+   public CachedXSLTURI(final URI uri) throws TransformerConfigurationException {
       super();
       this.uri = uri;
       this.reloadStyleSheet();
    }
 
-   public CachedXSLTURI(URI uri, URIResolver uriResolver) throws TransformerConfigurationException {
+   public CachedXSLTURI(final URI uri, final URIResolver uriResolver) throws TransformerConfigurationException {
 
       this.uri = uri;
       this.uriResolver = uriResolver;

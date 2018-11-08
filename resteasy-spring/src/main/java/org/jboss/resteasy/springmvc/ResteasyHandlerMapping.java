@@ -35,7 +35,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    private HandlerInterceptor[] interceptors;
    private boolean throwNotFound = false;
 
-   public ResteasyHandlerMapping(ResteasyDeployment deployment)
+   public ResteasyHandlerMapping(final ResteasyDeployment deployment)
    {
       super();
       this.dispatcher = (SynchronousDispatcher)deployment.getDispatcher();

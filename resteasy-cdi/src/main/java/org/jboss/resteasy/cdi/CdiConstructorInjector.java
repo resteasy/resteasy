@@ -30,7 +30,7 @@ public class CdiConstructorInjector implements ConstructorInjector
    private BeanManager manager;
    private Type type;
 
-   public CdiConstructorInjector(Type type, BeanManager manager)
+   public CdiConstructorInjector(final Type type, final BeanManager manager)
    {
       this.type = type;
       this.manager = manager;

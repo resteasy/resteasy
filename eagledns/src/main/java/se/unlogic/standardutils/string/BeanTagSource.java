@@ -21,7 +21,7 @@ public class BeanTagSource<T> implements TagSource{
    private final HashMap<String,Method> tagMethodMap;
    private final HashMap<String,Field> tagFieldMap;
 
-   public BeanTagSource(T bean, HashMap<String, Method> tagMethodMap, HashMap<String, Field> tagFieldMap, Set<String> tagSet) {
+   public BeanTagSource(final T bean, final HashMap<String, Method> tagMethodMap, final HashMap<String, Field> tagFieldMap, final Set<String> tagSet) {
 
       super();
       this.bean = bean;

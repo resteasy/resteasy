@@ -20,7 +20,7 @@ public class ValidationException extends Exception {
    private static final long serialVersionUID = -1221745166857804542L;
    private final List<ValidationError> errors;
 
-   public ValidationException(List<ValidationError> errors) {
+   public ValidationException(final List<ValidationError> errors) {
       super();
 
       if (errors == null) {
@@ -30,7 +30,7 @@ public class ValidationException extends Exception {
       this.errors = errors;
    }
 
-   public ValidationException(ValidationError... errors) {
+   public ValidationException(final ValidationError... errors) {
       super();
 
       if (errors == null) {

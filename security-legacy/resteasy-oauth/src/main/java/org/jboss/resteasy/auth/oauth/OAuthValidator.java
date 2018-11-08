@@ -21,7 +21,7 @@ public class OAuthValidator extends SimpleOAuthValidator {
 
    private OAuthProvider provider;
 
-   public OAuthValidator(OAuthProvider provider) {
+   public OAuthValidator(final OAuthProvider provider) {
       this.provider = provider;
    }
 

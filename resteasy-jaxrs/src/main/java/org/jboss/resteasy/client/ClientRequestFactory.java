@@ -39,24 +39,24 @@ public class ClientRequestFactory
       init(null, null, null);
    }
 
-   public ClientRequestFactory(URI base)
+   public ClientRequestFactory(final URI base)
    {
       init(null, null, base);
    }
 
-   public ClientRequestFactory(ClientExecutor executor, URI base)
+   public ClientRequestFactory(final ClientExecutor executor, final URI base)
    {
       init(executor, null, base);
    }
 
-   public ClientRequestFactory(ClientExecutor executor,
-                               ResteasyProviderFactory providerFactory)
+   public ClientRequestFactory(final ClientExecutor executor,
+                               final ResteasyProviderFactory providerFactory)
    {
       init(executor, providerFactory, null);
    }
 
-   public ClientRequestFactory(ClientExecutor executor,
-                               ResteasyProviderFactory providerFactory, URI base)
+   public ClientRequestFactory(final ClientExecutor executor,
+                               final ResteasyProviderFactory providerFactory, final URI base)
    {
       init(executor, providerFactory, base);
    }
@@ -75,7 +75,7 @@ public class ClientRequestFactory
       this.base = base;
    }
 
-   public ClientRequestFactory(ClientRequestFactory other)
+   public ClientRequestFactory(final ClientRequestFactory other)
    {
       this.providerFactory = other.providerFactory;
       this.executor = other.executor;

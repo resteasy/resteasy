@@ -13,13 +13,13 @@ public class PathParamProcessor implements WebTargetProcessor
    private final String paramName;
    private final Boolean encodeSlashInPath;
 
-   public PathParamProcessor(String paramName)
+   public PathParamProcessor(final String paramName)
    {
       this.paramName = paramName;
       this.encodeSlashInPath = true;
    }
 
-   public PathParamProcessor(String paramName, Boolean encodeSlashInPath)
+   public PathParamProcessor(final String paramName, final Boolean encodeSlashInPath)
    {
       this.paramName = paramName;
       this.encodeSlashInPath = encodeSlashInPath;

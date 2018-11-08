@@ -8,7 +8,7 @@ public class ProxyConfig
    private final MediaType defaultConsumes;
    private final MediaType defaultProduces;
 
-   public ProxyConfig(ClassLoader loader, MediaType defaultConsumes, MediaType defaultProduces)
+   public ProxyConfig(final ClassLoader loader, final MediaType defaultConsumes, final MediaType defaultProduces)
    {
       super();
       this.loader = loader;

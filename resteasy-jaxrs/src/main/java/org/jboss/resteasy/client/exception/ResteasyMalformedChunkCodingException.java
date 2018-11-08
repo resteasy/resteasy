@@ -14,17 +14,17 @@ public class ResteasyMalformedChunkCodingException extends ResteasyIOException
    {
    }
 
-   public ResteasyMalformedChunkCodingException(String message)
+   public ResteasyMalformedChunkCodingException(final String message)
    {
       super(message);
    }
 
-   public ResteasyMalformedChunkCodingException(String message, Throwable cause)
+   public ResteasyMalformedChunkCodingException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyMalformedChunkCodingException(Throwable cause)
+   public ResteasyMalformedChunkCodingException(final Throwable cause)
    {
       super(cause);
    }

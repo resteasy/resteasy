@@ -16,11 +16,11 @@ import java.sql.SQLException;
 
 public class BooleanQuery extends PreparedStatementQuery {
 
-   public BooleanQuery(Connection connection, boolean closeConnectionOnExit, String query) throws SQLException {
+   public BooleanQuery(final Connection connection, final boolean closeConnectionOnExit, final String query) throws SQLException {
       super(connection, closeConnectionOnExit, query);
    }
 
-   public BooleanQuery(DataSource dataSource, boolean closeConnectionOnExit, String query) throws SQLException {
+   public BooleanQuery(final DataSource dataSource, final boolean closeConnectionOnExit, final String query) throws SQLException {
       super(dataSource, closeConnectionOnExit, query);
    }
 

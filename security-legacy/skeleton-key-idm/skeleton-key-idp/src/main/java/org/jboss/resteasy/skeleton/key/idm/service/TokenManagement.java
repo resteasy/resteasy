@@ -109,7 +109,7 @@ public class TokenManagement
       }
    }
 
-   public TokenManagement(IdentityManager identityManager)
+   public TokenManagement(final IdentityManager identityManager)
    {
       this.identityManager = identityManager;
    }

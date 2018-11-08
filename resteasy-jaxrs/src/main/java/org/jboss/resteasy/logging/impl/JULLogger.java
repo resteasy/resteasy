@@ -11,7 +11,7 @@ public class JULLogger extends Logger
    private transient java.util.logging.Logger delegate;
    private String classname;
 
-   public JULLogger(String classname)
+   public JULLogger(final String classname)
    {
       delegate = java.util.logging.Logger.getLogger(classname);
       this.classname = classname;

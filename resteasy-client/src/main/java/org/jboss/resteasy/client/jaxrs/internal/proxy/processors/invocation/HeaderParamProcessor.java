@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
 {
 
-   public HeaderParamProcessor(String paramName)
+   public HeaderParamProcessor(final String paramName)
    {
       super(paramName);
    }

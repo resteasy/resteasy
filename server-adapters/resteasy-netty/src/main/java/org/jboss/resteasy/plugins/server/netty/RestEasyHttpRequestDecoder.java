@@ -36,7 +36,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
       HTTP
    }
 
-   public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive)
+   public RestEasyHttpRequestDecoder(final SynchronousDispatcher dispatcher, final String servletMappingPrefix, final Protocol protocol, final boolean isKeepAlive)
    {
       this.dispatcher = dispatcher;
       this.servletMappingPrefix = servletMappingPrefix;

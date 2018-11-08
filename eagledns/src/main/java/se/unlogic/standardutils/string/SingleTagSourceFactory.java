@@ -9,7 +9,7 @@ public class SingleTagSourceFactory<T> implements TagSourceFactory<T>{
    protected Set<String> tags;
    protected String tag;
 
-   public SingleTagSourceFactory(String tag){
+   public SingleTagSourceFactory(final String tag){
 
       this.tags = Collections.singleton(tag);
       this.tag = tag;

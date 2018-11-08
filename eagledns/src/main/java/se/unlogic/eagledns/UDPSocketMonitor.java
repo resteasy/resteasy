@@ -19,7 +19,7 @@ public class UDPSocketMonitor extends Thread {
    private static final short udpLength = 512;
    private final DatagramSocket socket;
 
-   public UDPSocketMonitor(EagleDNS eagleDNS, final InetAddress addr, final int port) throws SocketException {
+   public UDPSocketMonitor(final EagleDNS eagleDNS, final InetAddress addr, final int port) throws SocketException {
       super();
       this.eagleDNS = eagleDNS;
       this.addr = addr;

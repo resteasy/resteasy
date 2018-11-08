@@ -25,7 +25,7 @@ public class HeaderHolder implements Serializable
    private Type type;
    private String value;
 
-   public HeaderHolder(Type type, String value)
+   public HeaderHolder(final Type type, final String value)
    {
       this.type = type;
       this.value = value;

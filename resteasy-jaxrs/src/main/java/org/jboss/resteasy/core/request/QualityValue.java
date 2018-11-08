@@ -21,7 +21,7 @@ public final class QualityValue extends Number implements Comparable<QualityValu
    private final int WEIGHT;
 
 
-   private QualityValue(int weight)
+   private QualityValue(final int weight)
    {
       assert weight >= 0;
       assert weight <= 1000;

@@ -41,8 +41,8 @@ public class ResteasyWadlServiceRegistry {
 
    private String functionPrefix;
 
-   public ResteasyWadlServiceRegistry(ResteasyWadlServiceRegistry parent, ResourceMethodRegistry registry,
-                                       ResteasyProviderFactory providerFactory, ResourceLocator locator) {
+   public ResteasyWadlServiceRegistry(final ResteasyWadlServiceRegistry parent, final ResourceMethodRegistry registry,
+                                      final ResteasyProviderFactory providerFactory, final ResourceLocator locator) {
       this.parent = parent;
       this.registry = registry;
       this.providerFactory = providerFactory;

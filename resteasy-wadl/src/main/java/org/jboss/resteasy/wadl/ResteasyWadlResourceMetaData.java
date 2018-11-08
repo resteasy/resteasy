@@ -10,7 +10,7 @@ public class ResteasyWadlResourceMetaData {
    private String uri;
    private List<ResteasyWadlMethodMetaData> methodsMetaData = new ArrayList<ResteasyWadlMethodMetaData>();
 
-   public ResteasyWadlResourceMetaData(String uri) {
+   public ResteasyWadlResourceMetaData(final String uri) {
       this.uri = uri;
    }
 

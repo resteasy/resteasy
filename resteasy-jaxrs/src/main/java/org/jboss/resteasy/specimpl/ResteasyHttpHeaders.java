@@ -28,12 +28,12 @@ public class ResteasyHttpHeaders implements HttpHeaders
    private MultivaluedMap<String, String> requestHeaders;
    private Map<String, Cookie> cookies;
 
-   public ResteasyHttpHeaders(MultivaluedMap<String, String> requestHeaders)
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders)
    {
       this(requestHeaders, new HashMap<String, Cookie>());
    }
 
-   public ResteasyHttpHeaders(MultivaluedMap<String, String> requestHeaders, Map<String, Cookie> cookies)
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final Map<String, Cookie> cookies)
    {
       this.requestHeaders = requestHeaders;
       this.cookies = (cookies == null ? new HashMap<String, Cookie>() : cookies);

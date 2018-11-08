@@ -72,7 +72,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       private ClassKey classKey;
       private int hash;
 
-      private ClassAnnotationKey(Class<?> clazz, Annotation[] annotations)
+      private ClassAnnotationKey(final Class<?> clazz, final Annotation[] annotations)
       {
          this.annotations = new AnnotationBundleKey(annotations, AnnotationBundleKey.class);
          this.classKey = new ClassKey(clazz);

@@ -24,7 +24,7 @@ public class BeanTagSourceFactory<T> implements TagSourceFactory<T>{
    private HashMap<String,Field> tagFieldMap = new HashMap<String, Field>();
    private HashSet<String> tagsSet = new HashSet<String>();
 
-   public BeanTagSourceFactory(Class<T> beanClass) {
+   public BeanTagSourceFactory(final Class<T> beanClass) {
 
       this.beanClass = beanClass;
    }

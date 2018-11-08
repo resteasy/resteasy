@@ -97,7 +97,7 @@ public class ProxyBuilder<T>
       return invoker;
    }
 
-   private ProxyBuilder(Class<T> iface, ResteasyWebTarget webTarget)
+   private ProxyBuilder(final Class<T> iface, final ResteasyWebTarget webTarget)
    {
       if (System.getSecurityManager() == null)
       {

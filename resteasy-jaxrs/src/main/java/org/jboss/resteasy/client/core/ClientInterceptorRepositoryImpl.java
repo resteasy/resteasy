@@ -44,7 +44,7 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
          return null;
       }
 
-      InterceptorType(Class<?> clazz)
+      InterceptorType(final Class<?> clazz)
       {
          this.clazz = clazz;
       }

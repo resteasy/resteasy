@@ -1537,7 +1537,7 @@ public class Base64 {
        * @param in the <tt>java.io.InputStream</tt> from which to read data.
        * @since 1.3
        */
-      public InputStream(java.io.InputStream in) {
+      public InputStream(final java.io.InputStream in) {
 
          this(in, DECODE);
       } // end constructor
@@ -1563,7 +1563,7 @@ public class Base64 {
        * @see Base64#DO_BREAK_LINES
        * @since 2.0
        */
-      public InputStream(java.io.InputStream in, int options) {
+      public InputStream(final java.io.InputStream in, final int options) {
 
          super(in);
          this.options = options; // Record for later
@@ -1739,7 +1739,7 @@ public class Base64 {
        * @param out the <tt>java.io.OutputStream</tt> to which data will be written.
        * @since 1.3
        */
-      public OutputStream(java.io.OutputStream out) {
+      public OutputStream(final java.io.OutputStream out) {
 
          this(out, ENCODE);
       } // end constructor
@@ -1764,7 +1764,7 @@ public class Base64 {
        * @see Base64#DO_BREAK_LINES
        * @since 1.3
        */
-      public OutputStream(java.io.OutputStream out, int options) {
+      public OutputStream(final java.io.OutputStream out, final int options) {
 
          super(out);
          this.breakLines = (options & DO_BREAK_LINES) != 0;

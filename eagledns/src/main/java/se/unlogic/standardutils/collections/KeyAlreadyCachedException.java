@@ -15,7 +15,7 @@ public class KeyAlreadyCachedException extends RuntimeException {
    private static final long serialVersionUID = 6139847169384918434L;
    private Object key;
 
-   public KeyAlreadyCachedException(Object key) {
+   public KeyAlreadyCachedException(final Object key) {
       this.key = key;
    }
 

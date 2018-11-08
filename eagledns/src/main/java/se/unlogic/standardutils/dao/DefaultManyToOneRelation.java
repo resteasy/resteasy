@@ -39,7 +39,7 @@ public class DefaultManyToOneRelation<LocalType,RemoteType, RemoteKeyType> imple
 
    private boolean initialized;
 
-   public DefaultManyToOneRelation(Class<LocalType> beanClass, Class<RemoteType> remoteClass, Class<RemoteKeyType> remoteKeyClass, Field field, Field remoteKeyField, DAOManaged daoManaged, AnnotatedDAOFactory daoFactory) {
+   public DefaultManyToOneRelation(final Class<LocalType> beanClass, final Class<RemoteType> remoteClass, final Class<RemoteKeyType> remoteKeyClass, final Field field, final Field remoteKeyField, final DAOManaged daoManaged, final AnnotatedDAOFactory daoFactory) {
 
       this.remoteClass = remoteClass;
       this.remoteRemoteKeyClass = remoteKeyClass;

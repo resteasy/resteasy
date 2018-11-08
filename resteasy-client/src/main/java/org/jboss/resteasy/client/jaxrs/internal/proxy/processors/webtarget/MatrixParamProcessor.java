@@ -9,7 +9,7 @@ import javax.ws.rs.client.WebTarget;
 public class MatrixParamProcessor extends AbstractWebTargetCollectionProcessor
 {
 
-   public MatrixParamProcessor(String paramName)
+   public MatrixParamProcessor(final String paramName)
    {
       super(paramName);
    }

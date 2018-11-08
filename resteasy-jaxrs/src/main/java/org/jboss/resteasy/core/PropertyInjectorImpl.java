@@ -37,7 +37,7 @@ public class PropertyInjectorImpl implements PropertyInjector
 
    private static class SetterMethod
    {
-      private SetterMethod(Method method, ValueInjector extractor)
+      private SetterMethod(final Method method, final ValueInjector extractor)
       {
          this.method = method;
          this.extractor = extractor;
@@ -51,7 +51,7 @@ public class PropertyInjectorImpl implements PropertyInjector
    protected HashMap<Long, Method> setterhashes = new HashMap<Long, Method>();
    protected Class<?> clazz;
 
-   public PropertyInjectorImpl(Class<?> clazz, ResteasyProviderFactory factory)
+   public PropertyInjectorImpl(final Class<?> clazz, final ResteasyProviderFactory factory)
    {
       this.clazz = clazz;
 

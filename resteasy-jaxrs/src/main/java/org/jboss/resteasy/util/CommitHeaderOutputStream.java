@@ -13,7 +13,7 @@ public class CommitHeaderOutputStream extends OutputStream
    protected boolean isHeadersCommitted;
    protected CommitCallback headers;
 
-   public CommitHeaderOutputStream(OutputStream delegate, CommitCallback headers)
+   public CommitHeaderOutputStream(final OutputStream delegate, final CommitCallback headers)
    {
       this.delegate = delegate;
       this.headers = headers;

@@ -46,12 +46,12 @@ public class JWEInput
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
    }
 
-   public JWEInput(String wire)
+   public JWEInput(final String wire)
    {
       this(wire, null);
    }
 
-   public JWEInput(String wire, Providers providers)
+   public JWEInput(final String wire, final Providers providers)
    {
       this.providers = providers;
       this.wireString = wire;

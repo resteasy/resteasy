@@ -43,7 +43,7 @@ public class SimpleExecutionController<T extends TaskGroup> implements Execution
    @XMLAttribute
    private AtomicInteger completedTaskCount = new AtomicInteger();
 
-   public SimpleExecutionController(T taskGroup, ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler) {
+   public SimpleExecutionController(final T taskGroup, final ThreadPoolTaskGroupHandler<T> threadPoolTaskHandler) {
 
       super();
       this.taskGroup = taskGroup;

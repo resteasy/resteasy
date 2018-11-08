@@ -20,11 +20,11 @@ public class DoublePopulator extends BaseStringPopulator<Double> implements Bean
       super();
    }
 
-   public DoublePopulator(String populatorID, StringFormatValidator formatValidator) {
+   public DoublePopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public DoublePopulator(String populatorID) {
+   public DoublePopulator(final String populatorID) {
       super(populatorID);
    }
 

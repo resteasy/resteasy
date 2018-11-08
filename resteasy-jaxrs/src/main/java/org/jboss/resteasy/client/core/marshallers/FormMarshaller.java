@@ -29,7 +29,7 @@ public class FormMarshaller implements Marshaller
 
    private static class GetterMethod
    {
-      private GetterMethod(Method method, Marshaller marshaller)
+      private GetterMethod(final Method method, final Marshaller marshaller)
       {
          this.method = method;
          this.marshaller = marshaller;
@@ -43,7 +43,7 @@ public class FormMarshaller implements Marshaller
    protected HashMap<Long, Method> getterHashes = new HashMap<Long, Method>();
    protected Class clazz;
 
-   public FormMarshaller(Class clazz, ResteasyProviderFactory factory)
+   public FormMarshaller(final Class clazz, final ResteasyProviderFactory factory)
    {
       this.clazz = clazz;
 

@@ -14,7 +14,7 @@ public class ResourceClassProcessorMethod implements ResourceMethod {
    private final ResourceMethod delegate;
    private final MediaType[] produces = new MediaType[]{MediaType.APPLICATION_XML_TYPE};
 
-   public ResourceClassProcessorMethod(ResourceMethod delegate) {
+   public ResourceClassProcessorMethod(final ResourceMethod delegate) {
       this.delegate = delegate;
    }
 

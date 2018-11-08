@@ -54,12 +54,12 @@ public class BuiltResponse extends Response
    {
    }
 
-   public BuiltResponse(int status, Headers<Object> metadata, Object entity, Annotation[] entityAnnotations)
+   public BuiltResponse(final int status, final Headers<Object> metadata, final Object entity, final Annotation[] entityAnnotations)
    {
       this(status, null, metadata, entity, entityAnnotations);
    }
 
-   public BuiltResponse(int status, String reason, Headers<Object> metadata, Object entity, Annotation[] entityAnnotations)
+   public BuiltResponse(final int status, final String reason, final Headers<Object> metadata, final Object entity, final Annotation[] entityAnnotations)
    {
       setEntity(entity);
       this.status = status;

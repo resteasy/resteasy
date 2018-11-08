@@ -10,17 +10,17 @@ public class MethodNotFoundException extends Exception {
       super();
    }
 
-   public MethodNotFoundException(String message, Throwable cause) {
+   public MethodNotFoundException(final String message, final Throwable cause) {
 
       super(message, cause);
    }
 
-   public MethodNotFoundException(String message) {
+   public MethodNotFoundException(final String message) {
 
       super(message);
    }
 
-   public MethodNotFoundException(Throwable cause) {
+   public MethodNotFoundException(final Throwable cause) {
 
       super(cause);
    }

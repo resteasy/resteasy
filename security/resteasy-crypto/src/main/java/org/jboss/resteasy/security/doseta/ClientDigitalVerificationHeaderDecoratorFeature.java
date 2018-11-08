@@ -40,7 +40,7 @@ public class ClientDigitalVerificationHeaderDecoratorFeature implements DynamicF
    @Priority(Priorities.HEADER_DECORATOR)
    public static class DigitalVerificationHeaderDecorator extends AbstractDigitalVerificationHeaderDecorator implements ClientResponseFilter
    {
-      public DigitalVerificationHeaderDecorator(Verify verify, Verifications verifications)
+      public DigitalVerificationHeaderDecorator(final Verify verify, final Verifications verifications)
       {
          this.verify = verify;
          this.verifications = verifications;

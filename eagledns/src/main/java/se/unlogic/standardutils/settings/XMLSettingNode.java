@@ -30,7 +30,7 @@ public class XMLSettingNode implements SettingNode {
    private final XPath xpath;
 
 
-   public XMLSettingNode(String path) throws SAXException, IOException, ParserConfigurationException {
+   public XMLSettingNode(final String path) throws SAXException, IOException, ParserConfigurationException {
 
       Document doc = XMLUtils.parseXmlFile(path, false,false);
       this.element = doc.getDocumentElement();
@@ -39,14 +39,14 @@ public class XMLSettingNode implements SettingNode {
 
    }
 
-   public XMLSettingNode(Document doc) {
+   public XMLSettingNode(final Document doc) {
 
       this.element = doc.getDocumentElement();
 
       this.xpath = XPathFactory.newInstance().newXPath();
    }
 
-   public XMLSettingNode(Element element) {
+   public XMLSettingNode(final Element element) {
 
       this.element = element;
 
@@ -54,7 +54,7 @@ public class XMLSettingNode implements SettingNode {
 
    }
 
-   public XMLSettingNode(File configurationFile) throws SAXException, IOException, ParserConfigurationException {
+   public XMLSettingNode(final File configurationFile) throws SAXException, IOException, ParserConfigurationException {
 
       Document doc = XMLUtils.parseXmlFile(configurationFile, false);
       this.element = doc.getDocumentElement();

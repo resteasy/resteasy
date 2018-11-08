@@ -19,11 +19,11 @@ import java.util.Map.Entry;
 
 public class HashMapQuery<KeyType, ValueType> extends PopulatedQuery<Entry<KeyType, ValueType>> {
 
-   public HashMapQuery(Connection connection, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends Entry<KeyType, ValueType>> bp) throws SQLException {
+   public HashMapQuery(final Connection connection, final boolean closeConnectionOnExit, final String query, final BeanResultSetPopulator<? extends Entry<KeyType, ValueType>> bp) throws SQLException {
       super(connection, closeConnectionOnExit, query, bp);
    }
 
-   public HashMapQuery(DataSource dataSource, boolean closeConnectionOnExit, String query, BeanResultSetPopulator<? extends Entry<KeyType, ValueType>> bp) throws SQLException {
+   public HashMapQuery(final DataSource dataSource, final boolean closeConnectionOnExit, final String query, final BeanResultSetPopulator<? extends Entry<KeyType, ValueType>> bp) throws SQLException {
       super(dataSource, closeConnectionOnExit, query, bp);
    }
 

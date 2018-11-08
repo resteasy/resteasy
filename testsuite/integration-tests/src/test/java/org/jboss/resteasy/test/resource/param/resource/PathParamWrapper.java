@@ -10,7 +10,7 @@ public class PathParamWrapper<E> {
 
    private final E element;
 
-   public PathParamWrapper(E element) {
+   public PathParamWrapper(final E element) {
       this.element = element;
    }
 

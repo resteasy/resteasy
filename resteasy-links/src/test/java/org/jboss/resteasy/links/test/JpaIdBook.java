@@ -12,7 +12,7 @@ public class JpaIdBook extends IdBook{
    public JpaIdBook() {
    }
 
-   public JpaIdBook(String name) {
+   public JpaIdBook(final String name) {
       this.name = name;
    }
 

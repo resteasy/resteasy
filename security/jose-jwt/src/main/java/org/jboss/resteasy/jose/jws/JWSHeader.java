@@ -28,7 +28,7 @@ public class JWSHeader implements Serializable
    {
    }
 
-   public JWSHeader(Algorithm algorithm, String type, String contentType)
+   public JWSHeader(final Algorithm algorithm, final String type, final String contentType)
    {
       this.algorithm = algorithm;
       this.type = type;

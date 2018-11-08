@@ -16,8 +16,8 @@ public class MethodParamMetaData
    private MethodParamType paramType;
    private String paramName;
 
-   public MethodParamMetaData(Class<?> type, Annotation[] annotations,
-         MethodParamType paramType, String paramName)
+   public MethodParamMetaData(final Class<?> type, final Annotation[] annotations,
+                              final MethodParamType paramType, final String paramName)
    {
       super();
       this.type = type;

@@ -23,12 +23,12 @@ public class CachedXSLTFile extends CachedXSLTBase{
       this.cacheStyleSheet(file);
    }
 
-   public CachedXSLTFile(File f) throws TransformerConfigurationException{
+   public CachedXSLTFile(final File f) throws TransformerConfigurationException{
       this.file = f;
       this.cacheStyleSheet(f);
    }
 
-   public CachedXSLTFile(File file, URIResolver uriResolver) throws TransformerConfigurationException {
+   public CachedXSLTFile(final File file, final URIResolver uriResolver) throws TransformerConfigurationException {
 
       this.file =  file;
       this.uriResolver = uriResolver;

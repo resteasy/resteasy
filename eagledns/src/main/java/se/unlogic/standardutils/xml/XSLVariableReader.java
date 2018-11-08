@@ -39,25 +39,25 @@ public class XSLVariableReader {
 
    private final XPath xpath = XPathFactory.newInstance().newXPath();;
 
-   public XSLVariableReader(Document doc) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
+   public XSLVariableReader(final Document doc) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
 
       this.doc = doc;
       subDocuments = this.getSubDocuments(doc, null);
    }
 
-   public XSLVariableReader(URI uri) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
+   public XSLVariableReader(final URI uri) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
 
       this.doc = XMLUtils.parseXmlFile(uri, false);
       subDocuments = this.getSubDocuments(doc, null);
    }
 
-   public XSLVariableReader(String filePath) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
+   public XSLVariableReader(final String filePath) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
 
       this.doc = XMLUtils.parseXmlFile(filePath, false, false);
       subDocuments = this.getSubDocuments(doc, null);
    }
 
-   public XSLVariableReader(File file) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
+   public XSLVariableReader(final File file) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, URISyntaxException {
 
       this.doc = XMLUtils.parseXmlFile(file, false);
       subDocuments = this.getSubDocuments(doc, null);

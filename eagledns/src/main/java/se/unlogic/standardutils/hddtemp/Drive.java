@@ -28,7 +28,7 @@ public class Drive implements Elementable{
    @XMLElement
    private DriveState driveState;
 
-   public Drive(Integer temp, String type, String device)
+   public Drive(final Integer temp, final String type, final String device)
    {
       this.temp = temp;
       this.device = device;

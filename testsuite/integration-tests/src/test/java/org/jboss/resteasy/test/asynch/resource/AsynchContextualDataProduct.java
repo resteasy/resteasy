@@ -10,7 +10,7 @@ public class AsynchContextualDataProduct
    {
    }
 
-   public AsynchContextualDataProduct(int id, String name)
+   public AsynchContextualDataProduct(final int id, final String name)
    {
       this.id = id;
       this.name = name;

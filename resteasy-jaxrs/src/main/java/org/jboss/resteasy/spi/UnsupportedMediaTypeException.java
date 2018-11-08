@@ -15,32 +15,32 @@ import javax.ws.rs.core.Response;
 public class UnsupportedMediaTypeException extends LoggableFailure
 {
 
-   public UnsupportedMediaTypeException(String s)
+   public UnsupportedMediaTypeException(final String s)
    {
       super(s, 415);
    }
 
-   public UnsupportedMediaTypeException(String s, Response response)
+   public UnsupportedMediaTypeException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public UnsupportedMediaTypeException(String s, Throwable throwable, Response response)
+   public UnsupportedMediaTypeException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public UnsupportedMediaTypeException(String s, Throwable throwable)
+   public UnsupportedMediaTypeException(final String s, final Throwable throwable)
    {
       super(s, throwable, 415);
    }
 
-   public UnsupportedMediaTypeException(Throwable throwable)
+   public UnsupportedMediaTypeException(final Throwable throwable)
    {
       super(throwable, 415);
    }
 
-   public UnsupportedMediaTypeException(Throwable throwable, Response response)
+   public UnsupportedMediaTypeException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

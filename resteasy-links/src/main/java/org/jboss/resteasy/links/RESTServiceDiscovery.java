@@ -47,7 +47,7 @@ public class RESTServiceDiscovery extends ArrayList<RESTServiceDiscovery.AtomLin
       public AtomLink() {
       }
 
-      public AtomLink(String href, String rel) {
+      public AtomLink(final String href, final String rel) {
          this.href = href;
          this.rel = rel;
       }

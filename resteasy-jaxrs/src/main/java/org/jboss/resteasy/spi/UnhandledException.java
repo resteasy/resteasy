@@ -10,12 +10,12 @@ package org.jboss.resteasy.spi;
  */
 public class UnhandledException extends RuntimeException
 {
-   public UnhandledException(String s, Throwable throwable)
+   public UnhandledException(final String s, final Throwable throwable)
    {
       super(s, throwable);
    }
 
-   public UnhandledException(Throwable throwable)
+   public UnhandledException(final Throwable throwable)
    {
       super(throwable);
    }

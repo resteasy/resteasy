@@ -36,17 +36,17 @@ public class ExceptionMapperTest
       {
       }
 
-      public MyException(String s)
+      public MyException(final String s)
       {
          super(s);
       }
 
-      public MyException(String s, Throwable throwable)
+      public MyException(final String s, final Throwable throwable)
       {
          super(s, throwable);
       }
 
-      public MyException(Throwable throwable)
+      public MyException(final Throwable throwable)
       {
          super(throwable);
       }
@@ -54,7 +54,7 @@ public class ExceptionMapperTest
 
    public static class SubclassException extends MyException
    {
-      public SubclassException(String s)
+      public SubclassException(final String s)
       {
          super(s);
       }

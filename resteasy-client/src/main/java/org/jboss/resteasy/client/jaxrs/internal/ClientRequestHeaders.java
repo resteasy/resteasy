@@ -31,7 +31,7 @@ public class ClientRequestHeaders
    protected ClientConfiguration configuration;
 
 
-   public ClientRequestHeaders(ClientConfiguration configuration)
+   public ClientRequestHeaders(final ClientConfiguration configuration)
    {
       this.configuration = configuration;
    }

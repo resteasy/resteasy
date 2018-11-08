@@ -4,7 +4,7 @@ public class CompletionStageResponseTestClass
 {
    String s;
 
-   public CompletionStageResponseTestClass(String s) {
+   public CompletionStageResponseTestClass(final String s) {
       this.s = s;
    }
 }

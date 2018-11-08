@@ -28,7 +28,7 @@ public class Comment {
    public Comment() {
    }
 
-   public Comment(int id, String text, Book book) {
+   public Comment(final int id, final String text, final Book book) {
       this.id = id;
       this.text = text;
       this.book = book;

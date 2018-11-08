@@ -88,7 +88,7 @@ public class ClientErrorInterceptorTest extends BaseResourceTest
    {
       private static final long serialVersionUID = 1L;
 
-      public MyException(String message)
+      public MyException(final String message)
       {
          super(message);
       }

@@ -14,17 +14,17 @@ public class ResteasyProtocolException extends ResteasyHttpException
    {
    }
 
-   public ResteasyProtocolException(String message)
+   public ResteasyProtocolException(final String message)
    {
       super(message);
    }
 
-   public ResteasyProtocolException(String message, Throwable cause)
+   public ResteasyProtocolException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyProtocolException(Throwable cause)
+   public ResteasyProtocolException(final Throwable cause)
    {
       super(cause);
    }

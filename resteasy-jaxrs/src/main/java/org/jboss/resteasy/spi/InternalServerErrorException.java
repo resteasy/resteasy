@@ -8,32 +8,32 @@ import javax.ws.rs.core.Response;
 public class InternalServerErrorException extends LoggableFailure
 {
 
-   public InternalServerErrorException(String s)
+   public InternalServerErrorException(final String s)
    {
       super(s, 500);
    }
 
-   public InternalServerErrorException(String s, Response response)
+   public InternalServerErrorException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public InternalServerErrorException(String s, Throwable throwable, Response response)
+   public InternalServerErrorException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public InternalServerErrorException(String s, Throwable throwable)
+   public InternalServerErrorException(final String s, final Throwable throwable)
    {
       super(s, throwable, 500);
    }
 
-   public InternalServerErrorException(Throwable throwable)
+   public InternalServerErrorException(final Throwable throwable)
    {
       super(throwable, 500);
    }
 
-   public InternalServerErrorException(Throwable throwable, Response response)
+   public InternalServerErrorException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

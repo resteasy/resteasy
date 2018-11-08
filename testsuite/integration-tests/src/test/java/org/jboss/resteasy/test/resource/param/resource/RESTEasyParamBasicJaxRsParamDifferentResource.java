@@ -50,12 +50,12 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
 
 
    public RESTEasyParamBasicJaxRsParamDifferentResource(
-         @CookieParam String cookieParam0,
-         @FormParam String formParam0,
-         @HeaderParam String headerParam0,
-         @MatrixParam String matrixParam0,
-         @PathParam String pathParam0,
-         @QueryParam String queryParam0
+         final @CookieParam String cookieParam0,
+         final @FormParam String formParam0,
+         final @HeaderParam String headerParam0,
+         final @MatrixParam String matrixParam0,
+         final @PathParam String pathParam0,
+         final @QueryParam String queryParam0
          )
    {
       this.cookieParam0 = cookieParam0;

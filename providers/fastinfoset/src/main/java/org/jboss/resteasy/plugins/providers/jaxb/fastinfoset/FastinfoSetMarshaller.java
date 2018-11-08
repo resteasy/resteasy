@@ -31,7 +31,7 @@ public class FastinfoSetMarshaller implements Marshaller
    private JAXBContext context;
    private Marshaller marshaller;
 
-   public FastinfoSetMarshaller(JAXBContext context) throws JAXBException
+   public FastinfoSetMarshaller(final JAXBContext context) throws JAXBException
    {
       this.context = context;
       marshaller = this.context.createMarshaller();

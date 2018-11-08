@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 public class NoMessageBodyWriterFoundFailure extends LoggableFailure
 {
 
-   public NoMessageBodyWriterFoundFailure(Class type, MediaType contentType)
+   public NoMessageBodyWriterFoundFailure(final Class type, final MediaType contentType)
    {
       super(
             String

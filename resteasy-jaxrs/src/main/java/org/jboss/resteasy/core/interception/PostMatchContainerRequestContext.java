@@ -19,13 +19,13 @@ public class PostMatchContainerRequestContext extends PreMatchContainerRequestCo
    protected final ResourceMethodInvoker resourceMethod;
 
    @Deprecated
-   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethodInvoker resourceMethod)
+   public PostMatchContainerRequestContext(final HttpRequest request,final ResourceMethodInvoker resourceMethod)
    {
       this(request, resourceMethod, new ContainerRequestFilter[]{}, null);
    }
 
-   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethodInvoker resourceMethod,
-         ContainerRequestFilter[] requestFilters, Supplier<BuiltResponse> continuation)
+   public PostMatchContainerRequestContext(final HttpRequest request,final ResourceMethodInvoker resourceMethod,
+                                           final ContainerRequestFilter[] requestFilters, final Supplier<BuiltResponse> continuation)
    {
       super(request, requestFilters, continuation);
       this.resourceMethod = resourceMethod;

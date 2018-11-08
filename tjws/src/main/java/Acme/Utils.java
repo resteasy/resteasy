@@ -1251,7 +1251,7 @@ public class Utils
        * @param properties where property THREADSINPOOL gives max threads Note if THREADSINPOOL not integers, or negative then DEF_MAX_POOLED_THREAD used
        * @param threadfactory thread factory
        */
-      public ThreadPool(Properties properties, ThreadFactory threadfactory)
+      public ThreadPool(final Properties properties, final ThreadFactory threadfactory)
       {
          try
          {

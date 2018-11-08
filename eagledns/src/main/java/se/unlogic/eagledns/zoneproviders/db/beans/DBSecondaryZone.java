@@ -8,7 +8,7 @@ public class DBSecondaryZone extends SecondaryZone {
 
    private Integer zoneID;
 
-   public DBSecondaryZone(Integer zoneID, String zoneName, String remoteServerAddress, String dclass) throws TextParseException {
+   public DBSecondaryZone(final Integer zoneID, final String zoneName, final String remoteServerAddress, final String dclass) throws TextParseException {
 
       super(zoneName, remoteServerAddress, dclass);
       this.zoneID = zoneID;

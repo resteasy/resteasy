@@ -11,7 +11,7 @@ public class SkeletonKeyPrincipal implements Principal
    protected String name;
    protected String surrogate;
 
-   public SkeletonKeyPrincipal(String name, String surrogate)
+   public SkeletonKeyPrincipal(final String name, final String surrogate)
    {
       this.name = name;
       this.surrogate = surrogate;

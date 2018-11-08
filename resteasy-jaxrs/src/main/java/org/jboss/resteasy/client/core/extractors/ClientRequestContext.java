@@ -13,8 +13,8 @@ public class ClientRequestContext
    private EntityExtractorFactory extractorFactory;
    private URI baseURI;
 
-   public ClientRequestContext(ClientRequest request, BaseClientResponse<?> clientResponse,
-                               ClientErrorHandler errorHandler, EntityExtractorFactory extractorFactory, URI baseURI)
+   public ClientRequestContext(final ClientRequest request, final BaseClientResponse<?> clientResponse,
+                               final ClientErrorHandler errorHandler, final EntityExtractorFactory extractorFactory, final URI baseURI)
    {
       this.request = request;
       this.clientResponse = clientResponse;

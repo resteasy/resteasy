@@ -14,17 +14,17 @@ public class ResteasyCookieRestrictionViolationException extends ResteasyMalform
    {
    }
 
-   public ResteasyCookieRestrictionViolationException(String message)
+   public ResteasyCookieRestrictionViolationException(final String message)
    {
       super(message);
    }
 
-   public ResteasyCookieRestrictionViolationException(String message, Throwable cause)
+   public ResteasyCookieRestrictionViolationException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyCookieRestrictionViolationException(Throwable cause)
+   public ResteasyCookieRestrictionViolationException(final Throwable cause)
    {
       super(cause);
    }

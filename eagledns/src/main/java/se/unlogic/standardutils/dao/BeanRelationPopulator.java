@@ -20,7 +20,7 @@ public class BeanRelationPopulator<T> implements BeanResultSetPopulator<T>{
    private Connection connection;
    private RelationQuery relationQuery;
 
-   public BeanRelationPopulator(BeanResultSetPopulator<T> populator, List<ManyToOneRelation<T,?,?>> manyToOneRelations, Connection connection, RelationQuery relationQuery) {
+   public BeanRelationPopulator(final BeanResultSetPopulator<T> populator, final List<ManyToOneRelation<T,?,?>> manyToOneRelations, final Connection connection, final RelationQuery relationQuery) {
       super();
       this.populator = populator;
       this.manyToOneRelations = manyToOneRelations;

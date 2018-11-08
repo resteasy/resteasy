@@ -26,7 +26,7 @@ public class ClientExecutionContextImpl implements ClientExecutionContext
    protected ClientRequest request;
    protected int index = 0;
 
-   public ClientExecutionContextImpl(List<ClientExecutionInterceptor> interceptors, ClientExecutor executor, ClientRequest request)
+   public ClientExecutionContextImpl(final List<ClientExecutionInterceptor> interceptors, final ClientExecutor executor, final ClientRequest request)
    {
       this.interceptors = interceptors;
       this.executor = executor;

@@ -39,7 +39,7 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
    private final Config config;
 
-   RestClientDelegateBean(Class<?> proxyType, BeanManager beanManager) {
+   RestClientDelegateBean(final Class<?> proxyType, final BeanManager beanManager) {
       this.proxyType = proxyType;
       this.beanManager = beanManager;
       this.config = ConfigProvider.getConfig(); // TODO should this be injected?

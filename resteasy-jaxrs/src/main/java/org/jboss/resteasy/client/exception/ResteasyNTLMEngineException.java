@@ -14,17 +14,17 @@ public class ResteasyNTLMEngineException extends ResteasyAuthenticationException
    {
    }
 
-   public ResteasyNTLMEngineException(String message)
+   public ResteasyNTLMEngineException(final String message)
    {
       super(message);
    }
 
-   public ResteasyNTLMEngineException(String message, Throwable cause)
+   public ResteasyNTLMEngineException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyNTLMEngineException(Throwable cause)
+   public ResteasyNTLMEngineException(final Throwable cause)
    {
       super(cause);
    }

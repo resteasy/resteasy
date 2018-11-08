@@ -36,7 +36,7 @@ public class SigningAlgorithm
    private String javaHashNotation;
 
    // 1. argument: RFC 4871 format, 2. argument: java representation, 3. argument: java hashing digest
-   public SigningAlgorithm(String rfc4871Notation, String javaSecNotation, String javaHashNotation)
+   public SigningAlgorithm(final String rfc4871Notation, final String javaSecNotation, final String javaHashNotation)
    {
       this.rfc4871Notation = rfc4871Notation;
       this.javaSecNotation = javaSecNotation;

@@ -27,7 +27,7 @@ public class SimpleServerCache implements ServerCache
       private final MultivaluedMap<String, Object> headers;
       private String etag;
 
-      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag)
+      private CacheEntry(final MultivaluedMap<String, Object> headers, final byte[] cached, final int expires, final String etag)
       {
          this.cached = cached;
          this.expires = expires;

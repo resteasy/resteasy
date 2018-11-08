@@ -11,7 +11,7 @@ public class IntegerCounter {
 
    private Integer value;
 
-   IntegerCounter(Integer value) {
+   IntegerCounter(final Integer value) {
       super();
       this.value = value;
    }

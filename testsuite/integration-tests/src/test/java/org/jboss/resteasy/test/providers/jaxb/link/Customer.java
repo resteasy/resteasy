@@ -23,7 +23,7 @@ public class Customer
    {
    }
 
-   public Customer(String name)
+   public Customer(final String name)
    {
       this.name = name;
    }

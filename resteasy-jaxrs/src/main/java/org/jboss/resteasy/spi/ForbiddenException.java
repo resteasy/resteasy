@@ -18,32 +18,32 @@ public class ForbiddenException extends LoggableFailure
       super(403);
    }
 
-   public ForbiddenException(String s)
+   public ForbiddenException(final String s)
    {
       super(s, 403);
    }
 
-   public ForbiddenException(String s, Response response)
+   public ForbiddenException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public ForbiddenException(String s, Throwable throwable, Response response)
+   public ForbiddenException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public ForbiddenException(String s, Throwable throwable)
+   public ForbiddenException(final String s, final Throwable throwable)
    {
       super(s, throwable, 403);
    }
 
-   public ForbiddenException(Throwable throwable)
+   public ForbiddenException(final Throwable throwable)
    {
       super(throwable, 403);
    }
 
-   public ForbiddenException(Throwable throwable, Response response)
+   public ForbiddenException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

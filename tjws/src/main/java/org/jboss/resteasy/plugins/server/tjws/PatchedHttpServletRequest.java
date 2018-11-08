@@ -26,7 +26,7 @@ public class PatchedHttpServletRequest extends HttpServletRequestDelegate
    private URL encodedURL;
    private String contextPath;
 
-   public PatchedHttpServletRequest(HttpServletRequest delegate, String contextPath)
+   public PatchedHttpServletRequest(final HttpServletRequest delegate, final String contextPath)
    {
       super(delegate);
       this.contextPath = contextPath;

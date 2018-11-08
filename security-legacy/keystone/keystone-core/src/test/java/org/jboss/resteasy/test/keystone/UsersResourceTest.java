@@ -38,7 +38,7 @@ public class UsersResourceTest
    {
       SkeletonKeyApplication app;
 
-      public SApp(@Context Configurable confgurable)
+      public SApp(final @Context Configurable confgurable)
       {
          this.app = new SkeletonKeyApplication(confgurable);
       }

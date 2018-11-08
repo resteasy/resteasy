@@ -16,7 +16,7 @@ public class Matrix<CellType> {
    private CellType[][] matrix;
 
    @SuppressWarnings("unchecked")
-   public Matrix(int rows, int cols){
+   public Matrix(final int rows, final int cols){
       this.matrix = (CellType[][])(new Object[rows][cols]);
    }
 

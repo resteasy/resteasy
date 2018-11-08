@@ -17,20 +17,20 @@ public class ValidationError {
    private ValidationErrorType validationErrorType;
    private String messageKey;
 
-   public ValidationError(String fieldName, ValidationErrorType validationErrorType, String messageKey) {
+   public ValidationError(final String fieldName, final ValidationErrorType validationErrorType, final String messageKey) {
       super();
       this.fieldName = fieldName;
       this.validationErrorType = validationErrorType;
       this.messageKey = messageKey;
    }
 
-   public ValidationError(String fieldName, ValidationErrorType validationErrorType) {
+   public ValidationError(final String fieldName, final ValidationErrorType validationErrorType) {
       super();
       this.fieldName = fieldName;
       this.validationErrorType = validationErrorType;
    }
 
-   public ValidationError(String messageKey) {
+   public ValidationError(final String messageKey) {
       super();
 
       this.messageKey = messageKey;

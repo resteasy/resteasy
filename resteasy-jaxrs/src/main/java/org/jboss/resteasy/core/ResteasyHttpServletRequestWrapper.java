@@ -30,7 +30,7 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
    private HttpServletRequest request;
    private HttpServletRequest proxy;
 
-   public ResteasyHttpServletRequestWrapper(HttpServletRequest request, HttpServletRequest proxy)
+   public ResteasyHttpServletRequestWrapper(final HttpServletRequest request, final HttpServletRequest proxy)
    {
       super(proxy);
       this.request = request;

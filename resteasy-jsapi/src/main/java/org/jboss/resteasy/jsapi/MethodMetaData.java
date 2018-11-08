@@ -45,7 +45,7 @@ public class MethodMetaData
    private String functionPrefix;
    private boolean wantsForm;
 
-   public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker invoker) throws Exception {
+   public MethodMetaData(final ServiceRegistry serviceRegistry, final ResourceMethodInvoker invoker) throws Exception {
       this.registry = serviceRegistry;
       this.invoker = invoker;
       this.method = invoker.getMethod();

@@ -21,11 +21,11 @@ public class UUIDPopulator extends BaseStringPopulator<UUID> implements QueryPar
       super();
    }
 
-   public UUIDPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public UUIDPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public UUIDPopulator(String populatorID) {
+   public UUIDPopulator(final String populatorID) {
       super(populatorID);
    }
 

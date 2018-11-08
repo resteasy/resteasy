@@ -12,7 +12,7 @@ public class QueryParamMarshaller implements Marshaller
 {
    private String paramName;
 
-   public QueryParamMarshaller(String paramName)
+   public QueryParamMarshaller(final String paramName)
    {
       this.paramName = paramName;
    }

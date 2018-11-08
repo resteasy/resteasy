@@ -10,12 +10,12 @@ public class UnauthorizedSignatureException extends ReaderException
 {
    protected VerificationResults results;
 
-   public UnauthorizedSignatureException(String reason)
+   public UnauthorizedSignatureException(final String reason)
    {
       super(reason, 401);
    }
 
-   public UnauthorizedSignatureException(VerificationResults results)
+   public UnauthorizedSignatureException(final VerificationResults results)
    {
       super(failedVerifierMessage(results), 401);
       this.results = results;

@@ -30,7 +30,7 @@ public class ExceptionHandler
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean mapperExecuted;
 
-   public ExceptionHandler(ResteasyProviderFactory providerFactory, Set<String> unwrappedExceptions)
+   public ExceptionHandler(final ResteasyProviderFactory providerFactory, final Set<String> unwrappedExceptions)
    {
       this.providerFactory = providerFactory;
       this.unwrappedExceptions = unwrappedExceptions;

@@ -14,17 +14,17 @@ public class ResteasyCredentialsNotAvailableException extends ResteasyAuthentica
    {
    }
 
-   public ResteasyCredentialsNotAvailableException(String message)
+   public ResteasyCredentialsNotAvailableException(final String message)
    {
       super(message);
    }
 
-   public ResteasyCredentialsNotAvailableException(String message, Throwable cause)
+   public ResteasyCredentialsNotAvailableException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyCredentialsNotAvailableException(Throwable cause)
+   public ResteasyCredentialsNotAvailableException(final Throwable cause)
    {
       super(cause);
    }

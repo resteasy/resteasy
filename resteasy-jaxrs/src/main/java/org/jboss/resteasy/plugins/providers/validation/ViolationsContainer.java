@@ -26,12 +26,12 @@ public class ViolationsContainer<T> implements Serializable
    private Exception exception;
    private Object target;
 
-   public ViolationsContainer(Object target)
+   public ViolationsContainer(final Object target)
    {
       this.target = target;
    }
 
-   public ViolationsContainer(Set<ResteasyConstraintViolation> set)
+   public ViolationsContainer(final Set<ResteasyConstraintViolation> set)
    {
       addViolations(set);
    }

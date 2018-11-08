@@ -117,7 +117,7 @@ public class ThrottledOutputStream extends FilterOutputStream
    private long start;
 
    // / Constructor.
-   public ThrottledOutputStream(OutputStream out, long maxBps)
+   public ThrottledOutputStream(final OutputStream out, final long maxBps)
    {
       super(out);
       this.maxBps = maxBps;

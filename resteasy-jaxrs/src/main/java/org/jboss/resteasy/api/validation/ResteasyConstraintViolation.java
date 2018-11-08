@@ -24,7 +24,7 @@ public class ResteasyConstraintViolation implements Serializable
    private String message;
    private String value;
 
-   public ResteasyConstraintViolation(ConstraintType.Type constraintType, String path, String message, String value)
+   public ResteasyConstraintViolation(final ConstraintType.Type constraintType, final String path, final String message, final String value)
    {
       this.constraintType = constraintType;
       this.path = path;

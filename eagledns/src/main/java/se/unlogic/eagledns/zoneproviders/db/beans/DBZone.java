@@ -90,7 +90,7 @@ public class DBZone implements Elementable{
       super();
    }
 
-   public DBZone(Zone zone, boolean secondary) {
+   public DBZone(final Zone zone, final boolean secondary) {
 
       this.parse(zone, secondary);
    }

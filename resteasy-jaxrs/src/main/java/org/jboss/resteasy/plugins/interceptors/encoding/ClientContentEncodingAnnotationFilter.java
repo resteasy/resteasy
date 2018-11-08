@@ -20,7 +20,7 @@ public class ClientContentEncodingAnnotationFilter implements WriterInterceptor
 {
    protected String encoding;
 
-   public ClientContentEncodingAnnotationFilter(String encoding)
+   public ClientContentEncodingAnnotationFilter(final String encoding)
    {
       this.encoding = encoding;
    }

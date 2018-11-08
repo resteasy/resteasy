@@ -16,32 +16,32 @@ import javax.ws.rs.core.Response;
 public class NotFoundException extends Failure
 {
 
-   public NotFoundException(String s)
+   public NotFoundException(final String s)
    {
       super(s, 404);
    }
 
-   public NotFoundException(String s, Response response)
+   public NotFoundException(final String s, final Response response)
    {
       super(s, response);
    }
 
-   public NotFoundException(String s, Throwable throwable, Response response)
+   public NotFoundException(final String s, final Throwable throwable, final Response response)
    {
       super(s, throwable, response);
    }
 
-   public NotFoundException(String s, Throwable throwable)
+   public NotFoundException(final String s, final Throwable throwable)
    {
       super(s, throwable, 404);
    }
 
-   public NotFoundException(Throwable throwable)
+   public NotFoundException(final Throwable throwable)
    {
       super(throwable, 404);
    }
 
-   public NotFoundException(Throwable throwable, Response response)
+   public NotFoundException(final Throwable throwable, final Response response)
    {
       super(throwable, response);
    }

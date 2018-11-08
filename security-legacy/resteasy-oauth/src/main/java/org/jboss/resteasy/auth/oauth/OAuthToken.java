@@ -14,9 +14,9 @@ public class OAuthToken {
    private long timeToLive;
    private long timestamp;
 
-   public OAuthToken(String token, String secret,
-                      String[] scopes, String[] permissions,
-                      long timeToLive, OAuthConsumer consumer) {
+   public OAuthToken(final String token, final String secret,
+                     final String[] scopes, final String[] permissions,
+                     final long timeToLive, final OAuthConsumer consumer) {
       this.token = token;
       this.secret = secret;
       this.scopes = scopes;

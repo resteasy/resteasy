@@ -26,7 +26,7 @@ public class SniConfiguration
     *
     * @param defaultServerKeystore default keystore to be used when no SNI is specified by the client.
     */
-   public SniConfiguration(SSLContext defaultServerKeystore)
+   public SniConfiguration(final SSLContext defaultServerKeystore)
    {
       mapping = new DomainNameMappingBuilder<>(createContext(defaultServerKeystore));
    }

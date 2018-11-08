@@ -122,7 +122,7 @@ public class FileServlet extends HttpServlet
    // @param throttles filename containing throttle settings
    // @param charset used for displaying directory page
    // @see ThrottledOutputStream
-   public FileServlet(String throttles, String charset) throws IOException
+   public FileServlet(final String throttles, final String charset) throws IOException
    {
       this();
       if (charset != null)

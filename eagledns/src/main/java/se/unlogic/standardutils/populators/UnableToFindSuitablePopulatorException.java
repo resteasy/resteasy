@@ -5,17 +5,17 @@ public class UnableToFindSuitablePopulatorException extends Exception {
 
    private static final long serialVersionUID = -214177380194928711L;
 
-   public UnableToFindSuitablePopulatorException(String message, Throwable cause) {
+   public UnableToFindSuitablePopulatorException(final String message, final Throwable cause) {
 
       super(message, cause);
    }
 
-   public UnableToFindSuitablePopulatorException(String message) {
+   public UnableToFindSuitablePopulatorException(final String message) {
 
       super(message);
    }
 
-   public UnableToFindSuitablePopulatorException(Throwable cause) {
+   public UnableToFindSuitablePopulatorException(final Throwable cause) {
 
       super(cause);
    }

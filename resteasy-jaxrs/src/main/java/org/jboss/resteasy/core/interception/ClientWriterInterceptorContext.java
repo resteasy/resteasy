@@ -23,10 +23,10 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    protected Map<String, Object> properties;
 
-   public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
-                                         Object entity, Class type, Type genericType, Annotation[] annotations,
-                                         MediaType mediaType, MultivaluedMap<String, Object> headers,
-                                         OutputStream outputStream, Map<String, Object> properties)
+   public ClientWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
+                                         final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
+                                         final MediaType mediaType, final MultivaluedMap<String, Object> headers,
+                                         final OutputStream outputStream, final Map<String, Object> properties)
    {
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
       this.properties = properties;

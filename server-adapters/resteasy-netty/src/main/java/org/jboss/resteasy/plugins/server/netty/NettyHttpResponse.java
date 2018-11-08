@@ -37,12 +37,12 @@ public class NettyHttpResponse implements HttpResponse
    private boolean keepAlive;
    private HttpMethod method;
 
-   public NettyHttpResponse(Channel channel, boolean keepAlive)
+   public NettyHttpResponse(final Channel channel, final boolean keepAlive)
    {
       this(channel, keepAlive, null);
    }
 
-   public NettyHttpResponse(Channel channel, boolean keepAlive, HttpMethod method)
+   public NettyHttpResponse(final Channel channel, final boolean keepAlive, final HttpMethod method)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       os = underlyingOutputStream = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());

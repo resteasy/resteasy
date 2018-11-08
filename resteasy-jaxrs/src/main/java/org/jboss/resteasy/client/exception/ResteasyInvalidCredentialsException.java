@@ -14,17 +14,17 @@ public class ResteasyInvalidCredentialsException extends ResteasyAuthenticationE
    {
    }
 
-   public ResteasyInvalidCredentialsException(String message)
+   public ResteasyInvalidCredentialsException(final String message)
    {
       super(message);
    }
 
-   public ResteasyInvalidCredentialsException(String message, Throwable cause)
+   public ResteasyInvalidCredentialsException(final String message, final Throwable cause)
    {
       super(message, cause);
    }
 
-   public ResteasyInvalidCredentialsException(Throwable cause)
+   public ResteasyInvalidCredentialsException(final Throwable cause)
    {
       super(cause);
    }

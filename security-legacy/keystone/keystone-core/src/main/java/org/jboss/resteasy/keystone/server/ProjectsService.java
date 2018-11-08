@@ -43,7 +43,7 @@ public class ProjectsService
    @Context
    private UriInfo uriInfo;
 
-   public ProjectsService(Cache cache, UsersService usersResource, RolesService rolesResource)
+   public ProjectsService(final Cache cache, final UsersService usersResource, final RolesService rolesResource)
    {
       this.cache = cache;
       this.usersResource = usersResource;

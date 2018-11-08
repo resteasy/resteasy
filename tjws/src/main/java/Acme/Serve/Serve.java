@@ -300,7 +300,7 @@ public class Serve implements ServletContext, Serializable
    protected List<ServeConnection> connections = new ArrayList<ServeConnection>();
 
    // / Constructor kept for API compatibility
-   public Serve(Map arguments, PrintStream logStream) {
+   public Serve(final Map arguments, final PrintStream logStream) {
       this(arguments, newLoggerForPrintStream(logStream));
    }
 
@@ -312,7 +312,7 @@ public class Serve implements ServletContext, Serializable
       this(new HashMap(), Logger.getLogger(Serve.class.getName()));
    }
 
-   private Serve(Map arguments, Logger log)
+   private Serve(final Map arguments, final Logger log)
    {
       this.arguments = arguments;
       this.log = log;
@@ -1420,7 +1420,7 @@ public class Serve implements ServletContext, Serializable
 
       int dispatchLen;
 
-      SimpleRequestDispatcher(String path)
+      SimpleRequestDispatcher(final String path)
       {
          Object[] os = registry.get(path);
          servlet = (HttpServlet) os[0];
@@ -1676,12 +1676,12 @@ public class Serve implements ServletContext, Serializable
 
       private String servletName;
 
-      public ServeConfig(ServletContext context)
+      public ServeConfig(final ServletContext context)
       {
          this(context, null, "undefined");
       }
 
-      public ServeConfig(ServletContext context, Hashtable initParams, String servletName)
+      public ServeConfig(final ServletContext context, final Hashtable initParams, final String servletName)
       {
          this.context = context;
          this.init_params = initParams;
@@ -1862,7 +1862,7 @@ public class Serve implements ServletContext, Serializable
 
       // / Constructor.
 
-      public ServeConnection(Socket socket, Serve serve)
+      public ServeConnection(final Socket socket, final Serve serve)
       {
          // Save arguments.
          this.socket = socket;
@@ -4344,7 +4344,7 @@ public class Serve implements ServletContext, Serializable
    {
       String name;
 
-      BasicAuthRealm(String name)
+      BasicAuthRealm(final String name)
       {
          this.name = name;
       }
@@ -4388,7 +4388,7 @@ public class Serve implements ServletContext, Serializable
        * @param in input stream
        * @param conn connection
        */
-      public ServeInputStream(InputStream in, ServeConnection conn)
+      public ServeInputStream(final InputStream in, final ServeConnection conn)
       {
          this.conn = conn;
          this.in = new BufferedInputStream(in);
@@ -4781,7 +4781,7 @@ public class Serve implements ServletContext, Serializable
 
       private Utils.SimpleBuffer buffer;
 
-      public ServeOutputStream(OutputStream out, ServeConnection conn)
+      public ServeOutputStream(final OutputStream out, final ServeConnection conn)
       {
          this.out = out;
          this.conn = conn;
@@ -5165,12 +5165,12 @@ public class Serve implements ServletContext, Serializable
       // what
       // means 0
       // and what is mesurement unit
-      AcmeSession(String id, ServletContext servletContext, HttpSessionContext sessionContext)
+      AcmeSession(final String id, final ServletContext servletContext, final HttpSessionContext sessionContext)
       {
          this(id, 0, servletContext, sessionContext);
       }
 
-      AcmeSession(String id, int inactiveInterval, ServletContext servletContext, HttpSessionContext sessionContext)
+      AcmeSession(final String id, final int inactiveInterval, final ServletContext servletContext, final HttpSessionContext sessionContext)
       {
          // new Exception("Session created with: "+servletContext).printStackTrace(); //!!!
          createTime = System.currentTimeMillis();
@@ -5533,7 +5533,7 @@ public class Serve implements ServletContext, Serializable
 
       protected Locale locale;
 
-      LocaleWithWeight(Locale l, float w)
+      LocaleWithWeight(final Locale l, final float w)
       {
          locale = l;
          weight = w;
@@ -5557,7 +5557,7 @@ public class Serve implements ServletContext, Serializable
    {
       Iterator i;
 
-      public AcceptLocaleEnumeration(TreeSet/* <LocaleWithWeight> */ts)
+      public AcceptLocaleEnumeration(final TreeSet/* <LocaleWithWeight> */ts)
       {
          i = ts.iterator();
       }

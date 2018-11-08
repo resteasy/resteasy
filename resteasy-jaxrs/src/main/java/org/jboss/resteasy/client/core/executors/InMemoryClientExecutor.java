@@ -45,7 +45,7 @@ public class InMemoryClientExecutor implements ClientExecutor
       dispatcher = new SynchronousDispatcher(ResteasyProviderFactory.getInstance());
    }
 
-   public InMemoryClientExecutor(Dispatcher dispatcher)
+   public InMemoryClientExecutor(final Dispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }

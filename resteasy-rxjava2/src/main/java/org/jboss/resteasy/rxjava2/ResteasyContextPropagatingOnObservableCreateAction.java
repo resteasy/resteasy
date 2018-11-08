@@ -27,7 +27,7 @@ public class ResteasyContextPropagatingOnObservableCreateAction implements BiFun
 
       final Observer<T> actual;
 
-      ContextCapturerObserver(Observer<T> actual)
+      ContextCapturerObserver(final Observer<T> actual)
       {
          this.actual = actual;
       }

@@ -26,7 +26,7 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
    protected Map<String, InputPart> formData = new HashMap<String, InputPart>();
    protected Map<String, List<InputPart>> formDataMap = new HashMap<String, List<InputPart>>();
 
-   public MultipartFormDataInputImpl(MediaType contentType, Providers workers) {
+   public MultipartFormDataInputImpl(final MediaType contentType, final Providers workers) {
       super(contentType, workers);
    }
 

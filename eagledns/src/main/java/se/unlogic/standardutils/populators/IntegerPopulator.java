@@ -29,17 +29,17 @@ public class IntegerPopulator extends BaseStringPopulator<Integer> implements Be
       super();
    }
 
-   public IntegerPopulator(int columnIndex) {
+   public IntegerPopulator(final int columnIndex) {
       super();
 
       this.columnIndex = columnIndex;
    }
 
-   public IntegerPopulator(String populatorID, StringFormatValidator formatValidator) {
+   public IntegerPopulator(final String populatorID, final StringFormatValidator formatValidator) {
       super(populatorID, formatValidator);
    }
 
-   public IntegerPopulator(String populatorID) {
+   public IntegerPopulator(final String populatorID) {
       super(populatorID);
    }
 
