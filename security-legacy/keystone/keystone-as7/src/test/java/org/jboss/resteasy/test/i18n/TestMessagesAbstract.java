@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -21,7 +21,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/keystone/as7/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -29,17 +29,17 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "00", "badSignature"), Messages.MESSAGES.badSignature());
       Assert.assertEquals(getExpected(BASE + "25", "securityDomainNotValid", "security"), Messages.MESSAGES.securityDomainNotValid("security"));
-      Assert.assertEquals(getExpected(BASE + "40", "unableToFindSecurityDomain", "domain"), Messages.MESSAGES.unableToFindSecurityDomain("domain")); 
+      Assert.assertEquals(getExpected(BASE + "40", "unableToFindSecurityDomain", "domain"), Messages.MESSAGES.unableToFindSecurityDomain("domain"));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

@@ -1607,7 +1607,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       String doGetDouble(@QueryParam("double") double[] v);
    }
-   
+
    static private void shutdown(ClientRequest request) throws Exception
    {
 //      request.getExecutor().close();

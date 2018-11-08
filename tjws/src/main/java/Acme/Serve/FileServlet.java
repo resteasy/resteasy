@@ -25,7 +25,7 @@
 //
 // Visit the ACME Labs Java page for up-to-date versions of this and other
 // fine Java utilities: http://www.acme.com/java/
-// 
+//
 // All enhancements Copyright (C)1998-2005 by Dmitriy Rogatkin
 // http://tjws.sourceforge.net
 

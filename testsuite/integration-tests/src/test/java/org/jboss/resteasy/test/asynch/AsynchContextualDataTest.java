@@ -40,7 +40,7 @@ import org.jboss.resteasy.category.NotForForwardCompatibility;
 public class AsynchContextualDataTest {
 
    public static Client client;
-   
+
    @Deployment()
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(AsynchContextualDataTest.class.getSimpleName());
@@ -51,7 +51,7 @@ public class AsynchContextualDataTest {
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
       return TestUtil.finishContainerPrepare(war, contextParam, singletons);
    }
-   
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, AsynchContextualDataTest.class.getSimpleName());
    }
@@ -85,7 +85,7 @@ public class AsynchContextualDataTest {
       //While the other request is waiting, fire off a request to /res/ which will allow the other request to complete
       WebTarget resTarget = client.target(generateURL("/products/res/" + id));
       Response resResponse = resTarget.request().get();
-       
+
       String entity = response.get().readEntity(String.class);
       String resEntity = resResponse.readEntity(String.class);
 

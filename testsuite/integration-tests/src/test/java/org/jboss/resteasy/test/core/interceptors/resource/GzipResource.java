@@ -106,14 +106,14 @@ public class GzipResource {
 
       return Response.ok().type(MediaType.TEXT_PLAIN).encoding("gzip").build();
    }
-    
+
    @POST
    @Path("big/send")
    public Response sendBig(byte[] b)
    {
       return Response.ok().build();
    }
-    
+
    @POST
    @Path("big/receive")
    public Response receiveBig(int n)

@@ -23,7 +23,7 @@ public class ResteasyMalformedCookieException extends ResteasyProtocolException
    {
       super(message, cause);
    }
-    
+
    public ResteasyMalformedCookieException(Throwable cause)
    {
       super(cause);

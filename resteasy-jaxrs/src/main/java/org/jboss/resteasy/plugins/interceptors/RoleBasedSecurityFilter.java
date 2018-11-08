@@ -32,7 +32,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      if (denyAll) 
+      if (denyAll)
       {
          throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html;charset=UTF-8").build());
       }

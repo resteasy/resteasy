@@ -281,7 +281,7 @@ public class InternalDispatcherTest
       cr = (ClientResponse<?>) client.getForwardedObject(0);
       Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
       cr.releaseConnection();
-      
+
       client.putForwardBasic("testBasic");
       Assert.assertEquals("testBasic", client.getBasic());
       client.postForwardBasic("testBasic1");

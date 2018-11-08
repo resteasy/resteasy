@@ -57,7 +57,7 @@ public class AsyncInvokeTest extends ClientTestBase{
    @Before
    public void init() {
       client = ClientBuilder.newClient();
-      
+
       nioClient = new ResteasyClientBuilder().useAsyncHttpEngine().build();
    }
 
@@ -420,7 +420,7 @@ public class AsyncInvokeTest extends ClientTestBase{
 
       }
    }
-   
+
    @Test
    public void AsyncCallbackExceptionHandlingTest() throws Exception {
       {

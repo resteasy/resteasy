@@ -331,7 +331,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          reactiveClasses = new ConcurrentHashMap<>();
       }
    }
-   
+
    protected void initialize()
    {
       initialize(null);
@@ -473,7 +473,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (clientExceptionMappers == null && parent != null) return parent.getClientExceptionMappers();
       return clientExceptionMappers;
    }
-   
+
    public Map<Class<?>, AsyncClientResponseProvider> getAsyncClientResponseProviders()
    {
       if (asyncClientResponseProviders == null && parent != null) return parent.getAsyncClientResponseProviders();
@@ -497,18 +497,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       AsyncClientResponseProvider provider = createProviderInstance(providerClass);
       addAsyncClientResponseProvider(provider, providerClass);
    }
-   
+
    protected void addAsyncClientResponseProvider(AsyncClientResponseProvider provider)
    {
       addAsyncClientResponseProvider(provider, provider.getClass());
    }
-   
+
    protected void addAsyncClientResponseProvider(AsyncClientResponseProvider provider, Class providerClass)
    {
       Type asyncType = Types.getActualTypeArgumentsOfAnInterface(providerClass, AsyncClientResponseProvider.class)[0];
       addAsyncClientResponseProvider(provider, asyncType);
    }
-   
+
    protected void addAsyncClientResponseProvider(AsyncClientResponseProvider provider, Type asyncType)
    {
       injectProperties(provider.getClass(), provider);
@@ -520,7 +520,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       asyncClientResponseProviders.put(asyncClass, provider);
    }
-   
+
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
    {
       if (contextResolvers == null && parent != null) return parent.getContextResolvers();
@@ -827,7 +827,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return new ResteasyProviderFactory();
    }
 
-   
+
    public static void setRegisterBuiltinByDefault(boolean registerBuiltinByDefault)
    {
       ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;
@@ -995,7 +995,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (headerDelegates == null && parent != null) return parent.getHeaderDelegates();
       return headerDelegates;
    }
-   
+
    private void addHeaderDelegateIfAbsent(Class clazz, HeaderDelegate header)
    {
       if (headerDelegates == null || !headerDelegates.containsKey(clazz))
@@ -2141,7 +2141,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          int priority = getPriority(priorityOverride, contracts, RxInvokerProvider.class, provider);
          newContracts.put(RxInvokerProvider.class, priority);
          Class<?> clazz = Types.getTemplateParameterOfInterface(provider, RxInvokerProvider.class);
-         clazz = Types.getTemplateParameterOfInterface(clazz, RxInvoker.class); 
+         clazz = Types.getTemplateParameterOfInterface(clazz, RxInvoker.class);
          if (clazz != null)
          {
             reactiveClasses.put(clazz, provider);
@@ -2588,7 +2588,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return mapper;
    }
-   
+
    public <T> AsyncClientResponseProvider<T> getAsyncClientResponseProvider(Class<T> type)
    {
       Class asyncType = type;
@@ -3177,7 +3177,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResourceBuilder getResourceBuilder() {
       return resourceBuilder;
    }
-   
+
    public RxInvokerProvider<?> getRxInvokerProviderFromReactiveClass(Class<?> clazz) {
       Class<? extends RxInvokerProvider> rxInvokerProviderClass = reactiveClasses.get(clazz);
       if (rxInvokerProviderClass != null)

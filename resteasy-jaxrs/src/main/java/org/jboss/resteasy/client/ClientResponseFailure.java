@@ -6,7 +6,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
  * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.client.ResponseProcessingException
  * @see javax.ws.rs.ProcessingException

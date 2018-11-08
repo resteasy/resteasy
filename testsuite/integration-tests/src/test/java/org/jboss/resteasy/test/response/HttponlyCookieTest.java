@@ -51,7 +51,7 @@ public class HttponlyCookieTest {
       client.close();
       client = null;
    }
-   
+
    @Test
    public void testHttponlyTrue() {
       WebTarget target = client.target(generateURL("/cookie/true"));

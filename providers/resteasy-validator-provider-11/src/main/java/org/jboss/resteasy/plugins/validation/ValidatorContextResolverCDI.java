@@ -6,7 +6,7 @@ import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 /**
- * 
+ *
  * @author Leandro Ferro Luzia
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $

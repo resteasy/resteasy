@@ -50,10 +50,10 @@ import rx.Observable;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
- * 
+ *
  * In these tests, the server uses Observables to create results asynchronously and streams the elements
  * of the Observables as they are created.
- * 
+ *
  * The client uses a proxy that calls an ObservableRxInvoker.
  */
 @RunWith(Arquillian.class)
@@ -553,7 +553,7 @@ public class RxObservableProxyTest {
       ResteasyClient client1 = new ResteasyClientBuilder().build();
       client1.register(ObservableRxInvokerProvider.class);
       RxObservableResource proxy1 = client1.target(generateURL("/")).proxy(RxObservableResource.class);
-      Observable<String> observable1 = proxy1.get();   
+      Observable<String> observable1 = proxy1.get();
 
       ResteasyClient client2 = new ResteasyClientBuilder().build();
       client2.register(ObservableRxInvokerProvider.class);
@@ -581,7 +581,7 @@ public class RxObservableProxyTest {
    @Test
    public void testGetTwoProxies() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
-      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();   
+      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       RxObservableResource proxy1 = client.target(generateURL("/")).proxy(RxObservableResource.class);
       RxObservableResource proxy2 = client.target(generateURL("/")).proxy(RxObservableResource.class);
@@ -610,7 +610,7 @@ public class RxObservableProxyTest {
    @Test
    public void testGetTwoObservables() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
-      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();   
+      CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
 
       Observable<String> observable1 = proxy.get();
       Observable<String> observable2 = proxy.get();

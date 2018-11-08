@@ -9,7 +9,7 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -22,7 +22,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/auth/oauth/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -30,19 +30,19 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "500", "accessToken"), Messages.MESSAGES.accessToken());
       Assert.assertEquals(getExpected(BASE + "510", "addingParameter", "x", "y"), Messages.MESSAGES.addingParameter("x", "y"));
       Assert.assertEquals(getExpected(BASE + "565", "errorHttpCode", "333", "wha?"), Messages.MESSAGES.errorHttpCode(333, "wha?"));
       Assert.assertEquals(getExpected(BASE + "590", "invalidTimestampLong", 1357), Messages.MESSAGES.invalidTimestampLong(1357));
-      Assert.assertEquals(getExpected(BASE + "700", "wrongURIScope"), Messages.MESSAGES.wrongURIScope());   
+      Assert.assertEquals(getExpected(BASE + "700", "wrongURIScope"), Messages.MESSAGES.wrongURIScope());
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

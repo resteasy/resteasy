@@ -69,7 +69,7 @@ public class ValidationWithCDITest
       LOG.info(war.toString(true));
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
-   
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, ValidationWithCDITest.class.getSimpleName());
    }
@@ -101,10 +101,10 @@ public class ValidationWithCDITest
    @Test
    @Category({NotForForwardCompatibility.class})
    public void testAsynch() throws Exception
-   {  
+   {
       Client client = ClientBuilder.newClient();
       WebTarget base = client.target(generateURL("/test/async/sub"));
-      
+
       {
          Builder builder = base.queryParam("foo", "x").request();
          builder.accept(MediaType.APPLICATION_XML);
@@ -117,7 +117,7 @@ public class ValidationWithCDITest
          countViolations(report, 0, 0, 0, 1, 0);
          response.close();
       }
-      
+
       {
          Builder builder = base.queryParam("foo", "xy").request();
          builder.accept(MediaType.APPLICATION_XML);
@@ -125,7 +125,7 @@ public class ValidationWithCDITest
          Assert.assertEquals(200, response.getStatus());
          response.close();
       }
-      
+
       {
          Builder builder = base.queryParam("foo", "x").request();
          builder.accept(MediaType.APPLICATION_XML);
@@ -139,7 +139,7 @@ public class ValidationWithCDITest
          response.close();
       }
    }
-   
+
    private void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
       Assert.assertEquals(fieldCount, e.getFieldViolations().size());

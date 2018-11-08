@@ -60,8 +60,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       this(request, httpResponse, serverResponse, null, new ContainerResponseFilter[]{}, t -> {}, null);
    }
 
-   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse, 
-         ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters, 
+   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse,
+         ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters,
          Consumer<Throwable> onComplete, RunnableWithIOException continuation)
    {
       this.request = request;
@@ -336,7 +336,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       ResteasyAsynchronousResponse asyncResponse = request.getAsyncContext().getAsyncResponse();
-      
+
       dispatcher.unhandledAsynchronousException(httpResponse, t);
       onComplete.accept(t);
       asyncResponse.complete();
@@ -364,7 +364,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
             inFilter = false;
          }
          if(suspended) {
-            if(!request.getAsyncContext().isSuspended()) 
+            if(!request.getAsyncContext().isSuspended())
             {
                request.getAsyncContext().suspend();
                weSuspended = true;

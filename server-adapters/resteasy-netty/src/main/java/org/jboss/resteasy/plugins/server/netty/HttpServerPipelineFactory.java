@@ -16,8 +16,8 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
  * The {@link ChannelPipelineFactory} which is used to serve HTTP Traffic.
- * 
- * 
+ *
+ *
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author Andy Taylor (andy.taylor@jboss.org)
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
@@ -32,17 +32,17 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler executionHandler;
    private final List<ChannelHandler> additionalChannelHandlers;
    private final int maxRequestSize;
-   
+
    public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive, List<ChannelHandler> additionalChannelHandlers)
    {
       this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol(), isKeepAlive);
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
-      if (executorThreadCount > 0) 
+      if (executorThreadCount > 0)
       {
          this.executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(executorThreadCount, 0L, 0L));
-      } 
-      else 
+      }
+      else
       {
          this.executionHandler = null;
       }
@@ -70,11 +70,11 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
       if (executionHandler != null) {
          pipeline.addLast("executionHandler", executionHandler);
       }
-      
+
       pipeline.addLast("handler", resteasyRequestHandler);
       return pipeline;
    }
-   
+
    protected Protocol getProtocol() {
       return Protocol.HTTP;
    }

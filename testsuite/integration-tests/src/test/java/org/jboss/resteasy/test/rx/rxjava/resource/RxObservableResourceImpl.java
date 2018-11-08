@@ -52,7 +52,7 @@ public class RxObservableResourceImpl {
    public Observable<List<Thing>> getThingList() {
       return buildObservableThingList("x", 2, 3);
    }
-   
+
    @GET
    @Path("get/bytes")
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -87,7 +87,7 @@ public class RxObservableResourceImpl {
    public Observable<List<Thing>> putThingList(String s) {
       return buildObservableThingList(s, 2, 3);
    }
-   
+
    @PUT
    @Path("put/bytes")
    @Consumes(MediaType.TEXT_PLAIN)
@@ -134,7 +134,7 @@ public class RxObservableResourceImpl {
       int n = Integer.valueOf(s);
       return buildObservableBytes(n);
    }
-   
+
    @DELETE
    @Path("delete/string")
    @Produces(MediaType.TEXT_PLAIN)
@@ -166,7 +166,7 @@ public class RxObservableResourceImpl {
    public Observable<byte[]> deleteBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @HEAD
    @Path("head/string")
    @Produces(MediaType.TEXT_PLAIN)
@@ -206,7 +206,7 @@ public class RxObservableResourceImpl {
    public Observable<byte[]> optionsBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @TRACE
    @Path("trace/string")
    @Produces(MediaType.TEXT_PLAIN)
@@ -238,19 +238,19 @@ public class RxObservableResourceImpl {
    public Observable<byte[]> traceBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @GET
    @Path("exception/unhandled")
    public Observable<Thing> exceptionUnhandled() throws Exception {
       throw new Exception("unhandled");
    }
-   
+
    @GET
    @Path("exception/handled")
    public Observable<Thing> exceptionHandled() throws Exception {
       throw new TestException("handled");
    }
-   
+
    @SuppressWarnings("deprecation")
    static Observable<String> buildObservableString(String s, int n) {
       return Observable.create(
@@ -301,7 +301,7 @@ public class RxObservableResourceImpl {
             }
          });
    }
-   
+
    @SuppressWarnings("deprecation")
    static Observable<byte[]> buildObservableBytes(int n) {
       return Observable.create(t -> {

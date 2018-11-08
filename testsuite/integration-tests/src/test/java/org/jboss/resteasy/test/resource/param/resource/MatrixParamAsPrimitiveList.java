@@ -73,7 +73,7 @@ public class MatrixParamAsPrimitiveList {
       Assert.assertEquals(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v.get(2).doubleValue(), 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@MatrixParam("char") List<Character> v) {

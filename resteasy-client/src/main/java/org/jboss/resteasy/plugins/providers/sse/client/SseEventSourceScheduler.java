@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */
@@ -60,7 +60,7 @@ class SseEventSourceScheduler
       this.phaser = new Phaser(1);
       this.closed = new AtomicBoolean(false);
    }
-   
+
    void schedule(final Runnable runnable, long delay, TimeUnit unit) throws RejectedExecutionException
    {
       if (this.closed.get())

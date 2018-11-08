@@ -47,7 +47,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    public Observable<List<Thing>> getThingList() {
       return buildObservableThingList("x", 2, 3);
    }
-   
+
    @GET
    @Path("get/bytes")
    @Produces(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    public Observable<List<Thing>> putThingList(String s) {
       return buildObservableThingList(s, 2, 3);
    }
-   
+
    @PUT
    @Path("put/bytes")
    @Consumes(MediaType.TEXT_PLAIN)
@@ -120,7 +120,7 @@ public class Rx2ObservableResourceNoStreamImpl {
       int n = Integer.valueOf(s);
       return buildObservableBytes(n);
    }
-   
+
    @DELETE
    @Path("delete/string")
    @Produces(MediaType.APPLICATION_JSON)
@@ -148,7 +148,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    public Observable<byte[]> deleteBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @HEAD
    @Path("head/string")
    @Produces(MediaType.APPLICATION_JSON)
@@ -183,7 +183,7 @@ public class Rx2ObservableResourceNoStreamImpl {
    public Observable<byte[]> optionsBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @TRACE
    @Path("trace/string")
    @Produces(MediaType.APPLICATION_JSON)
@@ -211,19 +211,19 @@ public class Rx2ObservableResourceNoStreamImpl {
    public Observable<byte[]> traceBytes() {
       return buildObservableBytes(3);
    }
-   
+
    @GET
    @Path("exception/unhandled")
    public Observable<Thing> exceptionUnhandled() throws Exception {
       throw new Exception("unhandled");
    }
-   
+
    @GET
    @Path("exception/handled")
    public Observable<Thing> exceptionHandled() throws Exception {
       throw new TestException("handled");
    }
-   
+
    static <T> Observable<String> buildObservableString(String s, int n) {
       return Observable.create(
          new ObservableOnSubscribe<String>() {
@@ -237,7 +237,7 @@ public class Rx2ObservableResourceNoStreamImpl {
             }
          });
    }
-   
+
    static Observable<Thing> buildObservableThing(String s, int n) {
       return Observable.create(
          new ObservableOnSubscribe<Thing>() {

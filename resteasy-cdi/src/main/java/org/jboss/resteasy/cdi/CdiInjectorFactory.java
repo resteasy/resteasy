@@ -47,7 +47,7 @@ public class CdiInjectorFactory implements InjectorFactory
       this.extension = lookupResteasyCdiExtension();
       sessionBeanInterface = extension.getSessionBeanInterface();
    }
-   
+
    public CdiInjectorFactory(BeanManager manager)
    {
       this.manager = manager;

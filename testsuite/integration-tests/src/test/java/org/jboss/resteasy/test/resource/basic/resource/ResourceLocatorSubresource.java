@@ -13,7 +13,7 @@ import org.junit.Assert;
 public class ResourceLocatorSubresource {
 
    private static final Logger LOG = Logger.getLogger(ResourceLocatorSubresource.class);
-   
+
    @GET
    public String doGet(@Context UriInfo uri) {
       LOG.info("Uri Ancesstors for Subresource.doGet():");

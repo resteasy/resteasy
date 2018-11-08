@@ -23,7 +23,7 @@ public class ResteasyHttpHostConnectException extends ResteasyIOException
    {
       super(message, cause);
    }
-    
+
    public ResteasyHttpHostConnectException(Throwable cause)
    {
       super(cause);

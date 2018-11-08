@@ -23,7 +23,7 @@ public class ResteasyClientException extends RuntimeException
    {
       super(message, cause);
    }
-    
+
    public ResteasyClientException(Throwable cause)
    {
       super(cause);

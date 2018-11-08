@@ -12,13 +12,13 @@ import java.util.Map;
 /**
  * Resolves Seam Security EL functions, s:hasRole() and s:hasPermission()
  * by decorating a delegate Unified EL FunctionMapper
- *  
+ *
  * @author Shane Bryzak
  */
 public class SeamFunctionMapper extends FunctionMapper
 {
    private static Map<String,List<Method>> methodCache = new HashMap<String,List<Method>>();
-   
+
    private FunctionMapper functionMapper;
    private static final Logger LOG = Logger.getLogger(SeamFunctionMapper.class);
 
@@ -26,17 +26,17 @@ public class SeamFunctionMapper extends FunctionMapper
    {
       this.functionMapper = functionMapper;
    }
-   
-   static 
+
+   static
    {
       cacheMethod("hasPermission", SecurityFunctions.class, "hasPermission",
                new Class[] {Object.class, String.class});
       cacheMethod("hasRole", SecurityFunctions.class, "hasRole",
-               new Class[] { String.class });      
+               new Class[] { String.class });
    }
 
-   @Override 
-   public Method resolveFunction(String prefix, String localName) 
+   @Override
+   public Method resolveFunction(String prefix, String localName)
    {
       if ( "s".equals(prefix) )
       {
@@ -59,7 +59,7 @@ public class SeamFunctionMapper extends FunctionMapper
    }
 
    /* @Override
-   public Method resolveFunction(String prefix, String localName, int paramCount) 
+   public Method resolveFunction(String prefix, String localName, int paramCount)
    {
       if ( "s".equals(prefix) )
       {
@@ -83,7 +83,7 @@ public class SeamFunctionMapper extends FunctionMapper
          return null;
       }
    }    */
-   
+
    private static void cacheMethod(String localName, Class<?> cls, String name, Class<?>[] params)
    {
       try
@@ -100,13 +100,13 @@ public class SeamFunctionMapper extends FunctionMapper
             methods = new ArrayList<Method>();
             methodCache.put(localName, methods);
          }
-         
-         methods.add(m);         
+
+         methods.add(m);
       }
       catch (NoSuchMethodException ex)
       {
          LOG.error(String.format("Method %s.%s could not be cached", cls.getName(), name));
       }
    }
-   
+
 }

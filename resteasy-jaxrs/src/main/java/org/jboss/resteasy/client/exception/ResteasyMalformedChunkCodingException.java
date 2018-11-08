@@ -23,7 +23,7 @@ public class ResteasyMalformedChunkCodingException extends ResteasyIOException
    {
       super(message, cause);
    }
-    
+
    public ResteasyMalformedChunkCodingException(Throwable cause)
    {
       super(cause);

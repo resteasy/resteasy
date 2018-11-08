@@ -16,11 +16,11 @@ import java.util.HashMap;
 
 /**
  * This class provides a static map containing mappings from classes to their corresponding set methods in the {@link PreparedStatement} interface.<p>
- * 
+ *
  * {@link Integer}, {@link Long}, {@link Double}, {@link Float}, {@link Boolean} and {@link Byte} types are mapped to the setObject method in order to allow null values.<p>
- * 
+ *
  * All other types are mapped to their default set method in the {@link PreparedStatement} interface.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

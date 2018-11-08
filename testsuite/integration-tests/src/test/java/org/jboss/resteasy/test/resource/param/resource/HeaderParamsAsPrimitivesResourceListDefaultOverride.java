@@ -62,7 +62,7 @@ public class HeaderParamsAsPrimitivesResourceListDefaultOverride
       Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265358979d, v.get(0).doubleValue(), 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@HeaderParam("char") @DefaultValue("b") List<Character> v) {

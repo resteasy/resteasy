@@ -11,7 +11,7 @@ import se.unlogic.standardutils.numbers.NumberUtils;
 
 /**
  * A JSON value component (no children)
- * 
+ *
  * Equalizes the "leaf" of the "composite pattern" design pattern.
  * @author sikstromj
  *

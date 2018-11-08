@@ -40,7 +40,7 @@ public class HttpServerContainer
    {
       return start(bindPath, null, initParams, contextParams);
    }
-   
+
    public static void start(ResteasyDeployment deployment) throws Exception
    {
       LOG.info(Messages.MESSAGES.embeddedContainerStart());
@@ -56,7 +56,7 @@ public class HttpServerContainer
    {
       return start(bindPath, domain, null, null);
    }
-   
+
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain, Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
@@ -91,7 +91,7 @@ public class HttpServerContainer
       }
       sun = null;
    }
-   
+
    public static void main(String[] args) throws Exception {
       start();
    }

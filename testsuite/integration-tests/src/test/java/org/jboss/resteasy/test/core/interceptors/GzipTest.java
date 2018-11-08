@@ -279,7 +279,7 @@ public class GzipTest {
       Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
    }
-   
+
    /**
     * @tpTestDetails Test exceeding default maximum size
     * @tpInfo RESTEASY-1484

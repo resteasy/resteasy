@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class MediaTypeFromMessageBodyWriterTest {
-    
+
    private static class Target {
       String path;
       String queryName;
@@ -49,14 +49,14 @@ public class MediaTypeFromMessageBodyWriterTest {
          this.queryValue = queryValue;
       }
    }
-    
+
    private static String ACCEPT_CHROME="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
    private static String ACCEPT_FIREFOX="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
    private static String ACCEPT_IE11="text/html, application/xhtml+xml, */*";
    private static Collection<Target> tgts = new ArrayList<Target>();
    private static Collection<String> accepts = new ArrayList<String>();
    private static ResteasyClient client;
-    
+
    static
    {
       tgts.add(new Target("java.util.TreeSet", null, null));
@@ -123,7 +123,7 @@ public class MediaTypeFromMessageBodyWriterTest {
             response = base.path(tgt.path).queryParam(tgt.queryName, tgt.queryValue).request().header("Accept", accept).get();
             }
             else {
-            response = base.path(tgt.path).request().header("Accept", accept).get();  
+            response = base.path(tgt.path).request().header("Accept", accept).get();
             }
             Assert.assertEquals(200, response.getStatus());
             String s = response.getHeaderString("X-COUNT");

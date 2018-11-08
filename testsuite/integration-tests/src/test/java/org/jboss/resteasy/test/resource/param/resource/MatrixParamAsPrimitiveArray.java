@@ -72,7 +72,7 @@ public class MatrixParamAsPrimitiveArray {
       Assert.assertEquals(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v[2], 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@MatrixParam("char") char[] v) {

@@ -43,12 +43,12 @@ public class InheritanceTest
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, InheritanceTest.class.getSimpleName());
    }
-   
+
    @BeforeClass
    public static void beforeSub() {
       client = ClientBuilder.newClient();
    }
-   
+
    @AfterClass
    public static void afterSub() {
       client.close();

@@ -5,7 +5,7 @@ package org.jboss.resteasy.auth.oauth;
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthToken {
-    
+
    private String token;
    private String secret;
    private String[] scopes;
@@ -13,9 +13,9 @@ public class OAuthToken {
    private OAuthConsumer consumer;
    private long timeToLive;
    private long timestamp;
-    
-   public OAuthToken(String token, String secret, 
-                      String[] scopes, String[] permissions, 
+
+   public OAuthToken(String token, String secret,
+                      String[] scopes, String[] permissions,
                       long timeToLive, OAuthConsumer consumer) {
       this.token = token;
       this.secret = secret;
@@ -26,7 +26,7 @@ public class OAuthToken {
       this.timestamp = System.currentTimeMillis();
    }
 
-    
+
    /**
     * Returns this Token's Consumer.
     * @return consumer
@@ -64,9 +64,9 @@ public class OAuthToken {
     * @return permissions
     */
    public String[] getPermissions() {
-      return permissions;    
+      return permissions;
    }
-    
+
    /**
     * Returns this Token's timestamp.
     * @return timestamp
@@ -74,7 +74,7 @@ public class OAuthToken {
    public long getTimestamp() {
       return timestamp;
    }
-    
+
    /**
     * Returns this Token's timeToLive.
     * @return time to live

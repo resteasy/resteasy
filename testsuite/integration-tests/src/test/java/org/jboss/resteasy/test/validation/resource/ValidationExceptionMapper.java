@@ -10,7 +10,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.jboss.resteasy.api.validation.Validation;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */

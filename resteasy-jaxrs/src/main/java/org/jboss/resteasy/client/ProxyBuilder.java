@@ -26,7 +26,7 @@ import java.util.Set;
  * @param <T>
  * @deprecated The Resteasy proxy facility in the client framework in resteasy-jaxrs is replaced by the
  * proxy facility extension in the JAX-RS 2.0 compliant resteasy-client module.
- * 
+ *
  * @see org.jboss.resteasy.client.jaxrs.ResteasyClient
  * @see org.jboss.resteasy.client.jaxrs.ProxyBuilder
  * @see org.jboss.resteasy.client.jaxrs.ResteasyWebTarget

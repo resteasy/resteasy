@@ -113,7 +113,7 @@ public class MultiValuedParamDateProxyTest {
          client.close();
       }
    }
-    
+
 
    /**
     * @tpTestDetails HeaderParam test
@@ -142,7 +142,7 @@ public class MultiValuedParamDateProxyTest {
          client.close();
       }
    }
-    
+
    /**
     * @tpTestDetails MatrixParam test
     * @tpSince RESTEasy 3.5
@@ -198,7 +198,7 @@ public class MultiValuedParamDateProxyTest {
          client.close();
       }
    }
-    
+
    /**
     * @tpTestDetails FormParam test
     * @tpSince RESTEasy 3.5
@@ -227,7 +227,7 @@ public class MultiValuedParamDateProxyTest {
          client.close();
       }
    }
-    
+
    /**
     * @tpTestDetails PathParam test
     * @tpSince RESTEasy 3.5
@@ -255,5 +255,5 @@ public class MultiValuedParamDateProxyTest {
          client.close();
       }
    }
-    
+
 }

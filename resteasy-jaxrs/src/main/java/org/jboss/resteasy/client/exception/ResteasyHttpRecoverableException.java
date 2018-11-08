@@ -23,7 +23,7 @@ public class ResteasyHttpRecoverableException extends ResteasyHttpException
    {
       super(message, cause);
    }
-    
+
    public ResteasyHttpRecoverableException(Throwable cause)
    {
       super(cause);

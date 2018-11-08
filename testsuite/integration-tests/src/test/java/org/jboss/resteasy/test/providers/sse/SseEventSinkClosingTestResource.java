@@ -21,7 +21,7 @@ import javax.ws.rs.sse.SseEventSink;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
- * 
+ *
  * @author Nicolas NESMON
  *
  */

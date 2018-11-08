@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
  * @version $Revision: 1 $
  *
  * @deprecated Replaced by javax.ws.rs.container.AsyncResponse
- * 
+ *
  * @see javax.ws.rs.container.AsyncResponse
  */
 @Deprecated

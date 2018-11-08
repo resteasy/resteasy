@@ -52,7 +52,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    {
       this(baseUri, declaring, method, new ProxyConfig(null, executor, providerFactory, extractorFactory, null, null, null));
    }
-   
+
    public ClientInvoker(URI baseUri, Class declaring, Method method, ProxyConfig config)
    {
       this.declaring = declaring;
@@ -103,7 +103,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
       try
       {
          if (uri == null) throw new RuntimeException(Messages.MESSAGES.baseURINotSetForClientProxy());
-         
+
 
          ClientRequest request = createRequest(args);
 

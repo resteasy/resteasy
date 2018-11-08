@@ -23,7 +23,7 @@ public class ResteasyConnectionPoolTimeoutException extends ResteasyConnectTimeo
    {
       super(message, cause);
    }
-    
+
    public ResteasyConnectionPoolTimeoutException(Throwable cause)
    {
       super(cause);

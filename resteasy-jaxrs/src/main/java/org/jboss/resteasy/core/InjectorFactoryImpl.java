@@ -163,7 +163,7 @@ public class InjectorFactoryImpl implements InjectorFactory
          return createParameterExtractorUsingProprietaryAnnotations(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, useDefault, providerFactory);
       }
    }
-   
+
    @Override
    @Deprecated
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
@@ -259,7 +259,7 @@ public class InjectorFactoryImpl implements InjectorFactory
          return null;
       }
    }
-   
+
    private ValueInjector createParameterExtractorUsingProprietaryAnnotations(Class injectTargetClass, AccessibleObject injectTarget, String defaultName, Class type,
          Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {

@@ -18,7 +18,7 @@ public class OutputPart
    private Type genericType;
    private MediaType mediaType;
    private String filename;
-   
+
    public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
       this(entity, type, genericType, mediaType, null);
@@ -57,8 +57,8 @@ public class OutputPart
    {
       return mediaType;
    }
-   
-   public String getFilename() 
+
+   public String getFilename()
    {
       return filename;
    }

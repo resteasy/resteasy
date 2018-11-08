@@ -137,19 +137,19 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
-      
+
       asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
       if(asyncResponseProvider == null){
          asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
       }
-      
-      if (isSseResourceMethod(method)) 
+
+      if (isSseResourceMethod(method))
       {
          isSse = true;
          method.markAsynchronous();
       }
    }
-   
+
    // spec section 9.3 Server API:
    // A resource method that injects an SseEventSink and
    // produces the media type text/event-stream is an SSE resource method.
@@ -323,7 +323,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       Object rtn = invokeOnTargetDryRun(request, response, target);
       return rtn;
    }
-   
+
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
@@ -337,7 +337,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       BuiltResponse rtn = invokeOnTarget(request, response, target);
       return rtn;
    }
-   
+
    protected Object invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
@@ -359,11 +359,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters, 
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
          () -> invokeOnTargetAfterFilter(request, response, target));
       // let it handle the continuation
       return requestContext.filter();
-   }   
+   }
 
    protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
    {
@@ -382,7 +382,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             validator.checkViolations(request);
          }
       }
-      
+
       AsyncResponseConsumer asyncResponseConsumer = null;
       if (asyncResponseProvider != null)
       {
@@ -404,12 +404,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          {
             // WARNING: this can throw if the exception is not mapped by the user, in
             // which case we haven't completed the connection and called the callbacks
-            try 
+            try
             {
                AsyncResponseConsumer consumer = asyncResponseConsumer;
                asyncResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
             }
-            catch(UnhandledException x) 
+            catch(UnhandledException x)
             {
                // make sure we call the callbacks before throwing to the container
                request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
@@ -501,7 +501,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       jaxrsResponse.addMethodAnnotations(getMethodAnnotations());
       return jaxrsResponse;
    }
-   
+
    private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyProviderFactory
             .getContextData(PostResourceMethodInvokers.class);
@@ -517,7 +517,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
    }
-   
+
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
    {
       asyncResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
@@ -627,9 +627,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       return MediaType.WILDCARD_TYPE;
    }
-   
-   
-   
+
+
+
 
    public Set<String> getHttpMethods()
    {
@@ -645,8 +645,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    {
       return method.getConsumes();
    }
-   
-   public boolean isSse() 
+
+   public boolean isSse()
    {
       return isSse;
    }

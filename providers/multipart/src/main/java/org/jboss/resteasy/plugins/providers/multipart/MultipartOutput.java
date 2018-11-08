@@ -23,13 +23,13 @@ public class MultipartOutput
       parts.add(outputPart);
       return outputPart;
    }
-   
+
    public OutputPart addPart(Object entity, MediaType mediaType, String filename)
    {
       OutputPart outputPart = new OutputPart(entity, entity.getClass(), null, mediaType, filename);
       parts.add(outputPart);
       return outputPart;
-   }   
+   }
 
    public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType)
    {
@@ -37,13 +37,13 @@ public class MultipartOutput
       parts.add(outputPart);
       return outputPart;
    }
-   
+
    public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename)
    {
       OutputPart outputPart = new OutputPart(entity, type.getRawType(), type.getType(), mediaType, filename);
       parts.add(outputPart);
       return outputPart;
-   }   
+   }
 
    public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
@@ -51,13 +51,13 @@ public class MultipartOutput
       parts.add(outputPart);
       return outputPart;
    }
-   
+
    public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
    {
       OutputPart outputPart = new OutputPart(entity, type, genericType, mediaType, filename);
       parts.add(outputPart);
       return outputPart;
-   }   
+   }
 
    public List<OutputPart> getParts()
    {

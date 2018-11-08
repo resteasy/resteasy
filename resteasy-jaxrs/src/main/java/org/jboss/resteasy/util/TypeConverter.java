@@ -232,7 +232,7 @@ public final class TypeConverter
    {
       Class<?> actualTarget = targetType;
       /*
-       * if this is a primitive type, use the Object class's "valueOf()" 
+       * if this is a primitive type, use the Object class's "valueOf()"
        * method.
        */
       if (targetType.isPrimitive())

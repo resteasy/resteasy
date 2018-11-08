@@ -54,7 +54,7 @@ public class ClientBuilderTest {
 
    }
 
-    
+
    /**
     * @tpTestDetails Create client with custom property, check that property is set and remove the property
     * from client configuration

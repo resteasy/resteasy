@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 /**
  * Abstract class for handling output from {@link InputStream}'s.<p>
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

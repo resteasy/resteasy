@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ViolationReport
 {
    private String exception;
-   
+
    private ArrayList<ResteasyConstraintViolation> fieldViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> propertyViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> classViolations = new ArrayList<ResteasyConstraintViolation>();
@@ -38,12 +38,12 @@ public class ViolationReport
       this.parameterViolations = (ArrayList<ResteasyConstraintViolation>) exception.getParameterViolations();
       this.returnValueViolations = (ArrayList<ResteasyConstraintViolation>) exception.getReturnValueViolations();
    }
-   
+
    public ViolationReport(String s)
    {
       this(new ResteasyViolationException(s));
    }
-   
+
    public ViolationReport()
    {
    }

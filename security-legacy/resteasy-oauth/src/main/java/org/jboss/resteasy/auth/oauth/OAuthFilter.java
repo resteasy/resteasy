@@ -22,7 +22,7 @@ import java.net.HttpURLConnection;
 
 /**
  * OAuth Servlet Filter that interprets OAuth Authentication messages to set the Principal and roles
- * for protected resources. 
+ * for protected resources.
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthFilter implements Filter {
@@ -81,7 +81,7 @@ public class OAuthFilter implements Filter {
          // let the request through with the new credentials
          LogMessages.LOGGER.debug(Messages.MESSAGES.doFilter());
          filterChain.doFilter(request, response);
-            
+
       } catch (OAuthException x) {
          OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), x.getHttpCode(), provider);
       } catch (OAuthProblemException x) {

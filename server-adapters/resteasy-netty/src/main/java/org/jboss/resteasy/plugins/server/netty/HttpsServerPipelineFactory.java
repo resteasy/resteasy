@@ -11,11 +11,11 @@ import java.util.List;
 
 /**
  * {@link HttpServerPipelineFactory} subclass which enable the use of HTTPS
- * 
+ *
  * @author Norman Maurer
  *
  */
-public class HttpsServerPipelineFactory extends HttpServerPipelineFactory 
+public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
 {
 
    private final SSLContext context;
@@ -27,7 +27,7 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
    }
 
    @Override
-   public ChannelPipeline getPipeline() throws Exception 
+   public ChannelPipeline getPipeline() throws Exception
    {
       ChannelPipeline cp = super.getPipeline();
       SSLEngine engine = context.createSSLEngine();
@@ -37,7 +37,7 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
    }
 
    @Override
-   protected Protocol getProtocol() 
+   protected Protocol getProtocol()
    {
       return Protocol.HTTPS;
    }

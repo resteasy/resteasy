@@ -8,7 +8,7 @@ import java.util.Map;
  * parts which are referenced from the root part. All parts have a unique id.
  * The type and the id of the start part is presented in parameters in the
  * message content-type header.
- * 
+ *
  * @author Attila Kiraly
  * @version $Revision: 1 $
  */

@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated Replaced by javax.ws.rs.container.Suspended
- * 
+ *
  * @see javax.ws.rs.container.Suspended
  */
 @Deprecated

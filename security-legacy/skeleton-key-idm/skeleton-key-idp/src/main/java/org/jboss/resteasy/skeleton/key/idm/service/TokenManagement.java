@@ -272,7 +272,7 @@ public class TokenManagement
                {
                   String entity = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.youAreNotAuthorizedForRequestedScope()+"</p>";
                   throw new ForbiddenException(Response.status(403).entity(entity).type("text/html").build());
-                  
+
                }
                access.addRole(role);
                if (roleMapping.getSurrogateIds() != null && roleMapping.getSurrogateIds().size() > 0)
@@ -580,7 +580,7 @@ public class TokenManagement
       String action = formActionUri.build(realm.getId()).toString();
       html.append("<form action=\"").append(action).append("\" method=\"POST\">");
       html.append(Messages.MESSAGES.username()+"<input type=\"text\" name=\"username\" size=\"20\"><br>");
-      
+
       for (RequiredCredential credential : identityManager.getRequiredCredentials(realm))
       {
          if (!credential.isInput()) continue;

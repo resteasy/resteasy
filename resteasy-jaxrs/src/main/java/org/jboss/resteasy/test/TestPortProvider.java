@@ -112,7 +112,7 @@ public class TestPortProvider
    {
       return PortProvider.getPort();
    }
-   
+
    /**
     * Look up the configured hostname, first checking an environment variable (RESTEASY_HOST),
     * then a system property (org.jboss.resteasy.host), and finally the default hostname (localhost).

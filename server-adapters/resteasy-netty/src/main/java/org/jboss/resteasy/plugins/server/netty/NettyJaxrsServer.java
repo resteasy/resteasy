@@ -53,21 +53,21 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
    static final ChannelGroup allChannels = new DefaultChannelGroup("NettyJaxrsServer");
 
-   public void setSSLContext(SSLContext sslContext) 
+   public void setSSLContext(SSLContext sslContext)
    {
       this.sslContext = sslContext;
    }
-   
+
    /**
     * Specify the worker count to use. For more informations about this please see the javadocs of {@link NioServerSocketChannelFactory}
     *
     * @param ioWorkerCount worker count
     */
-   public void setIoWorkerCount(int ioWorkerCount) 
+   public void setIoWorkerCount(int ioWorkerCount)
    {
       this.ioWorkerCount = ioWorkerCount;
    }
-   
+
    /**
     * Set the number of threads to use for the Executor. For more informations please see the javadocs of {@link OrderedMemoryAwareThreadPoolExecutor}.
     * If you want to disable the use of the {@link ExecutionHandler} specify a value {@literal <=} 0.  This should only be done if you are 100% sure that you don't have any blocking
@@ -86,12 +86,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     *
     * @param maxRequestSize the max request size. This is 10mb by default.
     */
-   public void setMaxRequestSize(int maxRequestSize) 
+   public void setMaxRequestSize(int maxRequestSize)
    {
       this.maxRequestSize  = maxRequestSize;
    }
-   
-   public void setKeepAlive(boolean isKeepAlive) 
+
+   public void setKeepAlive(boolean isKeepAlive)
    {
       this.isKeepAlive = isKeepAlive;
    }
@@ -178,7 +178,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       bootstrap = new ServerBootstrap(
             new NioServerSocketChannelFactory(
                       Executors.newCachedThreadPool(),
-                      Executors.newCachedThreadPool(), 
+                      Executors.newCachedThreadPool(),
                       ioWorkerCount));
 
       ChannelPipelineFactory factory;

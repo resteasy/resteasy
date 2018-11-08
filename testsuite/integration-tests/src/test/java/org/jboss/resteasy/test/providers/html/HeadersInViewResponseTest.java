@@ -67,7 +67,7 @@ public class HeadersInViewResponseTest {
    @Test
    @Category(NotForForwardCompatibility.class)
    public void testView() throws Exception {
-       
+
       Invocation.Builder request = client.target(generateURL("/test/get")).request();
       Response response = request.get();
       Map<String, NewCookie> map = response.getCookies();
@@ -76,7 +76,7 @@ public class HeadersInViewResponseTest {
       Assert.assertEquals("789", response.getHeaderString("xyz"));
       Assert.assertEquals("value2", map.get("name2").getValue());
    }
-    
+
    private static File getResteasyHtmlJar() {
 
       // Find resteasy-html jar in target

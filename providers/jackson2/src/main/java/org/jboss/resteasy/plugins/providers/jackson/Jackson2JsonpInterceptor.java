@@ -33,7 +33,7 @@ import org.jboss.resteasy.util.CommitHeaderOutputStream;
  * </p>
  * <p>
  *  Jackson JSON processor can produce such an response. This interceptor checks if the media type is a JavaScript one if there is a query
- *  parameter with the method name. The default name of this query parameter is "callback". So this interceptor is compatible with 
+ *  parameter with the method name. The default name of this query parameter is "callback". So this interceptor is compatible with
  *  <a href="http://api.jquery.com/jQuery.ajax/">jQuery</a>.
  * </p>
  * <p>
@@ -61,7 +61,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     * "text/javascript" media type. Default media type of script tags.
     */
    public static final MediaType TEXT_JAVASCRIPT_MEDIA_TYPE = new MediaType("text", "javascript");
-    
+
    /**
     * "application/javascript" media type.
     */
@@ -86,12 +86,12 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     * If response media type is one of this jsonp response may be created.
     */
    public static final MediaTypeMap<String> jsonpCompatibleMediaTypes = new MediaTypeMap<String>();
-    
+
    /**
     * Default {@link ObjectMapper} for type resolution. Used if none is provided by {@link Providers}.
     */
    protected static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper();
-    
+
    static {
       jsonpCompatibleMediaTypes.add(MediaType.APPLICATION_JSON_TYPE  , MediaType.APPLICATION_JSON_TYPE.toString());
       jsonpCompatibleMediaTypes.add(APPLICATION_JAVASCRIPT_MEDIA_TYPE, APPLICATION_JAVASCRIPT_MEDIA_TYPE.toString());
@@ -101,7 +101,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
    }
 
    private UriInfo uri;
-    
+
    private String callbackQueryParameter = DEFAULT_CALLBACK_QUERY_PARAMETER;
 
    private boolean wrapInTryCatch = false;
@@ -123,7 +123,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     * The {@link Providers} used to retrieve the {@link #objectMapper} from.
     */
    protected Providers providers;
-    
+
    /**
     * Is this interceptor enabled.
     */
@@ -179,7 +179,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
          context.proceed();
       }
    }
-    
+
    /**
     * Search for an {@link ObjectMapper} for the given class and mediaType
     *
@@ -202,11 +202,11 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
             return resolver.getContext(type);
          }
       }
-        
+
       return DEFAULT_MAPPER;
    }
-    
-    
+
+
    /**
     * Setter used by RESTeasy to provide the {@link UriInfo}.
     *
@@ -216,7 +216,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
    public void setUri(UriInfo uri) {
       this.uri = uri;
    }
-    
+
    /**
     * Setter used by RESTeasy to provide the {@link Providers}
     *

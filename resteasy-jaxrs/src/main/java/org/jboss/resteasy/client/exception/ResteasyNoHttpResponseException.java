@@ -23,7 +23,7 @@ public class ResteasyNoHttpResponseException extends ResteasyIOException
    {
       super(message, cause);
    }
-    
+
    public ResteasyNoHttpResponseException(Throwable cause)
    {
       super(cause);

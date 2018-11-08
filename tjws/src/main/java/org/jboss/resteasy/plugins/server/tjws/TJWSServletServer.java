@@ -12,7 +12,7 @@ import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;
 
 /**
- * 
+ *
  * This cannot be restarted once stopped.
  * <p>
  * All properties can be set by a Properties map.  See more info at <a href="http://tjws.sourceforge.net/">TJWS Website</a>
@@ -23,7 +23,7 @@ import Acme.Serve.Serve;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated See resteasy-undertow module.
  */
 public class TJWSServletServer
@@ -52,7 +52,7 @@ public class TJWSServletServer
          }
          mappingTable.put(context, directory);
       }
-      
+
       public String getInitParameter(String param)
       {
          if (initParams == null)
@@ -86,13 +86,13 @@ public class TJWSServletServer
    {
       server.addServlet(bindPath, servlet, initParams);
    }
-   
+
    public void addServlet(String bindPath, HttpServlet servlet, Hashtable<String,String> initParams, Hashtable<String,String> contextParams)
    {
       server.setInitParams(contextParams);
       server.addServlet(bindPath, servlet, initParams);
    }
-   
+
    public void setProps(Properties props)
    {
       this.props.putAll(props);

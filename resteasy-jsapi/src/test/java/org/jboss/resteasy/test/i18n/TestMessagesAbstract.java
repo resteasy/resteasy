@@ -20,7 +20,7 @@ import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -31,7 +31,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
    protected static ResourceMethodInvoker testMethod;
-   
+
    static
    {
       try
@@ -51,10 +51,10 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.error(e.getMessage(), e);
       }
    }
-   
+
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/jsapi/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -62,19 +62,19 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "00", "impossibleToGenerateJsapi", "class", "method"), Messages.MESSAGES.impossibleToGenerateJsapi("class", "method"));
       Assert.assertEquals(getExpected(BASE + "05", "invoker", testMethod), Messages.MESSAGES.invoker(testMethod));
       Assert.assertEquals(getExpected(BASE + "35", "restApiUrl", "http"), Messages.MESSAGES.restApiUrl("http"));
-      Assert.assertEquals(getExpected(BASE + "60", "thereAreNoResteasyDeployments"), Messages.MESSAGES.thereAreNoResteasyDeployments());     
+      Assert.assertEquals(getExpected(BASE + "60", "thereAreNoResteasyDeployments"), Messages.MESSAGES.thereAreNoResteasyDeployments());
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    @Override
    protected String getExpected(String id, String message, Object... args)
    {
@@ -83,7 +83,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       LOG.info("actual expected: " + ss);
       return ss;
    }
-   
+
    protected String pruneQuotes(String s)
    {
       StringBuffer sb = new StringBuffer();
@@ -111,6 +111,6 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       }
       return sb.toString();
    }
-   
+
    abstract protected Locale getLocale();
 }

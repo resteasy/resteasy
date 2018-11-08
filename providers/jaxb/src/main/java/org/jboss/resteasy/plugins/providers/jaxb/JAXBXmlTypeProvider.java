@@ -67,7 +67,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
    protected static final String OBJECT_FACTORY_NAME = ".ObjectFactory";
-   
+
    /**
     *
     */

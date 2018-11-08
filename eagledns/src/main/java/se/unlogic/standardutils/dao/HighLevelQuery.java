@@ -15,11 +15,11 @@ import java.util.List;
 
 /**
  * This class represents a SQL query and is used together with a AnnotatedDAO typed with a matching type.<p>
- * 
+ *
  * A high level abstracts away all and also verifies that the query parameters and order by criterias are of the correct type to avoid SQL exceptions.<p>
  *
  * @param <T> The type of bean this query is supposed to return
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  */
 public class HighLevelQuery<T> extends RelationQuery{

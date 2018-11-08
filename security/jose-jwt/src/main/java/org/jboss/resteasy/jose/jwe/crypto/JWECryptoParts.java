@@ -5,8 +5,8 @@ import org.jboss.resteasy.jose.i18n.Messages;
 
 
 /**
- * The cryptographic parts of a JSON Web Encryption (JWE) object. This class is 
- * an immutable simple wrapper for returning the cipher text, initialisation 
+ * The cryptographic parts of a JSON Web Encryption (JWE) object. This class is
+ * an immutable simple wrapper for returning the cipher text, initialisation
  * vector (IV), encrypted key and authentication tag
  * implementations.
  *

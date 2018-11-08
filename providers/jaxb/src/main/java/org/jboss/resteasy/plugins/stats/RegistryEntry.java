@@ -20,7 +20,7 @@ import java.util.List;
  *     {@literal <}/post{@literal >}
  * {@literal <}/resource{@literal >}
  * </pre>
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 2 $
  */

@@ -23,7 +23,7 @@ import java.util.Set;
 public class ProxyBuilder<T>
 {
    private static final Class<?>[] cClassArgArray = {Class.class};
-   
+
    private final Class<T> iface;
    private final ResteasyWebTarget webTarget;
    private ClassLoader loader;

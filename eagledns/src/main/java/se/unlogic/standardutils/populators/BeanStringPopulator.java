@@ -13,7 +13,7 @@ import se.unlogic.standardutils.validation.StringFormatValidator;
 
 /**
  * This interface is used for populating a bean or type from a String
- * 
+ *
  * @author Robert "Unlogic" Olofsson
  *
  * @param <T>

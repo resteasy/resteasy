@@ -120,7 +120,7 @@ public class JWSInput
       @SuppressWarnings("rawtypes")
       MessageBodyReader reader = providers.getMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader == null) throw new RuntimeException(Messages.MESSAGES.unableToFindReaderForContentType());
-      
+
       try
       {
          ByteArrayInputStream bais = new ByteArrayInputStream(content);

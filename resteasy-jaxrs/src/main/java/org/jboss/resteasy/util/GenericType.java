@@ -13,14 +13,14 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  * </pre>
  * <p>
  * The above code will get you the genericType for List&#x3C;String&#x3E;
- * 
+ *
  * N.B. This class is replaced by javax.ws.rs.core.GenericType.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated Replaced by javax.ws.rs.core.GenericType
- * 
+ *
  * @see javax.ws.rs.core.GenericType
  */
 @Deprecated

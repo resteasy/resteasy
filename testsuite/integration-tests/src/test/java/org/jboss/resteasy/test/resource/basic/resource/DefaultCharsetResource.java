@@ -20,34 +20,34 @@ public class DefaultCharsetResource {
    public String charset() {
       return "ok";
    }
-   
+
    @GET
    @Path("nomediatype")
    public String noMediaType() {
       return "ok";
    }
-   
+
    @GET
    @Produces("application/xml")
    @Path("xml_nocharset")
    public String xmlNoCharset() {
       return "ok";
    }
-   
+
    @GET
    @Produces("application/xml; charset=UTF-16")
    @Path("xml_charset")
    public String xmlCharset() {
       return "ok";
    }
-   
+
    @GET
    @Produces("application/xml-external-parsed-entity")
    @Path("external")
    public String external() {
       return "ok";
    }
-   
+
    @GET
    @Produces("application/json")
    @Path("json")

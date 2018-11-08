@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
 
 /**
- * 
+ *
  * @author <a href="mailto:jeff@infohazard.org">Jeff Schnitzer</a>
  */
 @SuppressWarnings("unchecked")

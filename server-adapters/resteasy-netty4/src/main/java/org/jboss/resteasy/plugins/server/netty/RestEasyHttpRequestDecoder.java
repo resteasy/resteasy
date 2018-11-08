@@ -58,7 +58,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
    {
       boolean keepAlive = HttpHeaders.isKeepAlive(request);
       final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory(), request.method());
-        
+
       DecoderResult decoderResult = request.decoderResult();
       if (decoderResult.isFailure())
       {
@@ -73,7 +73,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
          }
          return;
       }
-        
+
       final ResteasyHttpHeaders headers;
       final ResteasyUriInfo uriInfo;
       try

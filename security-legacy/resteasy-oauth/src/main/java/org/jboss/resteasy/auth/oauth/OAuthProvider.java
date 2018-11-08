@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Implement this interface to provide the RESTEasy servlets and filters with the knowledge to
  * load and store OAuth Consumer, Request and Access Tokens.
- * 
+ *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public interface OAuthProvider extends OAuthConsumerRegistration {

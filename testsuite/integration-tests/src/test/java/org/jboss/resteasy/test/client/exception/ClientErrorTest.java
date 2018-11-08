@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpSince RESTEasy 3.0.20
- * @tpTestCaseDetails Test client error caused by bad media type. 
+ * @tpTestCaseDetails Test client error caused by bad media type.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -44,7 +44,7 @@ public class ClientErrorTest
       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_0_web.xml");
       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
-   
+
    @Deployment(name = "war2", order = 2)
    public static Archive<?> deployJaxrs21() {
       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName() + "_jaxrs_2_1");
@@ -53,7 +53,7 @@ public class ClientErrorTest
       war.setWebXML(ClientErrorTest.class.getPackage(), "jaxrs_2_1_web.xml");
       return TestUtil.finishContainerPrepare(war, null, ClientErrorResource.class);
    }
-   
+
    @Deployment(name = "war3", order = 3)
    public static Archive<?> deployDefault() {
       WebArchive war = TestUtil.prepareArchive(ClientErrorTest.class.getSimpleName());
@@ -103,7 +103,7 @@ public class ClientErrorTest
          response.close();
       }
    }
-   
+
    /**
     * @tpTestDetails There are two methods that match path, but only one matches Accept.
     *                "jaxrs.2.0.request.matching" is set to true.
@@ -129,7 +129,7 @@ public class ClientErrorTest
          response.close();
       }
    }
-   
+
    /**
     * @tpTestDetails There are two methods that match path, and both match Accept.
     *                "jaxrs.2.0.request.matching" is set to false.
@@ -272,7 +272,7 @@ public class ClientErrorTest
       catch (Exception e)
       {
          throw new RuntimeException(e);
-      }  
+      }
       finally
       {
          response.close();
@@ -353,7 +353,7 @@ public class ClientErrorTest
          response.close();
       }
    }
-   
+
    static class TestMediaTypeHeaderDelegate extends MediaTypeHeaderDelegate
    {
       public static MediaType parse(String type)

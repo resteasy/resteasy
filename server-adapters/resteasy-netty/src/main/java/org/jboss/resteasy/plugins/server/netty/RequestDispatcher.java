@@ -45,7 +45,7 @@ public class RequestDispatcher
    {
       return domain;
    }
-   
+
    public ResteasyProviderFactory getProviderFactory()
    {
       return providerFactory;

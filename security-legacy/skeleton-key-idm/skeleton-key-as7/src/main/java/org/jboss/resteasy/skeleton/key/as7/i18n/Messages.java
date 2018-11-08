@@ -6,7 +6,7 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageBundle;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -28,7 +28,7 @@ public interface Messages
    String alreadyLoggedIn();
 
    @Message(id = BASE + 15, value = "Auth error")
-   String authError();   
+   String authError();
 
    @Message(id = BASE + 20, value = "authenticate userSessionManage.login(): %s")
    String authenticateUserSession(String name);
@@ -62,19 +62,19 @@ public interface Messages
 
    @Message(id = BASE + 70, value = "<--- end oauthAuthenticate")
    String endOAuthAuthenticate();
-   
+
    @Message(id = BASE + 75, value = "Failed to authenticate client_id")
    String failedToAuthenticateClientId();
-   
+
    @Message(id = BASE + 80, value = "failed to forward")
    String failedToForward();
-   
+
    @Message(id = BASE + 85, value = "Failed to load keystore")
    String failedToLoadKeystore();
-   
+
    @Message(id = BASE + 90, value = "Failed to load truststore")
    String failedToLoadTruststore();
-   
+
    @Message(id = BASE + 95, value = "Failed to log out")
    String failedToLogout();
 
@@ -95,7 +95,7 @@ public interface Messages
 
    @Message(id = BASE + 125, value = "invalidating session for user: %s")
    String invalidatingSessionForUser(String user);
-   
+
    @Message(id = BASE + 130, value = "--- invoke: %s")
    String invoke(String uri);
 
@@ -104,43 +104,43 @@ public interface Messages
 
    @Message(id = BASE + 140, value = "logoutUser: %s")
    String logoutUser(String user);
-   
+
    @Message(id = BASE + 145, value = "media type: %s")
    String mediaType(MediaType mediaType);
 
    @Message(id = BASE + 150, value = "You have not declared a keystore or public key")
    String mustDeclareKeystoreOrPublicKey();
-   
+
    @Message(id = BASE + 155, value = "You must define the login-role in your config file")
    String mustDefineLoginRole();
 
    @Message(id = BASE + 160, value = "You must define the oauth-client-role in your config file")
    String mustDefineOauthClientRole();
-   
+
    @Message(id = BASE + 165, value = "Must define realm-key-alias")
    String mustDefineRealmKeyAlias();
 
    @Message(id = BASE + 170, value = "Must set client-id to use with auth server")
    String mustSetClientId();
-   
+
    @Message(id = BASE + 175, value = "You must specify auth-url")
    String mustSpecifyAuthUrl();
-   
+
    @Message(id = BASE + 180, value = "You must specify code-url")
    String mustSpecifyCodeUrl();
-   
+
    @Message(id = BASE + 185, value = "No access code: %s")
    String noAccessCode(String code);
-   
+
    @Message(id = BASE + 190, value = "No certificates provided by jboss web to verify the caller")
    String noCertificatesProvidedByJBossWeb();
-   
+
    @Message(id = BASE + 195, value = "No oauth redirect query parameter set")
    String noOauthRedirectQueryParameterSet();
-   
+
    @Message(id = BASE + 200, value = "no session for user: %s")
    String noSessionForUser(String user);
-   
+
    @Message(id = BASE + 205, value = "No state cookie")
    String noStateCookie();
 
@@ -151,11 +151,11 @@ public interface Messages
    String notEqualClient();
 
    @Message(id = BASE + 220, value = "not equal redirect")
-   String notEqualRedirect();  
+   String notEqualRedirect();
 
    @Message(id = BASE + 225, value = "OAuth %s")
    String oAuthError(String error);
-   
+
    @Message(id = BASE + 230, value = "queryParam: %s")
    String queryParam(String state);
 
@@ -188,7 +188,7 @@ public interface Messages
 
    @Message(id = BASE + 280, value = "Token expired")
    String tokenExpired();
-   
+
    @Message(id = BASE + 285, value = "token not active")
    String tokenNotActive();
 

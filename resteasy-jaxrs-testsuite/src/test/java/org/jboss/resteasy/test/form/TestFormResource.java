@@ -209,7 +209,7 @@ public class TestFormResource extends BaseResourceTest
 
    @Test
    public void testFormResource() throws Exception
-   {      
+   {
       InputStream in = null;
       try
       {
@@ -257,12 +257,12 @@ public class TestFormResource extends BaseResourceTest
          }
       }
    }
-   
+
    static class StringPair
    {
       public String key;
       public String value;
-      
+
       StringPair(String key, String value)
       {
          this.key = key;

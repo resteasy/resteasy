@@ -507,7 +507,7 @@ public class Encode
       }
       return decoded;
    }
-   
+
    /**
     * decode an encoded map
     *

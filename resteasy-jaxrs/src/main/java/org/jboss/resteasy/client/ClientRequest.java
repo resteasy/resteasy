@@ -44,7 +44,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.client.Invocation
  */
@@ -71,7 +71,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    protected List<String> pathParameterList;
    protected LinkHeader linkHeader;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
- 
+
    private static String defaultExecutorClasss = "org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor";
 
    /**

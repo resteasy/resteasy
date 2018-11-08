@@ -17,7 +17,7 @@ import org.jboss.resteasy.cdi.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -31,7 +31,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    {
       public Class<? extends Annotation> annotationType() { return null; };
    };
-   
+
    protected static final Bean<String> testBean = new Bean<String>()
    {
       public String create(CreationalContext<String> creationalContext) {return null;}
@@ -46,9 +46,9 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       public boolean isNullable() { return false; }
       public Set<InjectionPoint> getInjectionPoints() { return null; }
    };
-   
+
    protected static final Set beanSet = new HashSet<Bean<String>>();
-   
+
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
    protected static final String BASE3 = BASE.substring(0, 3);
 
@@ -56,10 +56,10 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    {
       beanSet.add(testBean);
    }
-   
+
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/cdi/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -67,18 +67,18 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "00", "annotatedTypeNull"), Messages.MESSAGES.annotatedTypeNull());
       Assert.assertEquals(getExpected(BASE + "05", "beanDoesNotHaveScopeDefined", getClass(), testAnnotation), Messages.MESSAGES.beanDoesNotHaveScopeDefined(getClass(), testAnnotation));
       Assert.assertEquals(getExpected(BASE + "20", "beansFound", getClass().getGenericSuperclass(), beanSet), Messages.MESSAGES.beansFound(getClass().getGenericSuperclass(), beanSet));
-      Assert.assertEquals(getExpected(BASE3 + "630", "usingInterfaceForLookup", getClass().getGenericSuperclass(), getClass()), Messages.MESSAGES.usingInterfaceForLookup(getClass().getGenericSuperclass(), getClass())); 
+      Assert.assertEquals(getExpected(BASE3 + "630", "usingInterfaceForLookup", getClass().getGenericSuperclass(), getClass()), Messages.MESSAGES.usingInterfaceForLookup(getClass().getGenericSuperclass(), getClass()));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

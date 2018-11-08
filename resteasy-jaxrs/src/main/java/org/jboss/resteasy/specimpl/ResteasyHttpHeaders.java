@@ -177,7 +177,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
       for (WeightedLanguage language : languages) list.add(language.getLocale());
       return Collections.unmodifiableList(list);
    }
-   
+
    private void mergeCookies()
    {
       List<String> cookieHeader = requestHeaders.get(HttpHeaders.COOKIE);

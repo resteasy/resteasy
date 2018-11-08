@@ -76,7 +76,7 @@ public class AcceptHeaders
       }
 
       LogMessages.LOGGER.debug(result.toString());
-      
+
       return result;
    }
 

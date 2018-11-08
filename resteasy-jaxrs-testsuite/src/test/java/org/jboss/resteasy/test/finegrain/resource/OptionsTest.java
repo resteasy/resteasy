@@ -106,7 +106,7 @@ public class OptionsTest
          for (String v : allowed.split(","))
          {
             vals.add(v.trim());
-         }  
+         }
          Assert.assertEquals(4, vals.size());
          Assert.assertTrue(vals.contains("GET"));
          Assert.assertTrue(vals.contains("DELETE"));
@@ -134,7 +134,7 @@ public class OptionsTest
          for (String v : allowed.split(","))
          {
             vals.add(v.trim());
-         }  
+         }
          Assert.assertEquals(4, vals.size());
          Assert.assertTrue(vals.contains("GET"));
          Assert.assertTrue(vals.contains("DELETE"));

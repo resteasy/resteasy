@@ -15,7 +15,7 @@ public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
 {
    private String applicationContextConfiguration;
    private int port;
-   private String context = ""; 
+   private String context = "";
 
    private TJWSEmbeddedSpringMVCServer server;
 

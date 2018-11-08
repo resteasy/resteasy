@@ -4,7 +4,7 @@ import javax.ws.rs.container.ContainerResponseContext;
 
 /**
  * Suspendable response context, which allows the users to suspend execution of the filter
- * chain until it is resumed normally, or abnormally with a {@link Throwable}. 
+ * chain until it is resumed normally, or abnormally with a {@link Throwable}.
  *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
@@ -19,13 +19,13 @@ public interface SuspendableContainerResponseContext extends ContainerResponseCo
     * {@link org.jboss.resteasy.core.interception.ResponseContainerRequestContext#abortWith(javax.ws.rs.core.Response)}.
     */
    void suspend();
-   
+
    /**
     * Resumes the current response, and proceeds to the next response filter, if any,
     * or to send the response.
     */
    void resume();
-   
+
    /**
     * Aborts the current response with the given exception. This behaves as if the request
     * filter threw this exception synchronously, which means that the exception will not

@@ -58,7 +58,7 @@ public class MatrixParamAsPrimitiveWrappers {
       Assert.assertEquals(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v.doubleValue(), 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGet(@MatrixParam("char") Character v) {

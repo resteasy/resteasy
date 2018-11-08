@@ -189,7 +189,7 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
          if (repository == null)
          {
             throw new InvalidKeyException(Messages.MESSAGES.unableToLocatePrivateKey());
-            
+
          }
 
          privateKey = repository.findPrivateKey(dosetaSignature);

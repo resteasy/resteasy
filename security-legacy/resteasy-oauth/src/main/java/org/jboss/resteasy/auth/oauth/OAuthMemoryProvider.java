@@ -31,7 +31,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
       do{
          newToken = makeRandomString();
       }while(accessTokens.containsKey(newToken));
-      OAuthToken token = new OAuthToken(newToken, makeRandomString(), 
+      OAuthToken token = new OAuthToken(newToken, makeRandomString(),
                                           requestToken.getScopes(), requestToken.getPermissions(),
                                           -1, requestToken.getConsumer());
       accessTokens.put(token.getToken(), token);
@@ -49,16 +49,16 @@ public class OAuthMemoryProvider implements OAuthProvider {
       return ret;
    }
 
-   private OAuthRequestToken doMakeRequestToken(String consumerKey, String callback, 
-         String[] scopes, String[] permissions) 
+   private OAuthRequestToken doMakeRequestToken(String consumerKey, String callback,
+         String[] scopes, String[] permissions)
       throws OAuthException {
       OAuthConsumer consumer = _getConsumer(consumerKey);
       String newToken;
       do{
          newToken = makeRandomString();
       }while(requestTokens.containsKey(newToken));
-      OAuthRequestToken token = 
-         new OAuthRequestToken(newToken, makeRandomString(), callback, 
+      OAuthRequestToken token =
+         new OAuthRequestToken(newToken, makeRandomString(), callback,
                scopes, permissions, -1, consumer);
       requestTokens.put(token.getToken(), token);
       return token;
@@ -72,7 +72,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
          throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchRequestKey(requestKey));
       return ret;
    }
-    
+
    public OAuthRequestToken verifyAndRemoveRequestToken(String customerKey, String requestToken, String verifier) throws OAuthException {
       OAuthRequestToken request = getRequestToken(requestToken);
       checkCustomerKey(request, customerKey);
@@ -202,7 +202,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
    public void registerConsumerPermissions(String consumerKey,
          String[] permissions) throws OAuthException {
       // TODO Auto-generated method stub
-        
+
    }
 
    public Set<String> convertPermissionsToRoles(String[] permissions) {

@@ -7,13 +7,13 @@ import javax.ws.rs.core.Response;
 
 @Path("test")
 public class MessageBodyWriterObjectResource {
-   
+
    @GET
    @Path("")
    public Response test() {
       return Response.ok(new MessageBodyWriterObjectMessage("ok")).build();
    }
-   
+
    @GET
    @Path("used")
    @Produces("text/plain")

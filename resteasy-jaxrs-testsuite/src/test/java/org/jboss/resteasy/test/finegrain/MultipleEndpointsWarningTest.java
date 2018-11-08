@@ -28,7 +28,7 @@ import org.junit.runners.MethodSorters;
 
 /**
  * RESTEASY-1398 - false "multiple endpoints" warning
- * 
+ *
  * @author <a href="mailto:thofman@redhat.com">Tomas Hofman</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

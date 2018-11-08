@@ -36,7 +36,7 @@ public class NullHeaderTest {
 
    @Test
    public void testNullHeader() throws Exception {
-   
+
       Client client = ClientBuilder.newClient();
       WebTarget base = client.target(PortProviderUtil.generateURL("/test", NullHeaderTest.class.getSimpleName()));
       Response response = base.register(NullHeaderFilter.class).request().header("X-Auth-User", null).get();

@@ -97,7 +97,7 @@ public class ResteasyDeployment
    protected void startInternal()
    {
       // it is very important that each deployment create their own provider factory
-      // this allows each WAR to have their own set of providers 
+      // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
       providerFactory.setRegisterBuiltins(registerBuiltin);
 
@@ -176,7 +176,7 @@ public class ResteasyDeployment
       // push context data so we can inject it
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
       contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-      
+
       try
       {
          if (injectorFactory == null && injectorFactoryClass != null)
@@ -995,17 +995,17 @@ public class ResteasyDeployment
    {
       this.widerRequestMatching = widerRequestMatching;
    }
-   
+
    public boolean isJaxrs_2_0_RequestMatching()
    {
       return jaxrs_2_0_RequestMatching;
    }
-   
+
    public void setJaxrs_2_0_RequestMatching(boolean jaxrs_2_0_RequestMatching)
    {
       this.jaxrs_2_0_RequestMatching = jaxrs_2_0_RequestMatching;
    }
-   
+
    public boolean isAddCharset()
    {
       return addCharset;
@@ -1025,7 +1025,7 @@ public class ResteasyDeployment
    {
       this.injectorFactory = injectorFactory;
    }
-   
+
    public Object getProperty(String key) {
       return properties.get(key);
    }

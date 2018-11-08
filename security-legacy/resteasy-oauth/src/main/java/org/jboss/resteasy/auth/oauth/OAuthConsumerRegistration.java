@@ -2,7 +2,7 @@ package org.jboss.resteasy.auth.oauth;
 
 /**
  * Registration of OAuth consumers
- * 
+ *
  */
 public interface OAuthConsumerRegistration {
 
@@ -17,7 +17,7 @@ public interface OAuthConsumerRegistration {
    OAuthConsumer registerConsumer(String consumerKey,
             String displayName, String connectURI) throws OAuthException;
 
-    
+
    /**
     * Registers Consumer Scopes
     * @param consumerKey the Consumer key.
@@ -26,7 +26,7 @@ public interface OAuthConsumerRegistration {
     */
    void registerConsumerScopes(String consumerKey,
             String[] scopes) throws OAuthException;
-    
+
    /**
     * Registers Consumer Permissions
     * @param consumerKey the Consumer key.
@@ -35,5 +35,5 @@ public interface OAuthConsumerRegistration {
     */
    void registerConsumerPermissions(String consumerKey,
             String[] permissions) throws OAuthException;
-        
+
 }

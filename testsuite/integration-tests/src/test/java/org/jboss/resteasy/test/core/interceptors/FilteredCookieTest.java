@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 @Category({NotForForwardCompatibility.class})
 public class FilteredCookieTest {
-   
+
    private static final String OLD_COOKIE_NAME = "old-cookie";
    private static final String NEW_COOKIE_NAME = "new-cookie";
 
@@ -52,7 +52,7 @@ public class FilteredCookieTest {
     */
    @Test
    public void testServerHeaders() {
-      
+
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/test/get"));
       Response response = target.request().get();
@@ -60,7 +60,7 @@ public class FilteredCookieTest {
       Assert.assertEquals(200, response.getStatus());
       Assert.assertNotNull(cookie);
       client.close();
-      
+
       client = ClientBuilder.newClient();
       target = client.target(generateURL("/test/return"));
       Builder builder = target.request();

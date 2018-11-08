@@ -197,7 +197,7 @@ public class SkeletonKeyApplication
 
       String name = getConfigProperty(SKELETON_KEY_INFINISPAN_CACHE_NAME);
       if (name == null) throw new RuntimeException(Messages.MESSAGES.needToSpecifyCacheName());
-      
+
       try
       {
          return new DefaultCacheManager(path).getCache(name);

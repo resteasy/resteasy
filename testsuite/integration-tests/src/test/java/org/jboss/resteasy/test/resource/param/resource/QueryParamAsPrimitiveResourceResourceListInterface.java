@@ -35,7 +35,7 @@ public interface QueryParamAsPrimitiveResourceResourceListInterface {
    @GET
    @Produces("application/double")
    String doGetDouble(@QueryParam("double") List<Double> v);
-    
+
    @GET
    @Produces("application/char")
    String doGetCharacter(@QueryParam("char") List<Character> v);

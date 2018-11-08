@@ -47,7 +47,7 @@ public class MySQLScriptDAO implements ScriptDAO {
             throw e;
          }
       }
-      
+
       this.executeScript(sb.toString());
 
    }

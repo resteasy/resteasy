@@ -28,9 +28,9 @@ import java.util.List;
 /**
  * This class is used to read the values of xsl:variable tags in XSL stylesheets. It recursively parses through all xsl:includes and xsl:imports and also
  * handles 'classpath://' style URI's.
- * 
+ *
  * @author Robert "Unlogic" Olofsson
- * 
+ *
  */
 public class XSLVariableReader {
 

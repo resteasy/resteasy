@@ -310,7 +310,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          AsyncContext asyncContext = servletRequest.startAsync();
          asyncContext.addListener(asynchronousResponse);
          wasSuspended = true;
-         //set time out to -1 and resteasy will take care of timeout 
+         //set time out to -1 and resteasy will take care of timeout
          asyncContext.setTimeout(-1);
          return asyncContext;
       }

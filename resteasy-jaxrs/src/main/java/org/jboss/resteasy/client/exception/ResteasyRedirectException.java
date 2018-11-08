@@ -23,7 +23,7 @@ public class ResteasyRedirectException extends ResteasyNonRepeatableRequestExcep
    {
       super(message, cause);
    }
-    
+
    public ResteasyRedirectException(Throwable cause)
    {
       super(cause);

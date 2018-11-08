@@ -23,7 +23,7 @@ public class ResteasyCookieRestrictionViolationException extends ResteasyMalform
    {
       super(message, cause);
    }
-    
+
    public ResteasyCookieRestrictionViolationException(Throwable cause)
    {
       super(cause);

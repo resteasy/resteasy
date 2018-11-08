@@ -13,9 +13,9 @@ public class MyTestJaxbController
 {
    public MyTestJaxbController()
    {
-      
+
    }
-   
+
    @RequestMapping(value = "/basic/spring/object/json", method =
    { RequestMethod.GET })
    public String testJaxbJson(ModelMap model)

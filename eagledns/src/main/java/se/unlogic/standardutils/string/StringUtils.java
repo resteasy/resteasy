@@ -305,15 +305,15 @@ public class StringUtils {
    }
 
    public static int countOccurrences(String string, String snippet) {
-      
+
       int count = 0;
       int index = 0;
-      
+
       while ((index = string.indexOf(snippet, index)) != -1) {
          ++index;
          ++count;
       }
-      
+
       return count;
    }
 }

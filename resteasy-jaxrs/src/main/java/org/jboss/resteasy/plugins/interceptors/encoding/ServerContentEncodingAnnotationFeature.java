@@ -40,7 +40,7 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
       }
       configurable.register(createFilter(encodings));
    }
-   
+
    protected boolean isGZipRegistered(Configuration configuration)
    {
       //TODO replace with the line below when dropping resteasy-legacy

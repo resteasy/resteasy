@@ -34,7 +34,7 @@ public interface HeaderParamsAsPrimitivesPrimitivesProxy {
    @GET
    @Produces("application/double")
    String doGet(@HeaderParam("double") double v);
-    
+
    @GET
    @Produces("application/char")
    String doGet(@HeaderParam("char") char v);

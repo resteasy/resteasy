@@ -20,9 +20,9 @@ public class ParameterSubResClassSub
 
    @Inject
    RequestScopedObject requestScope;
-   
+
    @Context UriInfo uriInfo;
-   
+
    @GET
    @Produces("text/plain")
    public String get(@Context HttpHeaders headers)

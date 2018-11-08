@@ -212,7 +212,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
          }
          else
          {
-            inputStream = decrypted.getInputStream();  
+            inputStream = decrypted.getInputStream();
          }
          return reader.readFrom(t, gt, ann, mediaType, mimeHeaders, inputStream);
       }

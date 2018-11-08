@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -58,7 +58,7 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
       }
       return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
    }
-   
+
    protected Response buildResponse(Object entity, String mediaType, Status status)
    {
       ResponseBuilder builder =  Response.status(status).entity(entity);
@@ -66,12 +66,12 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
       builder.header(Validation.VALIDATION_HEADER, "true");
       return builder.build();
    }
-   
+
    protected Response buildViolationReportResponse(ResteasyViolationException exception, Status status)
    {
       ResponseBuilder builder = Response.status(status);
       builder.header(Validation.VALIDATION_HEADER, "true");
-      
+
       // Check standard media types.
       MediaType mediaType = getAcceptMediaType(exception.getAccept());
       if (mediaType != null)
@@ -80,21 +80,21 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
          builder.entity(new ViolationReport(exception));
          return builder.build();
       }
-      
+
       // Default media type.
       builder.type(MediaType.TEXT_PLAIN);
       builder.entity(exception.toString());
       return builder.build();
    }
-   
-   
+
+
    protected String unwrapException(Throwable t)
    {
       StringBuffer sb = new StringBuffer();
       doUnwrapException(sb, t);
       return sb.toString();
    }
-   
+
    private void doUnwrapException(StringBuffer sb, Throwable t)
    {
       if (t == null)
@@ -109,7 +109,7 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
          sb.append(']');
       }
    }
-   
+
    private MediaType getAcceptMediaType (List<MediaType> accept)
    {
       Iterator<MediaType> it = accept.iterator();

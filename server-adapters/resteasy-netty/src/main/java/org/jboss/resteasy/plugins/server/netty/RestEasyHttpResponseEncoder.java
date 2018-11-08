@@ -22,27 +22,27 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 /**
  * {@link OneToOneEncoder} implementation which encodes {@link org.jboss.resteasy.spi.HttpResponse}'s to
  * {@link HttpResponse}'s
- * 
+ *
  * This implementation is {@link Sharable}
- * 
+ *
  * @author Norman Maurer
  *
  */
 @Sharable
-public class RestEasyHttpResponseEncoder extends OneToOneEncoder 
+public class RestEasyHttpResponseEncoder extends OneToOneEncoder
 {
-   
+
    private final RequestDispatcher dispatcher;
 
-   public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher) 
+   public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher)
    {
       this.dispatcher = dispatcher;
    }
-   
-   
+
+
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Override
-   protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception 
+   protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception
    {
       if (msg instanceof org.jboss.resteasy.spi.HttpResponse) {
          NettyHttpResponse nettyResponse = (NettyHttpResponse) msg;
@@ -74,7 +74,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
             response.setContent(buffer);
          }
 
-         if (nettyResponse.isKeepAlive()) 
+         if (nettyResponse.isKeepAlive())
          {
             // Add content length and connection header if needed
             response.headers()

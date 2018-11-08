@@ -87,7 +87,7 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
                   LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), e);
                }
             }
-            
+
          }
       });
    }

@@ -36,7 +36,7 @@ public interface HeaderParamsAsPrimitivesListDefaultOverrideProxy {
    @GET
    @Produces("application/double")
    String doGetDouble(@HeaderParam("double") @DefaultValue("0.0") List<Double> v);
-    
+
    @GET
    @Produces("application/char")
    String doGetCharacter(@HeaderParam("char") @DefaultValue("b") List<Character> v);

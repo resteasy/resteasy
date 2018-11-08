@@ -7,7 +7,7 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao.script;
 /**
- * This class represents a region (a sequence) between two symbols (sequences) in a sequence 
+ * This class represents a region (a sequence) between two symbols (sequences) in a sequence
  * @author sikstromj
  *
  */

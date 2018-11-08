@@ -154,12 +154,12 @@ public class ServerDrivenNegotiation
    {
       if (best == null)
          return true;
-      
+
       // Compare overall quality.
       int signum = bestQuality.getOverallQuality().compareTo(optionQuality.getOverallQuality());
       if (signum != 0)
          return signum < 0;
-      
+
       // Overall quality is the same.
       // Assuming the request has an Accept header, a VariantQuality has a non-null
       // requestMediaType if and only if it the corresponding Variant has a non-null mediaType.
@@ -202,7 +202,7 @@ public class ServerDrivenNegotiation
             return false;
          }
       }
-      
+
       // Compare variant media types for specificity.
       MediaType bestType = best.getMediaType();
       MediaType optionType = option.getMediaType();

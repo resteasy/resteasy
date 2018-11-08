@@ -18,9 +18,9 @@ import java.io.IOException;
 
 /**
  * Utility class for handling files and folders
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
- * 
+ *
  */
 public class FileUtils {
 

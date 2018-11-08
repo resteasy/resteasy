@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 /**
  * Utility class for executing processes and handling the output from them.
- * 
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  *
  */

@@ -67,7 +67,7 @@ public class SigningTest
    public static DosetaKeyRepository repository;
    public static PrivateKey badKey;
    public static ResteasyClient client;
-   
+
    public Registry getRegistry()
    {
       return deployment.getRegistry();
@@ -102,7 +102,7 @@ public class SigningTest
       server.setRootResourcePath("/");
       server.start();
       deployment = server.getDeployment();
-      
+
       repository = new DosetaKeyRepository();
       repository.setKeyStorePath("test.jks");
       repository.setKeyStorePassword("password");

@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -51,7 +51,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       }
       doTest(getLocale(), filename);
    }
-   
+
    protected void doTest(Locale locale, String filename) throws Exception
    {
       doTestFatal(locale, filename);
@@ -62,9 +62,9 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       doTestTrace(locale, filename);
    }
 
-   
+
    protected void doTestFatal(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.FATAL, getLocale(), filename);
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
       LogMessages.LOGGER.couldNotDeleteFile("path", new Exception("Sluggo says"));
@@ -72,7 +72,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestError(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.ERROR, getLocale(), filename);
 
       // ERROR
@@ -90,7 +90,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestWarn(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.WARN, locale, filename);
 
       // ERROR
@@ -115,7 +115,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestInfo(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.INFO, locale, filename);
 
       // ERROR
@@ -146,7 +146,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestDebug(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.DEBUG, locale, filename);
 
       // ERROR
@@ -178,7 +178,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    }
 
    protected void doTestTrace(Locale locale, String filename) throws Exception
-   {  
+   {
       before(Level.TRACE, locale, filename);
 
       // ERROR
@@ -208,13 +208,13 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       expected = getExpected(BASE + "300", "creatingContextObject", "key", "value");
       Assert.assertTrue(baos.toString().contains(expected));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
       LOG.info("expected number of methods: " +LogMessages.class.getDeclaredMethods().length);
-      return LogMessages.class.getDeclaredMethods().length;  
+      return LogMessages.class.getDeclaredMethods().length;
    }
-   
+
    abstract protected Locale getLocale();
 }

@@ -30,13 +30,13 @@ public class TestResource
    @Retention(value= RetentionPolicy.RUNTIME)
    public @interface TRACE {
    }
-   
+
    @HttpMethod("METHOD")
    @Target({ElementType.METHOD})
    @Retention(RetentionPolicy.RUNTIME)
    public @interface METHOD {
    }
-   
+
    @Path("get")
    @GET
    public Response get()

@@ -6,9 +6,9 @@ import javax.ws.rs.core.Response;
  * Thrown by RESTEasy when HTTP Not Found (404) is encountered
  *
  * JAX-RS now has this exception
- * 
+ *
  * @deprecated Replaced by javax.ws.rs.NotFoundException in jaxrs-api module.
- * 
+ *
  * @see <a href="https://jcp.org/en/jsr/detail?id=339">jaxrs-api</a>
  * @see javax.ws.rs.NotFoundException
  */

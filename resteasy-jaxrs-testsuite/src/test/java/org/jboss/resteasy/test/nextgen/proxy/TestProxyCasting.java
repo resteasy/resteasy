@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-1332 / RESTEASY-1250
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date
  */
@@ -29,11 +29,11 @@ public class TestProxyCasting
    private static ResteasyDeployment deployment;
    private static Dispatcher dispatcher;
    private static ResteasyWebTarget target;
-   
+
    public interface Nothing
    {
    }
-   
+
    public interface InterfaceA
    {
       @GET
@@ -65,7 +65,7 @@ public class TestProxyCasting
          return "BAR";
       }
    }
-  
+
    @BeforeClass
    public static void before() throws Exception
    {
@@ -84,7 +84,7 @@ public class TestProxyCasting
       deployment = null;
       Thread.sleep(100);
    }
-   
+
    @Test
    public void testResourceProxy() throws Exception
    {

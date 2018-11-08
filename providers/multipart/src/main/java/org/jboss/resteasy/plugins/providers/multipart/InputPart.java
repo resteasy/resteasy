@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 
 /**
  * Represents one part of a multipart message.
- * 
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */

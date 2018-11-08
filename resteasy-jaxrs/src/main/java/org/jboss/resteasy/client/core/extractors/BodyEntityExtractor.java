@@ -54,7 +54,7 @@ public class BodyEntityExtractor implements EntityExtractor
       boolean releaseConnectionAfter = true;
       try
       {
-         // void methods should be handled before this method gets called, but it's worth being defensive   
+         // void methods should be handled before this method gets called, but it's worth being defensive
          if (method.getReturnType() == null)
          {
 //            throw new RuntimeException(

@@ -4,7 +4,7 @@ import javax.ws.rs.client.RxInvoker;
 
 import io.reactivex.Observable;
 
-public interface ObservableRxInvoker extends RxInvoker<Observable<?>> 
+public interface ObservableRxInvoker extends RxInvoker<Observable<?>>
 {
 
 }

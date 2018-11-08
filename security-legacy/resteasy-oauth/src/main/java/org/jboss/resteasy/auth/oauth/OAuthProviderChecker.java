@@ -70,7 +70,7 @@ public class OAuthProviderChecker implements OAuthProvider {
          throws OAuthException {
       provider.registerConsumerScopes(consumerKey, scopes);
    }
-    
+
    public void registerConsumerPermissions(String consumerKey, String[] permissions)
       throws OAuthException {
       provider.registerConsumerPermissions(consumerKey, permissions);

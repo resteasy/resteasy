@@ -45,7 +45,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
       byte[] bytes = convertToBytes(n, mediaType);
       entityStream.write(bytes);
    }
-   
+
    private byte[] convertToBytes(Number n, MediaType mediaType)
    {
       String charset = mediaType.getParameters().get("charset");
@@ -53,7 +53,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
       {
          charset = StandardCharsets.UTF_8.name();
       }
-      
+
       if (n instanceof Byte)
       {
          try
@@ -66,7 +66,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Byte.toString(n.byteValue()).getBytes();
          }
       }
-      
+
       if (n instanceof Double)
       {
          try
@@ -78,7 +78,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Double.toString(n.doubleValue()).getBytes();
          }
       }
-      
+
       if (n instanceof Float)
       {
          try
@@ -90,7 +90,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Float.toString(n.floatValue()).getBytes();
          }
       }
-      
+
       if (n instanceof Integer)
       {
          try
@@ -102,7 +102,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Integer.toString(n.intValue()).getBytes();
          }
       }
-      
+
       if (n instanceof Long)
       {
          try
@@ -114,7 +114,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Long.toString(n.longValue()).getBytes();
          }
       }
-      
+
       if (n instanceof Short)
       {
          try
@@ -126,7 +126,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return Short.toString(n.shortValue()).getBytes();
          }
       }
-      
+
       if (n instanceof BigDecimal)
       {
          try
@@ -150,7 +150,7 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return BigInteger.class.cast(n).toString().getBytes();
          }
       }
-      
+
       throw new RuntimeException(Messages.MESSAGES.unexpectedNumberSubclass(n.getClass().getName()));
    }
 }

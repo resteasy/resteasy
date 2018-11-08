@@ -27,7 +27,7 @@ package Acme.Serve;
 
 /**
  * @author dmitriy
- *  
+ *
  * @deprecated See resteasy-undertow module.
  */
 @Deprecated

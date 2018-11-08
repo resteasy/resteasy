@@ -75,7 +75,7 @@ public class CacheControlFeature implements DynamicFeature
       cacheControl.setProxyRevalidate(methodCached.proxyRevalidate());
       return cacheControl;
    }
-   
+
    protected CacheControl initCacheControl(NoCache value)
    {
       CacheControl cacheControl = new CacheControl();

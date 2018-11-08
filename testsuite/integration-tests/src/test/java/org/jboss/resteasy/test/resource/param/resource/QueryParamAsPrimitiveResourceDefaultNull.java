@@ -58,7 +58,7 @@ public class QueryParamAsPrimitiveResourceDefaultNull {
       Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE,  0.0d, v, 0.0);
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGet(@QueryParam("char") char v) {

@@ -59,7 +59,7 @@ public class QueryParamAsPrimitiveResourceListDefaultNull {
       Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 0, v.size());
       return "content";
    }
-    
+
    @GET
    @Produces("application/char")
    public String doGetCharacter(@QueryParam("char") List<Character> v) {

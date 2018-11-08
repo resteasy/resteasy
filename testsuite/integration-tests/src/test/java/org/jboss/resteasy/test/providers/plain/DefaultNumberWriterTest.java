@@ -63,7 +63,7 @@ public class DefaultNumberWriterTest {
    public void resetProviderFlag() {
       DefaultNumberWriterCustom.used = false;
    }
-    
+
    /**
     * @tpTestDetails Tests Byte object
     * @tpSince RESTEasy 3.0.16

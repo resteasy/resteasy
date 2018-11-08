@@ -104,7 +104,7 @@ public class ParameterSubResTest {
       Assert.assertEquals("Wrong content of response", "Boo! - fred", response.readEntity(String.class));
    }
 
-   
+
    @Test
    public void testReturnSubResourceAsClass() throws Exception {
       Response response = client.target(generateURL("/path/subclass")).request().get();
@@ -113,7 +113,7 @@ public class ParameterSubResTest {
       response = client.target(generateURL("/path/subclass")).request().get();
       Assert.assertEquals("Wrong response", "resourceCounter:2,appscope:2,requestScope:1", response.readEntity(String.class));
    }
-   
+
    /**
     * @tpTestDetails Check root resource.
     * @tpSince RESTEasy 3.0.16

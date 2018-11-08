@@ -103,7 +103,7 @@ public class PublisherResponseTest {
             () -> latch.countDown());
       latch.await();
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
-      
+
       // make sure the completion callback was called with no error
       Builder request = client.target(generateURL("/callback-called-no-error")).request();
       Response response = request.get();
@@ -129,7 +129,7 @@ public class PublisherResponseTest {
       latch.await();
       ClientErrorException cee = (ClientErrorException)value.get();
       Assert.assertEquals("Got it", cee.getResponse().readEntity(String.class));
-      
+
       // make sure the completion callback was called with with an error
       Builder request = client.target(generateURL("/callback-called-with-error")).request();
       Response response = request.get();
@@ -195,11 +195,11 @@ public class PublisherResponseTest {
          if(collector.size() >= 2) {
             future.complete(null);
          }
-      }, 
+      },
             t -> {
                logger.error(t.getMessage(), t);
-               errors.add(t);  
-            }, 
+               errors.add(t);
+            },
             () -> {
                // bah, never called
                future.complete(null);
@@ -231,11 +231,11 @@ public class PublisherResponseTest {
       if(collector.size() >= 2) {
          future.complete(null);
       }
-      }, 
+      },
          t -> {
             logger.error("Error:", t);
-            errors.add(t);  
-         }, 
+            errors.add(t);
+         },
          () -> {
             // bah, never called
             future.complete(null);

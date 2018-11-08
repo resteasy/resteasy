@@ -60,7 +60,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          try
          {
-           
+
             Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
             {
@@ -69,8 +69,8 @@ public class ContextParameterInjector implements ValueInjector
                {
                   return null;
                }
-              
-               if ("getContextResolver".equals(name)) 
+
+               if ("getContextResolver".equals(name))
                {
                   return method.invoke(factory, objects);
                }

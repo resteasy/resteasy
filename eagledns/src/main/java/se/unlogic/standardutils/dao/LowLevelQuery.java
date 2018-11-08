@@ -17,18 +17,18 @@ import java.util.List;
 /**
  * This class represents a SQL query and is used together with the {@link AnnotatedDAO} class.
  * <p>
- * 
+ *
  * A low level query lets you write the SQL and set any parameters in contrast to the {@link HighLevelQuery}.
  * <p>
- * 
+ *
  * The SQL query is written like a normal prepared statement with '?' chars representing the parameters to be set.
  * <p>
- * 
+ *
  * The parameters will be set on the prepared statement using the "class -> method mapping" in the {@link PreparedStatementQueryMethods} class.<br>
  * Basically this means that any parameter that has a set method matching it's type in the {@link PreparedStatement} interface will work.
  * <p>
- * 
- * 
+ *
+ *
  * @author Robert "Unlogic" Olofsson (unlogic@unlogic.se)
  */
 public class LowLevelQuery<T> extends RelationQuery {

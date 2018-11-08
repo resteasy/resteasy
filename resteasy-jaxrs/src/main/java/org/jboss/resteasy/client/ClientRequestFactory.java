@@ -19,7 +19,7 @@ import java.net.URI;
  * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
  * @author Solomon Duskis
  * @version $Revision: 1 $
- * 
+ *
  * @see org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
  * @see org.jboss.resteasy.client.jaxrs.ResteasyWebTarget
  */

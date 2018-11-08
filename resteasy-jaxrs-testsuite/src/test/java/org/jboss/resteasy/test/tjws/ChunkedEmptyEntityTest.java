@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for RESTEASY-602.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: $
  */
@@ -44,31 +44,31 @@ public class ChunkedEmptyEntityTest
    {
       EmbeddedContainer.stop();
    }
-   
+
    @Test
    public void testContinue() throws Exception
    {
       _run_test("PUT", "/continue", "100");
    }
-   
+
    @Test
    public void testHead() throws Exception
    {
       _run_test("HEAD", "/head", "204");
    }
-   
+
    @Test
    public void testNoContent() throws Exception
    {
       _run_test("PUT", "/nocontent", "204");
    }
-   
+
    @Test
    public void testNotModified() throws Exception
    {
       _run_test("GET", "/notmodified", "304");
    }
-   
+
    void _run_test(String method, String path, String status) throws Exception
    {
       // Solicit a reply with response code 204.
@@ -100,12 +100,12 @@ public class ChunkedEmptyEntityTest
       }
    }
 
-   private void writeString(OutputStream os, String s) throws IOException 
+   private void writeString(OutputStream os, String s) throws IOException
    {
       LOG.info(">>" + s);
       os.write((s + "\r\n").getBytes());
    }
-   
+
    /**
     * Lifted from Acme.Serve.Serve
     */
@@ -145,7 +145,7 @@ public class ChunkedEmptyEntityTest
 
       return buf.toString();
    }
-   
+
    @Path("/")
    static public class SimpleResource
    {
@@ -156,7 +156,7 @@ public class ChunkedEmptyEntityTest
       {
          return Response.noContent().build();
       }
-      
+
       @PUT
       @Path("/continue")
       @Consumes("text/plain")
@@ -164,7 +164,7 @@ public class ChunkedEmptyEntityTest
       {
          return Response.status(100).build();
       }
-      
+
       @PUT
       @Path("/nocontent")
       @Consumes("text/plain")
@@ -172,7 +172,7 @@ public class ChunkedEmptyEntityTest
       {
          LOG.info(body);
       }
-      
+
       @GET
       @Path("/notmodified")
       @Consumes("text/plain")

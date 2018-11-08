@@ -23,7 +23,7 @@ public class ResteasyAuthenticationException extends ResteasyProtocolException
    {
       super(message, cause);
    }
-    
+
    public ResteasyAuthenticationException(Throwable cause)
    {
       super(cause);

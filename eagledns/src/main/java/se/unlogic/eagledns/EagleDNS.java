@@ -62,9 +62,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * EagleDNS copyright Robert "Unlogic" Olofsson (unlogic@unlogic.se)
- * 
+ *
  * Based on the jnamed class from the dnsjava project (http://www.dnsjava.org/) copyright (c) 1999-2004 Brian Wellington (bwelling@xbill.org)
- * 
+ *
  * @author Robert "Unlogic" Olofsson
  * @author Michael Neale, Red Hat (JBoss division)
  */

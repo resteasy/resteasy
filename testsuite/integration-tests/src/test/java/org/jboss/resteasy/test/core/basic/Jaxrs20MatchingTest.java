@@ -90,7 +90,7 @@ public class Jaxrs20MatchingTest {
       Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
       response.close();
    }
-   
+
    /**
     * @tpTestDetails Test JAX-RS 2.1 resource matching
     * @tpSince RESTEasy 3.6.1

@@ -60,7 +60,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    private boolean disableExternalEntities = true;
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
-   
+
    public MapProvider()
    {
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
@@ -83,7 +83,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          }
       }
    }
-   
+
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
@@ -131,11 +131,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(valueType, annotations);
       if (xmlAdapter != null)
       {
-         valueType = xmlAdapter.getValueType();  
+         valueType = xmlAdapter.getValueType();
       }
       JaxbMap jaxbMap = null;
       JAXBElement<JaxbMap> ele = null;
-      
+
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
@@ -165,7 +165,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
             {
                source = new StreamSource(entityStream);
             }
-            
+
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
          }
          WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
@@ -342,7 +342,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    {
       this.disableDTDs = disableDTDs;
    }
-   
+
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -351,7 +351,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
       return null;
    }
-   
+
    protected boolean needsSecurity()
    {
       return true;

@@ -23,7 +23,7 @@ public class ResteasyMalformedChallengeException extends ResteasyProtocolExcepti
    {
       super(message, cause);
    }
-    
+
    public ResteasyMalformedChallengeException(Throwable cause)
    {
       super(cause);

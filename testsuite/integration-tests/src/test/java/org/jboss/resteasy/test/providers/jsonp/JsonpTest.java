@@ -76,7 +76,7 @@ public class JsonpTest {
       doTestObject("UTF-32");
       doTestObject(null);
    }
-   
+
    private void doTestObject(String charset) throws Exception {
       WebTarget target = client.target(generateURL("/test/json/object"));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
@@ -85,7 +85,7 @@ public class JsonpTest {
       logger.info("Request entity: " + json);
 
       JsonObject obj = Json.createObjectBuilder().add("name", "Bill").add("id", 10001).build();
-      
+
       obj = target.request().post(Entity.json(obj), JsonObject.class);
       Assert.assertTrue("JsonObject from the response doesn't contain field 'name'", obj.containsKey("name"));
       Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'name'",
@@ -109,7 +109,7 @@ public class JsonpTest {
       doTestArray("UTF-32");
       doTestArray(null);
    }
-   
+
    private void doTestArray(String charset) {
       WebTarget target = client.target(generateURL("/test/json/array"));
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);

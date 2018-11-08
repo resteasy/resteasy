@@ -10,7 +10,7 @@ import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -23,7 +23,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
 
    @Test
    public void testLocale() throws Exception
-   {  
+   {
       Locale locale = getLocale();
       String filename = "org/jboss/resteasy/security/doseta/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
@@ -31,19 +31,19 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          LOG.info(getClass() + ": " + filename + " not found.");
          return;
       }
-      
+
       Assert.assertEquals(getExpected(BASE + "500", "bodyHashesDoNotMatch"), Messages.MESSAGES.bodyHashesDoNotMatch());
       Assert.assertEquals(getExpected(BASE + "525", "couldNotFindPublicKey", new DKIMSignature()), Messages.MESSAGES.couldNotFindPublicKey(new DKIMSignature()));
       Assert.assertEquals(getExpected(BASE + "540", "expectedValue", "x", "y", "z"), Messages.MESSAGES.expectedValue("x", "y", "z"));
       Assert.assertEquals(getExpected(BASE + "650", "unsupportedKeyType", "xyz"), Messages.MESSAGES.unsupportedKeyType("xyz"));
    }
-   
+
    @Override
    protected int getExpectedNumberOfMethods()
    {
-      return Messages.class.getDeclaredMethods().length;  
+      return Messages.class.getDeclaredMethods().length;
    }
-   
+
    @Override
    protected String getExpected(String id, String message, Object... args)
    {
@@ -52,7 +52,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       LOG.info("actual expected: " + ss);
       return ss;
    }
-   
+
    protected String pruneQuotes(String s)
    {
       StringBuffer sb = new StringBuffer();
@@ -80,6 +80,6 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       }
       return sb.toString();
    }
-   
+
    abstract protected Locale getLocale();
 }

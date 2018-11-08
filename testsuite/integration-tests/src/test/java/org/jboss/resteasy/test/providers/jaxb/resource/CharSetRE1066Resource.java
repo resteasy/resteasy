@@ -22,7 +22,7 @@ public class CharSetRE1066Resource
    {
       return "junk";
    }
-   
+
    @POST
    @Path("xml/produces")
    @Consumes("application/xml")

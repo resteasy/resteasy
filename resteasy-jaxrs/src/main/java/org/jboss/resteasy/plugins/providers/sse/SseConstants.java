@@ -28,6 +28,6 @@ public class SseConstants
    public enum EVENT {
       START, COMMENT, FIELD,
    }
-   
+
    public static final String SSE_ELEMENT_MEDIA_TYPE = "element-type";
 }

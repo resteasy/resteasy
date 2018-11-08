@@ -9,12 +9,12 @@ import org.jboss.resteasy.auth.oauth.i18n.Messages;
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
 public class OAuthRequestToken extends OAuthToken {
-    
+
    private String callback;
    private String verifier;
-    
+
    public OAuthRequestToken(String token, String secret, String callback,
-                             String[] scopes, String[] permissions, 
+                             String[] scopes, String[] permissions,
                              long timeToLive, OAuthConsumer consumer) {
       super(token, secret, scopes, permissions, timeToLive, consumer);
       this.callback = callback;
@@ -26,7 +26,7 @@ public class OAuthRequestToken extends OAuthToken {
    public String getCallback() {
       return callback;
    }
-    
+
    /**
     * Returns this Token's verifier.
     * @return verifier
@@ -36,7 +36,7 @@ public class OAuthRequestToken extends OAuthToken {
          return verifier;
       }
    }
-    
+
    public void setVerifier(String verifier) throws OAuthException {
       synchronized (this) {
          if (this.verifier != null) {
@@ -45,5 +45,5 @@ public class OAuthRequestToken extends OAuthToken {
          this.verifier = verifier;
       }
    }
-    
+
 }

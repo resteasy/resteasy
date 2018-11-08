@@ -34,7 +34,7 @@ public class TestUtilRxJava {
       MavenUtil mavenUtil;
       mavenUtil = MavenUtil.create(true);
       List<File> runtimeDependencies = new ArrayList<>();
-        
+
       try {
          runtimeDependencies.add(mavenUtil.createMavenGavFile("org.jboss.resteasy:resteasy-rxjava:" + System.getProperty("project.version")));
          runtimeDependencies.add(mavenUtil.createMavenGavFile("io.reactivex:rxjava:" + getRxJavaVersion()));
@@ -50,11 +50,11 @@ public class TestUtilRxJava {
    public static void addRxJavaLibraries(WebArchive archive) {
       archive.addAsLibraries(resolveRxJavaDependencies());
    }
-    
+
    public static void setManifestWithReactiveStreamsDependency(WebArchive archive) {
       archive.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.reactivestreams"));
    }
-    
+
    public static void setupRxJava(WebArchive archive) {
       addRxJavaLibraries(archive);
       setManifestWithReactiveStreamsDependency(archive);

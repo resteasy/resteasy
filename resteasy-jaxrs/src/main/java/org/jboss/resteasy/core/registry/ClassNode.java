@@ -58,7 +58,7 @@ public class ClassNode
             return expression.getRoot();
          }
       }
-      throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));      
+      throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));
    }
 
    public void potentials(String path, int start, List<ClassExpression> matches)

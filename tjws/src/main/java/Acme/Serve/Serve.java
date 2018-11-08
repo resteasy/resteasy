@@ -117,7 +117,7 @@ import java.util.logging.StreamHandler;
 /// Minimal Java servlet container class.
 // <P>
 // This class implements a very small embeddable servlet container.
-// It runs Servlets compatible with the API used by Sun's 
+// It runs Servlets compatible with the API used by Sun's
 // <A HREF="http://docs.sun.com/app/docs/doc/819-3653">Java System Application </A> server.
 // Servlet API can be found <A HREF="http://java.sun.com/products/servlet/">here</A>.
 // It comes with default Servlets which provide the usual
@@ -4184,7 +4184,7 @@ public class Serve implements ServletContext, Serializable
             ((ServeOutputStream) out).setChunked(chunked_out);
          }
       }
-      
+
       private boolean containsBody()
       {
          return !("HEAD".equalsIgnoreCase(reqMethod) || (100 <= resCode && resCode < 200) || resCode == 204 || resCode == 304);

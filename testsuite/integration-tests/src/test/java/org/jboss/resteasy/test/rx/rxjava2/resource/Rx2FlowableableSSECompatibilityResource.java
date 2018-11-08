@@ -21,7 +21,7 @@ public interface Rx2FlowableableSSECompatibilityResource {
    @Produces("text/event-stream")
    @SseElementType("application/json")
    void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse);
-   
+
    @GET
    @Path("flowable/thing")
    @Produces("text/event-stream")

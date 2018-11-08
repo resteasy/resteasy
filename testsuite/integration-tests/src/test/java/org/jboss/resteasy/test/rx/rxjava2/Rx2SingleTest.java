@@ -47,14 +47,14 @@ import io.reactivex.Single;
  * @tpSubChapter Reactive classes
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.6
- * 
- * In these tests, the server resource methods create and return objects of type Single<T>. 
+ *
+ * In these tests, the server resource methods create and return objects of type Single<T>.
  * The client uses a SingleRxInvoker to get objects of type Single<T>.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class Rx2SingleTest {
-   
+
    private static ResteasyClient client;
    private static CountDownLatch latch;
    private static AtomicReference<Object> value = new AtomicReference<Object>();
@@ -79,7 +79,7 @@ public class Rx2SingleTest {
          + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
       return TestUtil.finishContainerPrepare(war, null, Rx2SingleResourceImpl.class, TestExceptionMapper.class);
    }
-   
+
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, Rx2SingleTest.class.getSimpleName());
    }
@@ -95,7 +95,7 @@ public class Rx2SingleTest {
       latch = new CountDownLatch(1);
       value.set(null);
    }
-   
+
    @AfterClass
    public static void after() throws Exception {
       client.close();
@@ -111,7 +111,7 @@ public class Rx2SingleTest {
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals("x", value.get());
    }
-   
+
    @Test
    public void testGetString() throws Exception {
       SingleRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
@@ -393,7 +393,7 @@ public class Rx2SingleTest {
          Assert.assertEquals("x", value.get());
       }
    }
-   
+
    @Test
    public void testUnhandledException() throws Exception {
       SingleRxInvoker invoker = client.target(generateURL("/exception/unhandled")).request().rx(SingleRxInvoker.class);
@@ -407,7 +407,7 @@ public class Rx2SingleTest {
       Assert.assertNotNull(t);
       Assert.assertTrue(t.getMessage().contains("500"));
    }
-   
+
    @Test
    public void testHandledException() throws Exception {
       SingleRxInvoker invoker = client.target(generateURL("/exception/handled")).request().rx(SingleRxInvoker.class);
@@ -421,25 +421,25 @@ public class Rx2SingleTest {
       Assert.assertNotNull(t);
       Assert.assertTrue(t.getMessage().contains("444"));
    }
-   
+
    @Test
    public void testGetTwoClients() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
-      
+
       ResteasyClient client1 = new ResteasyClientBuilder().build();
       client1.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker1 = client1.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       ResteasyClient client2 = new ResteasyClientBuilder().build();
       client2.register(SingleRxInvokerProvider.class);
       SingleRxInvoker invoker2 = client2.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single2 = (Single<Response>) invoker2.get();
-      
+
       single1.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
       single2.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
-      
+
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(2, list.size());
@@ -447,21 +447,21 @@ public class Rx2SingleTest {
          Assert.assertEquals("x", list.get(i));
       }
    }
-   
+
    @Test
    public void testGetTwoInvokers() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
-      
+
       SingleRxInvoker invoker1 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker1.get();      
+      Single<Response> single1 = (Single<Response>) invoker1.get();
 
       SingleRxInvoker invoker2 = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
       Single<Response> single2 = (Single<Response>) invoker2.get();
-      
+
       single1.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
       single2.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
-      
+
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(2, list.size());
@@ -469,19 +469,19 @@ public class Rx2SingleTest {
          Assert.assertEquals("x", list.get(i));
       }
    }
-   
+
    @Test
    public void testGetTwoSingles() throws Exception {
       CountDownLatch cdl = new CountDownLatch(2);
       CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>();
-      
+
       SingleRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(SingleRxInvoker.class);
-      Single<Response> single1 = (Single<Response>) invoker.get();      
+      Single<Response> single1 = (Single<Response>) invoker.get();
       Single<Response> single2 = (Single<Response>) invoker.get();
-      
+
       single1.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
       single2.subscribe((Response r) -> {list.add(r.readEntity(String.class)); cdl.countDown();});
-      
+
       boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       Assert.assertEquals(2, list.size());
@@ -489,7 +489,7 @@ public class Rx2SingleTest {
          Assert.assertEquals("x", list.get(i));
       }
    }
-   
+
    private Throwable unwrap(Throwable t, Class<?> clazz) {
       while (t != null) {
          if (t.getClass().equals(clazz)) {

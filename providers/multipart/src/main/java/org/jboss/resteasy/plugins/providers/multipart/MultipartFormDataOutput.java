@@ -38,14 +38,14 @@ public class MultipartFormDataOutput extends MultipartOutput
       addFormDataMap(key, part);
       return part;
    }
-   
+
    public OutputPart addFormData(String key, Object entity, MediaType mediaType, String filename)
    {
       OutputPart part = super.addPart(entity, mediaType, filename);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
-   }   
+   }
 
    public OutputPart addFormData(String key, Object entity, GenericType<?> type, MediaType mediaType)
    {
@@ -54,14 +54,14 @@ public class MultipartFormDataOutput extends MultipartOutput
       addFormDataMap(key, part);
       return part;
    }
-   
+
    public OutputPart addFormData(String key, Object entity, GenericType<?> type, MediaType mediaType, String filename)
    {
       OutputPart part = super.addPart(entity, type, mediaType, filename);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
-   }   
+   }
 
    public OutputPart addFormData(String key, Object entity, Class<?> type, Type genericType, MediaType mediaType)
    {
@@ -70,14 +70,14 @@ public class MultipartFormDataOutput extends MultipartOutput
       addFormDataMap(key, part);
       return part;
    }
-   
+
    public OutputPart addFormData(String key, Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
    {
       OutputPart part = super.addPart(entity, type, genericType, mediaType, filename);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
-   }   
+   }
 
    public Map<String, OutputPart> getFormData()
    {

@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 /**
  * HttpClient4xUtils provides utility methods useful for changes
  * necessitated by switching from HttpClient 3.x to HttpClient 4.x.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
@@ -28,7 +28,7 @@ public class HttpClient4xUtils
          LogMessages.LOGGER.unableToCloseEntityStream(e);
       }
    }
-   
+
    static public String updateQuery(String uriString, String query)
    {
       try
