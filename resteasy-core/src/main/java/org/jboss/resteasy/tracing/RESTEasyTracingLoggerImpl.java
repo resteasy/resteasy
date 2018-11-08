@@ -143,11 +143,22 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
 
    private static void formatResponse(final Response response, final StringBuilder text) {
       text.append(" <").append(formatStatusInfo(response.getStatusInfo())).append('|');
-      if (response.hasEntity()) {
-         formatInstance(response.getEntity(), text);
+
+      Object entity;
+      try {
+         entity = response.getEntity();
+      }
+      catch(IllegalStateException ise) {
+         // [RESTEASY-1142] IllegalStateException from ClientResponse.getEntity() means the response is closed and got no entity
+         entity = null;
+      }
+
+      if (entity != null) {
+         formatInstance(entity, text);
       } else {
          text.append("-no-entity-");
       }
+
       text.append('>');
    }
 
