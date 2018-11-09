@@ -28,13 +28,13 @@
         <property name="eachLine" value="true"/>
     </module>
 
-    <module name="RegexpSingleline">
-        <!-- \s matches whitespace character, $ matches end of line. -->
-        <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing spaces."/>
-    </module>
-
     <module name="TreeWalker">
+
+        <module name="RegexpSinglelineJava">
+            <!-- \s matches whitespace character, $ matches end of line. -->
+            <property name="format" value="\s+$"/>
+            <property name="message" value="Line has trailing spaces."/>
+        </module>
 
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
@@ -104,6 +104,7 @@
             <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
             <property name="checkFormat" value="$1"/>
         </module>
+
     </module>
 
 </module>
