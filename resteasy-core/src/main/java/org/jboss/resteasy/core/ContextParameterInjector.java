@@ -158,38 +158,35 @@ public class ContextParameterInjector implements ValueInjector
       return CompletableFuture.completedFuture(createProxy());
    }
 
-    protected Object createProxy()
-    {
-        if (proxy != null)
-        {
-            try
-            {
-                return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        else
-        {
-           Class[] intfs = {rawType};
-           ClassLoader clazzLoader = null;
-           final SecurityManager sm = System.getSecurityManager();
-           if (sm == null)
-           {
-              clazzLoader = rawType.getClassLoader();
-           } else
-           {
-
-              clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                 @Override
-                 public ClassLoader run() {
-                    return rawType.getClassLoader();
-                 }
-              });
-           }
-           return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
-        }
-    }
+   protected Object createProxy()
+   {
+      if (proxy != null)
+      {
+         try
+         {
+            return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else
+      {
+         Class[] intfs = {rawType};
+         ClassLoader clazzLoader = null;
+         final SecurityManager sm = System.getSecurityManager();
+         if (sm == null) {
+            clazzLoader = rawType.getClassLoader();
+         } else {
+            clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+               @Override
+               public ClassLoader run() {
+                  return rawType.getClassLoader();
+               }
+            });
+         }
+         return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
+      }
+   }
 }

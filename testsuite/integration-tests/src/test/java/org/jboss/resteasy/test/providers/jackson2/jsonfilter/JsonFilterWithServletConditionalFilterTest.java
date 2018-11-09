@@ -39,55 +39,55 @@ import org.junit.runner.RunWith;
 @Category({NotForForwardCompatibility.class})
 public class JsonFilterWithServletConditionalFilterTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
-        war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class, ObjectWriterModifierConditionalFilter.class);
-        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        war.addAsWebInfResource(JsonFilterWithServletConditionalFilterTest.class.getPackage(), "web-filter-conditional.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
+      war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class, ObjectWriterModifierConditionalFilter.class);
+      war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+      war.addAsWebInfResource(JsonFilterWithServletConditionalFilterTest.class.getPackage(), "web-filter-conditional.xml", "web.xml");
+      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Json field id is filtered out
-     * @tpSince RESTEasy 3.1.0
-     */
-    @Test
-    @Category({ExpectedFailingOnWildFly13.class})
-    public void testJacksonConditionalStringPropertyFiltered() throws Exception {
-        WebTarget target = client.target(generateURL("/products/-1"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-    }
+   /**
+    * @tpTestDetails Json field id is filtered out
+    * @tpSince RESTEasy 3.1.0
+    */
+   @Test
+   @Category({ExpectedFailingOnWildFly13.class})
+   public void testJacksonConditionalStringPropertyFiltered() throws Exception {
+      WebTarget target = client.target(generateURL("/products/-1"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("Conditional filter doesn't work", !response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+   }
 
-    /**
-     * @tpTestDetails Json field id is not filtered
-     * @tpSince RESTEasy 3.1.0
-     */
-    @Test
-    public void testJacksonConditionalStringPropertyNotFiltered() throws Exception {
-        WebTarget target = client.target(generateURL("/products/333"));
-        Response response = target.request().get();
-        response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
-    }
+   /**
+    * @tpTestDetails Json field id is not filtered
+    * @tpSince RESTEasy 3.1.0
+    */
+   @Test
+   public void testJacksonConditionalStringPropertyNotFiltered() throws Exception {
+      WebTarget target = client.target(generateURL("/products/333"));
+      Response response = target.request().get();
+      response.bufferEntity();
+      Assert.assertTrue("Conditional filter doesn't work", response.readEntity(String.class).contains("id") &&
+            response.readEntity(String.class).contains("name"));
+   }
 }

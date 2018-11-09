@@ -46,44 +46,44 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+   "content"
 })
 @XmlRootElement(name = "accept")
 public class AppAccept extends AppCommonAttributes
 {
 
-    private static final long serialVersionUID = 8792589507058023990L;
-    @XmlValue
-    protected String content;
+   private static final long serialVersionUID = 8792589507058023990L;
+   @XmlValue
+   protected String content;
 
-    public AppAccept() {}
+   public AppAccept() {}
     
-    public AppAccept(String content) {
-        super();
-        this.content = content;
-    }
+   public AppAccept(String content) {
+      super();
+      this.content = content;
+   }
 
-    /**
-     * Gets the value of the content property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getContent() {
-        return content;
-    }
+   /**
+    * Gets the value of the content property.
+    * 
+    * @return
+    *     possible object is
+    *     {@link String }
+    *     
+    */
+   public String getContent() {
+      return content;
+   }
 
-    /**
-     * Sets the value of the content property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setContent(String value) {
-        this.content = value;
-    }
+   /**
+    * Sets the value of the content property.
+    * 
+    * @param value
+    *     allowed object is
+    *     {@link String }
+    *     
+    */
+   public void setContent(String value) {
+      this.content = value;
+   }
 }

@@ -6,8 +6,8 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ExceptionMapperMyCustomExceptionMapper extends ExceptionMapperAbstractExceptionMapper<ExceptionMapperMyCustomException> {
-    @Override
-    protected void handleError(final Response.ResponseBuilder builder, final ExceptionMapperMyCustomException e) {
-        builder.entity("custom").type(MediaType.TEXT_HTML_TYPE);
-    }
+   @Override
+   protected void handleError(final Response.ResponseBuilder builder, final ExceptionMapperMyCustomException e) {
+      builder.entity("custom").type(MediaType.TEXT_HTML_TYPE);
+   }
 }

@@ -9,16 +9,16 @@ import javax.ws.rs.Produces;
 @Path("/test")
 public class SingletonCustomProviderResource {
 
-    @POST
-    @Consumes("application/octet-stream")
-    public void testConsume(SingletonCustomProviderObject foo) {
-    }
+   @POST
+   @Consumes("application/octet-stream")
+   public void testConsume(SingletonCustomProviderObject foo) {
+   }
 
 
-    @GET
-    @Produces("application/octet-stream")
-    public SingletonCustomProviderObject testProduce() {
-        return new SingletonCustomProviderObject();
-    }
+   @GET
+   @Produces("application/octet-stream")
+   public SingletonCustomProviderObject testProduce() {
+      return new SingletonCustomProviderObject();
+   }
 
 }

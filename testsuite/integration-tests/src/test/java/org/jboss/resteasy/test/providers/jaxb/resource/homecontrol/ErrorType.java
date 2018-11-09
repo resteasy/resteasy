@@ -60,4 +60,3 @@ public enum ErrorType {
    }
 
 }
-

@@ -36,55 +36,55 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class NestedCollectionsFormTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(NestedCollectionsFormTest.class.getSimpleName());
-        war.addClass(NestedCollectionsFormTelephoneNumber.class);
-        war.addClass(NestedCollectionsFormPerson.class);
-        war.addClass(NestedCollectionsFormCountry.class);
-        war.addClass(NestedCollectionsFormAddress.class);
-        return TestUtil.finishContainerPrepare(war, null, NestedCollectionsFormResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(NestedCollectionsFormTest.class.getSimpleName());
+      war.addClass(NestedCollectionsFormTelephoneNumber.class);
+      war.addClass(NestedCollectionsFormPerson.class);
+      war.addClass(NestedCollectionsFormCountry.class);
+      war.addClass(NestedCollectionsFormAddress.class);
+      return TestUtil.finishContainerPrepare(war, null, NestedCollectionsFormResource.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, NestedCollectionsFormTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, NestedCollectionsFormTest.class.getSimpleName());
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void close() {
-        client.close();
-    }
+   @After
+   public void close() {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Set all relevant parameters to form.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void shouldSupportCollectionsWithNestedObjectsInForm() throws Exception {
-        javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
-        .param("telephoneNumbers[0].country.code", "31")
-        .param("telephoneNumbers[0].number", "0612345678")
-        .param("telephoneNumbers[1].country.code", "91")
-        .param("telephoneNumbers[1].number", "9717738723")
-        .param("address[INVOICE].street", "Main Street")
-        .param("address[INVOICE].houseNumber", "2")
-        .param("address[INVOICE].country.code", "NL")
-        .param("address[SHIPPING].street", "Square One")
-        .param("address[SHIPPING].houseNumber", "13")
-        .param("address[SHIPPING].country.code", "IN");
+   /**
+    * @tpTestDetails Set all relevant parameters to form.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void shouldSupportCollectionsWithNestedObjectsInForm() throws Exception {
+      javax.ws.rs.core.Form form = new javax.ws.rs.core.Form()
+         .param("telephoneNumbers[0].country.code", "31")
+         .param("telephoneNumbers[0].number", "0612345678")
+         .param("telephoneNumbers[1].country.code", "91")
+         .param("telephoneNumbers[1].number", "9717738723")
+         .param("address[INVOICE].street", "Main Street")
+         .param("address[INVOICE].houseNumber", "2")
+         .param("address[INVOICE].country.code", "NL")
+         .param("address[SHIPPING].street", "Square One")
+         .param("address[SHIPPING].houseNumber", "13")
+         .param("address[SHIPPING].country.code", "IN");
 
-        WebTarget base = client.target(PortProviderUtil.generateURL("/person", NestedCollectionsFormTest.class.getSimpleName()));
-        Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
+      WebTarget base = client.target(PortProviderUtil.generateURL("/person", NestedCollectionsFormTest.class.getSimpleName()));
+      Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
 
-        response.close();
-    }
+      response.close();
+   }
 }

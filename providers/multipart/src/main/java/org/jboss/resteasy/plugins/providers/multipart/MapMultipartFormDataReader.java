@@ -28,39 +28,38 @@ import org.jboss.resteasy.spi.util.Types;
 @Provider
 @Consumes("multipart/form-data")
 public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> {
-	protected @Context
-	Providers workers;
+   protected @Context Providers workers;
 
-	public boolean isReadable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return type.equals(Map.class) && genericType != null
-				&& genericType instanceof ParameterizedType;
-	}
+   public boolean isReadable(Class<?> type, Type genericType,
+         Annotation[] annotations, MediaType mediaType) {
+      return type.equals(Map.class) && genericType != null
+            && genericType instanceof ParameterizedType;
+   }
 
-	public Map<?, ?> readFrom(Class<Map<?, ?>> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-			throws IOException, WebApplicationException {
-		String boundary = mediaType.getParameters().get("boundary");
-		if (boundary == null)
-		   throw new IOException(Messages.MESSAGES.unableToGetBoundary());
+   public Map<?, ?> readFrom(Class<Map<?, ?>> type, Type genericType,
+         Annotation[] annotations, MediaType mediaType,
+         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+         throws IOException, WebApplicationException {
+      String boundary = mediaType.getParameters().get("boundary");
+      if (boundary == null)
+         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
 
-		if (!(genericType instanceof ParameterizedType))
-		   throw new IllegalArgumentException(Messages.MESSAGES.receivedGenericType(this, genericType, ParameterizedType.class));
-		ParameterizedType param = (ParameterizedType) genericType;
-		Type baseType = param.getActualTypeArguments()[1];
-		Class<?> rawType = Types.getRawType(baseType);
+      if (!(genericType instanceof ParameterizedType))
+         throw new IllegalArgumentException(Messages.MESSAGES.receivedGenericType(this, genericType, ParameterizedType.class));
+      ParameterizedType param = (ParameterizedType) genericType;
+      Type baseType = param.getActualTypeArguments()[1];
+      Class<?> rawType = Types.getRawType(baseType);
 
-		MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(
-				mediaType, workers);
-		input.parse(entityStream);
+      MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(
+            mediaType, workers);
+      input.parse(entityStream);
 
-		Map<Object, Object> map = new LinkedHashMap<Object, Object>();
+      Map<Object, Object> map = new LinkedHashMap<Object, Object>();
 
-		for (Map.Entry<String, List<InputPart>> entry : input.getFormDataMap()
-				.entrySet())
-			map.put(entry.getKey(), entry.getValue().get(0).getBody(rawType,
-					baseType));
+      for (Map.Entry<String, List<InputPart>> entry : input.getFormDataMap()
+            .entrySet())
+         map.put(entry.getKey(), entry.getValue().get(0).getBody(rawType,
+               baseType));
 
       if (!InputStream.class.equals(rawType))
       {
@@ -68,6 +67,6 @@ public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> 
          input.close();
       }
 
-		return map;
-	}
+      return map;
+   }
 }

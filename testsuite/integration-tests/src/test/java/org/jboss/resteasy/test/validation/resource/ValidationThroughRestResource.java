@@ -12,18 +12,18 @@ import javax.ws.rs.Produces;
 @Stateless
 public class ValidationThroughRestResource {
 
-    @NotNull
-    private String name;
+   @NotNull
+   private String name;
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    @POST
-    @Path("/createHike")
-    @Consumes("application/json")
-    @Produces({"application/json", "text/plain"})
-    public void createHike(@Min(1) long id, String from, String to) {
-        // nothing to do
-    }
+   @POST
+   @Path("/createHike")
+   @Consumes("application/json")
+   @Produces({"application/json", "text/plain"})
+   public void createHike(@Min(1) long id, String from, String to) {
+      // nothing to do
+   }
 }

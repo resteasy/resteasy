@@ -7,7 +7,7 @@ import org.jboss.resteasy.spi.touri.MappedBy;
 import java.lang.annotation.Annotation;
 
 public class MappedByAnnotationResolver extends
-        AbstractURITemplateAnnotationResolver
+      AbstractURITemplateAnnotationResolver
 {
    protected Class<? extends Annotation> getAnnotationType()
    {

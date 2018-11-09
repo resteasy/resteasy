@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 @Path("/user")
 @Produces("application/xml")
 public interface ProxyJaxbResourceIntf {
-    @Path("/{userId}/inventory/credits")
-    @GET
-    Response getCredits(@PathParam("userId") String userId);
+   @Path("/{userId}/inventory/credits")
+   @GET
+   Response getCredits(@PathParam("userId") String userId);
 }

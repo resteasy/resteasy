@@ -11,15 +11,15 @@ import javax.ws.rs.Consumes;
 import java.util.List;
 
 public interface BaseClassFromTypeListStoreIntf<T> {
-    @GET
-    @Path("/intf")
-    @Produces("application/json")
-    @BadgerFish
-    @Wrapped
-    List<T> list();
+   @GET
+   @Path("/intf")
+   @Produces("application/json")
+   @BadgerFish
+   @Wrapped
+   List<T> list();
 
-    @PUT
-    @Path("/intf")
-    @Consumes("application/json")
-    void put(@Wrapped @BadgerFish List<T> list);
+   @PUT
+   @Path("/intf")
+   @Consumes("application/json")
+   void put(@Wrapped @BadgerFish List<T> list);
 }

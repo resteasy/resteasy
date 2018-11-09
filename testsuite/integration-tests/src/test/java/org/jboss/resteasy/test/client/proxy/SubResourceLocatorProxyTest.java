@@ -32,69 +32,69 @@ import javax.ws.rs.Produces;
 @RunAsClient
 public class SubResourceLocatorProxyTest {
 
-    public interface Book {
-        @GET
-        @Path("/title")
-        @Produces("text/plain")
-        String getTitle();
+   public interface Book {
+      @GET
+      @Path("/title")
+      @Produces("text/plain")
+      String getTitle();
 
-        @Path("/ch/{number}")
-        Chapter getChapter(@PathParam("number") int number);
-    }
+      @Path("/ch/{number}")
+      Chapter getChapter(@PathParam("number") int number);
+   }
 
-    public interface Chapter {
-        @GET
-        @Path("title")
-        @Produces("text/plain")
-        String getTitle();
+   public interface Chapter {
+      @GET
+      @Path("title")
+      @Produces("text/plain")
+      String getTitle();
 
-        @GET
-        @Path("body")
-        @Produces("text/plain")
-        String getBody();
-    }
+      @GET
+      @Path("body")
+      @Produces("text/plain")
+      String getBody();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(SubResourceLocatorProxyTest.class.getSimpleName());
-        war.addClass(SubResourceLocatorProxyTest.class);
-        return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorProxyBookResource.class,
-                SubResourceLocatorProxyChapterResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(SubResourceLocatorProxyTest.class.getSimpleName());
+      war.addClass(SubResourceLocatorProxyTest.class);
+      return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorProxyBookResource.class,
+            SubResourceLocatorProxyChapterResource.class);
+   }
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SubResourceLocatorProxyTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, SubResourceLocatorProxyTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Client sends request thru client proxy. The processing of the response goes first to the Book
-     * resource which creates Chapter subresource and creates the response.
-     * @tpPassCrit Expected string is returned in the response.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testSubresourceProxy() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/gulliverstravels"));
-        Book book = target.proxy(Book.class);
+   /**
+    * @tpTestDetails Client sends request thru client proxy. The processing of the response goes first to the Book
+    * resource which creates Chapter subresource and creates the response.
+    * @tpPassCrit Expected string is returned in the response.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testSubresourceProxy() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/gulliverstravels"));
+      Book book = target.proxy(Book.class);
 
-        Assert.assertEquals("GET request thru client proxy failed", "Gulliver's Travels", book.getTitle());
+      Assert.assertEquals("GET request thru client proxy failed", "Gulliver's Travels", book.getTitle());
 
-        Chapter ch1 = book.getChapter(1);
-        Assert.assertEquals("GET request thru client proxy failed", "Chapter 1", ch1.getTitle());
+      Chapter ch1 = book.getChapter(1);
+      Assert.assertEquals("GET request thru client proxy failed", "Chapter 1", ch1.getTitle());
 
-        Chapter ch2 = book.getChapter(2);
-        Assert.assertEquals("GET request thru client proxy failed", "Chapter 2", ch2.getTitle());
-    }
+      Chapter ch2 = book.getChapter(2);
+      Assert.assertEquals("GET request thru client proxy failed", "Chapter 2", ch2.getTitle());
+   }
 }

@@ -48,9 +48,9 @@ public class ServerResponseWriter
 {
    @FunctionalInterface
    public interface RunnableWithIOException {
-	   void run() throws IOException;
+      void run() throws IOException;
    }
-	
+
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
@@ -81,8 +81,10 @@ public class ServerResponseWriter
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
       
       executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, () -> {
-         //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
-         if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
+         Object entity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
+
+         //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests
+         if (entity == null || response.getOutputStream() == null)
          {
             response.setStatus(jaxrsResponse.getStatus());
             commitHeaders(jaxrsResponse, response);
@@ -90,7 +92,6 @@ public class ServerResponseWriter
          }
 
          Class type = jaxrsResponse.getEntityClass();
-         Object ent = jaxrsResponse.getEntity();
          Type generic = jaxrsResponse.getGenericType();
          Annotation[] annotations = jaxrsResponse.getAnnotations();
          @SuppressWarnings(value = "unchecked")
@@ -133,7 +134,7 @@ public class ServerResponseWriter
          }
 
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-               providerFactory, ent, type, generic, annotations, mt,
+               providerFactory, entity, type, generic, annotations, mt,
                jaxrsResponse.getMetadata(), os, request);
 
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
@@ -153,46 +154,46 @@ public class ServerResponseWriter
 
    public static void setResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
-	   MediaType mt = getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
-	   if (mt != null)
-	   {
-		   jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
-	   }
+      MediaType mt = getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
+      if (mt != null)
+      {
+         jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
+      }
    }
    
    public static MediaType getResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
-	  MediaType mt = null;
-      if (jaxrsResponse.getEntity() != null)
+      MediaType mt = null;
+      if (!jaxrsResponse.isClosed() && jaxrsResponse.getEntity() != null)
       {
-        if ((mt = jaxrsResponse.getMediaType()) == null)
-        {
-           mt = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
-        }
-        
-        boolean addCharset = true;
-        ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
-        if (deployment != null)
-        {
-           addCharset = deployment.isAddCharset();
-        }
-        if (addCharset)
-        {
-           if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
-           {
-              if (MediaTypeHelper.isTextLike(mt))
-              {
-                 mt = mt.withCharset(StandardCharsets.UTF_8.toString());
-              }
-           }
-        }
+         if ((mt = jaxrsResponse.getMediaType()) == null)
+         {
+            mt = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
+         }
+
+         boolean addCharset = true;
+         ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
+         if (deployment != null)
+         {
+            addCharset = deployment.isAddCharset();
+         }
+         if (addCharset)
+         {
+            if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+            {
+               if (MediaTypeHelper.isTextLike(mt))
+               {
+                  mt = mt.withCharset(StandardCharsets.UTF_8.toString());
+               }
+            }
+         }
       }
       return mt;
    }
 
    private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, 
          ResteasyProviderFactory providerFactory, 
-		   ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
+         ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
 
@@ -209,7 +210,7 @@ public class ServerResponseWriter
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
          ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
-        		 requestContext, responseFilters, onComplete, continuation);
+               requestContext, responseFilters, onComplete, continuation);
 
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
 
@@ -235,8 +236,8 @@ public class ServerResponseWriter
    
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
-	   MediaType chosen = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
-	   jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
+      MediaType chosen = getDefaultContentType(request, jaxrsResponse, providerFactory, method);
+      jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
    }
    
    protected static MediaType getDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)

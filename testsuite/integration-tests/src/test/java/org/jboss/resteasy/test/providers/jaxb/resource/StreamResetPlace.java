@@ -8,14 +8,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "place")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class StreamResetPlace {
-    private String name;
+   private String name;
 
-    @XmlAttribute
-    public String getName() {
-        return name;
-    }
+   @XmlAttribute
+   public String getName() {
+      return name;
+   }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 }

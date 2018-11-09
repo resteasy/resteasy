@@ -28,38 +28,38 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class CustomValueInjectorTest {
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(CustomValueInjectorTest.class.getSimpleName());
-        war.addClass(CustomValueInjectorHello.class);
-        return TestUtil.finishContainerPrepare(war, null, CustomValueInjectorHelloResource.class,
-                CustomValueInjectorInjectorFactoryImpl.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(CustomValueInjectorTest.class.getSimpleName());
+      war.addClass(CustomValueInjectorHello.class);
+      return TestUtil.finishContainerPrepare(war, null, CustomValueInjectorHelloResource.class,
+            CustomValueInjectorInjectorFactoryImpl.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CustomValueInjectorTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CustomValueInjectorTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Client test.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomInjectorFactory() throws Exception {
-        String result = client.target(generateURL("/")).request().get(String.class);
-        Assert.assertEquals("Response has wrong content", "world", result);
-    }
+   /**
+    * @tpTestDetails Client test.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testCustomInjectorFactory() throws Exception {
+      String result = client.target(generateURL("/")).request().get(String.class);
+      Assert.assertEquals("Response has wrong content", "world", result);
+   }
 
 }

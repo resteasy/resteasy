@@ -118,6 +118,18 @@
             </properties>
         </profile>
         <profile>
+            <id>server-version-12x-exclusions</id>
+            <activation>
+              <property>
+                <name>server.version</name>
+                <value>12.0.0.Final</value>
+              </property>
+            </activation>
+            <properties>
+              <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly12</additional.surefire.excluded.groups>
+            </properties>
+        </profile>
+        <profile>
             <id>server-version-13x-exclusions</id>
             <activation>
               <property>

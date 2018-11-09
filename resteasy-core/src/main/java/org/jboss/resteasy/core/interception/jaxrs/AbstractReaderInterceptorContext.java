@@ -208,6 +208,6 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    }
 
    public Object getProcessedInterceptorCount() {
-         return index;
+      return index;
    }
 }

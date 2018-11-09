@@ -155,17 +155,17 @@ public class NettyHttpRequest extends BaseHttpRequest
 
    public NettyHttpResponse getResponse()
    {
-       return response;
+      return response;
    }
 
    public boolean isKeepAlive()
    {
-       return response.isKeepAlive();
+      return response.isKeepAlive();
    }
 
    public boolean is100ContinueExpected()
    {
-       return is100ContinueExpected;
+      return is100ContinueExpected;
    }
 
    @Override
@@ -185,211 +185,211 @@ public class NettyHttpRequest extends BaseHttpRequest
       this.inputStream = new ByteBufInputStream(content);
    }
 
-    public void releaseContentBuffer() {
+   public void releaseContentBuffer() {
       if (content != null) {
-        this.content.release();
+         this.content.release();
       }
-    }
+   }
 
    class NettyExecutionContext extends AbstractExecutionContext {
-        protected final NettyHttpRequest request;
-        protected final NettyHttpResponse response;
-        protected volatile boolean done;
-        protected volatile boolean cancelled;
-        protected volatile boolean wasSuspended;
-        protected NettyHttpAsyncResponse asyncResponse;
+      protected final NettyHttpRequest request;
+      protected final NettyHttpResponse response;
+      protected volatile boolean done;
+      protected volatile boolean cancelled;
+      protected volatile boolean wasSuspended;
+      protected NettyHttpAsyncResponse asyncResponse;
 
-        NettyExecutionContext(NettyHttpRequest request, NettyHttpResponse response, SynchronousDispatcher dispatcher)
-        {
+      NettyExecutionContext(NettyHttpRequest request, NettyHttpResponse response, SynchronousDispatcher dispatcher)
+      {
+         super(dispatcher, request, response);
+         this.request = request;
+         this.response = response;
+         this.asyncResponse = new NettyHttpAsyncResponse(dispatcher, request, response);
+      }
+
+      @Override
+      public boolean isSuspended() {
+         return wasSuspended;
+      }
+
+      @Override
+      public ResteasyAsynchronousResponse getAsyncResponse() {
+         return asyncResponse;
+      }
+
+      @Override
+      public ResteasyAsynchronousResponse suspend() throws IllegalStateException {
+         return suspend(-1);
+      }
+
+      @Override
+      public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException {
+         return suspend(millis, TimeUnit.MILLISECONDS);
+      }
+
+      @Override
+      public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
+         if (wasSuspended)
+         {
+            throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
+         }
+         wasSuspended = true;
+         return asyncResponse;
+      }
+
+
+      /**
+       * Netty implementation of {@link AsyncResponse}.
+       *
+       * @author Kristoffer Sjogren
+       */
+      class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
+         private final Object responseLock = new Object();
+         protected ScheduledFuture timeoutFuture;
+         private NettyHttpResponse nettyResponse;
+         NettyHttpAsyncResponse(SynchronousDispatcher dispatcher, NettyHttpRequest request, NettyHttpResponse response) {
             super(dispatcher, request, response);
-            this.request = request;
-            this.response = response;
-            this.asyncResponse = new NettyHttpAsyncResponse(dispatcher, request, response);
-        }
+            this.nettyResponse = response;
+         }
 
-        @Override
-        public boolean isSuspended() {
-            return wasSuspended;
-        }
+         @Override
+         public void initialRequestThreadFinished() {
+         // done
+         }
 
-        @Override
-        public ResteasyAsynchronousResponse getAsyncResponse() {
-            return asyncResponse;
-        }
-
-        @Override
-        public ResteasyAsynchronousResponse suspend() throws IllegalStateException {
-            return suspend(-1);
-        }
-
-        @Override
-        public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException {
-            return suspend(millis, TimeUnit.MILLISECONDS);
-        }
-
-        @Override
-        public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
-            if (wasSuspended)
+         @Override
+         public void complete() {
+            synchronized (responseLock)
             {
-               throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
+               if (done) return;
+               if (cancelled) return;
+               done = true;
+               nettyFlush();
             }
-            wasSuspended = true;
-            return asyncResponse;
-        }
+         }
 
 
-        /**
-         * Netty implementation of {@link AsyncResponse}.
-         *
-         * @author Kristoffer Sjogren
-         */
-        class NettyHttpAsyncResponse extends AbstractAsynchronousResponse {
-            private final Object responseLock = new Object();
-            protected ScheduledFuture timeoutFuture;
-            private NettyHttpResponse nettyResponse;
-            NettyHttpAsyncResponse(SynchronousDispatcher dispatcher, NettyHttpRequest request, NettyHttpResponse response) {
-                super(dispatcher, request, response);
-                this.nettyResponse = response;
-            }
-
-            @Override
-            public void initialRequestThreadFinished() {
-                // done
-            }
-
-            @Override
-            public void complete() {
-                synchronized (responseLock)
-                {
-                    if (done) return;
-                    if (cancelled) return;
-                    done = true;
-                    nettyFlush();
-                }
-            }
-
-
-            @Override
-            public boolean resume(Object entity) {
-                synchronized (responseLock)
-                {
-                    if (done) return false;
-                    if (cancelled) return false;
-                    done = true;
-                    return internalResume(entity, t -> nettyFlush());
-                }
-            }
-
-            @Override
-            public boolean resume(Throwable ex) {
-                synchronized (responseLock)
-                {
-                    if (done) return false;
-                    if (cancelled) return false;
-                    done = true;
-                    return internalResume(ex, t -> nettyFlush());
-                }
-            }
-
-            @Override
-            public boolean cancel() {
-                synchronized (responseLock)
-                {
-                    if (cancelled) {
-                        return true;
-                    }
-                    if (done) {
-                        return false;
-                    }
-                    done = true;
-                    cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> nettyFlush());
-                }
-            }
-
-            @Override
-            public boolean cancel(int retryAfter) {
-                synchronized (responseLock)
-                {
-                    if (cancelled) return true;
-                    if (done) return false;
-                    done = true;
-                    cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                          t -> nettyFlush());
-                }
-            }
-
-           protected synchronized void nettyFlush()
-           {
-              flushed = true;
-              try
-              {
-                 nettyResponse.finish();
-              }
-              catch (IOException e)
-              {
-                 throw new RuntimeException(e);
-              }
-           }
-
-           @Override
-            public boolean cancel(Date retryAfter) {
-                synchronized (responseLock)
-                {
-                    if (cancelled) return true;
-                    if (done) return false;
-                    done = true;
-                    cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
-                          t -> nettyFlush());
-                }
-            }
-
-            @Override
-            public boolean isSuspended() {
-                return !done && !cancelled;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return cancelled;
-            }
-
-            @Override
-            public boolean isDone() {
-                return done;
-            }
-
-            @Override
-            public boolean setTimeout(long time, TimeUnit unit) {
-                synchronized (responseLock)
-                {
-                    if (done || cancelled) return false;
-                    if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
-                        return false;
-                    }
-                    Runnable task = new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            handleTimeout();
-                        }
-                    };
-                    timeoutFuture = ctx.executor().schedule(task, time, unit);
-                }
-                return true;
-            }
-
-            protected void handleTimeout()
+         @Override
+         public boolean resume(Object entity) {
+            synchronized (responseLock)
             {
-                if (timeoutHandler != null)
-                {
-                    timeoutHandler.handleTimeout(this);
-                }
-                if (done) return;
-                resume(new ServiceUnavailableException());
+               if (done) return false;
+               if (cancelled) return false;
+               done = true;
+               return internalResume(entity, t -> nettyFlush());
             }
-        }
-    }
+         }
+
+         @Override
+         public boolean resume(Throwable ex) {
+            synchronized (responseLock)
+            {
+               if (done) return false;
+               if (cancelled) return false;
+               done = true;
+               return internalResume(ex, t -> nettyFlush());
+            }
+         }
+
+         @Override
+         public boolean cancel() {
+            synchronized (responseLock)
+            {
+               if (cancelled) {
+                  return true;
+               }
+               if (done) {
+                  return false;
+               }
+               done = true;
+               cancelled = true;
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> nettyFlush());
+            }
+         }
+
+         @Override
+         public boolean cancel(int retryAfter) {
+            synchronized (responseLock)
+            {
+               if (cancelled) return true;
+               if (done) return false;
+               done = true;
+               cancelled = true;
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
+                  t -> nettyFlush());
+            }
+         }
+
+         protected synchronized void nettyFlush()
+         {
+            flushed = true;
+            try
+            {
+               nettyResponse.finish();
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+
+         @Override
+         public boolean cancel(Date retryAfter) {
+            synchronized (responseLock)
+            {
+               if (cancelled) return true;
+               if (done) return false;
+               done = true;
+               cancelled = true;
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
+                  t -> nettyFlush());
+            }
+         }
+
+         @Override
+         public boolean isSuspended() {
+            return !done && !cancelled;
+         }
+
+         @Override
+         public boolean isCancelled() {
+            return cancelled;
+         }
+
+         @Override
+         public boolean isDone() {
+            return done;
+         }
+
+         @Override
+         public boolean setTimeout(long time, TimeUnit unit) {
+            synchronized (responseLock)
+            {
+               if (done || cancelled) return false;
+               if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
+                  return false;
+               }
+               Runnable task = new Runnable() {
+                  @Override
+                  public void run()
+                  {
+                     handleTimeout();
+                  }
+               };
+               timeoutFuture = ctx.executor().schedule(task, time, unit);
+            }
+            return true;
+         }
+
+         protected void handleTimeout()
+         {
+            if (timeoutHandler != null)
+            {
+               timeoutHandler.handleTimeout(this);
+            }
+            if (done) return;
+            resume(new ServiceUnavailableException());
+         }
+      }
+   }
 }

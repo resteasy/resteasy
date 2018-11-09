@@ -9,7 +9,7 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class AsyncPostProcessingInterceptor implements ContainerResponseFilter {
-    public static volatile boolean called;
+   public static volatile boolean called;
 
    @Override
    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)

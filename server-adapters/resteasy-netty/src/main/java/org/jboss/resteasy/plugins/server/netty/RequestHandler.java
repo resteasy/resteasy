@@ -43,41 +43,41 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception
    {
       if (e.getMessage() instanceof NettyHttpRequest) {
-          NettyHttpRequest request = (NettyHttpRequest) e.getMessage();
+         NettyHttpRequest request = (NettyHttpRequest) e.getMessage();
 
-          if (request.is100ContinueExpected())
-          {
-             send100Continue(e);
-          }
+         if (request.is100ContinueExpected())
+         {
+            send100Continue(e);
+         }
 
-          NettyHttpResponse response = request.getResponse();
-          try
-          {
-             dispatcher.service(ctx, request, response, true);
-          }
-          catch (Failure e1)
-          {
-             response.reset();
-             response.setStatus(e1.getErrorCode());
-          }
-          catch (Exception ex)
-          {
-             response.reset();
-             response.setStatus(500);
-             LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
-          }
+         NettyHttpResponse response = request.getResponse();
+         try
+         {
+            dispatcher.service(ctx, request, response, true);
+         }
+         catch (Failure e1)
+         {
+            response.reset();
+            response.setStatus(e1.getErrorCode());
+         }
+         catch (Exception ex)
+         {
+            response.reset();
+            response.setStatus(500);
+            LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
+         }
 
-          // Write the response.
-          ChannelFuture future = e.getChannel().write(response);
+         // Write the response.
+         ChannelFuture future = e.getChannel().write(response);
 
-          //NETTY-391
-          NettyJaxrsServer.allChannels.add(e.getChannel());
+         //NETTY-391
+         NettyJaxrsServer.allChannels.add(e.getChannel());
 
-          // Close the non-keep-alive connection after the write operation is done.
-          if (!request.isKeepAlive())
-          {
-             future.addListener(ChannelFutureListener.CLOSE);
-          }
+         // Close the non-keep-alive connection after the write operation is done.
+         if (!request.isKeepAlive())
+         {
+            future.addListener(ChannelFutureListener.CLOSE);
+         }
       }
 
    }
@@ -90,18 +90,18 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
 
    @Override
    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-           throws Exception
+         throws Exception
    {
       // handle the case of to big requests.
       if (e.getCause() instanceof TooLongFrameException)
       {
-          DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE);
-          e.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
+         DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE);
+         e.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
       }
       else
       {
-          LogMessages.LOGGER.info(Messages.MESSAGES.exceptionCaught(), e.getCause());
-          e.getChannel().close();
+         LogMessages.LOGGER.info(Messages.MESSAGES.exceptionCaught(), e.getCause());
+         e.getChannel().close();
       }
 
    }

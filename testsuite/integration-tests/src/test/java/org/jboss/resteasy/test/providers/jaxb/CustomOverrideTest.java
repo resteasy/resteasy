@@ -29,44 +29,44 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class CustomOverrideTest {
 
-    private static Logger logger = Logger.getLogger(CustomOverrideTest.class.getName());
-    static ResteasyClient client;
+   private static Logger logger = Logger.getLogger(CustomOverrideTest.class.getName());
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(CustomOverrideTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, CustomOverrideResource.class, CustomOverrideWriter.class,
-                CustomOverrideFoo.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(CustomOverrideTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, CustomOverrideResource.class, CustomOverrideWriter.class,
+            CustomOverrideFoo.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, CustomOverrideTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, CustomOverrideTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test for same resource path for media type xml and "text/x-vcard" with custom MessageBodyWriter
-     * @tpInfo RESTEASY-510
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRegression() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/test"));
-        String response = target.request().accept("text/x-vcard").get(String.class);
-        logger.info(response);
-        Assert.assertEquals("---bill---", response);
+   /**
+    * @tpTestDetails Test for same resource path for media type xml and "text/x-vcard" with custom MessageBodyWriter
+    * @tpInfo RESTEASY-510
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testRegression() throws Exception {
+      ResteasyWebTarget target = client.target(generateURL("/test"));
+      String response = target.request().accept("text/x-vcard").get(String.class);
+      logger.info(response);
+      Assert.assertEquals("---bill---", response);
 
-        response = target.request().accept("application/xml").get(String.class);
-        Assert.assertTrue(response.contains("customOverrideFoo"));
-        logger.info(response);
-    }
+      response = target.request().accept("application/xml").get(String.class);
+      Assert.assertTrue(response.contains("customOverrideFoo"));
+      logger.info(response);
+   }
 }

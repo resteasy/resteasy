@@ -43,17 +43,17 @@ public class ApplicationScopeValidationTest {
    
    @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
-       WebArchive war = TestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
+      WebArchive war = TestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
                .addClasses(ApplicationScopeIRestServiceAppScoped.class, ApplicationScopeIRestServiceReqScoped.class)
                .addClasses(ApplicationScopeMyDto.class)
                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-       Map<String, String> contextParam = new HashMap<>();
-       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
-       return TestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
+      Map<String, String> contextParam = new HashMap<>();
+      contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+      return TestUtil.finishContainerPrepare(war, contextParam, ApplicationScopeRestServiceAppScoped.class, ApplicationScopeRestServiceReqScoped.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, ApplicationScopeValidationTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ApplicationScopeValidationTest.class.getSimpleName());
    }
    
    @Test

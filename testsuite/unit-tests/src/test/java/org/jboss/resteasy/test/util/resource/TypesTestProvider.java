@@ -7,9 +7,9 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 public class TypesTestProvider implements ExceptionMapper<NullPointerException>, MarshalledEntity<Integer> {
 
-    public Response toResponse(NullPointerException exception) {
-        return null;
-    }
+   public Response toResponse(NullPointerException exception) {
+      return null;
+   }
 
    @Override
    public byte[] getMarshalledBytes()

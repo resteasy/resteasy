@@ -24,7 +24,7 @@ public class RequestUtil
    }
 
    public static ResteasyRequestWrapper getRequestWrapper(HttpServletRequest request) throws ServletException,
-           IOException
+         IOException
    {
       ResteasyRequestWrapper wrapper = (ResteasyRequestWrapper) request.getAttribute(RESPONSE_WRAPPER_KEY);
       if (wrapper == null)
@@ -40,7 +40,7 @@ public class RequestUtil
    }
 
    public static ResteasyRequestWrapper getRequestWrapper(HttpServletRequest request, String method, String prefix)
-           throws ServletException, IOException
+         throws ServletException, IOException
    {
       ResteasyRequestWrapper wrapper = (ResteasyRequestWrapper) request.getAttribute(RESPONSE_WRAPPER_KEY);
       if (wrapper == null)

@@ -228,7 +228,7 @@ public final class TypeConverter
     */
    @SuppressWarnings("unchecked")
    public static <T> T getTypeViaValueOfMethod(final String source, final Class<T> targetType)
-           throws NoSuchMethodException
+         throws NoSuchMethodException
    {
       Class<?> actualTarget = targetType;
       /*
@@ -250,8 +250,8 @@ public final class TypeConverter
             result = targetType.cast(value);
          }
          /*
-          * handle the primitive case
-          */
+         * handle the primitive case
+         */
          else if (!actualTarget.equals(targetType) && actualTarget.isInstance(value))
          {
             // because you can't use targetType.cast() with primitives.

@@ -7,8 +7,8 @@ import javax.servlet.ServletContext;
 
 public class SpringContextLoaderSubclass extends SpringContextLoader {
 
-    @Override
-    protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
-        super.customizeContext(servletContext, configurableWebApplicationContext);
-    }
+   @Override
+   protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
+      super.customizeContext(servletContext, configurableWebApplicationContext);
+   }
 }

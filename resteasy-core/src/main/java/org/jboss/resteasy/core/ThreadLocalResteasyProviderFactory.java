@@ -221,7 +221,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    {
       MessageBodyReader<T> reader = getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader!=null)
-          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
       return reader;
    }
 
@@ -494,7 +494,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    {
       MessageBodyWriter<T> writer = getDelegate().getMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
       return writer;
    }
 
@@ -563,7 +563,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    {
       MessageBodyWriter<T> writer = getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
       return writer;
    }
 
@@ -572,7 +572,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    {
       MessageBodyReader<T> reader = getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader!=null)
-          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
       return reader;
    }
 

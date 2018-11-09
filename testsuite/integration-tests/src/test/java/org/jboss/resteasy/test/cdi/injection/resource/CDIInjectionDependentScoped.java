@@ -6,4 +6,3 @@ import javax.enterprise.context.Dependent;
 public class CDIInjectionDependentScoped {
 
 }
-

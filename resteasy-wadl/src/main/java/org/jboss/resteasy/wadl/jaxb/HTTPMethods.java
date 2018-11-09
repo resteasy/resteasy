@@ -34,18 +34,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum HTTPMethods {
 
-    GET,
-    POST,
-    PUT,
-    HEAD,
-    DELETE;
+   GET,
+   POST,
+   PUT,
+   HEAD,
+   DELETE;
 
-    public String value() {
-        return name();
-    }
+   public String value() {
+      return name();
+   }
 
-    public static HTTPMethods fromValue(String v) {
-        return valueOf(v);
-    }
+   public static HTTPMethods fromValue(String v) {
+      return valueOf(v);
+   }
 
 }

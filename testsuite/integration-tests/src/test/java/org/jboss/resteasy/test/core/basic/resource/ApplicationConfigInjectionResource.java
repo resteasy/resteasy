@@ -9,32 +9,32 @@ import javax.ws.rs.core.Context;
 @Path("/injection")
 @Produces("text/plain")
 public class ApplicationConfigInjectionResource {
-    private ApplicationConfig application;
+   private ApplicationConfig application;
 
-    @Path("/field")
-    @GET
-    public boolean fieldInjection() {
-        return getApplication().isFieldInjected();
-    }
+   @Path("/field")
+   @GET
+   public boolean fieldInjection() {
+      return getApplication().isFieldInjected();
+   }
 
-    @Path("/setter")
-    @GET
-    public boolean setterInjection() {
-        return getApplication().isSetterInjected();
-    }
+   @Path("/setter")
+   @GET
+   public boolean setterInjection() {
+      return getApplication().isSetterInjected();
+   }
 
-    @Path("/constructor")
-    @GET
-    public boolean constructorInjection() {
-        return getApplication().isConstructorInjected();
-    }
+   @Path("/constructor")
+   @GET
+   public boolean constructorInjection() {
+      return getApplication().isConstructorInjected();
+   }
 
-    private ApplicationConfig getApplication() {
-        return application;
-    }
+   private ApplicationConfig getApplication() {
+      return application;
+   }
 
-    @Context
-    public void setApplication(Application app) {
-        this.application = (ApplicationConfig) app;
-    }
+   @Context
+   public void setApplication(Application app) {
+      this.application = (ApplicationConfig) app;
+   }
 }

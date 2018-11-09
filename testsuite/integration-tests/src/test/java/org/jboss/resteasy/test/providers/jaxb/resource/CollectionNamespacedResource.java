@@ -17,65 +17,65 @@ import java.util.Set;
 
 @Path("/namespaced")
 public class CollectionNamespacedResource {
-    @GET
-    @Path("array")
-    @Produces("application/xml")
-    @Wrapped
-    public CollectionNamespacedCustomer[] getCustomers() {
-        CollectionNamespacedCustomer[] custs = {new CollectionNamespacedCustomer("bill"), new CollectionNamespacedCustomer("monica")};
-        return custs;
-    }
+   @GET
+   @Path("array")
+   @Produces("application/xml")
+   @Wrapped
+   public CollectionNamespacedCustomer[] getCustomers() {
+      CollectionNamespacedCustomer[] custs = {new CollectionNamespacedCustomer("bill"), new CollectionNamespacedCustomer("monica")};
+      return custs;
+   }
 
-    @PUT
-    @Path("array")
-    @Consumes("application/xml")
-    public void putCustomers(@Wrapped CollectionNamespacedCustomer[] customers) {
-        Assert.assertEquals("bill", customers[0].getName());
-        Assert.assertEquals("monica", customers[1].getName());
-    }
+   @PUT
+   @Path("array")
+   @Consumes("application/xml")
+   public void putCustomers(@Wrapped CollectionNamespacedCustomer[] customers) {
+      Assert.assertEquals("bill", customers[0].getName());
+      Assert.assertEquals("monica", customers[1].getName());
+   }
 
-    @GET
-    @Path("set")
-    @Produces("application/xml")
-    @Wrapped
-    public Set<CollectionNamespacedCustomer> getCustomerSet() {
-        HashSet<CollectionNamespacedCustomer> set = new HashSet<CollectionNamespacedCustomer>();
-        set.add(new CollectionNamespacedCustomer("bill"));
-        set.add(new CollectionNamespacedCustomer("monica"));
+   @GET
+   @Path("set")
+   @Produces("application/xml")
+   @Wrapped
+   public Set<CollectionNamespacedCustomer> getCustomerSet() {
+      HashSet<CollectionNamespacedCustomer> set = new HashSet<CollectionNamespacedCustomer>();
+      set.add(new CollectionNamespacedCustomer("bill"));
+      set.add(new CollectionNamespacedCustomer("monica"));
 
-        return set;
-    }
+      return set;
+   }
 
-    @PUT
-    @Path("list")
-    @Consumes("application/xml")
-    public void putCustomers(@Wrapped List<CollectionNamespacedCustomer> customers) {
-        Assert.assertEquals("bill", customers.get(0).getName());
-        Assert.assertEquals("monica", customers.get(1).getName());
-    }
+   @PUT
+   @Path("list")
+   @Consumes("application/xml")
+   public void putCustomers(@Wrapped List<CollectionNamespacedCustomer> customers) {
+      Assert.assertEquals("bill", customers.get(0).getName());
+      Assert.assertEquals("monica", customers.get(1).getName());
+   }
 
-    @GET
-    @Path("list")
-    @Produces("application/xml")
-    @Wrapped
-    public List<CollectionNamespacedCustomer> getCustomerList() {
-        ArrayList<CollectionNamespacedCustomer> set = new ArrayList<CollectionNamespacedCustomer>();
-        set.add(new CollectionNamespacedCustomer("bill"));
-        set.add(new CollectionNamespacedCustomer("monica"));
+   @GET
+   @Path("list")
+   @Produces("application/xml")
+   @Wrapped
+   public List<CollectionNamespacedCustomer> getCustomerList() {
+      ArrayList<CollectionNamespacedCustomer> set = new ArrayList<CollectionNamespacedCustomer>();
+      set.add(new CollectionNamespacedCustomer("bill"));
+      set.add(new CollectionNamespacedCustomer("monica"));
 
-        return set;
-    }
+      return set;
+   }
 
-    @GET
-    @Path("list/response")
-    @Produces("application/xml")
-    @Wrapped
-    public Response getCustomerListResponse() {
-        ArrayList<CollectionNamespacedCustomer> set = new ArrayList<CollectionNamespacedCustomer>();
-        set.add(new CollectionNamespacedCustomer("bill"));
-        set.add(new CollectionNamespacedCustomer("monica"));
-        GenericEntity<List<CollectionNamespacedCustomer>> genericEntity = new GenericEntity<List<CollectionNamespacedCustomer>>(set) {
-        };
-        return Response.ok(genericEntity).build();
-    }
+   @GET
+   @Path("list/response")
+   @Produces("application/xml")
+   @Wrapped
+   public Response getCustomerListResponse() {
+      ArrayList<CollectionNamespacedCustomer> set = new ArrayList<CollectionNamespacedCustomer>();
+      set.add(new CollectionNamespacedCustomer("bill"));
+      set.add(new CollectionNamespacedCustomer("monica"));
+      GenericEntity<List<CollectionNamespacedCustomer>> genericEntity = new GenericEntity<List<CollectionNamespacedCustomer>>(set) {
+      };
+      return Response.ok(genericEntity).build();
+   }
 }

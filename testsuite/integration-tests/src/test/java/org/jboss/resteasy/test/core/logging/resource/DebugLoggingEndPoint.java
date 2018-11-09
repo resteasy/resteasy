@@ -8,17 +8,17 @@ import javax.ws.rs.Produces;
 @Path("/")
 public class DebugLoggingEndPoint {
 
-    @POST
-    @Path("custom")
-    @Produces("aaa/bbb")
-    @Consumes("aaa/bbb")
-    public String custom(String data) {
-        return data;
-    }
+   @POST
+   @Path("custom")
+   @Produces("aaa/bbb")
+   @Consumes("aaa/bbb")
+   public String custom(String data) {
+      return data;
+   }
 
-    @POST
-    @Path("build/in")
-    public String buildIn(String data) {
-        return data;
-    }
+   @POST
+   @Path("build/in")
+   public String buildIn(String data) {
+      return data;
+   }
 }

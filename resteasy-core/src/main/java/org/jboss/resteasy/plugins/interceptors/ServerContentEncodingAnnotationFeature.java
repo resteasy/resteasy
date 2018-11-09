@@ -59,7 +59,7 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
       {
          if (annotation.annotationType().isAnnotationPresent(ContentEncoding.class))
          {
-           encodings.add(annotation.annotationType().getAnnotation(ContentEncoding.class).value().toLowerCase());
+            encodings.add(annotation.annotationType().getAnnotation(ContentEncoding.class).value().toLowerCase());
          }
       }
       return encodings;

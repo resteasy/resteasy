@@ -5,9 +5,9 @@ import javax.ws.rs.Path;
 
 @Path("resource")
 public class AbstractMapperResource {
-    @GET
-    @Path("custom")
-    public String custom() throws Throwable {
-        throw new AbstractMapperException("hello");
-    }
+   @GET
+   @Path("custom")
+   public String custom() throws Throwable {
+      throw new AbstractMapperException("hello");
+   }
 }

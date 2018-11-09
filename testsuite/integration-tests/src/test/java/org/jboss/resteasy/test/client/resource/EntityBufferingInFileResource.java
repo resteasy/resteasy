@@ -11,13 +11,13 @@ import java.io.InputStream;
 @Path("/")
 public class EntityBufferingInFileResource {
 
-    private static final Logger logger = Logger.getLogger(EntityBufferingInFileResource.class);
+   private static final Logger logger = Logger.getLogger(EntityBufferingInFileResource.class);
 
-    @POST
-    @Produces("text/plain")
-    @Path("hello")
-    public InputStream resourceMethod(DataSource ds) throws Exception {
-        logger.info("entered resourceMethod()");
-        return ds.getInputStream();
-    }
+   @POST
+   @Produces("text/plain")
+   @Path("hello")
+   public InputStream resourceMethod(DataSource ds) throws Exception {
+      logger.info("entered resourceMethod()");
+      return ds.getInputStream();
+   }
 }

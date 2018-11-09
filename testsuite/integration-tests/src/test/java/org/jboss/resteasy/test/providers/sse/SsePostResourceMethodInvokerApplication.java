@@ -14,9 +14,9 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/")
 public class SsePostResourceMethodInvokerApplication extends Application {
 
-	@Override
-	public Set<Object> getSingletons() {
-		return Collections.singleton(new SsePostResourceMethodInvokerTestResource());
-	}
+   @Override
+   public Set<Object> getSingletons() {
+      return Collections.singleton(new SsePostResourceMethodInvokerTestResource());
+   }
 
 }

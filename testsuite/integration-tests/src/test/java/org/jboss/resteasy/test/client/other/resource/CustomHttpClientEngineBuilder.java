@@ -14,20 +14,20 @@ import javax.net.ssl.SSLContext;
 
 public class CustomHttpClientEngineBuilder extends ClientHttpEngineBuilder43 {
 
-    @Override
-    protected ClientHttpEngine createEngine(HttpClientConnectionManager cm, RequestConfig.Builder rcBuilder,
-                                            HttpHost defaultProxy, int responseBufferSize, HostnameVerifier verifier, SSLContext theContext)
-    {
-        HttpClient httpClient = HttpClientBuilder.create()
-                .setConnectionManager(cm)
-                .setDefaultRequestConfig(rcBuilder.build())
-                .setProxy(defaultProxy)
-                .disableContentCompression().build();
-        ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, true);
-        engine.setResponseBufferSize(responseBufferSize);
-        engine.setHostnameVerifier(verifier);
-        // this may be null.  We can't really support this with Apache Client.
-        engine.setSslContext(theContext);
-        return engine;
-    }
+   @Override
+   protected ClientHttpEngine createEngine(HttpClientConnectionManager cm, RequestConfig.Builder rcBuilder,
+                                 HttpHost defaultProxy, int responseBufferSize, HostnameVerifier verifier, SSLContext theContext)
+   {
+      HttpClient httpClient = HttpClientBuilder.create()
+            .setConnectionManager(cm)
+            .setDefaultRequestConfig(rcBuilder.build())
+            .setProxy(defaultProxy)
+            .disableContentCompression().build();
+      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, true);
+      engine.setResponseBufferSize(responseBufferSize);
+      engine.setHostnameVerifier(verifier);
+      // this may be null.  We can't really support this with Apache Client.
+      engine.setSslContext(theContext);
+      return engine;
+   }
 }

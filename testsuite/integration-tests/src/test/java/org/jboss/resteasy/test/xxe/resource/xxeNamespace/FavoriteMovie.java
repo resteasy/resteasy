@@ -26,31 +26,31 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "FavoriteMovie", propOrder = {
-        "title"
+      "title"
 })
 public class FavoriteMovie {
 
-    @XmlElement(required = true, namespace = "http://abc.com")
-    protected String title;
+   @XmlElement(required = true, namespace = "http://abc.com")
+   protected String title;
 
-    /**
-     * Gets the value of the title property.
-     *
-     * @return possible object is
-     * {@link String }
-     */
-    public String getTitle() {
-        return title;
-    }
+   /**
+    * Gets the value of the title property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getTitle() {
+      return title;
+   }
 
-    /**
-     * Sets the value of the title property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setTitle(String value) {
-        this.title = value;
-    }
+   /**
+    * Sets the value of the title property.
+    *
+    * @param value allowed object is
+    *              {@link String }
+    */
+   public void setTitle(String value) {
+      this.title = value;
+   }
 
 }

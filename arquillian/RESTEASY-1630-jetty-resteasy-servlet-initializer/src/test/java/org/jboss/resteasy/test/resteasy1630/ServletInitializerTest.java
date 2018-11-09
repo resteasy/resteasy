@@ -21,51 +21,51 @@ import static org.junit.Assert.assertEquals;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
 /**
- See the Servlet 3.0 spec, section 8.2.4 for implementation and processing the details
- of ServletContainerInitializer.
+   See the Servlet 3.0 spec, section 8.2.4 for implementation and processing the details
+   of ServletContainerInitializer.
 
- Resteasy's implementation of ServletContainerInitializer is declared in the
- META-INF/services directory of archive org.jboss.resteasy:resteasy-servlet-initializer
- as required by the spec.  This archive MUST be included in the generated WAR file
- so the server can find and call it.  Shrinkwrap's Maven class and .addAsLibraries
- method is used to achieve this.
+   Resteasy's implementation of ServletContainerInitializer is declared in the
+   META-INF/services directory of archive org.jboss.resteasy:resteasy-servlet-initializer
+   as required by the spec.  This archive MUST be included in the generated WAR file
+   so the server can find and call it.  Shrinkwrap's Maven class and .addAsLibraries
+   method is used to achieve this.
 
- This test checks that the implementation properly handles a jaxrs app that provides
- resource and provider classes as well as no web.xml file.
+   This test checks that the implementation properly handles a jaxrs app that provides
+   resource and provider classes as well as no web.xml file.
  */
 
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ServletInitializerTest {
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        File pomFile = Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.resteasy:resteasy-servlet-initializer")
-            .withoutTransitivity().asSingleFile();
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      File pomFile = Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.resteasy:resteasy-servlet-initializer")
+         .withoutTransitivity().asSingleFile();
 
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1630-two.war")
-            .addClasses(TestApplication.class)
-            .addClasses(TestResource.class)
-            .addAsLibraries(pomFile)
-            .addAsWebInfResource("web.xml");
-        return war;
-    }
+      WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1630-two.war")
+         .addClasses(TestApplication.class)
+         .addClasses(TestResource.class)
+         .addAsLibraries(pomFile)
+         .addAsWebInfResource("web.xml");
+      return war;
+   }
 
-    @ArquillianResource
-    URI baseUri;
+   @ArquillianResource
+   URI baseUri;
 
-    /**
-     * App declares files via the web.xml
-     * @throws Exception
-     */
-    @Test
-    public void testEndpoint() throws Exception {
-        Response response = ResteasyClientBuilder.newClient()
-            .target(baseUri.toString() + "test/17").request().get();
+   /**
+    * App declares files via the web.xml
+    * @throws Exception
+    */
+   @Test
+   public void testEndpoint() throws Exception {
+      Response response = ResteasyClientBuilder.newClient()
+         .target(baseUri.toString() + "test/17").request().get();
 //        System.out.println("Status: " + response.getStatus());
-        String entity = response.readEntity(String.class);
+      String entity = response.readEntity(String.class);
 //        System.out.println("Result: " + entity);
-        assertEquals(200, response.getStatus());
-        Assert.assertEquals("17", entity);
-    }
+      assertEquals(200, response.getStatus());
+      Assert.assertEquals("17", entity);
+   }
 }

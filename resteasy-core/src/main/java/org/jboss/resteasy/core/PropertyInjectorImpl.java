@@ -143,33 +143,33 @@ public class PropertyInjectorImpl implements PropertyInjector
       {
          ret = ret.thenCompose(v -> entry.getValue().inject(request, response, unwrapAsync)
                .thenAccept(value -> {
-               try
-               {
-                  entry.getKey().set(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new InternalServerErrorException(e);
-               }
-            }));
+                  try
+                  {
+                     entry.getKey().set(target, value);
+                  }
+                  catch (IllegalAccessException e)
+                  {
+                     throw new InternalServerErrorException(e);
+                  }
+               }));
       }
       for (SetterMethod setter : setters)
       {
          ret = ret.thenCompose(v -> setter.extractor.inject(request, response, unwrapAsync)
                .thenAccept(value -> {
-               try
-               {
-                  setter.method.invoke(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new InternalServerErrorException(e);
-               }
-               catch (InvocationTargetException e)
-               {
-                  throw new ApplicationException(e.getCause());
-               }
-            }));
+                  try
+                  {
+                     setter.method.invoke(target, value);
+                  }
+                  catch (IllegalAccessException e)
+                  {
+                     throw new InternalServerErrorException(e);
+                  }
+                  catch (InvocationTargetException e)
+                  {
+                     throw new ApplicationException(e.getCause());
+                  }
+               }));
       }
       return ret;
    }
@@ -182,52 +182,52 @@ public class PropertyInjectorImpl implements PropertyInjector
       {
          ret = ret.thenCompose(v -> entry.getValue().inject(unwrapAsync)
                .thenAccept(value -> {
-               try
-               {
-                  entry.getKey().set(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new InternalServerErrorException(e);
-               }
-            }));
+                  try
+                  {
+                     entry.getKey().set(target, value);
+                  }
+                  catch (IllegalAccessException e)
+                  {
+                     throw new InternalServerErrorException(e);
+                  }
+               }));
       }
       for (SetterMethod setter : setters)
       {
          ret = ret.thenCompose(v -> setter.extractor.inject(unwrapAsync)
                .thenAccept(value -> {
-               try
-               {
-                  setter.method.invoke(target, value);
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new InternalServerErrorException(e);
-               }
-               catch (InvocationTargetException e)
-               {
-                  throw new ApplicationException(e.getCause());
-               }
-            }));
+                  try
+                  {
+                     setter.method.invoke(target, value);
+                  }
+                  catch (IllegalAccessException e)
+                  {
+                     throw new InternalServerErrorException(e);
+                  }
+                  catch (InvocationTargetException e)
+                  {
+                     throw new ApplicationException(e.getCause());
+                  }
+               }));
       }
       return ret;
    }
 
    private Field[] getDeclaredFields(final Class<?> clazz)
    {
-       final SecurityManager sm = System.getSecurityManager();
-       if (sm != null)
-       {
-          return AccessController.doPrivileged(new PrivilegedAction<Field[]>()
-          {
-             @Override
-             public Field[] run()
-             {
-                return clazz.getDeclaredFields();
-             }
-          });
-       }
-       return clazz.getDeclaredFields();
+      final SecurityManager sm = System.getSecurityManager();
+      if (sm != null)
+      {
+         return AccessController.doPrivileged(new PrivilegedAction<Field[]>()
+         {
+            @Override
+            public Field[] run()
+            {
+               return clazz.getDeclaredFields();
+            }
+         });
+      }
+      return clazz.getDeclaredFields();
    }
 
    private Method[] getDeclaredMethods(final Class<?> clazz)

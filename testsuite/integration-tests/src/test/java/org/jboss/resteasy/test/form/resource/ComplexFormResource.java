@@ -10,11 +10,11 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/")
 public class ComplexFormResource {
-    @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/person")
-    public String post(@Form ComplexFormPerson p) {
-        return p.toString();
-    }
+   @POST
+   @Produces(MediaType.TEXT_PLAIN)
+   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+   @Path("/person")
+   public String post(@Form ComplexFormPerson p) {
+      return p.toString();
+   }
 }

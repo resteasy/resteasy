@@ -35,71 +35,71 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class MediaTypeNegotiationClientQualityTest {
 
-	@Produces({ "application/x;qs=0.9", "application/y;qs=0.7" })
-	public static class CustomMessageBodyWriter1 implements MessageBodyWriter<Object> {
+   @Produces({ "application/x;qs=0.9", "application/y;qs=0.7" })
+   public static class CustomMessageBodyWriter1 implements MessageBodyWriter<Object> {
 
-		@Override
-		public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-			return true;
-		}
+      @Override
+      public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+         return true;
+      }
 
-		@Override
-		public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-			return -1;
-		}
+      @Override
+      public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+         return -1;
+      }
 
-		@Override
-		public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-				MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-				throws IOException, WebApplicationException {
-		}
+      @Override
+      public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+      }
 
-	}
+   }
 
-	public static class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
-		@Override
-		public Response toResponse(NotFoundException notFoundException) {
-			return Response.status(Status.NOT_FOUND).entity(new Object()).build();
-		}
-	}
+   public static class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
+      @Override
+      public Response toResponse(NotFoundException notFoundException) {
+         return Response.status(Status.NOT_FOUND).entity(new Object()).build();
+      }
+   }
 
-	private static Client client;
-	private static final String DEP = "MediaTypeNegotiationClientQualityTest";
+   private static Client client;
+   private static final String DEP = "MediaTypeNegotiationClientQualityTest";
 
-	@Deployment
-	public static Archive<?> deploy() {
-		WebArchive war = TestUtil.prepareArchive(DEP);
-		return TestUtil.finishContainerPrepare(war, null, CustomMessageBodyWriter1.class,
-				NotFoundExceptionMapper.class);
-	}
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(DEP);
+      return TestUtil.finishContainerPrepare(war, null, CustomMessageBodyWriter1.class,
+            NotFoundExceptionMapper.class);
+   }
 
-	@BeforeClass
-	public static void setup() {
-		client = ClientBuilder.newClient();
-	}
+   @BeforeClass
+   public static void setup() {
+      client = ClientBuilder.newClient();
+   }
 
-	@AfterClass
-	public static void cleanup() {
-		client.close();
-	}
+   @AfterClass
+   public static void cleanup() {
+      client.close();
+   }
 
-	private String generateURL() {
-		return PortProviderUtil.generateBaseUrl(DEP);
-	}
+   private String generateURL() {
+      return PortProviderUtil.generateBaseUrl(DEP);
+   }
 
-	@Test
-	public void testClientQuality() throws Exception {
-		Invocation.Builder request = client.target(generateURL()).path("echo").request("application/x;q=0.7",
-				"application/y;q=0.9");
-		Response response = request.get();
-		try {
-			Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
-			MediaType mediaType = response.getMediaType();
-			Assert.assertEquals("application", mediaType.getType());
-			Assert.assertEquals("y", mediaType.getSubtype());
-		} finally {
-			response.close();
-		}
-	}
+   @Test
+   public void testClientQuality() throws Exception {
+      Invocation.Builder request = client.target(generateURL()).path("echo").request("application/x;q=0.7",
+            "application/y;q=0.9");
+      Response response = request.get();
+      try {
+         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+         MediaType mediaType = response.getMediaType();
+         Assert.assertEquals("application", mediaType.getType());
+         Assert.assertEquals("y", mediaType.getSubtype());
+      } finally {
+         response.close();
+      }
+   }
 
 }

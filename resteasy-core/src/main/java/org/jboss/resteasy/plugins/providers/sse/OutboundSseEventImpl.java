@@ -131,10 +131,10 @@ public class OutboundSseEventImpl implements OutboundSseEvent
          
          if (data instanceof GenericEntity)
          {
-			GenericEntity<?> genericEntity = (GenericEntity<?>) data;
-			this.type = genericEntity.getRawType();
-			this.genericType = genericEntity.getType();
-			this.data = genericEntity.getEntity();
+            GenericEntity<?> genericEntity = (GenericEntity<?>) data;
+            this.type = genericEntity.getRawType();
+            this.genericType = genericEntity.getType();
+            this.data = genericEntity.getEntity();
          }
          else
          {
@@ -146,10 +146,10 @@ public class OutboundSseEventImpl implements OutboundSseEvent
 
       public OutboundSseEvent build()
       {
-        if (this.comment == null && this.data == null)
-        {
-           throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("comment or data"));
-        }
+         if (this.comment == null && this.data == null)
+         {
+            throw new IllegalArgumentException(Messages.MESSAGES.nullValueSetToCreateOutboundSseEvent("comment or data"));
+         }
          return new OutboundSseEventImpl(name, id, reconnectDelay, type, genericType, mediaType, data, comment);
       }
    }

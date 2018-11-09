@@ -1,12 +1,12 @@
 @XmlSchema(namespace = "http://www.w3.org/2005/Atom",
 //        attributeFormDefault = XmlNsForm.QUALIFIED, 
-        elementFormDefault = XmlNsForm.QUALIFIED
+      elementFormDefault = XmlNsForm.QUALIFIED
 )
 @XmlJavaTypeAdapters(
-        {
-                @XmlJavaTypeAdapter(type = URI.class, value = UriAdapter.class),
-                @XmlJavaTypeAdapter(type = MediaType.class, value = MediaTypeAdapter.class)
-        }) package org.jboss.resteasy.plugins.providers.atom;
+      {
+            @XmlJavaTypeAdapter(type = URI.class, value = UriAdapter.class),
+            @XmlJavaTypeAdapter(type = MediaType.class, value = MediaTypeAdapter.class)
+      }) package org.jboss.resteasy.plugins.providers.atom;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlNsForm;

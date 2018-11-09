@@ -6,8 +6,8 @@ package org.jboss.resteasy.jsapi.testing;
  */
 public class MinusImpl implements Minus {
 
-    @Override
-    public Integer operate(Integer operand1, Integer operand2) {
-        return operand1 - operand2;
-    }
+   @Override
+   public Integer operate(Integer operand1, Integer operand2) {
+      return operand1 - operand2;
+   }
 }

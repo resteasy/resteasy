@@ -32,6 +32,7 @@ import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.util.Types;
+import org.jboss.resteasy.util.DelegatingOutputStream;
 
 /**
  * Created by rsearls on 6/26/17.
@@ -41,7 +42,7 @@ import org.jboss.resteasy.spi.util.Types;
 @Consumes({"application/json", "application/*+json", "text/json", "*/*"})
 @Priority(Priorities.USER-100)
 public class JsonBindingProvider extends AbstractJsonBindingProvider
-        implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
+      implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
    private final boolean disabled;
    
@@ -49,7 +50,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       super();
       ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
-                || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+            || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
    }
    
    @Override
@@ -64,7 +65,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          return false;
       }
       return (isSupportedMediaType(mediaType))
-    		  && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
+            && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
    }
 
    @Override
@@ -84,7 +85,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
             return null;
          }
          // detail text provided in logger message
-         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e));
+         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e, e.getMessage()));
       }
    }
    
@@ -137,10 +138,17 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
                        MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream)
-           throws java.io.IOException, javax.ws.rs.WebApplicationException {
+         throws java.io.IOException, javax.ws.rs.WebApplicationException {
       Jsonb jsonb = getJsonb(type);
       try
       {
+         entityStream = new DelegatingOutputStream(entityStream) {
+            @Override
+            public void flush() throws IOException {
+               // don't flush as this is a performance hit on Undertow.
+               // and causes chunked encoding to happen.
+            }
+         };
          entityStream.write(jsonb.toJson(t).getBytes(getCharset(mediaType)));
          entityStream.flush();
       } catch (Throwable e)

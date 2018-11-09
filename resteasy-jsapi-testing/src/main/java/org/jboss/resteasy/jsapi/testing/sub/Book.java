@@ -9,11 +9,11 @@ import javax.ws.rs.Produces;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public interface Book {
-    @GET
-    @Path("/title")
-    @Produces("text/plain")
-    String getTitle();
+   @GET
+   @Path("/title")
+   @Produces("text/plain")
+   String getTitle();
 
-    @Path("/ch/{number}")
-    Chapter getChapter(@PathParam("number") int number);
+   @Path("/ch/{number}")
+   Chapter getChapter(@PathParam("number") int number);
 }

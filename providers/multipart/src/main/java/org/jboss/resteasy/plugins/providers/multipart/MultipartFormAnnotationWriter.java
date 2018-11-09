@@ -90,7 +90,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    }
 
    protected void getFields(Class<?> type, MultipartFormDataOutput output, Object obj)
-           throws IOException
+         throws IOException
    {
       for (Field field : type.getDeclaredFields())
       {

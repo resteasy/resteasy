@@ -71,7 +71,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
     * Gets port number of this HttpServer.
     *
     * @return port number.
-     */
+    */
    public int getPort()
    {
       return runtimePort > 0 ? runtimePort : configuredPort;

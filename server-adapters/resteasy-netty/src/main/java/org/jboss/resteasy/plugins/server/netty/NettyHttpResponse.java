@@ -101,21 +101,21 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void sendError(int status, String message) throws IOException
    {
-       if (committed) 
-       {
-           throw new IllegalStateException();
-       }
-       
-       HttpResponseStatus responseStatus = null;
-       if (message != null)
-       {
-           responseStatus = new HttpResponseStatus(status, message);
-       }
-       else
-       {
-           responseStatus = HttpResponseStatus.valueOf(status);
-       }
-       DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, responseStatus);
+      if (committed) 
+      {
+         throw new IllegalStateException();
+      }
+      
+      HttpResponseStatus responseStatus = null;
+      if (message != null)
+      {
+         responseStatus = new HttpResponseStatus(status, message);
+      }
+      else
+      {
+         responseStatus = HttpResponseStatus.valueOf(status);
+      }
+      DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, responseStatus);
       if (keepAlive)
       {
          // Add keep alive and content length if needed
@@ -123,8 +123,8 @@ public class NettyHttpResponse implements HttpResponse
             .add(Names.CONNECTION, Values.KEEP_ALIVE)
             .add(Names.CONTENT_LENGTH, 0);
       }
-       channel.write(response);
-       committed = true;
+      channel.write(response);
+      committed = true;
    }
 
    @Override
@@ -146,7 +146,7 @@ public class NettyHttpResponse implements HttpResponse
    }
    
    public boolean isKeepAlive() {
-       return keepAlive;
+      return keepAlive;
    }
 
    public HttpMethod getMethod() {
@@ -155,7 +155,7 @@ public class NettyHttpResponse implements HttpResponse
 
    @Override
    public void flushBuffer() throws IOException {
-	   underlyingOutputStream.flush();
+      underlyingOutputStream.flush();
    }
 
 }

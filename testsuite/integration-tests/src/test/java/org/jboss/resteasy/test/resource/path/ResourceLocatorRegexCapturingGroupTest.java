@@ -34,88 +34,88 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ResourceLocatorRegexCapturingGroupTest {
-    private static final String ERROR_MSG = "Response contain wrong content";
-    static Client client;
+   private static final String ERROR_MSG = "Response contain wrong content";
+   static Client client;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResourceLocatorRegexCapturingGroupTest.class.getSimpleName());
-        war.addClasses(ResourceLocatorRegexCapturingGroupSubResourceNoPath.class,
-            ResourceLocatorRegexCapturingGroupSubResourceWithPath.class);
-        war.addAsWebInfResource(ResourceLocatorRegexCapturingGroupTest.class.getPackage(), "web.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, ResourceLocatorRegexCapturingGroup.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ResourceLocatorRegexCapturingGroupTest.class.getSimpleName());
+      war.addClasses(ResourceLocatorRegexCapturingGroupSubResourceNoPath.class,
+         ResourceLocatorRegexCapturingGroupSubResourceWithPath.class);
+      war.addAsWebInfResource(ResourceLocatorRegexCapturingGroupTest.class.getPackage(), "web.xml", "web.xml");
+      return TestUtil.finishContainerPrepare(war, null, ResourceLocatorRegexCapturingGroup.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResourceLocatorRegexCapturingGroupTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResourceLocatorRegexCapturingGroupTest.class.getSimpleName());
+   }
 
-    @AfterClass
-    public static void close() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void close() throws Exception {
+      client.close();
+   }
 
-    @AfterClass
-    public static void after() throws Exception {
+   @AfterClass
+   public static void after() throws Exception {
 
-    }
+   }
 
-    /**
-     * @tpTestDetails Test for root resource and for subresource.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testBasic() throws Exception {
-        {
-            Response response = client.target(generateURL("/capture/basic")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "basic success", response.readEntity(String.class));
-            response.close();
-        }
-        {
-            Response response = client.target(generateURL("/capture/BASIC/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "BASIC test", response.readEntity(String.class));
-            response.close();
-        }
-    }
+   /**
+    * @tpTestDetails Test for root resource and for subresource.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testBasic() throws Exception {
+      {
+         Response response = client.target(generateURL("/capture/basic")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "basic success", response.readEntity(String.class));
+         response.close();
+      }
+      {
+         Response response = client.target(generateURL("/capture/BASIC/test")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "BASIC test", response.readEntity(String.class));
+         response.close();
+      }
+   }
 
-    @Test
-    public void testBird() throws Exception {
-        {
-            Response response = client.target(generateURL("/capture/nobird")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "nobird success", response.readEntity(String.class));
-            response.close();
-        }
+   @Test
+   public void testBird() throws Exception {
+      {
+         Response response = client.target(generateURL("/capture/nobird")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "nobird success", response.readEntity(String.class));
+         response.close();
+      }
 
-        {
-            Response response = client.target(generateURL("/capture/BIRD/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "BIRD test", response.readEntity(String.class));
-            response.close();
-        }
-    }
+      {
+         Response response = client.target(generateURL("/capture/BIRD/test")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "BIRD test", response.readEntity(String.class));
+         response.close();
+      }
+   }
 
-    @Test
-    public void testFly() throws Exception {
-        {
-            Response response = client.target(generateURL("/capture/a/nofly/b")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/nofly/b success", response.readEntity(String.class));
-            response.close();
-        }
+   @Test
+   public void testFly() throws Exception {
+      {
+         Response response = client.target(generateURL("/capture/a/nofly/b")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "a/nofly/b success", response.readEntity(String.class));
+         response.close();
+      }
 
-        {
-            Response response = client.target(generateURL("/capture/a/FLY/b/test")).request().get();
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            Assert.assertEquals(ERROR_MSG, "a/FLY/b test", response.readEntity(String.class));
-            response.close();
-        }
-    }
+      {
+         Response response = client.target(generateURL("/capture/a/FLY/b/test")).request().get();
+         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+         Assert.assertEquals(ERROR_MSG, "a/FLY/b test", response.readEntity(String.class));
+         response.close();
+      }
+   }
 }

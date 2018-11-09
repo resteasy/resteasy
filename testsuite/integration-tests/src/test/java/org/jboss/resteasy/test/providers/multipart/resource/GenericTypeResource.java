@@ -16,18 +16,18 @@ import java.util.List;
 
 @Path("")
 public class GenericTypeResource {
-    @POST
-    @Path("test")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response testInputPartSetMediaType(MultipartInput input) throws IOException {
-        List<InputPart> parts = input.getParts();
-        InputPart part = parts.get(0);
-        List<String> body = part.getBody(GenericTypeMultipartTest.stringListType);
-        String reply = "";
-        for (Iterator<String> it = body.iterator(); it.hasNext(); ) {
-            reply += it.next() + " ";
-        }
-        return Response.ok(reply).build();
-    }
+   @POST
+   @Path("test")
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response testInputPartSetMediaType(MultipartInput input) throws IOException {
+      List<InputPart> parts = input.getParts();
+      InputPart part = parts.get(0);
+      List<String> body = part.getBody(GenericTypeMultipartTest.stringListType);
+      String reply = "";
+      for (Iterator<String> it = body.iterator(); it.hasNext(); ) {
+         reply += it.next() + " ";
+      }
+      return Response.ok(reply).build();
+   }
 }

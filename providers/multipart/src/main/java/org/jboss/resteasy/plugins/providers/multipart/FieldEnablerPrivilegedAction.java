@@ -18,15 +18,15 @@ import java.security.PrivilegedAction;
  * 
  */
 public class FieldEnablerPrivilegedAction implements PrivilegedAction<Object> {
-	private final Field field;
+   private final Field field;
 
-	public FieldEnablerPrivilegedAction(Field field) {
-		super();
-		this.field = field;
-	}
+   public FieldEnablerPrivilegedAction(Field field) {
+      super();
+      this.field = field;
+   }
 
-	public Object run() {
-		field.setAccessible(true);
-		return null;
-	}
+   public Object run() {
+      field.setAccessible(true);
+      return null;
+   }
 }

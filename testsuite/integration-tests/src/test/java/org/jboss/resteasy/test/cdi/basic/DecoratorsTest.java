@@ -57,76 +57,76 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class DecoratorsTest {
 
-    private static Logger log = Logger.getLogger(DecoratorsTest.class);
+   private static Logger log = Logger.getLogger(DecoratorsTest.class);
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(DecoratorsTest.class.getSimpleName())
-            .addClasses(Constants.class, UtilityProducer.class, Utilities.class, DecoratorsVisitList.class, PortProviderUtil.class)
-            .addClasses(DecoratorsResourceIntf.class, DecoratorsResource.class, EJBBook.class)
-            .addClasses(DecoratorsBookReaderInterceptorDecorator.class, DecoratorsBookReaderInterceptor.class)
-            .addClasses(DecoratorsBookReaderDecorator.class, DecoratorsBookReader.class)
-            .addClasses(DecoratorsBookWriterInterceptorDecorator.class, DecoratorsBookWriterInterceptor.class)
-            .addClasses(DecoratorsBookWriterDecorator.class, DecoratorsBookWriter.class)
-            .addClasses(DecoratorsResourceBinding.class, DecoratorsResourceInterceptor.class, DecoratorsResourceDecorator.class)
-            .addClasses(DecoratorsFilterBinding.class, DecoratorsTestRequestFilter.class, DecoratorsRequestFilterDecorator.class)
-            .addClasses(DecoratorsResponseFilter.class, DecoratorsResponseFilterDecorator.class)
-            .addAsWebInfResource(DecoratorsTest.class.getPackage(), "decoratorBeans.xml", "beans.xml");
-        return war;
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(DecoratorsTest.class.getSimpleName())
+         .addClasses(Constants.class, UtilityProducer.class, Utilities.class, DecoratorsVisitList.class, PortProviderUtil.class)
+         .addClasses(DecoratorsResourceIntf.class, DecoratorsResource.class, EJBBook.class)
+         .addClasses(DecoratorsBookReaderInterceptorDecorator.class, DecoratorsBookReaderInterceptor.class)
+         .addClasses(DecoratorsBookReaderDecorator.class, DecoratorsBookReader.class)
+         .addClasses(DecoratorsBookWriterInterceptorDecorator.class, DecoratorsBookWriterInterceptor.class)
+         .addClasses(DecoratorsBookWriterDecorator.class, DecoratorsBookWriter.class)
+         .addClasses(DecoratorsResourceBinding.class, DecoratorsResourceInterceptor.class, DecoratorsResourceDecorator.class)
+         .addClasses(DecoratorsFilterBinding.class, DecoratorsTestRequestFilter.class, DecoratorsRequestFilterDecorator.class)
+         .addClasses(DecoratorsResponseFilter.class, DecoratorsResponseFilterDecorator.class)
+         .addAsWebInfResource(DecoratorsTest.class.getPackage(), "decoratorBeans.xml", "beans.xml");
+      return war;
+   }
 
-    private ResteasyProviderFactory factory;
-    @Before
-    public void setup() {
-        // Create an instance and set it as the singleton to use
-        factory = ResteasyProviderFactory.newInstance();
-        ResteasyProviderFactory.setInstance(factory);
-        RegisterBuiltin.register(factory);
-    }
-    @After
-    public void cleanup() {
-        // Clear the singleton
-        ResteasyProviderFactory.clearInstanceIfEqual(factory);
-    }
+   private ResteasyProviderFactory factory;
+   @Before
+   public void setup() {
+      // Create an instance and set it as the singleton to use
+      factory = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory.setInstance(factory);
+      RegisterBuiltin.register(factory);
+   }
+   @After
+   public void cleanup() {
+      // Clear the singleton
+      ResteasyProviderFactory.clearInstanceIfEqual(factory);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, DecoratorsTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, DecoratorsTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Store Book to server, received it and check decorator usage.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDecorators() throws Exception {
-        Client client = ClientBuilder.newClient();
+   /**
+    * @tpTestDetails Store Book to server, received it and check decorator usage.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDecorators() throws Exception {
+      Client client = ClientBuilder.newClient();
 
-        // Create book.
-        WebTarget base = client.target(generateURL("/create/"));
-        EJBBook book = new EJBBook("RESTEasy: the Sequel");
-        Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML_TYPE));
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        log.info("Status: " + response.getStatus());
-        int id = response.readEntity(int.class);
-        log.info("id: " + id);
-        assertEquals("Wrong id of received book", 0, id);
-        response.close();
+      // Create book.
+      WebTarget base = client.target(generateURL("/create/"));
+      EJBBook book = new EJBBook("RESTEasy: the Sequel");
+      Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML_TYPE));
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      log.info("Status: " + response.getStatus());
+      int id = response.readEntity(int.class);
+      log.info("id: " + id);
+      assertEquals("Wrong id of received book", 0, id);
+      response.close();
 
-        // Retrieve book.
-        base = client.target(generateURL("/book/" + id));
-        response = base.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        EJBBook result = response.readEntity(EJBBook.class);
-        log.info("book: " + book);
-        assertEquals("Wrong received book", book, result);
-        response.close();
+      // Retrieve book.
+      base = client.target(generateURL("/book/" + id));
+      response = base.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      EJBBook result = response.readEntity(EJBBook.class);
+      log.info("book: " + book);
+      assertEquals("Wrong received book", book, result);
+      response.close();
 
-        // Test order of decorator invocations.
-        base = client.target(generateURL("/test/"));
-        response = base.request().post(Entity.text(new String()));
-        assertEquals("Wrong decorator usage", HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
+      // Test order of decorator invocations.
+      base = client.target(generateURL("/test/"));
+      response = base.request().post(Entity.text(new String()));
+      assertEquals("Wrong decorator usage", HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
 
-        client.close();
-    }
+      client.close();
+   }
 }

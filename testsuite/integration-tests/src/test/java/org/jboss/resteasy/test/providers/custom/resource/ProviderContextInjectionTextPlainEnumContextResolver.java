@@ -10,6 +10,6 @@ import javax.ws.rs.ext.Provider;
 public class ProviderContextInjectionTextPlainEnumContextResolver implements ContextResolver<ProviderContextInjectionEnumProvider> {
     @Override
     public ProviderContextInjectionEnumProvider getContext(Class<?> type) {
-        return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.CTS : null;
+        return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.JAXRS : null;
     }
 }

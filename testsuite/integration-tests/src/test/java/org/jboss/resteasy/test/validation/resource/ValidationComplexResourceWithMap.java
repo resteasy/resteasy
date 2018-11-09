@@ -7,14 +7,14 @@ import javax.ws.rs.PathParam;
 
 @Path("/{s}")
 public class ValidationComplexResourceWithMap {
-    @Valid
-    ValidationComplexMapOfStrings mos;
+   @Valid
+   ValidationComplexMapOfStrings mos;
 
-    public ValidationComplexResourceWithMap(@PathParam("s") final String s) {
-        mos = new ValidationComplexMapOfStrings(s);
-    }
+   public ValidationComplexResourceWithMap(@PathParam("s") final String s) {
+      mos = new ValidationComplexMapOfStrings(s);
+   }
 
-    @POST
-    public void post() {
-    }
+   @POST
+   public void post() {
+   }
 }

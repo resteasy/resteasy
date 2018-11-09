@@ -17,56 +17,56 @@ import java.util.Date;
 
 @Provider
 public class ResponseGetAnnotationsDateClientReaderWriter implements MessageBodyReader<Date>,
-        MessageBodyWriter<Date> {
-    private StringBuilder atom;
+      MessageBodyWriter<Date> {
+   private StringBuilder atom;
 
-    public ResponseGetAnnotationsDateClientReaderWriter(final StringBuilder atom) {
-        super();
-        this.atom = atom;
-    }
+   public ResponseGetAnnotationsDateClientReaderWriter(final StringBuilder atom) {
+      super();
+      this.atom = atom;
+   }
 
-    @Override
-    public long getSize(Date arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
-                        MediaType arg4) {
-        return String.valueOf(Long.MAX_VALUE).length()
-                + ResponseGetAnnotationsDateContainerReaderWriter.SPLITTER.length();
-    }
+   @Override
+   public long getSize(Date arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
+                  MediaType arg4) {
+      return String.valueOf(Long.MAX_VALUE).length()
+            + ResponseGetAnnotationsDateContainerReaderWriter.SPLITTER.length();
+   }
 
-    @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
+   @Override
+   public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
                                MediaType arg3) {
-        return arg0 == Date.class;
-    }
+      return arg0 == Date.class;
+   }
 
-    @Override
-    public void writeTo(Date date, Class<?> arg1, Type arg2, Annotation[] arg3,
-                        MediaType arg4, MultivaluedMap<String, Object> arg5,
-                        OutputStream stream) throws IOException, WebApplicationException {
-        byte[] bytes = dateToString(date).getBytes();
-        stream.write(bytes);
-    }
+   @Override
+   public void writeTo(Date date, Class<?> arg1, Type arg2, Annotation[] arg3,
+                  MediaType arg4, MultivaluedMap<String, Object> arg5,
+                  OutputStream stream) throws IOException, WebApplicationException {
+      byte[] bytes = dateToString(date).getBytes();
+      stream.write(bytes);
+   }
 
-    @Override
-    public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
+   @Override
+   public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
                               MediaType arg3) {
-        return isWriteable(arg0, arg1, arg2, arg3);
-    }
+      return isWriteable(arg0, arg1, arg2, arg3);
+   }
 
-    @Override
-    public Date readFrom(Class<Date> arg0, Type arg1, Annotation[] arg2,
+   @Override
+   public Date readFrom(Class<Date> arg0, Type arg1, Annotation[] arg2,
                          MediaType arg3, MultivaluedMap<String, String> arg4,
                          InputStream arg5) throws IOException, WebApplicationException {
-        InputStreamReader reader = new InputStreamReader(arg5);
-        BufferedReader br = new BufferedReader(reader);
-        String data = br.readLine();
-        String[] split = data == null ? new String[]{"0"} : data
-                .split(ResponseGetAnnotationsDateContainerReaderWriter.SPLITTER);
-        long date = Long.parseLong(split[0]);
-        atom.append(split[1]);
-        return new Date(date);
-    }
+      InputStreamReader reader = new InputStreamReader(arg5);
+      BufferedReader br = new BufferedReader(reader);
+      String data = br.readLine();
+      String[] split = data == null ? new String[]{"0"} : data
+            .split(ResponseGetAnnotationsDateContainerReaderWriter.SPLITTER);
+      long date = Long.parseLong(split[0]);
+      atom.append(split[1]);
+      return new Date(date);
+   }
 
-    public static final String dateToString(Date date) {
-        return String.valueOf(date.getTime());
-    }
+   public static final String dateToString(Date date) {
+      return String.valueOf(date.getTime());
+   }
 }

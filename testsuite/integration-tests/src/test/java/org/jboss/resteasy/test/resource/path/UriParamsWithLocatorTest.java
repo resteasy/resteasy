@@ -31,53 +31,53 @@ import javax.ws.rs.core.Response;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class UriParamsWithLocatorTest {
-    static Client client;
+   static Client client;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+   @BeforeClass
+   public static void setup() throws Exception {
+      client = ClientBuilder.newClient();
+   }
 
-    @Deployment(name = "one")
-    public static Archive<?> deploy1() {
-        WebArchive war = TestUtil.prepareArchive("one");
-        war.addClass(UriParamsWithLocatorResource.class);
-        return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator.class);
-    }
+   @Deployment(name = "one")
+   public static Archive<?> deploy1() {
+      WebArchive war = TestUtil.prepareArchive("one");
+      war.addClass(UriParamsWithLocatorResource.class);
+      return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator.class);
+   }
 
-    @Deployment(name = "two")
-    public static Archive<?> deploy2() {
-        WebArchive war = TestUtil.prepareArchive("two");
-        war.addClass(UriParamsWithLocatorResource2.class);
-        return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator2.class);
-    }
+   @Deployment(name = "two")
+   public static Archive<?> deploy2() {
+      WebArchive war = TestUtil.prepareArchive("two");
+      war.addClass(UriParamsWithLocatorResource2.class);
+      return TestUtil.finishContainerPrepare(war, null, UriParamsWithLocatorLocator2.class);
+   }
 
-    @AfterClass
-    public static void close() throws Exception {
-        client.close();
-    }
+   @AfterClass
+   public static void close() throws Exception {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails CTest double ID as String in resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDoubleId() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/1/2", "one"))
-                .request().get();
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails CTest double ID as String in resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDoubleId() throws Exception {
+      Response response = client.target(PortProviderUtil.generateURL("/1/2", "one"))
+            .request().get();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      response.close();
+   }
 
-    /**
-     * @tpTestDetails CTest double ID as PathSegment in resource
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testDoubleIdAsPathSegment() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/1/2", "two"))
-                .request().get();
-        Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        response.close();
-    }
+   /**
+    * @tpTestDetails CTest double ID as PathSegment in resource
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testDoubleIdAsPathSegment() throws Exception {
+      Response response = client.target(PortProviderUtil.generateURL("/1/2", "two"))
+            .request().get();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      response.close();
+   }
 }

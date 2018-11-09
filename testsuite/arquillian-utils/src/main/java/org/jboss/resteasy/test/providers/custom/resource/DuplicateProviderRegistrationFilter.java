@@ -8,10 +8,10 @@ import javax.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
 
 public class DuplicateProviderRegistrationFilter implements ClientRequestFilter {
-    private static Logger logger = Logger.getLogger(DuplicateProviderRegistrationFilter.class);
+   private static Logger logger = Logger.getLogger(DuplicateProviderRegistrationFilter.class);
 
-    @Override
-    public void filter(ClientRequestContext clientRequestContext) throws IOException {
-        logger.info(DuplicateProviderRegistrationFilter.class.getName());
-    }
+   @Override
+   public void filter(ClientRequestContext clientRequestContext) throws IOException {
+      logger.info(DuplicateProviderRegistrationFilter.class.getName());
+   }
 }

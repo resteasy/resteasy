@@ -24,4 +24,4 @@ public class CustomJacksonProvider extends ResteasyJackson2Provider {
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       this.setMapper(mapper);
    }
- }
+}

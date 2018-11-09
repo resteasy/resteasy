@@ -264,7 +264,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T options(Class<T> responseType)
    {
       return build(HttpMethod.OPTIONS).invoke(responseType);
-  }
+   }
 
    @Override
    public <T> T options(GenericType<T> responseType)

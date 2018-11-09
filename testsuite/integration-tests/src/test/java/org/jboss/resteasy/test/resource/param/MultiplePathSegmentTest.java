@@ -43,12 +43,12 @@ public class MultiplePathSegmentTest {
 
    @BeforeClass
    public static void setup() {
-       client = ClientBuilder.newClient();
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void cleanup() {
-       client.close();
+      client.close();
    }
    
    /**

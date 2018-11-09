@@ -16,31 +16,31 @@ import javax.ws.rs.core.Response;
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public interface GenericSuperInterfaceDataCentersResource {
 
-    @GET
-    @Formatted
-    GenericSuperInterfaceDataCenters list();
+   @GET
+   @Formatted
+   GenericSuperInterfaceDataCenters list();
 
-    @POST
-    @Formatted
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response add(GenericSuperInterfaceDataCenter dataCenter);
+   @POST
+   @Formatted
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   Response add(GenericSuperInterfaceDataCenter dataCenter);
 
-    @DELETE
-    @Path("{id}")
-    Response remove(@PathParam("id") String id);
+   @DELETE
+   @Path("{id}")
+   Response remove(@PathParam("id") String id);
 
-    @DELETE
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{id}")
-    Response remove(@PathParam("id") String id, GenericSuperInterfaceAction action);
+   @DELETE
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Path("{id}")
+   Response remove(@PathParam("id") String id, GenericSuperInterfaceAction action);
 
-    /**
-     * Sub-resource locator method, returns individual GenericSuperInterfaceDataCenterResource on which the
-     * remainder of the URI is dispatched.
-     *
-     * @param id the GenericSuperInterfaceDataCenter ID
-     * @return matching subresource if found
-     */
-    @Path("{id}")
-    GenericSuperInterfaceDataCenterResource getDataCenterSubResource(@PathParam("id") String id);
+   /**
+    * Sub-resource locator method, returns individual GenericSuperInterfaceDataCenterResource on which the
+    * remainder of the URI is dispatched.
+    *
+    * @param id the GenericSuperInterfaceDataCenter ID
+    * @return matching subresource if found
+    */
+   @Path("{id}")
+   GenericSuperInterfaceDataCenterResource getDataCenterSubResource(@PathParam("id") String id);
 }

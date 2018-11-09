@@ -14,8 +14,8 @@ import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
 @Produces({"application/fastinfoset", "application/*+fastinfoset"})
 public class FastInfosetCollectionProvider extends CollectionProvider {
 
-  @Override
-  protected boolean needsSecurity() {
-    return false;
-  }
+   @Override
+   protected boolean needsSecurity() {
+      return false;
+   }
 }

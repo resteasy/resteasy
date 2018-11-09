@@ -9,9 +9,9 @@ import javax.ws.rs.core.Response;
 @Produces("text/plain")
 public class CustomContextProviderPreferenceResource {
 
-    @GET
-    @Path("test")
-    public Response test() {
-        return Response.status(CustomContextProviderPreferenceResolver.entered ? 200 : 444).build();
-    }
+   @GET
+   @Path("test")
+   public Response test() {
+      return Response.status(CustomContextProviderPreferenceResolver.entered ? 200 : 444).build();
+   }
 }

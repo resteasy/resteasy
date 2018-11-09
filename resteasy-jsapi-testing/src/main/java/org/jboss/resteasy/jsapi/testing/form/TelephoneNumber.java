@@ -8,22 +8,22 @@ import javax.ws.rs.FormParam;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class TelephoneNumber {
-    @FormParam("countryCode") private String countryCode;
-    @FormParam("number") private String number;
+   @FormParam("countryCode") private String countryCode;
+   @FormParam("number") private String number;
 
-    public String getCountryCode() {
-        return countryCode;
-    }
+   public String getCountryCode() {
+      return countryCode;
+   }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
+   public void setCountryCode(String countryCode) {
+      this.countryCode = countryCode;
+   }
 
-    public String getNumber() {
-        return number;
-    }
+   public String getNumber() {
+      return number;
+   }
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
+   public void setNumber(String number) {
+      this.number = number;
+   }
 }

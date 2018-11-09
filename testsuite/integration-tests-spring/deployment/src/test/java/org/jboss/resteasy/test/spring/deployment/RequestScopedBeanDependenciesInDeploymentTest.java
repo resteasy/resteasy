@@ -43,51 +43,51 @@ import static org.junit.Assert.assertEquals;
 @RunAsClient
 public class RequestScopedBeanDependenciesInDeploymentTest {
 
-    @Deployment
-    private static Archive<?> deploy() {
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, RequestScopedBeanDependenciesInDeploymentTest.class.getSimpleName() + ".war")
-                .addAsWebInfResource(RequestScopedBeanDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
-        archive.addAsWebInfResource(RequestScopedBeanDependenciesInDeploymentTest.class.getPackage(), "requestScopedBean/spring-request-scope-test-server.xml", "applicationContext.xml");
-        archive.addClass(RequestScopedBeanDependenciesInDeploymentTest.class);
-        archive.addClass(RequestScopedBeanQualifierInjectorFactoryImpl.class);
-        archive.addClass(RequestScopedBeanInnerBean.class);
-        archive.addClass(RequestScopedBeanInnerBeanImpl.class);
-        archive.addClass(RequestScopedBeanTestBean.class);
-        archive.addClass(RequestScopedBeanBean.class);
-        archive.addClass(RequestScopedBeanTestBeanResource.class);
-        archive.addClass(RequestScopedBeanBeanFactoryBean.class);
+   @Deployment
+   private static Archive<?> deploy() {
+      WebArchive archive = ShrinkWrap.create(WebArchive.class, RequestScopedBeanDependenciesInDeploymentTest.class.getSimpleName() + ".war")
+            .addAsWebInfResource(RequestScopedBeanDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
+      archive.addAsWebInfResource(RequestScopedBeanDependenciesInDeploymentTest.class.getPackage(), "requestScopedBean/spring-request-scope-test-server.xml", "applicationContext.xml");
+      archive.addClass(RequestScopedBeanDependenciesInDeploymentTest.class);
+      archive.addClass(RequestScopedBeanQualifierInjectorFactoryImpl.class);
+      archive.addClass(RequestScopedBeanInnerBean.class);
+      archive.addClass(RequestScopedBeanInnerBeanImpl.class);
+      archive.addClass(RequestScopedBeanTestBean.class);
+      archive.addClass(RequestScopedBeanBean.class);
+      archive.addClass(RequestScopedBeanTestBeanResource.class);
+      archive.addClass(RequestScopedBeanBeanFactoryBean.class);
 
-        // Permission needed for "arquillian.debug" to run
-        // "suppressAccessChecks" required for access to arquillian-core.jar
-        // remaining permissions needed to run springframework
-        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+      // Permission needed for "arquillian.debug" to run
+      // "suppressAccessChecks" required for access to arquillian-core.jar
+      // remaining permissions needed to run springframework
+      archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new PropertyPermission("arquillian.*", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
-        ), "permissions.xml");
+      ), "permissions.xml");
 
-        TestUtilSpring.addSpringLibraries(archive);
-        return archive;
-    }
+      TestUtilSpring.addSpringLibraries(archive);
+      return archive;
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, RequestScopedBeanDependenciesInDeploymentTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, RequestScopedBeanDependenciesInDeploymentTest.class.getSimpleName());
+   }
 
-    /**
-     * @tpTestDetails Test request bean defined in xml spring settings
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testBean() throws Exception {
-        Client client = ResteasyClientBuilder.newClient();
-        WebTarget target = client.target(generateURL("/"));
-        Response response = target.request().accept(MediaType.TEXT_PLAIN_TYPE).get();
+   /**
+    * @tpTestDetails Test request bean defined in xml spring settings
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testBean() throws Exception {
+      Client client = ResteasyClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/"));
+      Response response = target.request().accept(MediaType.TEXT_PLAIN_TYPE).get();
 
-        String result = response.readEntity(String.class);
-        assertEquals("Request bean could not be injected", "configuredValue", result);
-    }
+      String result = response.readEntity(String.class);
+      assertEquals("Request bean could not be injected", "configuredValue", result);
+   }
 
 }

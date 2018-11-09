@@ -12,20 +12,20 @@ import javax.servlet.ServletResponse;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyObjectWriterInjector;
 
 public class ObjectWriterModifierConditionalFilter implements Filter {
-    private static ObjectFilterModifierConditional modifier = new ObjectFilterModifierConditional();
+   private static ObjectFilterModifierConditional modifier = new ObjectFilterModifierConditional();
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+   @Override
+   public void init(FilterConfig filterConfig) throws ServletException {
+   }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
+   @Override
+   public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-        ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
-        chain.doFilter(request, response);
-    }
+      ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
+      chain.doFilter(request, response);
+   }
 
-    @Override
-    public void destroy() {
-    }
+   @Override
+   public void destroy() {
+   }
 }

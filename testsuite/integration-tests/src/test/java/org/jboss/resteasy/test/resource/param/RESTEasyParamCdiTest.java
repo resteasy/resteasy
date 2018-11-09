@@ -35,69 +35,69 @@ import static org.hamcrest.CoreMatchers.is;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class RESTEasyParamCdiTest {
-    protected static final Logger logger = Logger.getLogger(JsonBindingTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(JsonBindingTest.class.getName());
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploySimpleResource() {
-        WebArchive war = TestUtil.prepareArchive(RESTEasyParamCdiTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, RESTEasyParamCdiResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploySimpleResource() {
+      WebArchive war = TestUtil.prepareArchive(RESTEasyParamCdiTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, RESTEasyParamCdiResource.class);
+   }
 
-    @Before
-    public void init() {
-        client = (ResteasyClient)ClientBuilder.newClient();
-    }
+   @Before
+   public void init() {
+      client = (ResteasyClient)ClientBuilder.newClient();
+   }
 
-    @After
-    public void after() throws Exception {
-        client.close();
-    }
+   @After
+   public void after() throws Exception {
+      client.close();
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, RESTEasyParamCdiTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, RESTEasyParamCdiTest.class.getSimpleName());
+   }
 
 
-    /**
-     * @tpTestDetails Checks end-point with @RequestScoped annotation
-     * @tpSince RESTEasy 3.6
-     */
-    @Test
-    public void requestScopedTest() throws Exception {
-        for (Integer i = 0; i < 100; i++) {
-            logger.info("Request " + i);
-            String defaultValue = i.toString();
-            Response response = client.target(generateURL(String.format("/%d/%d/%d/%d",
-                    i, i, i, i)))
-                    .queryParam("queryParam0", defaultValue)
-                    .queryParam("queryParam1", defaultValue)
-                    .queryParam("queryParam2", defaultValue)
-                    .queryParam("queryParam3", defaultValue)
-                    .matrixParam("matrixParam0", defaultValue)
-                    .matrixParam("matrixParam1", defaultValue)
-                    .matrixParam("matrixParam2", defaultValue)
-                    .matrixParam("matrixParam3", defaultValue)
-                    .request()
-                    .header("headerParam0", defaultValue)
-                    .header("headerParam1", defaultValue)
-                    .header("headerParam2", defaultValue)
-                    .header("headerParam3", defaultValue)
-                    .cookie("cookieParam0", defaultValue)
-                    .cookie("cookieParam1", defaultValue)
-                    .cookie("cookieParam2", defaultValue)
-                    .cookie("cookieParam3", defaultValue)
-                    .post(Entity.form(new Form()
-                            .param("formParam0", defaultValue)
-                            .param("formParam1", defaultValue)
-                            .param("formParam2", defaultValue)
-                            .param("formParam3", defaultValue)
-                    ));
-            Assert.assertThat("expected response code is 200, get: " + response.getStatus(),
-                    response.getStatus(), is(200));
-            String message = response.readEntity(String.class);
-            Assert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
-        }
-    }
+   /**
+    * @tpTestDetails Checks end-point with @RequestScoped annotation
+    * @tpSince RESTEasy 3.6
+    */
+   @Test
+   public void requestScopedTest() throws Exception {
+      for (Integer i = 0; i < 100; i++) {
+         logger.info("Request " + i);
+         String defaultValue = i.toString();
+         Response response = client.target(generateURL(String.format("/%d/%d/%d/%d",
+            i, i, i, i)))
+            .queryParam("queryParam0", defaultValue)
+            .queryParam("queryParam1", defaultValue)
+            .queryParam("queryParam2", defaultValue)
+            .queryParam("queryParam3", defaultValue)
+            .matrixParam("matrixParam0", defaultValue)
+            .matrixParam("matrixParam1", defaultValue)
+            .matrixParam("matrixParam2", defaultValue)
+            .matrixParam("matrixParam3", defaultValue)
+            .request()
+            .header("headerParam0", defaultValue)
+            .header("headerParam1", defaultValue)
+            .header("headerParam2", defaultValue)
+            .header("headerParam3", defaultValue)
+            .cookie("cookieParam0", defaultValue)
+            .cookie("cookieParam1", defaultValue)
+            .cookie("cookieParam2", defaultValue)
+            .cookie("cookieParam3", defaultValue)
+            .post(Entity.form(new Form()
+                  .param("formParam0", defaultValue)
+                  .param("formParam1", defaultValue)
+                  .param("formParam2", defaultValue)
+                  .param("formParam3", defaultValue)
+            ));
+         Assert.assertThat("expected response code is 200, get: " + response.getStatus(),
+            response.getStatus(), is(200));
+         String message = response.readEntity(String.class);
+         Assert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
+      }
+   }
 }

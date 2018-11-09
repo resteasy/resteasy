@@ -27,13 +27,13 @@ import org.jboss.arquillian.test.api.ArquillianResource;
  */
 public abstract class ClientTestBase {
 
-    @ArquillianResource
-    URI baseUri;
+   @ArquillianResource
+   URI baseUri;
 
-    protected String generateURL(String path) {
-        if (path.startsWith("/")){
-            path = path.substring(1);
-        }
-        return baseUri.resolve(path).toString();
-    }
+   protected String generateURL(String path) {
+      if (path.startsWith("/")){
+         path = path.substring(1);
+      }
+      return baseUri.resolve(path).toString();
+   }
 }

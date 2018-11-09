@@ -5,14 +5,14 @@ import javax.ws.rs.Path;
 
 @Path("resource")
 public class UriBuilderResource {
-    @Path("method")
-    @GET
-    public String get() {
-        return "";
-    }
+   @Path("method")
+   @GET
+   public String get() {
+      return "";
+   }
 
-    @Path("locator")
-    public Object locator() {
-        return null;
-    }
+   @Path("locator")
+   public Object locator() {
+      return null;
+   }
 }

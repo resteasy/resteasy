@@ -15,6 +15,6 @@ import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
  */
 @Provider
 public class ValidatorContextResolverCDI extends AbstractValidatorContextResolver
-implements ContextResolver<GeneralValidatorCDI>
+   implements ContextResolver<GeneralValidatorCDI>
 {
 }

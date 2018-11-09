@@ -35,32 +35,32 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SpecializedInheritanceTest {
-    protected static final Logger log = LogManager.getLogger(SpecializedInheritanceTest.class.getName());
+   protected static final Logger log = LogManager.getLogger(SpecializedInheritanceTest.class.getName());
 
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(SpecializedInheritanceTest.class.getSimpleName());
-        war.addClasses(UtilityProducer.class)
-                .addClasses(CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class)
-                .addClasses(CDIInheritenceBook.class, CDIInheritenceBookSpecialized.class, CDIInheritenceInheritanceResource.class)
-                .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "specializedBeans.xml", "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(SpecializedInheritanceTest.class.getSimpleName());
+      war.addClasses(UtilityProducer.class)
+            .addClasses(CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class)
+            .addClasses(CDIInheritenceBook.class, CDIInheritenceBookSpecialized.class, CDIInheritenceInheritanceResource.class)
+            .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "specializedBeans.xml", "beans.xml");
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
+   }
 
-    /**
-     * @tpTestDetails Client get request. Resource check inheritance bean on server.
-     * @tpPassCrit Response status should not contain error.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAlternative() throws Exception {
-        Client client = ClientBuilder.newClient();
-        log.info("starting testAlternative()");
-        WebTarget base = client.target(PortProviderUtil.generateURL("/specialized/", SpecializedInheritanceTest.class.getSimpleName()));
-        Response response = base.request().get();
-        log.info("Response status: " + response.getStatus());
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
-        client.close();
-    }
+   /**
+    * @tpTestDetails Client get request. Resource check inheritance bean on server.
+    * @tpPassCrit Response status should not contain error.
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void testAlternative() throws Exception {
+      Client client = ClientBuilder.newClient();
+      log.info("starting testAlternative()");
+      WebTarget base = client.target(PortProviderUtil.generateURL("/specialized/", SpecializedInheritanceTest.class.getSimpleName()));
+      Response response = base.request().get();
+      log.info("Response status: " + response.getStatus());
+      assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      response.close();
+      client.close();
+   }
 }

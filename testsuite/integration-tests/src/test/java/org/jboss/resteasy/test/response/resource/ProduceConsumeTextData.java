@@ -18,30 +18,30 @@ import java.lang.reflect.Type;
 @Produces("text/plain")
 @Consumes("text/plain")
 public class ProduceConsumeTextData implements MessageBodyReader<ProduceConsumeData>, MessageBodyWriter<ProduceConsumeData> {
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(ProduceConsumeData.class);
-    }
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return type.equals(ProduceConsumeData.class);
+   }
 
-    @Override
-    public ProduceConsumeData readFrom(Class<ProduceConsumeData> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        String str = ProviderHelper.readString(entityStream, mediaType);
-        return new ProduceConsumeData(str, "text");
-    }
+   @Override
+   public ProduceConsumeData readFrom(Class<ProduceConsumeData> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+      String str = ProviderHelper.readString(entityStream, mediaType);
+      return new ProduceConsumeData(str, "text");
+   }
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(ProduceConsumeData.class);
-    }
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return type.equals(ProduceConsumeData.class);
+   }
 
-    @Override
-    public long getSize(ProduceConsumeData data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
+   @Override
+   public long getSize(ProduceConsumeData data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return -1;
+   }
 
-    @Override
-    public void writeTo(ProduceConsumeData data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        String str = data.data + ":" + data.type + ":text";
-        entityStream.write(str.getBytes());
-    }
+   @Override
+   public void writeTo(ProduceConsumeData data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+      String str = data.data + ":" + data.type + ":text";
+      entityStream.write(str.getBytes());
+   }
 }

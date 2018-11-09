@@ -33,8 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations =
-{ "classpath:/spring-test-async.xml" })
+@ContextConfiguration(locations = { "classpath:/spring-test-async.xml" })
 @DirtiesContext
 @Ignore
 public class AsynchSpringTest

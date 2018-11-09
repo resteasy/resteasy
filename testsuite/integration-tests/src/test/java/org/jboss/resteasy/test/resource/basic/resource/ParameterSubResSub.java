@@ -5,7 +5,7 @@ import javax.ws.rs.Produces;
 
 
 public interface ParameterSubResSub {
-    @GET
-    @Produces("text/plain")
-    String get();
+   @GET
+   @Produces("text/plain")
+   String get();
 }

@@ -18,58 +18,66 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
+ * This servlet does not support grammars.
+ * Use @org.jboss.resteasy.wadl.ResteasyWadlDefaultServlet instead.
  */
+// TODO: remove this in master in proper time
+@Deprecated
 public class ResteasyWadlServlet extends HttpServlet {
 
-    private Map<String, ResteasyWadlServiceRegistry> services;
+   private Map<String, ResteasyWadlServiceRegistry> services;
 
-    private ResteasyWadlServletWriter apiWriter = new ResteasyWadlServletWriter();
+   private ResteasyWadlServletWriter wadlWriter = new ResteasyWadlServletWriter();
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        LogMessages.LOGGER.debug(Messages.MESSAGES.loadingResteasyWadlServlet());
+   public ResteasyWadlServletWriter getWadlWriter() {
+      return wadlWriter;
+   }
 
-        scanResources();
+   @Override
+   public void init(ServletConfig config) throws ServletException {
+      super.init(config);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.loadingResteasyWadlServlet());
 
-        LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyWadlServletLoaded());
+      scanResources();
 
-        // make it possible to get to us for rescanning
-        ServletContext servletContext = config.getServletContext();
-        servletContext.setAttribute(getClass().getName(), this);
-    }
+      LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyWadlServletLoaded());
 
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        String uri = req.getRequestURL().toString();
-        uri = uri.substring(0, uri.length() - req.getServletPath().length());
-        LogMessages.LOGGER.debug(Messages.MESSAGES.servingPathInfo(pathInfo));
-        LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));
-        if (this.services == null) scanResources();
-        if (this.services == null) {
-            resp.sendError(503, Messages.MESSAGES.noResteasyDeployments());
-            return;
-        }
-        resp.setContentType(MediaType.APPLICATION_XML);
-        this.apiWriter.writeWadl(uri, req, resp, services);
-    }
+      // make it possible to get to us for rescanning
+      ServletContext servletContext = config.getServletContext();
+      servletContext.setAttribute(getClass().getName(), this);
+   }
 
-    public void scanResources() {
+   @Override
+   protected void service(HttpServletRequest req, HttpServletResponse resp)
+         throws IOException {
+      String pathInfo = req.getPathInfo();
+      String uri = req.getRequestURL().toString();
+      uri = uri.substring(0, uri.length() - req.getServletPath().length());
+      LogMessages.LOGGER.debug(Messages.MESSAGES.servingPathInfo(pathInfo));
+      LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));
+      if (this.services == null) scanResources();
+      if (this.services == null) {
+         resp.sendError(503, Messages.MESSAGES.noResteasyDeployments());
+         return;
+      }
+      resp.setContentType(MediaType.APPLICATION_XML);
+      this.wadlWriter.writeWadl(uri, req, resp, services);
+   }
 
-        ServletConfig config = getServletConfig();
-        ServletContext servletContext = config.getServletContext();
+   public void scanResources() {
 
-        @SuppressWarnings(value = "unchecked")
-        Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
-        if (deployments == null) return;
-        synchronized (this) {
-            services = new HashMap<String, ResteasyWadlServiceRegistry>();
-            for (Map.Entry<String, ResteasyDeployment> entry : deployments.entrySet()) {
-                services.put(entry.getKey(), ResteasyWadlGenerator.generateServiceRegistry(entry.getValue()));
-            }
-        }
-    }
+      ServletConfig config = getServletConfig();
+      ServletContext servletContext = config.getServletContext();
+
+      @SuppressWarnings(value = "unchecked")
+      Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
+      if (deployments == null) return;
+      synchronized (this) {
+         services = new HashMap<>();
+         for (Map.Entry<String, ResteasyDeployment> entry : deployments.entrySet()) {
+            services.put(entry.getKey(), ResteasyWadlGenerator.generateServiceRegistry(entry.getValue()));
+         }
+      }
+   }
 
 }

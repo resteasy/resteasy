@@ -40,48 +40,48 @@ public class ResteasyConstraintViolation implements Serializable
    }
 
    /**
-   * @return type of constraint
-   */
+    * @return type of constraint
+    */
    public ConstraintType.Type getConstraintType()
    {
       return constraintType;
    }
 
    /**
-   * @return description of element violating constraint
-   */
+    * @return description of element violating constraint
+    */
    public String getPath()
    {
       return path;
    }
 
    /**
-   * @return description of constraint violation
-   */
+    * @return description of constraint violation
+    */
    public String getMessage()
    {
       return message;
    }
 
    /**
-   * @return object in violation of constraint
-   */
+    * @return object in violation of constraint
+    */
    public String getValue()
    {
       return value;
    }
 
    /**
-   * @return String representation of violation
-   */
+    * @return String representation of violation
+    */
    public String toString()
    {
       return "[" + type() + "]\r[" + path + "]\r[" + message + "]\r[" + value + "]\r";
    }
 
    /**
-   * @return String form of violation type
-   */
+    * @return String form of violation type
+    */
    public String type()
    {
       return constraintType.toString();

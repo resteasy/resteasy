@@ -9,7 +9,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 @Provider
 public class AsyncPostProcessingMsgBodyWriterInterceptor implements WriterInterceptor {
-    public static volatile boolean called;
+   public static volatile boolean called;
 
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException

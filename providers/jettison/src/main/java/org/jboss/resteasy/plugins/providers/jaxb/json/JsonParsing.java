@@ -109,7 +109,7 @@ public class JsonParsing
    }
 
    protected static char eatWhitspace(Reader buffer, boolean reset)
-           throws IOException
+         throws IOException
    {
       int i;
       char c;

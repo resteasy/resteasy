@@ -5,17 +5,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class JsonMapFoo {
-    @XmlAttribute
-    private String name;
+   @XmlAttribute
+   private String name;
 
-    public JsonMapFoo() {
-    }
+   public JsonMapFoo() {
+   }
 
-    public JsonMapFoo(final String name) {
-        this.name = name;
-    }
+   public JsonMapFoo(final String name) {
+      this.name = name;
+   }
 
-    public String getName() {
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 }

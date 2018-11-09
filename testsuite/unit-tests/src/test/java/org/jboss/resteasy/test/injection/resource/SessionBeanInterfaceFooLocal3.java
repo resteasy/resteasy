@@ -5,6 +5,6 @@ import javax.ws.rs.Path;
 
 @Path("foo")
 public interface SessionBeanInterfaceFooLocal3 {
-    @GET
-    String foo3();
+   @GET
+   String foo3();
 }

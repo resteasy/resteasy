@@ -46,27 +46,27 @@ public class FastinfoSetMarshaller implements Marshaller
    }
 
    public void marshal(Object o, Result result)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, OutputStream outputStream)
-           throws JAXBException
+         throws JAXBException
    {
       marshal(o, getFastinfoSetXMLStreamWriter(outputStream));
    }
 
    public void marshal(Object o, File file)
-           throws JAXBException
+         throws JAXBException
    {
       try
       {
          OutputStream os = new FileOutputStream(file);
          try {
-             marshal(o, os);
+            marshal(o, os);
          } finally {
-             os.close();
+            os.close();
          }
       }
       catch (IOException e)
@@ -76,61 +76,61 @@ public class FastinfoSetMarshaller implements Marshaller
    }
 
    public void marshal(Object o, Writer writer)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, ContentHandler contentHandler)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, Node node)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public void marshal(Object o, XMLStreamWriter xmlStreamWriter)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.marshal(o, xmlStreamWriter);
    }
 
    public void marshal(Object o, XMLEventWriter xmlEventWriter)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public Node getNode(Object o)
-           throws JAXBException
+         throws JAXBException
    {
       throw new UnsupportedOperationException();
    }
 
    public void setProperty(String s, Object o)
-           throws PropertyException
+         throws PropertyException
    {
       marshaller.setProperty(s, o);
    }
 
    public Object getProperty(String s)
-           throws PropertyException
+         throws PropertyException
    {
       return marshaller.getProperty(s);
    }
 
    public void setEventHandler(ValidationEventHandler validationEventHandler)
-           throws JAXBException
+         throws JAXBException
    {
       marshaller.setEventHandler(validationEventHandler);
    }
 
    public ValidationEventHandler getEventHandler()
-           throws JAXBException
+         throws JAXBException
    {
       return marshaller.getEventHandler();
    }

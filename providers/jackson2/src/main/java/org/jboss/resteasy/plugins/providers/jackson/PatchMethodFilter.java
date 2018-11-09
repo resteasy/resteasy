@@ -45,7 +45,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
    {
       //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
       if (requestContext.getMethod().equals("PATCH")
-            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.equals(requestContext.getMediaType()))
+            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
       {
 
          HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);

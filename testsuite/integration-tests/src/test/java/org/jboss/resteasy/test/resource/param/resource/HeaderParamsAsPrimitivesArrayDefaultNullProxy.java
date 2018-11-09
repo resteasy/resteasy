@@ -6,11 +6,11 @@ import javax.ws.rs.Produces;
 
 @Path("/array/default/null")
 public interface HeaderParamsAsPrimitivesArrayDefaultNullProxy {
-    @GET
-    @Produces("application/boolean")
-    String doGetBoolean();
+   @GET
+   @Produces("application/boolean")
+   String doGetBoolean();
 
-    @GET
-    @Produces("application/short")
-    String doGetShort();
+   @GET
+   @Produces("application/short")
+   String doGetShort();
 }

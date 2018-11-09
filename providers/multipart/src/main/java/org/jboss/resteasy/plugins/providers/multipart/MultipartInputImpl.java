@@ -199,7 +199,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
                  .getAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY);
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
-                    .valueOf(defaultContentType);
+               .valueOf(defaultContentType);
          this.defaultPartCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
          if (defaultPartCharset != null)
          {
@@ -235,13 +235,13 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    }
 
    protected InputStream addHeaderToHeadlessStream(InputStream is)
-           throws UnsupportedEncodingException
+         throws UnsupportedEncodingException
    {
       return new SequenceInputStream(createHeaderInputStream(), is);
    }
 
    protected InputStream createHeaderInputStream()
-           throws UnsupportedEncodingException
+         throws UnsupportedEncodingException
    {
       String header = HttpHeaders.CONTENT_TYPE + ": " + contentType
               + "\r\n\r\n";

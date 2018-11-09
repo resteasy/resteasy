@@ -3,12 +3,12 @@ package org.jboss.resteasy.test.validation.resource;
 import javax.validation.ValidationException;
 
 public class ValidationExceptionOtherValidationException extends ValidationException {
-    private static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
 
-    ValidationExceptionOtherValidationException() {
-    }
+   ValidationExceptionOtherValidationException() {
+   }
 
-    ValidationExceptionOtherValidationException(final Exception cause) {
-        super(cause);
-    }
+   ValidationExceptionOtherValidationException(final Exception cause) {
+      super(cause);
+   }
 }

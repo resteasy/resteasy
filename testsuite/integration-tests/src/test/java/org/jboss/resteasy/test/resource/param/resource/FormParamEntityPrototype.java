@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
 public abstract class FormParamEntityPrototype {
-    protected String value;
+   protected String value;
 
-    public String getValue() {
-        return value;
-    }
+   public String getValue() {
+      return value;
+   }
 }

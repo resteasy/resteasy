@@ -33,13 +33,13 @@
     <bean id="singletonReg" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
           p:context="/basic/singleton/">
         <property name="beanName">
-            <idref local="singletonScopedResource"/>
+            <idref bean="singletonScopedResource"/>
         </property>
     </bean>
     <bean id="prototypeReg" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
           p:context="/basic/prototype/">
         <property name="beanName">
-            <idref local="requestScopedResource"/>
+            <idref bean="requestScopedResource"/>
         </property>
     </bean>
 
@@ -49,7 +49,7 @@
      -->
     <bean id="myTestInterceptor" class="org.jboss.resteasy.springmvc.test.spring.MyTestInterceptor"/>
     <util:list id="resteasy.dispatcher.interceptors">
-        <ref local="myTestInterceptor"/>
+        <ref bean="myTestInterceptor"/>
     </util:list>
 
 	<bean id="jsonView" class="org.jboss.resteasy.springmvc.ResteasyView"

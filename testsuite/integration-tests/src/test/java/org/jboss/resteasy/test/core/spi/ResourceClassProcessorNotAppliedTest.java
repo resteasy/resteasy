@@ -35,66 +35,66 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 @RunWith(Arquillian.class)
 public class ResourceClassProcessorNotAppliedTest {
 
-    protected static final Logger logger = Logger.getLogger(ResourceClassProcessorNotAppliedTest.class.getName());
+   protected static final Logger logger = Logger.getLogger(ResourceClassProcessorNotAppliedTest.class.getName());
 
-    private static List<String> visitedProcessors = new ArrayList<>();
+   private static List<String> visitedProcessors = new ArrayList<>();
 
-    public static synchronized void addToVisitedProcessors(String item) {
-        visitedProcessors.add(item);
-    }
+   public static synchronized void addToVisitedProcessors(String item) {
+      visitedProcessors.add(item);
+   }
 
-    static ResteasyClient client;
+   static ResteasyClient client;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorNotAppliedTest.class.getSimpleName());
-        war.addClass(ResourceClassProcessorNotAppliedTest.class);
-        war.addClass(PortProviderUtil.class);
-        war.addClass(ResourceClassProcessorNotAppliedImplementation.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("arquillian.*", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null,
-                ResourceClassProcessorPureEndPoint.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorNotAppliedTest.class.getSimpleName());
+      war.addClass(ResourceClassProcessorNotAppliedTest.class);
+      war.addClass(PortProviderUtil.class);
+      war.addClass(ResourceClassProcessorNotAppliedImplementation.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
+            new PropertyPermission("org.jboss.resteasy.port", "read"),
+            new RuntimePermission("getenv.RESTEASY_PORT"),
+            new PropertyPermission("ipv6", "read"),
+            new PropertyPermission("node", "read"),
+            new PropertyPermission("arquillian.*", "read"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new ReflectPermission("suppressAccessChecks")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null,
+            ResourceClassProcessorPureEndPoint.class);
+   }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResourceClassProcessorNotAppliedTest.class.getSimpleName());
-    }
+   private String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ResourceClassProcessorNotAppliedTest.class.getSimpleName());
+   }
 
 
-    /**
-     * @tpTestDetails ResourceClassProcessor implementation should not be used if web.xml doesn't contains provider name
-     *                and resteasy.scan is not allowed
-     * @tpSince RESTEasy 3.6
-     */
-    @Test
-    public void notAppliedTest() {
-        // init client
-        client = (ResteasyClient)ClientBuilder.newClient();
+   /**
+    * @tpTestDetails ResourceClassProcessor implementation should not be used if web.xml doesn't contains provider name
+    *                and resteasy.scan is not allowed
+    * @tpSince RESTEasy 3.6
+    */
+   @Test
+   public void notAppliedTest() {
+      // init client
+      client = (ResteasyClient)ClientBuilder.newClient();
 
-        // do request
-        Response response = client.target(generateURL("/pure/pure")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      // do request
+      Response response = client.target(generateURL("/pure/pure")).request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
-        // log visited processors
-        int i = 0;
-        for (String item : visitedProcessors) {
-            logger.info(String.format("%d. %s", ++i, item));
-        }
+      // log visited processors
+      int i = 0;
+      for (String item : visitedProcessors) {
+         logger.info(String.format("%d. %s", ++i, item));
+      }
 
-        // asserts
-        Assert.assertThat("ResourceClassProcessor was used although it should not be used",
-                visitedProcessors.size(), greaterThanOrEqualTo(0));
+      // asserts
+      Assert.assertThat("ResourceClassProcessor was used although it should not be used",
+            visitedProcessors.size(), greaterThanOrEqualTo(0));
 
-        // close client
-        client.close();
-    }
+      // close client
+      client.close();
+   }
 }

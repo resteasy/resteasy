@@ -37,48 +37,48 @@ import java.lang.reflect.Type;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
-    @Deployment
-    public static Archive<?> createTestArchive() {
-        WebArchive war = TestUtil.prepareArchive(ContextProvidersNewClientTest.class.getSimpleName())
-                .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class,
-                        ContextProvidersName.class, ContextProvidersXop.class)
-                .addClass(ContextProvidersTestBase.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")
-        ), "permissions.xml");
-        return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
-    }
+   @Deployment
+   public static Archive<?> createTestArchive() {
+      WebArchive war = TestUtil.prepareArchive(ContextProvidersNewClientTest.class.getSimpleName())
+            .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class,
+                  ContextProvidersName.class, ContextProvidersXop.class)
+            .addClass(ContextProvidersTestBase.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks")
+      ), "permissions.xml");
+      return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
+   }
 
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ContextProvidersNewClientTest.class.getSimpleName());
-    }
+   private static String generateURL(String path) {
+      return PortProviderUtil.generateURL(path, ContextProvidersNewClientTest.class.getSimpleName());
+   }
 
-    @Override
-    <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL(path));
-        ClientResponse response = (ClientResponse) target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        T entity = response.readEntity(clazz, null, annotations);
-        return entity;
-    }
+   @Override
+   <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL(path));
+      ClientResponse response = (ClientResponse) target.request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      T entity = response.readEntity(clazz, null, annotations);
+      return entity;
+   }
 
-    @Override
-    <S, T> T post(String path, S payload, MediaType mediaType,
+   @Override
+   <S, T> T post(String path, S payload, MediaType mediaType,
                   Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(generateURL(path));
-        Entity<S> entity = Entity.entity(payload, mediaType, annotations);
-        ClientResponse response = (ClientResponse) target.request().post(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        T result;
-        if (genericReturnType != null) {
-            result = response.readEntity(returnType, genericReturnType, null);
-        } else {
-            result = response.readEntity(returnType);
-        }
-        return result;
-    }
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL(path));
+      Entity<S> entity = Entity.entity(payload, mediaType, annotations);
+      ClientResponse response = (ClientResponse) target.request().post(entity);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      T result;
+      if (genericReturnType != null) {
+         result = response.readEntity(returnType, genericReturnType, null);
+      } else {
+         result = response.readEntity(returnType);
+      }
+      return result;
+   }
 
 }

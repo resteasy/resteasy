@@ -7,4 +7,3 @@ import javax.ws.rs.Path;
 @Path("/")
 public interface EJBLocalResource extends EJBResourceParent {
 }
-

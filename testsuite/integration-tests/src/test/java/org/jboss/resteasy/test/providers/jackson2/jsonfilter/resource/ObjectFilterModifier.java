@@ -16,17 +16,17 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
  *
  */
 public class ObjectFilterModifier extends ObjectWriterModifier {
-	public ObjectFilterModifier() {
-	}
-	@Override
-	public ObjectWriter modify(EndpointConfigBase<?> endpoint,
-			MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
-			ObjectWriter w, JsonGenerator jg) throws IOException {
+   public ObjectFilterModifier() {
+   }
+   @Override
+   public ObjectWriter modify(EndpointConfigBase<?> endpoint,
+         MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
+         ObjectWriter w, JsonGenerator jg) throws IOException {
 
-		FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
-				"nameFilter",
-				SimpleBeanPropertyFilter.filterOutAllExcept("name"));
-		return w.with(filterProvider);
+      FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+            "nameFilter",
+            SimpleBeanPropertyFilter.filterOutAllExcept("name"));
+      return w.with(filterProvider);
 
-	}
+   }
 }

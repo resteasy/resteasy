@@ -32,7 +32,7 @@ public class ResteasyRequestWrapper
    }
 
    public ResteasyRequestWrapper(HttpServletRequest request, String httpMethod, String prefix)
-           throws ServletException, IOException
+         throws ServletException, IOException
    {
       this.httpServletRequest = request;
       ResteasyHttpHeaders headers = ServletUtil.extractHttpHeaders(request);

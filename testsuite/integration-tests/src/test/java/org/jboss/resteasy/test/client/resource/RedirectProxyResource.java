@@ -9,29 +9,29 @@ import javax.ws.rs.core.Response;
 public interface RedirectProxyResource
 {
 
-    @Path("redirect/{p}")
-    @GET
-    Response redirect(@PathParam("p") String p);
+   @Path("redirect/{p}")
+   @GET
+   Response redirect(@PathParam("p") String p);
 
-    @Path("redirected")
-    @GET
-    Response redirected();
-
-
-    @Path("redirectDirectResponse/{p}")
-    @GET
-    Response redirectDirectResponse(@PathParam("p") String p);
-
-    @Path("redirectedDirectResponse")
-    @GET
-    String redirectedDirectResponse();
-
-    @Path("movedPermanently/{p}")
-    @GET
-    Response movedPermanently(@PathParam("p") String p);
+   @Path("redirected")
+   @GET
+   Response redirected();
 
 
-    @Path("found/{p}")
-    @GET
-    Response found(@PathParam("p") String p);
+   @Path("redirectDirectResponse/{p}")
+   @GET
+   Response redirectDirectResponse(@PathParam("p") String p);
+
+   @Path("redirectedDirectResponse")
+   @GET
+   String redirectedDirectResponse();
+
+   @Path("movedPermanently/{p}")
+   @GET
+   Response movedPermanently(@PathParam("p") String p);
+
+
+   @Path("found/{p}")
+   @GET
+   Response found(@PathParam("p") String p);
 }

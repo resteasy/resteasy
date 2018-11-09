@@ -6,15 +6,15 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 
 public class InputPartDefaultContentTypeWildcardOverwriteContainerBean {
-    @FormParam("foo")
-    @PartType(MediaType.APPLICATION_XML)
-    private InputPartDefaultContentTypeWildcardOverwriteXmlBean foo;
+   @FormParam("foo")
+   @PartType(MediaType.APPLICATION_XML)
+   private InputPartDefaultContentTypeWildcardOverwriteXmlBean foo;
 
-    public InputPartDefaultContentTypeWildcardOverwriteXmlBean getFoo() {
-        return foo;
-    }
+   public InputPartDefaultContentTypeWildcardOverwriteXmlBean getFoo() {
+      return foo;
+   }
 
-    public void setFoo(InputPartDefaultContentTypeWildcardOverwriteXmlBean foo) {
-        this.foo = foo;
-    }
+   public void setFoo(InputPartDefaultContentTypeWildcardOverwriteXmlBean foo) {
+      this.foo = foo;
+   }
 }

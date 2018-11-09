@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 
 @Path("/foo/")
 public interface ObjectToURIResouce {
-    @Path("{id}")
-    @GET
-    ObjectToURIAbstractURITemplateObject getFoo(@PathParam("id") Integer id);
+   @Path("{id}")
+   @GET
+   ObjectToURIAbstractURITemplateObject getFoo(@PathParam("id") Integer id);
 }

@@ -11,11 +11,11 @@ import java.util.logging.Logger;
 @InterceptorFilterBinding
 @InterceptorRequestFilterInterceptorBinding
 public class InterceptorRequestFilter implements ContainerRequestFilter {
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
-        log.info("executing InterceptorRequestFilter.filter()");
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext) throws IOException {
+      log.info("executing InterceptorRequestFilter.filter()");
+   }
 }

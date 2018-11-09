@@ -140,9 +140,7 @@ public class GuiceContextTest
    @Path("test")
    public static class FieldTestResource
    {
-      private
-      @Context
-      UriInfo uriInfo;
+      private @Context UriInfo uriInfo;
 
       @GET
       public String getName()

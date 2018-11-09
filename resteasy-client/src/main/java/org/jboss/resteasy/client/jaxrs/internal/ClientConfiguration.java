@@ -85,7 +85,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       MessageBodyWriter<T> writer = providerFactory.getClientMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
       return writer;
    }
 
@@ -93,7 +93,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    {
       MessageBodyReader<T> reader = providerFactory.getClientMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader!=null)
-          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
       return reader;
    }
 

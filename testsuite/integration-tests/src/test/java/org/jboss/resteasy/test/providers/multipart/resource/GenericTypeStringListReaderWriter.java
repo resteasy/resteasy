@@ -22,49 +22,49 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_XML)
 @Produces(MediaType.APPLICATION_XML)
 public class GenericTypeStringListReaderWriter implements MessageBodyReader<List<String>>, MessageBodyWriter<List<String>> {
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return GenericTypeMultipartTest.stringListType.getType().equals(genericType);
-    }
+   @Override
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return GenericTypeMultipartTest.stringListType.getType().equals(genericType);
+   }
 
-    @Override
-    public long getSize(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
-                        MediaType mediaType) {
-        return -1;
-    }
+   @Override
+   public long getSize(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType) {
+      return -1;
+   }
 
-    @Override
-    public void writeTo(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
-                        MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException {
-        List<String> list = t;
-        for (Iterator<String> it = list.iterator(); it.hasNext(); ) {
-            entityStream.write(it.next().getBytes());
-            entityStream.write("\r".getBytes());
-        }
-    }
+   @Override
+   public void writeTo(List<String> t, Class<?> type, Type genericType, Annotation[] annotations,
+                  MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+         throws IOException, WebApplicationException {
+      List<String> list = t;
+      for (Iterator<String> it = list.iterator(); it.hasNext(); ) {
+         entityStream.write(it.next().getBytes());
+         entityStream.write("\r".getBytes());
+      }
+   }
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return GenericTypeMultipartTest.stringListType.getType().equals(genericType);
-    }
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return GenericTypeMultipartTest.stringListType.getType().equals(genericType);
+   }
 
-    @Override
-    public List<String> readFrom(Class<List<String>> type, Type genericType, Annotation[] annotations,
+   @Override
+   public List<String> readFrom(Class<List<String>> type, Type genericType, Annotation[] annotations,
                                  MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        List<String> list = new ArrayList<String>();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte b = (byte) entityStream.read();
-        while (b > -1) {
-            while (b != '\r') {
-                baos.write(b);
-                b = (byte) entityStream.read();
-            }
-            list.add(new String(baos.toByteArray()));
-            baos.reset();
+         throws IOException, WebApplicationException {
+      List<String> list = new ArrayList<String>();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      byte b = (byte) entityStream.read();
+      while (b > -1) {
+         while (b != '\r') {
+            baos.write(b);
             b = (byte) entityStream.read();
-        }
-        return list;
-    }
+         }
+         list.add(new String(baos.toByteArray()));
+         baos.reset();
+         b = (byte) entityStream.read();
+      }
+      return list;
+   }
 }

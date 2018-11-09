@@ -15,60 +15,60 @@ import java.util.Base64;
 @Path("/test/resource")
 public class CryptoCertResource {
 
-    public static X509Certificate cert;
-    public static PrivateKey privateKey;
+   public static X509Certificate cert;
+   public static PrivateKey privateKey;
 
-    static {
-        try {
-            privateKey = (PrivateKey) fromString(loadString("privateKey"));
-            cert = (X509Certificate) fromString(loadString("cert"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+   static {
+      try {
+         privateKey = (PrivateKey) fromString(loadString("privateKey"));
+         cert = (X509Certificate) fromString(loadString("cert"));
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
 
 
-    public static String readString(final InputStream in) throws IOException {
-        char[] buffer = new char[10240];
-        StringBuilder builder = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        int wasRead = 0;
-        do {
-            wasRead = reader.read(buffer, 0, 1024);
-            if (wasRead > 0) {
-                builder.append(buffer, 0, wasRead);
-            }
-        }
-        while (wasRead > -1);
+   public static String readString(final InputStream in) throws IOException {
+      char[] buffer = new char[10240];
+      StringBuilder builder = new StringBuilder();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      int wasRead = 0;
+      do {
+         wasRead = reader.read(buffer, 0, 1024);
+         if (wasRead > 0) {
+            builder.append(buffer, 0, wasRead);
+         }
+      }
+      while (wasRead > -1);
 
-        return builder.toString();
-    }
+      return builder.toString();
+   }
 
-    private static String loadString(String name) throws IOException {
-        String resource = String.format("%s.txt", name);
-        InputStream stream = null;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader != null) {
-            stream = classLoader.getResourceAsStream(resource);
-        }
-        if (stream == null) {
-            stream = TestApplication.class.getResourceAsStream(resource);
-        }
-        if (stream == null) {
-            throw new RuntimeException();
-        }
-        return readString(stream);
-    }
-    /**
-     * Read the object from Base64 string.
-     */
-    private static Object fromString(String s) throws IOException,
-            ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(s);
-        ObjectInputStream ois = new ObjectInputStream(
-                new ByteArrayInputStream(data));
-        Object o = ois.readObject();
-        ois.close();
-        return o;
-    }
+   private static String loadString(String name) throws IOException {
+      String resource = String.format("%s.txt", name);
+      InputStream stream = null;
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      if (classLoader != null) {
+         stream = classLoader.getResourceAsStream(resource);
+      }
+      if (stream == null) {
+         stream = TestApplication.class.getResourceAsStream(resource);
+      }
+      if (stream == null) {
+         throw new RuntimeException();
+      }
+      return readString(stream);
+   }
+   /**
+    * Read the object from Base64 string.
+    */
+   private static Object fromString(String s) throws IOException,
+         ClassNotFoundException {
+      byte[] data = Base64.getDecoder().decode(s);
+      ObjectInputStream ois = new ObjectInputStream(
+            new ByteArrayInputStream(data));
+      Object o = ois.readObject();
+      ois.close();
+      return o;
+   }
 }

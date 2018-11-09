@@ -22,34 +22,34 @@ import java.lang.reflect.Type;
 @Produces("*/*")
 @Consumes("*/*")
 public class WriterNotBuiltinTestWriter implements MessageBodyWriter, MessageBodyReader {
-    private static Logger logger = Logger.getLogger(WriterNotBuiltinTestWriter.class);
+   private static Logger logger = Logger.getLogger(WriterNotBuiltinTestWriter.class);
 
-    public static volatile boolean used;
+   public static volatile boolean used;
 
-    public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+   public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return true;
+   }
 
-    public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return o.toString().getBytes().length;
-    }
+   public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return o.toString().getBytes().length;
+   }
 
-    public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(o.toString().getBytes());
-        logger.info("my writeTo");
-        used = true;
-    }
+   public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+      entityStream.write(o.toString().getBytes());
+      logger.info("my writeTo");
+      used = true;
+   }
 
-    public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+   public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return true;
+   }
 
-    @SuppressWarnings(value = "unchecked")
-    public Object readFrom(Class type, Type genericType,
+   @SuppressWarnings(value = "unchecked")
+   public Object readFrom(Class type, Type genericType,
                            Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        String value = ProviderHelper.readString(entityStream, mediaType);
-        return TypeConverter.getType(type, value);
-    }
+         throws IOException, WebApplicationException {
+      String value = ProviderHelper.readString(entityStream, mediaType);
+      return TypeConverter.getType(type, value);
+   }
 }

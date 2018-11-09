@@ -10,15 +10,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 public class ConfigurationInheritenceTestMessageBodyReader5 implements MessageBodyReader<String> {
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return false;
-    }
+   @Override
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      return false;
+   }
 
-    @Override
-    public String readFrom(Class<String> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   @Override
+   public String readFrom(Class<String> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        return null;
-    }
+         throws IOException, WebApplicationException {
+      return null;
+   }
 }

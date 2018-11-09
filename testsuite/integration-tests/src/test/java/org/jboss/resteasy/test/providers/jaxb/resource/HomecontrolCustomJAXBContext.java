@@ -38,4 +38,3 @@ public class HomecontrolCustomJAXBContext extends JAXBContext {
       return this.delegate.createValidator();
    }
 }
-

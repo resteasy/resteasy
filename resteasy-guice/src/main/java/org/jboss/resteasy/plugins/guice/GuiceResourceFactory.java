@@ -38,7 +38,7 @@ public class GuiceResourceFactory implements ResourceFactory
    {
       final Object resource = provider.get();
       return propertyInjector.inject(request, response, resource, true)
-    		  .thenApply(v -> resource);
+            .thenApply(v -> resource);
    }
 
    public void requestFinished(final HttpRequest request, final HttpResponse response, final Object resource)

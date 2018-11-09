@@ -38,12 +38,12 @@ public class FilteredCookieTest {
 
    @Deployment
    public static Archive<?> deploySimpleResource() {
-       WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
-       return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
+      WebArchive war = TestUtil.prepareArchive(FilteredCookieTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, FilteredCookieResource.class, FilteredCookieContainerRequestFilter.class);
    }
 
    private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, FilteredCookieTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, FilteredCookieTest.class.getSimpleName());
    }
 
    /**

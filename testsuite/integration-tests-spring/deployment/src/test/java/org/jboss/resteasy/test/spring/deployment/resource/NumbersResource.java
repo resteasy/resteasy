@@ -19,17 +19,16 @@ import org.springframework.stereotype.Controller;
 @Path("numbers")
 public class NumbersResource {
 
-    @GET
-    @Produces("application/json")
-    public JsonArray numbers() {
-        JsonArrayBuilder array = Json.createArrayBuilder();
-        Stream<String> numberStream = Stream.generate(System::currentTimeMillis)
-            .map(String::valueOf)
-            .limit(10);
-        numberStream.forEach(array::add);
-        return array.build();
+   @GET
+   @Produces("application/json")
+   public JsonArray numbers() {
+      JsonArrayBuilder array = Json.createArrayBuilder();
+      Stream<String> numberStream = Stream.generate(System::currentTimeMillis)
+         .map(String::valueOf)
+         .limit(10);
+      numberStream.forEach(array::add);
+      return array.build();
 
-    }
+   }
 
 }
-

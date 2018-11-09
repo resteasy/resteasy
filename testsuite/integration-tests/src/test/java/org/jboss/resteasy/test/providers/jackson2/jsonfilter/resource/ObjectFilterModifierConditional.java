@@ -16,40 +16,40 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
 public class ObjectFilterModifierConditional extends ObjectWriterModifier {
-    @Override
-    public ObjectWriter modify(EndpointConfigBase<?> endpointConfigBase, MultivaluedMap<String, Object> multivaluedMap,
+   @Override
+   public ObjectWriter modify(EndpointConfigBase<?> endpointConfigBase, MultivaluedMap<String, Object> multivaluedMap,
                                Object o, ObjectWriter objectWriter, JsonGenerator jsonGenerator) throws IOException {
 
-        PropertyFilter theFilter = new SimpleBeanPropertyFilter() {
-            @Override
-            public void serializeAsField
-                    (Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer)
-                    throws Exception {
-                if (include(writer)) {
-                    if (!writer.getName().equals("id")) {
-                        writer.serializeAsField(pojo, jgen, provider);
-                        return;
-                    }
-                    int intValue = ((Jackson2Product) pojo).getId();
-                    if (intValue >= 0) {
-                        writer.serializeAsField(pojo, jgen, provider);
-                    }
-                } else if (!jgen.canOmitFields()) { // since 2.3
-                    writer.serializeAsOmittedField(pojo, jgen, provider);
-                }
+      PropertyFilter theFilter = new SimpleBeanPropertyFilter() {
+         @Override
+         public void serializeAsField
+            (Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer)
+               throws Exception {
+            if (include(writer)) {
+               if (!writer.getName().equals("id")) {
+                  writer.serializeAsField(pojo, jgen, provider);
+                  return;
+               }
+               int intValue = ((Jackson2Product) pojo).getId();
+               if (intValue >= 0) {
+                  writer.serializeAsField(pojo, jgen, provider);
+               }
+            } else if (!jgen.canOmitFields()) { // since 2.3
+               writer.serializeAsOmittedField(pojo, jgen, provider);
             }
-            @Override
-            protected boolean include(BeanPropertyWriter writer) {
-                return true;
-            }
-            @Override
-            protected boolean include(PropertyWriter writer) {
-                return true;
-            }
-        };
+         }
+         @Override
+         protected boolean include(BeanPropertyWriter writer) {
+            return true;
+         }
+         @Override
+         protected boolean include(PropertyWriter writer) {
+            return true;
+         }
+      };
 
-        FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
-                "nameFilter", theFilter);
-        return objectWriter.with(filterProvider);
-    }
+      FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+            "nameFilter", theFilter);
+      return objectWriter.with(filterProvider);
+   }
 }

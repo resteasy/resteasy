@@ -36,30 +36,30 @@ import static org.hamcrest.CoreMatchers.is;
 @RunAsClient
 public class SubResourceLocatorTest {
 
-    @Deployment
-    public static Archive<?> testReturnValuesDeploy() throws Exception {
-        WebArchive war = TestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
-        war.addClasses(SubResourceLocatorBaseCrudService.class, SubResourceLocatorBaseService.class,
-                SubResourceLocatorFoo.class, SubResourceLocatorOhaUserModel.class,
-                SubResourceLocatorPlatformServiceResource.class, SubResourceLocatorUserResource.class);
-        return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
-                SubResourceLocatorPlatformServiceImpl.class);
-    }
+   @Deployment
+   public static Archive<?> testReturnValuesDeploy() throws Exception {
+      WebArchive war = TestUtil.prepareArchive(SubResourceLocatorTest.class.getSimpleName());
+      war.addClasses(SubResourceLocatorBaseCrudService.class, SubResourceLocatorBaseService.class,
+            SubResourceLocatorFoo.class, SubResourceLocatorOhaUserModel.class,
+            SubResourceLocatorPlatformServiceResource.class, SubResourceLocatorUserResource.class);
+      return TestUtil.finishContainerPrepare(war, null, SubResourceLocatorImpFoo.class,
+            SubResourceLocatorPlatformServiceImpl.class);
+   }
 
-    /**
-     * @tpTestDetails Sub resource locator should not fail
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void test657() throws Exception {
-        ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
-        WebTarget base = client.target(PortProviderUtil.generateURL("/platform/users/89080/data/ada/jsanchez110",
-                SubResourceLocatorTest.class.getSimpleName()));
+   /**
+    * @tpTestDetails Sub resource locator should not fail
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void test657() throws Exception {
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+      WebTarget base = client.target(PortProviderUtil.generateURL("/platform/users/89080/data/ada/jsanchez110",
+            SubResourceLocatorTest.class.getSimpleName()));
 
-        Response response = base.request().get();
-        String s = response.readEntity(String.class);
-        Assert.assertThat("Wrong response content", s, is("bill"));
-        response.close();
-        client.close();
-    }
+      Response response = base.request().get();
+      String s = response.readEntity(String.class);
+      Assert.assertThat("Wrong response content", s, is("bill"));
+      response.close();
+      client.close();
+   }
 }

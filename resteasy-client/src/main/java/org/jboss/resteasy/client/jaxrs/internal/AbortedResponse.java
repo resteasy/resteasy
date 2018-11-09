@@ -35,7 +35,7 @@ public class AbortedResponse extends ClientResponse
       {
          for (Object obj : entry.getValue())
          {
-             getMetadata().add(entry.getKey(), configuration.toHeaderString(obj));
+            getMetadata().add(entry.getKey(), configuration.toHeaderString(obj));
          }
       }
       setStatus(response.getStatus());
@@ -60,8 +60,8 @@ public class AbortedResponse extends ClientResponse
 
             @SuppressWarnings("rawtypes")
             MessageBodyWriter writer = configuration
-                    .getMessageBodyWriter(getEntityClass(), getGenericType(),
-                            null, mediaType);
+               .getMessageBodyWriter(getEntityClass(), getGenericType(),
+                     null, mediaType);
             if (writer == null) {
                throw new ProcessingException(Messages.MESSAGES.failedToBufferAbortedResponseNoWriter(mediaType, entityClass.getName()));
             }

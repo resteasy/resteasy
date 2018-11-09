@@ -64,12 +64,12 @@ public class ClientWebTarget implements ResteasyWebTarget
     */
    private static UriBuilder uriBuilderFromUri(URI uri)
    {
-       return new ResteasyUriBuilderImpl().uri(uri);
+      return new ResteasyUriBuilderImpl().uri(uri);
    }
    
    private static UriBuilder uriBuilderFromUri(String uri)
    {
-       return new ResteasyUriBuilderImpl().uri(uri);
+      return new ResteasyUriBuilderImpl().uri(uri);
    }
    
    @Override
@@ -313,9 +313,9 @@ public class ClientWebTarget implements ResteasyWebTarget
       String[] stringValues = toStringValues(values);
       ResteasyUriBuilder copy;
       if (uriBuilder instanceof ResteasyUriBuilder) {
-          copy = (ResteasyUriBuilder)uriBuilder.clone();
+         copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+         copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (String obj : stringValues)
       {
@@ -331,9 +331,9 @@ public class ClientWebTarget implements ResteasyWebTarget
       if (parameters == null) throw new NullPointerException(Messages.MESSAGES.parametersWasNull());
       ResteasyUriBuilder copy;
       if (uriBuilder instanceof ResteasyUriBuilder) {
-          copy = (ResteasyUriBuilder)uriBuilder.clone();
+         copy = (ResteasyUriBuilder)uriBuilder.clone();
       } else {
-          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
+         copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {

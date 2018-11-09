@@ -56,7 +56,7 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
          @MatrixParam String matrixParam0,
          @PathParam String pathParam0,
          @QueryParam String queryParam0
-         )
+   )
    {
       this.cookieParam0 = cookieParam0;
       this.formParam0 = formParam0;
@@ -135,18 +135,18 @@ public class RESTEasyParamBasicJaxRsParamDifferentResource
    @POST
    @Path("a/{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}/{pathParam4}")
    public Response post(
-           @CookieParam String cookieParam3,
-           @FormParam String formParam3,
-           @HeaderParam String headerParam3,
-           @MatrixParam String matrixParam3,
-           @PathParam String pathParam3,
-           @QueryParam String queryParam3,
-           @javax.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
-           @javax.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
-           @javax.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
-           @javax.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
-           @javax.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
-           @javax.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
+         @CookieParam String cookieParam3,
+         @FormParam String formParam3,
+         @HeaderParam String headerParam3,
+         @MatrixParam String matrixParam3,
+         @PathParam String pathParam3,
+         @QueryParam String queryParam3,
+         @javax.ws.rs.CookieParam("cookieParam4") String jaxrsCookieParam4,
+         @javax.ws.rs.FormParam("formParam4") String jaxrsFormParam4,
+         @javax.ws.rs.HeaderParam("headerParam4") String jaxrsHeaderParam4,
+         @javax.ws.rs.MatrixParam("matrixParam4") String jaxrsMatrixParam4,
+         @javax.ws.rs.PathParam("pathParam4") String jaxrsPathParam4,
+         @javax.ws.rs.QueryParam("queryParam4") String jaxrsQueryParam4)
    {
 
       StringBuilder details = new StringBuilder();

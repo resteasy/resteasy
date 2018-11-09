@@ -7,10 +7,10 @@ import javax.ws.rs.Produces;
 
 @Path("/curly")
 public class ReaderWriterCurlyBraces {
-    @Path("{tableName:[a-z][a-z0-9_]{0,49}}")
-    @GET
-    @Produces("text/plain")
-    public String get(@PathParam("tableName") String param) {
-        return "param";
-    }
+   @Path("{tableName:[a-z][a-z0-9_]{0,49}}")
+   @GET
+   @Produces("text/plain")
+   public String get(@PathParam("tableName") String param) {
+      return "param";
+   }
 }

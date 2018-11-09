@@ -94,7 +94,7 @@ public class JWEBuilder
       if (contentType != null) builder.append(",\"cty\":\"").append(contentType).append("\"");
       builder.append("}");
       String json = builder.toString();
-	 return Base64Url.encode(json.getBytes(StandardCharsets.UTF_8));
+      return Base64Url.encode(json.getBytes(StandardCharsets.UTF_8));
    }
 
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -192,8 +192,8 @@ public class JWEBuilder
        */
       public String dir(byte[] secret)
       {
-          SecretKey key = new SecretKeySpec(secret, "AES");
-          return dir(key);
+         SecretKey key = new SecretKeySpec(secret, "AES");
+         return dir(key);
       }
 
       public String dir(SecretKey key)

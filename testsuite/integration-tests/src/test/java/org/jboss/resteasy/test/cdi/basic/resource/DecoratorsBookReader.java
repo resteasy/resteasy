@@ -19,32 +19,31 @@ import java.util.logging.Logger;
 @Provider
 @Consumes(Constants.MEDIA_TYPE_TEST_XML)
 public class DecoratorsBookReader implements MessageBodyReader<EJBBook> {
-    private static MessageBodyReader<EJBBook> delegate;
+   private static MessageBodyReader<EJBBook> delegate;
 
-    @Inject
-    private Logger log;
+   @Inject
+   private Logger log;
 
-    static {
-        ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-        delegate = factory.getMessageBodyReader(EJBBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
-    }
+   static {
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+      delegate = factory.getMessageBodyReader(EJBBook.class, null, null, Constants.MEDIA_TYPE_TEST_XML_TYPE);
+   }
 
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        log.info("entering DecoratorsBookReader.isReadable()");
-        boolean b = EJBBook.class.equals(type);
-        log.info("leaving DecoratorsBookReader.isReadable()");
-        return b;
-    }
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+      log.info("entering DecoratorsBookReader.isReadable()");
+      boolean b = EJBBook.class.equals(type);
+      log.info("leaving DecoratorsBookReader.isReadable()");
+      return b;
+   }
 
-    public EJBBook readFrom(Class<EJBBook> type, Type genericType,
+   public EJBBook readFrom(Class<EJBBook> type, Type genericType,
                          Annotation[] annotations, MediaType mediaType,
                          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        log.info("entering DecoratorsBookReader.readFrom()");
-        EJBBook book = EJBBook.class.cast(delegate.readFrom(EJBBook.class, genericType, annotations, mediaType, httpHeaders, entityStream));
-        log.info("DecoratorsBookReader.readFrom() read " + book);
-        log.info("leaving DecoratorsBookReader.readFrom()");
-        return book;
-    }
+         throws IOException, WebApplicationException {
+      log.info("entering DecoratorsBookReader.readFrom()");
+      EJBBook book = EJBBook.class.cast(delegate.readFrom(EJBBook.class, genericType, annotations, mediaType, httpHeaders, entityStream));
+      log.info("DecoratorsBookReader.readFrom() read " + book);
+      log.info("leaving DecoratorsBookReader.readFrom()");
+      return book;
+   }
 }
-

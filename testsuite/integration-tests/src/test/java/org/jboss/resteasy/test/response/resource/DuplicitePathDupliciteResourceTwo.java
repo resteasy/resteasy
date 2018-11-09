@@ -7,12 +7,12 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/b")
 public class DuplicitePathDupliciteResourceTwo {
-    public static final String DUPLICITE_RESPONSE = "response5";
+   public static final String DUPLICITE_RESPONSE = "response5";
 
-    @Path("/c")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String dupliciteOne() {
-        return DUPLICITE_RESPONSE;
-    }
+   @Path("/c")
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   public String dupliciteOne() {
+      return DUPLICITE_RESPONSE;
+   }
 }

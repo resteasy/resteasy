@@ -1089,7 +1089,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
    }
 
-   private void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
+   private void addContextResolver(ContextResolver provider, int priority, Class providerClass, boolean builtin)
    {
       // RESTEASY-1725
       if (providerClass.getName().contains("$$Lambda$"))
@@ -1115,9 +1115,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
-      int priority = getPriority(null, null, ContextResolver.class, providerClass);
-      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass,
-            priority, builtin);
+      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass, priority, builtin);
       if (produces != null)
       {
          for (String produce : produces.value())
@@ -1160,44 +1158,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       if (resolvers == null)
          return null;
       List<ContextResolver> rtn = new ArrayList<ContextResolver>();
-
       List<SortedKey<ContextResolver>> list = resolvers.getPossible(type);
-      if (type.isWildcardType())
-      {
-         // do it upside down if it is a wildcard type:  Note: this is to pass the stupid TCK which prefers that
-         // a wildcard type match up with other wildcard types
-         //         for (int i = list.size() - 1; i >= 0; i--)
-         //         {
-         //            rtn.add(list.get(i).obj);
-         //         }
-
-         // Fix for RESTEASY-1609.
-         // This is related to the fix in RESTEASY-1471, prior to which user ContextResolvers appeared
-         // to be built-in. The original loop may have been in response to that bug, so the reversal
-         // may not be necessary. In any case, this code will do the reversal but put user ContextResolvers
-         // at the beginning of the list.
-         for (int i = list.size() - 1; i >= 0; i--)
-         {
-            if (!list.get(i).isBuiltin)
-            {
-               rtn.add(list.get(i).obj);
-            }
-         }
-         for (int i = list.size() - 1; i >= 0; i--)
-         {
-            if (list.get(i).isBuiltin)
-            {
-               rtn.add(list.get(i).obj);
-            }
-         }
-      }
-      else
-      {
-         for (SortedKey<ContextResolver> resolver : list)
-         {
-            rtn.add(resolver.obj);
-         }
-      }
+      list.forEach(resolver -> rtn.add(resolver.obj));
       return rtn;
    }
 
@@ -1577,9 +1539,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          try
          {
-            addContextResolver(createProviderInstance((Class<? extends ContextResolver>) provider), provider,
-                  isBuiltin);
             int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider);
+            addContextResolver(createProviderInstance((Class<? extends ContextResolver>)provider), priority, provider, isBuiltin);
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
@@ -1811,8 +1772,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          try
          {
-            addContextResolver((ContextResolver) provider, provider.getClass(), false);
             int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider.getClass());
+            addContextResolver((ContextResolver) provider, priority, provider.getClass(), false);
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)

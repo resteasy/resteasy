@@ -27,47 +27,47 @@ import javax.ws.rs.client.WebTarget;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CDILocatorTest {
-    static Client client;
-    static WebTarget baseTarget;
+   static Client client;
+   static WebTarget baseTarget;
 
-    @Deployment
-    public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(CDILocatorTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, CDILocatorResource.class);
-    }
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(CDILocatorTest.class.getSimpleName());
+      return TestUtil.finishContainerPrepare(war, null, CDILocatorResource.class);
+   }
 
-    private static String generateURL() {
-        return PortProviderUtil.generateBaseUrl(CDILocatorTest.class.getSimpleName());
-    }
+   private static String generateURL() {
+      return PortProviderUtil.generateBaseUrl(CDILocatorTest.class.getSimpleName());
+   }
 
-    @BeforeClass
-    public static void initClient() {
-        client = ClientBuilder.newClient();
-        baseTarget = client.target(generateURL());
-    }
+   @BeforeClass
+   public static void initClient() {
+      client = ClientBuilder.newClient();
+      baseTarget = client.target(generateURL());
+   }
 
-    @AfterClass
-    public static void closeClient() {
-        client.close();
-    }
+   @AfterClass
+   public static void closeClient() {
+      client.close();
+   }
 
-    /**
-     * @tpTestDetails Check generic type
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void genericTypeTest() throws Exception {
-        String result = baseTarget.path("test").queryParam("foo", "yo").request().get(String.class);
-        Assert.assertEquals("Wrong response", "OK", result);
-    }
+   /**
+    * @tpTestDetails Check generic type
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void genericTypeTest() throws Exception {
+      String result = baseTarget.path("test").queryParam("foo", "yo").request().get(String.class);
+      Assert.assertEquals("Wrong response", "OK", result);
+   }
 
-    /**
-     * @tpTestDetails Check locator
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void locatorTest() throws Exception {
-        String result = baseTarget.path("test/lookup").queryParam("foo", "yo").request().get(String.class);
-        Assert.assertEquals("Wrong response", "OK", result);
-    }
+   /**
+    * @tpTestDetails Check locator
+    * @tpSince RESTEasy 3.0.16
+    */
+   @Test
+   public void locatorTest() throws Exception {
+      String result = baseTarget.path("test/lookup").queryParam("foo", "yo").request().get(String.class);
+      Assert.assertEquals("Wrong response", "OK", result);
+   }
 }

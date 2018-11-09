@@ -154,8 +154,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     */
    public ResteasyClientBuilderImpl connectionCheckoutTimeout(long timeout, TimeUnit unit)
    {
-       this.connectionCheckoutTimeoutMs = (int) TimeUnit.MILLISECONDS.convert(timeout, unit);
-       return this;
+      this.connectionCheckoutTimeoutMs = (int) TimeUnit.MILLISECONDS.convert(timeout, unit);
+      return this;
    }
 
    /**
@@ -263,12 +263,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       return this;
    }
 
-    /**
-     * Adds a TLS/SSL SNI Host Name for authentication.
-     *
-     * @param sniHostNames host names
-     * @return an updated client builder instance
-     */
+   /**
+    * Adds a TLS/SSL SNI Host Name for authentication.
+    *
+    * @param sniHostNames host names
+    * @return an updated client builder instance
+    */
    public ResteasyClientBuilderImpl sniHostNames(String... sniHostNames) {
       this.sniHostNames.addAll(Arrays.asList(sniHostNames));
       return this;
@@ -308,7 +308,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme)
    {
       this.defaultProxy = new HttpHost(hostname, port, scheme);
-	   return this;
+      return this;
    }
 
    public ResteasyProviderFactory getProviderFactory()

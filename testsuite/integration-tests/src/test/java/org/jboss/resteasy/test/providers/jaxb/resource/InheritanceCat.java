@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class InheritanceCat extends InheritanceAnimal {
 
-    public InheritanceCat() {
-    }
+   public InheritanceCat() {
+   }
 
-    public InheritanceCat(final String name) {
-        super(name);
-    }
+   public InheritanceCat(final String name) {
+      super(name);
+   }
 }

@@ -12,27 +12,27 @@ public class AsynchContextualDataProduct
 
    public AsynchContextualDataProduct(int id, String name)
    {
-       this.id = id;
-       this.name = name;
+      this.id = id;
+      this.name = name;
    }
 
    public String getName()
    {
-       return name;
+      return name;
    }
 
    public void setName(String name)
    {
-       this.name = name;
+      this.name = name;
    }
 
    public int getId()
    {
-       return id;
+      return id;
    }
 
    public void setId(int id)
    {
-       this.id = id;
+      this.id = id;
    }
 }

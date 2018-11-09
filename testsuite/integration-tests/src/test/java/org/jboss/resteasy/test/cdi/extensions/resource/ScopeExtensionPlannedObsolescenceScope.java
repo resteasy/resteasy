@@ -17,6 +17,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @NormalScope
 @Inherited
 public @interface ScopeExtensionPlannedObsolescenceScope {
-    int value() default 1;
+   int value() default 1;
 }
-

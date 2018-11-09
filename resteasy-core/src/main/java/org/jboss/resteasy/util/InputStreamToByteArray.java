@@ -27,7 +27,7 @@ public class InputStreamToByteArray extends InputStream
 
    @Override
    public int read()
-           throws IOException
+         throws IOException
    {
       int b = delegate.read();
       if (b > -1)
@@ -37,7 +37,7 @@ public class InputStreamToByteArray extends InputStream
 
    @Override
    public int read(byte[] bytes)
-           throws IOException
+         throws IOException
    {
       int num = delegate.read(bytes);
       if (num > 0)
@@ -49,7 +49,7 @@ public class InputStreamToByteArray extends InputStream
 
    @Override
    public int read(byte[] bytes, int off, int len)
-           throws IOException
+         throws IOException
    {
       int num = delegate.read(bytes, off, len);
       if (num > 0)
@@ -61,21 +61,21 @@ public class InputStreamToByteArray extends InputStream
 
    @Override
    public long skip(long l)
-           throws IOException
+         throws IOException
    {
       return delegate.skip(l);
    }
 
    @Override
    public int available()
-           throws IOException
+         throws IOException
    {
       return delegate.available();
    }
 
    @Override
    public void close()
-           throws IOException
+         throws IOException
    {
       delegate.close();
    }
@@ -88,7 +88,7 @@ public class InputStreamToByteArray extends InputStream
 
    @Override
    public void reset()
-           throws IOException
+         throws IOException
    {
       throw new RuntimeException(Messages.MESSAGES.streamWrappedBySignature());
    }

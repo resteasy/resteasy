@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.validation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -120,8 +119,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private ValidationException toValidationException(Exception exception, SimpleViolationsContainer simpleViolationsContainer)
    {
       if (exception instanceof ConstraintDeclarationException ||
-          exception instanceof ConstraintDefinitionException  ||
-          exception instanceof GroupDefinitionException)
+         exception instanceof ConstraintDefinitionException  ||
+         exception instanceof GroupDefinitionException)
       {
          return (ValidationException) exception;
       }
@@ -185,7 +184,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       if ((violationsContainer.isFieldsValidated()
             || !GetRestful.isRootResource(object.getClass())
             || hasApplicationScope(object))
-          && violationsContainer.size() > 0)
+         && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationExceptionImpl(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -239,7 +238,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       catch (NoClassDefFoundError e)
       {
-        // Shouldn't get here. Deliberately empty.
+      // Shouldn't get here. Deliberately empty.
       }
       return true;
    }
@@ -347,41 +346,41 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    
    protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
-   	List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
-   	Class<?>[] interfaces = clazz.getInterfaces();
-   	for (int i = 0; i < interfaces.length; i++)
-   	{
-   	   Method interfaceMethod = getSuperMethod(method, interfaces[i]);
-   	   if (interfaceMethod != null)
-   	   {
-   	      ExecutableType[] types = getExecutableTypesOnMethod(interfaceMethod);
-   	      if (types != null)
-   	      {
-   	         typesList.add(types);
-   	      }
-   	   }
-   	   List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
-   	   if (superList.size() > 0)
-   	   {
-   	      typesList.addAll(superList);
-   	   }
-   	}
-   	return typesList;
+      List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
+      Class<?>[] interfaces = clazz.getInterfaces();
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         Method interfaceMethod = getSuperMethod(method, interfaces[i]);
+         if (interfaceMethod != null)
+         {
+            ExecutableType[] types = getExecutableTypesOnMethod(interfaceMethod);
+            if (types != null)
+            {
+               typesList.add(types);
+            }
+         }
+         List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
+         if (superList.size() > 0)
+         {
+            typesList.addAll(superList);
+         }
+      }
+      return typesList;
    }
    
    static protected ExecutableType[] getExecutableTypesOnMethod(Method method)
    {
-   	ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
-   	if (voe == null || voe.type().length == 0)
-   	{
-   		return null;
-   	}
-   	ExecutableType[] types = voe.type();
-   	if (types == null || types.length == 0)
-   	{
-   		return null;
-   	}
-   	return types;
+      ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
+      if (voe == null || voe.type().length == 0)
+      {
+         return null;
+      }
+      ExecutableType[] types = voe.type();
+      if (types == null || types.length == 0)
+      {
+         return null;
+      }
+      return types;
    }
    
    static protected boolean isGetter(Method m)
@@ -461,18 +460,18 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return null;
    }
    
-	/**
-	 * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
-	 * 
-	 * N.B. "Override" here is reflexive. I.e., a method overrides itself.
-	 * 
-	 * @param subTypeMethod   The sub type method (cannot be {@code null}).
-	 * @param superTypeMethod The super type method (cannot be {@code null}).
-	 * 
-	 * @return Returns {@code true} if {@code subTypeMethod} overrides {@code superTypeMethod}, {@code false} otherwise.
-	 *         
-	 * Taken from Hibernate Validator
-	 */
+   /**
+    * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
+    *
+    * N.B. "Override" here is reflexive. I.e., a method overrides itself.
+    *
+    * @param subTypeMethod   The sub type method (cannot be {@code null}).
+    * @param superTypeMethod The super type method (cannot be {@code null}).
+    *
+    * @return Returns {@code true} if {@code subTypeMethod} overrides {@code superTypeMethod}, {@code false} otherwise.
+    *
+    * Taken from Hibernate Validator
+    */
    protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod == null || superTypeMethod == null)
@@ -554,19 +553,21 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @SuppressWarnings({"rawtypes", "unchecked"})
    public void checkForConstraintViolations(HttpRequest request, Exception e)
    {
-      if (e instanceof InvocationTargetException)
+      Throwable t = e;
+      while (t != null && !(t instanceof ConstraintViolationException))
       {
-         Throwable t = InvocationTargetException.class.cast(e).getTargetException();
-         if (t instanceof ConstraintViolationException)
-         {
-            e = ConstraintViolationException.class.cast(t);
-         }
+         t = t.getCause();
       }
       
-      if (e instanceof ConstraintViolationException)
+      if (t instanceof ResteasyViolationException)
+      {
+         throw ResteasyViolationException.class.cast(t);
+      }
+      
+      if (t instanceof ConstraintViolationException)
       {
          SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
-         ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
+         ConstraintViolationException cve = ConstraintViolationException.class.cast(t);
          Set cvs = cve.getConstraintViolations();
          violationsContainer.addViolations(cvs);
          if (violationsContainer.size() > 0)
@@ -575,15 +576,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          }
       }
       
-      Throwable t = e.getCause();
-      while (t != null && !(t instanceof ResteasyViolationException))
-      {
-         t = t.getCause();    
-      }
-      if (t instanceof ResteasyViolationException)
-      {
-         throw ResteasyViolationException.class.cast(t);
-      }
+      return;
    }
    
    protected Validator getValidator(HttpRequest request)
