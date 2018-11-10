@@ -54,8 +54,7 @@ public interface LogMessages extends BasicLogger
    void failedToInvokeAsynchronously(@Cause Throwable ignored);
 
    @LogMessage(level = Level.ERROR)
-   @Message(id = BASE
-         + 20, value = "Unhandled asynchronous exception, sending back 500", format = Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 20, value = "Unhandled asynchronous exception, sending back 500", format = Format.MESSAGE_FORMAT)
    void unhandledAsynchronousException(@Cause Throwable ignored);
 
    @LogMessage(level = Level.ERROR)
@@ -65,6 +64,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.ERROR)
    @Message(id = BASE + 30, value = "Failed to write event {0}", format = Format.MESSAGE_FORMAT)
    void failedToWriteSseEvent(String event, @Cause Throwable cause);
+
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 35, value = "Cannot register {0} as HeaderDelegate: it has no type parameter", format = Format.MESSAGE_FORMAT)
+   void cannotRegisterheaderDelegate(Class<?> clazz);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //

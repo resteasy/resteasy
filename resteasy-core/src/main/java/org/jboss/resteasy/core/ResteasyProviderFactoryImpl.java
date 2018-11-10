@@ -1638,6 +1638,20 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          addResourceClassProcessor(provider, priority);
          newContracts.put(ResourceClassProcessor.class, priority);
       }
+      if (isA(provider, HeaderDelegate.class, contracts))
+      {
+         Type[] headerTypes = Types.getActualTypeArgumentsOfAnInterface(provider, HeaderDelegate.class);
+         if (headerTypes.length == 0)
+         {
+            LogMessages.LOGGER.cannotRegisterheaderDelegate(provider);
+         }
+         else
+         {
+            Class<?> headerClass = Types.getRawType(headerTypes[0]);
+            HeaderDelegate<?> delegate = createProviderInstance((Class<? extends HeaderDelegate>) provider);
+            addHeaderDelegate(headerClass, delegate);
+         }
+      }
    }
 
    /**
@@ -1958,6 +1972,19 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          int priority = getPriority(priorityOverride, contracts, ResourceClassProcessor.class, provider.getClass());
          addResourceClassProcessor((ResourceClassProcessor) provider, priority);
          newContracts.put(ResourceClassProcessor.class, priority);
+      }
+      if (isA(provider, HeaderDelegate.class, contracts))
+      {
+         Type[] headerTypes = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), HeaderDelegate.class);
+         if (headerTypes.length == 0)
+         {
+            LogMessages.LOGGER.cannotRegisterheaderDelegate(provider.getClass());
+         }
+         else
+         {
+            Class<?> headerClass = Types.getRawType(headerTypes[0]);
+            addHeaderDelegate(headerClass, (HeaderDelegate) provider);
+         }
       }
    }
 
