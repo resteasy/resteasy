@@ -1,7 +1,10 @@
 package org.jboss.resteasy.plugins.server.undertow;
 
 import static io.undertow.servlet.Servlets.servlet;
+import static org.xnio.Options.SSL_CLIENT_AUTH_MODE;
+import static org.xnio.SslClientAuthMode.NOT_REQUESTED;
 import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -20,6 +23,9 @@ import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.xnio.OptionMap;
+import org.xnio.Options;
+import org.xnio.SslClientAuthMode;
 
 public class UndertowEmbededServer implements EmbeddedJaxrsServer
 {
@@ -36,6 +42,10 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    private String contextPath = "/";
 
    private Undertow server;
+   
+   private SSLContext sslContext;
+   
+   private SSLParameters ssLParameters;
 
    @Override
    public void setRootResourcePath(String rootResourcePath)
@@ -47,10 +57,29 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    @Override
    public void start()
    {
-      server = Undertow.builder().addHttpListener(port, hostName).setHandler(root).build();
+      Builder builder = Undertow.builder();
+      if (this.sslContext != null)
+      {
+         builder.addHttpsListener(port, hostName, sslContext, root);
+         if (ssLParameters != null && ssLParameters.getNeedClientAuth()) {
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
+         }
+         
+         if (ssLParameters != null && ssLParameters.getWantClientAuth()) {
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUESTED);
+         }
+         if (ssLParameters != null && !ssLParameters.getNeedClientAuth()) {
+            builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.NOT_REQUESTED);
+         }
+         
+      }
+      else
+      {
+         builder.addHttpListener(port, hostName).setHandler(root);
+      }
+      server = builder.build();
       server.start();
       deploy(this.deployment);
-
    }
 
    public void deploy(ResteasyDeployment deployment)
@@ -135,7 +164,7 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    @Override
    public void setSSLContext(SSLContext sslContext)
    {
-      // TODO Auto-generated method stub
+      this.sslContext = sslContext;
 
    }
 
@@ -149,7 +178,7 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    @Override
    public void setSslParameters(SSLParameters sslParameters)
    {
-      // TODO Auto-generated method stub
+      this.ssLParameters = sslParameters;
 
    }
 
