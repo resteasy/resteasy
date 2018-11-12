@@ -1,7 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -16,6 +20,11 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
    public FormParamProcessor(String paramName)
    {
       super(paramName);
+   }
+   
+   public FormParamProcessor(String paramName, Type type, Annotation[] annotations, ClientConfiguration config)
+   {
+      super(paramName, type, annotations, config);
    }
 
    @Override

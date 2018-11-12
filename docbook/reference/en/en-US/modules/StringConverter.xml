@@ -665,5 +665,187 @@ public static class TestResource {
    }
    </programlisting>
    </sect1>
+ 
+    <sect1>
+   <title>Default multiple valued <classname>ParamConverter</classname></title>
    
+   <para>
+   RESTEasy includes two built-in <classname>ParamConverter</classname>s in the resteasy-jaxrs module,
+   one for <classname>Collection</classname>s:
+   </para>
+   
+<programlisting>
+   <classname>org.jboss.resteasy.plugins.providers.MultiValuedCollectionParamConverter</classname>,
+</programlisting>
+
+   <para>
+   and one for arrays:
+   </para>
+   
+<programlisting>
+   <classname>org.jboss.resteasy.plugins.providers.MultiValuedArrayParamConverter</classname>,
+</programlisting>
+   
+   <para>
+   which implement the concepts in the previous section.
+   </para>
+   
+   <para>
+   In particular, <methodname>MultiValued*ParamConverter.fromString()</methodname> can transform a
+   string representation coming over the network into a <classname>Collection</classname> or array, and
+   <methodname>MultiValued*ParamConverter.toString()</methodname> can be used by a client side proxy
+   to transform <classname>Collection</classname>s or arrays into a string representation.
+   </para>
+   
+   <para>
+   String representations are determined by <classname>org.jboss.resteasy.annotations.Separator</classname>,
+   a parameter annotation in the resteasy-core module:
+   </para>
+   
+<programlisting>
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Separator
+{
+   public String value() default "";
+}
+</programlisting>
+
+   <para>
+   The value of <code>Separator.value()</code> is used to separate individual elements of a <classname>Collection</classname>
+   or array. For example, a proxy implementing
+   </para>
+   
+<programlisting>
+@Path("path/separator/multi/{p}")
+@GET
+public String pathMultiSeparator(@PathParam("p") @Separator("-") List&lt;String&gt; ss); 
+</programlisting>
+
+   <para>
+   will turn
+   </para>
+   
+<programlisting>
+List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+list.add("abc");
+list.add("xyz");
+proxy.pathMultiSeparator(list);
+</programlisting>
+
+  <para>
+  and "path/separator/multi/{p}" into ".../path/separator/multi/abc-xyz". On the server side,
+  the RESTEasy runtime will turn "abc-xyz" back into a list consisting of elements "abc" and "xyz" for
+  </para>
+  
+<programlisting>
+@Path("path/separator/multi/{p}")
+@GET
+public String pathMultiSeparator(@PathParam("p") @Separator("-") List&lt;String&gt; ss) {
+   StringBuffer sb = new StringBuffer();
+   for (String s : ss) {
+      sb.append(s);
+      sb.append("|");
+   }
+   return sb.toString();
+}
+</programlisting>
+  
+   <para>
+   which will return "abc|xyz|".
+   </para>
+   
+   <para>
+   In fact, the value of the <classname>Separator</classname> annotations may be a more general regular
+   expression, which is passed to <methodname>String.split()</methodname>. For example, "[-,;]" tells the
+   server side to break up a string using either "-", ",", or ";". On the client side, a string will be created
+   using the first element, "-" in this case.
+   </para>
+   
+   <para>
+   If a parameter is annotated with <classname>@Separator</classname> with no value, then the default value is
+   </para>
+   
+   <itemizedlist>
+      <listitem>"," for a <classname>@HeaderParam</classname>, <classname>@MatrixParam</classname>,
+      <classname>@PathParam</classname>, or <classname>@QueryParam</classname>, and
+      </listitem> 
+      
+      <listitem>
+      "-" for a <classname>@CookieParam</classname>.
+      </listitem>
+   </itemizedlist>
+   
+   <para>
+      The <classname>MultiValued*ParamConverter</classname>s depend on existing facilities for handling
+      the individual elements. On the server side, once it has parsed the incoming string into substrings,
+      <classname>MultiValued*ParamConverter</classname> turns each substring into an Java object according
+      to Section 3.2 "Fields and Bean Properties" of the JAX-RS specification. On the client side, 
+      <classname>MultiValued*ParamConverter</classname> turns a Java object into a string as follows:
+   </para>
+   
+   <orderedlist>
+      <listitem>look for a <classname>ParamConverter</classname>;</listitem>
+      <listitem>
+         if there is no suitable <classname>ParamConverter</classname> and the parameter
+         is labeled <classname>@HeaderParam</classname>, look for a
+         <classname>HeaderDelegate</classname>; or</listitem>
+      <listitem>
+         call <methodname>toString()</methodname>.
+      </listitem>
+   </orderedlist>
+   
+   <para>
+   These <classname>ParamConverter</classname>s are meant to be fairly general, but there are a number of
+   restrictions:
+   </para>
+   
+   <orderedlist>
+      <listitem>They don't handle nested <classname>Collections</classname> or arrays. That is,
+      <classname>List&lt;String&gt;</classname> and <code>String[]</code> are OK, but
+      <classname>List&lt;List&lt;String&gt;&gt;</classname> and <code>String[][]</code> are not. 
+      </listitem>
+      
+      <listitem>
+      The regular expression used in <classname>Separator</classname> must match the regular expression
+<programlisting>
+"\\p{Punct}|\\[\\p{Punct}+\\]"
+</programlisting>
+
+      That is, it must be either a single instance of a punctuation symbol, i.e., a symbol in the set
+<programlisting>
+!"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~
+</programlisting>
+
+      or a class of punctuation symbols like "[-,;]".
+      </listitem>
+      
+      <listitem>
+      For either of these <classname>ParamConverter</classname>s to be available for use with a given parameter, that
+      parameter must be annotated with <classname>@Separator</classname>.
+      </listitem>
+   </orderedlist>
+   
+   <para>
+   There are also some logical restrictions:
+   </para>
+   
+   <orderedlist>
+      <listitem>
+      Cookie syntax, as specified in <ulink url="https://tools.ietf.org/html/rfc6265#section-4.1.1">https://tools.ietf.org/html/rfc6265#section-4.1.1</ulink>,
+      assigns a meaning to ";", so it cannot be used as a separator.
+      </listitem>
+      <listitem>
+      If a separator character appears in the content of an element, then there will be problems. For example, if "," is
+      used as a separator, then, if a proxy sends the array <code>["a","b,c","d"]</code>, it will turn into the 
+      string "a,b,c,d" on the wire and be reconstituted on the server as four elements.
+      </listitem>
+   </orderedlist>
+   
+   <para>
+   These built-in <classname>ParamConverter</classname>s have the lowest priority, so any user supplied 
+   <classname>ParamConverter</classname>s will be tried first.
+   </para>
+   </sect1>
+     
 </chapter>

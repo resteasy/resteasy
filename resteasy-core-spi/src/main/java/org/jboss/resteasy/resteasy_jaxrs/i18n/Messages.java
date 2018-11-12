@@ -826,4 +826,13 @@ public interface Messages
 
    @Message(id = BASE + 1097, value = "Registering a context resolver doesn't support lambdas")
    String registeringContextResolverAsLambda();
+   
+   @Message(id = BASE + 1098, value = "MultiValuedArrayParamConverter expected array, not: %s")
+   String expectedArray(String className);
+   
+   @Message(id = BASE + 1099, value = "MultiValuedCollectionParamConverter unable to parse: %s")
+   String unableToParse(String s);
+
+   @Message(id = BASE + 13, value = "Error creating array from %s")
+   String errorCreatingArray(String s);
 }

@@ -1165,13 +1165,20 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
    {
-      for (SortedKey<ParamConverterProvider> provider : getSortedParamConverterProviders())
+      try
       {
-         ParamConverter converter = provider.getObj().getConverter(clazz, genericType, annotations);
-         if (converter != null)
-            return converter;
+         ResteasyContext.pushContext(ResteasyProviderFactory.class, this); // For MultiValuedParamConverterProvider
+         for (SortedKey<ParamConverterProvider> provider : getSortedParamConverterProviders())
+         {
+            ParamConverter converter = provider.getObj().getConverter(clazz, genericType, annotations);
+            if (converter != null) return converter;
+         }
+         return null;
       }
-      return null;
+      finally
+      {
+         ResteasyContext.popContextData(ResteasyProviderFactory.class);
+      }
    }
 
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
@@ -1211,7 +1218,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
       return object.toString();
    }
-
+   
    @Override
    public String toHeaderString(Object object)
    {
