@@ -60,6 +60,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected HttpHost defaultProxy;
    protected int responseBufferSize;
    protected List<String> sniHostNames = new ArrayList<>();
+   protected boolean trustSelfSignedCertificates = true;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -484,6 +485,16 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    public boolean isTrustManagerDisabled()
    {
       return disableTrustManager;
+   }
+
+   @Override
+   public boolean isTrustSelfSignedCertificates(){
+      return trustSelfSignedCertificates;
+   }
+
+   @Override
+   public void setIsTrustSelfSignedCertificates(boolean b){
+      trustSelfSignedCertificates = b;
    }
 
    @Override

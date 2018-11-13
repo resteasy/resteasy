@@ -107,8 +107,10 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                .setSecureRandom(null)
                .loadKeyMaterial(that.getKeyStore(),
                         that.getKeyStorePassword() != null ? that.getKeyStorePassword().toCharArray() : null)
-               .loadTrustMaterial(that.getTrustStore(), TrustSelfSignedStrategy.INSTANCE)
+               .loadTrustMaterial(that.getTrustStore(),
+                       that.isTrustSelfSignedCertificates() ? TrustSelfSignedStrategy.INSTANCE : null)
                .build();
+
             sslsf = new SSLConnectionSocketFactory(ctx, verifier) {
                @Override
                protected void prepareSocket(SSLSocket socket) throws IOException
