@@ -110,6 +110,18 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
    public abstract boolean isTrustManagerDisabled();
 
    /**
+    * When the user is not using a TrustManager (see disableTrustManager) and
+    * does not define an SSLContext object but they want all defined trustStores
+    * to use the TrustSelfSignedCertificates trust strategy set this value to true.
+    *
+    * @param b A value of true assigns trust strategy TrustSelfSignedCertificates
+    *          to the trustStores.  A value of false assigns a null to the trust
+    *          strategy. The default value is true in order to maintain backward
+    *          compatibility.
+    */
+   public abstract void setIsTrustSelfSignedCertificates(boolean b);
+   public abstract boolean isTrustSelfSignedCertificates();
+   /**
     * SSL policy used to verify hostnames
     *
     * @param policy SSL policy
