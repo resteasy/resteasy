@@ -37,6 +37,7 @@ import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistr
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.test.interception.resource.FakeHttpServer;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter3;
@@ -47,6 +48,7 @@ import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFi
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter3;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 
@@ -59,6 +61,10 @@ import org.junit.Test;
 public class PriorityTest {
 
    private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
+
+   @Rule
+   public FakeHttpServer fakeHttpServer = new FakeHttpServer();
+
    /**
     * @tpTestDetails Test for classes implements ContainerResponseFilter.
     * @tpSince RESTEasy 3.0.16
@@ -122,7 +128,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          StringBuilder result = new StringBuilder();
          webTarget.register(new ClientRequestFilter()
          {
@@ -155,7 +163,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          StringBuilder result = new StringBuilder();
          webTarget.register(new ClientResponseFilter()
          {
@@ -190,7 +200,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          webTarget.register((ClientResponseFilter) (containerRequestContext, containerResponseContext) -> {
             containerResponseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
             containerResponseContext.setEntityStream(new ByteArrayInputStream("hello".getBytes()));
@@ -230,7 +242,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          StringBuilder result = new StringBuilder();
          webTarget.register(new WriterInterceptor()
          {
@@ -265,7 +279,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          webTarget.register((ClientResponseFilter) (containerRequestContext, containerResponseContext) -> {
             containerResponseContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
             containerResponseContext.setEntityStream(new ByteArrayInputStream("hello".getBytes()));
@@ -320,7 +336,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          StringBuilder result = new StringBuilder();
          webTarget.register(new MessageBodyWriter<String>()
          {
@@ -369,7 +387,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          webTarget.register(new ClientRequestFilter()
          {
             @Context
@@ -408,5 +428,4 @@ public class PriorityTest {
          client.close();
       }
    }
-
 }
