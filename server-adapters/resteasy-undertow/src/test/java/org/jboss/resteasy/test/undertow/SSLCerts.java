@@ -19,11 +19,8 @@ import java.security.KeyStore;
  */
 public enum SSLCerts
 {
-   DEFAULT_SERVER_KEYSTORE("ssl/default_server_keystore.jks", "secret".toCharArray(), null, null),
-   SNI_SERVER_KEYSTORE("ssl/sni_server_keystore.jks", "secret".toCharArray(), null, null),
-   NO_TRUSTED_CLIENTS_KEYSTORE("ssl/no_trusted_clients_keystore.jks", "secret".toCharArray(), null, null),
-   DEFAULT_TRUSTSTORE(null, null, "ssl/default_client_truststore.jks", "secret".toCharArray()),
-   SNI_TRUSTSTORE(null, null, "ssl/sni_client_truststore.jks", "secret".toCharArray());
+   SERVER_KEYSTORE("ssl/server.keystore", "password".toCharArray(), "ssl/server.truststore", "password".toCharArray()),
+   CLIENT_KEYSTORE("ssl/client.keystore", "password".toCharArray(), "ssl/client.truststore", "password".toCharArray());
 
    private final SSLContext sslContext;
 

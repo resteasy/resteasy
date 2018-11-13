@@ -81,28 +81,27 @@ public class UndertowJAXRSTest
    public void testSSLClientAuthNone() throws Exception
    {
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8443).rootPath("ssl")
-            .sslContext(SSLCerts.DEFAULT_SERVER_KEYSTORE.getSslContext())
+            .sslContext(SSLCerts.SERVER_KEYSTORE.getSslContext())
             .sslClientAuthentication(SSLClientAuthentication.NONE).build();
       CompletionStage<Instance> instance = JAXRS.start(new MyApp(), configuration);
       instance.toCompletableFuture().get();
-      ResteasyClient client = createClientWithCertificate(SSLCerts.DEFAULT_TRUSTSTORE.getSslContext());
+      ResteasyClient client = createClientWithCertificate(SSLCerts.CLIENT_KEYSTORE.getSslContext());
       Assert.assertEquals("hello world",
             client.target("https://localhost:8443/ssl/base/test").request().get(String.class));
       instance.toCompletableFuture().get().stop();
       
    }
    
-   //@Test
-   //TODO:Fix this
+   @Test
    public void testSSLClientAuthRequired() throws Exception
    {
       
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8443).rootPath("clientauth")
-            .sslContext(SSLCerts.SNI_SERVER_KEYSTORE.getSslContext())
+            .sslContext(SSLCerts.SERVER_KEYSTORE.getSslContext())
             .sslClientAuthentication(SSLClientAuthentication.MANDATORY).build();
       CompletionStage<Instance> instance = JAXRS.start(new MyApp(), configuration);
       instance.toCompletableFuture().get();
-      ResteasyClient client = createClientWithCertificate(SSLCerts.SNI_TRUSTSTORE.getSslContext());
+      ResteasyClient client = createClientWithCertificate(SSLCerts.CLIENT_KEYSTORE.getSslContext());
       Assert.assertEquals("hello world",
             client.target("https://localhost:8443/clientauth/base/test").request().get(String.class));
       instance.toCompletableFuture().get().stop();
