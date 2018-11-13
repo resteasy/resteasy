@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.interception.resource.FakeHttpServer;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter3;
@@ -14,6 +15,8 @@ import org.jboss.resteasy.test.interception.resource.PriorityClientResponseFilte
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter3;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 import javax.ws.rs.client.ClientRequestFilter;
@@ -31,6 +34,10 @@ import static org.junit.Assert.assertTrue;
 public class PriorityTest {
 
    private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
+
+   @Rule
+   public FakeHttpServer fakeHttpServer = new FakeHttpServer();
+
    /**
     * @tpTestDetails Test for classes implements ContainerResponseFilter.
     * @tpSince RESTEasy 3.0.16
