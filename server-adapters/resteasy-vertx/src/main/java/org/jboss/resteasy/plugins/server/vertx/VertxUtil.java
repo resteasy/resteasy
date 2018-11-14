@@ -43,7 +43,9 @@ public class VertxUtil
       {
          uriString = protocol + "://" + host + uri;
       }
-
+      if (contextPath != null && !contextPath.isEmpty() && !contextPath.startsWith("/")) {
+         contextPath = "/"+ contextPath;
+      }
       URI absoluteURI = URI.create(uriString);
       return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
    }
