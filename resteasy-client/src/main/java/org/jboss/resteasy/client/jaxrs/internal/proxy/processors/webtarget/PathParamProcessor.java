@@ -15,15 +15,15 @@ import javax.ws.rs.client.WebTarget;
 public class PathParamProcessor implements WebTargetProcessor
 {
    private final String paramName;
-   private final Boolean encodeSlashInPath;
-   protected Type type;
-   protected Annotation[] annotations;
-   protected ClientConfiguration configuration;
+   private final boolean isEncoded;
+   protected final Type type;
+   protected final Annotation[] annotations;
+   protected final ClientConfiguration configuration;
 
-   public PathParamProcessor(final String paramName, final Boolean encodeSlashInPath, final Type genericType, final Annotation[] annotations, final ClientConfiguration clientConfiguration)
+   public PathParamProcessor(final String paramName, final boolean isEncoded, final Type genericType, final Annotation[] annotations, final ClientConfiguration clientConfiguration)
    {
       this.paramName = paramName;
-      this.encodeSlashInPath = encodeSlashInPath;
+      this.isEncoded = isEncoded;
       this.type = genericType;
       this.annotations = annotations;
       this.configuration = clientConfiguration;
@@ -33,6 +33,8 @@ public class PathParamProcessor implements WebTargetProcessor
    public WebTarget build(WebTarget target, Object param)
    {
       Object param2 = configuration.toString(param, type, annotations);
-      return target.resolveTemplate(paramName, param2, encodeSlashInPath);
+      return isEncoded
+         ? target.resolveTemplateFromEncoded(paramName, param2)
+         : target.resolveTemplate(paramName, param2, false);
    }
 }

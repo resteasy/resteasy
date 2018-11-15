@@ -61,10 +61,10 @@ public class EncodedPathProxyTest {
    {
       ResteasyWebTarget target = client.target(generateBaseUrl());
       EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
-      Response response = proxy.encode("t;hawkular/f;jk-feed", null);
+      Response response = proxy.encode("t;hawkular/f%3Bjk-feed", null);
       Assert.assertEquals(200, response.getStatus());
       String uri = response.readEntity(String.class);
-      Assert.assertEquals(generateBaseUrl() + "/test/encode/t;hawkular%2Ff;jk-feed", uri);
+      Assert.assertEquals(generateBaseUrl() + "/test/encode/t;hawkular%2Ff%3Bjk-feed", uri);
    }
 
    /**
@@ -76,9 +76,9 @@ public class EncodedPathProxyTest {
    {
       ResteasyWebTarget target = client.target(generateBaseUrl());
       EncodedPathProxyInterface proxy = target.proxy(EncodedPathProxyInterface.class);
-      Response response = proxy.noencode("t;hawkular/f;jk-feed", null);
+      Response response = proxy.noencode("t;hawkular/f%3Bjk-feed", null);
       Assert.assertEquals(200, response.getStatus());
       String uri = response.readEntity(String.class);
-      Assert.assertEquals(generateBaseUrl() + "/test/noencode/t;hawkular/f;jk-feed", uri);
+      Assert.assertEquals(generateBaseUrl() + "/test/noencode/t;hawkular/f%253Bjk-feed", uri);
    }
 }
