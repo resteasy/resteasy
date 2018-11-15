@@ -78,8 +78,8 @@
         <version.org.slf4j>1.7.25</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>3.0.6.Final</version.org.wildfly.core.wildfly-cli>
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
-        <version.org.wildfly.wildfly-arquillian-container-managed>2.1.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
-        <version.org.wildfly.wildfly-arquillian-container-remote>2.1.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
+        <version.org.wildfly.wildfly-arquillian-container-managed>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-managed>
+        <version.org.wildfly.wildfly-arquillian-container-remote>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-remote>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
         <version.org.wildfly.security.wildfly-elytron>1.6.1.Final</version.org.wildfly.security.wildfly-elytron>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
