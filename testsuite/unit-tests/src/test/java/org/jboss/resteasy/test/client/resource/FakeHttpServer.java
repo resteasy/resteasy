@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 
 /** Tiny fake HTTP server providing a target for testing the RESTEasy client. */
 public class FakeHttpServer extends ExternalResource {
@@ -48,12 +50,12 @@ public class FakeHttpServer extends ExternalResource {
    protected void before() throws Throwable {
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
 
+      // generic dummy methods
       server.createContext("/path", exchange -> {
          final byte[] response;
          final int length;
          final int status;
-         switch (exchange.getRequestMethod().toUpperCase())
-         {
+         switch (exchange.getRequestMethod().toUpperCase()) {
             case "HEAD":
                response = EMPTY_BYTE_ARRAY;
                length = exchange.getRequestURI().toString().getBytes(StandardCharsets.UTF_8).length;
@@ -72,6 +74,43 @@ public class FakeHttpServer extends ExternalResource {
                response = buffer.toByteArray();
                length = response.length;
                status = 200;
+               break;
+            }
+
+            default:
+               response = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
+               length = response.length;
+               status = 405;
+               break;
+         }
+
+         exchange.sendResponseHeaders(status, length);
+         OutputStream os = exchange.getResponseBody();
+         os.write(response);
+         os.close();
+      });
+
+      // for ChunkedTransferEncodingUnitTest
+      server.createContext("/chunked", exchange -> {
+         final byte[] response;
+         final int length;
+         final int status;
+         switch (exchange.getRequestMethod().toUpperCase()) {
+            case "POST": {
+               ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+               Streams.copyStream(exchange.getRequestBody(), buffer);
+
+               String transferEncoding = exchange.getRequestHeaders().getFirst("Transfer-Encoding");
+               if ("chunked".equalsIgnoreCase(transferEncoding)
+                  && Arrays.equals(buffer.toByteArray(), "file entity".getBytes())) {
+                  response = "ok".getBytes();
+                  status = 200;
+               } else {
+                  response = "not ok".getBytes();
+                  status = 400;
+               }
+
+               length = response.length;
                break;
             }
 
