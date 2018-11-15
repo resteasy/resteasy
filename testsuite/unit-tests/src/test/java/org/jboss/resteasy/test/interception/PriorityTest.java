@@ -15,7 +15,6 @@ import org.jboss.resteasy.test.interception.resource.PriorityClientResponseFilte
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter3;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
