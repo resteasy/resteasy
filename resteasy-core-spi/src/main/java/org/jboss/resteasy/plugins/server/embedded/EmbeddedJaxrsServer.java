@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.embedded;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
+import javax.ws.rs.JAXRS;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
@@ -32,4 +33,7 @@ public interface EmbeddedJaxrsServer
    void setPort(int port);
    
    void setHost(String host);
+   
+   default void setConfiguration(JAXRS.Configuration configuration) {
+   }
 }

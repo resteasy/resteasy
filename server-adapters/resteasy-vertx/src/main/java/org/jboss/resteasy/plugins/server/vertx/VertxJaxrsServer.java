@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
+
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,9 +12,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.JAXRS;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SniHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -23,9 +32,12 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.plugins.server.netty.RequestDispatcher;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -47,6 +59,9 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    protected String root = "";
    protected SecurityDomain domain;
    private String deploymentID;
+   private SSLContext sslContext;
+   private SSLParameters sslParameters;
+   private JAXRS.Configuration configuration;
    // default no idle timeout.
 
    public String getHost()
@@ -131,6 +146,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    public void start()
    {
       vertx = Vertx.vertx(vertxOptions);
+      
       deployment.start();
       if (deployment.getApplication() != null) {
          ApplicationPath appPath = deployment.getApplication().getClass().getAnnotation(ApplicationPath.class);
@@ -144,7 +160,19 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
          }
       }
       String key = UUID.randomUUID().toString();
-      deploymentMap.put(key, new Helper(root, serverOptions, deployment, domain));
+      
+      Object httpServerConfig = configuration.property(HttpServerOptions.class.getName());
+      if (httpServerConfig != null && httpServerConfig instanceof HttpServerOptions)
+      {
+         HttpServerOptions httpServerOptions = new HttpServerOptions((HttpServerOptions) httpServerConfig);
+         httpServerOptions.setHost(serverOptions.getHost());
+         httpServerOptions.setPort(serverOptions.getPort());
+         deploymentMap.put(key, new Helper(root, httpServerOptions, deployment, domain));
+      }
+      else
+      {
+         deploymentMap.put(key, new Helper(root, serverOptions, deployment, domain));
+      }
       // Configure the server.
       CompletableFuture<String> fut = new CompletableFuture<>();
       DeploymentOptions deploymentOptions = new DeploymentOptions()
@@ -174,7 +202,10 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
          throw new RuntimeException(e);
       }
    }
-
+   @Override
+   public void setConfiguration(JAXRS.Configuration configuration) {
+      this.configuration = configuration;
+   }
    @Override
    public void stop()
    {
@@ -229,11 +260,6 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
       {
          Helper helper = deploymentMap.get(config().getString("helper"));
          server = vertx.createHttpServer(helper.serverOptions);
-         //HttpServer server =
-         //vertx.createHttpServer(new HttpServerOptions().setSsl(true).setKeyStoreOptions(
-           //    new JksOptions().setPath("server-keystore.jks").setPassword("wibble")
-           //  ));
-         
          server.requestHandler(new VertxRequestHandler(vertx, helper.deployment, helper.root, helper.domain));
          server.listen(ar -> {
             if (ar.succeeded())
@@ -250,6 +276,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void setSSLContext(SSLContext sslContext)
    {
+      this.sslContext = sslContext;
    }
 
    @Override
@@ -262,7 +289,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void setSslParameters(SSLParameters sslParameters)
    {
-      // TODO Auto-generated method stub
+      this.sslParameters = sslParameters;
 
    }
 }
