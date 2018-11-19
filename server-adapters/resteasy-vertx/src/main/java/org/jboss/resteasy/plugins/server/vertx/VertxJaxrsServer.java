@@ -1,8 +1,4 @@
 package org.jboss.resteasy.plugins.server.vertx;
-
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
-
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,12 +28,9 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.netty.RequestDispatcher;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -160,10 +153,10 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
          }
       }
       String key = UUID.randomUUID().toString();
-      
-      Object httpServerConfig = configuration.property(HttpServerOptions.class.getName());
-      if (httpServerConfig != null && httpServerConfig instanceof HttpServerOptions)
+
+      if (configuration != null && configuration.property(HttpServerOptions.class.getName()) instanceof HttpServerOptions  )
       {
+         Object httpServerConfig = configuration.property(HttpServerOptions.class.getName());
          HttpServerOptions httpServerOptions = new HttpServerOptions((HttpServerOptions) httpServerConfig);
          httpServerOptions.setHost(serverOptions.getHost());
          httpServerOptions.setPort(serverOptions.getPort());
