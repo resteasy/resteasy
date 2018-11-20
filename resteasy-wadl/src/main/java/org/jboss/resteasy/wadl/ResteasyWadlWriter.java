@@ -395,10 +395,10 @@ public class ResteasyWadlWriter {
                    Iterator<Include> iter = grammars.getInclude().iterator();
                    while (iter.hasNext()) {
                        for (Doc doc : iter.next().getDoc()) {
-                           // CHECKSTYLE.OFF: EmptyStatement
-                           if ("Generated".equals(doc.getTitle()));
-                           // CHECKSTYLE.ON: EmptyStatement
-                           iter.remove();
+                           if ("Generated".equals(doc.getTitle())) {
+                               iter.remove();
+                               break;
+                           }
                        }
                    }
                }
