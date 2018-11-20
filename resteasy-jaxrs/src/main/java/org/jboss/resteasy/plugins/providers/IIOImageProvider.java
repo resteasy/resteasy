@@ -193,8 +193,11 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       {
          if (param.canWriteCompressed())
          {
-            param.setCompressionMode(writerParams.compressionMode());
-            param.setCompressionQuality(writerParams.compressionQuality());
+            final int cm = writerParams.compressionMode();
+            param.setCompressionMode(cm);
+            if (ImageWriteParam.MODE_EXPLICIT == cm) {
+               param.setCompressionQuality(writerParams.compressionQuality());
+            }
          }
       }
       else if (param.canWriteCompressed())

@@ -13,7 +13,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,7 +39,9 @@ import java.util.Arrays;
 @RunAsClient
 public class IIOImageProviderTest {
    static ResteasyClient client;
-   static final String testPngResource = "test.png";
+   //two different versions of the same png image, compressed using JDK8 and JDK11, so that we can perform byte comparisons in testPostPNGImage()
+   static final String testPngResource1 = "test1.png";
+   static final String testPngResource2 = "test2.png";
    static final String testWdpResource = "test.wdp";
 
    @Before
@@ -70,8 +71,8 @@ public class IIOImageProviderTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Ignore("[RESTEASY-1724] java.lang.IllegalStateException: Compression mode not MODE_EXPLICIT!")
-   public void testPostJPEGIMage() throws Exception {
+   public void testPostPNGImage() throws Exception {
+      final String testPngResource = System.getProperty("java.version").startsWith("1.") ? testPngResource1 : testPngResource2;
       File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
       Assert.assertTrue(file.exists());
       Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/png"));
