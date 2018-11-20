@@ -80,8 +80,10 @@ public class ServerResponseWriter
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
 
       executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, () -> {
+         Object entity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
+
          //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests
-         if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
+         if (entity == null || response.getOutputStream() == null)
          {
             response.setStatus(jaxrsResponse.getStatus());
             commitHeaders(jaxrsResponse, response);
@@ -89,7 +91,6 @@ public class ServerResponseWriter
          }
 
          Class type = jaxrsResponse.getEntityClass();
-         Object ent = jaxrsResponse.getEntity();
          Type generic = jaxrsResponse.getGenericType();
          Annotation[] annotations = jaxrsResponse.getAnnotations();
          @SuppressWarnings(value = "unchecked")
@@ -132,7 +133,7 @@ public class ServerResponseWriter
          }
 
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-               providerFactory, ent, type, generic, annotations, mt,
+               providerFactory, entity, type, generic, annotations, mt,
                jaxrsResponse.getMetadata(), os, request);
          writerContext.proceed();
          if(sendHeaders) {
@@ -154,7 +155,7 @@ public class ServerResponseWriter
    public static MediaType getResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       MediaType mt = null;
-      if (jaxrsResponse.getEntity() != null)
+      if (!jaxrsResponse.isClosed() && jaxrsResponse.getEntity() != null)
       {
          if ((mt = jaxrsResponse.getMediaType()) == null)
          {

@@ -235,13 +235,13 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    @Override
    public boolean hasEntity()
    {
-      return jaxrsResponse.hasEntity();
+      return !jaxrsResponse.isClosed() && jaxrsResponse.hasEntity();
    }
 
    @Override
    public Object getEntity()
    {
-      return jaxrsResponse.getEntity();
+      return !jaxrsResponse.isClosed() ? jaxrsResponse.getEntity() : null;
    }
 
    @Override
