@@ -1,12 +1,14 @@
 package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.util.Types;
+import org.jboss.resteasy.test.util.resource.TypesParamConverterPOJO;
 import org.jboss.resteasy.test.util.resource.TypesTestProvider;
 import org.jboss.resteasy.test.util.resource.TypesTestProviderSubclass;
-import org.jboss.resteasy.spi.util.Types;
 import org.junit.Test;
 
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.ParamConverter;
 import java.lang.reflect.Type;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +34,10 @@ public class TypesBuiltInTest {
       parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, MarshalledEntity.class);
       assertEquals("Wrong count of parameters", 1, parameters.length);
       assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
+
+      parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, ParamConverter.class);
+      assertEquals("Wrong count of parameters", 1, parameters.length);
+      assertEquals("Wrong type of parameter", TypesParamConverterPOJO.class, (Class<?>) parameters[0]);
    }
 
    /**
@@ -48,5 +54,9 @@ public class TypesBuiltInTest {
       parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, MarshalledEntity.class);
       assertEquals("Wrong count of parameters", 1, parameters.length);
       assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
+
+      parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, ParamConverter.class);
+      assertEquals("Wrong count of parameters", 1, parameters.length);
+      assertEquals("Wrong type of parameter", TypesParamConverterPOJO.class, (Class<?>) parameters[0]);
    }
 }

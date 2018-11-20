@@ -4,8 +4,9 @@ import org.jboss.resteasy.spi.MarshalledEntity;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.ParamConverter;
 
-public class TypesTestProvider implements ExceptionMapper<NullPointerException>, MarshalledEntity<Integer> {
+public class TypesTestProvider implements ExceptionMapper<NullPointerException>, MarshalledEntity<Integer>, ParamConverter<TypesParamConverterPOJO> {
 
    public Response toResponse(NullPointerException exception) {
       return null;
@@ -23,4 +24,15 @@ public class TypesTestProvider implements ExceptionMapper<NullPointerException>,
       return null;
    }
 
+   @Override
+   public TypesParamConverterPOJO fromString(String str) {
+      TypesParamConverterPOJO pojo = new TypesParamConverterPOJO();
+      pojo.setName(str);
+      return pojo;
+   }
+
+   @Override
+   public String toString(TypesParamConverterPOJO value) {
+      return value.getName();
+   }
 }
