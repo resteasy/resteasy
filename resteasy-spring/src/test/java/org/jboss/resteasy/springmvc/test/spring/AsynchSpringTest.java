@@ -3,7 +3,6 @@ package org.jboss.resteasy.springmvc.test.spring;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring-test-async.xml" })
 @DirtiesContext
-@Ignore
 public class AsynchSpringTest
 {
    private static CountDownLatch latch;
