@@ -28,6 +28,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.JAXRS;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -52,7 +53,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 {
    protected ServerBootstrap bootstrap = new ServerBootstrap();
    protected String hostname = null;
-   protected int configuredPort = 8080;
+   protected int configuredPort = DEFAULT_PORT;
    protected int runtimePort = -1;
    protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
    protected String root = "";
@@ -149,6 +150,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
    public void setPort(int port) {
       this.configuredPort = port;
+      if (this.configuredPort == JAXRS.Configuration.FREE_PORT) {
+         configuredPort = this.scanPort();
+      }
+      if (this.configuredPort == JAXRS.Configuration.DEFAULT_PORT) {
+         configuredPort = DEFAULT_PORT;
+      }
    }
 
    public void setBacklog(int backlog)

@@ -30,6 +30,18 @@ public class NettyJAXRSTest
       Assert.assertEquals("hello world",
             client.target("https://localhost:8443/ssl/test").request().get(String.class));
    }
+   @Test
+   public void testFreePort() throws Exception {
+      JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost")
+            .port(JAXRS.Configuration.FREE_PORT).rootPath("context1").build();
+      CompletionStage<Instance> instance = JAXRS.start(new Application(), configuration);
+      instance.toCompletableFuture().get();
+
+      JAXRS.Configuration config = JAXRS.Configuration.builder().host("localhost").port(JAXRS.Configuration.FREE_PORT)
+            .rootPath("context1").build();
+      CompletionStage<Instance> server = JAXRS.start(new Application(), configuration);
+      server.toCompletableFuture().get();
+   }
    
    public class Application extends javax.ws.rs.core.Application
    {

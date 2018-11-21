@@ -1,8 +1,6 @@
 package org.jboss.resteasy.plugins.server.undertow;
 
 import static io.undertow.servlet.Servlets.servlet;
-import static org.xnio.Options.SSL_CLIENT_AUTH_MODE;
-import static org.xnio.SslClientAuthMode.NOT_REQUESTED;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.handlers.PathHandler;
@@ -18,12 +16,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.JAXRS;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
@@ -33,7 +31,7 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
 
    final ServletContainer container = ServletContainer.Factory.newInstance();
 
-   private int port = 8080;
+   private int port = DEFAULT_PORT;
 
    private String hostName = "localhost";
 
@@ -186,7 +184,14 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    public void setPort(int port)
    {
       this.port = port;
-
+      if (this.port == JAXRS.Configuration.FREE_PORT)
+      {
+         port = this.scanPort();
+      }
+      if (this.port == JAXRS.Configuration.DEFAULT_PORT)
+      {
+         port = DEFAULT_PORT;
+      }
    }
 
    @Override

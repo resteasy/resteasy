@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
+import javax.ws.rs.JAXRS;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
@@ -26,7 +27,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
 {
    protected HttpContextBuilder context = new HttpContextBuilder();
    protected HttpServer httpServer;
-   protected int configuredPort = 8080;
+   protected int configuredPort = DEFAULT_PORT;
    protected int runtimePort = -1;
    protected String host;
    protected SSLContext sslContext;
@@ -77,6 +78,12 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    public void setPort(int port)
    {
       this.configuredPort = port;
+      if (this.configuredPort == JAXRS.Configuration.FREE_PORT) {
+         configuredPort = this.scanPort();
+      }
+      if (this.configuredPort == JAXRS.Configuration.DEFAULT_PORT) {
+         configuredPort = DEFAULT_PORT;
+      }
    }
 
    /**
