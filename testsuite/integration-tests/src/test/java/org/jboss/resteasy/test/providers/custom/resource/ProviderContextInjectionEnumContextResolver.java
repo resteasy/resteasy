@@ -8,7 +8,7 @@ public class ProviderContextInjectionEnumContextResolver implements ContextResol
 
    @Override
    public ProviderContextInjectionEnumProvider getContext(Class<?> type) {
-      return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.JAXRS : null;
+      return type == ProviderContextInjectionEnumProvider.class ? ProviderContextInjectionEnumProvider.CTS : null;
    }
 
 }
