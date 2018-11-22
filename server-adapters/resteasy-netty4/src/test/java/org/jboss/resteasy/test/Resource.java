@@ -60,7 +60,7 @@ public class Resource
    public String context(@Context ChannelHandlerContext context) {
       return context.channel().toString();
    }
-   
+
    @POST
    @Path("/post")
    @Produces("text/plain")

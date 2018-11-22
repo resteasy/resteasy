@@ -21,7 +21,7 @@ public class HttpsServerPipelineFactory extends HttpServerPipelineFactory
 {
 
    private final SSLContext context;
-   
+
    private SSLParameters sslParameters;
 
    public HttpsServerPipelineFactory(final RequestDispatcher dispatcher, final String root, final int executorThreadCount, final int maxRequestSize, final boolean isKeepAlive, final List<ChannelHandler> additionalChannelHandlers, final SSLContext context)

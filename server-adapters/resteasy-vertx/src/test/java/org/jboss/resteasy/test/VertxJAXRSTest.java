@@ -73,7 +73,7 @@ public class VertxJAXRSTest
       }
       catch (Throwable e)
       {
-         e.printStackTrace();
+         Assert.fail("Unexpected error:" + e.getMessage());
       }
       finally
       {
@@ -116,7 +116,7 @@ public class VertxJAXRSTest
       }
       catch (Throwable e)
       {
-         e.printStackTrace();
+         Assert.fail("Unexpected error:" + e.getMessage());
       }
       finally
       {

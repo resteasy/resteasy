@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class UndertowJAXRSTest
 {
-   @Path("/test")
+   @Path("/jaxrs")
    public static class Resource
    {
       @GET
@@ -35,7 +35,7 @@ public class UndertowJAXRSTest
       }
    }
 
-   @ApplicationPath("/base")
+   @ApplicationPath("/app")
    public static class MyApp extends Application
    {
       @Override
@@ -51,14 +51,14 @@ public class UndertowJAXRSTest
    public void testJAXRS() throws Exception
    {
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8080)
-            .rootPath("/contextpath").build();
+            .rootPath("contextpath").build();
       CompletionStage<Instance> instance = JAXRS.start(new MyApp(), configuration);
       try
       {
          CompletionStage<Void> request = instance.thenAccept(ins -> {
             try (Client client = ClientBuilder.newClient())
             {
-               Assert.assertEquals("hello world", client.target("http://localhost:8080/contextpath/base/test").request()
+               Assert.assertEquals("hello world", client.target("http://localhost:8080/contextpath/app/jaxrs").request()
                      .get(String.class));
             }
          });
@@ -76,7 +76,7 @@ public class UndertowJAXRSTest
          }
       }
    }
-   
+
    @Test
    public void testSSLClientAuthNone() throws Exception
    {
@@ -87,15 +87,12 @@ public class UndertowJAXRSTest
       instance.toCompletableFuture().get();
       ResteasyClient client = createClientWithCertificate(SSLCerts.CLIENT_KEYSTORE.getSslContext());
       Assert.assertEquals("hello world",
-            client.target("https://localhost:8443/ssl/base/test").request().get(String.class));
+            client.target("https://localhost:8443/ssl/app/jaxrs").request().get(String.class));
       instance.toCompletableFuture().get().stop();
-      
    }
-   
    @Test
    public void testSSLClientAuthRequired() throws Exception
    {
-      
       JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8443).rootPath("clientauth")
             .sslContext(SSLCerts.SERVER_KEYSTORE.getSslContext())
             .sslClientAuthentication(SSLClientAuthentication.MANDATORY).build();
@@ -103,10 +100,10 @@ public class UndertowJAXRSTest
       instance.toCompletableFuture().get();
       ResteasyClient client = createClientWithCertificate(SSLCerts.CLIENT_KEYSTORE.getSslContext());
       Assert.assertEquals("hello world",
-            client.target("https://localhost:8443/clientauth/base/test").request().get(String.class));
+            client.target("https://localhost:8443/clientauth/app/jaxrs").request().get(String.class));
       instance.toCompletableFuture().get().stop();
    }
-   
+
    private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
    {
       ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilderImpl();

@@ -313,7 +313,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract boolean isReactive(Class<?> clazz);
 
    public abstract ResourceBuilder getResourceBuilder();
-   
+
    public abstract EmbeddedJaxrsServer getJaxrsServer();
 
 }

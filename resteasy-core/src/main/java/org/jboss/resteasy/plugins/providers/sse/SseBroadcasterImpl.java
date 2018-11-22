@@ -173,7 +173,8 @@ public class SseBroadcasterImpl implements SseBroadcaster
     * @param cascading Boolean value that controls closing of registered {@link SseEventSink}
     *                  instances.
     */
-   public void close(boolean cascading) {
-      //TODO: implement this 
+   public void close(boolean cascading)
+   {
+      // TODO: implement this
    }
 }

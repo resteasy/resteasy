@@ -12,7 +12,8 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  */
 public interface EmbeddedJaxrsServer
 {
-   final int DEFAULT_PORT = 8080;
+   int DEFAULT_PORT = 8080;
+
    void setRootResourcePath(String rootResourcePath);
 
    void start();
@@ -24,21 +25,23 @@ public interface EmbeddedJaxrsServer
    void setDeployment(ResteasyDeployment deployment);
 
    void setSecurityDomain(SecurityDomain sc);
-   
+
    void setSSLContext(SSLContext sslContext);
-   
+
    void setProtocol(String protocol);
-   
+
    void setSslParameters(SSLParameters sslParameters);
-   
+
    void setPort(int port);
-   
+
    void setHost(String host);
-   
-   default void setConfiguration(JAXRS.Configuration configuration) {
+
+   default void setConfiguration(JAXRS.Configuration configuration)
+   {
    }
-   
-   default int scanPort() {
+
+   default int scanPort()
+   {
       return PortProvider.getFreePort();
    }
 }

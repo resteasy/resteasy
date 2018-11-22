@@ -1,6 +1,14 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpExchange;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
@@ -9,13 +17,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.sun.net.httpserver.HttpExchange;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,15 +26,20 @@ import java.util.Map;
 public class HttpServerRequest extends BaseHttpRequest
 {
    protected SynchronousDispatcher dispatcher;
+
    protected HttpResponse httpResponse;
+
    protected HttpExchange exchange;
+
    protected ResteasyHttpHeaders httpHeaders;
+
    protected String preProcessedPath;
+
    protected Map<String, Object> attributes = new HashMap<String, Object>();
+
    protected String httpMethod;
 
-
-   public HttpServerRequest(SynchronousDispatcher dispatcher, HttpResponse httpResponse, HttpExchange exchange)
+   public HttpServerRequest(final SynchronousDispatcher dispatcher, final HttpResponse httpResponse, final HttpExchange exchange)
    {
       super(HttpExchangeUtil.extractUriInfo(exchange));
       this.dispatcher = dispatcher;
@@ -83,7 +90,8 @@ public class HttpServerRequest extends BaseHttpRequest
    public Object getAttribute(String attribute)
    {
       Object val = attributes.get(attribute);
-      if (val != null) return val;
+      if (val != null)
+         return val;
       return exchange.getAttribute(attribute);
    }
 
@@ -107,6 +115,7 @@ public class HttpServerRequest extends BaseHttpRequest
       Enumeration<String> en = new Enumeration<String>()
       {
          private Iterator<String> it = attributes.keySet().iterator();
+
          @Override
          public boolean hasMoreElements()
          {

@@ -32,7 +32,7 @@ public class BootstrapConfigurationBuilder implements Builder {
       properties.put(name, value);
       return this;
    }
-   
+
    private class ServerConfiguration implements javax.ws.rs.JAXRS.Configuration {
       @Override
       @SuppressWarnings({"rawtypes", "unchecked"})

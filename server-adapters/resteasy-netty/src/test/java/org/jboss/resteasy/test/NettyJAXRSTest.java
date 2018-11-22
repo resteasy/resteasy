@@ -29,7 +29,7 @@ public class NettyJAXRSTest
       Assert.assertEquals("hello world",
             client.target("https://localhost:8443/ssl/test").request().get(String.class));
    }
-   
+
    public class Application extends javax.ws.rs.core.Application
    {
       public final Set<Object> singletons = new HashSet<Object>();
@@ -41,7 +41,7 @@ public class NettyJAXRSTest
       }
 
    }
-   
+
    private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
    {
       ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilderImpl();

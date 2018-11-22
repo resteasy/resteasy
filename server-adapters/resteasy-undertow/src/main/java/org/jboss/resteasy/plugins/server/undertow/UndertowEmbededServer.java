@@ -24,7 +24,6 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
-
 public class UndertowEmbededServer implements EmbeddedJaxrsServer
 {
    final PathHandler root = new PathHandler();
@@ -40,9 +39,9 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
    private String contextPath = "/";
 
    private Undertow server;
-   
+
    private SSLContext sslContext;
-   
+
    private SSLParameters ssLParameters;
 
    @Override
@@ -62,14 +61,12 @@ public class UndertowEmbededServer implements EmbeddedJaxrsServer
          if (ssLParameters != null && ssLParameters.getNeedClientAuth()) {
             builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
          }
-         
          if (ssLParameters != null && ssLParameters.getWantClientAuth()) {
             builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUESTED);
          }
          if (ssLParameters != null && !ssLParameters.getNeedClientAuth()) {
             builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.NOT_REQUESTED);
          }
-         
       }
       else
       {

@@ -42,7 +42,7 @@ public class NettyJAXRSTest
       CompletionStage<Instance> server = JAXRS.start(new Application(), configuration);
       server.toCompletableFuture().get();
    }
-   
+
    public class Application extends javax.ws.rs.core.Application
    {
       public final Set<Object> singletons = new HashSet<Object>();
@@ -52,9 +52,7 @@ public class NettyJAXRSTest
          singletons.add(new Resource());
          return singletons;
       }
-
    }
-   
    private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
    {
       ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilderImpl();

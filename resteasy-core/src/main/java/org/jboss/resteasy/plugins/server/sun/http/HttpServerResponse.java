@@ -1,18 +1,20 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpExchange;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
+
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+
+import com.sun.net.httpserver.HttpExchange;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -21,13 +23,18 @@ import java.util.Map;
 public class HttpServerResponse implements HttpResponse
 {
    private int status = 200;
+
    private MultivaluedMap<String, Object> outputHeaders;
+
    private HttpExchange exchange;
+
    private OutputStream streamWrapper;
+
    private boolean committed;
+
    private ResteasyProviderFactory factory;
 
-   public HttpServerResponse(ResteasyProviderFactory factory, HttpExchange ex)
+   public HttpServerResponse(final ResteasyProviderFactory factory, final HttpExchange ex)
    {
       this.exchange = ex;
       this.factory = factory;
@@ -70,19 +77,22 @@ public class HttpServerResponse implements HttpResponse
       RuntimeDelegate.HeaderDelegate<Object> delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
-         //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));
+         // System.out.println("addResponseHeader: " + key + " " +
+         // delegate.toString(value));
          exchange.getResponseHeaders().add(name, delegate.toString(value));
       }
       else
       {
-         //System.out.println("addResponseHeader: " + key + " " + value.toString());
+         // System.out.println("addResponseHeader: " + key + " " +
+         // value.toString());
          exchange.getResponseHeaders().add(name, value.toString());
       }
    }
 
    public void commitHeaders() throws IOException
    {
-      if (committed) return;
+      if (committed)
+         return;
       long len = 0;
       if (outputHeaders.containsKey("Content-Length"))
       {
@@ -165,7 +175,8 @@ public class HttpServerResponse implements HttpResponse
    }
 
    @Override
-   public void flushBuffer() throws IOException {
+   public void flushBuffer() throws IOException
+   {
       commitHeaders();
       exchange.getResponseBody().flush();
    }

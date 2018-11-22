@@ -244,6 +244,5 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setSslParameters(SSLParameters sslParameters)
    {
       this.sslParameters = sslParameters;
-      
    }
 }

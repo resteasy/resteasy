@@ -7,9 +7,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.ws.rs.JAXRS;
 
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
@@ -17,8 +17,9 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 /**
- * com.sun.net.httpserver.HttpServer adapter for Resteasy.  You may instead want to create and manage your own HttpServer.
- * Use the HttpContextBuilder class in this case to build and register a specific HttpContext.
+ * com.sun.net.httpserver.HttpServer adapter for Resteasy. You may instead want
+ * to create and manage your own HttpServer. Use the HttpContextBuilder class in
+ * this case to build and register a specific HttpContext.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -26,14 +27,20 @@ import com.sun.net.httpserver.HttpsServer;
 public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
 {
    protected HttpContextBuilder context = new HttpContextBuilder();
-   protected HttpServer httpServer;
-   protected int configuredPort = DEFAULT_PORT;
-   protected int runtimePort = -1;
-   protected String host;
-   protected SSLContext sslContext;
-   protected String protocol;
-   protected SSLParameters sslParameters;
 
+   protected HttpServer httpServer;
+
+   protected int configuredPort = DEFAULT_PORT;
+
+   protected int runtimePort = -1;
+
+   protected String host;
+
+   protected SSLContext sslContext;
+
+   protected String protocol;
+
+   protected SSLParameters sslParameters;
 
    public void setRootResourcePath(String rootResourcePath)
    {
@@ -61,7 +68,8 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    }
 
    /**
-    * If you do not provide an HttpServer instance, one will be created on startup
+    * If you do not provide an HttpServer instance, one will be created on
+    * startup
     *
     * @param httpServer
     */
@@ -78,10 +86,12 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    public void setPort(int port)
    {
       this.configuredPort = port;
-      if (this.configuredPort == JAXRS.Configuration.FREE_PORT) {
+      if (this.configuredPort == JAXRS.Configuration.FREE_PORT)
+      {
          configuredPort = this.scanPort();
       }
-      if (this.configuredPort == JAXRS.Configuration.DEFAULT_PORT) {
+      if (this.configuredPort == JAXRS.Configuration.DEFAULT_PORT)
+      {
          configuredPort = DEFAULT_PORT;
       }
    }
@@ -90,14 +100,14 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
     * Gets port number of this HttpServer.
     *
     * @return port number.
-     */
+    */
    public int getPort()
    {
       return runtimePort > 0 ? runtimePort : configuredPort;
    }
 
    /**
-    * Value is ignored if HttpServer property is set. If host is not set, host 
+    * Value is ignored if HttpServer property is set. If host is not set, host
     * will be any local address
     *
     * @param host
@@ -116,11 +126,12 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       return this.host;
    }
-   
+
    public SSLContext getSSLContext()
    {
       return this.sslContext;
    }
+
    @Override
    public void setSSLContext(SSLContext sslContext)
    {
@@ -131,6 +142,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       return protocol;
    }
+
    @Override
    public void setProtocol(String protocol)
    {
@@ -141,6 +153,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    {
       return sslParameters;
    }
+
    @Override
    public void setSslParameters(SSLParameters sslParameters)
    {
@@ -155,13 +168,17 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
          try
          {
             InetSocketAddress address = null;
-            if (host == null) {
+            if (host == null)
+            {
                address = new InetSocketAddress(configuredPort);
-            } else {
+            }
+            else
+            {
                address = new InetSocketAddress(host, configuredPort);
             }
-            if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null) {
-                HttpsServer sslServer = HttpsServer.create(address, 10);
+            if ("HTTPS".equalsIgnoreCase(protocol) || this.sslContext != null)
+            {
+               HttpsServer sslServer = HttpsServer.create(address, 10);
                sslServer.setHttpsConfigurator(new HttpsConfigurator(sslContext)
                {
                   @Override
@@ -178,8 +195,9 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
 
                   }
                });
-                httpServer = sslServer;
-            } else
+               httpServer = sslServer;
+            }
+            else
             {
                httpServer = HttpServer.create(address, 10);
             }

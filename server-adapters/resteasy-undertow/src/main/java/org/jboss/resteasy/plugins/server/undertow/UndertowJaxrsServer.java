@@ -160,8 +160,10 @@ public class UndertowJaxrsServer
 
    public UndertowJaxrsServer deploy(ResteasyDeployment deployment, String contextPath, Map<String, String> contextParams, Map<String, String> initParams)
    {
-      if (contextPath == null) contextPath = "/";
-      if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
+      if (contextPath == null)
+         contextPath = "/";
+      if (!contextPath.startsWith("/"))
+         contextPath = "/" + contextPath;
       DeploymentInfo builder = undertowDeployment(deployment);
       builder.setContextPath(contextPath);
       builder.setDeploymentName("Resteasy" + contextPath);

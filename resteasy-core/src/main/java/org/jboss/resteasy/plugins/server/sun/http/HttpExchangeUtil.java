@@ -1,7 +1,16 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpsServer;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
@@ -10,15 +19,8 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.PathHelper;
 
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpsServer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,8 +31,7 @@ public class HttpExchangeUtil
    public static ResteasyUriInfo extractUriInfo(HttpExchange exchange)
    {
       String host = exchange.getLocalAddress().getHostName();
-      if (exchange.getLocalAddress().getPort() != 80
-              && exchange.getLocalAddress().getPort() != 443)
+      if (exchange.getLocalAddress().getPort() != 80 && exchange.getLocalAddress().getPort() != 443)
       {
          host += ":" + exchange.getLocalAddress().getPort();
       }
@@ -51,7 +52,8 @@ public class HttpExchangeUtil
       if (!path.trim().equals(""))
       {
          String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+         if (!tmpContextPath.endsWith("/"))
+            tmpContextPath += "/";
          baseURI = UriBuilder.fromUri(absoluteURI).replacePath(tmpContextPath).replaceQuery(null).build();
       }
       else
@@ -59,8 +61,8 @@ public class HttpExchangeUtil
          baseURI = UriBuilder.fromUri(absoluteURI).replaceQuery(null).build();
       }
       URI relativeURI = UriBuilder.fromUri(path).replaceQuery(absoluteURI.getRawQuery()).build();
-      //System.out.println("path: " + path);
-      //System.out.println("query string: " + request.getQueryString());
+      // System.out.println("path: " + path);
+      // System.out.println("query string: " + request.getQueryString());
       ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
       return uriInfo;
    }
@@ -83,7 +85,8 @@ public class HttpExchangeUtil
    {
       Map<String, Cookie> cookies = new HashMap<String, Cookie>();
       List<String> cookieHeaders = headers.get("Cookie");
-      if (cookieHeaders == null) return cookies;
+      if (cookieHeaders == null)
+         return cookies;
 
       for (String cookieHeader : cookieHeaders)
       {
@@ -99,7 +102,8 @@ public class HttpExchangeUtil
    {
       List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT);
-      if (accepts == null) return acceptableMediaTypes;
+      if (accepts == null)
+         return acceptableMediaTypes;
 
       for (String accept : accepts)
       {
@@ -112,12 +116,14 @@ public class HttpExchangeUtil
    {
       List<String> acceptable = new ArrayList<String>();
       List<String> accepts = requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE);
-      if (accepts == null) return acceptable;
+      if (accepts == null)
+         return acceptable;
 
       for (String accept : accepts)
       {
          String[] splits = accept.split(",");
-         for (String split : splits) acceptable.add(split.trim());
+         for (String split : splits)
+            acceptable.add(split.trim());
       }
       return acceptable;
    }

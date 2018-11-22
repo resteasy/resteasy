@@ -22,6 +22,7 @@ import com.sun.net.httpserver.HttpHandler;
 public class ResteasyHttpHandler implements HttpHandler
 {
    protected Dispatcher dispatcher;
+
    protected ResteasyProviderFactory providerFactory;
 
    public void setDispatcher(Dispatcher dispatcher)
@@ -41,7 +42,7 @@ public class ResteasyHttpHandler implements HttpHandler
       HttpRequest request = null;
       try
       {
-         request = new HttpServerRequest((SynchronousDispatcher)dispatcher, response, httpExchange);
+         request = new HttpServerRequest((SynchronousDispatcher) dispatcher, response, httpExchange);
       }
       catch (Exception e)
       {
@@ -52,15 +53,15 @@ public class ResteasyHttpHandler implements HttpHandler
 
       try
       {
-         //logger.info("***PATH: " + request.getRequestURL());
-         // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
+         // logger.info("***PATH: " + request.getRequestURL());
+         // classloader/deployment aware RestasyProviderFactory. Used to have
+         // request specific
          // ResteasyProviderFactory.getInstance()
          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
          {
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
-
 
          try
          {
@@ -95,7 +96,6 @@ public class ResteasyHttpHandler implements HttpHandler
          }
 
       }
-
 
    }
 }

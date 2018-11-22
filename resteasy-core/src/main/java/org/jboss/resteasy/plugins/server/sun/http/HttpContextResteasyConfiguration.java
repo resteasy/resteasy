@@ -1,9 +1,10 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpContext;
+import java.util.Set;
+
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
-import java.util.Set;
+import com.sun.net.httpserver.HttpContext;
 
 /**
  * ResteasyConfiguration adapter for HttpContext attributes
@@ -15,7 +16,7 @@ public class HttpContextResteasyConfiguration implements ResteasyConfiguration
 {
    protected HttpContext context;
 
-   public HttpContextResteasyConfiguration(HttpContext context)
+   public HttpContextResteasyConfiguration(final HttpContext context)
    {
       this.context = context;
    }
@@ -24,7 +25,8 @@ public class HttpContextResteasyConfiguration implements ResteasyConfiguration
    public String getParameter(String name)
    {
       Object val = context.getAttributes().get(name);
-      if (val == null) return null;
+      if (val == null)
+         return null;
       return val.toString();
    }
 

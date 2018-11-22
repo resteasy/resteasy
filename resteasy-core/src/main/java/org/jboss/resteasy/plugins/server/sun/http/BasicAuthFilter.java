@@ -22,7 +22,7 @@ public class BasicAuthFilter extends Filter
 {
    protected SecurityDomain domain;
 
-   public BasicAuthFilter(SecurityDomain domain)
+   public BasicAuthFilter(final SecurityDomain domain)
    {
       this.domain = domain;
    }
@@ -40,7 +40,8 @@ public class BasicAuthFilter extends Filter
             String cookie = auth.substring(6);
             cookie = new String(Base64.decodeBase64(cookie.getBytes()));
             String[] split = cookie.split(":");
-            //System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
+            // System.out.println("Authenticating user: " + split[0] +
+            // " passwd: " + split[1]);
             Principal user = null;
             try
             {

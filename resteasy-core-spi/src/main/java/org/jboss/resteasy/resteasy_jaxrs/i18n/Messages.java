@@ -26,7 +26,7 @@ import org.jboss.resteasy.api.validation.ConstraintType;
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages
 {
-   public Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+   Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
 
    int BASE = 3000;
 
@@ -845,7 +845,7 @@ public interface Messages
 
    @Message(id = BASE_EMBEDEDSERVER + 10, value = "Error parsing request")
    String errorParsingRequest();
-   
+
    @Message(id = BASE_EMBEDEDSERVER + 15, value = "WTF!")
    String wtf();
 }

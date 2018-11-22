@@ -1,43 +1,51 @@
 package org.jboss.resteasy.plugins.server.sun.http;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpServer;
-
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpServer;
+
 /**
- * Helper class to create a ResteasyDeployment and bind it to an HttpContext of an HttpServer.  Setting the SecurityDomain
- * will turn on Basic Authentication.  Right now, only BasicAuthentication is supported.
+ * Helper class to create a ResteasyDeployment and bind it to an HttpContext of
+ * an HttpServer. Setting the SecurityDomain will turn on Basic Authentication.
+ * Right now, only BasicAuthentication is supported.
  *
- * HttpContext.getAttributes() data is available within Providers and Resources by injecting a ResteasyConfiguration interface
+ * HttpContext.getAttributes() data is available within Providers and Resources
+ * by injecting a ResteasyConfiguration interface
  *
  * <pre>
-     HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
-     contextBuilder = new HttpContextBuilder();
-     contextBuilder.getDeployment().getActualResourceClasses().add(SimpleResource.class);
-     HttpContext context = contextBuilder.bind(httpServer);
-     context.getAttributes().put("some.config.info", "42");
-     httpServer.start();
-
-     contextBuilder.cleanup();
-     httpServer.stop(0);
+ * HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 10);
+ * contextBuilder = new HttpContextBuilder();
+ * contextBuilder.getDeployment().getActualResourceClasses().add(SimpleResource.class);
+ * HttpContext context = contextBuilder.bind(httpServer);
+ * context.getAttributes().put(&quot;some.config.info&quot;, &quot;42&quot;);
+ * httpServer.start();
+ * contextBuilder.cleanup();
+ * httpServer.stop(0);
  * </pre>
- * Create your HttpServer the way you want then use the org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize Resteasy
- * and bind it to an HttpContext.  The HttpContext attributes are available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration
+ * Create your HttpServer the way you want then use the
+ * org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder to initialize
+ * Resteasy and bind it to an HttpContext. The HttpContext attributes are
+ * available by injecting in a org.jboss.resteasy.spi.ResteasyConfiguration
  * interface using @Context within your provider and resource classes.
  *
  *
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>* @version $Revision: 1 $
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>* @version
+ *         $Revision: 1 $
  */
 public class HttpContextBuilder
 {
    protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+
    protected String path = "/";
+
    protected ResteasyHttpHandler handler;
+
    protected SecurityDomain securityDomain;
+
    protected HttpContext boundContext;
 
    public ResteasyDeployment getDeployment()

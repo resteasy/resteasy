@@ -97,7 +97,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -107,14 +106,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
@@ -265,7 +262,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    protected Set<Feature> enabledFeatures;
    protected Set<Class<?>> providerClasses;
    protected Set<Object> providerInstances;
-   
 
    public ResteasyProviderFactoryImpl()
    {
@@ -1658,6 +1654,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          addResourceClassProcessor(provider, priority);
          newContracts.put(ResourceClassProcessor.class, priority);
       }
+
       if (isA(provider, HeaderDelegate.class, contracts))
       {
          Type[] headerTypes = Types.getActualTypeArgumentsOfAnInterface(provider, HeaderDelegate.class);
@@ -1670,6 +1667,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             Class<?> headerClass = Types.getRawType(headerTypes[0]);
             HeaderDelegate<?> delegate = createProviderInstance((Class<? extends HeaderDelegate>) provider);
             addHeaderDelegate(headerClass, delegate);
+         }
+      }
       if (isA(provider, EmbeddedJaxrsServer.class, contracts))
       {
          try
@@ -2670,16 +2669,17 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return resourceBuilder;
    }
-   
-   public EmbeddedJaxrsServer getJaxrsServer() {
+
+   public EmbeddedJaxrsServer getJaxrsServer()
+   {
       return jaxrsServer;
    }
 
    public <T> T getContextData(Class<T> type)
    {
       return ResteasyContext.getContextData(type);
-   }   
-   
+   }
+
    public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
    {
       RegisterBuiltin.register(this);
@@ -2689,7 +2689,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          @Override
          public Instance get()
          {
-           
+
             if (jaxrsServer == null)
             {
                jaxrsServer = new SunHttpJaxrsServer();
@@ -2716,7 +2716,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                jaxrsServer.setSSLContext(configuration.sslContext());
             }
             jaxrsServer.setProtocol(configuration.protocol());
-
+            jaxrsServer.setConfiguration(configuration);
             ResteasyDeployment deployment = new ResteasyDeploymentImpl();
             deployment.setApplication(application);
             jaxrsServer.setDeployment(deployment);
@@ -2732,22 +2732,24 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
                @Override
                public CompletionStage<StopResult> stop()
                {
-                  return CompletableFuture.supplyAsync(new Supplier<StopResult>() {
+                  return CompletableFuture.supplyAsync(new Supplier<StopResult>()
+                  {
                      @Override
                      public StopResult get()
                      {
                         jaxrsServer.stop();
-                         return new StopResult() {
+                        return new StopResult()
+                        {
 
                            @Override
                            public <T> T unwrap(Class<T> nativeClass)
                            {
                               return null;
                            }
-                            
-                         };
+
+                        };
                      }
-                    
+
                   });
                }
 
