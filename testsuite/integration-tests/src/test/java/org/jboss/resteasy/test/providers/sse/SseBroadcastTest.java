@@ -11,6 +11,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -151,12 +152,12 @@ public class SseBroadcastTest {
    }
 
    /**
-    * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called after the broadcast event is sent
-    * and the SseEventSink is closed.
-    * @tpInfo RESTEASY-1680
+    * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called after the SseEventSink is closed.
+    * @tpInfo RESTEASY-1680, RESTEASY-1819
     * @tpSince RESTEasy 3.5.0
     */
    @Test
+   @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
    public void testBroadcasterOnCloseCallbackCloseSinkOnServer() throws Exception {
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/broadcast/subscribe"));
@@ -164,21 +165,79 @@ public class SseBroadcastTest {
       SseEventSource msgEventSource = SseEventSource.target(target).reconnectingEvery(5, TimeUnit.MINUTES).build();
       try (SseEventSource eventSource = msgEventSource) {
          eventSource.register(event -> {
-            Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+            Assert.fail("Event should not be received");
          }, ex -> {
                logger.error(ex.getMessage(), ex);
             });
          eventSource.open();
 
          client.target(generateURL("/broadcast/listeners")).request().get();
-         client.target(generateURL("/broadcast/startAndClose")).request()
-               .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
+         client.target(generateURL("/broadcast/closeSink")).request().get();
       } finally {
          client.close();
       }
 
       Client checkClient = ClientBuilder.newClient();
-      boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+
+      boolean onCloseCalled = false;
+      for (int i = 0; i < 30; i++) {
+         onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+         if (onCloseCalled) {
+            break;
+         }
+         Thread.sleep(100);
+      }
+
+      Assert.assertTrue(onCloseCalled);
+      checkClient.close();
+      removeBroadcaster();
+   }
+
+   /**
+    * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called
+    * after the client connection is closed.
+    * @tpInfo RESTEASY-1680, RESTEASY-1819
+    * @tpSince RESTEasy 3.5.0
+    */
+   @Test
+   @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
+   public void testBroadcasterOnCloseCallbackCloseClientConnection() throws Exception {
+      final CountDownLatch latch = new CountDownLatch(1);
+      final AtomicInteger errors = new AtomicInteger(0);
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/broadcast/subscribe"));
+
+      SseEventSource msgEventSource = SseEventSource.target(target).build();
+
+      try (SseEventSource eventSource = msgEventSource) {
+         eventSource.register(event -> {
+            Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
+            latch.countDown();
+         }, ex -> {
+            errors.incrementAndGet();
+            logger.error(ex.getMessage(), ex);
+         });
+         eventSource.open();
+
+         client.target(generateURL("/broadcast/listeners")).request().get();
+         client.target(generateURL("/broadcast/start")).request()
+               .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
+         Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+      } finally {
+         client.close();
+      }
+
+      Client checkClient = ClientBuilder.newClient();
+
+      boolean onCloseCalled = false;
+      for (int i = 0; i < 30; i++) {
+         onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+         if (onCloseCalled) {
+            break;
+         }
+         Thread.sleep(100);
+      }
+
       Assert.assertTrue(onCloseCalled);
       checkClient.close();
       removeBroadcaster();

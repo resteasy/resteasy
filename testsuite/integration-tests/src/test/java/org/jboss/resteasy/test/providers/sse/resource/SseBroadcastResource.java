@@ -58,15 +58,14 @@ public class SseBroadcastResource {
       this.sseBroadcaster.broadcast(sse.newEvent(message));
    }
 
-   @POST
-   @Path("/startAndClose")
-   public void broadcastAndClose(String message, @Context Sse sse) throws IOException, InterruptedException {
+   @GET
+   @Path("/closeSink")
+   public void closeSink() {
       if (this.sseBroadcaster == null) {
          throw new IllegalStateException("No Sse broadcaster created.");
       }
       this.eventSink.close();
       logger.info("Sink closed: " + eventSink.isClosed());
-      this.sseBroadcaster.broadcast(sse.newEvent(message));
    }
 
    @GET

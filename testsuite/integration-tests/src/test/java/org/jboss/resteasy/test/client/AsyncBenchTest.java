@@ -24,9 +24,15 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * @tpChapter Client tests
+ * @tpSubChapter Asynchronous
+ * @tpTestCaseDetails https://issues.jboss.org/browse/RESTEASY-1025
+ * @tpSince RESTEasy 3.5.0
+ */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore
+@Ignore("Not a functional test")
 public class AsyncBenchTest extends ClientTestBase
 {
 
