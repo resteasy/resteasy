@@ -43,10 +43,6 @@
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.reactivestreams</groupId>
             <artifactId>reactive-streams</artifactId>
         </dependency>
@@ -166,12 +162,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -52,7 +52,6 @@ import javax.ws.rs.core.Response;
 public class Jackson2Test {
 
    protected static final Logger logger = Logger.getLogger(Jackson2Test.class.getName());
-   private static final String JETTISON_DEPLOYMENT = "jettison";
    private static final String JSONP_ENABLED = "JSONP_enabled";
    private static final String JSONP_DISABLED = "JSONP_disabled";
 
@@ -109,20 +108,6 @@ public class Jackson2Test {
       return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
             Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
             Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
-   }
-
-   /**
-    * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
-    */
-   @Deployment(name = "jettison")
-   public static Archive<?> deployJettison() {
-      WebArchive war = TestUtil.prepareArchive(JETTISON_DEPLOYMENT);
-      war.addClass(Jackson2Test.class);
-      war.addAsManifestResource("jboss-deployment-structure-jackson-v2-jettison.xml", "jboss-deployment-structure.xml");
-      return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
-            Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
-            Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class,
-            org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor.class);
    }
 
    @Before
@@ -241,33 +226,6 @@ public class Jackson2Test {
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertTrue("Entity doesn't contain formatting", entity.contains("\n"));
       response.close();
-   }
-
-   /**
-    * @tpTestDetails Client sends GET request for json annotated resource. The resource is annotated with @BadgerFish
-    * and @NoJackson annotations. The jettison provider should be triggered instead of jackson one.
-    * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
-    * @tpPassCrit The resource returns json entities in correct format
-    * @tpInfo JBEAP-2856
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testXmlString() throws Exception {
-      WebTarget target = client.target(PortProviderUtil.generateURL("/xml/products/333", JETTISON_DEPLOYMENT));
-      Response response = target.request().get();
-      String entity = response.readEntity(String.class);
-      logger.info(entity);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2856"), HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertTrue("Entity doesn't have json format", entity.startsWith("{\"product"));
-      response.close();
-
-      target = client.target(PortProviderUtil.generateURL("/xml/products", JETTISON_DEPLOYMENT));
-      Response response2 = target.request().get();
-      String entity2 = response2.readEntity(String.class);
-      logger.info(entity2);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2856"), HttpResponseCodes.SC_OK, response2.getStatus());
-      Assert.assertTrue("Entity doesn't have json format", entity2.startsWith("[{\"product"));
-      response2.close();
    }
 
    /**
