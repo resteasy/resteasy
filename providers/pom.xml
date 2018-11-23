@@ -20,7 +20,6 @@
             </activation>
             <modules>
                 <module>jaxb</module>
-                <!--<module>jettison</module>-->
                 <module>fastinfoset</module>
                 <module>jackson2</module>
                 <module>json-p-ee7</module>

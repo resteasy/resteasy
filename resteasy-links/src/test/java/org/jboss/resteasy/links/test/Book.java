@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: We need to add @XmlNsMap support in Jackson provider
+// The JIRA issue to track the progress: https://issues.jboss.org/browse/RESTEASY-2067
 //@Mapped(namespaceMap = @XmlNsMap(jsonName = "atom", namespace = "http://www.w3.org/2005/Atom"))
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
