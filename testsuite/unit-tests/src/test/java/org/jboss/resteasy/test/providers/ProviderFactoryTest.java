@@ -5,7 +5,6 @@ import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.providers.namespace.mapping.NamespaceMappingResource;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryStrParamUnmarshaller;
 import org.junit.Assert;
 import org.junit.Before;
@@ -139,7 +138,6 @@ public class ProviderFactoryTest {
          ResteasyDeployment dep2 = new ResteasyDeploymentImpl();
          dep2.setProviderFactory(rpf2);
          dep2.setDeploymentSensitiveFactoryEnabled(true);
-         dep2.getResourceClasses().add(NamespaceMappingResource.class.getName());
          dep2.start();
 
          dep1.stop();
