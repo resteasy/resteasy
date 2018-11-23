@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.sse.resource.SseBroadcastResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -12,8 +11,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -145,32 +144,28 @@ public class SseBroadcastTest {
       }
 
       Client checkClient = new ResteasyClientBuilder().build();
-      //checkClient.target(generateURL("/broadcast")).request().delete();
       boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
       Assert.assertTrue(onCloseCalled);
       checkClient.close();
    }
 
    /**
-    * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called after the broadcast event is sent
-    * and the SseEventSink is closed.
-    * @tpInfo RESTEASY-1680
+    * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called after the SseEventSink is closed.
+    * @tpInfo RESTEASY-1680, RESTEASY-1819
     * @tpSince RESTEasy 3.5.0
     */
    @Test
-   @Category(ExpectedFailing.class) // RESTEASY-1819
+   @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
    public void testBroadcasterOnCloseCallbackCloseSinkOnServer() throws Exception {
-      final CountDownLatch latch = new CountDownLatch(1);
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(generateURL("/broadcast/subscribe"));
 
-      SseEventSource msgEventSource = SseEventSource.target(target).build();
+      SseEventSource msgEventSource = SseEventSource.target(target).reconnectingEvery(21, TimeUnit.MINUTES).build();
 
       try (SseEventSource eventSource = msgEventSource) {
          eventSource.register(event -> {
-            Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(event.readData()));
-            latch.countDown();
+            Assert.fail("Event should not be received");
          }, ex -> {
             errors.incrementAndGet();
             logger.error(ex.getMessage(), ex);
@@ -178,15 +173,20 @@ public class SseBroadcastTest {
          eventSource.open();
 
          client.target(generateURL("/broadcast/listeners")).request().get();
-         client.target(generateURL("/broadcast/startAndClose")).request()
-               .post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS));
-         Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+         client.target(generateURL("/broadcast/closeSink")).request().get();
       } finally {
          client.close();
       }
 
       Client checkClient = new ResteasyClientBuilder().build();
-      boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+      boolean onCloseCalled = false;
+      for (int i = 0; i < 30; i++) {
+         onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+         if (onCloseCalled) {
+            break;
+         }
+         Thread.sleep(100);
+      }
       Assert.assertTrue(onCloseCalled);
       checkClient.close();
       removeBroadcaster();
@@ -195,11 +195,11 @@ public class SseBroadcastTest {
    /**
     * @tpTestDetails SseBroadcaster.onClose() The SseBroadcaster.onClose() is called
     * after the client connection is closed.
-    * @tpInfo RESTEASY-1680
+    * @tpInfo RESTEASY-1680, RESTEASY-1819
     * @tpSince RESTEasy 3.5.0
     */
    @Test
-   @Category(ExpectedFailing.class) // RESTEASY-1819
+   @Ignore("https://issues.jboss.org/browse/RESTEASY-1819")
    public void testBroadcasterOnCloseCallbackCloseClientConnection() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
       final AtomicInteger errors = new AtomicInteger(0);
@@ -226,9 +226,15 @@ public class SseBroadcastTest {
          client.close();
       }
 
-      Thread.sleep(5000);
       Client checkClient = new ResteasyClientBuilder().build();
-      boolean onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+      boolean onCloseCalled = false;
+      for (int i = 0; i < 30; i++) {
+         onCloseCalled = checkClient.target(generateURL("/broadcast/onCloseCalled")).request().get(boolean.class);
+         if (onCloseCalled) {
+            break;
+         }
+         Thread.sleep(100);
+      }
       Assert.assertTrue(onCloseCalled);
       checkClient.close();
       removeBroadcaster();

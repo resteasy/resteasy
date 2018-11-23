@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -45,12 +45,30 @@ import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALI
 public class DuplicitePathTest {
    static ResteasyClient client;
 
+   /**
+    * Init servlet warning count ( WFLYUT0101: Duplicate servlet mapping /a/* found )
+    */
+   private static int initServletWarningsCount;
+
+   /**
+    * Get RESTEasy warning count
+    */
    private static int getWarningCount() {
       return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
    }
 
+   /**
+    * Gets servlet warning count
+    * Warning comes from server (outside of the resteasy)
+    * Example: WFLYUT0101: Duplicate servlet mapping /a/* found
+    */
+   private static int getServletMappingWarningCount() {
+      return TestUtil.getWarningCount("WFLYUT0101", false, DEFAULT_CONTAINER_QUALIFIER);
+   }
+
    @Deployment
    public static Archive<?> deploySimpleResource() {
+      initServletWarningsCount = getServletMappingWarningCount();
       WebArchive war = ShrinkWrap.create(WebArchive.class, DuplicitePathTest.class.getSimpleName() + ".war");
       war.addClass(DuplicitePathDupliciteApplicationOne.class);
       war.addClass(DuplicitePathDupliciteApplicationTwo.class);
@@ -82,9 +100,8 @@ public class DuplicitePathTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1445] FIXME
+   @Category({NotForForwardCompatibility.class, ExpectedFailingOnWildFly13.class})
    public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
-      int initWarningsCount = getWarningCount();
       WebTarget base = client.target(generateURL("/a/b/c"));
       Response response = null;
       try {
@@ -98,7 +115,7 @@ public class DuplicitePathTest {
          response.close();
       }
       Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
-                     1, getWarningCount() - initWarningsCount);
+                     1, getServletMappingWarningCount() - initServletWarningsCount);
    }
 
    /**

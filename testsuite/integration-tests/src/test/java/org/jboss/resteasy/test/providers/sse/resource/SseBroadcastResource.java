@@ -26,6 +26,8 @@ public class SseBroadcastResource {
 
    private static final Logger logger = Logger.getLogger(SseBroadcastResource.class);
 
+   SseEventSink subscribedSink = null;
+
    @GET
    @Path("/subscribe")
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -43,6 +45,7 @@ public class SseBroadcastResource {
          }
       }
       sseBroadcaster.register(sink);
+      subscribedSink = sink;
       logger.info("Sink registered");
    }
 
@@ -55,16 +58,18 @@ public class SseBroadcastResource {
       this.sseBroadcaster.broadcast(sse.newEvent(message));
    }
 
-   @POST
-   @Path("/startAndClose")
-   @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void broadcastAndClose(String message, @Context Sse sse, @Context SseEventSink sseEventSink) throws IOException {
+   @GET
+   @Path("/closeSink")
+   public void closeSink() {
       if (this.sseBroadcaster == null) {
          throw new IllegalStateException("No Sse broadcaster created.");
       }
-      this.sseBroadcaster.broadcast(sse.newEvent(message)).thenAccept((Object obj) -> {
-         sseEventSink.close();
-      });
+
+      logger.info("attempt to close sseEventSink");
+      if (subscribedSink != null) {
+         logger.info("closing sseEventSink");
+         subscribedSink.close();
+      }
    }
 
    @GET
