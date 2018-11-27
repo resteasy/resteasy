@@ -428,4 +428,52 @@ public class PriorityTest {
          client.close();
       }
    }
+
+   @Test
+   public void testContextResolverPriorityOverride_2()
+   {
+      Client client = ClientBuilder.newClient();
+      try
+      {
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
+         webTarget.register(new ClientRequestFilter()
+         {
+            @Context
+            Providers providers;
+
+            @Override
+            public void filter(ClientRequestContext requestContext) throws IOException
+            {
+               providers.getContextResolver(String.class, MediaType.WILDCARD_TYPE).getContext(getClass());
+            }
+         });
+         StringBuilder result = new StringBuilder();
+         webTarget.register(new ContextResolver<String>()
+         {
+            @Override
+            public String getContext(Class<?> type)
+            {
+               result.append("K");
+               return null;
+            }
+         }, 1);
+         webTarget.register(new ContextResolver<String>()
+         {
+            @Override
+            public String getContext(Class<?> type)
+            {
+               result.append("O");
+               return null;
+            }
+         }, 0);
+         webTarget.request().get().close();
+         Assert.assertEquals("OK", result.toString());
+      }
+      finally
+      {
+         client.close();
+      }
+   }
 }
