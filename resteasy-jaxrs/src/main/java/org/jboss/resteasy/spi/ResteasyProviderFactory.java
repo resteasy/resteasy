@@ -1440,33 +1440,35 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       asyncStreamProviders.put(asyncClass, provider);
    }
 
-   protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
+   protected void addContextResolver(Class<? extends ContextResolver> resolver, int priority, boolean builtin)
    {
       ContextResolver writer = createProviderInstance(resolver);
-      addContextResolver(writer, resolver, builtin);
+      addContextResolver(writer, priority, resolver, builtin);
    }
 
-   protected void addContextResolver(ContextResolver provider)
+   protected void addContextResolver(ContextResolver provider, int priority)
    {
-      addContextResolver(provider, false);
+      addContextResolver(provider, priority, false);
    }
 
-   protected void addContextResolver(ContextResolver provider, boolean builtin)
+   protected void addContextResolver(ContextResolver provider, int priority, boolean builtin)
    {
-      addContextResolver(provider, provider.getClass(), builtin);
+      addContextResolver(provider, priority, provider.getClass(), builtin);
    }
 
-   protected void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
+   protected void addContextResolver(ContextResolver provider, int priority, Class providerClass, boolean builtin)
    {
       // RESTEASY-1725
-      if (providerClass.getName().contains("$$Lambda$")) {
+      if (providerClass.getName().contains("$$Lambda$"))
+      {
          throw new RuntimeException(Messages.MESSAGES.registeringContextResolverAsLambda());
       }
       Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
-      addContextResolver(provider, parameter, providerClass, builtin);
+      addContextResolver(provider, priority, parameter, providerClass, builtin);
    }
 
-   protected void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
+   protected void addContextResolver(ContextResolver provider, int priority, Type typeParameter, Class providerClass,
+         boolean builtin)
    {
       injectProperties(providerClass, provider);
       Class<?> parameterClass = Types.getRawType(typeParameter);
@@ -1485,7 +1487,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
-      int priority = this.getPriority(null,  null,  ContextResolver.class, providerClass);
       SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass, priority, builtin);
       if (produces != null)
       {
@@ -1556,46 +1557,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public List<ContextResolver> getContextResolvers(final Class<?> clazz, MediaType type)
    {
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = getContextResolvers().get(clazz);
-      if (resolvers == null) return null;
-      List<ContextResolver> rtn = new ArrayList<ContextResolver>();
-
+      if (resolvers == null)
+      {
+         return null;
+      }
+      List<ContextResolver> rtn = new ArrayList<>();
       List<SortedKey<ContextResolver>> list = resolvers.getPossible(type);
-      if (type.isWildcardType())
-      {
-         // do it upside down if it is a wildcard type:  Note: this is to pass the stupid TCK which prefers that
-         // a wildcard type match up with other wildcard types
-//         for (int i = list.size() - 1; i >= 0; i--)
-//         {
-//            rtn.add(list.get(i).obj);
-//         }
-
-         // Fix for RESTEASY-1609.
-         // This is related to the fix in RESTEASY-1471, prior to which user ContextResolvers appeared
-         // to be built-in. The original loop may have been in response to that bug, so the reversal
-         // may not be necessary. In any case, this code will do the reversal but put user ContextResolvers
-         // at the beginning of the list.
-         for (int i = list.size() - 1; i >= 0; i--)
-         {
-            if (!list.get(i).isBuiltin)
-            {
-               rtn.add(list.get(i).obj);
-            }
-         }
-         for (int i = list.size() - 1; i >= 0; i--)
-         {
-            if (list.get(i).isBuiltin)
-            {
-               rtn.add(list.get(i).obj);
-            }
-         }
-      }
-      else
-      {
-         for (SortedKey<ContextResolver> resolver : list)
-         {
-            rtn.add(resolver.obj);
-         }
-      }
+      list.forEach(resolver -> rtn.add(resolver.obj));
       return rtn;
    }
 
@@ -2054,8 +2022,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addContextResolver(provider, isBuiltin);
             int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider);
+            addContextResolver(provider, priority, isBuiltin);
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
@@ -2282,8 +2250,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addContextResolver((ContextResolver) provider);
             int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider.getClass());
+            addContextResolver((ContextResolver) provider, priority);
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
