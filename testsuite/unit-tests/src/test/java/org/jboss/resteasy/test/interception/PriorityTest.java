@@ -420,7 +420,9 @@ public class PriorityTest {
       Client client = ClientBuilder.newClient();
       try
       {
-         WebTarget webTarget = client.target("http://www.test.com");
+         fakeHttpServer.start();
+
+         WebTarget webTarget = client.target("http://" + fakeHttpServer.getHostAndPort());
          webTarget.register(new ClientRequestFilter()
          {
             @Context
@@ -459,5 +461,4 @@ public class PriorityTest {
          client.close();
       }
    }
-
 }
