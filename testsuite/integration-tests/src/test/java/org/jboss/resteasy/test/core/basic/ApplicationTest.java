@@ -10,6 +10,8 @@ import org.jboss.resteasy.test.core.basic.resource.ApplicationTestMappedApplicat
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestResourceA;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestResourceB;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationTestScannedApplication;
+import org.jboss.resteasy.test.core.basic.resource.ApplicationTestSingletonA;
+import org.jboss.resteasy.test.core.basic.resource.ApplicationTestSingletonB;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -46,6 +48,8 @@ public class ApplicationTest {
             ApplicationTestMappedApplication.class,
             ApplicationTestResourceA.class,
             ApplicationTestResourceB.class,
+            ApplicationTestSingletonA.class,
+            ApplicationTestSingletonB.class,
             ApplicationTestScannedApplication.class);
       return war;
    }
@@ -68,6 +72,12 @@ public class ApplicationTest {
 
       Response response = base.path("resources/b").request().get();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+
+      value = base.path("singletons/a").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+
+      response = base.path("singletons/b").request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
       client.close();
    }
 
@@ -85,11 +95,17 @@ public class ApplicationTest {
 
       Response response = base.path("resources/a").request().get();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+
+      value = base.path("singletons/b").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+
+      response = base.path("singletons/a").request().get();
+      Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
       client.close();
    }
 
    /**
-    * @tpTestDetails Test scanned application in deployment: getClasses method is not used.
+    * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -99,12 +115,19 @@ public class ApplicationTest {
 
       String value = base.path("resources/a").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+
       value = base.path("resources/b").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+
+      value = base.path("singletons/a").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+
+      value = base.path("singletons/b").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
    }
 
    /**
-    * @tpTestDetails Test scanned application in deployment: getClasses method is not used. This application is mapped to different location.
+    * @tpTestDetails Test scanned application in deployment: getClasses and getSingletons methods are not used. This application is mapped to different location.
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -114,7 +137,14 @@ public class ApplicationTest {
 
       String value = base.path("resources/a").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+
       value = base.path("resources/b").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+
+      value = base.path("singletons/a").request().get(String.class);
+      Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+
+      value = base.path("singletons/b").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
    }
 }
