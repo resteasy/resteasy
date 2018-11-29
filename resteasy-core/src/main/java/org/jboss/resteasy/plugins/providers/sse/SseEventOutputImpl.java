@@ -315,4 +315,13 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       return false;
    }
 
+   @Override
+   public boolean equals(Object o) {
+      return this == o;
+   }
+
+   @Override
+   public int hashCode() {
+      return ((Object)this).hashCode();
+   }
 }
