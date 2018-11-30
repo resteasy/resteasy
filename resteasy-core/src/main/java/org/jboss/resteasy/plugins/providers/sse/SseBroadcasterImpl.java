@@ -51,24 +51,7 @@ public class SseBroadcasterImpl implements SseBroadcaster
    @Override
    public void close()
    {
-      if (!closed.compareAndSet(false, true))
-      {
-         return;
-      }
-      writeLock.lock();
-      try
-      {
-         //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
-         //is it necessay to close the subsribed SseEventSink ?
-         outputQueue.forEach(eventSink -> {
-            eventSink.close();
-            notifyOnCloseListeners(eventSink);
-         });
-      }
-      finally
-      {
-         writeLock.unlock();
-      }
+      close(true);
    }
 
    private void checkClosed()
@@ -175,6 +158,24 @@ public class SseBroadcasterImpl implements SseBroadcaster
     */
    public void close(boolean cascading)
    {
-      // TODO: implement this
+      if (!closed.compareAndSet(false, true))
+      {
+         return;
+      }
+      writeLock.lock();
+      try
+      {
+         if (cascading)
+         {
+            outputQueue.forEach(eventSink -> {
+               eventSink.close();
+               notifyOnCloseListeners(eventSink);
+            });
+         }
+      }
+      finally
+      {
+         writeLock.unlock();
+      }
    }
 }
