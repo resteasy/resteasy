@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import java.util.Set;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
@@ -545,9 +546,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    {
       LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       boolean registered = false;
-      if (config.getClasses() != null)
+      Set<Class<?>> classes = config.getClasses();
+      if (classes != null)
       {
-         for (Class clazz : config.getClasses())
+         for (Class clazz : classes)
          {
             if (GetRestful.isRootResource(clazz))
             {
@@ -563,9 +565,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             }
          }
       }
-      if (config.getSingletons() != null)
+      Set<Object> singletons = config.getSingletons();
+      if (singletons != null)
       {
-         for (Object obj : config.getSingletons())
+         for (Object obj : singletons)
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
