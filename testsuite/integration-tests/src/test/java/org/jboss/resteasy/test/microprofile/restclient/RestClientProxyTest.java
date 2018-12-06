@@ -9,7 +9,6 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly12;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.microprofile.MicroprofileClientBuilderResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -37,7 +36,6 @@ public class RestClientProxyTest
       war.addPackage(HelloResource.class.getPackage());
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addClass(PortProviderUtil.class);
-      war.addClass(ExpectedFailingOnWildFly12.class);
       war.addClass(ExpectedFailingOnWildFly13.class);
       war.addClass(Category.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient\n"), "MANIFEST.MF");
@@ -50,7 +48,7 @@ public class RestClientProxyTest
    }
 
    @Test
-   @Category({ExpectedFailingOnWildFly12.class, ExpectedFailingOnWildFly13.class})
+   @Category({ExpectedFailingOnWildFly13.class})
    public void testGetClient() throws Exception
    {
       RestClientBuilder builder = RestClientBuilder.newBuilder();
