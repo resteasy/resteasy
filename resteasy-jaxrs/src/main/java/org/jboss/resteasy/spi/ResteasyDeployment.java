@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -547,9 +548,10 @@ public class ResteasyDeployment
    {
       LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       boolean registered = false;
-      if (config.getClasses() != null)
+      Set<Class<?>> classes = config.getClasses();
+      if (classes != null)
       {
-         for (Class clazz : config.getClasses())
+         for (Class clazz : classes)
          {
             if (GetRestful.isRootResource(clazz))
             {
@@ -565,9 +567,10 @@ public class ResteasyDeployment
             }
          }
       }
-      if (config.getSingletons() != null)
+      Set<Object> singletons = config.getSingletons();
+      if (singletons != null)
       {
-         for (Object obj : config.getSingletons())
+         for (Object obj : singletons)
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
