@@ -83,6 +83,7 @@ public class DefaultMediaTypeTest {
 
    /**
     * @tpTestDetails Test Date object without produce annotation
+    *                https://issues.jboss.org/browse/RESTEASY-1403
     * @tpSince RESTEasy 3.0.16
     */
    @Test
@@ -118,6 +119,7 @@ public class DefaultMediaTypeTest {
 
    /**
     * @tpTestDetails Test Foo object without produce annotation
+    *                https://issues.jboss.org/browse/RESTEASY-1403
     * @tpSince RESTEasy 3.0.16
     */
    @Test
