@@ -1,18 +1,26 @@
 package org.jboss.resteasy.test.providers.sse;
 
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
+import org.jboss.resteasy.plugins.providers.sse.SseBroadcasterImpl;
+import org.jboss.resteasy.plugins.providers.sse.SseEventOutputImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.concurrent.*;
 
-import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
-import org.jboss.resteasy.plugins.providers.sse.SseBroadcasterImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import static junit.framework.TestCase.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /***
  *
@@ -94,8 +102,8 @@ public class SseBroadcasterTest
       {
          Assert.fail("All close listeners should have been notified");
       }
-      Assert.assertTrue(sseEventSink1.isClosed());
-      Assert.assertTrue(sseEventSink2.isClosed());
+      assertTrue(sseEventSink1.isClosed());
+      assertTrue(sseEventSink2.isClosed());
    }
 
    // We are expecting this test to invoke both close and error listeners when
@@ -108,7 +116,7 @@ public class SseBroadcasterTest
       SseEventSink sseEventSink = newSseEventSink();
       sseBroadcasterImpl.register(sseEventSink);
       sseEventSink.close();
-      Assert.assertTrue(sseEventSink.isClosed());
+      assertTrue(sseEventSink.isClosed());
 
       CountDownLatch countDownLatch = new CountDownLatch(3);
       sseBroadcasterImpl.onClose(ses -> {
@@ -184,6 +192,66 @@ public class SseBroadcasterTest
       {
          Assert.fail("All error listeners should have been notified");
       }
+   }
+
+   @Before
+   public void before(){
+      HttpRequest request = mock(HttpRequest.class);
+      ResteasyAsynchronousContext resteasyAsynchronousContext = mock(ResteasyAsynchronousContext.class);
+      doReturn(resteasyAsynchronousContext).when(request).getAsyncContext();
+
+      //prevent NPE in SseEventOutputImpl ctr
+      ResteasyContext.pushContext(org.jboss.resteasy.spi.HttpRequest.class, request);
+   }
+
+   @Test
+   public void testRemoveDisconnectedEventSink() throws Exception {
+      SseBroadcasterImpl sseBroadcasterImpl = new SseBroadcasterImpl();
+
+      final ConcurrentLinkedQueue<SseEventSink> outputQueue = getOutputQueue(sseBroadcasterImpl);
+      CountDownLatch countDownLatch = new CountDownLatch(2);
+
+      //we want to test against actual SseEventOutputImpl
+      final SseEventSink sseEventSink1 = new SseEventOutputImpl(null);
+      final SseEventSink sseEventSink2 = new SseEventOutputImpl(null);
+
+
+      sseBroadcasterImpl.register(sseEventSink1);
+      sseBroadcasterImpl.register(sseEventSink2);
+
+
+      sseBroadcasterImpl.onClose(ses -> {
+         countDownLatch.countDown();
+      });
+
+      sseBroadcasterImpl.onError((ses, error) -> {
+         //error is an NPE thrown by SseEventOutputImpl#send
+         countDownLatch.countDown();
+      });
+
+      sseEventSink2.close();
+
+      sseBroadcasterImpl.broadcast(new OutboundSseEventImpl.BuilderImpl().data("Test").build());
+
+      if (!countDownLatch.await(5, TimeUnit.SECONDS))
+      {
+         fail("All close listeners should have been notified");
+      } else {
+         assertTrue(outputQueue.size() == 1);
+         assertSame(outputQueue.peek(), sseEventSink1);
+      }
+   }
+
+   private ConcurrentLinkedQueue<SseEventSink> getOutputQueue(SseBroadcasterImpl sseBroadcasterImpl) throws NoSuchFieldException, IllegalAccessException {
+      Field fld = SseBroadcasterImpl.class.getDeclaredField("outputQueue");
+      fld.setAccessible(true);
+      return (ConcurrentLinkedQueue<SseEventSink>) fld.get(sseBroadcasterImpl);
+   }
+
+   @org.junit.After
+   public void after(){
+      //revert contextual data
+      ResteasyContext.pushContext(org.jboss.resteasy.spi.HttpRequest.class, null);
    }
 
    private SseEventSink newSseEventSink()
