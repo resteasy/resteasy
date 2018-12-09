@@ -14,9 +14,12 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-import static junit.framework.TestCase.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
@@ -102,8 +105,8 @@ public class SseBroadcasterTest
       {
          Assert.fail("All close listeners should have been notified");
       }
-      assertTrue(sseEventSink1.isClosed());
-      assertTrue(sseEventSink2.isClosed());
+      Assert.assertTrue(sseEventSink1.isClosed());
+      Assert.assertTrue(sseEventSink2.isClosed());
    }
 
    // We are expecting this test to invoke both close and error listeners when
@@ -116,7 +119,7 @@ public class SseBroadcasterTest
       SseEventSink sseEventSink = newSseEventSink();
       sseBroadcasterImpl.register(sseEventSink);
       sseEventSink.close();
-      assertTrue(sseEventSink.isClosed());
+      Assert.assertTrue(sseEventSink.isClosed());
 
       CountDownLatch countDownLatch = new CountDownLatch(3);
       sseBroadcasterImpl.onClose(ses -> {
@@ -237,8 +240,8 @@ public class SseBroadcasterTest
       {
          fail("All close listeners should have been notified");
       } else {
-         assertTrue(outputQueue.size() == 1);
-         assertSame(outputQueue.peek(), sseEventSink1);
+         Assert.assertTrue(outputQueue.size() == 1);
+         Assert.assertSame(outputQueue.peek(), sseEventSink1);
       }
    }
 
