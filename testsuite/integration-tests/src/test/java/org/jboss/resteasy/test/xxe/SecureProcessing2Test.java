@@ -28,6 +28,8 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import java.io.File;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.StringContains.containsString;
@@ -92,8 +94,11 @@ public class SecureProcessing2Test {
          "</entry>" +
          "</map>";
 
-   String bar = "<!DOCTYPE secureProcessingBar SYSTEM \"src/test/resources/org/jboss/resteasy/test/xxe/SecureProcessing_external.dtd\"><secureProcessingBar><s>junk</s></secureProcessingBar>";
-   String filename = TestUtil.getResourcePath(SecureProcessing2Test.class, "SecureProcessiongTestpasswd");
+   File file = new File("src/test/resources/org/jboss/resteasy/test/xxe/SecureProcessing_external.dtd");
+   String secureProcessing_externalDtd = file.getAbsolutePath();
+   String bar = "<!DOCTYPE secureProcessingBar SYSTEM \"" + secureProcessing_externalDtd + "\"><secureProcessingBar><s>junk</s></secureProcessingBar>";
+   File file2 = new File("src/test/resources/org/jboss/resteasy/test/xxe/SecureProcessiongTestpasswd");
+   String filename = file2.getAbsolutePath();
    String externalXmlRootElement =
          "<?xml version=\"1.0\"?>\r" +
                "<!DOCTYPE foo\r" +
