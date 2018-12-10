@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class TestLinks
 {
@@ -90,12 +89,19 @@ public class TestLinks
    }
 
    @Test
-   public void testLinks() throws Exception
-   {
-      Book book = client.getBookXML("foo");
-      checkBookLinks1(url, book);
-      book = client.getBookJSON("foo");
-      checkBookLinks1(url, book);
+   public void testLinksXML() throws Exception {
+
+         Book book = client.getBookXML("foo");
+         checkBookLinks1(url, book);
+
+   }
+
+   @Test
+   public void testLinksJson() throws Exception {
+
+         Book book = client.getBookJSON("foo");
+         checkBookLinks1(url, book);
+
    }
 
    @Test
