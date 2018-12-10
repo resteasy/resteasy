@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class TestLinksInvalidEL
 {
@@ -108,6 +107,7 @@ public class TestLinksInvalidEL
       }
    }
    @Test
+   @Ignore
    public void testELWorksWithoutPackageJSON() throws Exception
    {
       try{

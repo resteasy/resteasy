@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class TestFacadeLinks
 {
@@ -90,6 +89,7 @@ public class TestFacadeLinks
    }
 
    @Test
+   @Ignore
    public void testLinks() throws Exception
    {
       ScrollableCollection comments = client.getScrollableCommentsXML("foo", "book");
