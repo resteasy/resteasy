@@ -43,6 +43,7 @@ public abstract class ClientResponse extends BuiltResponse
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
    protected byte[] bufferedEntity;
+   protected boolean streamRead;
    protected boolean streamFullyRead;
    protected RESTEasyTracingLogger tracingLogger;
 
@@ -89,14 +90,19 @@ public abstract class ClientResponse extends BuiltResponse
       Object entity = super.getEntity();
       if (entity != null)
       {
-         return entity;
+         return checkEntityReadAsInputStreamFullyConsumed(entity);
       }
-      //Check if the entity was previously fully consumed
-      if (streamFullyRead && bufferedEntity == null)
+      return checkEntityReadAsInputStreamFullyConsumed(getEntityStream());
+   }
+
+   //Check if the entity was previously fully consumed
+   private <T> T checkEntityReadAsInputStreamFullyConsumed(T entity)
+   {
+      if (bufferedEntity == null && entity instanceof InputStream && streamFullyRead)
       {
          throw new IllegalStateException();
       }
-      return getEntityStream();
+      return entity;
    }
 
    @Override
@@ -202,6 +208,7 @@ public abstract class ClientResponse extends BuiltResponse
 
       private int checkEOF(int v)
       {
+         response.streamRead=true;
          if (v < 0)
          {
             response.streamFullyRead = true;
@@ -401,7 +408,7 @@ public abstract class ClientResponse extends BuiltResponse
    {
       abortIfClosed();
       if (bufferedEntity != null) return true;
-      if (entity != null) return false;
+      if (streamRead) return false;
       if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
       InputStream is = getInputStream();
       if (is == null) return false;
