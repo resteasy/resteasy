@@ -16,7 +16,8 @@ import org.jboss.resteasy.spi.Registry;
 public class LinkDecorator implements DecoratorProcessor<Marshaller, AddLinks> {
 
    public Marshaller decorate(Marshaller target, final AddLinks annotation,
-         Class type, Annotation[] annotations, MediaType mediaType) {
+                              Class type, Annotation[] annotations, MediaType mediaType) {
+
       target.setListener(new Listener() {
          @Override
          public void beforeMarshal(Object entity) {

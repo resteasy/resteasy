@@ -19,6 +19,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
+import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -49,6 +50,12 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 @Produces({"application/json", "application/*+json", "text/json"})
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
+
+   public static DecoratedEntityContainer decorateEntity(Class type, Annotation[] annotations, MediaType mediaType, DecoratedEntityContainer container) {
+      DecoratorMatcher processor = new DecoratorMatcher();
+      return processor.decorate(DecoratedEntityContainer.class, container, type, annotations, mediaType);
+   }
+
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
@@ -256,6 +263,9 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
          }
 
+         //  TODO: Add decorator
+         decorateEntity(type, annotations, mediaType, new DecoratedEntityContainer(value));
+
          if (System.getSecurityManager() == null) {
             writer.writeValue(jg, value);
          } else {
@@ -276,6 +286,4 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          jg.close();
       }
    }
-
-
 }
