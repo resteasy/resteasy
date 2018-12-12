@@ -263,7 +263,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
          }
 
-         //  TODO: Add decorator
+         // [RESTEASY-1317] Support Jackson in Atom links
          decorateEntity(type, annotations, mediaType, new DecoratedEntityContainer(value));
 
          if (System.getSecurityManager() == null) {
