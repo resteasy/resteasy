@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.concurrent.CompletionStage;
+import javax.ws.rs.JAXRS;
+import javax.ws.rs.JAXRS.Instance;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -29,6 +31,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -576,4 +579,12 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
       return reader;
    }
 
+   @Override
+   public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration){
+      RegisterBuiltin.register(this);
+      if (this.jaxrsServer == null) {
+         jaxrsServer = this.defaultFactory.getJaxrsServer();
+      }
+      return internalBootstrap(application, configuration);
+   }
 }

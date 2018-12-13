@@ -258,7 +258,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    private Map<String, Object> properties;
    private Map<Class<?>, Class<? extends RxInvokerProvider<?>>> reactiveClasses;
    private ResourceBuilder resourceBuilder;
-   private EmbeddedJaxrsServer jaxrsServer;
+   protected EmbeddedJaxrsServer jaxrsServer;
    protected Set<Feature> enabledFeatures;
    protected Set<Class<?>> providerClasses;
    protected Set<Object> providerInstances;
@@ -2679,17 +2679,20 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       return ResteasyContext.getContextData(type);
    }
-
    public CompletionStage<Instance> bootstrap(Application application, JAXRS.Configuration configuration)
    {
       RegisterBuiltin.register(this);
+      return internalBootstrap(application, configuration);
+   }
+
+   protected CompletionStage<Instance> internalBootstrap(Application application, JAXRS.Configuration configuration)
+   {
       return CompletableFuture.supplyAsync(new Supplier<Instance>()
       {
 
          @Override
          public Instance get()
          {
-
             if (jaxrsServer == null)
             {
                jaxrsServer = new SunHttpJaxrsServer();
@@ -2763,6 +2766,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          }
       });
    }
+
    @Override
    public Builder createConfigurationBuilder()
    {

@@ -116,6 +116,8 @@ public class UndertowParameterTest {
    {
       server.stop();
       client.close();
+      //deployment.setDeploymentSensitiveFactoryEnabled(true) leaves a threadlocal instance:
+      //RuntimeDelegate.setInstance(null);
    }
 
    @Test
