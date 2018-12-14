@@ -86,6 +86,8 @@ public class DecoratorMatcher
    }
 
    public <T> boolean hasDecorator(Class<T> targetClass, Annotation[] annotations) {
+      if (targetClass == null || annotations == null)
+         return false;
       for (Annotation annotation : annotations) {
          Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
          if (decorator != null && targetClass.isAssignableFrom(decorator.target()))
