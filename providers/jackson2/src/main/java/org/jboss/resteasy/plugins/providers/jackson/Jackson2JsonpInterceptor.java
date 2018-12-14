@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *  The method has to be present in the current JavaScript environment.
  * </p>
  * <p>
- *  Jackson JSON processor can produce such an response. This interceptor checks if the media type is a JavaScript one if there is a query
+ *  Jackson JSON decoratorMatcher can produce such an response. This interceptor checks if the media type is a JavaScript one if there is a query
  *  parameter with the method name. The default name of this query parameter is "callback". So this interceptor is compatible with
  *  <a href="http://api.jquery.com/jQuery.ajax/">jQuery</a>.
  * </p>
