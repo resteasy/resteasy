@@ -89,16 +89,19 @@ public class TestLinks
    }
 
    @Test
-   public void testLinks() throws Exception
-   {
-      {
+   public void testLinksXML() throws Exception {
+
          Book book = client.getBookXML("foo");
          checkBookLinks1(url, book);
-      }
-      {
+
+   }
+
+   @Test
+   public void testLinksJson() throws Exception {
+
          Book book = client.getBookJSON("foo");
          checkBookLinks1(url, book);
-      }
+
    }
 
    @Test

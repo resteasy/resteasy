@@ -51,10 +51,8 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
 
-   public static DecoratedEntityContainer decorateEntity(Class type, Annotation[] annotations, MediaType mediaType, DecoratedEntityContainer container) {
-      DecoratorMatcher processor = new DecoratorMatcher();
-      return processor.decorate(DecoratedEntityContainer.class, container, type, annotations, mediaType);
-   }
+   DecoratorMatcher decoratorMatcher = new DecoratorMatcher();
+
 
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
@@ -264,7 +262,9 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          }
 
          // [RESTEASY-1317] Support Jackson in Atom links
-         decorateEntity(type, annotations, mediaType, new DecoratedEntityContainer(value));
+         if (decoratorMatcher.hasDecorator(DecoratedEntityContainer.class, annotations)) {
+            decoratorMatcher.decorate(DecoratedEntityContainer.class, new DecoratedEntityContainer(value), type, annotations, mediaType);
+         }
 
          if (System.getSecurityManager() == null) {
             writer.writeValue(jg, value);
