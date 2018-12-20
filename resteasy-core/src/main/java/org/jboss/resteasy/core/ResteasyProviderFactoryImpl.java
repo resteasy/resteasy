@@ -1329,7 +1329,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
          ParamConverterProvider paramConverterProvider = (ParamConverterProvider) injectedInstance(provider);
-         injectProperties(provider);
+         injectProperties(paramConverterProvider);
          if (sortedParamConverterProviders == null)
          {
             sortedParamConverterProviders = Collections

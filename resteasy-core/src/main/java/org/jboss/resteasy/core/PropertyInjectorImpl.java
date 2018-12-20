@@ -213,6 +213,11 @@ public class PropertyInjectorImpl implements PropertyInjector
       return ret;
    }
 
+   public HashMap<Field, ValueInjector> getFieldMap()
+   {
+      return fieldMap;
+   }
+
    private Field[] getDeclaredFields(final Class<?> clazz)
    {
       final SecurityManager sm = System.getSecurityManager();

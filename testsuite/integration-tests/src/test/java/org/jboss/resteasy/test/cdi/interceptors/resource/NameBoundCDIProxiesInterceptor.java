@@ -20,7 +20,7 @@ public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, C
 
    @Override
    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-      Object entity = application.getClass().isSynthetic() ? in + responseContext.getEntity() + "-out" : responseContext.getEntity();
+      Object entity = isJavassist(application) ? in + responseContext.getEntity() + "-out" : responseContext.getEntity();
       responseContext.setEntity(entity);
    }
 
@@ -29,4 +29,10 @@ public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, C
       in = "in-";
    }
 
+   /**
+    * Verify that application is a javassist proxy, which implies that CDI is activated.
+    */
+   private boolean isJavassist(Application application) {
+      return application.getClass().getName().contains("$$_jvst");
+   }
 }

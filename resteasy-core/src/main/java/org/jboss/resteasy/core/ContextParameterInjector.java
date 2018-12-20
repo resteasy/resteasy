@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -55,6 +56,10 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
+      if (Application.class.isAssignableFrom(rawType))
+      {
+         return CompletableFuture.completedFuture(ResteasyContext.getContextData(Application.class));
+      }
       if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
@@ -139,8 +144,12 @@ public class ContextParameterInjector implements ValueInjector
    @Override
    public CompletionStage<Object> inject(boolean unwrapAsync)
    {
-      //if (type.equals(Providers.class)) return factory;
-      if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
+     //if (type.equals(Providers.class)) return factory;
+      if (Application.class.isAssignableFrom(rawType))
+      {
+         return CompletableFuture.completedFuture(ResteasyContext.getContextData(Application.class));
+      }
+      if (rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations, unwrapAsync));
       }
@@ -154,7 +163,6 @@ public class ContextParameterInjector implements ValueInjector
          if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
          throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
-
       return CompletableFuture.completedFuture(createProxy());
    }
 
@@ -187,6 +195,34 @@ public class ContextParameterInjector implements ValueInjector
             });
          }
          return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
+      }
+   }
+
+   static class InjectedApplication extends Application
+   {
+      private Application delegate;
+
+      public Set<Class<?>> getClasses()
+      {
+         getDelegate();
+         return delegate.getClasses();
+      }
+
+      public Set<Object> getSingletons()
+      {
+         getDelegate();
+         return delegate.getSingletons();
+      }
+
+      public Map<String, Object> getProperties()
+      {
+         getDelegate();
+         return delegate.getProperties();
+      }
+
+      private void getDelegate()
+      {
+         delegate = ResteasyContext.getContextData(Application.class);
       }
    }
 }
