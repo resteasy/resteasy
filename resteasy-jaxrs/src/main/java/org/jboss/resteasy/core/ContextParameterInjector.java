@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -43,7 +45,11 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface() || type.equals(SseEventSink.class))
+      if (Application.class.isAssignableFrom(type))
+      {
+         return ResteasyProviderFactory.getContextData(Application.class);
+      }
+      if (!type.isInterface() ||type.equals(SseEventSink.class))
       {
          return ResteasyProviderFactory.getContextData(type);
       }
@@ -96,7 +102,11 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (type.equals(Application.class) || type.equals(SseEventSink.class))
+      if (Application.class.isAssignableFrom(type))
+      {
+          return ResteasyProviderFactory.getContextData(Application.class);
+      }
+      if (type.equals(SseEventSink.class))
       {
          return ResteasyProviderFactory.getContextData(type);
       }
@@ -146,6 +156,34 @@ public class ContextParameterInjector implements ValueInjector
             });
          }
          return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
+      }
+   }
+
+   static class InjectedApplication extends Application
+   {
+      private Application delegate;
+
+      public Set<Class<?>> getClasses()
+      {
+         getDelegate();
+         return delegate.getClasses();
+      }
+
+      public Set<Object> getSingletons()
+      {
+         getDelegate();
+         return delegate.getSingletons();
+      }
+
+      public Map<String, Object> getProperties()
+      {
+         getDelegate();
+         return delegate.getProperties();
+      }
+
+      private void getDelegate()
+      {
+         delegate = ResteasyProviderFactory.getContextData(Application.class);
       }
    }
 }
