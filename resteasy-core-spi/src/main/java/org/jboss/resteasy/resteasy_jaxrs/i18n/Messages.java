@@ -646,7 +646,7 @@ public interface Messages
    String unableToDetermineBaseClass();
 
    @Message(id = BASE
-         + 870, value = "Unable to extract parameter from http request: {0} value is '{1}' for {2}", format = Format.MESSAGE_FORMAT)
+         + 870, value = "Unable to extract parameter from http request: {0} value is ''{1}'' for {2}", format = Format.MESSAGE_FORMAT)
    String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
 
    @Message(id = BASE

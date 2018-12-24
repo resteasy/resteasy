@@ -11,6 +11,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.ConstructorParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
+import org.jboss.resteasy.spi.BadRequestException;
+import org.jboss.resteasy.spi.NotFoundException;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -60,7 +62,9 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object[]> injectableArguments(HttpRequest input, HttpResponse response, boolean unwrapAsync)
+   public CompletionStage<Object[]> injectableArguments(HttpRequest input,
+                                                        HttpResponse response,
+                                                        boolean unwrapAsync)
    {
       if (params != null && params.length > 0)
       {
@@ -70,7 +74,9 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          for (ValueInjector extractor : params)
          {
             int ifinal = i++;
-            stage = stage.thenCompose(v -> extractor.inject(input, response, unwrapAsync).thenAccept(value -> args[ifinal] = value));
+            stage = stage.thenCompose(v ->
+                    extractor.inject(input, response, unwrapAsync)
+                            .thenAccept(value -> args[ifinal] = value));
          }
          return stage.thenApply(v -> args);
       }
@@ -101,7 +107,19 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    {
       return injectableArguments(request, httpResponse, unwrapAsync)
       .exceptionally(e -> {
-         throw new InternalServerErrorException(Messages.MESSAGES.failedProcessingArguments(constructor.toString()), e);
+         //CompletionStage does not support rethrow of exception.
+         //Must create new exception object and throw it.
+         Throwable t = e.getCause();
+         if (t != null) {
+            if (t instanceof NotFoundException) {
+               throw new NotFoundException(t.getMessage(), t.getCause());
+            } else if (t instanceof BadRequestException) {
+               throw new BadRequestException(t.getMessage(), t.getCause());
+            }
+         }
+         throw new InternalServerErrorException(
+                    Messages.MESSAGES.failedProcessingArguments(constructor.toString()), e);
+
       }).thenApply(args -> {
          try
          {
@@ -122,7 +140,8 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             {
                throw (WebApplicationException) cause;
             }
-            throw new ApplicationException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
+            throw new ApplicationException(Messages.MESSAGES.failedToConstruct(
+                    constructor.toString()), e.getCause());
          }
          catch (IllegalArgumentException e)
          {
