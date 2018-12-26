@@ -85,7 +85,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
             return null;
          }
          // detail text provided in logger message
-         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e, e.getMessage()));
+         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e, e.getMessage()), e);
       }
    }
 
@@ -153,7 +153,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          entityStream.flush();
       } catch (Throwable e)
       {
-         throw new ProcessingException(Messages.MESSAGES.jsonBSerializationError(e.toString()));
+         throw new ProcessingException(Messages.MESSAGES.jsonBSerializationError(e.toString()), e);
       }
    }
 
