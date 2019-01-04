@@ -114,7 +114,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>14.0.0.Final</server.version>
+                <server.version>15.0.0.Final</server.version>
             </properties>
         </profile>
         <profile>
