@@ -184,6 +184,15 @@ public class TestUtil {
       return ManagementClient.online(onlineOptions);
    }
 
+   public static OnlineManagementClient clientInit(int portOffset) throws IOException {
+      OnlineOptions onlineOptions = OnlineOptions
+            .standalone()
+            .hostAndPort("localhost", 9990 + portOffset) // 9990 is default port for EAP 7
+            .connectionTimeout(120000)
+            .build();
+      return ManagementClient.online(onlineOptions);
+   }
+
    public static ModelNodeResult runCmd(OnlineManagementClient client, String cmd) throws Exception {
       ModelNodeResult result = client.execute(cmd);
       logger.info("CLI command: " + cmd);
@@ -422,5 +431,13 @@ public class TestUtil {
     */
    public static void addOtherLibrary(WebArchive archive, String dependency) {
       archive.addAsLibrary(resolveDependency(dependency));
+   }
+
+   public static boolean isWindows() {
+      String osName = System.getProperty("os.name");
+      if (osName == null) {
+         Assert.fail("Can't get the operating system name");
+      }
+      return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
    }
 }
