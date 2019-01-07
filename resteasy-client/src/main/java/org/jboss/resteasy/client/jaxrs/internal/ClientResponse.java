@@ -41,8 +41,8 @@ public abstract class ClientResponse extends BuiltResponse
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
    protected byte[] bufferedEntity;
-   protected boolean streamRead;
-   protected boolean streamFullyRead;
+   protected volatile boolean streamRead;
+   protected volatile boolean streamFullyRead;
 
    protected ClientResponse(final ClientConfiguration configuration)
    {
