@@ -1,0 +1,117 @@
+package org.jboss.resteasy.test.security;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.TargetsContainer;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.security.resource.SslResource;
+import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
+
+import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WILDCARD;
+import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WILDCARD;
+
+/**
+ * @tpSubChapter Security
+ * @tpChapter Integration tests
+ * @tpTestCaseDetails Tests for SSL - server secured with certificate with wildcard hostname "*host"
+ * @tpSince RESTEasy 3.7.0
+ */
+@RunWith(Arquillian.class)
+@RunAsClient
+public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
+
+   private static KeyStore truststore;
+
+   private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wildcard-hostname.keystore";
+   private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wildcard-hostname.truststore";
+   private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WILDCARD);
+
+   @TargetsContainer(SSL_CONTAINER_QUALIFIER_WILDCARD)
+   @Deployment(managed=false, name=DEPLOYMENT_NAME)
+   public static Archive<?> createDeployment() {
+      WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
+      return TestUtil.finishContainerPrepare(war, null, SslResource.class);
+   }
+
+   @BeforeClass
+   public static void prepareTruststore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+      truststore = KeyStore.getInstance("jks");
+      try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
+         truststore.load(in, PASSWORD.toCharArray());
+      }
+   }
+
+   @Before
+   public void startContainer() throws Exception {
+      if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WILDCARD)) {
+         containerController.start(SSL_CONTAINER_QUALIFIER_WILDCARD);
+         secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WILDCARD);
+         deployer.deploy(DEPLOYMENT_NAME);
+      }
+   }
+
+   /**
+    * @tpTestDetails HostnameVerificationPolicy.WILDCARD test
+    * Client has truststore containing self-signed certificate.
+    * Server/endpoint is secured with the same self-signed certificate, but only wildcard of server hostname (*host) is included among 'subject alternative names' in the certificate.
+    * Client should trust the server because HostnameVerificationPolicy is set to WILDCARD.
+    * @tpSince RESTEasy 3.7.0
+    */
+   @Test
+   public void testHostnameVerificationPolicyWildcard() {
+      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+
+      resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
+
+      client = resteasyClientBuilder.trustStore(truststore).build();
+      Response response = client.target(URL).request().get();
+      Assert.assertEquals("Hello World!", response.readEntity(String.class));
+      Assert.assertEquals(200, response.getStatus());
+   }
+
+   /**
+    * @tpTestDetails HostnameVerificationPolicy.STRICT test
+    * Client has truststore containing self-signed certificate.
+    * Server/endpoint is secured with the same self-signed certificate, but only wildcard of server hostname (*host) is included among 'subject alternative names' in the certificate.
+    * HostnameVerificationPolicy is set to STRICT so exception should be thrown.
+    * @tpSince RESTEasy 3.7.0
+    */
+   @Test(expected = ProcessingException.class)
+   @Ignore("RESTEASY-2176")
+   public void testHostnameVerificationPolicyStrict() {
+      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+
+      resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
+
+      client = resteasyClientBuilder.trustStore(truststore).build();
+      client.target(URL).request().get();
+   }
+
+   @After
+   public void after() {
+      client.close();
+   }
+
+}
