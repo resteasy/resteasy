@@ -13,6 +13,8 @@ import java.net.URL;
 public class PortProviderUtil {
    private static final int DEFAULT_PORT = 8080;
 
+   private static final int HTTPS_PORT = 8443;
+
    private static final String PORT_ENV_VAR_NAME = "RESTEASY_PORT";
 
    private static final String PORT_PROPERTY_NAME = "org.jboss.resteasy.port";
@@ -145,6 +147,40 @@ public class PortProviderUtil {
       }
       // ipv6
       return String.format("http://[%s]:%d/%s%s", hostName, port, testName, path);
+   }
+
+   /**
+    * Generate a base https URL incorporating the configured port.
+    *
+    * @return a full https URL
+    */
+   public static String generateBaseHttpsUrl(String testName) {
+      return generateHttpsURL("", testName);
+   }
+
+   /**
+    * Generate a https URL incorporating the configured port.
+    *
+    * @param path the path
+    * @param testName the test name
+    * @return a full https URL
+    */
+   public static String generateHttpsURL(String path, String testName) {
+      return generateHttpsURL(path, testName,  getHost(), HTTPS_PORT);
+   }
+   /**
+    * Generate a https URL with port, hostname
+    *
+    * @param path the path
+    * @return a full https URL
+    */
+   public static String generateHttpsURL(String path, String testName, String hostName, int port) {
+      // ipv4
+      if (!ipv6) {
+         return String.format("https://%s:%d/%s%s", hostName, port, testName, path);
+      }
+      // ipv6
+      return String.format("https://[%s]:%d/%s%s", hostName, port, testName, path);
    }
 
    /**

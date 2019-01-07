@@ -422,4 +422,12 @@ public class TestUtil {
    public static void addOtherLibrary(WebArchive archive, String dependency) {
       archive.addAsLibrary(resolveDependency(dependency));
    }
+
+   public static boolean isWindows() {
+      String osName = System.getProperty("os.name");
+      if (osName == null) {
+         Assert.fail("Can't get the operating system name");
+      }
+      return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
+   }
 }
