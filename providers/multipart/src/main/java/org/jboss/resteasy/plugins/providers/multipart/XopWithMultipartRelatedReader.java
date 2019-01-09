@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -49,6 +50,8 @@ public class XopWithMultipartRelatedReader implements MessageBodyReader<Object>
          throw new IOException(Messages.MESSAGES.unableToGetBoundary());
       MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
             mediaType, workers);
+      Providers providers = ResteasyProviderFactory.getContextData(Providers.class);
+      input.setProviders(providers);
       input.parse(entityStream);
 
       XopWithMultipartRelatedJAXBProvider xopWithMultipartRelatedJAXBProvider = new XopWithMultipartRelatedJAXBProvider(
