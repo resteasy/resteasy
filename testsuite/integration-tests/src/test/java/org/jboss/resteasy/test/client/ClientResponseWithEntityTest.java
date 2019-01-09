@@ -3,9 +3,12 @@ package org.jboss.resteasy.test.client;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.util.Date;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
@@ -267,6 +270,68 @@ public class ClientResponseWithEntityTest {
          Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
          Assert.assertTrue(response.bufferEntity());
       }
+   }
+
+   /**
+    * <p>
+    * According to the java doc of:
+    * <ul>
+    * <li>{@link Response#readEntity(Class)}</li>
+    * <li>{@link Response#readEntity(javax.ws.rs.core.GenericType)}</li>
+    * <li>{@link Response#readEntity(Class, Annotation[])}</li>
+    * <li>{@link Response#readEntity(javax.ws.rs.core.GenericType, Annotation[])}</li>
+    * </ul>
+    * those methods are supposed to close the original entity input stream (unless the supplied type is input stream)
+    * and then cache the result for subsequent retrievals via {@link Response#getEntity()}.
+    * </p>
+    * <p>
+    * So it clearly means that those methods MUST not {@link Response#close() close()} the response.<br>
+    * Else subsequent retrievals via {@link Response#getEntity()} will always end up with {@link IllegalStateException} being thrown.
+    * </p>
+    */
+   @Test
+   public void readEntity_Should_NotCloseTheResponse_Once_EntityIsRead()
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+      //Entity read successfully
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         try
+         {
+            Assert.assertEquals(entity, response.getEntity());
+         }
+         catch (IllegalStateException e)
+         {
+            Assert.fail("The response was not supposed to be closed");
+         }
+      }
+
+      //Entity read unsuccessfully
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         try
+         {
+            response.readEntity(Date.class);
+            Assert.fail("The content of the message was not supposed to be mapped to a Date");
+         }
+         catch (ProcessingException e)
+         {
+         }
+         try
+         {
+            Assert.assertTrue(response.hasEntity());
+         }
+         catch (IllegalStateException e)
+         {
+            Assert.fail("The response was not supposed to be closed");
+         }
+      }
+
    }
 
 }

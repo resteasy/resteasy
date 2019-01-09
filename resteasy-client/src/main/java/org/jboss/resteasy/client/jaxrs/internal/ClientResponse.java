@@ -219,7 +219,7 @@ public abstract class ClientResponse extends BuiltResponse
       @Override
       public void close() throws IOException {
          super.close();
-         this.response.close();
+         this.response.releaseConnection();
       }
    }
 
@@ -277,17 +277,12 @@ public abstract class ClientResponse extends BuiltResponse
          try
          {
             entity = readFrom(type, genericType, getMediaType(), anns);
-            if (entity == null || (entity != null
-               && !InputStream.class.isInstance(entity)
-               && !Reader.class.isInstance(entity)
-               && bufferedEntity == null))
+            if (entity == null || (!InputStream.class.isInstance(entity) && !Reader.class.isInstance(entity)
+                  && !EventInput.class.isInstance(entity) && bufferedEntity == null))
             {
                try
                {
-                  if (!EventInput.class.isInstance(entity))
-                  {
-                     close();
-                  }
+                  releaseConnection();
                }
                catch (Exception ignored)
                {
@@ -299,7 +294,7 @@ public abstract class ClientResponse extends BuiltResponse
             //logger.error("failed", e);
             try
             {
-               close();
+               releaseConnection();
             }
             catch (Exception ignored)
             {
