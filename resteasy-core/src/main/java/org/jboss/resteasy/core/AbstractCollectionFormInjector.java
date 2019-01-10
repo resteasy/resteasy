@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ValueInjector;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.HashSet;

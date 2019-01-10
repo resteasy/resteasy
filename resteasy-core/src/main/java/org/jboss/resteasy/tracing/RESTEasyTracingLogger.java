@@ -64,7 +64,7 @@ public interface RESTEasyTracingLogger
    /**
     * Create new Tracing logger.
     *
-    * @param Configuration        configuration
+    * @param configuration configuration
     * @param loggerNameSuffix tracing logger name suffix.
     * @return new tracing logger.
     */
@@ -81,6 +81,7 @@ public interface RESTEasyTracingLogger
     * Returns instance of {@code TracingLogger} associated with current request processing
     * ({@code propertiesDelegate}).
     *
+    * @param request http request
     * @return returns instance of {@code TracingLogger} from {@code ResteasyProviderFactory}. Does not return {@code null}.
     */
    static RESTEasyTracingLogger getInstance(HttpRequest request)
@@ -209,6 +210,8 @@ public interface RESTEasyTracingLogger
     * Return configuration type of tracing support according to application configuration.
     * <p>
     * By default tracing support is switched OFF.
+    * @param configuration configuration
+    * @return the configuration type
     */
    static String getTracingConfig(Configuration configuration) {
       return TRACING.AVAILABLE ? RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration).toString() : null;
@@ -216,7 +219,7 @@ public interface RESTEasyTracingLogger
 
    /**
     * Get application-wide tracing level threshold.
-    *
+    * @param configuration configuration
     * @return tracing level threshold.
     */
    static String getTracingThreshold(Configuration configuration) {

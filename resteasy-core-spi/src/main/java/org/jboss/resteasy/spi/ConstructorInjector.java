@@ -12,7 +12,7 @@ public interface ConstructorInjector
 {
    /**
     * Construct outside the scope of an HTTP request.  Useful for singleton factories.
-    *
+    * @param unwrapAsync unwrap async
     * @return constructed object
     */
    CompletionStage<Object> construct(boolean unwrapAsync);
@@ -22,6 +22,7 @@ public interface ConstructorInjector
     *
     * @param request http request
     * @param response http response
+    * @param unwrapAsync unwrap async
     * @return constructed object
     * @throws Failure if failure occurred
     * @throws WebApplicationException if application exception occurred
@@ -34,6 +35,7 @@ public interface ConstructorInjector
     * in cases where the resource factory wants to allocate the object itself, but wants resteasy to populate
     * the arguments.
     *
+    * @param unwrapAsync unwrap async
     * @return array of arguments
     */
    CompletionStage<Object[]> injectableArguments(boolean unwrapAsync);
@@ -45,6 +47,7 @@ public interface ConstructorInjector
     *
     * @param request http request
     * @param response http response
+    * @param unwrapAsync unwrap async
     * @return array of arguments
     * @throws Failure if failure occurred
     */

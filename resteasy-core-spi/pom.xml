@@ -129,6 +129,23 @@
                 <artifactId>clover-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <pluginManagement>
+           <plugins>
+	          <plugin>
+	             <groupId>org.apache.maven.plugins</groupId>
+	             <artifactId>maven-javadoc-plugin</artifactId>
+	             <configuration>
+	                <additionalDependencies>
+	                   <additionalDependency>
+	                      <groupId>org.jboss.resteasy</groupId>
+	                      <artifactId>resteasy-core</artifactId>
+	                      <version>${project.version}</version>
+	                   </additionalDependency>
+	                </additionalDependencies>
+	             </configuration>
+	          </plugin>
+           </plugins>
+        </pluginManagement>
     </build>
     <profiles>
         <profile>

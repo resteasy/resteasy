@@ -22,7 +22,7 @@ import java.beans.PropertyEditorSupport;
  *
  * example
  *
- * @InitBinder
+ * {@literal @}InitBinder
  * public void initBinder(WebDataBinder binder) {
  *     binder.registerCustomEditor(MediaType.class,
  *         new MediaTypeEditor());
