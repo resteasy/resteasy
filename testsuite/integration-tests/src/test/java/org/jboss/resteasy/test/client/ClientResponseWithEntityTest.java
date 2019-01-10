@@ -154,14 +154,7 @@ public class ClientResponseWithEntityTest {
          {
             Assert.assertTrue(IllegalStateException.class.isInstance(e));
             // Following is to be sure that previous IllegalStateException is not because of closed response
-            try
-            {
-               Assert.assertTrue(response.hasEntity());
-            }
-            catch (IllegalStateException e2)
-            {
-               Assert.fail("The response was not supposed to be closed");
-            }
+            checkResponseNotClosed(response);
          }
       }
 
@@ -182,14 +175,7 @@ public class ClientResponseWithEntityTest {
          {
             Assert.assertTrue(IllegalStateException.class.isInstance(e));
             // Following is to be sure that previous IllegalStateException is not because of closed response
-            try
-            {
-               Assert.assertTrue(response.hasEntity());
-            }
-            catch (IllegalStateException e2)
-            {
-               Assert.fail("The response was not supposed to be closed");
-            }
+            checkResponseNotClosed(response);
          }
       }
    }
@@ -294,6 +280,7 @@ public class ClientResponseWithEntityTest {
    {
       Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
             .request(MediaType.APPLICATION_XML_TYPE);
+
       //Entity read successfully
       try (Response response = request.get();)
       {
@@ -332,6 +319,244 @@ public class ClientResponseWithEntityTest {
          }
       }
 
+   }
+
+   /**
+    * <p>
+    * According to the java doc of:
+    * <ul>
+    * <li>{@link Response#readEntity(Class)}</li>
+    * <li>{@link Response#readEntity(javax.ws.rs.core.GenericType)}</li>
+    * <li>{@link Response#readEntity(Class, Annotation[])}</li>
+    * <li>{@link Response#readEntity(javax.ws.rs.core.GenericType, Annotation[])}</li>
+    * </ul>
+    * Subsequent call to one of those methods MUST throw an {@link IllegalStateException} if the original entity input stream has already been
+    * fully consumed without buffering the entity data prior consuming.
+    * </p>
+    *
+    * @throws IOException
+    */
+   @Test
+   public void readEntity_Should_ThrowIllegalStateException_When_EntityInputStream_IsFullyConsumed() throws IOException
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //without buffering => second call to response.readEntity(Message.class)/response.readEntity(InputStream.class) => throw an IllegalStateException
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         try
+         {
+            response.readEntity(Message.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+         try
+         {
+            response.readEntity(InputStream.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+      }
+
+      //with buffering => second call to response.readEntity(Message.class)/response.readEntity(InputStream.class) => OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertTrue(response.bufferEntity());
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+      }
+   }
+
+   @Test
+   public void readEntity_Should_ThrowIllegalStateException_When_EntityInputStream_IsFullyConsumed_2() throws IOException
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //without buffering, input stream retrieved using response.getEntity() and then fully consumed => call to response.readEntity(Message.class)/response.readEntity(InputStream.class) throws an IllegalStateException
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         InputStream entityStream = (InputStream) response.getEntity();
+         //Fully consume the original response stream
+         while (entityStream.read() != -1)
+         {
+         }
+         try
+         {
+            response.readEntity(Message.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+         try
+         {
+            response.readEntity(InputStream.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+      }
+
+      //with buffering, input stream retrieved using response.getEntity() and then fully consumed => call to response.readEntity(Message.class)/response.readEntity(InputStream.class) is OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertTrue(response.bufferEntity());
+         InputStream entityStream = (InputStream) response.getEntity();
+         //Fully consumed the original response stream
+         while (entityStream.read() != -1)
+         {
+         }
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+      }
+   }
+
+   @Test
+   public void readEntity_Should_ThrowIllegalStateException_When_EntityInputStream_IsFullyConsumed_3() throws IOException
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //without buffering, input stream retrieved using response.readEntity(InputStream.class) and then fully consumed => call to response.readEntity(Message.class)/response.readEntity(InputStream.class) throws an IllegalStateException
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         InputStream entityStream = response.readEntity(InputStream.class);
+         //Fully consume the original response stream
+         while (entityStream.read() != -1)
+         {
+         }
+         try
+         {
+            response.readEntity(Message.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+         try
+         {
+            response.readEntity(InputStream.class);
+            Assert.fail("An IllegalStateException was expected.");
+         }
+         catch (Exception e)
+         {
+            Assert.assertTrue(IllegalStateException.class.isInstance(e));
+            // Following is to be sure that previous IllegalStateException is not because of closed response
+            checkResponseNotClosed(response);
+         }
+      }
+
+      //with buffering, input stream retrieved using response.readEntity(InputStream.class) and then fully consumed => call to response.readEntity(Message.class)/response.readEntity(InputStream.class) is OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertTrue(response.bufferEntity());
+         InputStream entityStream = response.readEntity(InputStream.class);
+         //Fully consumed the original response stream
+         while (entityStream.read() != -1)
+         {
+         }
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+      }
+   }
+
+   @Test
+   public void readEntity_Should_ReturnEntityInputStream_When_EntityInputStream_IsNotFullyConsumed() throws IOException
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //input stream retrieved using response.getEntity() and then partially consumed => calls to response.readEntity(InputStream.class) is OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         InputStream entityStream = (InputStream) response.getEntity();
+         Assert.assertTrue(-1 != entityStream.read());
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+      }
+
+      //input stream retrieved using response.getEntity() and not consumed => calls to response.readEntity(InputStream.class) and response.readEntity(Message.class) are OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertTrue(InputStream.class.isInstance(response.getEntity()));
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+      }
+   }
+
+   @Test
+   public void readEntity_Should_ReturnEntityInputStream_When_EntityInputStream_IsNotFullyConsumed_2() throws IOException
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //input stream retrieved using response.readEntity(InputStream.class) and then partially consumed => calls to response.readEntity(InputStream.class) is OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         InputStream entityStream = response.readEntity(InputStream.class);
+         Assert.assertTrue(-1 != entityStream.read());
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+      }
+
+      //input stream retrieved using response.readEntity(InputStream.class) and not consumed => calls to response.readEntity(InputStream.class) and response.readEntity(Message.class) are OK
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(response.hasEntity());
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+         Assert.assertTrue(InputStream.class.isInstance(response.readEntity(InputStream.class)));
+         Message entity = response.readEntity(Message.class);
+         Assert.assertEquals("Hello world", entity.message);
+      }
+   }
+
+   private void checkResponseNotClosed(Response response)
+   {
+      try
+      {
+         Assert.assertTrue(response.hasEntity());
+      }
+      catch (IllegalStateException e2)
+      {
+         Assert.fail("The response was not supposed to be closed");
+      }
    }
 
 }
