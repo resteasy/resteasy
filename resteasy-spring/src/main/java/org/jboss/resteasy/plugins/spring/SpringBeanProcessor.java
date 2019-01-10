@@ -292,7 +292,12 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    }
 
    /**
-    * process a single @Provider or a single resource.
+    * Process a single @Provider or a single resource.
+    * @param beanFactory bean factory
+    * @param dependsOnProviders dependent providers list
+    * @param name bean name
+    * @param beanDef bean definition
+    * @return bean class
     */
    protected Class<?> processBean(final ConfigurableListableBeanFactory beanFactory,
                                   List<String> dependsOnProviders, String name, BeanDefinition beanDef)
