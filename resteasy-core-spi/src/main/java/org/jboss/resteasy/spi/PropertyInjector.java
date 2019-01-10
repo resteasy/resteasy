@@ -15,6 +15,8 @@ public interface PropertyInjector
     * This method should only be used outside the scope of an HTTP request.
     *
     * @param target target object
+    * @param unwrapAsync unwrap async
+    * @return {@link CompletionStage}
     */
    CompletionStage<Void> inject(Object target, boolean unwrapAsync);
 
@@ -25,7 +27,10 @@ public interface PropertyInjector
     * @param request http request
     * @param response http response
     * @param target target object
+    * @param unwrapAsync unwrap async
+    * @return {@link CompletionStage}
     * @throws Failure if application failure occurred
+    * @throws WebApplicationException if application exception occurred
     */
    CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
 }

@@ -37,7 +37,6 @@ public interface ResteasyContextParameters {
     * Those diagnostic/tracing information are returned in response headers ({@code X-RESTEasy-Tracing-nnn}).
     * The feature should not be switched on on production environment.
     * <p>
-    * <p>
     * Allowed values:
     * <ul>
     * <li>{@code OFF} - tracing support is disabled.</li>
@@ -45,7 +44,6 @@ public interface ResteasyContextParameters {
     * <li>{@code ALL} - tracing support is enabled for every request.</li>
     * </ul>
     * Type of the property value is {@code String}. The default value is {@code "OFF"}.
-    * </p>
     * <p>
     * The name of the configuration property is <tt>{@value}</tt>.
     * </p>
@@ -61,7 +59,6 @@ public interface ResteasyContextParameters {
     * The property allows to set application default level o diagnostic information.
     * Tracing level can be changed for each request by specifying request HTTP header {@code X-RESTEasy-Tracing-Threshold}.
     * <p>
-    * <p>
     * Allowed values:
     * <ul>
     * <li>{@code SUMMARY}</li>
@@ -69,7 +66,6 @@ public interface ResteasyContextParameters {
     * <li>{@code VERBOSE}</li>
     * </ul>
     * Type of the property value is {@code String}. The default value is {@code "TRACE"}.
-    * </p>
     * <p>
     * The name of the configuration property is <tt>{@value}</tt>.
     * </p>
