@@ -42,10 +42,11 @@ public class PrefixedFormInjector extends FormInjector
    }
 
    /**
-    * Calls the super {@link #inject(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse)} method.
+    * Calls the super {@link #inject(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse, boolean)} method.
     * @param prefix prefix
     * @param request http request
     * @param response http response
+    * @param unwrapAsync unwrap async
     * @return injector instance
     */
    protected Object doInject(String prefix, HttpRequest request, HttpResponse response)

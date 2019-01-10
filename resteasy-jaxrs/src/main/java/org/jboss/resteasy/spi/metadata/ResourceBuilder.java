@@ -740,6 +740,7 @@ public class ResourceBuilder
     * Register a new {@link ResourceClassProcessor} which will be used to post-process all
     * {@link ResourceClass} instances created from the builder.
     * @param processor resource class processor
+    * @param priority processor priority
     */
    public void registerResourceClassProcessor(ResourceClassProcessor processor, int priority)
    {

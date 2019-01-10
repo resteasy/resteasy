@@ -46,7 +46,7 @@ public class ExceptionHandler
     * of exception.
     *
     * @param exception exception
-    * @return response
+    * @return response response object
     */
    @SuppressWarnings(value = "unchecked")
    public Response executeExactExceptionMapper(Throwable exception)
@@ -84,6 +84,7 @@ public class ExceptionHandler
     * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found.
     *
     * @param exception exception
+    * @param logger logger
     * @return true if an ExceptionMapper was found and executed
     */
    @SuppressWarnings(value = "unchecked")
