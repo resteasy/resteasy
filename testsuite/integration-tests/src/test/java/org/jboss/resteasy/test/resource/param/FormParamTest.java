@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.param.resource.FormParamBasicResource;
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityPrototype;
-import org.jboss.resteasy.test.resource.param.resource.FormParamEntityThrowsIllegaArgumentException;
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityWithConstructor;
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityWithFromString;
 import org.jboss.resteasy.test.resource.param.resource.FormParamResource;
@@ -47,7 +46,6 @@ public class FormParamTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(FormParamTest.class.getSimpleName());
       war.addClass(FormParamEntityPrototype.class);
-      war.addClass(FormParamEntityThrowsIllegaArgumentException.class);
       war.addClass(FormParamEntityWithConstructor.class);
       war.addClass(FormParamEntityWithFromString.class);
       return TestUtil.finishContainerPrepare(war, null, FormParamResource.class,
@@ -130,19 +128,5 @@ public class FormParamTest {
       Assert.assertEquals(ERROR_CODE, "CTS_FORMPARAM:ListConstructor", response.readEntity(String.class));
       response.close();
    }
-
-   /**
-    * @tpTestDetails Check wrong arguments, exception is excepted
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testIllegalArgumentException() {
-      Response response = client.target(generateURL("/FormParamTest/IllegalArgumentException")).request().
-            header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
-      Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-      Assert.assertEquals(ERROR_CODE, "", response.readEntity(String.class));
-      response.close();
-   }
-
 
 }

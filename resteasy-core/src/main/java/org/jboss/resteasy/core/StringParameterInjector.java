@@ -393,9 +393,13 @@ public class StringParameterInjector
 
    }
 
-   public StringParameterInjector(final Class<?> type, final Type genericType, final String paramName, final Class<?> paramType, final String defaultValue, final AccessibleObject target, final Annotation[] annotations, final ResteasyProviderFactory factory)
+   public StringParameterInjector(final Class<?> type, final Type genericType,
+                                  final String paramName, final Class<?> paramType,
+                                  final String defaultValue, final AccessibleObject target,
+                                  final Annotation[] annotations, final ResteasyProviderFactory factory)
    {
-      initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
+      initialize(type, genericType, paramName, paramType, defaultValue, target,
+              annotations, factory);
    }
 
    public boolean isCollectionOrArray()
@@ -456,7 +460,6 @@ public class StringParameterInjector
 
    }
 
-
    private boolean initialize(Annotation[] annotations, ResteasyProviderFactory factory){
 
       //No need to find any conversion mechanism if we are dealing with primitive type
@@ -466,49 +469,57 @@ public class StringParameterInjector
       }
 
       // First try to find a ParamConverter if any
-      paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
-      if (paramConverter != null)
       {
-         return true;
-      }
-
-      // Else try to find a StringParameterUnmarshaller if any
-      unmarshaller = factory.createStringParameterUnmarshaller(baseType);
-      if (unmarshaller != null)
-      {
-         unmarshaller.setAnnotations(annotations);
-         return true;
-      }
-      for (Annotation annotation : annotations)
-      {
-         StringParameterUnmarshallerBinder binder = annotation.annotationType().getAnnotation(StringParameterUnmarshallerBinder.class);
-         if (binder != null)
-         {
-            try
-            {
-               unmarshaller = binder.value().newInstance();
-            }
-            catch (InstantiationException e)
-            {
-               throw new RuntimeException(e.getCause());
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new RuntimeException(e);
-            }
-            factory.injectProperties(unmarshaller);
-            unmarshaller.setAnnotations(annotations);
+         paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
+         if (paramConverter != null) {
+            validateParamConverter(paramConverter, defaultValue);
             return true;
          }
       }
 
-      // Else try to find a RuntimeDelegate.HeaderDelegate if any
-      if (HeaderParam.class.equals(paramType) || org.jboss.resteasy.annotations.jaxrs.HeaderParam.class.equals(paramType))
+      // Else try to find a StringParameterUnmarshaller if any
       {
-         delegate = factory.getHeaderDelegate(baseType);
-         if (delegate != null)
-         {
+         unmarshaller = factory.createStringParameterUnmarshaller(baseType);
+         if (unmarshaller != null) {
+            unmarshaller.setAnnotations(annotations);
+            validateUnmarshaller(unmarshaller, defaultValue);
             return true;
+         }
+
+         for (Annotation annotation : annotations) {
+            StringParameterUnmarshallerBinder binder = annotation.annotationType().getAnnotation(StringParameterUnmarshallerBinder.class);
+            if (binder != null) {
+               try {
+                  unmarshaller = binder.value().newInstance();
+               } catch (InstantiationException e) {
+                  throw new RuntimeException(e.getCause());
+               } catch (IllegalAccessException e) {
+                  throw new RuntimeException(e);
+               }
+               factory.injectProperties(unmarshaller);
+               unmarshaller.setAnnotations(annotations);
+               validateUnmarshaller(unmarshaller, defaultValue);
+               return true;
+            }
+         }
+      }
+      // Else try to find a RuntimeDelegate.HeaderDelegate if any
+      {
+         if (HeaderParam.class.equals(paramType) || org.jboss.resteasy.annotations.jaxrs.HeaderParam.class.equals(paramType)) {
+            delegate = factory.getHeaderDelegate(baseType);
+            if (delegate != null) {
+               if (defaultValue != null) {
+                  try {
+                     delegate.fromString(defaultValue);
+                  } catch (Exception e) {
+                     throw new RuntimeException(Messages.MESSAGES.paramConverterFailed(
+                             defaultValue, type.getName(), target.toString(),
+                             delegate.getClass().getName(), e.getClass().getName(),
+                             e.getMessage()));
+                  }
+               }
+               return true;
+            }
          }
       }
 
@@ -544,6 +555,7 @@ public class StringParameterInjector
                   valueOf = fromValue;
                }
             }
+            validateBaseType(valueOf, defaultValue);
          }
       }
       catch (NoSuchMethodException e)
@@ -556,7 +568,11 @@ public class StringParameterInjector
          try
          {
             fromString = baseType.getDeclaredMethod("fromString", String.class);
-            if (Modifier.isStatic(fromString.getModifiers()) == false) fromString = null;
+            if (Modifier.isStatic(fromString.getModifiers()) == false) {
+               fromString = null;
+            } else {
+               validateBaseType(fromString, defaultValue);
+            }
          }
          catch (NoSuchMethodException ignored)
          {
@@ -564,7 +580,11 @@ public class StringParameterInjector
          try
          {
             valueOf = baseType.getDeclaredMethod("valueOf", String.class);
-            if (Modifier.isStatic(valueOf.getModifiers()) == false) valueOf = null;
+            if (Modifier.isStatic(valueOf.getModifiers()) == false) {
+               valueOf = null;
+            } else {
+               validateBaseType(valueOf, defaultValue);
+            }
          }
          catch (NoSuchMethodException ignored)
          {
@@ -586,6 +606,7 @@ public class StringParameterInjector
             if(Character.class.equals(baseType))
             {
                paramConverter = characterParamConverter;
+               validateParamConverter(paramConverter, defaultValue);
                return true;
             }
          }
@@ -759,5 +780,67 @@ public class StringParameterInjector
    protected void throwProcessingException(String message, Throwable cause)
    {
       throw new BadRequestException(message, cause);
+   }
+
+   /**
+    * Confirm the method can handle the default value without throwing
+    * and exception.
+    *
+    * @param paramConverter
+    * @param defaultValue
+    */
+   private void validateParamConverter(ParamConverter paramConverter,
+                                       String defaultValue) {
+      if (defaultValue != null) {
+         try {
+            paramConverter.fromString(defaultValue);
+         } catch (Exception e) {
+            throw new RuntimeException(Messages.MESSAGES.paramConverterFailed(
+                    defaultValue, type.getName(), target.toString(),
+                    paramConverter.getClass().getName(), e.getClass().getName(),
+                    e.getMessage()));
+         }
+      }
+   }
+
+   /**
+    * Confirm the method can handle the default value without throwing
+    * and exception.
+    *
+    * @param paramUnmarshaller
+    * @param defaultValue
+    */
+   private void validateUnmarshaller(StringParameterUnmarshaller paramUnmarshaller,
+                                     String defaultValue) {
+      if (defaultValue != null) {
+         try {
+            paramUnmarshaller.fromString(defaultValue);
+         } catch (Exception e) {
+            throw new RuntimeException(Messages.MESSAGES.unmarshallerFailed(
+                    defaultValue, type.getName(), target.toString(),
+                    paramUnmarshaller.getClass().getName(), e.getClass().getName(),
+                    e.getMessage()));
+
+         }
+      }
+   }
+
+   /**
+    * Confirm the method can handle the default value without throwing
+    * and exception.
+    *
+    * @param method
+    * @param defaultValue
+    */
+   private void validateBaseType(Method method, String defaultValue) {
+      if (defaultValue != null) {
+         try {
+            method.invoke(method.getDeclaringClass(), defaultValue);
+         } catch (Exception e) {
+            throw new RuntimeException(Messages.MESSAGES.baseTypeMethodFailed(
+                    defaultValue, type.getName(), target.toString(),
+                    method.toString(), e.getClass().getName(), e.getMessage()));
+         }
+      }
    }
 }

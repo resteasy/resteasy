@@ -52,13 +52,4 @@ public class FormParamBasicResource {
             .build();
    }
 
-   @Path(value = "/IllegalArgumentException")
-   @POST
-   @Consumes("application/x-www-form-urlencoded")
-   public Response throwWebApplicationException(
-         @DefaultValue("SortedSetFromString") @FormParam("default_argument") FormParamEntityThrowsIllegaArgumentException defaultArgument) {
-      return Response.ok().build();
-   }
-
-
 }

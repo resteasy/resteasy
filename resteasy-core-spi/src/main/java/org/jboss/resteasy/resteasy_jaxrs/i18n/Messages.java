@@ -835,4 +835,22 @@ public interface Messages
 
    @Message(id = BASE + 13, value = "Error creating array from %s")
    String errorCreatingArray(String s);
+
+   @Message(id = BASE + 1110,
+           value = "Error converting default value %s for parameter %s in method %s using param converter %s. Exception: %s : %s")
+   String paramConverterFailed(String defaultValue, String param, String method,
+                               String paramConverter, String exceptionClass,
+                               String exceptionMsg);
+
+   @Message(id = BASE + 1111,
+           value = "Error converting default value %s for parameter %s in method %s using method %s. Exception: %s : %s")
+   String baseTypeMethodFailed(String defaultValue, String param, String method,
+                               String converterMethod, String exceptionClass,
+                               String exceptionMsg);
+
+   @Message(id = BASE + 1112,
+           value = "Error converting default value %s for parameter %s in method %s using unmarshaller %s. Exception: %s : %s")
+   String unmarshallerFailed(String defaultValue, String param, String method,
+                               String converterMethod, String exceptionClass,
+                             String exceptionMsg);
 }
