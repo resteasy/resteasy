@@ -99,6 +99,7 @@ public class DecoratorMatcher
    private <T> void registerDecorators(Class<T> targetClass, HashMap<Class<?>, Annotation> meta, Annotation[] annotations) {
       for (Annotation annotation : annotations)
       {
+         Decorators decorators = annotation.annotationType().getAnnotation(Decorators.class);
          Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
          if (decorator != null && targetClass.isAssignableFrom(decorator.target()))
          {

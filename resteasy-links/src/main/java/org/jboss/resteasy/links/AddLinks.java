@@ -1,7 +1,10 @@
 package org.jboss.resteasy.links;
 
 import org.jboss.resteasy.annotations.Decorator;
+import org.jboss.resteasy.annotations.Decorators;
+import org.jboss.resteasy.links.impl.JsonLinkDecorator;
 import org.jboss.resteasy.links.impl.LinkDecorator;
+import org.jboss.resteasy.plugins.providers.jackson.DecoratedEntityContainer;
 
 import javax.xml.bind.Marshaller;
 import java.lang.annotation.Documented;
@@ -15,12 +18,16 @@ import java.lang.annotation.Target;
  * to every entity in the response. This will only inject RESTServiceDiscovery instances
  * on entities that have a field of this type, but it will be done recursively on the response's
  * entity.
+ *
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
  */
-@Target( { ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER,
-      ElementType.FIELD })
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER,
+      ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Decorator(processor = LinkDecorator.class, target = Marshaller.class)
+@Decorators(values = {
+      @Decorator(processor = LinkDecorator.class, target = Marshaller.class),
+      @Decorator(processor = JsonLinkDecorator.class, target = DecoratedEntityContainer.class)
+})
 @Documented
 public @interface AddLinks {
 }
