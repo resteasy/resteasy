@@ -1,7 +1,7 @@
 install:
  - mvn clean; java -version
 script:
- - travis_wait 60 mvn -B -Ptravis  -fae -Dserver.version=$SERVER_VERSION install
+ - travis_wait 60 mvn -B -Ptravis -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
@@ -11,11 +11,20 @@ env:
   - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
   - SERVER_VERSION=15.0.0.Final
-matrix:
+jobs:
   exclude:
     - jdk: oraclejdk11
       env: SERVER_VERSION=13.0.0.Final
-#cache:
+  include:
+    - stage: "javadoc"
+      script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
+      jdk: oraclejdk8
+      env: SERVER_VERSION=15.0.0.Final
+    - stage: "javadoc"
+      script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
+      jdk: oraclejdk11
+      env: SERVER_VERSION=15.0.0.Final
+##cache:
 # directories:
 #  - $HOME/.m2
 addons:
