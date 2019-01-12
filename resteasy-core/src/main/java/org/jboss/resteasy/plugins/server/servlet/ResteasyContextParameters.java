@@ -45,7 +45,7 @@ public interface ResteasyContextParameters {
     * </ul>
     * Type of the property value is {@code String}. The default value is {@code "OFF"}.
     * <p>
-    * The name of the configuration property is <tt>{@value}</tt>.
+    * The name of the configuration property is <code>{@value}</code>.
     * </p>
     */
    String RESTEASY_TRACING_TYPE = "resteasy.server.tracing.type";
@@ -67,7 +67,7 @@ public interface ResteasyContextParameters {
     * </ul>
     * Type of the property value is {@code String}. The default value is {@code "TRACE"}.
     * <p>
-    * The name of the configuration property is <tt>{@value}</tt>.
+    * The name of the configuration property is <code>{@value}</code>.
     * </p>
     */
    String RESTEASY_TRACING_THRESHOLD = "resteasy.server.tracing.threshold";
