@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;
@@ -43,6 +44,12 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    private boolean expandEntityReferences = false;
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
+
+   public DocumentProvider()
+   {
+      // nullary constructor so that GraalVM's native-image is able to process this file
+      this(ResteasyContext.getContextData(ResteasyConfiguration.class));
+   }
 
    public DocumentProvider(final @Context ResteasyConfiguration config)
    {
