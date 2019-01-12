@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * URI templates.
  * </p>
  * <p>
- * Suppose this resource can be accessed using the URI template <tt>/orders/{name}/{id}</tt>,
- * and your resource holds the two bean properties <tt>name</tt> and <tt>id</tt>, then your
+ * Suppose this resource can be accessed using the URI template <code>/orders/{name}/{id}</code>,
+ * and your resource holds the two bean properties <code>name</code> and <code>id</code>, then your
  * resource class should be annotated with {@link ResourceIDs @ResourceIDs({"name", "value"})}.
  * </p>
  * @author <a href="mailto:stef@epardaud.fr">Stéphane Épardaud</a>
