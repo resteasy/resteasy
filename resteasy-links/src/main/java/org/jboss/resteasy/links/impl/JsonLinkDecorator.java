@@ -2,7 +2,7 @@ package org.jboss.resteasy.links.impl;
 
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.links.AddJsonLinks;
+import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.plugins.providers.jackson.DecoratedEntityContainer;
 import org.jboss.resteasy.spi.DecoratorProcessor;
 import org.jboss.resteasy.spi.Registry;
@@ -11,10 +11,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import java.lang.annotation.Annotation;
 
-public class JsonLinkDecorator implements DecoratorProcessor<DecoratedEntityContainer, AddJsonLinks> {
+public class JsonLinkDecorator implements DecoratorProcessor<DecoratedEntityContainer, AddLinks> {
 
    @Override
-   public DecoratedEntityContainer decorate(DecoratedEntityContainer target, AddJsonLinks annotation, Class type, Annotation[] annotations, MediaType mediaType) {
+   public DecoratedEntityContainer decorate(DecoratedEntityContainer target, AddLinks annotation, Class type, Annotation[] annotations, MediaType mediaType) {
       UriInfo uriInfo = ResteasyContext.getContextData(UriInfo.class);
       ResourceMethodRegistry registry = (ResourceMethodRegistry) ResteasyContext.getContextData(Registry.class);
 
