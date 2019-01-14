@@ -20,7 +20,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import org.jboss.resteasy.links.AddJsonLinks;
+//import org.jboss.resteasy.links.AddJsonLinks;
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
@@ -41,7 +41,7 @@ public class BookStore {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResource(value = Book.class, rel = "list")
    @GET
    @Path("books")
@@ -59,7 +59,7 @@ public class BookStore {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResource(value = Book.class, pathParameters = "${title}")
    @GET
    @Path("book/{id}")
@@ -86,7 +86,7 @@ public class BookStore {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResources({
       @LinkResource(value = Book.class, rel = "comments", pathParameters = "${title}"),
       @LinkResource(value = Comment.class, rel = "list", pathParameters = "${book.title}")
@@ -99,7 +99,7 @@ public class BookStore {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResources({
       @LinkResource(value = Book.class, rel="comment-collection"),
       @LinkResource(value = Comment.class, rel="collection"),
@@ -134,7 +134,7 @@ public class BookStore {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResource(value = Comment.class, rel = "self", pathParameters = {"${book.title}", "${id}"})
    @GET
    @Path("book/{id}/comment/{cid}")

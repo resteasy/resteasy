@@ -1,6 +1,6 @@
 package org.jboss.resteasy.links.test.el;
 
-import org.jboss.resteasy.links.AddJsonLinks;
+//import org.jboss.resteasy.links.AddJsonLinks;
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.test.Book;
@@ -26,7 +26,7 @@ public class BookStoreNoPackage {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-   @AddJsonLinks
+//   @AddJsonLinks
    @LinkResource(value = Book.class, pathParameters = "${title}")
    @GET
    @Path("book/{id}")

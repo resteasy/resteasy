@@ -68,7 +68,7 @@ public class DecoratorMatcher
          Decorators decorators = decoratorAnnotation.getAnnotation(Decorators.class);
          if (decorators != null) {
             for (Decorator decorator : decorators.values()) {
-               if (target.getClass().isAssignableFrom(decorator.target())) {
+               if (decorator.target().isAssignableFrom(target.getClass())) {
                   target = doDecoration(target, type, annotations, mediaType, annotation, decorator);
                }
             }
@@ -109,9 +109,17 @@ public class DecoratorMatcher
       if (targetClass == null || annotations == null)
          return false;
       for (Annotation annotation : annotations) {
-         Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
-         if (decorator != null && targetClass.isAssignableFrom(decorator.target()))
-            return true;
+         Decorators decorators = annotation.annotationType().getAnnotation(Decorators.class);
+         if (decorators != null) {
+            for (Decorator decorator : decorators.values()) {
+               if (decorator != null && decorator.target().isAssignableFrom(targetClass))
+                  return true;
+            }
+         } else {
+            Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
+            if (decorator != null && decorator.target().isAssignableFrom(targetClass))
+               return true;
+         }
       }
       return false;
    }
