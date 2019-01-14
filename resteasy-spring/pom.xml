@@ -12,7 +12,7 @@
     <description/>
 
     <properties>
-        <version.spring>4.3.20.RELEASE</version.spring>
+        <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
     </properties>
 
     <repositories>
@@ -63,19 +63,19 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${version.spring}</version>
+            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.spring}</version>
+            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${version.spring}</version>
+            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
