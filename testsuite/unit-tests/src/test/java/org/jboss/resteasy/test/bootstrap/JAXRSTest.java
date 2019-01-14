@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.ws.rs.GET;
@@ -15,17 +16,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.jboss.logging.processor.apt.ProcessingException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class JAXRSTest
 {
 
+   //FIX port issue
    @Test
    public void testJAXRS() throws Exception
    {
@@ -59,7 +59,7 @@ public class JAXRSTest
    @Test
    public void testFailedStartJAXRS() throws Exception
    {
-      JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8081).rootPath("error")
+      JAXRS.Configuration configuration = JAXRS.Configuration.builder().host("localhost").port(8088).rootPath("error")
             .build();
       CompletionStage<Instance> instance = JAXRS.start(new ErrorApplication(), configuration);
       try
@@ -70,7 +70,6 @@ public class JAXRSTest
       {
          Assert.assertTrue("Server failed is expected", e.getMessage().indexOf("Could not find constructor") > -1);
       }
-
    }
 
    @Test
@@ -121,9 +120,10 @@ public class JAXRSTest
       Assert.assertEquals("BootStrapApi", client.target("https://localhost:8445/wantclientauth/produces/string")
             .request().get(String.class));
    }
-   
+
    @Test
-   public void testPropertyProvider() throws Exception {
+   public void testPropertyProvider() throws Exception
+   {
       TestPropertyProvider propertyProvider = new TestPropertyProvider();
       JAXRS.Configuration config = JAXRS.Configuration.builder().from((name, type) -> {
          return propertyProvider.getValue(name, type);
@@ -137,20 +137,24 @@ public class JAXRSTest
       }
    }
 
-   class TestPropertyProvider {
-      public Optional<Object> getValue(String name, Class<?> type) {
-          if (name.equals(JAXRS.Configuration.HOST))
-             return Optional.of("localhost");
-          if (name.equals(JAXRS.Configuration.PORT)) {
-             return Optional.of(8999);
-          }
-          if (name.equals(JAXRS.Configuration.ROOT_PATH)) {
-             return Optional.of("propertyProvider");
-          }
-          return Optional.empty();
+   class TestPropertyProvider
+   {
+      public Optional<Object> getValue(String name, Class<?> type)
+      {
+         if (name.equals(JAXRS.Configuration.HOST))
+            return Optional.of("localhost");
+         if (name.equals(JAXRS.Configuration.PORT))
+         {
+            return Optional.of(8999);
+         }
+         if (name.equals(JAXRS.Configuration.ROOT_PATH))
+         {
+            return Optional.of("propertyProvider");
+         }
+         return Optional.empty();
       }
    }
-   
+
    private ResteasyClient createClientWithCertificate(SSLContext sslContext, String... sniName)
    {
       ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilderImpl();

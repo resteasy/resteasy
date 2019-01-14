@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.sun.http.test;
 
 import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.junit.Assert;

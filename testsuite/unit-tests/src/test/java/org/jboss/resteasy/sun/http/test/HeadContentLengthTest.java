@@ -1,7 +1,8 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.sun.http.test;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

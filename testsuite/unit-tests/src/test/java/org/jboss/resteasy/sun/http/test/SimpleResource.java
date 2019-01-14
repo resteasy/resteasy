@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.sun.http.test;
 
 import org.jboss.logging.Logger;
 

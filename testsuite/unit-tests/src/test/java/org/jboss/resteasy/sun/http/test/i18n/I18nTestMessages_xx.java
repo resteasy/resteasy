@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.i18n;
+package org.jboss.resteasy.sun.http.test.i18n;
 
 import java.util.Locale;
 

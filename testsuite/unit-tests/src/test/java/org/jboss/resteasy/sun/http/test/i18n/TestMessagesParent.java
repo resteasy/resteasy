@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.i18n;
+package org.jboss.resteasy.sun.http.test.i18n;
 
 import org.jboss.logging.Logger;
 import org.junit.AfterClass;

@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.security;
+package org.jboss.resteasy.sun.http.test.security;
 
 import static org.jboss.resteasy.test.TestPortProvider.createProxy;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
