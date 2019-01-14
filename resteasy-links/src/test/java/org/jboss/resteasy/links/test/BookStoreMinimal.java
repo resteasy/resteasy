@@ -1,6 +1,5 @@
 package org.jboss.resteasy.links.test;
 
-//import org.jboss.resteasy.links.AddJsonLinks;
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
@@ -41,7 +40,6 @@ public class BookStoreMinimal {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-//   @AddJsonLinks
    @LinkResource(value = Book.class)
    @GET
    @Path("books")
@@ -58,7 +56,6 @@ public class BookStoreMinimal {
    }
 
    @Produces({"application/xml", "application/json"})
-//   @AddJsonLinks
    @AddLinks
    @LinkResource()
    @GET
@@ -86,7 +83,6 @@ public class BookStoreMinimal {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-//   @AddJsonLinks
    @LinkResources({
       @LinkResource(value = Book.class, rel = "comments"),
       @LinkResource(value = Comment.class)
@@ -99,7 +95,6 @@ public class BookStoreMinimal {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-//   @AddJsonLinks
    @LinkResources({
       @LinkResource(value = Book.class, rel="comment-collection"),
       @LinkResource(value = Comment.class, rel="collection"),
@@ -134,7 +129,6 @@ public class BookStoreMinimal {
 
    @Produces({"application/xml", "application/json"})
    @AddLinks
-//   @AddJsonLinks
    @LinkResource()
    @GET
    @Path("book/{id}/comment/{cid}")
