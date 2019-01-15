@@ -50,7 +50,7 @@
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.14.v20181114</version.org.eclipse.jetty>
         <version.org.eclipse.yasson>1.0.2</version.org.eclipse.yasson>
-        <version.com.github.tomakehurst.wiremock>2.10.1</version.com.github.tomakehurst.wiremock>
+        <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
         <version.org.glassfish.javax.el>3.0.1-b08</version.org.glassfish.javax.el>
         <version.org.glassfish.javax.json>1.1.2</version.org.glassfish.javax.json>
         <version.org.hibernate.hibernate-validator>5.2.4.Final</version.org.hibernate.hibernate-validator>
