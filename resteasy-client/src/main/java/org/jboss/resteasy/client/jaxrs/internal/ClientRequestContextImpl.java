@@ -235,4 +235,13 @@ public class ClientRequestContextImpl implements ClientRequestContext
    {
       return invocation.getHeaders().getHeader(name);
    }
+
+   /**
+    * exposes the client invocation for easier integration with other libraries
+    * @return the underlying client invocation
+    */
+   public ClientInvocation getInvocation()
+   {
+      return invocation;
+   }
 }
