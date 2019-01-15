@@ -28,12 +28,6 @@
   <name>MicroProfile Rest Client TCK</name>
   <packaging>jar</packaging>
 
-  <properties>
-    <version.microprofile.restclient>1.0.1</version.microprofile.restclient>
-    <version.microprofile-config>1.2</version.microprofile-config>
-    <version.wildfly-microprofile-config>1.2.1</version.wildfly-microprofile-config>
-  </properties>
-
   <dependencies>
 
     <!-- REST Client implementation-->
@@ -57,14 +51,12 @@
     <dependency>
       <groupId>org.eclipse.microprofile.config</groupId>
       <artifactId>microprofile-config-api</artifactId>
-      <version>${version.microprofile-config}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.wildfly</groupId>
-      <artifactId>wildfly-microprofile-config-implementation</artifactId>
-      <version>${version.wildfly-microprofile-config}</version>
+      <artifactId>wildfly-microprofile-config-smallrye</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -73,7 +65,6 @@
     <dependency>
       <groupId>org.eclipse.microprofile.rest.client</groupId>
       <artifactId>microprofile-rest-client-tck</artifactId>
-      <version>${version.microprofile.restclient}</version>
       <scope>test</scope>
     </dependency>
 

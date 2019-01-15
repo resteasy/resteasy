@@ -79,6 +79,7 @@
         <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.1.1.Final</version.org.wildfly.wildfly-arquillian-container-remote>
+        <version.org.wildfly.wildfly-microprofile-config-smallrye>14.0.0.Final</version.org.wildfly.wildfly-microprofile-config-smallrye>
         <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
         <version.javax.validation-api>2.0.1.Final</version.javax.validation-api>
         <version.weld.api>3.0.SP4</version.weld.api>
@@ -546,6 +547,19 @@
                 <groupId>org.eclipse.microprofile.config</groupId>
                 <artifactId>microprofile-config-api</artifactId>
                 <version>${version.microprofile.config}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.microprofile.rest.client</groupId>
+                <artifactId>microprofile-rest-client-tck</artifactId>
+                <version>${version.microprofile.restclient}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-microprofile-config-smallrye</artifactId>
+                <version>${version.org.wildfly.wildfly-microprofile-config-smallrye}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- testsuite dependencies -->
