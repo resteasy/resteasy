@@ -136,6 +136,8 @@
 
         <module-def name="com.github.fge.jackson-coreutils">
             <maven-resource group="com.github.fge" artifact="jackson-coreutils"/>
+            <maven-resource group="com.github.fge" artifact="msg-simple"/>
+            <maven-resource group="com.github.fge" artifact="btf"/>
         </module-def>
 
         <module-def name="com.github.fge.json-patch">
