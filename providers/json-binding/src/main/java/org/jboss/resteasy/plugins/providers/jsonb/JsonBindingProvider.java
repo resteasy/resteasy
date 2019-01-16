@@ -38,8 +38,8 @@ import org.jboss.resteasy.util.DelegatingOutputStream;
  * Created by rsearls on 6/26/17.
  */
 @Provider
-@Produces({"application/json", "application/*+json", "text/json", "*/*"})
-@Consumes({"application/json", "application/*+json", "text/json", "*/*"})
+@Produces({"application/json", "application/*+json", "text/json"})
+@Consumes({"application/json", "application/*+json", "text/json"})
 @Priority(Priorities.USER-100)
 public class JsonBindingProvider extends AbstractJsonBindingProvider
       implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
@@ -56,16 +56,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
-      if (disabled)
+      if (disabled || !isSupportedMediaType(mediaType) || isGenericJaxb(type, genericType))
       {
          return false;
       }
-      if (isGenericJaxb(type, genericType))
-      {
-         return false;
-      }
-      return (isSupportedMediaType(mediaType))
-            && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
+      return hasJsonBindingAnnotations(annotations) || !isJaxbClass(type);
    }
 
    @Override
@@ -115,16 +110,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-      if (disabled)
+      if (disabled || !isSupportedMediaType(mediaType) || isGenericJaxb(type, genericType))
       {
          return false;
       }
-      if (isGenericJaxb(type, genericType))
-      {
-         return false;
-      }
-      return (isSupportedMediaType(mediaType))
-            && ((hasJsonBindingAnnotations(annotations)) || (!isJaxbClass(type)));
+      return hasJsonBindingAnnotations(annotations) || !isJaxbClass(type);
    }
 
    @Override
