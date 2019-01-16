@@ -5,7 +5,7 @@ script:
 
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
   - oraclejdk11
 env:
   - SERVER_VERSION=13.0.0.Final
@@ -18,7 +18,7 @@ jobs:
   include:
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-      jdk: oraclejdk8
+      jdk: openjdk8
       env: SERVER_VERSION=15.0.0.Final
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
@@ -27,7 +27,3 @@ jobs:
 ##cache:
 # directories:
 #  - $HOME/.m2
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
