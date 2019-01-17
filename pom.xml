@@ -25,7 +25,8 @@
         <modular.jdk.args/>
         <!-- maven-enforcer-plugin -->
         <maven.min.version>3.2.5</maven.min.version>
-        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <jdk.min.version>${maven.compiler.release}</jdk.min.version>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>-Xms512m -Xmx512m ${modular.jdk.args}</surefire.system.args>
         <!-- Plugins versions -->

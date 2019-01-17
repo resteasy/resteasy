@@ -5,25 +5,13 @@ script:
 
 language: java
 jdk:
-  - openjdk8
   - oraclejdk11
 env:
-  - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
   - SERVER_VERSION=15.0.0.Final
 jobs:
-  exclude:
-    - jdk: oraclejdk11
-      env: SERVER_VERSION=13.0.0.Final
   include:
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-      jdk: openjdk8
+      jdk: oraclejdk11
       env: SERVER_VERSION=15.0.0.Final
-#    - stage: "javadoc"
-#      script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-#      jdk: oraclejdk11
-#      env: SERVER_VERSION=15.0.0.Final
-##cache:
-# directories:
-#  - $HOME/.m2
