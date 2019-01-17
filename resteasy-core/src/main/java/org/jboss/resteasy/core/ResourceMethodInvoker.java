@@ -9,6 +9,7 @@ import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
@@ -489,7 +490,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             Response r = (Response)rtn;
             Headers<Object> metadata = new Headers<Object>();
             metadata.putAll(r.getMetadata());
-            rtn = new BuiltResponse(r.getStatus(), r.getStatusInfo().getReasonPhrase(), metadata, r.getEntity(), null);
+            rtn = new BuiltResponseEntityNotBacked(r.getStatus(), r.getStatusInfo().getReasonPhrase(),
+                    metadata, r.getEntity(), null);
          }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
          rtn1.addMethodAnnotations(getMethodAnnotations());
