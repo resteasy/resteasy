@@ -4,12 +4,16 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+import org.jboss.resteasy.test.client.proxy.resource.ProxyParameterAnotations;
+import org.jboss.resteasy.test.client.proxy.resource.ProxyParameterAnotationsResource;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicCustomValuesResource;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicJaxRsParamDifferentResource;
 import org.jboss.resteasy.test.resource.param.resource.RESTEasyParamBasicJaxRsParamSameResource;
@@ -26,6 +30,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @tpSubChapter Parameters
@@ -47,6 +54,7 @@ public class RESTEasyParamBasicTest {
       war.addClass(RESTEasyParamBasicProxy.class);
       return TestUtil.finishContainerPrepare(war, null,
             RESTEasyParamBasicResource.class,
+            ProxyParameterAnotationsResource.class,
             RESTEasyParamBasicJaxRsParamDifferentResource.class,
             RESTEasyParamBasicJaxRsParamSameResource.class,
             RESTEasyParamBasicCustomValuesResource.class,
@@ -66,6 +74,59 @@ public class RESTEasyParamBasicTest {
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, RESTEasyParamBasicTest.class.getSimpleName());
    }
+
+   /**
+    * @tpTestDetails Basic check of new query parameters, matrix parameters, header parameters, cookie parameters and form parameters in proxy clients
+    *                Test checks that RESTEasy can inject correct values to method attributes in proxy clients
+    *                This test uses new annotations without any annotation value in the proxy, however the annotation values are used in the server side resource.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void proxyClientAllParamsTest() throws MalformedURLException {
+      final String url = generateURL("");
+      final String parameterValue = "parameterValue";
+      ProxyParameterAnotations proxy = new ResteasyClientBuilderImpl().build().target(url).proxy(ProxyParameterAnotations.class);
+
+      String response = proxy.executeQueryParam(parameterValue);
+      Assert.assertEquals("QueryParam = "+parameterValue, response);
+
+      response = proxy.executeHeaderParam(parameterValue);
+      Assert.assertEquals("HeaderParam = "+parameterValue, response);
+
+      response = proxy.executeCookieParam(parameterValue);
+      Assert.assertEquals("CookieParam = "+parameterValue, response);
+
+      response = proxy.executePathParam(parameterValue);
+      Assert.assertEquals("PathParam = "+parameterValue, response);
+
+      response = proxy.executeFormParam(parameterValue);
+      Assert.assertEquals("FormParam = "+parameterValue, response);
+
+      response = proxy.executeMatrixParam(parameterValue);
+      Assert.assertEquals("MatrixParam = "+parameterValue, response);
+
+      //AllAtOnce with RestEasy client
+      response = proxy.executeAllParams(
+              "queryParam0",
+              "headerParam0",
+              "cookieParam0",
+              "pathParam0",
+              "formParam0",
+              "matrixParam0");
+      Assert.assertEquals("queryParam0 headerParam0 cookieParam0 pathParam0 formParam0 matrixParam0", response);
+
+      //AllAtOnce with MicroProfile client
+      ProxyParameterAnotations mpRestClient = RestClientBuilder.newBuilder().baseUrl(new URL(url)).build(ProxyParameterAnotations.class);
+      response = mpRestClient.executeAllParams(
+              "queryParam0",
+              "headerParam0",
+              "cookieParam0",
+              "pathParam0",
+              "formParam0",
+              "matrixParam0");
+      Assert.assertEquals("queryParam0 headerParam0 cookieParam0 pathParam0 formParam0 matrixParam0", response);
+   }
+
 
    /**
     * @tpTestDetails Basic check of new query parameters, matrix parameters, header parameters, cookie parameters and form parameters
