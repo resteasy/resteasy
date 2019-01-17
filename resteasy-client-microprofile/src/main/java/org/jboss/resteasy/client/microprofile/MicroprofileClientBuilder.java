@@ -207,8 +207,12 @@ class MicroprofileClientBuilder implements RestClientBuilder {
          Map<String, Object> paramMap = new HashMap<>();
          for (Parameter p : method.getParameters()) {
             PathParam pathParam = p.getAnnotation(PathParam.class);
+            org.jboss.resteasy.annotations.jaxrs.PathParam pathParam2 = p.getAnnotation(org.jboss.resteasy.annotations.jaxrs.PathParam.class);
             if (pathParam != null) {
                paramMap.put(pathParam.value(), "foobar");
+            } else if (pathParam2 != null) {
+               paramMap.put((pathParam2.value() != null && pathParam2.value().length() > 0) ?
+                               pathParam2.value() : p.getName(), "foobar");
             }
          }
 

@@ -44,11 +44,11 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    protected HashMap<Long, Method> getterHashes = new HashMap<Long, Method>();
    protected Class clazz;
 
-   public FormProcessor(final Class clazz, final ClientConfiguration configuration)
+   public FormProcessor(final Class clazz, final ClientConfiguration configuration, final String defaultFormName)
    {
       this.clazz = clazz;
 
-      populateMap(clazz, configuration);
+      populateMap(clazz, configuration, defaultFormName);
    }
 
    public static long methodHash(Method method)
@@ -128,7 +128,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
       }
    }
 
-   protected void populateMap(Class clazz, ClientConfiguration configuration)
+   protected void populateMap(Class clazz, ClientConfiguration configuration, String defaultFormName)
    {
       for (Field field : clazz.getDeclaredFields())
       {
@@ -138,7 +138,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
          Type genericType = field.getGenericType();
 
          Object processor = ProcessorFactory.createProcessor(
-                 clazz, configuration, type, annotations, genericType, field, true);
+                 clazz, defaultFormName, configuration, type, annotations, genericType, field, true);
          if (processor != null)
          {
             if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
@@ -158,7 +158,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
          Type genericType = method.getGenericReturnType();
 
          Object processor = ProcessorFactory
-                 .createProcessor(clazz, configuration, type, annotations,
+                 .createProcessor(clazz, defaultFormName, configuration, type, annotations,
                          genericType, method, true);
          if (processor != null)
          {
@@ -184,7 +184,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
 
       }
       if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class))
-         populateMap(clazz.getSuperclass(), configuration);
+         populateMap(clazz.getSuperclass(), configuration, defaultFormName);
 
 
    }
