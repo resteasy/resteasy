@@ -32,6 +32,7 @@
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
         <version.surefire.plugin>2.19.1</version.surefire.plugin>
+        <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -258,6 +259,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${version.javadoc.plugin}</version>
                     <configuration>
+                        <source>8</source>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>
                         <quiet>false</quiet>
