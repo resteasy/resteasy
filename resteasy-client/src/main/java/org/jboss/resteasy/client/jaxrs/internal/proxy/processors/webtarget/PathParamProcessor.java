@@ -20,7 +20,7 @@ public class PathParamProcessor implements WebTargetProcessor
    protected final Annotation[] annotations;
    protected final ClientConfiguration configuration;
 
-   public PathParamProcessor(final String paramName, final boolean isEncoded, final Type genericType, final Annotation[] annotations, final ClientConfiguration clientConfiguration)
+   public PathParamProcessor(final String paramName, final Type genericType, final Annotation[] annotations, final ClientConfiguration clientConfiguration, final boolean isEncoded)
    {
       this.paramName = paramName;
       this.isEncoded = isEncoded;
