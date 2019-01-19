@@ -20,10 +20,10 @@ jobs:
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
       jdk: openjdk8
       env: SERVER_VERSION=15.0.0.Final
-#    - stage: "javadoc"
-#      script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-#      jdk: oraclejdk11
-#      env: SERVER_VERSION=15.0.0.Final
+    - stage: "javadoc"
+      script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
+      jdk: oraclejdk11
+      env: SERVER_VERSION=15.0.0.Final
 ##cache:
 # directories:
 #  - $HOME/.m2
