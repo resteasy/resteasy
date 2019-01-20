@@ -41,7 +41,6 @@
                 <include>org.jboss.resteasy:resteasy-client</include>
                 <include>org.jboss.resteasy:resteasy-servlet-initializer</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
-                <include>org.jboss.resteasy:resteasy-jettison-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
                 <include>org.jboss.resteasy:resteasy-atom-provider</include>
                 <include>org.jboss.resteasy:resteasy-multipart-provider</include>

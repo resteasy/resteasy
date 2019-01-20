@@ -41,24 +41,10 @@ public class JacksonJaxbCoexistenceTest {
 
    static ResteasyClient client;
    protected static final Logger logger = Logger.getLogger(JacksonJaxbCoexistenceTest.class.getName());
-   private static final String JETTISON_DEPLOYMENT = "jettison";
 
    @Deployment(name = "default")
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(JacksonJaxbCoexistenceTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, JacksonJaxbCoexistenceJacksonResource.class,
-            JacksonJaxbCoexistenceJacksonXmlResource.class, JacksonJaxbCoexistenceXmlResource.class,
-            JacksonJaxbCoexistenceProduct2.class,
-            JacksonJaxbCoexistenceXmlProduct.class);
-   }
-
-   /**
-    * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
-    */
-   @Deployment(name = "jettison")
-   public static Archive<?> deployJettison() {
-      WebArchive war = TestUtil.prepareArchive(JETTISON_DEPLOYMENT);
-      war.addAsManifestResource("jboss-deployment-structure-jackson-v2-jettison.xml", "jboss-deployment-structure.xml");
       return TestUtil.finishContainerPrepare(war, null, JacksonJaxbCoexistenceJacksonResource.class,
             JacksonJaxbCoexistenceJacksonXmlResource.class, JacksonJaxbCoexistenceXmlResource.class,
             JacksonJaxbCoexistenceProduct2.class,
@@ -132,29 +118,6 @@ public class JacksonJaxbCoexistenceTest {
       Assert.assertEquals("The response entity content doesn't match the expected",
             "[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity);
       response.close();
-   }
-
-   /**
-    * @tpTestDetails Test that Jettison is picked
-    * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
-    * @tpSince RESTEasy 3.0.16
-    */
-   @Test
-   public void testXmlString() throws Exception {
-      WebTarget target = client.target(PortProviderUtil.generateURL("/xml/products/333", JETTISON_DEPLOYMENT));
-      Response response = target.request().get();
-      String entity = response.readEntity(String.class);
-      logger.info(entity);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2856"), HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertTrue(entity.startsWith("{\"product"));
-      response.close();
-
-      target = client.target(PortProviderUtil.generateURL("/xml/products", JETTISON_DEPLOYMENT));
-      response = target.request().get();
-      entity = response.readEntity(String.class);
-      logger.info(entity);
-      Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2856"), HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertTrue(entity.startsWith("[{\"product"));
    }
 
    /**
