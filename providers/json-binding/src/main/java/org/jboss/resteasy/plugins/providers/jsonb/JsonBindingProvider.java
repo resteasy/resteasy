@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
@@ -20,18 +18,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
-import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
 /**
@@ -56,11 +48,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
-      if (disabled || !isSupportedMediaType(mediaType) || isGenericJaxb(type, genericType))
+      if (disabled || !isSupportedMediaType(mediaType))
       {
          return false;
       }
-      return hasJsonBindingAnnotations(annotations) || !isJaxbClass(type);
+      return hasJsonBindingAnnotations(annotations) || isSupportedMediaType(mediaType);
    }
 
    @Override
@@ -110,11 +102,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-      if (disabled || !isSupportedMediaType(mediaType) || isGenericJaxb(type, genericType))
+      if (disabled || !isSupportedMediaType(mediaType))
       {
          return false;
       }
-      return hasJsonBindingAnnotations(annotations) || !isJaxbClass(type);
+      return hasJsonBindingAnnotations(annotations) || isSupportedMediaType(mediaType);
    }
 
    @Override
@@ -146,46 +138,6 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
          throw new ProcessingException(Messages.MESSAGES.jsonBSerializationError(e.toString()), e);
       }
    }
-
-   private boolean isGenericJaxb(Class<?> type, Type genericType)
-   {
-      if (Map.class.isAssignableFrom(type) && genericType != null)
-      {
-         Class<?> valueType = Types.getMapValueType(genericType);
-         if (valueType != null && isJaxbClass(valueType))
-         {
-            return true;
-         }
-      }
-
-      if ((Collection.class.isAssignableFrom(type) || type.isArray()) && genericType != null)
-      {
-         Class<?> baseType = Types.getCollectionBaseType(type, genericType);
-         if (baseType != null && isJaxbClass(baseType))
-         {
-            return true;
-         }
-      }
-      return false;
-   }
-
-   private boolean isJaxbClass(Class<?> classType)
-   {
-      if (JAXBElement.class.equals(classType))
-      {
-         return true;
-      }
-      for (Annotation a : classType.getAnnotations()) {
-         Class<? extends Annotation> c = a.annotationType();
-         if (c.equals(XmlRootElement.class) || c.equals(XmlType.class) ||c.equals(XmlJavaTypeAdapter.class) ||c.equals(XmlSeeAlso.class))
-         {
-            return true;
-         }
-      }
-      return false;
-
-   }
-
    private static boolean hasJsonBindingAnnotations(Annotation[] searchList)
    {
       if (searchList != null) {
