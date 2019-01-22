@@ -77,7 +77,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    /**
     * Set the default executor class name.
     *
-    * @param classname
+    * @param classname Class name
     */
    public static void setDefaultExecutorClass(String classname)
    {
@@ -479,8 +479,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    /**
     * Tries to automatically unmarshal to target type.
     *
-    * @param returnType
-    * @param <T>
+    * @param returnType Return type
     * @return
     * @throws Exception
     */

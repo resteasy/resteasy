@@ -9,7 +9,7 @@ import rx.Subscriber;
 import rx.functions.Func1;
 
 /**
- * @deprecated:
+ * Deprecated:
  *
  *   "RxJava 1.x is now officially end-of-life (EOL). No further developments,
  *    bugfixes, enhancements, javadoc changes or maintenance will be provided by

@@ -84,7 +84,6 @@ public class ExceptionHandler
     * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found.
     *
     * @param exception exception
-    * @param logger logger
     * @return true if an ExceptionMapper was found and executed
     */
    @SuppressWarnings(value = "unchecked")
