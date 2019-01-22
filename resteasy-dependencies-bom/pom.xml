@@ -92,6 +92,7 @@
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
         <version.org.hibernate.validator>6.0.14.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
+        <version.rest-assured>3.3.0</version.rest-assured>
     </properties>
 
     <distributionManagement>
@@ -402,6 +403,12 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${version.rest-assured}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

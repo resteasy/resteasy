@@ -24,6 +24,7 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
 /**
@@ -36,13 +37,22 @@ import org.jboss.resteasy.util.DelegatingOutputStream;
 public class JsonBindingProvider extends AbstractJsonBindingProvider
       implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
-   private final boolean disabled;
+   private boolean disabled;
 
    public JsonBindingProvider() {
       super();
       ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
             || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+      ResteasyProviderFactory providerFactory = ResteasyContext.getContextData(ResteasyProviderFactory.class);
+      if (context == null && providerFactory != null)
+      {
+         Object config = providerFactory.getProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
+         if (config != null)
+         {
+            disabled = Boolean.parseBoolean(config.toString());
+         }
+      }
    }
 
    @Override
