@@ -5,6 +5,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveResource;
 import org.jboss.resteasy.test.resource.param.resource.QueryParamAsPrimitiveResourceArray;
@@ -298,6 +300,24 @@ public class QueryParamAsPrimitiveTest {
       resourceQueryPrimitiveList.doGetByte(list);
       byte[] array = {(byte) 127, (byte) 127, (byte) 127};
       resourceQueryPrimitiveArray.doGetByte(array);
+   }
+
+   @Test(timeout = 5000)
+   public void testProxyClientGetByte() {
+      final int size = 30000;
+      byte[] array = new byte[size];
+      //Test bigger sizes
+      for (int i = 0; i < size; i++) {
+         array[i] = (byte) 127;
+      }
+
+      for (int i = 0; i < 5; i++) {
+         try {
+            resourceQueryPrimitiveArray.doPostByte(array);
+         } catch (BadRequestException | ProcessingException e) {
+            // expected
+         }
+      }
    }
 
    /**

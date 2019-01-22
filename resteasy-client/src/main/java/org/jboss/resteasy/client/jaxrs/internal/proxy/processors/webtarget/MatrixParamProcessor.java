@@ -25,9 +25,9 @@ public class MatrixParamProcessor extends AbstractWebTargetCollectionProcessor
    }
 
    @Override
-   protected WebTarget apply(WebTarget target, Object object)
+   protected WebTarget apply(WebTarget target, Object... objects)
    {
-      return target.matrixParam(paramName, object);
+      return target.matrixParam(paramName, objects);
    }
 
 }

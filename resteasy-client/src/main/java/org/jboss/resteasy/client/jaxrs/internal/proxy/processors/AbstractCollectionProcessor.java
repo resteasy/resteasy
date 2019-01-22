@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
@@ -32,7 +33,7 @@ public abstract class AbstractCollectionProcessor<T>
       this.config = config;
    }
 
-   protected abstract T apply(T target, Object object);
+   protected abstract T apply(T target, Object... objects);
 
    @SuppressWarnings("unchecked")
    public T buildIt(T target, Object object)
@@ -50,10 +51,7 @@ public abstract class AbstractCollectionProcessor<T>
             }
             else
             {
-               for (Object obj : (Collection<?>) object)
-               {
-                  target = apply(target, obj);
-               }
+               target = apply(target,  ((Collection<?>) object).toArray());
             }
          }
       }
@@ -65,46 +63,10 @@ public abstract class AbstractCollectionProcessor<T>
             object = paramConverter.toString(object);
             target = apply(target, object);
          }
-         else if (object.getClass().getComponentType().isPrimitive())
-         {
-            Class<?> componentType = object.getClass().getComponentType();
-            if (componentType.equals(boolean.class))
-            {
-               for (boolean bool : (boolean[]) object) target = apply(target, bool);
-            }
-            else if (componentType.equals(byte.class))
-            {
-               for (byte val : (byte[]) object) target = apply(target, val);
-            }
-            else if (componentType.equals(short.class))
-            {
-               for (short val : (short[]) object) target = apply(target, val);
-            }
-            else if (componentType.equals(int.class))
-            {
-               for (int val : (int[]) object) target = apply(target, val);
-            }
-            else if (componentType.equals(long.class))
-            {
-               for (long val : (long[]) object) target = apply(target, val);
-            }
-            else if (componentType.equals(float.class))
-            {
-               for (float val : (float[]) object) target = apply(target, val);
-            }
-            else if (componentType.equals(double.class))
-            {
-               for (double val : (double[]) object) target = apply(target, val);
-            }
-         }
          else
          {
-            Object[] objs = (Object[]) object;
-            for (Object obj : objs)
-            {
-               target = apply(target, obj);
-
-            }
+            Object[] arr = convertToObjectsArray(object);
+            target = apply(target, arr);
          }
       }
       else
@@ -112,5 +74,19 @@ public abstract class AbstractCollectionProcessor<T>
          target = apply(target, object);
       }
       return target;
+   }
+
+   private static Object[] convertToObjectsArray(Object array) {
+      if(array instanceof Object[])
+         return (Object[]) array;
+
+      int length = Array.getLength(array);
+
+      Object[] objects = new Object[length];
+      for (int i = 0; i < length; i++) {
+          objects[i] = Array.get(array, i);
+      }
+
+      return objects;
    }
 }
