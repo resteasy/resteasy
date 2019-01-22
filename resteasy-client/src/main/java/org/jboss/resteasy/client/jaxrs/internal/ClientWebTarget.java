@@ -310,6 +310,12 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (name == null) throw new NullPointerException(Messages.MESSAGES.nameWasNull());
+
+      //The whole array can be represented as one object, so we need to cast it to array of objects
+      if (values.length == 1 && values[0].getClass().isArray() && !values[0].getClass().getComponentType().isPrimitive()) {
+         values = (Object[]) values[0];
+      }
+
       String[] stringValues = toStringValues(values);
       ResteasyUriBuilder copy;
       if (uriBuilder instanceof ResteasyUriBuilder) {
@@ -317,10 +323,8 @@ public class ClientWebTarget implements ResteasyWebTarget
       } else {
          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
-      for (String obj : stringValues)
-      {
-         copy.clientQueryParam(name, obj);
-      }
+
+      copy.clientQueryParam(name, stringValues);
       return  newInstance(client, copy, configuration);
    }
 
