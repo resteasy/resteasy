@@ -1357,6 +1357,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    /**
     * Add a {@link ClientErrorInterceptor} to this provider factory instance.
     * Duplicate handlers are ignored. (For Client Proxy API only)
+    * @param handler ClientErrorInterceptor handler
     */
    public void addClientErrorInterceptor(ClientErrorInterceptor handler)
    {
@@ -1373,6 +1374,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    /**
     * Return the list of currently registered {@link ClientErrorInterceptor} instances.
+    *
+    * @return List of {@link ClientErrorInterceptor} instances
     */
    public List<ClientErrorInterceptor> getClientErrorInterceptors()
    {
