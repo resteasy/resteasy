@@ -2,13 +2,18 @@ package org.jboss.resteasy.test.validation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
+import io.restassured.path.json.JsonPath;
+
 import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLClassValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFoo;
@@ -16,6 +21,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationXMLFooConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFooReaderWriter;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -30,7 +36,10 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 
 /**
@@ -51,12 +60,17 @@ public class ValidationXMLTest {
       WebArchive war = TestUtil.prepareArchive(ValidationXMLTest.class.getSimpleName())
             .addClasses(ValidationXMLFoo.class, ValidationXMLFooValidator.class, ValidationXMLFooConstraint.class,
                   ValidationXMLClassValidator.class, ValidationXMLClassConstraint.class);
-      return TestUtil.finishContainerPrepare(war, null, ValidationXMLFooReaderWriter.class, ValidationXMLResourceWithAllFivePotentialViolations.class);
+      Map<String, String> contextParams = new HashMap<>();
+      contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+      return TestUtil.finishContainerPrepare(war, contextParams, ValidationXMLFooReaderWriter.class, ValidationXMLResourceWithAllFivePotentialViolations.class);
    }
 
    @Before
    public void init() {
-      client = (ResteasyClient)ClientBuilder.newClient().register(ValidationXMLFooReaderWriter.class);
+      ClientBuilder builder = ClientBuilder.newBuilder();
+      builder.property(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, true);
+      builder.register(ValidationXMLFooReaderWriter.class);
+      client = (ResteasyClient)builder.build();
    }
 
    @After
@@ -254,26 +268,22 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
-         String start = "{\"exception\":null,\"fieldViolations\":[";
-         String fieldViolation1 = "{\"constraintType\":\"FIELD\",\"path\":\"s\",\"message\":\"size must be between 2 and 4\",\"value\":\"a\"}";
-         String fieldViolation2 = "{\"constraintType\":\"FIELD\",\"path\":\"t\",\"message\":\"size must be between 2 and 4\",\"value\":\"b\"}";
-         String propertyViolation = "\"propertyViolations\":[{\"constraintType\":\"PROPERTY\",\"path\":\"u\",\"message\":\"size must be between 3 and 5\",\"value\":\"c\"}]";
-         String classViolationStart = "\"classViolations\":[{\"constraintType\":\"CLASS\",\"path\":\"\",\"message\":\"Concatenation of s and u must have length > 5\",\"value\":\"org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@";
-         String classViolationEnd = "}]";
-         String parameterViolationP1 = "\"parameterViolations\":[{\"constraintType\":\"PARAMETER\",\"path\":\"post.";
-         String parameterViolationP2 = "\",\"message\":\"s must have length: 3 <= length <= 5\",\"value\":\"ValidationXMLFoo[p]\"}]";
-         String returnValueViolation = "\"returnValueViolations\":[]";
-         String end = "}";
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(start));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation1));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation2));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationStart));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationEnd));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP1));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP2));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(returnValueViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(end));
+         JsonPath jsonPath = new JsonPath(entity);
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.path"), Matchers.hasItems("s", "t"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.value"), Matchers.hasItems("a", "b"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.message"), Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4"));
+
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("u"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItem("c"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItem("size must be between 3 and 5"));
+
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.path"), Matchers.hasItem(""));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations.message"), Matchers.hasItem("Concatenation of s and u must have length > 5"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path"), Matchers.hasSize(1));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.path", String.class).get(0), Matchers.startsWith("post."));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.message"), Matchers.hasItem("s must have length: 3 <= length <= 5"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations.value"), Matchers.hasItem("ValidationXMLFoo[p]"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations"), Matchers.hasSize(0));
          response.close();
       }
 
@@ -320,18 +330,16 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
-         String start = "\"exception\":null";
-         String fieldViolation = "\"fieldViolations\":[]";
-         String propertyViolation = "\"propertyViolations\":[]";
-         String classViolation = "\"classViolations\":[]";
-         String parameterViolation = "\"parameterViolations\":[],";
-         String returnValueViolation = "\"returnValueViolations\":[{\"constraintType\":\"RETURN_VALUE\",\"path\":\"post.<return value>\",\"message\":\"s must have length: 4 <= length <= 5\",\"value\":\"ValidationXMLFoo[123]\"";
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(start));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolation));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(returnValueViolation));
+         JsonPath jsonPath = new JsonPath(entity);
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations"), Matchers.hasSize(0));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations"), Matchers.hasSize(0));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations"), Matchers.hasSize(0));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations"), Matchers.hasSize(0));
+
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.constraintType"), Matchers.hasItem("RETURN_VALUE"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.path"), Matchers.hasItem("post.<return value>"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.message"), Matchers.hasItem("s must have length: 4 <= length <= 5"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("returnValueViolations.value"), Matchers.hasItem("ValidationXMLFoo[123]"));
          response.close();
       }
 
