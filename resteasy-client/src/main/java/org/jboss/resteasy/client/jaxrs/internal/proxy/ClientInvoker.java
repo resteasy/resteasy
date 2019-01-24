@@ -114,15 +114,15 @@ public class ClientInvoker implements MethodInvoker
 
    protected Object invokeAsync(final Object[] args)
    {
-      ClientInvocationBuilder builder = (ClientInvocationBuilder) webTarget.request();
-      ClientInvocation request = createRequest(args);
-      builder.setInvocation(request);
+      ClientInvocationBuilder requestBuilder = createRequest(args);
+      ClientInvocation request = (ClientInvocation) requestBuilder.build(httpMethod);
+      requestBuilder.setInvocation(request);
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
       {
          executor = webTarget.getResteasyClient().asyncInvocationExecutor();
       }
-      RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
+      RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(requestBuilder, executor);
       Type type = method.getGenericReturnType();
       if (type instanceof ParameterizedType)
       {
@@ -144,13 +144,16 @@ public class ClientInvoker implements MethodInvoker
 
    protected Object invokeSync(Object[] args)
    {
-      ClientInvocation request = createRequest(args);
-      ClientResponse response = (ClientResponse)request.invoke();
+      ClientInvocationBuilder requestBuilder = createRequest(args);
+      ClientInvocation request = (ClientInvocation)requestBuilder.build(httpMethod);
+      request.setClientInvoker(this);
+
+      ClientResponse response = request.invoke();
       ClientContext context = new ClientContext(request, response, entityExtractorFactory);
       return extractor.extractEntity(context);
    }
 
-   protected ClientInvocation createRequest(Object[] args)
+   protected ClientInvocationBuilder createRequest(Object[] args)
    {
       WebTarget target = this.webTarget;
       for (int i = 0; i < processors.length; i++)
@@ -182,9 +185,7 @@ public class ClientInvoker implements MethodInvoker
 
          }
       }
-      ClientInvocation clientInvocation = (ClientInvocation)builder.build(httpMethod);
-      clientInvocation.setClientInvoker(this);
-      return clientInvocation;
+      return builder;
    }
 
    public String getHttpMethod()
