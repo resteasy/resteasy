@@ -24,11 +24,9 @@ public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
    }
 
    @Override
-   protected ClientInvocation apply(ClientInvocation invocation, Object... objects)
+   protected ClientInvocation apply(ClientInvocation invocation, Object object)
    {
-      for (Object object : objects) {
-         invocation.getHeaders().header(paramName, object);
-      }
+      invocation.getHeaders().header(paramName, object);
       return invocation;
    }
 

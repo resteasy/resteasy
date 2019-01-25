@@ -25,10 +25,10 @@ public class QueryParamProcessor extends AbstractWebTargetCollectionProcessor
    }
 
    @Override
-   protected WebTarget apply(WebTarget target, Object... objects)
+   protected WebTarget apply(WebTarget target, Object object)
    {
       ResteasyWebTarget t = (ResteasyWebTarget)target;
-      return t.queryParamNoTemplate(paramName, objects);
+      return t.queryParamNoTemplate(paramName, object);
    }
 
 

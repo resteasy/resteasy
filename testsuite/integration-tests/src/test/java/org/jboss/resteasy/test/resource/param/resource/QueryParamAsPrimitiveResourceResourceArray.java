@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -15,11 +14,6 @@ public interface QueryParamAsPrimitiveResourceResourceArray {
    @GET
    @Produces("application/byte")
    String doGetByte(@QueryParam("byte") byte[] v);
-
-   @POST
-   @Path("/non/existing/end/point")
-   @Produces("application/byte")
-   String doPostByte(@QueryParam("byte") byte[] v);
 
    @GET
    @Produces("application/short")

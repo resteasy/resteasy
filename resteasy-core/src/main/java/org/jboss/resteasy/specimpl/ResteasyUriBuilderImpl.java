@@ -905,50 +905,28 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
     * @return Returns this instance to allow call chaining.
     */
    @Override
-   public UriBuilder clientQueryParam(String name, Object... values) throws IllegalArgumentException
+   public UriBuilder clientQueryParam(String name, Object value) throws IllegalArgumentException
    {
-      StringBuilder sb = new StringBuilder();
-      String prefix = "";
-      if (query == null) query = "";
-      else {
-         sb.append(query).append("&");
-      }
-
       if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
-      if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
-      for (Object value : values)
-      {
-         if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
-         sb.append(prefix);
-         prefix = "&";
-         sb.append(Encode.encodeQueryParamAsIs(name)).append("=").append(Encode.encodeQueryParamAsIs(value.toString()));
-      }
-
-      query = sb.toString();
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
+      if (query == null) query = "";
+      else query += "&";
+      query += Encode.encodeQueryParamAsIs(name) + "=" + Encode.encodeQueryParamAsIs(value.toString());
       return this;
    }
 
    @Override
    public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
    {
-      StringBuilder sb = new StringBuilder();
-      String prefix = "";
-      if (query == null) query = "";
-      else {
-         sb.append(query).append("&");
-      }
-
       if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
       if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
       for (Object value : values)
       {
          if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
-         sb.append(prefix);
-         prefix = "&";
-         sb.append(Encode.encodeQueryParam(name)).append("=").append(Encode.encodeQueryParam(value.toString()));
+         if (query == null) query = "";
+         else query += "&";
+         query += Encode.encodeQueryParam(name) + "=" + Encode.encodeQueryParam(value.toString());
       }
-
-      query = sb.toString();
       return this;
    }
 

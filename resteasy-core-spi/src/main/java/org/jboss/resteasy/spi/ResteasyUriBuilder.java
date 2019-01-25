@@ -120,7 +120,7 @@ public abstract class ResteasyUriBuilder extends UriBuilder
     * @param value the value of the query parameter.
     * @return Returns this instance to allow call chaining.
     */
-   public abstract UriBuilder clientQueryParam(String name, Object... values) throws IllegalArgumentException;
+   public abstract UriBuilder clientQueryParam(String name, Object value) throws IllegalArgumentException;
 
    public abstract String getHost();
 
