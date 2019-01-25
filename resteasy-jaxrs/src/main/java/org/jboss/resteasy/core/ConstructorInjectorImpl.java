@@ -10,8 +10,6 @@ import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.ConstructorParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.NotFoundException;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -118,44 +116,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          {
             throw (WebApplicationException) cause;
          }
-
-         boolean is400Error = false;
-         boolean is404Error = false;
-         if (params == null)
-         {
-            throw new ApplicationException(Messages.MESSAGES.failedToConstruct(
-                    constructor.toString()), e.getCause());
-         } else
-         {
-            for (ValueInjector extractor : params) {
-               if (extractor instanceof CookieParamInjector
-                       || extractor instanceof HeaderParamInjector) {
-                  is400Error = true;
-               } else if (extractor instanceof PathParamInjector
-                       || extractor instanceof QueryParamInjector
-                       || extractor instanceof MatrixParamInjector) {
-                  is404Error = true;
-               }
-            }
-
-            if (is400Error && is404Error) {
-               // input params of mixed of annotation types.  It can not be determined
-               // if the issue is a 400 or 404 error.  Default to 400 error
-               throw new BadRequestException(Messages.MESSAGES.failedToConstruct(
-                       constructor.toString()), e.getCause());
-            } else if (is400Error) {
-               throw new BadRequestException(Messages.MESSAGES.failedToConstruct(
-                       constructor.toString()), e.getCause());
-            } else if (is404Error) {
-               throw new NotFoundException(Messages.MESSAGES.failedToConstruct(
-                       constructor.toString()), e.getCause());
-            } else {
-               // None of the input params had annotations requiring the other
-               // HTTP error types.
-               throw new ApplicationException(Messages.MESSAGES.failedToConstruct(
-                       constructor.toString()), e.getCause());
-            }
-         }
+         throw new ApplicationException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
       }
       catch (IllegalArgumentException e)
       {
