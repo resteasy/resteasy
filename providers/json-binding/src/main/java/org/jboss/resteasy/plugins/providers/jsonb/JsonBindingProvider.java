@@ -8,7 +8,6 @@ import java.lang.reflect.Type;
 
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
-import javax.json.bind.annotation.JsonbAnnotation;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
@@ -37,12 +36,12 @@ import org.jboss.resteasy.util.DelegatingOutputStream;
 public class JsonBindingProvider extends AbstractJsonBindingProvider
       implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
-   private boolean disabled;
+   private final boolean disabled;
 
    public JsonBindingProvider() {
       super();
       ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
-      disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
+      boolean disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
             || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
       ResteasyProviderFactory providerFactory = ResteasyContext.getContextData(ResteasyProviderFactory.class);
       if (context == null && providerFactory != null)
@@ -53,16 +52,17 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
             disabled = Boolean.parseBoolean(config.toString());
          }
       }
+      this.disabled = disabled;
    }
 
    @Override
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType) {
-      if (disabled || !isSupportedMediaType(mediaType))
+      if (disabled)
       {
          return false;
       }
-      return hasJsonBindingAnnotations(annotations) || isSupportedMediaType(mediaType);
+      return isSupportedMediaType(mediaType);
    }
 
    @Override
@@ -112,11 +112,11 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
-      if (disabled || !isSupportedMediaType(mediaType))
+      if (disabled)
       {
          return false;
       }
-      return hasJsonBindingAnnotations(annotations) || isSupportedMediaType(mediaType);
+      return isSupportedMediaType(mediaType);
    }
 
    @Override
@@ -147,17 +147,5 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       {
          throw new ProcessingException(Messages.MESSAGES.jsonBSerializationError(e.toString()), e);
       }
-   }
-   private static boolean hasJsonBindingAnnotations(Annotation[] searchList)
-   {
-      if (searchList != null) {
-         for (Annotation ann : searchList) {
-            if (ann.annotationType().isAnnotationPresent(JsonbAnnotation.class))
-            {
-               return true;
-            }
-         }
-      }
-      return false;
    }
 }
