@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import io.restassured.path.json.JsonPath;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,6 +43,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.restassured.path.json.JsonPath;
+
 /**
  * @tpSubChapter Validation
  * @tpChapter Integration tests
@@ -54,7 +55,6 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class ValidationJaxbTest {
    ResteasyClient client;
-   ResteasyClient jacksonClient;
    private static final String UNEXPECTED_VALIDATION_ERROR_MSG = "Unexpected validation error";
    private static final String WAR_WITH_JSONB = "ValidationJaxbTest";
    private static final String WAR_WITH_JACKSON2 = "ValidationJaxbTestJackson2";
@@ -79,13 +79,11 @@ public class ValidationJaxbTest {
    @Before
    public void init() {
       client = (ResteasyClient)ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
-      jacksonClient = createJacksonClient();
    }
 
    @After
    public void after() throws Exception {
       client.close();
-      jacksonClient.close();
    }
 
    /**
@@ -96,7 +94,6 @@ public class ValidationJaxbTest {
             .addClasses(ValidationCoreFoo.class, ValidationCoreFooConstraint.class, ValidationCoreFooReaderWriter.class, ValidationCoreFooValidator.class)
             .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
             .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
-            .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new HibernateValidatorPermission("accessPrivateMembers")
@@ -139,7 +136,7 @@ public class ValidationJaxbTest {
    @Test
    public void testRawJSONWithJackson2() throws Exception {
       ValidationCoreFoo foo = new ValidationCoreFoo("p");
-      Response response = jacksonClient.target(generateJacksonURL("/all/a/z")).request().accept(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(foo, "application/foo"));
+      Response response = client.target(generateJacksonURL("/all/a/z")).request().accept(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(foo, "application/foo"));
       assertValidationReport(response);
    }
    /**
@@ -164,7 +161,7 @@ public class ValidationJaxbTest {
    @Test
    public void testJSONJackson() throws Exception
    {
-      doTest(MediaType.APPLICATION_JSON_TYPE, jacksonClient.target(generateJacksonURL("/all/a/z")));
+      doTest(MediaType.APPLICATION_JSON_TYPE, client.target(generateJacksonURL("/all/a/z")));
    }
 
    public void doTest(MediaType mediaType, WebTarget target) throws Exception {
@@ -204,12 +201,6 @@ public class ValidationJaxbTest {
       JsonPath jsonPath = new JsonPath(response.readEntity(String.class));
       Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("fieldViolations.constraintType"), Matchers.hasItem("FIELD"));
       Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("fieldViolations.path"), Matchers.hasItem("s"));
-   }
-   private ResteasyClient createJacksonClient() {
-      ClientBuilder builder = ClientBuilder.newBuilder();
-      builder.property(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, true);
-      builder.register(ValidationCoreFooReaderWriter.class);
-      return (ResteasyClient)builder.build();
    }
 }
 

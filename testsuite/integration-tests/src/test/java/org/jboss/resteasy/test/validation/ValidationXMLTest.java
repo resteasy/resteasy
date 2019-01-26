@@ -67,10 +67,7 @@ public class ValidationXMLTest {
 
    @Before
    public void init() {
-      ClientBuilder builder = ClientBuilder.newBuilder();
-      builder.property(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, true);
-      builder.register(ValidationXMLFooReaderWriter.class);
-      client = (ResteasyClient)builder.build();
+      client = (ResteasyClient)ClientBuilder.newClient().register(ValidationXMLFooReaderWriter.class);
    }
 
    @After

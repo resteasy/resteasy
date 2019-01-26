@@ -8,7 +8,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -317,7 +316,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       {
          // create a new one
          providerFactory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
-         ResteasyContext.pushContext(ResteasyProviderFactory.class, providerFactory);
+         RegisterBuiltin.register(providerFactory);
       }
       return providerFactory;
    }
@@ -325,12 +324,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public ResteasyClient build()
    {
-      RegisterBuiltin.register(getProviderFactory());
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
       {
          config.property(entry.getKey(), entry.getValue());
       }
+
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
