@@ -1,12 +1,18 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
 import javax.ws.rs.client.ClientBuilder;
+
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbJsonXmlRootElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbXmlRootElementClient;
@@ -58,7 +64,9 @@ public class JaxbXmlRootElementProviderTest {
       WebArchive war = TestUtil.prepareArchive(JaxbXmlRootElementProviderTest.class.getSimpleName());
       war.addClass(Parent.class);
       war.addClass(Child.class);
-      return TestUtil.finishContainerPrepare(war, null, JaxbXmlRootElementProviderResource.class);
+      Map<String, String> contextParams = new HashMap<>();
+      contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
+      return TestUtil.finishContainerPrepare(war, contextParams, JaxbXmlRootElementProviderResource.class);
    }
 
    @Before

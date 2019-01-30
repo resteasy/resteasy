@@ -392,7 +392,10 @@
             <scope>provided</scope>
         </dependency>
 
-
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -499,6 +502,7 @@
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>
+                                    <include>**/ValidationJaxbTest.java</include>
                                 </includes>
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>

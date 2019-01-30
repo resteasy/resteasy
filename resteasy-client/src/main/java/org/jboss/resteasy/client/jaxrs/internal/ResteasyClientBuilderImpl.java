@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Configuration;
+
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
