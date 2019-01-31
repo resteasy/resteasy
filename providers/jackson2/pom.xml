@@ -59,6 +59,12 @@
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
+            <exclusions>
+                <exclusion>
+		          <groupId>com.google.code.findbugs</groupId>
+		          <artifactId>jsr305</artifactId>
+		        </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
