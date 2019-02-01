@@ -24,7 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -89,12 +88,14 @@ public class TestFacadeLinks
    }
 
    @Test
-   @Ignore
-   public void testLinks() throws Exception
-   {
+   public void testLinksXML() throws Exception {
       ScrollableCollection comments = client.getScrollableCommentsXML("foo", "book");
       checkCommentsLinks(url, comments);
-      comments = client.getScrollableCommentsJSON("foo", "book");
+   }
+
+   @Test
+   public void testLinksJSON() throws Exception {
+      ScrollableCollection comments = client.getScrollableCommentsJSON("foo", "book");
       checkCommentsLinks(url, comments);
    }
 
@@ -123,37 +124,5 @@ public class TestFacadeLinks
       atomLink = links.getLinkForRel("home");
       Assert.assertNotNull(atomLink);
       Assert.assertEquals(url+"/", atomLink.getHref());
-   }
-
-   private void checkCommentLinks(String url, Comment comment) {
-      Assert.assertNotNull(comment);
-      Assert.assertEquals(0, comment.getId());
-      RESTServiceDiscovery links = comment.getRest();
-      Assert.assertNotNull(links);
-      Assert.assertEquals(6, links.size());
-      // self
-      AtomLink atomLink = links.getLinkForRel("self");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-      // update
-      atomLink = links.getLinkForRel("update");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-      // remove
-      atomLink = links.getLinkForRel("remove");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comment/0", atomLink.getHref());
-      // list
-      atomLink = links.getLinkForRel("list");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
-      // add
-      atomLink = links.getLinkForRel("add");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comments", atomLink.getHref());
-      // collection
-      atomLink = links.getLinkForRel("collection");
-      Assert.assertNotNull(atomLink);
-      Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
    }
 }

@@ -18,8 +18,8 @@ public class BookStoreInvalidEL {
 
    {
       Book book = new Book("foo", "bar");
-      book.addComment(0, "great book");
-      book.addComment(1, "terrible book");
+      book.addComment(Integer.toString(0), "great book");
+      book.addComment(Integer.toString(1), "terrible book");
       books.put(book.getTitle(), book);
    }
 
