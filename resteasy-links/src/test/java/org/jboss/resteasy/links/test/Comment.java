@@ -20,7 +20,6 @@ public class Comment {
 
    @XmlElement
    public String text;
-   
    @ParentResource
    public Book book;
 
@@ -47,12 +46,15 @@ public class Comment {
    public String getText() {
       return text;
    }
+
    public void setText(String text) {
       this.text = text;
    }
+
    public Book getBook() {
       return book;
    }
+
    public void setBook(Book book) {
       this.book = book;
    }
