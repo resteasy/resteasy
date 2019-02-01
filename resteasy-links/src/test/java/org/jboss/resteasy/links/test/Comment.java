@@ -20,13 +20,11 @@ public class Comment {
 
    @XmlElement
    public String text;
+   
    @ParentResource
    public Book book;
 
    @XmlElement
-   // These both fail deserialisation for some reason
-//   @XmlElement(name = "link", namespace = "http://www.w3.org/2005/Atom")
-//   @XmlElementRef
    private RESTServiceDiscovery rest;
 
    public Comment() {
@@ -66,11 +64,4 @@ public class Comment {
    public void setRest(RESTServiceDiscovery rest) {
       this.rest = rest;
    }
-
-   // JAXB wants an ID to be a String...
-//   @XmlAttribute
-//   @XmlID
-//   public String getXMLID(){
-//      return Integer.toString(id);
-//   }
 }
