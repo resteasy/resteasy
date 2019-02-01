@@ -24,11 +24,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class TestLinks
@@ -54,7 +52,7 @@ public class TestLinks
       dispatcher = null;
    }
 
-   @Parameters
+   @Parameterized.Parameters
    public static List<Class<?>[]> getParameters(){
       return Arrays.asList(new Class<?>[]{BookStore.class}, new Class<?>[]{BookStoreMinimal.class});
    }
@@ -90,7 +88,6 @@ public class TestLinks
 
    @Test
    public void testLinksXML() throws Exception {
-
          Book book = client.getBookXML("foo");
          checkBookLinks1(url, book);
 
@@ -98,21 +95,22 @@ public class TestLinks
 
    @Test
    public void testLinksJson() throws Exception {
-
          Book book = client.getBookJSON("foo");
          checkBookLinks1(url, book);
-
    }
 
    @Test
-   @Ignore
-   public void testComments() throws Exception
+   public void testCommentsXML() throws Exception
    {
       List<Comment> comments = client.getBookCommentsXML("foo");
       Assert.assertNotNull(comments);
       Assert.assertFalse(comments.isEmpty());
       checkCommentLinks(url, comments.get(0));
-      comments = client.getBookCommentsJSON("foo");
+   }
+
+   @Test
+   public void testCommentsJson() throws Exception {
+      List<Comment> comments = client.getBookCommentsJSON("foo");
       Assert.assertNotNull(comments);
       Assert.assertFalse(comments.isEmpty());
       checkCommentLinks(url, comments.get(0));
@@ -157,7 +155,7 @@ public class TestLinks
 
    private void checkCommentLinks(String url, Comment comment) {
       Assert.assertNotNull(comment);
-      Assert.assertEquals(0, comment.getId());
+      Assert.assertEquals(Integer.toString(0), comment.getId());
       RESTServiceDiscovery links = comment.getRest();
       Assert.assertNotNull(links);
       Assert.assertEquals(6, links.size());

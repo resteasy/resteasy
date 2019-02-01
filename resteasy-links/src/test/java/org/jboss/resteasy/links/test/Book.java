@@ -72,13 +72,13 @@ public class Book {
       this.comments = comments;
    }
 
-   public void addComment(int id, String text){
+   public void addComment(String id, String text){
       comments.add(new Comment(id, text, this));
    }
 
    public Comment getComment(int commentId) {
       for(Comment c : comments)
-         if(c.getId() == commentId)
+         if(c.getId().equals(commentId))
             return c;
       return null;
    }

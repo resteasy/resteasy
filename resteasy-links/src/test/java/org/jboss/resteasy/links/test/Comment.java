@@ -13,7 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class Comment {
-   public int id;
+
+   @XmlAttribute
+   @XmlID
+   public String id;
+
    @XmlElement
    public String text;
    @ParentResource
@@ -28,18 +32,20 @@ public class Comment {
    public Comment() {
    }
 
-   public Comment(final int id, final String text, final Book book) {
+   public Comment(final String id, final String text, final Book book) {
       this.id = id;
       this.text = text;
       this.book = book;
    }
 
-   public int getId() {
+   public String getId() {
       return id;
    }
-   public void setId(int id) {
+
+   public void setId(String id) {
       this.id = id;
    }
+
    public String getText() {
       return text;
    }
@@ -62,9 +68,9 @@ public class Comment {
    }
 
    // JAXB wants an ID to be a String...
-   @XmlAttribute
-   @XmlID
-   public String getXMLID(){
-      return Integer.toString(id);
-   }
+//   @XmlAttribute
+//   @XmlID
+//   public String getXMLID(){
+//      return Integer.toString(id);
+//   }
 }
