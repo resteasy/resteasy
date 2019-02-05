@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.client;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -100,6 +101,37 @@ public class ClientBuilderTest {
       Assert.assertEquals("Expect 1 warnining messages of Provider class is already registered", 2, TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155);
       Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 
+      client.close();
+   }
+
+   /**
+    * @tpTestDetails Sets http proxy based on client properties
+    * @tpPassCrit Default proxy has to be set
+    */
+   @Test
+   public void testHttpProxySetup() {
+      final String testProxyHost = "myproxy.com";
+      final String testProxyPort = "8080";
+      final String testProxyScheme = "https";
+      ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder().property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost);
+      Client client = clientBuilder.build();
+      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
+      // since port was not set, it must be -1
+      Assert.assertEquals(-1, clientBuilder.getDefaultProxyPort());
+      // since scheme was not set, it must be http
+      Assert.assertEquals("http", clientBuilder.getDefaultProxyScheme());
+      client.close();
+      clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, testProxyPort).property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
+      client = clientBuilder.build();
+      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
+      Assert.assertEquals(Integer.parseInt(testProxyPort), clientBuilder.getDefaultProxyPort());
+      Assert.assertEquals(testProxyScheme, clientBuilder.getDefaultProxyScheme());
+      client.close();
+      clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, Integer.parseInt(testProxyPort)).property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
+      client = clientBuilder.build();
+      Assert.assertEquals(testProxyHost, clientBuilder.getDefaultProxyHostname());
+      Assert.assertEquals(Integer.parseInt(testProxyPort), clientBuilder.getDefaultProxyPort());
+      Assert.assertEquals(testProxyScheme, clientBuilder.getDefaultProxyScheme());
       client.close();
    }
 }

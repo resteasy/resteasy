@@ -676,7 +676,22 @@ Client client = new ResteasyClientBuilder().httpEngine(engine).build();
      </programlisting>
       </para>
     </section>
-
+    <section id="http_proxy">
+      <title>HTTP proxy</title>
+      <para>
+         The <classname>ClientHttpEngine</classname> implementations based on Apache
+         <classname>HttpClient</classname> support HTTP proxy.
+         This feature can be enabled by setting specific properties on the builder:
+         <itemizedlist>
+         	<listitem><classname>org.jboss.resteasy.jaxrs.client.proxy.host</classname></listitem>
+         	<listitem><classname>org.jboss.resteasy.jaxrs.client.proxy.port</classname></listitem>
+         	<listitem><classname>org.jboss.resteasy.jaxrs.client.proxy.scheme</classname></listitem>
+         </itemizedlist>
+         <programlisting>
+Client client = ClientBuilder.newBuilder().property("org.jboss.resteasy.jaxrs.client.proxy.host", "someproxy.com").property("org.jboss.resteasy.jaxrs.client.proxy.port", 8080).build();
+     </programlisting>
+      </para>
+    </section>
     <section id="apache_4_3">
         <title>Apache HTTP Client 4.3 APIs</title>
      <para>

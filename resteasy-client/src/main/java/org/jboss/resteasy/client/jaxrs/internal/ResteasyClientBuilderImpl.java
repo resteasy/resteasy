@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -329,7 +330,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       {
          config.property(entry.getKey(), entry.getValue());
       }
-
+      // check for proxy config parameters
+      setProxyIfNeeded(config);
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -341,6 +343,31 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
       return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
+   }
+
+   /** This method sets http proxy if {@link ResteasyClientBuilder#PROPERTY_PROXY_HOST} is set in the properties.
+    *
+    * @param clientConfig client config
+    */
+   private void setProxyIfNeeded(ClientConfiguration clientConfig) {
+      try {
+         Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
+         if (proxyHostProp != null) {
+            Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
+            // default if the port is not set or if it is not string or number
+            Integer proxyPort = -1;
+            if (proxyPortProp != null && proxyPortProp instanceof Number) {
+               proxyPort = ((Number) proxyPortProp).intValue();
+            } else if (proxyPortProp != null && proxyPortProp instanceof String) {
+               proxyPort = Integer.parseInt((String) proxyPortProp);
+            }
+            Object proxySchemeProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME);
+            defaultProxy((String)proxyHostProp, proxyPort, (String)proxySchemeProp);
+         }
+      } catch(Exception e) {
+         // catch possible exceptions (in this case we do not set proxy at all)
+         LogMessages.LOGGER.warn(Messages.MESSAGES.unableToSetHttpProxy(), e);
+      }
    }
 
    protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
