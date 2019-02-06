@@ -414,6 +414,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       return clientMessageBodyWriters;
    }
 
+   //TODO get rid of this method, replace it with getExceptionMapper(Class<?> c); get rid of exceptionMappers member (only use sortedExceptionMappers)
    public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       if (exceptionMappers != null)

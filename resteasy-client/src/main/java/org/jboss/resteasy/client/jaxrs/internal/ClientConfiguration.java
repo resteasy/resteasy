@@ -57,7 +57,10 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public void setProperties(Map<String, Object> newProps)
    {
-      providerFactory.setProperties(newProps);
+      if (newProps != null && !newProps.isEmpty())
+      {
+         providerFactory.setProperties(newProps);
+      }
    }
 
    protected ResteasyProviderFactory getProviderFactory()
