@@ -220,7 +220,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    private MediaTypeMap<SortedKey<MessageBodyReader>> clientMessageBodyReaders;
    private MediaTypeMap<SortedKey<MessageBodyWriter>> clientMessageBodyWriters;
    private Map<Class<?>, SortedKey<ExceptionMapper>> sortedExceptionMappers;
-   private Map<Class<?>, ExceptionMapper> exceptionMappers;
    private Map<Class<?>, AsyncResponseProvider> asyncResponseProviders;
    private Map<Class<?>, AsyncClientResponseProvider> asyncClientResponseProviders;
    private Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
@@ -412,22 +411,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       if (clientMessageBodyWriters == null && parent != null)
          return parent.getClientMessageBodyWriters();
       return clientMessageBodyWriters;
-   }
-
-   //TODO get rid of this method, replace it with getExceptionMapper(Class<?> c); get rid of exceptionMappers member (only use sortedExceptionMappers)
-   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
-   {
-      if (exceptionMappers != null)
-      {
-         return exceptionMappers;
-      }
-      Map<Class<?>, ExceptionMapper> map = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
-      for (Entry<Class<?>, SortedKey<ExceptionMapper>> entry : getSortedExceptionMappers().entrySet())
-      {
-         map.put(entry.getKey(), entry.getValue().getObj());
-      }
-      exceptionMappers = map;
-      return map;
    }
 
    private Map<Class<?>, SortedKey<ExceptionMapper>> getSortedExceptionMappers()
@@ -1022,7 +1005,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          return;
       }
       sortedExceptionMappers.put(exceptionClass, candidateExceptionMapper);
-      exceptionMappers = null;
    }
 
    private void addAsyncResponseProvider(AsyncResponseProvider provider, Class providerClass)
@@ -1990,14 +1972,22 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       Class exceptionType = type;
       SortedKey<ExceptionMapper> mapper = null;
+      Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
       while (mapper == null)
       {
          if (exceptionType == null)
             break;
-         mapper = getSortedExceptionMappers().get(exceptionType);
+         mapper = mappers.get(exceptionType);
          if (mapper == null)
             exceptionType = exceptionType.getSuperclass();
       }
+      return mapper != null ? mapper.getObj() : null;
+   }
+
+   public <T extends Throwable> ExceptionMapper<T> getExceptionMapperForClass(Class<T> type)
+   {
+      Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
+      SortedKey<ExceptionMapper> mapper = mappers.get(type);
       return mapper != null ? mapper.getObj() : null;
    }
 

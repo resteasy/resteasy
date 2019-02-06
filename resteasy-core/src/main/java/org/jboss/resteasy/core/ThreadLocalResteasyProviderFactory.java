@@ -505,12 +505,6 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    }
 
    @Override
-   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
-   {
-      return ((ResteasyProviderFactoryImpl)getDelegate()).getExceptionMappers();
-   }
-
-   @Override
    public <T> AsyncResponseProvider<T> getAsyncResponseProvider(Class<T> type)
    {
       return getDelegate().getAsyncResponseProvider(type);

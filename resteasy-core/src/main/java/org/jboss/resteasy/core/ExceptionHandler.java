@@ -55,7 +55,7 @@ public class ExceptionHandler
       if (logger == null)
          logger = RESTEasyTracingLogger.empty();
 
-      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
+      ExceptionMapper mapper = providerFactory.getExceptionMapperForClass(exception.getClass());
       if (mapper == null) return null;
       mapperExecuted = true;
       long timestamp = logger.timestamp("EXCEPTION_MAPPING");
@@ -75,7 +75,7 @@ public class ExceptionHandler
    {
       if (logger == null)
          logger = RESTEasyTracingLogger.empty();
-      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
+      ExceptionMapper mapper = providerFactory.getExceptionMapperForClass(clazz);
       if (mapper == null) return null;
       mapperExecuted = true;
       long timestamp = logger.timestamp("EXCEPTION_MAPPING");
@@ -123,7 +123,7 @@ public class ExceptionHandler
       Class causeClass = exception.getClass();
       while (mapper == null) {
          if (causeClass == null) break;
-         mapper = providerFactory.getExceptionMappers().get(causeClass);
+         mapper = providerFactory.getExceptionMapperForClass(causeClass);
          if (mapper == null) causeClass = causeClass.getSuperclass();
       }
 
