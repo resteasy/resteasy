@@ -14,6 +14,8 @@ import java.util.HashMap;
  */
 public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
+   public static final MediaTypeHeaderDelegate INSTANCE = new MediaTypeHeaderDelegate();
+
    public Object fromString(String type) throws IllegalArgumentException
    {
       if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());

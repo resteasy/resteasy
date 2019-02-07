@@ -13,6 +13,8 @@ import java.util.Date;
  */
 public class DateDelegate implements RuntimeDelegate.HeaderDelegate<Date>
 {
+   public static final DateDelegate INSTANCE = new DateDelegate();
+
    @Override
    public Date fromString(String value)
    {

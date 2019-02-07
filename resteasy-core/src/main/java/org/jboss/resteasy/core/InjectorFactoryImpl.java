@@ -42,6 +42,8 @@ import static org.jboss.resteasy.spi.util.FindAnnotation.findAnnotation;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class InjectorFactoryImpl implements InjectorFactory
 {
+   public static final InjectorFactoryImpl INSTANCE = new InjectorFactoryImpl();
+
    @Override
    public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory providerFactory)
    {

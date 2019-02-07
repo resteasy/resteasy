@@ -337,16 +337,16 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
       reactiveClasses = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.reactiveClasses);
       headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getHeaderDelegates());
-      addHeaderDelegateIfAbsent(MediaType.class, new MediaTypeHeaderDelegate());
-      addHeaderDelegateIfAbsent(NewCookie.class, new NewCookieHeaderDelegate());
-      addHeaderDelegateIfAbsent(Cookie.class, new CookieHeaderDelegate());
-      addHeaderDelegateIfAbsent(URI.class, new UriHeaderDelegate());
-      addHeaderDelegateIfAbsent(EntityTag.class, new EntityTagDelegate());
-      addHeaderDelegateIfAbsent(CacheControl.class, new CacheControlDelegate());
-      addHeaderDelegateIfAbsent(Locale.class, new LocaleDelegate());
-      addHeaderDelegateIfAbsent(LinkHeader.class, new LinkHeaderDelegate());
-      addHeaderDelegateIfAbsent(javax.ws.rs.core.Link.class, new LinkDelegate());
-      addHeaderDelegateIfAbsent(Date.class, new DateDelegate());
+      addHeaderDelegateIfAbsent(MediaType.class, MediaTypeHeaderDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(NewCookie.class, NewCookieHeaderDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(Cookie.class, CookieHeaderDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(URI.class, UriHeaderDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(EntityTag.class, EntityTagDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(CacheControl.class, CacheControlDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(Locale.class, LocaleDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(LinkHeader.class, LinkHeaderDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(javax.ws.rs.core.Link.class, LinkDelegate.INSTANCE);
+      addHeaderDelegateIfAbsent(Date.class, DateDelegate.INSTANCE);
 
       resourceBuilder = new ResourceBuilder();
 
@@ -355,7 +355,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       builtinsRegistered = false;
       registerBuiltins = true;
 
-      injectorFactory = parent == null ? new InjectorFactoryImpl() : parent.getInjectorFactory();
+      injectorFactory = parent == null ? InjectorFactoryImpl.INSTANCE : parent.getInjectorFactory();
    }
 
    private void initializeRegistriesAndFilters(ResteasyProviderFactory parent)

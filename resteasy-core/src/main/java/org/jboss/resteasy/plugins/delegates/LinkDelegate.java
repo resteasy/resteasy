@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
 {
+   public static final LinkDelegate INSTANCE = new LinkDelegate();
+
    private static class Parser
    {
       private int curr;

@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<CacheControl>
 {
+   public static final CacheControlDelegate INSTANCE = new CacheControlDelegate();
+
    public CacheControl fromString(String value) throws IllegalArgumentException
    {
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.cacheControlValueNull());

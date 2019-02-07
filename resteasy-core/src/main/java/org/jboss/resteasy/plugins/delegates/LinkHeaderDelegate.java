@@ -20,6 +20,8 @@ import java.util.StringTokenizer;
  */
 public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHeader>
 {
+   public static final LinkHeaderDelegate INSTANCE = new LinkHeaderDelegate();
+
    private static class Parser
    {
       private int curr;

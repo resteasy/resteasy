@@ -12,6 +12,8 @@ import java.net.URI;
  */
 public class UriHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
+   public static final UriHeaderDelegate INSTANCE = new UriHeaderDelegate();
+
    public Object fromString(String value) throws IllegalArgumentException
    {
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.uriValueNull());
