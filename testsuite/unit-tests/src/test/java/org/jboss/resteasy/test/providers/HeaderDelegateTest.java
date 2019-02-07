@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers;
 
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.Test;

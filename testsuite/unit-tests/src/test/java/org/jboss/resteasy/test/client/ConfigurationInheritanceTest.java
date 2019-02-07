@@ -34,7 +34,7 @@ import javax.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestFeature1;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestFeature2;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestFeature3;

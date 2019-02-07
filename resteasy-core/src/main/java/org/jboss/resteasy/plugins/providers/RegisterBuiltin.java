@@ -19,8 +19,10 @@ import java.util.WeakHashMap;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.ext.Providers;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.core.providerfactory.ClientHelper;
+import org.jboss.resteasy.core.providerfactory.NOOPServerHelper;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
@@ -49,6 +51,12 @@ public class RegisterBuiltin
             public RuntimeType getRuntimeType()
             {
                return RuntimeType.CLIENT;
+            }
+            @Override
+            protected void initializeUtils()
+            {
+               clientHelper = new ClientHelper(this);
+               serverHelper = NOOPServerHelper.INSTANCE;
             }
          };
          if (!rpf.isBuiltinsRegistered()) {
