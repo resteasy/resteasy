@@ -105,7 +105,8 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                .setSecureRandom(null)
                .loadKeyMaterial(that.clientKeyStore,
                         that.clientPrivateKeyPassword != null ? that.clientPrivateKeyPassword.toCharArray() : null)
-               .loadTrustMaterial(that.truststore, TrustSelfSignedStrategy.INSTANCE)
+               .loadTrustMaterial(that.truststore,
+                       that.isTrustSelfSignedCertificates() ? TrustSelfSignedStrategy.INSTANCE : null)
                .build();
             sslsf = new SSLConnectionSocketFactory(ctx, verifier) {
                @Override

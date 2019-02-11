@@ -78,6 +78,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected HttpHost defaultProxy;
    protected int responseBufferSize;
    protected List<String> sniHostNames = new ArrayList<>();
+   protected boolean trustSelfSignedCertificates = true;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -237,6 +238,26 @@ public class ResteasyClientBuilder extends ClientBuilder
       this.disableTrustManager = true;
       return this;
    }
+
+   /**
+    * When the user is not using a TrustManager (see disableTrustManager) and
+    * does not define an SSLContext object but they want all defined trustStores
+    * to use the TrustSelfSignedCertificates trust strategy set this value to true.
+    *
+    * @param b A value of true assigns trust strategy TrustSelfSignedCertificates
+    *          to the trustStores.  A value of false assigns a null to the trust
+    *          strategy. The default value is true in order to maintain backward
+    *          compatibility.
+    */
+
+   public void setIsTrustSelfSignedCertificates(boolean b){
+      trustSelfSignedCertificates = b;
+   }
+
+   public boolean isTrustSelfSignedCertificates(){
+      return trustSelfSignedCertificates;
+   }
+
 
    /**
     * SSL policy used to verify hostnames
