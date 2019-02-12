@@ -277,6 +277,7 @@ REST._complete = function(request, callback){
 }
 
 REST._isXMLMIME = function(contentType){
+	contentType = contentType.split(";", 1)[0];
 	return contentType == "text/xml"
 			|| contentType == "application/xml"
 			|| (contentType.indexOf("application/") == 0
@@ -284,6 +285,7 @@ REST._isXMLMIME = function(contentType){
 }
 
 REST._isJSONMIME = function(contentType){
+	contentType = contentType.split(";", 1)[0];
 	return contentType == "application/json"
 			|| (contentType.indexOf("application/") == 0
 				&& contentType.lastIndexOf("+json") == (contentType.length - 5));
