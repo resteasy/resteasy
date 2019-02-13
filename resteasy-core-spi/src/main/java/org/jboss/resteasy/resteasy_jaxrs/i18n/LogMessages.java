@@ -61,7 +61,7 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 25, value = "Unknown exception while executing {0} {1}", format = Format.MESSAGE_FORMAT)
    void unknownException(String method, String path, @Cause Throwable cause);
 
-   @LogMessage(level = Level.ERROR)
+   @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 30, value = "Failed to write event {0}", format = Format.MESSAGE_FORMAT)
    void failedToWriteSseEvent(String event, @Cause Throwable cause);
 
