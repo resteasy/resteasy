@@ -1271,21 +1271,12 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       registerProvider(provider, null, isBuiltin, null);
    }
 
-   protected static boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
+   protected boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
    {
-      if (!type.isAssignableFrom(target))
-         return false;
-      if (contracts == null || contracts.size() == 0)
-         return true;
-      for (Class<?> contract : contracts.keySet())
-      {
-         if (contract.equals(type))
-            return true;
-      }
-      return false;
+      return isA(target, type, contracts == null ? null : contracts.keySet());
    }
 
-   protected static boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
+   protected boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
    {
       return isA(target.getClass(), type, contracts);
    }

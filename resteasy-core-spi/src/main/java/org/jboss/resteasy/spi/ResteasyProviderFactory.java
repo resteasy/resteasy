@@ -146,6 +146,23 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
       ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;
    }
 
+   public static boolean isA(Class target, Class type, Set<Class<?>> contracts)
+   {
+      if (!type.isAssignableFrom(target)) return false;
+      if (contracts == null || contracts.size() == 0) return true;
+      for (Class<?> contract : contracts)
+      {
+         if (contract.equals(type))
+            return true;
+      }
+      return false;
+   }
+
+   public static boolean isA(Object target, Class type, Set<Class<?>> contracts)
+   {
+      return isA(target.getClass(), type, contracts);
+   }
+
    protected abstract void registerBuiltin();
 
    public abstract boolean isRegisterBuiltins();
