@@ -42,16 +42,18 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
       if (filename == null) {
          return "";
       } else {
-         String encodedFilename = filename;
-         try {
-            encodedFilename = URLEncoder.encode(filename, "UTF-8");
-            // append encoding charset into the value if and only if encoding was needed
-            if (!encodedFilename.equals(filename)) {
-            // encoding was needed, so per rfc5987 we have to prepend charset
-               return "; filename*=utf-8''" + encodedFilename.replaceAll("\\+", "%20");
+         if (part.isUtf8Encode()) {
+            String encodedFilename = filename;
+            try {
+               encodedFilename = URLEncoder.encode(filename, "UTF-8");
+               // append encoding charset into the value if and only if encoding was needed
+               if (!encodedFilename.equals(filename)) {
+               // encoding was needed, so per rfc5987 we have to prepend charset
+                  return "; filename*=utf-8''" + encodedFilename.replaceAll("\\+", "%20");
+               }
+            } catch (UnsupportedEncodingException e) {
+               // should not happen
             }
-         } catch (UnsupportedEncodingException e) {
-            // should not happen
          }
          return "; filename=\"" + filename + "\"";
       }
