@@ -41,7 +41,12 @@ public class MultipartFormDataOutput extends MultipartOutput
 
    public OutputPart addFormData(String key, Object entity, MediaType mediaType, String filename)
    {
-      OutputPart part = super.addPart(entity, mediaType, filename);
+      return addFormData(key, entity, mediaType, filename, false);
+   }
+
+   public OutputPart addFormData(String key, Object entity, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart part = super.addPart(entity, mediaType, filename, utf8Encode);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
@@ -57,7 +62,12 @@ public class MultipartFormDataOutput extends MultipartOutput
 
    public OutputPart addFormData(String key, Object entity, GenericType<?> type, MediaType mediaType, String filename)
    {
-      OutputPart part = super.addPart(entity, type, mediaType, filename);
+      return addFormData(key, entity, type, mediaType, filename, false);
+   }
+
+   public OutputPart addFormData(String key, Object entity, GenericType<?> type, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart part = super.addPart(entity, type, mediaType, filename, utf8Encode);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
@@ -73,7 +83,12 @@ public class MultipartFormDataOutput extends MultipartOutput
 
    public OutputPart addFormData(String key, Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
    {
-      OutputPart part = super.addPart(entity, type, genericType, mediaType, filename);
+      return addFormData(key, entity, type, genericType, mediaType, filename, false);
+   }
+
+   public OutputPart addFormData(String key, Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart part = super.addPart(entity, type, genericType, mediaType, filename, utf8Encode);
       formData.put(key, part);
       addFormDataMap(key, part);
       return part;
