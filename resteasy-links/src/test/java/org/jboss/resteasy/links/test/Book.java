@@ -78,7 +78,7 @@ public class Book {
 
    public Comment getComment(int commentId) {
       for(Comment c : comments)
-         if(Integer.getInteger(c.getId()).equals(commentId))
+         if(Integer.valueOf(c.getId()).equals(commentId))
             return c;
       return null;
    }
