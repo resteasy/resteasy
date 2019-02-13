@@ -23,6 +23,7 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
@@ -103,7 +104,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
       for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
       {
-         feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
+         feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
       }
 
       this.methodInjector = injector.createMethodInjector(method, resourceMethodProviderFactory);
