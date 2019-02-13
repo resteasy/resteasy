@@ -1683,7 +1683,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       registerProvider(provider, null, isBuiltin, null);
    }
-   
+
    public static boolean isA(Class target, Class type, Set<Class<?>> contracts)
    {
       if (!type.isAssignableFrom(target)) return false;
@@ -1694,7 +1694,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return false;
    }
-   
+
    public static boolean isA(Object target, Class type, Set<Class<?>> contracts)
    {
       return isA(target.getClass(), type, contracts);
@@ -1704,7 +1704,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return isA(target, type, contracts == null ? null : contracts.keySet());
    }
-   
+
    protected boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
    {
       return isA(target.getClass(), type, contracts);
