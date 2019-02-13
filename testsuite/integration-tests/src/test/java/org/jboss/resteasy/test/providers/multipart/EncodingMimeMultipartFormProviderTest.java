@@ -1,14 +1,19 @@
 package org.jboss.resteasy.test.providers.multipart;
 
+import java.io.File;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.jboss.resteasy.test.providers.multipart.resource.EncodingMimeMultipartFormProviderResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.providers.multipart.resource.EncodingMimeMultipartFormProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -16,12 +21,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.io.File;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Multipart provider
@@ -32,7 +31,6 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class EncodingMimeMultipartFormProviderTest {
 
-   private static Logger logger = Logger.getLogger(EncodingMimeMultipartFormProviderTest.class);
    private static final String TEST_URI = generateURL("/encoding-mime");
    // file with non ASCII character
    private static final String testFilePath = TestUtil.getResourcePath(EncodingMimeMultipartFormProviderTest.class, "EncodingMimeMultipartFormProviderTestData.txt");
@@ -58,7 +56,7 @@ public class EncodingMimeMultipartFormProviderTest {
       Assert.assertTrue("File " + testFilePath + " doesn't exists", file.exists());
 
       MultipartFormDataOutput mpfdo = new MultipartFormDataOutput();
-      mpfdo.addFormData("file_upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE, EncodingMimeMultipartFormProviderResource.FILENAME_NON_ASCII);
+      mpfdo.addFormData("file_upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE, EncodingMimeMultipartFormProviderResource.FILENAME_NON_ASCII, true);
 
       ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Response response = client.target(TEST_URI + "/file").request()

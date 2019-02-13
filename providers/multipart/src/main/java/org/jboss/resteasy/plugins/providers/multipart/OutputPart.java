@@ -18,6 +18,7 @@ public class OutputPart
    private Type genericType;
    private MediaType mediaType;
    private String filename;
+   private boolean utf8Encode;
 
    public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType)
    {
@@ -26,11 +27,17 @@ public class OutputPart
 
    public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType, final String filename)
    {
+      this(entity, type, genericType, mediaType, null, false);
+   }
+
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType, final String filename, final boolean utf8Encode)
+   {
       this.entity = entity;
       this.type = type;
       this.genericType = genericType;
       this.mediaType = mediaType;
       this.filename = filename;
+      this.utf8Encode = utf8Encode;
    }
 
    public MultivaluedMap<String, Object> getHeaders()
@@ -61,5 +68,10 @@ public class OutputPart
    public String getFilename()
    {
       return filename;
+   }
+
+   public boolean isUtf8Encode()
+   {
+      return utf8Encode;
    }
 }
