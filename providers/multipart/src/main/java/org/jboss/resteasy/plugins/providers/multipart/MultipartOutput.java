@@ -26,7 +26,12 @@ public class MultipartOutput
 
    public OutputPart addPart(Object entity, MediaType mediaType, String filename)
    {
-      OutputPart outputPart = new OutputPart(entity, entity.getClass(), null, mediaType, filename);
+      return addPart(entity, mediaType, filename, false);
+   }
+
+   public OutputPart addPart(Object entity, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart outputPart = new OutputPart(entity, entity.getClass(), null, mediaType, filename, utf8Encode);
       parts.add(outputPart);
       return outputPart;
    }
@@ -40,7 +45,12 @@ public class MultipartOutput
 
    public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename)
    {
-      OutputPart outputPart = new OutputPart(entity, type.getRawType(), type.getType(), mediaType, filename);
+      return addPart(entity, type, mediaType, filename, false);
+   }
+
+   public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart outputPart = new OutputPart(entity, type.getRawType(), type.getType(), mediaType, filename, utf8Encode);
       parts.add(outputPart);
       return outputPart;
    }
@@ -54,7 +64,12 @@ public class MultipartOutput
 
    public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
    {
-      OutputPart outputPart = new OutputPart(entity, type, genericType, mediaType, filename);
+      return addPart(entity, type, genericType, mediaType, filename, false);
+   }
+
+   public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename, boolean utf8Encode)
+   {
+      OutputPart outputPart = new OutputPart(entity, type, genericType, mediaType, filename, utf8Encode);
       parts.add(outputPart);
       return outputPart;
    }
