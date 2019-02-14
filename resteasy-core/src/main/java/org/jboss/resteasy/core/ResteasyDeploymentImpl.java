@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import java.util.Set;
 
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
@@ -105,7 +105,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       Object tracingText;
       Object thresholdText;
 
-      Config config = ConfigProvider.getConfig();
+      Config config = ResteasyConfigProvider.getConfig();
       tracingText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_TYPE, String.class).orElse(null);
       thresholdText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, String.class).orElse(null);
       Object context = getDefaultContextObjects().get(ResteasyConfiguration.class);

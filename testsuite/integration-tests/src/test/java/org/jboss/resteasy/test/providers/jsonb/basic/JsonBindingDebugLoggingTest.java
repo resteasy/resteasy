@@ -78,14 +78,6 @@ public class JsonBindingDebugLoggingTest {
    /**
     * @tpTestDetails Check exception during server sending
     * @tpSince RESTEasy 4.0.0.Beta7
-    *
-    * In this scenario the exception originates in JsonBindingProvider.writeTo.
-    * The exception is passed up the call stack to SynchronousDispatcher.writeException.
-    * The ExceptionHandler processes the original exception and identifies it as an
-    * UnhandledException.  The exception is written to the server.log by this class
-    * and the original exception is wrapped in an UnhandledException class and returned
-    * up the call stack.  This exception is passed through undertow code which adds
-    * HTML formatting to the message that is returned to the caller.
     */
    @Test
    public void exceptionDuringServerSend() throws Exception {
@@ -124,11 +116,6 @@ public class JsonBindingDebugLoggingTest {
             containsString("RESTEASY008205")
       ));
 
-      // checking server.log contents
-      // For applicationExcpetionLog and yassonExceptionLog there are
-      // always 2 log records for this text.  One is generated from
-      // resteasy and one is generated from undertow.
-      // assert log messages after request
       Assert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(2));
       Assert.assertThat("RESTEasy exception should be logged",
@@ -138,8 +125,6 @@ public class JsonBindingDebugLoggingTest {
       Assert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
-      // There is always 2 log records for this error.  One is generated
-      // from resteasy and one is generated from undertow.
       Assert.assertThat("There are not only 2 error logs in server",
               errorStringLog.count(), is(2));
    }
@@ -148,15 +133,6 @@ public class JsonBindingDebugLoggingTest {
    /**
     * @tpTestDetails Check exception during server receiving
     * @tpSince RESTEasy 4.0.0.Beta7
-    *
-    * In this scenario the exception originates in JsonBindingProvider.readFrom.
-    * The exception is passed up the call stack to MessageBodyParameterInjector.inject
-    * which identifies it as read exception and wraps it in a ReaderException class.
-    * This exception continues up the call stack to SynchronousDispatcher.writeException.
-    * The ExceptionHandler processes it as a ReaderException.  The exception is
-    * written to a log by this class.  A Response object is created.  The
-    * exception message is assigned as the (String) entity in the response object.
-    * The response object is returned to the caller.
     */
    @Test
    public void exceptionDuringServerReceive() throws Exception {
@@ -187,7 +163,7 @@ public class JsonBindingDebugLoggingTest {
                       containsString("javax.json.bind.JsonbException: ")
               ));
 
-      // assert log messages after request in the server.log
+      // assert log messages after request
       Assert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
       Assert.assertThat("RESTEasy exception should be logged",
@@ -204,12 +180,6 @@ public class JsonBindingDebugLoggingTest {
    /**
     * @tpTestDetails Check exception during client receiving
     * @tpSince RESTEasy 4.0.0.Beta7
-    *
-    * In this scenario the exception originates in JsonBindingProvider.readFrom.
-    * The exception is passed up the call stack to ClientResponse.readEntity which
-    * catches it as a RuntimeException.  The original exception is returned to the
-    * caller on the client side and this test logs the exception in the test's
-    * server.log for reference.
     */
    @Test
    public void exceptionDuringClientReceive() throws Exception {
@@ -271,11 +241,6 @@ public class JsonBindingDebugLoggingTest {
    /**
     * @tpTestDetails Check exception during client sending
     * @tpSince RESTEasy 4.0.0.Beta7
-    *
-    * In this scenario the exception originates in JsonBindingProvider.writeTo.
-    * The exception is passed up the call stack to ApacheHttpClient43Engine.invoke
-    * which catches it as an exception.  The original exception is written to the
-    * server.log and wrapped in ProcessingException and returned to the caller.
     */
    @Test
    public void exceptionDuringClientSend() throws Exception {
