@@ -16,6 +16,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
@@ -298,6 +299,8 @@ public abstract class ClientResponse extends BuiltResponse
             {
 
             }
+            // record error details in server.log
+            LogMessages.LOGGER.clientSideProcessingFailure(e);
             throw e;
          }
       }

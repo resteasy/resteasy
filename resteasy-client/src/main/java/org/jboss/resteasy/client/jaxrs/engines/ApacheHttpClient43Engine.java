@@ -269,7 +269,11 @@ public class ApacheHttpClient43Engine implements ApacheHttpClientEngine
       }
       catch (Exception e)
       {
-         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
+         ProcessingException processingException = new ProcessingException(
+                 Messages.MESSAGES.unableToInvokeRequest(), e);
+         // record error details in server.log
+         LogMessages.LOGGER.clientSideProcessingFailure(processingException);
+         throw processingException;
       }
       finally
       {

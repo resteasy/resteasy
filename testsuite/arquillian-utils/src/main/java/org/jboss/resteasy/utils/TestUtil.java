@@ -362,10 +362,17 @@ public class TestUtil {
     * Get count of lines with specific string in log
     */
    public static int getWarningCount(String findedString, boolean onServer, String containerQualifier) {
+      return getWarningCount(findedString, onServer, containerQualifier, false);
+   }
+
+   /**
+    * Get count of lines with specific string or regexp in log
+    */
+   public static int getWarningCount(String findedString, boolean onServer, String containerQualifier, boolean useRegexp) {
       int count = 0;
       List<String> lines = TestUtil.readServerLogLines(onServer, containerQualifier);
       for (String line : lines) {
-         if (line.contains(findedString)) {
+         if ((!useRegexp && line.contains(findedString)) || (useRegexp && line.matches(findedString))) {
             count++;
          }
       }
