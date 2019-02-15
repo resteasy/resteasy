@@ -70,8 +70,9 @@ public class MyService {
     @Produces("application/vnd.customer+json")
     public Customer[] getCustomers() {}
 }
-]]>
+]]></programlisting>
     </sect1>
+
     <sect1 id="JSONP_Support">
         <title>JSONP Support</title>
         <para>
