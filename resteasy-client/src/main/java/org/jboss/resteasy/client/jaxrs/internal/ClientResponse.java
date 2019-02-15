@@ -419,6 +419,7 @@ public abstract class ClientResponse extends BuiltResponse
       entity = null;
       bufferedEntity = null;
       streamFullyRead = false;
+      streamRead = false;
    }
 
    @Override

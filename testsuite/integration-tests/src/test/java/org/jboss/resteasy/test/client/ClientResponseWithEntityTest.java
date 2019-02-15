@@ -20,6 +20,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.test.client.resource.ClientResponseWithEntityResponseFilter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -269,4 +270,19 @@ public class ClientResponseWithEntityTest {
       }
    }
 
+   @Test
+   public void bufferEntity_Should_ReturnTrue_When_InputStream_Is_Replaced()
+   {
+      Client client = ClientBuilder.newClient();
+      client.register(ClientResponseWithEntityResponseFilter.class);
+      Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world")
+            .request(MediaType.APPLICATION_XML_TYPE);
+
+      //entity retrieved as an input stream using response.getEntity() and not consumed => response.bufferEntity() MUST return true
+      try (Response response = request.get();)
+      {
+         Assert.assertTrue(ClientResponseWithEntityResponseFilter.called());
+         Assert.assertTrue(response.bufferEntity());
+      }
+   }
 }
