@@ -71,7 +71,7 @@ public class JacksonDatatypeTest {
    }
 
    @Deployment(name = "withDatatype")
-   public static Archive<?> deployJettison() {
+   public static Archive<?> deployJackson() {
       WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_WITH_DATATYPE + ".war");
       Map<String, String> contextParam = new HashMap<>();
       contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");

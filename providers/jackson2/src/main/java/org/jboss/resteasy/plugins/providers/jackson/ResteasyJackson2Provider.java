@@ -17,11 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -57,14 +55,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
-      if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;
       return super.isReadable(aClass, type, annotations, mediaType);
    }
 
    @Override
    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
-      if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;
       return super.isWriteable(aClass, type, annotations, mediaType);
    }
 

@@ -1,6 +1,4 @@
-package org.jboss.resteasy.test.xxe.resource.xxeJettison;
-
-import org.jboss.resteasy.annotations.providers.NoJackson;
+package org.jboss.resteasy.test.xxe.resource.xxeJackson;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -31,7 +29,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "favoriteMovieXmlType", propOrder = {
    "title"
 })
-@NoJackson
 public class FavoriteMovieXmlType {
 
    @XmlElement(required = true)

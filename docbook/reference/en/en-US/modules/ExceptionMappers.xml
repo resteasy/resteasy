@@ -68,7 +68,7 @@
    <sect1 id="builtinException">
      <title>RESTEasy Built-in Internally-Thrown Exceptions</title>
      <para>RESTEasy has a set of built-in exceptions that are thrown by it when it encounters errors during dispatching or marshalling.  They all
-           revolve around specific HTTP error codes.  You can find them in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's 
+           revolve around specific HTTP error codes.  You can find them in RESTEasy's javadoc under the package org.jboss.resteasy.spi.  Here's
            a list of them:</para>
 <table frame="topbot">
 <tgroup cols="3" rowsep="1" colsep="1">
@@ -95,12 +95,12 @@ wrapped exception or if the exception isn't a WebApplicationException, then rest
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBUnmarshalException</entry>
 <entry>400</entry>
-<entry>The JAXB providers (XML and Jettison) throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
+<entry>The JAXB providers throw this exception on reads.  They may be wrapping JAXBExceptions.  This class extends ReaderException</entry>
 </row>
 <row>
 <entry>o.j.r.plugins.providers.jaxb.JAXBMarshalException</entry>
 <entry>500</entry>
-<entry>The JAXB providers (XML and Jettison) throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
+<entry>The JAXB providers throw this exception on writes.  They may be wrapping JAXBExceptions.  This class extends WriterException</entry>
 </row>
 <row>
 <entry>ApplicationException</entry>

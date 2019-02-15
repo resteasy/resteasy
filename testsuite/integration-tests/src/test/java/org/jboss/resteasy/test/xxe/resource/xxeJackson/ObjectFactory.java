@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.xxe.resource.xxeJettison;
+package org.jboss.resteasy.test.xxe.resource.xxeJackson;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
