@@ -1,4 +1,4 @@
-<!-- 
+<!--
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
                          "http://www.docbook.org/xml/4.4/docbookx.dtd">
  -->
@@ -26,7 +26,7 @@
 		client, via auto-discovery.
 		</para>
 		<warning>
-			<para>This is only available when using the Jettison or JAXB providers (for JSON and XML).</para>
+			<para>This is only available when using the Jackson2 or JAXB providers (for JSON and XML).</para>
 		</warning>
 		<para>
 		The main advantage over Link headers is that you can have any number of Atom links directly over the
@@ -235,7 +235,7 @@ public class Book {
 			method on several resource types. For example the <constant>/order/foo/comments</constant> operation
 			can belongs on the <classname>Order</classname> resource with the <constant>comments</constant>
 			relation, and on the <classname>Comment</classname> resource with the <constant>list</constant>
-			relation. 
+			relation.
 			</para>
 		</section>
 		<section>
@@ -249,7 +249,7 @@ public class Book {
 				<title>Loading URI template values from the entity</title>
 				<para>
 					URI template values are extracted from the entity from fields or Java Bean properties
-					annotated with <classname>@ResourceID</classname>, JAXB's <classname>@XmlID</classname> or 
+					annotated with <classname>@ResourceID</classname>, JAXB's <classname>@XmlID</classname> or
 					JPA's <classname>@Id</classname>. If there are more than one URI template
 					value to find in a given entity, you can annotate your entity with <classname>@ResourceIDs</classname>
 					to list the names of fields or properties that make up this entity's Id. If there are other
@@ -333,7 +333,7 @@ public interface BookStore {
 				<title>Specifying path parameters manually</title>
 				<para>
 				If you do not want to annotate your entities with resource ID annotations (<classname>@ResourceID</classname>,
-				<classname>@ResourceIDs</classname>, <classname>@XmlID</classname> or <classname>@Id</classname>) and 
+				<classname>@ResourceIDs</classname>, <classname>@XmlID</classname> or <classname>@Id</classname>) and
 				<classname>@ParentResource</classname>, you can also specify the URI template values inside the
 				<classname>@LinkResource</classname> annotation, using Unified Expression Language expressions:
 				</para>
@@ -360,7 +360,7 @@ public interface BookStore {
 				</table>
 				<para>
 				The UEL expressions are evaluated in the context of the entity, which means that any unqualified
-				variable will be taken as a property for the entity itself, with the special variable 
+				variable will be taken as a property for the entity itself, with the special variable
 				<varname>this</varname> bound to the entity we're generating links for.
 				</para>
 				<para>
@@ -546,7 +546,7 @@ public interface BookStore {
 			<para>
 			Sometimes it is useful to add resources which are just containers or layers on other resources. For
 			example if you want to represent a collection of <classname>Comment</classname> with a start index
-			and a certain number of entries, in order to implement paging. Such a collection is not really an 
+			and a certain number of entries, in order to implement paging. Such a collection is not really an
 			entity in your model, but it should obtain the <constant>"add"</constant> and <constant>"list"</constant>
 			link relations for the <constant>Comment</constant> entity.
 			</para>

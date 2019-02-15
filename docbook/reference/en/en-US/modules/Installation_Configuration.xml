@@ -13,9 +13,9 @@
         <para>
             In WildFly, RESTEasy and the JAX-RS API are automatically loaded into your deployment's classpath
             if and only if you are deploying a JAX-RS application (as determined by the presence
-            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1. 
+            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
             If you need any of those libraries which are not loaded automatically, you'll have to bring them in
-            with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:  
+            with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:
         </para>
         <programlisting><![CDATA[
 <jboss-deployment-structure>
@@ -26,7 +26,7 @@
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
         <para>The <literal>services</literal> attribute must be set to "import" for modules that have default providers
-            in a META-INF/services/javax.ws.rs.ext.Providers file. 
+            in a META-INF/services/javax.ws.rs.ext.Providers file.
         </para>
         <para>
             To get an idea of which RESTEasy modules are loaded by default when JAX-RS services are deployed, please
@@ -132,17 +132,6 @@
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.resteasy-jettison-provider
-                    </entry>
-                    <entry>
-                        no
-                    </entry>
-                    <entry>
-                        Alternative JAXB-like parser for JSON (deprecated)
-                    </entry>
-                </row>
-                <row>
-                    <entry>
                         org.jboss.resteasy.jose-jwt
                     </entry>
                     <entry>
@@ -244,7 +233,7 @@
             </tgroup>
             </table>
         </para>
-    
+
         <section id="other_resteasy_modules">
         <title>Other RESTEasy modules</title>
             <para>
@@ -265,7 +254,7 @@
 	        </para>
 	    </section>
     </section>
-        
+
     <section>
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
@@ -309,11 +298,11 @@ public class MyApplication extends Application
             <classname>Application</classname> class (or a subclass thereof)
             which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
             Of course, even in this case it can be used to specify additional information such as context parameters.
-            If there is an <classname>Application</classname> class but it doesn't have an 
+            If there is an <classname>Application</classname> class but it doesn't have an
             <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
             &lt;servlet-mapping&gt; element is required.
         </para>
-        
+
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
             not all RESTEasy modules are bundled with WildFly. For example,
@@ -352,15 +341,15 @@ public class MyApplication extends Application
         <para>
             If you are not using Maven, you can include the necessary jars by hand. If you download
             RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
-            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.             
+            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.
             If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
             Copy these, as needed, into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
-        
+
         <section>
         <title>Servlet 3.0 containers</title>
-        
+
         <para>
             RESTEasy uses the <literal>ServletContainerInitializer</literal> integration interface in Servlet 3.0 containers
             to initialize an application, automatically scanning for resources and providers. To enable automatic
@@ -375,7 +364,7 @@ public class MyApplication extends Application
 </dependency>
 ]]></programlisting>
         </section>
-        
+
         <section>
         <title>Older servlet containers</title>
         <para>
@@ -823,10 +812,10 @@ public abstract class Application
         </para>
 
         <para>
-            
+
         </para>
         <para>
-            <emphasis role="bold">Note. </emphasis>If your web.xml file does not have a 
+            <emphasis role="bold">Note. </emphasis>If your web.xml file does not have a
             &lt;servlet-mapping&gt; element, you must use an <classname>Application</classname> class
             annotated with <classname>@ApplicationPath</classname>.
 
@@ -909,13 +898,13 @@ public abstract class Application
 
     <section>
     <title>Client side</title>
-    
+
     <para>
         JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
         communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
         consists of resteasy-jaxrs and resteasy-client. You can access them by way of maven:
     </para>
-    
+
 <programlisting><![CDATA[
 <dependency>
     <groupId>org.jboss.resteasy</groupId>

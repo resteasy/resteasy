@@ -2,11 +2,11 @@
 
 ## Introduction
 The aim of testsuite module is to provide unit and integration tests for Resteasy.
-All newly added tests go into this module. 
+All newly added tests go into this module.
 The integration tests run with specified Wildfly server.
 
 ## Testsuite structure
-- arquillian-utils - contains helper classes used often in tests like - help methods for creating the deployment, 
+- arquillian-utils - contains helper classes used often in tests like - help methods for creating the deployment,
 categories for tests, server setup task etc.
 - integration-tests - contains tests to run in container (Wildfly)
 - integration-tests-spring - tests for resteasy integration with spring
@@ -44,7 +44,7 @@ Run default tests (excluding the ones expected to fail) with path to the contain
 
 ### All tests including the failing ones
 By default all tests annotated with ``@Category({ ExpectedFailing.class })``
-are excluded. 
+are excluded.
 
 To run the testsuite with failing tests included for testing purposes:
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Denable.expected.failing -fn
@@ -68,7 +68,7 @@ Resteasy version for unit-tests and for client side of integration tests can be 
 
 ### IPv6 testing
 Use ``ipv6`` property and specify IP address for EAP binding for IPv6 testing. Example:
- 
+
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dnode=2620:52:0:2804:56ee:75ff:fe1d:44c3 -Dipv6
 
 ### Security manager
@@ -99,13 +99,13 @@ which implements ServerSetupTask.
 
 #### PicketBox is enabled, Elytron is not enabled
 Tests run with PicketBox security domain. This is the default.
-  
+
 #### Both PicketBox and Elytron security subsystems are enabled
   * Tests run with PicketBox security domain. Activate this mode by:
     > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron
   * Tests run with Elytron security domain. Activate this mode by:
     > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron -Dsecurity.domain=elytron
-    
+
     If property '-Dsecurity.domain=elytron' is defined in the maven run, then '-Delytron' property is enforced to be defined too,
      because tests need this property to trigger correct server configuration.
 
@@ -190,7 +190,6 @@ Following is the list of chapters and corresponding subchapters for javadoc test
     - Jackson2 provider
     - Jackson provider
     - Jaxb provider
-    - Jettison provider
     - Jsapi
     - Json-p provider
     - Localization
@@ -205,6 +204,3 @@ Following is the list of chapters and corresponding subchapters for javadoc test
     - Validator provider
     - Writers
     - XXE
-
-
-

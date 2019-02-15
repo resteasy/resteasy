@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.xxe.resource.xxeJettison;
+package org.jboss.resteasy.test.xxe.resource.xxeJackson;
 
 import org.jboss.logging.Logger;
 
@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 @Path("/")
-public class JettisonMovieResource {
+public class Jackson2MovieResource {
 
-   private static final Logger log = Logger.getLogger(JettisonMovieResource.class);
+   private static final Logger log = Logger.getLogger(Jackson2MovieResource.class);
 
    @POST
    @Path("xmlRootElement")

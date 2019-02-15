@@ -1,14 +1,11 @@
 package org.jboss.resteasy.test.providers.jackson2.resource;
 
-import org.jboss.resteasy.annotations.providers.NoJackson;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "product")
-@NoJackson
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JacksonJaxbCoexistenceXmlProduct {
    @XmlAttribute

@@ -4,7 +4,7 @@
    <para>
    With the help of the JBoss Logging project, all log and exception messages in RESTEasy are internationalized. That is, they
    have a default value in English which can be overridden in any given locale by a file which gives translated values. For
-   more information about internationalization and localization in Java, see, for example, 
+   more information about internationalization and localization in Java, see, for example,
    <ulink url="http://docs.oracle.com/javase/tutorial/i18n">http://docs.oracle.com/javase/tutorial/i18n</ulink>. For more about
    JBoss Logging, see
    <ulink url="https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/">
@@ -21,7 +21,7 @@
    underlying logger. With the exception of the resteasy-jaxrs module, all messages are in the Messages class. resteasy-jaxrs
    has exception messages in the Messages class and log messages in the LogMessages class.
    </para>
-   
+
    <para>
    Each message is prefixed by the project code "RESTEASY" followed by an ID which is unique to RESTEasy. These IDs belong to the
    following ranges:
@@ -63,10 +63,6 @@
          <row>
             <entry align="left">6500-6999</entry>
             <entry align="left">providers/jaxb</entry>
-         </row>
-         <row>
-            <entry align="left">7000-7499</entry>
-            <entry align="left">providers/jettison</entry>
          </row>
          <row>
             <entry align="left">7500-7999</entry>
@@ -159,19 +155,19 @@
       </tbody>
    </tgroup>
    </table>
-   
+
    <para>
-   For example, the jaxb provider contains the interface 
+   For example, the jaxb provider contains the interface
    </para>
-   
+
    <blockquote>
    <classname>org.jboss.resteasy.plugins.providers.jaxb.i18.Messages</classname>
    </blockquote>
-   
+
    <para>
    which looks like
    </para>
-   
+
    <programlisting>
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages
@@ -181,94 +177,94 @@ public interface Messages
 
    @Message(id = BASE + 00, value = "Collection wrapping failed, expected root element name of {0} got {1}", format=Format.MESSAGE_FORMAT)
    String collectionWrappingFailedLocalPart(String element, String localPart);
-   
+
    @Message(id = BASE + 05, value = "Collection wrapping failed, expect namespace of {0} got {1}", format=Format.MESSAGE_FORMAT)
    String collectionWrappingFailedNamespace(String namespace, String uri);
    ...
    </programlisting>
-   
+
    <para>
    The value of a message is retrieved by referencing a method and passing the appropriate parameters. For example,
    </para>
-   
+
    <programlisting>
 throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocalPart(wrapped.element(), ele.getName().getLocalPart()));
    </programlisting>
-   
+
    </section>
-   
+
    <section>
    <title>Localization</title>
-   
+
    <para>
    When RESTEasy is built with the "i18n" profile, a template properties file containing the default messages
    is created in a subdirectory of target/generated-translation-files. In the jaxb provider, for example,
    the
    </para>
-   
+
    <blockquote>
    Messages.i18n_locale_COUNTRY_VARIANT.properties
    </blockquote>
-   
+
    <para>
-   goes in the 
+   goes in the
    </para>
-   
+
    <blockquote>
    org/jboss/resteasy/plugins/providers/jaxb/i18n
    </blockquote>
-   
+
    <para>
    directory, and the first few lines are
    </para>
-   
+
    <programlisting>
 # Id: 6500
 # Message: Collection wrapping failed, expected root element name of {0} got {1}
-# @param 1: element - 
-# @param 2: localPart - 
+# @param 1: element -
+# @param 2: localPart -
 collectionWrappingFailedLocalPart=Collection wrapping failed, expected root element name of {0} got {1}
 # Id: 6505
 # Message: Collection wrapping failed, expect namespace of {0} got {1}
-# @param 1: namespace - 
-# @param 2: uri - 
+# @param 1: namespace -
+# @param 2: uri -
 collectionWrappingFailedNamespace=Collection wrapping failed, expect namespace of {0} got {1}
    </programlisting>
-   
+
    <para>
    To provide the translation of the messages for a particular locale, the file should be renamed, replacing
-   "locale", "COUNTRY", and "VARIANT" as appropriate (possibly omitting the latter two), and copied to the 
+   "locale", "COUNTRY", and "VARIANT" as appropriate (possibly omitting the latter two), and copied to the
    src/main/resources directory. In the jaxb provider, it would go in
    </para>
-   
+
    <blockquote>
    src/main/resources/org/jboss/resteasy/plugins/providers/jaxb/i18n
    </blockquote>
-   
+
    <para>
    For testing purposes, each module containing a Messages interface has two sample properties files, for
    the locale "en" and the imaginary locale "xx", in the src/test/resources directory. They are copied to
    src/main/resources when the module is built and deleted when it is cleaned.
    </para>
-   
+
    <para>
    The Messages.i18n_xx.properties file in the jaxb provider, for example, looks like
    </para>
-   
+
    <programlisting>
 # Id: 6500
 # Message: Collection wrapping failed, expected root element name of {0} got {1}
-# @param 1: element - 
-# @param 2: localPart - 
+# @param 1: element -
+# @param 2: localPart -
 collectionWrappingFailedLocalPart=Collection wrapping failed, expected root element name of {0} got {1}
 # Id: 6505
 # Message: Collection wrapping failed, expect namespace of {0} got {1}
-# @param 1: namespace - 
-# @param 2: uri - 
+# @param 1: namespace -
+# @param 2: uri -
 collectionWrappingFailedNamespace=aaa {0} bbb {1} ccc
 ...
    </programlisting>
-   
+
    <para>
    Note that the value of collectionWrappingFailedNamespace is modified.
    </para>
