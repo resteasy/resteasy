@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-testsuite</artifactId>
-    <version>3.6.4-SNAPSHOT</version>
+    <version>3.7.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
