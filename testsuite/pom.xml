@@ -23,11 +23,13 @@
         <jacoco.agent></jacoco.agent>
         <additionalJvmArgs></additionalJvmArgs>
         <ipv6ArquillianSettings></ipv6ArquillianSettings>
+        <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
     </properties>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <failIfNoTests>false</failIfNoTests>
@@ -40,6 +42,7 @@
                         <jboss.home>${jboss.home}</jboss.home>
                         <project.version>${project.version}</project.version>
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
+                        <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
@@ -215,115 +218,6 @@
             <properties>
                 <securityManagerArg>-secmgr</securityManagerArg>
             </properties>
-        </profile>
-        <!-- This profile creates custom server configuration file with configured Elytron subsystem -->
-        <profile>
-            <id>elytron</id>
-            <activation>
-                <property>
-                    <name>elytron</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy</id>
-                                <phase>process-test-resources</phase>
-                                <configuration>
-                                    <target>
-                                        <copy file="${server.home}/standalone/configuration/standalone-full.xml"
-                                              tofile="${server.home}/standalone/configuration/standalone-full-elytron.xml"
-                                              overwrite="true" failonerror="true"/>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <executions>
-                            <execution>
-                                <id>enable-elytron-full-cli</id>
-                                <phase>process-test-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>${java.home}/bin/java</executable>
-                                    <arguments>
-                                        <argument>-jar</argument>
-                                        <argument>${server.home}/jboss-modules.jar</argument>
-                                        <argument>-mp</argument>
-                                        <argument>${server.home}/modules</argument>
-                                        <argument>org.jboss.as.cli</argument>
-                                        <argument>--file=${basedir}/config/enable-elytron-full.cli</argument>
-                                    </arguments>
-                                    <environmentVariables>
-                                        <JBOSS_HOME>${server.home}</JBOSS_HOME>
-                                    </environmentVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <securityManagerArg>${securityManagerArg}</securityManagerArg>
-                                <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
-                                <jboss.server.config.file.name>standalone-full-elytron.xml</jboss.server.config.file.name>
-                                <ipv6>false</ipv6>
-                                <ipv6ArquillianSettings></ipv6ArquillianSettings>
-                                <node>127.0.0.1</node>
-                                <jboss.home>${jboss.home}</jboss.home>
-                                <project.version>${project.version}</project.version>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- This profile enforces to define -Delytron property when -Dsecurity.domain=elytron is triggered -->
-        <profile>
-            <id>security.domain</id>
-            <activation>
-                <property>
-                    <name>security.domain</name>
-                    <value>elytron</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>enforce-property</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <requireProperty>
-                                            <property>elytron</property>
-                                            <message>You must set property '-Delytron' to the build in order to have all components for Elytron configured!</message>
-                                        </requireProperty>
-                                    </rules>
-                                    <fail>true</fail>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <!-- This profile generates jacoco coverage files. To generate html report use "-Djacoco.generate.report" -->
         <profile>
