@@ -1,4 +1,9 @@
 embed-server --server-config=standalone-full-elytron.xml
+
+if (outcome != success) of /subsystem=elytron/http-authentication-factory=application-http-authentication:read-resource
+    /subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global, security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC},{mechanism-name=FORM}])
+end-if
+
 /subsystem=undertow/application-security-domain=other:add(http-authentication-factory=application-http-authentication)
 /subsystem=ejb3/application-security-domain=other:add(security-domain=ApplicationDomain)
 /subsystem=batch-jberet:write-attribute(name=security-domain, value=ApplicationDomain)
