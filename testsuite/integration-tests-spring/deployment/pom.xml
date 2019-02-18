@@ -93,6 +93,7 @@
                 </property>
             </activation>
             <properties>
+                <security.provider>elytron</security.provider>
                 <jboss.server.config.file.name>standalone-full-elytron.xml</jboss.server.config.file.name>
             </properties>
             <build>
