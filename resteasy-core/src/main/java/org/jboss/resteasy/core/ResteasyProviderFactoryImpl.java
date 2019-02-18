@@ -2650,4 +2650,11 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       return ResteasyContext.getContextData(type);
    }
 
+   @Override
+   public void initializeClientProviders(ResteasyProviderFactory factory)
+   {
+      clientRequestFilterRegistry = factory == null ? new ClientRequestFilterRegistryImpl(this) : factory.getClientRequestFilterRegistry().clone(this);
+      clientResponseFilters =  factory == null ? new ClientResponseFilterRegistryImpl(this) : factory.getClientResponseFilters().clone(this);
+   }
+
 }
