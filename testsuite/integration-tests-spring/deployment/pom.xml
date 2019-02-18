@@ -131,14 +131,12 @@
                                 </goals>
                                 <configuration>
                                     <executable>${java.home}/bin/java</executable>
-                                    <arguments>
-                                        <argument>-jar</argument>
-                                        <argument>${jboss.home}/jboss-modules.jar</argument>
-                                        <argument>-mp</argument>
-                                        <argument>${jboss.home}/modules</argument>
-                                        <argument>org.jboss.as.cli</argument>
-                                        <argument>--file=${basedir}/../../config/enable-elytron-full.cli</argument>
-                                    </arguments>
+                                    <commandlineArgs>
+                                        ${modular.jdk.args} -jar ${jboss.home}/jboss-modules.jar
+                                        -mp ${jboss.home}/modules
+                                        org.jboss.as.cli
+                                        --file=${basedir}/../../config/enable-elytron-full.cli
+                                    </commandlineArgs>
                                     <environmentVariables>
                                         <JBOSS_HOME>${jboss.home}</JBOSS_HOME>
                                     </environmentVariables>
