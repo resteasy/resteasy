@@ -17,7 +17,16 @@ public class HeaderParamProcessor extends AbstractInvocationCollectionProcessor
    @Override
    protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object object)
    {
-      return (ClientInvocationBuilder)target.header(paramName, object);
+      return apply(target, new Object[]{object});
+   }
+
+   @Override
+   protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object[] objects)
+   {
+      for (Object object : objects) {
+         target = (ClientInvocationBuilder)target.header(paramName, object);
+      }
+      return target;
    }
 
 }

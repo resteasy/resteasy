@@ -4,6 +4,7 @@ import org.jboss.resteasy.test.resource.param.QueryParamAsPrimitiveTest;
 import org.junit.Assert;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -22,6 +23,15 @@ public class QueryParamAsPrimitiveResourceArray implements QueryParamAsPrimitive
    @GET
    @Produces("application/byte")
    public String doGetByte(@QueryParam("byte") byte[] v) {
+      Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[0]);
+      Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[1]);
+      Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[2]);
+      return "content";
+   }
+
+   @POST
+   @Produces("application/byte")
+   public String doPostByte(@QueryParam("byte") byte[] v) {
       Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[0]);
       Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[1]);
       Assert.assertTrue(QueryParamAsPrimitiveTest.ERROR_MESSAGE, (byte) 127 == v[2]);

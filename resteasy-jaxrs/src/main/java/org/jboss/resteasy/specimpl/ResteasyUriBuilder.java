@@ -946,26 +946,53 @@ public class ResteasyUriBuilder extends UriBuilder
     */
    public UriBuilder clientQueryParam(String name, Object value) throws IllegalArgumentException
    {
-      if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
-      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
+      return clientQueryParam(name, new Object[]{value});
+   }
+
+   public UriBuilder clientQueryParam(String name, Object[] values) throws IllegalArgumentException
+   {
+      StringBuilder sb = new StringBuilder();
+      String prefix = "";
       if (query == null) query = "";
-      else query += "&";
-      query += Encode.encodeQueryParamAsIs(name) + "=" + Encode.encodeQueryParamAsIs(value.toString());
+      else {
+         sb.append(query).append("&");
+      }
+
+      if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
+      if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
+      for (Object value : values)
+      {
+         if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
+         sb.append(prefix);
+         prefix = "&";
+         sb.append(Encode.encodeQueryParamAsIs(name)).append("=").append(Encode.encodeQueryParamAsIs(value.toString()));
+      }
+
+      query = sb.toString();
       return this;
    }
 
    @Override
    public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
    {
+      StringBuilder sb = new StringBuilder();
+      String prefix = "";
+      if (query == null) query = "";
+      else {
+         sb.append(query).append("&");
+      }
+
       if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
       if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
       for (Object value : values)
       {
          if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
-         if (query == null) query = "";
-         else query += "&";
-         query += Encode.encodeQueryParam(name) + "=" + Encode.encodeQueryParam(value.toString());
+         sb.append(prefix);
+         prefix = "&";
+         sb.append(Encode.encodeQueryParam(name)).append("=").append(Encode.encodeQueryParam(value.toString()));
       }
+
+      query = sb.toString();
       return this;
    }
 
