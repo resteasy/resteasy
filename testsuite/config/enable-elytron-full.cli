@@ -16,11 +16,9 @@ end-if
 /core-service=management/management-interface=http-interface:write-attribute(name=http-authentication-factory,value=management-http-authentication)
 /core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
 
-reload
-
 /core-service=management/security-realm=ManagementRealm:remove
 /core-service=management/security-realm=ApplicationRealm/authentication=local:remove
 /core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
 /core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
-reload
+
 stop-embedded-server
