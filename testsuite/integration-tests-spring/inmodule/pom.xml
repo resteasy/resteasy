@@ -181,7 +181,7 @@
                 <executions>
                     <execution>
                         <id>install-as-module-spring-3.2.x-resources</id>
-                        <phase>process-resources</phase>
+                        <phase>process-test-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -205,7 +205,7 @@
                 <executions>
                     <execution>
                         <id>install-as-module-spring-3.2.x-dependencies</id>
-                        <phase>process-resources</phase>
+                        <phase>process-test-resources</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
