@@ -21,26 +21,34 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
    @Override
    protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object object)
    {
-      Form form = null;
-      Object entity = target.getInvocation().getEntity();
-      if (entity != null)
-      {
-         if (entity instanceof Form)
+      return apply(target, new Object[]{object});
+   }
+
+   @Override
+   protected ClientInvocationBuilder apply(ClientInvocationBuilder target, Object[] objects)
+   {
+      for (Object object : objects) {
+         Form form = null;
+         Object entity = target.getInvocation().getEntity();
+         if (entity != null)
          {
-            form = (Form) entity;
+            if (entity instanceof Form)
+            {
+               form = (Form) entity;
+            }
+            else
+            {
+               throw new RuntimeException(Messages.MESSAGES.cannotSetFormParameter());
+            }
          }
          else
          {
-            throw new RuntimeException(Messages.MESSAGES.cannotSetFormParameter());
+            form = new Form();
+            target.getInvocation().setEntity(Entity.form(form));
          }
+         String value = target.getInvocation().getClientConfiguration().toString(object);
+         form.param(paramName, value);
       }
-      else
-      {
-         form = new Form();
-         target.getInvocation().setEntity(Entity.form(form));
-      }
-      String value = target.getInvocation().getClientConfiguration().toString(object);
-      form.param(paramName, value);
       return target;
    }
 
