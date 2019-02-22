@@ -317,6 +317,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          // create a new one
          providerFactory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
          RegisterBuiltin.register(providerFactory);
+
+         if (ResteasyProviderFactory.peekInstance() != null)
+         {
+            providerFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
       }
       return providerFactory;
    }

@@ -330,4 +330,5 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
 
    public abstract ResourceBuilder getResourceBuilder();
 
+   public abstract void initializeClientProviders(ResteasyProviderFactory factory);
 }
