@@ -35,7 +35,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
    private File ROLES_FILE;
 
    // This property decides under which security subsystem will be used for the tests
-   private String subsystem = System.getProperty("security.domain", "picketbox");
+   private String subsystem = "elytron".equals(System.getProperty("security.provider")) ? "elytron" : "picketbox";
 
    // Security domain name shared by elytron and picketBox configuration
    private String securityDomainName = "jaxrsSecDomain";

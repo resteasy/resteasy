@@ -1,4 +1,9 @@
 embed-server --server-config=standalone-full-elytron.xml
+
+if (outcome != success) of /subsystem=elytron/http-authentication-factory=application-http-authentication:read-resource
+    /subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global, security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC},{mechanism-name=FORM}])
+end-if
+
 /subsystem=undertow/application-security-domain=other:add(http-authentication-factory=application-http-authentication)
 /subsystem=ejb3/application-security-domain=other:add(security-domain=ApplicationDomain)
 /subsystem=batch-jberet:write-attribute(name=security-domain, value=ApplicationDomain)
@@ -11,11 +16,9 @@ embed-server --server-config=standalone-full-elytron.xml
 /core-service=management/management-interface=http-interface:write-attribute(name=http-authentication-factory,value=management-http-authentication)
 /core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
 
-reload
-
 /core-service=management/security-realm=ManagementRealm:remove
 /core-service=management/security-realm=ApplicationRealm/authentication=local:remove
 /core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
 /core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
-reload
+
 stop-embedded-server
