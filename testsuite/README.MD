@@ -96,24 +96,18 @@ To redirect to standard output (console) use ``-Dmaven.test.redirectTestOutputTo
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dmaven.test.redirectTestOutputToFile=false
 
 ### Set security subsystem for the tests (PicketBox/Elytron)
-The testsuite can run in **three modes**, which differ by security subsystem configuration and by subsystem used in the tests,
+The testsuite can run in **two modes**, which differ by security subsystem configuration and by subsystem used in the tests,
 which require security domain defined.
 
 The tests which require security domain configuration are extending ``org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup``
 which implements ServerSetupTask.
 
-#### PicketBox is enabled, Elytron is not enabled
+#### Default (PicketBox) security configuration is used, Elytron is not enabled
 Tests run with PicketBox security domain. This is the default.
   
-#### Both PicketBox and Elytron security subsystems are enabled
-  * Tests run with PicketBox security domain. Activate this mode by:
-    > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron
-  * Tests run with Elytron security domain. Activate this mode by:
-    > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron -Dsecurity.domain=elytron
-    
-    If property '-Dsecurity.domain=elytron' is defined in the maven run, then '-Delytron' property is enforced to be defined too,
-     because tests need this property to trigger correct server configuration.
-
+#### Elytron security subsystems are enabled
+Tests run with Elytron security domain. Activate this mode by:
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Delytron
 
 ## Jacoco test coverage
 You can generate Jacoco test coverage report with the following steps.
