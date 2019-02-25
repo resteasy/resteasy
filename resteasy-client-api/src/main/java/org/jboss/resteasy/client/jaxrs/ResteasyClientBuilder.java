@@ -38,6 +38,18 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
    }
 
    /**
+    * Client properties to enable proxy. Proxy host property name (string).
+    */
+   public static final String PROPERTY_PROXY_HOST = "org.jboss.resteasy.jaxrs.client.proxy.host";
+   /**
+    * Proxy port property name (integer).
+    */
+   public static final String PROPERTY_PROXY_PORT = "org.jboss.resteasy.jaxrs.client.proxy.port";
+   /**
+    * Proxy scheme property name (string).
+    */
+   public static final String PROPERTY_PROXY_SCHEME = "org.jboss.resteasy.jaxrs.client.proxy.scheme";
+   /**
     * Changing the providerFactory will wipe clean any registered components or properties.
     *
     * @param providerFactory provider factory

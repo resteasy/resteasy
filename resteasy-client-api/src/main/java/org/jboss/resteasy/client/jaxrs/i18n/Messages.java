@@ -145,4 +145,7 @@ public interface Messages
 
    @Message(id = BASE + 180, value = "Could not close http response")
    String couldNotCloseHttpResponse();
+
+   @Message(id = BASE + 185, value = "Unable to set http proxy")
+   String unableToSetHttpProxy();
 }
