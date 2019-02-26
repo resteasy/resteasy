@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.jackson2.resource;
 
-import org.jboss.resteasy.annotations.providers.NoJackson;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,7 +16,6 @@ public class JacksonJaxbCoexistenceXmlResource {
 
    @GET
    @Produces("application/json")
-   @NoJackson
    public JacksonJaxbCoexistenceXmlProduct[] getProducts() {
 
       JacksonJaxbCoexistenceXmlProduct[] products = {new JacksonJaxbCoexistenceXmlProduct(333, "Iphone"), new JacksonJaxbCoexistenceXmlProduct(44, "macbook")};

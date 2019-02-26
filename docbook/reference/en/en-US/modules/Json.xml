@@ -1,7 +1,6 @@
 <chapter id="json">
     <title>JSON Support via Jackson</title>
-    <para>Besides the Jettision JAXB adapter for JSON, RESTEasy also supports integration with the Jackson project.
-        Many users find the output from Jackson much nicer than the Badger format or Mapped format provided by Jettison.
+    <para>RESTEasy supports integration with the Jackson project.
         For more on Jackson 2, see <ulink url="http://wiki.fasterxml.com/JacksonHome">http://wiki.fasterxml.com/JacksonHome</ulink>.
         Besides JAXB like APIs, it has a JavaBean based model, described at
         <ulink url="http://wiki.fasterxml.com/JacksonDataBinding">http://wiki.fasterxml.com/JacksonDataBinding</ulink>,
@@ -12,9 +11,9 @@
     <para>
     <emphasis role="bold">NOTE.</emphasis> The resteasy-jackson-provider module, which is based on the outdated Jackson 1.9.x, is
     currently deprecated, and will be removed in a release subsequent to 3.1.0.Final. The resteasy-jackson2-provider
-    module is based on Jackson 2. 
+    module is based on Jackson 2.
     </para>
-    
+
     <sect1>
         <title>Using Jackson 1.9.x Outside of WildFly</title>
         <para>If you're deploying RESTEasy outside of WildFly,
@@ -72,56 +71,8 @@ public class MyService {
     public Customer[] getCustomers() {}
 }
 ]]></programlisting>
-    <para>Another problem that occurs is when you are using the RESTEasy JAXB providers alongside Jackson.
-        You may want to use Jettison and JAXB to output your JSON instead of Jackson. In this case, you must
-        either not install the Jackson provider, or use the annotation
-        @org.jboss.resteasy.annotations.providers.NoJackson
-        on your JAXB annotated classes. For example:
-    </para>
-    <programlisting><![CDATA[
-@XmlRootElement
-@NoJackson
-public class Customer {...}
-
-@Path("/customers")
-public class MyService {
-
-    @GET
-    @Produces("application/vnd.customer+json")
-    public Customer[] getCustomers() {}
-}
-]]></programlisting>
-    <para>
-        If you can't annotate the JAXB class with @NoJackson, then you can
-        use the annotation on a method parameter. For example:
-    </para>
-    <programlisting><![CDATA[
-@XmlRootElement
-public class Customer {...}
-
-@Path("/customers")
-public class MyService {
-
-    @GET
-    @Produces("application/vnd.customer+json")
-    @NoJackson
-    public Customer[] getCustomers() {}
-
-    @POST
-    @Consumes("application/vnd.customer+json")
-    public void createCustomer(@NoJackson Customer[] customers) {...}
-}
-]]></programlisting>
     </sect1>
-    <sect1 id="Possible_Jackson_Problems">
-        <title>Possible Conflict With JAXB Provider</title>
-        <para>
-            If your Jackson classes are annotated with JAXB annotations and you have the resteasy-jaxb-provider in your
-            classpath, you may trigger the Jettision JAXB marshalling code. To turn off the JAXB json marshaller
-            use the @org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes("application/*+json") on your
-            classes.
-        </para>
-    </sect1>
+
     <sect1 id="JSONP_Support">
         <title>JSONP Support</title>
         <para>
@@ -161,7 +112,7 @@ try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
             You can enable this feature by setting the resteasy.jsonp.silent property to true
         </para>
         <para>
-        <emphasis role="bold">Note.</emphasis> Because JSONP can be used in 
+        <emphasis role="bold">Note.</emphasis> Because JSONP can be used in
         <emphasis role="bold">Cross Site Scripting Inclusion (XSSI) attacks</emphasis>,
         <methodname>Jackson2JsonpInterceptor</methodname>
         is disabled by default. Two steps are necessary to enable it:
@@ -204,7 +155,7 @@ public Product getFormattedProduct()
     <sect1 id="JSON_Filter_Support">
         <title>JSON Filter Support</title>
         <para>
-            In Jackson2 , there is new feature <ulink url="http://wiki.fasterxml.com/JacksonFeatureJsonFilter">JsonFilter</ulink> to allow annotate class with @JsonFilter and doing dynamic filtering. 
+            In Jackson2 , there is new feature <ulink url="http://wiki.fasterxml.com/JacksonFeatureJsonFilter">JsonFilter</ulink> to allow annotate class with @JsonFilter and doing dynamic filtering.
 Here is an example which defines mapping from "nameFilter" to filter instances and filter bean properties when serilize to json format:
 <programlisting>
 @JsonFilter(value="nameFilter")
@@ -262,8 +213,8 @@ public class JsonFilterWriteInterceptor implements WriterInterceptor{
 	public void aroundWriteTo(WriterInterceptorContext context)
 			throws IOException, WebApplicationException {
 		//set a threadlocal modifier
-	    ObjectWriterInjector.set(modifier);	
-		context.proceed();	
+	    ObjectWriterInjector.set(modifier);
+		context.proceed();
 	}
 
 }
