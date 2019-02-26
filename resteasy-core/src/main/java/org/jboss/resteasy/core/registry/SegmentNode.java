@@ -44,6 +44,7 @@ public class SegmentNode
 {
    public static final String RESTEASY_CHOSEN_ACCEPT = "RESTEASY_CHOSEN_ACCEPT";
    public static final String RESTEASY_SERVER_HAS_PRODUCES = "RESTEASY-SERVER-HAS-PRODUCES";
+   public static final String RESTEASY_SERVER_HAS_PRODUCES_LC = RESTEASY_SERVER_HAS_PRODUCES.toLowerCase();
    public static final MediaType[] WILDCARD_ARRAY = {MediaType.WILDCARD_TYPE};
    public static final List<MediaType> DEFAULT_ACCEPTS = new ArrayList<MediaType>();
 

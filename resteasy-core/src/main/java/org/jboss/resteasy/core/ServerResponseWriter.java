@@ -157,7 +157,7 @@ public class ServerResponseWriter
       MediaType mt = getResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
       if (mt != null)
       {
-         jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.toString());
+         jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt);
       }
    }
 
@@ -377,7 +377,7 @@ public class ServerResponseWriter
       {
          Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
          map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES);
-         map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES.toLowerCase());
+         map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES_LC);
          chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
       }
       boolean hasQ = chosen.getParameters().containsKey("q");
