@@ -321,8 +321,6 @@ public static class TestService
       <para>
          For example, consider this JAXB class:
       </para>
-      <para>
-
 <programlisting>
 @XmlRootElement(name = "book")
 public class Book
@@ -376,7 +374,37 @@ public class Book
     }
 }
 </programlisting>
-      </para>
+       <para>
+           And we can write a method to use the above entity:
+       </para>
+<programlisting>
+@Path("/test_json")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Book test_json() {
+    Book book = new Book();
+    book.setTitle("EJB 3.0");
+    book.setAuthor("Bill Burke");
+    book.setISBN("596529260");
+    return book;
+}
+</programlisting>
+       <para>
+           Requesting from the above method, and we can see the default Jackson2 marshaller would return JSON that looked like this:
+       </para>
+       <para>
+<programlisting>
+$ http localhost:8080/dummy/test_json
+HTTP/1.1 200
+...
+Content-Type: application/json
+
+{
+"ISBN": "596529260",
+"author": "Bill Burke",
+"title": "EJB 3.0"
+}</programlisting>
+       </para>
    </sect1>
    <sect1 id="JAXB_+_FastinfoSet_provider">
       <title>JAXB + FastinfoSet provider</title>
