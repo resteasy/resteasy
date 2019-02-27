@@ -19,6 +19,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    public static final MediaTypeHeaderDelegate INSTANCE = new MediaTypeHeaderDelegate();
 
    private static Map<String, MediaType> map = new ConcurrentHashMap<String, MediaType>();
+   private static Map<MediaType, String> reverseMap = new ConcurrentHashMap<MediaType, String>();
    private static final int MAX_MT_CACHE_SIZE =
        Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200);
 
@@ -64,8 +65,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
           final int size = map.size();
           if (size >= MAX_MT_CACHE_SIZE) {
               map.clear();
+              reverseMap.clear();
           }
           map.put(type, result);
+          reverseMap.put(result, type);
       }
       return result;
    }
@@ -147,6 +150,22 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    {
       if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       MediaType type = (MediaType) o;
+      String result = reverseMap.get(type);
+      if (result == null) {
+          result = internalToString(type);
+          final int size = reverseMap.size();
+          if (size >= MAX_MT_CACHE_SIZE) {
+             reverseMap.clear();
+             map.clear();
+          }
+          reverseMap.put(type, result);
+          map.put(result, type);
+      }
+      return result;
+   }
+
+   private String internalToString(MediaType type)
+   {
       StringBuilder buf = new StringBuilder();
 
       buf.append(type.getType().toLowerCase()).append("/").append(type.getSubtype().toLowerCase());
