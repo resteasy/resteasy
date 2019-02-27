@@ -293,6 +293,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return method.getResourceClass().getClazz();
    }
 
+   public Class<?> getReturnType()
+   {
+      return method.getReturnType();
+   }
+
    public Annotation[] getMethodAnnotations()
    {
       return methodAnnotations;
