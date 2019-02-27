@@ -133,9 +133,9 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
       try
       {
          return (ResteasyProviderFactory) Thread.currentThread().getContextClassLoader()
-               .loadClass("org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl").newInstance();
+               .loadClass("org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl").getDeclaredConstructor().newInstance();
       }
-      catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
