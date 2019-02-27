@@ -56,8 +56,8 @@ public class ServerHelper
    protected void initialize(ResteasyProviderFactoryImpl parent)
    {
       serverDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getServerDynamicFeatures());
-      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
-      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
+      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
+      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
 
       serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyReaders().clone();
       serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyWriters().clone();

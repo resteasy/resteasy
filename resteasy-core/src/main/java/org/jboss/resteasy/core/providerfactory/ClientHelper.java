@@ -69,8 +69,8 @@ public class ClientHelper
       clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistryImpl(rpf) : parent.getClientWriterInterceptorRegistry().clone(rpf);
 
       clientDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getClientDynamicFeatures());
-      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
-      reactiveClasses = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.clientHelper.reactiveClasses);
+      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>(1) : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
+      reactiveClasses = parent == null ? new ConcurrentHashMap<>(8) : new ConcurrentHashMap<>(parent.clientHelper.reactiveClasses);
    }
 
    protected void initializeClientProviders(ResteasyProviderFactory factory)

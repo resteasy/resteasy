@@ -191,7 +191,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderClasses());
       providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderInstances());
       classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClassContracts());
-      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
+      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
       contextResolvers = new ConcurrentHashMap<>();
       if (parent != null)
       {
@@ -200,10 +200,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             contextResolvers.put(entry.getKey(), entry.getValue().clone());
          }
       }
-      contextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getContextInjectors());
-      asyncContextInjectors = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getAsyncContextInjectors());
+      contextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getContextInjectors());
+      asyncContextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getAsyncContextInjectors());
       sortedParamConverterProviders = Collections.synchronizedSortedSet(parent == null ? new TreeSet<>() : new TreeSet<>(parent.getSortedParamConverterProviders()));
-      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
+      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
 
       resourceBuilder = new ResourceBuilder();
 
