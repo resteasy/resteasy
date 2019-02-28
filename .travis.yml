@@ -8,16 +8,14 @@ jdk:
   - openjdk8
   - oraclejdk11
 env:
-  - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
   - SERVER_VERSION=15.0.0.Final
-  - SERVER_VERSION=15.0.0.Final ELYTRON=true
+  - SERVER_VERSION=16.0.0.Final
+  - SERVER_VERSION=16.0.0.Final ELYTRON=true
 jobs:
   exclude:
     - jdk: oraclejdk11
-      env: SERVER_VERSION=13.0.0.Final
-    - jdk: oraclejdk11
-      env: SERVER_VERSION=15.0.0.Final ELYTRON=true
+      env: SERVER_VERSION=16.0.0.Final ELYTRON=true
   include:
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
