@@ -120,19 +120,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>15.0.0.Final</server.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-13x-exclusions</id>
-            <activation>
-              <property>
-                <name>server.version</name>
-                <value>13.0.0.Final</value>
-              </property>
-            </activation>
-            <properties>
-              <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingOnWildFly13</additional.surefire.excluded.groups>
+                <server.version>16.0.0.Final</server.version>
             </properties>
         </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->

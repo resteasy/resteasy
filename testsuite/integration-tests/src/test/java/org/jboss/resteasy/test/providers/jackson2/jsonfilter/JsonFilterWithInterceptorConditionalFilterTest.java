@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
@@ -68,7 +67,6 @@ public class JsonFilterWithInterceptorConditionalFilterTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category({ExpectedFailingOnWildFly13.class})
    public void testJacksonConditionalStringPropertyFiltered() throws Exception {
       WebTarget target = client.target(generateURL("/products/-1"));
       Response response = target.request().get();

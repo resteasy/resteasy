@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonResource;
@@ -22,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -72,7 +70,6 @@ public class JacksonJaxbCoexistenceTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ExpectedFailingOnWildFly13.class})
    public void testJacksonString() throws Exception {
       WebTarget target = client.target(generateURL("/products/333"));
       Response response = target.request().get();
@@ -99,7 +96,6 @@ public class JacksonJaxbCoexistenceTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ExpectedFailingOnWildFly13.class})
    public void testJacksonXmlString() throws Exception {
       WebTarget target = client.target(generateURL("/jxml/products/333"));
       Response response = target.request().get();
