@@ -340,4 +340,13 @@
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${version.jxr.plugin}</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
