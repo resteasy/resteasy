@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly13;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson.resource.JacksonJAXBResource;
@@ -20,7 +19,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Assert;
@@ -120,7 +118,6 @@ public class JacksonTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ExpectedFailingOnWildFly13.class})
    public void testJacksonString() throws Exception {
       WebTarget target = client.target(generateURL("/products/333"));
       Response response = target.request().get();
@@ -225,7 +222,6 @@ public class JacksonTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
-   @Category({ExpectedFailingOnWildFly13.class})
    public void testJacksonJAXB() throws Exception {
       {
             WebTarget target = client.target(generateURL("/jaxb"));
