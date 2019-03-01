@@ -525,6 +525,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                     <executions>
 
+                        <!-- Re-evaluate https://issues.jboss.org/browse/RESTEASY-1884 in case we find ourselves
+                             in need of adding additional execution. -->
+                        
                         <!-- default test execution -->
                         <execution>
                             <id>default-test</id>
