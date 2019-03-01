@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyDeploymentObserver;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -78,6 +79,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    private String paramMapping;
    private Map<String, Object> properties = new TreeMap<String, Object>();
+   private static List<ResteasyDeploymentObserver> deploymentObservers = new ArrayList<>();
 
    public void start()
    {
@@ -315,6 +317,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             }
             suffixNegotiationFilter.setLanguageMappings(languageExtensions);
          }
+
+         for (ResteasyDeploymentObserver observer : deploymentObservers)
+         {
+            observer.start(this);
+         }
       }
       finally
       {
@@ -536,6 +543,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
       ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
       ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+
+      for (ResteasyDeploymentObserver observer : deploymentObservers)
+      {
+         observer.stop(this);
+      }
    }
 
    /**
@@ -995,5 +1007,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    @Override
    public void setProperty(String key, Object value) {
       properties.put(key, value);
+   }
+
+   public static void registerObserver(ResteasyDeploymentObserver observer)
+   {
+      deploymentObservers.add(observer);
    }
 }

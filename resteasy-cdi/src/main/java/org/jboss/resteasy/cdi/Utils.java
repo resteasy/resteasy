@@ -2,6 +2,7 @@ package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
@@ -144,5 +145,29 @@ public class Utils
          }
       }
       return false;
+   }
+
+   /**
+    * Returns the annotation object from the set of annotations
+    * defined be the annotation class
+    *
+    * @param annotationClass the looked up annotation
+    * @param annotations set of annotation objects
+    * @param <T> the type of the passed annotation
+    * @return annotation object from the annotations set defined by the annotation
+    */
+   public static <T extends Annotation> T getAnnotation(Class<T> annotationClass, Set<Annotation> annotations)
+   {
+      for (Annotation annotation : annotations)
+      {
+         if (annotation.annotationType().equals(annotationClass))
+         {
+            @SuppressWarnings("unchecked")
+            T result = (T) annotation;
+            return result;
+         }
+      }
+
+      return null;
    }
 }

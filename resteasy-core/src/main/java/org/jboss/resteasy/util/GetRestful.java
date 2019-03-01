@@ -21,7 +21,7 @@ public class GetRestful
     */
    public static Class getRootResourceClass(Class clazz)
    {
-      return AnnotationResolver.getClassWithAnnotation(clazz, Path.class);
+      return AnnotationResolver.getInstance().getClassWithAnnotation(clazz, Path.class);
    }
 
    /**

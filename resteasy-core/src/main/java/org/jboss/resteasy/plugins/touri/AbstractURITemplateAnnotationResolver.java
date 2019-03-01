@@ -20,17 +20,18 @@ import java.util.Map;
 public abstract class AbstractURITemplateAnnotationResolver implements
       URIResolver
 {
+   private static AnnotationResolver annotationResolver = AnnotationResolver.getInstance();
 
    @SuppressWarnings("rawtypes")
    public boolean handles(Class type)
    {
-      return AnnotationResolver.getClassWithAnnotation(type, getAnnotationType()) != null;
+      return annotationResolver.getClassWithAnnotation(type, getAnnotationType()) != null;
    }
 
    @SuppressWarnings("unchecked")
    public String resolveURI(Object object)
    {
-      Class<? extends Object> clazz = AnnotationResolver
+      Class<? extends Object> clazz = annotationResolver
               .getClassWithAnnotation(object.getClass(), getAnnotationType());
       ResteasyUriBuilder uriBuilderImpl = getUriBuilder(clazz);
       Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(clazz);
