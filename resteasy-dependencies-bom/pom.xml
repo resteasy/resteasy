@@ -42,7 +42,7 @@
         <version.org.apache.httpcomponents.httpclient>4.5.4</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.5</version.org.apache.httpcomponents.httpcore>
         <version.org.apache.httpcomponents.httpasyncclient>4.1.3</version.org.apache.httpcomponents.httpasyncclient>
-        <version.org.apache.james.apache-mime4j>0.6</version.org.apache.james.apache-mime4j>
+        <version.org.apache.james.apache-mime4j>0.7.2</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.60</version.org.bouncycastle>
         <version.org.codehaus.jackson>1.9.13</version.org.codehaus.jackson>
@@ -382,7 +382,17 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
-                <artifactId>apache-mime4j</artifactId>
+                <artifactId>apache-mime4j-core</artifactId>
+                <version>${version.org.apache.james.apache-mime4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-mime4j-dom</artifactId>
+                <version>${version.org.apache.james.apache-mime4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-mime4j-storage</artifactId>
                 <version>${version.org.apache.james.apache-mime4j}</version>
             </dependency>
             <dependency>
