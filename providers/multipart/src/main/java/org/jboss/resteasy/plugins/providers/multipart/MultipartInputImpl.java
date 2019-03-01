@@ -1,27 +1,21 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import org.apache.james.mime4j.dom.BinaryBody;
+import org.apache.james.mime4j.dom.Body;
+import org.apache.james.mime4j.dom.Entity;
+import org.apache.james.mime4j.dom.Message;
+import org.apache.james.mime4j.dom.Multipart;
+import org.apache.james.mime4j.dom.TextBody;
+import org.apache.james.mime4j.dom.field.ContentTypeField;
+import org.apache.james.mime4j.message.BodyPart;
+import org.apache.james.mime4j.stream.Field;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -29,38 +23,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
-
-import org.apache.james.mime4j.MimeException;
-import org.apache.james.mime4j.MimeIOException;
-import org.apache.james.mime4j.codec.Base64InputStream;
-import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
-import org.apache.james.mime4j.descriptor.BodyDescriptor;
-import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.message.BinaryBody;
-import org.apache.james.mime4j.message.Body;
-import org.apache.james.mime4j.message.BodyFactory;
-import org.apache.james.mime4j.message.BodyPart;
-import org.apache.james.mime4j.message.Entity;
-import org.apache.james.mime4j.message.Message;
-import org.apache.james.mime4j.message.MessageBuilder;
-import org.apache.james.mime4j.message.Multipart;
-import org.apache.james.mime4j.message.TextBody;
-import org.apache.james.mime4j.parser.Field;
-import org.apache.james.mime4j.parser.MimeStreamParser;
-import org.apache.james.mime4j.storage.AbstractStorageProvider;
-import org.apache.james.mime4j.storage.DefaultStorageProvider;
-import org.apache.james.mime4j.storage.Storage;
-import org.apache.james.mime4j.storage.StorageOutputStream;
-import org.apache.james.mime4j.storage.StorageProvider;
-import org.apache.james.mime4j.storage.ThresholdStorageProvider;
-import org.apache.james.mime4j.util.MimeUtil;
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.core.ProvidersContextRetainer;
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -76,117 +51,6 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
    protected String defaultPartCharset = null;
    protected Providers savedProviders;
-   // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
-   private static class BinaryOnlyMessageBuilder extends MessageBuilder
-   {
-      private Method expectMethod;
-      private java.lang.reflect.Field bodyFactoryField;
-      private java.lang.reflect.Field stackField;
-
-      private void init()
-      {
-         try
-         {
-            expectMethod = MessageBuilder.class.getDeclaredMethod("expect", Class.class);
-            expectMethod.setAccessible(true);
-            bodyFactoryField = MessageBuilder.class.getDeclaredField("bodyFactory");
-            bodyFactoryField.setAccessible(true);
-            stackField = MessageBuilder.class.getDeclaredField("stack");
-            stackField.setAccessible(true);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-
-      private BinaryOnlyMessageBuilder(final Entity entity)
-      {
-         super(entity);
-         init();
-      }
-
-      private BinaryOnlyMessageBuilder(final Entity entity, final StorageProvider storageProvider)
-      {
-         super(entity, storageProvider);
-         init();
-      }
-
-      @SuppressWarnings(value = "unchecked")
-      @Override
-      public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException
-      {
-         // the only thing different from the superclass is that we just return a BinaryBody no matter what
-         try
-         {
-            expectMethod.invoke(this, Entity.class);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-
-         final String enc = bd.getTransferEncoding();
-
-         final Body body;
-
-         final InputStream decodedStream;
-         if (MimeUtil.ENC_BASE64.equals(enc)) {
-            decodedStream = new Base64InputStream(is);
-         } else if (MimeUtil.ENC_QUOTED_PRINTABLE.equals(enc)) {
-            decodedStream = new QuotedPrintableInputStream(is);
-         } else {
-            decodedStream = is;
-         }
-
-         BodyFactory factory;
-         try
-         {
-            factory = (BodyFactory)bodyFactoryField.get(this);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-
-         body = factory.binaryBody(decodedStream);
-
-         Stack<Object> st;
-         try
-         {
-            st = (Stack<Object>)stackField.get(this);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-         Entity entity = ((Entity) st.peek());
-         entity.setBody(body);
-      }
-   }
-
-   private static class BinaryMessage extends Message
-   {
-      private BinaryMessage(final InputStream is) throws IOException, MimeIOException
-      {
-         try {
-            MimeStreamParser parser = new MimeStreamParser(null);
-
-            StorageProvider storageProvider;
-            if (System.getProperty(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY) != null) {
-               storageProvider = DefaultStorageProvider.getInstance();
-            } else {
-               StorageProvider backend = new CustomTempFileStorageProvider();
-               storageProvider = new ThresholdStorageProvider(backend, 1024);
-            }
-            parser.setContentHandler(new BinaryOnlyMessageBuilder(this, storageProvider));
-            parser.parse(is);
-         } catch (MimeException e) {
-            throw new MimeIOException(e);
-         }
-
-      }
-   }
 
    public MultipartInputImpl(final MediaType contentType, final Providers workers)
    {
@@ -200,16 +64,19 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
                .valueOf(defaultContentType);
-         this.defaultPartCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
+         this.defaultPartCharset = (String) httpRequest.getAttribute(
+                 InputPart.DEFAULT_CHARSET_PROPERTY);
          if (defaultPartCharset != null)
          {
-            this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+            this.defaultPartContentType = getMediaTypeWithDefaultCharset(
+                    this.defaultPartContentType);
          }
       }
    }
 
    public MultipartInputImpl(final MediaType contentType, final Providers workers,
-                             final MediaType defaultPartContentType, final String defaultPartCharset)
+                             final MediaType defaultPartContentType,
+                             final String defaultPartCharset)
    {
       this.contentType = contentType;
       this.workers = workers;
@@ -223,14 +90,18 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    public MultipartInputImpl(final Multipart multipart, final Providers workers) throws IOException
    {
-      for (BodyPart bodyPart : multipart.getBodyParts())
-         parts.add(extractPart(bodyPart));
+      for (Entity entity : multipart.getBodyParts()) {
+         if (entity instanceof BodyPart)
+         {
+            parts.add(extractPart((BodyPart)entity));
+         }
+      }
       this.workers = workers;
    }
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is));
+      mimeMessage = Mime4JWorkaround.parseMessage(addHeaderToHeadlessStream(is));
       extractParts();
    }
 
@@ -261,8 +132,12 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    protected void extractParts() throws IOException
    {
       Multipart multipart = (Multipart) mimeMessage.getBody();
-      for (BodyPart bodyPart : multipart.getBodyParts())
-         parts.add(extractPart(bodyPart));
+      for (Entity entity : multipart.getBodyParts()) {
+         if (entity instanceof BodyPart)
+         {
+            parts.add(extractPart((BodyPart)entity));
+         }
+      }
    }
 
    protected InputPart extractPart(BodyPart bodyPart) throws IOException
@@ -321,7 +196,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             if (bodyPart.getBody() instanceof Multipart)
             {
-               return (T) new MultipartInputImpl(Multipart.class.cast(bodyPart.getBody()), workers);
+               return (T) new MultipartInputImpl(
+                       Multipart.class.cast(bodyPart.getBody()), workers);
             }
          }
          try
@@ -507,131 +383,4 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    {
       savedProviders = providers;
    }
-
-   /**
-    * A custom TempFileStorageProvider that do no set deleteOnExit on temp files,
-    * to avoid memory leaks (see https://issues.apache.org/jira/browse/MIME4J-251)
-    *
-    */
-   private static class CustomTempFileStorageProvider extends AbstractStorageProvider
-   {
-
-      private static final String DEFAULT_PREFIX = "m4j";
-
-      private final String prefix;
-
-      private final String suffix;
-
-      private final File directory;
-
-      CustomTempFileStorageProvider()
-      {
-         this(DEFAULT_PREFIX, null, null);
-      }
-
-      CustomTempFileStorageProvider(final String prefix, final String suffix, final File directory)
-      {
-         if (prefix == null || prefix.length() < 3)
-            throw new IllegalArgumentException("invalid prefix");
-
-         if (directory != null && !directory.isDirectory() && !directory.mkdirs())
-            throw new IllegalArgumentException("invalid directory");
-
-         this.prefix = prefix;
-         this.suffix = suffix;
-         this.directory = directory;
-      }
-
-      public StorageOutputStream createStorageOutputStream() throws IOException
-      {
-         File file = File.createTempFile(prefix, suffix, directory);
-
-         return new TempFileStorageOutputStream(file);
-      }
-
-      private static final class TempFileStorageOutputStream extends StorageOutputStream
-      {
-         private File file;
-
-         private OutputStream out;
-
-         TempFileStorageOutputStream(final File file) throws IOException
-         {
-            this.file = file;
-            this.out = new FileOutputStream(file);
-         }
-
-         @Override
-         public void close() throws IOException
-         {
-            super.close();
-            out.close();
-         }
-
-         @Override
-         protected void write0(byte[] buffer, int offset, int length) throws IOException
-         {
-            out.write(buffer, offset, length);
-         }
-
-         @Override
-         protected Storage toStorage0() throws IOException
-         {
-            // out has already been closed because toStorage calls close
-            return new TempFileStorage(file);
-         }
-      }
-
-      private static final class TempFileStorage implements Storage
-      {
-
-         private File file;
-
-         private static final Set<File> filesToDelete = new HashSet<File>();
-
-         TempFileStorage(final File file)
-         {
-            this.file = file;
-         }
-
-         public void delete()
-         {
-            // deleting a file might not immediately succeed if there are still
-            // streams left open (especially under Windows). so we keep track of
-            // the files that have to be deleted and try to delete all these
-            // files each time this method gets invoked.
-
-            // a better but more complicated solution would be to start a
-            // separate thread that tries to delete the files periodically.
-
-            synchronized (filesToDelete)
-            {
-               if (file != null)
-               {
-                  filesToDelete.add(file);
-                  file = null;
-               }
-
-               for (Iterator<File> iterator = filesToDelete.iterator(); iterator.hasNext();)
-               {
-                  File f = iterator.next();
-                  if (f.delete())
-                  {
-                     iterator.remove();
-                  }
-               }
-            }
-         }
-
-         public InputStream getInputStream() throws IOException
-         {
-            if (file == null)
-               throw new IllegalStateException("storage has been deleted");
-
-            return new BufferedInputStream(new FileInputStream(file));
-         }
-
-      }
-   }
-
 }
