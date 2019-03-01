@@ -12,8 +12,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -43,7 +43,7 @@ public class MultipurtContainsJsonTest {
    }
 
    public static MessageBodyWriter<MultipartFormDataOutput> getWriter() {
-      ResteasyProviderFactory factory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
+      ResteasyProviderFactory factory = new ResteasyProviderFactoryImpl(ResteasyProviderFactory.newInstance(), true);
       RegisterBuiltin.register(factory);
       factory.registerProviderInstance(new ProviderFactoryPrecendencePlainTextWriter());
       factory.registerProviderInstance(new ProviderFactoryPrecedenceIntegerPlainTextWriter());

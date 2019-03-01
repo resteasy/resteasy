@@ -115,14 +115,14 @@ public class MediaTypeMap<T>
       }
    }
 
-   private static Pattern COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+(.+)");
+   private static final Pattern COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+(.+)");
 
    // Composite subtypes are of the pattern *+subtype i.e. *+xml, *+json
-   public static Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
+   public static final Pattern COMPOSITE_SUBTYPE_WILDCARD_PATTERN = Pattern.compile("\\*\\+(.+)");
 
 
    // This composite is subtype+*  i.e. atom+* rss+*
-   public static Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
+   public static final Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
 
    private static class SubtypeMap<T>
    {
@@ -252,14 +252,7 @@ public class MediaTypeMap<T>
       return clone;
    }
 
-   public Map<CachedMediaTypeAndClass, List<T>> getClassCache()
-   {
-      return classCache;
-   }
-
-
-
-   public static class CachedMediaTypeAndClass
+   private static class CachedMediaTypeAndClass
    {
       // we need a weak reference because of possible hot deployment
       // Although, these reference should get cleared up with any add() invocation

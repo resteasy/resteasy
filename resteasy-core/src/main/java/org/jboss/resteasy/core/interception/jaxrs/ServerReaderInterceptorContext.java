@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

@@ -10,7 +10,7 @@ import org.jboss.resteasy.util.CookieParser;
  */
 public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Cookie>
 {
-
+   public static final CookieHeaderDelegate INSTANCE = new CookieHeaderDelegate();
    public Cookie fromString(String value) throws IllegalArgumentException
    {
       return CookieParser.parseCookies(value).get(0);

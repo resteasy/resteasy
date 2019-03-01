@@ -202,7 +202,9 @@ public class InboundSseEventImpl implements InboundSseEvent
       else
       {
          ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
-         RegisterBuiltin.register(factory);
+         if (!factory.isBuiltinsRegistered()) {
+            RegisterBuiltin.register(factory);
+         }
          reader = factory.getClientMessageBodyReader(type.getRawType(), type.getType(), annotations, mediaType);
       }
       if (reader == null)

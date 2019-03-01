@@ -18,6 +18,7 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
+   public static final NewCookieHeaderDelegate INSTANCE = new NewCookieHeaderDelegate();
    private static final String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
    public Object fromString(String newCookie) throws IllegalArgumentException {

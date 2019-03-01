@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;

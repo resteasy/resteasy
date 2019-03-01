@@ -10,7 +10,7 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
@@ -148,7 +148,7 @@ public class PriorityEqualityTest {
       ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
       factory.register(ExceptionMapper1.class);
       factory.register(ExceptionMapper2.class);
-      Assert.assertEquals(1, factory.getExceptionMappers().size());
+      Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
    }
 
    /**
@@ -161,6 +161,6 @@ public class PriorityEqualityTest {
       ResteasyProviderFactoryImpl factory = new ResteasyProviderFactoryImpl();
       factory.registerProviderInstance(new ExceptionMapper1());
       factory.registerProviderInstance(new ExceptionMapper2());
-      Assert.assertEquals(1, factory.getExceptionMappers().size());
+      Assert.assertEquals(ExceptionMapper2.class, factory.getExceptionMapper(TestException.class).getClass());
    }
 }

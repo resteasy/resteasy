@@ -11,6 +11,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  */
 public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityTag>
 {
+   public static final EntityTagDelegate INSTANCE = new EntityTagDelegate();
+
    public EntityTag fromString(String value) throws IllegalArgumentException
    {
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.entityTagValueNull());

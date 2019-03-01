@@ -1,7 +1,7 @@
 package org.jboss.resteasy.mock;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

@@ -1,1 +1,1 @@
-org.jboss.resteasy.core.ResteasyProviderFactoryImpl
+org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl

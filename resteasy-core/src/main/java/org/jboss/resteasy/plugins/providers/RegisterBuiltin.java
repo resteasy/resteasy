@@ -14,10 +14,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.WeakHashMap;
 
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.core.providerfactory.ClientHelper;
+import org.jboss.resteasy.core.providerfactory.NOOPServerHelper;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
@@ -30,6 +35,39 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class RegisterBuiltin
 {
+   private static final Map<ClassLoader, ResteasyProviderFactory> configuredClientFactories = new WeakHashMap<>();
+   private static final boolean gzipForCachedFactories = isGZipEnabled();
+
+   public static synchronized ResteasyProviderFactory getClientInitializedResteasyProviderFactory(ClassLoader cl)
+   {
+      ResteasyProviderFactory rpf = null;
+      final boolean gzip = isGZipEnabled();
+      if (gzipForCachedFactories == gzip) {
+         rpf = configuredClientFactories.get(cl);
+      }
+      if (rpf == null) {
+         rpf = new ResteasyProviderFactoryImpl(null, true) {
+            @Override
+            public RuntimeType getRuntimeType()
+            {
+               return RuntimeType.CLIENT;
+            }
+            @Override
+            protected void initializeUtils()
+            {
+               clientHelper = new ClientHelper(this);
+               serverHelper = NOOPServerHelper.INSTANCE;
+            }
+         };
+         if (!rpf.isBuiltinsRegistered()) {
+            register(rpf);
+         }
+         if (gzipForCachedFactories == gzip) {
+            configuredClientFactories.put(cl, rpf);
+         }
+      }
+      return rpf;
+   }
 
    public static void register(ResteasyProviderFactory factory)
    {
@@ -141,18 +179,22 @@ public class RegisterBuiltin
             LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
          }
       }
-      if (AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+      if (isGZipEnabled()) {
+         factory.registerProvider(AcceptEncodingGZIPFilter.class, true);
+         factory.registerProvider(GZIPDecodingInterceptor.class, true);
+         factory.registerProvider(GZIPEncodingInterceptor.class, true);
+      }
+   }
+
+   private static boolean isGZipEnabled() {
+      return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
          @Override
          public Boolean run() {
             final String value = System.getProperty("resteasy.allowGzip");
             if ("".equals(value)) return Boolean.FALSE;
             return Boolean.parseBoolean(value);
          }
-      })) {
-         factory.registerProvider(AcceptEncodingGZIPFilter.class, true);
-         factory.registerProvider(GZIPDecodingInterceptor.class, true);
-         factory.registerProvider(GZIPEncodingInterceptor.class, true);
-      }
+      });
    }
 
 }

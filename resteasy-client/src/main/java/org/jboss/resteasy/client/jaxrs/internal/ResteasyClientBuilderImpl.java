@@ -9,12 +9,13 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Configuration;
 
 import java.security.KeyStore;
@@ -316,8 +317,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       if (providerFactory == null)
       {
          // create a new one
-         providerFactory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
-         RegisterBuiltin.register(providerFactory);
+         providerFactory = new LocalResteasyProviderFactory(RegisterBuiltin.getClientInitializedResteasyProviderFactory(Thread.currentThread().getContextClassLoader()));
 
          if (ResteasyProviderFactory.peekInstance() != null)
          {
@@ -451,7 +451,13 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public ResteasyClientBuilderImpl withConfig(Configuration config)
    {
-      providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactoryImpl());
+      providerFactory = new ResteasyProviderFactoryImpl() {
+         @Override
+         public RuntimeType getRuntimeType()
+         {
+            return RuntimeType.CLIENT;
+         }
+      };
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {

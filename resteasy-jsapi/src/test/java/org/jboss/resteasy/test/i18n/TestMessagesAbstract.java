@@ -10,7 +10,7 @@ import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.InjectorFactory;

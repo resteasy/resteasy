@@ -13,6 +13,8 @@ import java.util.Locale;
  */
 public class LocaleDelegate implements RuntimeDelegate.HeaderDelegate<Locale>
 {
+   public static final LocaleDelegate INSTANCE = new LocaleDelegate();
+
    public Locale fromString(String value) throws IllegalArgumentException
    {
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.localeValueNull());

@@ -2,6 +2,9 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
+import org.jboss.resteasy.core.providerfactory.NOOPClientHelper;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ServerHelper;
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -108,7 +111,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       };
 
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(providerFactory);
+      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(providerFactory) {
+         @Override
+         protected void initializeUtils()
+         {
+            clientHelper = NOOPClientHelper.INSTANCE;
+            serverHelper = new ServerHelper(this);
+         }
+      };
       for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
       {
          feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
@@ -224,7 +234,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(parentProviderFactory);
+      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(parentProviderFactory) {
+         @Override
+         protected void initializeUtils()
+         {
+            clientHelper = NOOPClientHelper.INSTANCE;
+            serverHelper = new ServerHelper(this);
+         }
+      };
       for (DynamicFeature feature : parentProviderFactory.getServerDynamicFeatures())
       {
          feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));

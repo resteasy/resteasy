@@ -7,6 +7,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,6 +16,13 @@ import java.util.HashMap;
  */
 public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
+   public static final MediaTypeHeaderDelegate INSTANCE = new MediaTypeHeaderDelegate();
+
+   private static Map<String, MediaType> map = new ConcurrentHashMap<String, MediaType>();
+   private static Map<MediaType, String> reverseMap = new ConcurrentHashMap<MediaType, String>();
+   private static final int MAX_MT_CACHE_SIZE =
+       Integer.getInteger("org.jboss.resteasy.max_mediatype_cache_size", 200);
+
    public Object fromString(String type) throws IllegalArgumentException
    {
       if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
@@ -49,6 +58,22 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    }
 
    public static MediaType parse(String type)
+   {
+      MediaType result = map.get(type);
+      if (result == null) {
+          result = internalParse(type);
+          final int size = map.size();
+          if (size >= MAX_MT_CACHE_SIZE) {
+              map.clear();
+              reverseMap.clear();
+          }
+          map.put(type, result);
+          reverseMap.put(result, type);
+      }
+      return result;
+   }
+
+   private static MediaType internalParse(String type)
    {
       int typeIndex = type.indexOf('/');
       int paramIndex = type.indexOf(';');
@@ -125,6 +150,22 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    {
       if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       MediaType type = (MediaType) o;
+      String result = reverseMap.get(type);
+      if (result == null) {
+          result = internalToString(type);
+          final int size = reverseMap.size();
+          if (size >= MAX_MT_CACHE_SIZE) {
+             reverseMap.clear();
+             map.clear();
+          }
+          reverseMap.put(type, result);
+          map.put(result, type);
+      }
+      return result;
+   }
+
+   private String internalToString(MediaType type)
+   {
       StringBuilder buf = new StringBuilder();
 
       buf.append(type.getType().toLowerCase()).append("/").append(type.getSubtype().toLowerCase());
