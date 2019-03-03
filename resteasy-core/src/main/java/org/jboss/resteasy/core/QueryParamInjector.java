@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -9,6 +8,7 @@ import org.jboss.resteasy.spi.ValueInjector;
 
 import org.jboss.resteasy.spi.NotFoundException;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.BadRequestException;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;

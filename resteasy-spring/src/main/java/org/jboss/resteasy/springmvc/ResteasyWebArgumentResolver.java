@@ -2,7 +2,6 @@ package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.CookieParamInjector;
 import org.jboss.resteasy.plugins.spring.i18n.Messages;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.annotation.RestfulData;
@@ -16,6 +15,7 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.BadRequestException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

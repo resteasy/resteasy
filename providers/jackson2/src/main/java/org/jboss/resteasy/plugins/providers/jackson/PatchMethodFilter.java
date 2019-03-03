@@ -12,12 +12,12 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.BadRequestException;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;

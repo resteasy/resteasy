@@ -1,9 +1,9 @@
 package org.jboss.resteasy.test.request;
 
+import javax.ws.rs.BadRequestException;
 
 import org.jboss.resteasy.core.request.AcceptHeaders;
 import org.jboss.resteasy.core.request.QualityValue;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;

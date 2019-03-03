@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.BadRequestException;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
 @SuppressWarnings("unchecked")

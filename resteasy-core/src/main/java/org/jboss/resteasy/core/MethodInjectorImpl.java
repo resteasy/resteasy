@@ -2,7 +2,6 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -16,6 +15,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.BadRequestException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -112,7 +112,6 @@ public class MethodInjectorImpl implements MethodInjector
       catch (Exception e)
       {
          BadRequestException badRequest = new BadRequestException(Messages.MESSAGES.failedProcessingArguments(method.toString()), e);
-         badRequest.setLoggable(true);
          throw badRequest;
       }
    }

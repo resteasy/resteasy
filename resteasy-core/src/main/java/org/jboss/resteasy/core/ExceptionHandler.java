@@ -13,11 +13,13 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.BadRequestException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -217,6 +219,31 @@ public class ExceptionHandler
          return resp;
       }
    }
+   protected Response handleClientErrorException(HttpRequest request,
+                                                 ClientErrorException e) {
+
+      LogMessages.LOGGER.failedExecutingError(request.getHttpMethod(),
+              request.getUri().getPath(), e);
+
+      Response response = e.getResponse();
+
+      if (response != null) {
+         return response;
+      } else {
+         Response.ResponseBuilder builder = Response.status(-1);
+
+         if (e instanceof BadRequestException) {
+            builder.status(HttpResponseCodes.SC_BAD_REQUEST);
+         } else if (e instanceof NotFoundException) {
+            builder.status(HttpResponseCodes.SC_NOT_FOUND);
+         }
+
+         if (e.getMessage() != null)
+            builder.type(MediaType.TEXT_HTML).entity(e.getMessage());
+         Response resp = builder.build();
+         return resp;
+      }
+   }
 
    protected Response handleWriterException(HttpRequest request, WriterException e, RESTEasyTracingLogger logger)
    {
@@ -275,7 +302,15 @@ public class ExceptionHandler
       jaxrsResponse = executeExactExceptionMapper(e, logger);
       if (jaxrsResponse == null)
       {
-         if (e instanceof WebApplicationException)
+         if (e instanceof ClientErrorException) {
+            // These are BadRequestException and NotFoundException exceptions
+            jaxrsResponse = executeExceptionMapper(e, logger);
+            if (jaxrsResponse == null)
+            {
+               jaxrsResponse = handleClientErrorException(request, (ClientErrorException) e);
+            }
+
+         } else if (e instanceof WebApplicationException)
          {
             /*
              * If the response property of the exception does not
@@ -288,8 +323,6 @@ public class ExceptionHandler
             WebApplicationException wae = (WebApplicationException) e;
             if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
             {
-               //Response response = wae.getResponse();
-               //return response;
                jaxrsResponse = wae.getResponse();
             } else
             {
