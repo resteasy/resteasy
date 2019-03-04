@@ -192,7 +192,7 @@
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-11"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider"/>
         </module-def>
 
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->

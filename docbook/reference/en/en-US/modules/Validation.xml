@@ -3,10 +3,10 @@
    
    <para>
    RESTEasy provides the support for validation mandated by the
-   <ulink url="http://www.jcp.org/en/jsr/detail?id=339">JAX-RS: Java API for RESTful Web Services 2.0 </ulink>,
+   <ulink url="http://www.jcp.org/en/jsr/detail?id=339">JAX-RS: Java API for RESTful Web Services 2.1 </ulink>,
    given the presence of an implementation of the
-   <ulink url="http://beanvalidation.org/1.1/spec/">Bean Validation specification 1.1</ulink>
-   such as <ulink url="http://www.hibernate.org/subprojects/validator.html"> Hibernate Validator 5.x</ulink>. 
+   <ulink url="http://beanvalidation.org/1.1/spec/">Bean Validation specification</ulink>
+   such as <ulink url="http://hibernate.org/validator/">Hibernate Validator</ulink>. 
    </para>
    
    <para>
@@ -315,14 +315,14 @@ path fields.
          <title>Validation Service Providers</title>
          
             <para>
-   The form of validation mandated by the JAX-RS 2.0 specification, based on Bean Validation 1.1,
-   is supported by the RESTEasy module resteasy-validator-provider-11, which produces the artifact
-   resteasy-validator-provider-11-&lt;version&gt;.jar.  Validation is turned on by default (assuming
-   resteasy-validator-provider-11-&lt;version&gt;.jar is available), though
+   The form of validation mandated by the JAX-RS 2.1 specification, based on Bean Validation 1.1 or greater,
+   is supported by the RESTEasy module resteasy-validator-provider, which produces the artifact
+   resteasy-validator-provider-&lt;version&gt;.jar.  Validation is turned on by default (assuming
+   resteasy-validator-provider-&lt;version&gt;.jar is available), though
    parameter and return value validation can be turned off or modified in the validation.xml
    configuration file. See the
-   <ulink url="http://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/">Hibernate Validator</ulink>
-   documentation for the details.  WildFly 8+ ships with Hibernate Validator 5.x.
+   <ulink url="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=6.0">Hibernate Validator</ulink>
+   documentation for the details.
    </para>
    
          <para>
@@ -413,7 +413,7 @@ public interface GeneralValidator
    </para>
  
    <para>
-   RESTEasy module resteasy-validator-provider-11 supplies an implementation
+   RESTEasy module resteasy-validator-provider supplies an implementation
    of <methodname>GeneralValidator</methodname>.
    An alternative implementation may be supplied by implementing 
    <classname>ContextResolver&lt;GeneralValidator&gt;</classname> and
@@ -469,7 +469,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
    ]]></programlisting>
 
    <para>
-   The validator in resteasy-validator-provider-11 implements GeneralValidatorCDI.
+   The validator in resteasy-validator-provider implements GeneralValidatorCDI.
    </para>
    </section>
 </chapter>
