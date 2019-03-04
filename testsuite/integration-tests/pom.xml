@@ -220,7 +220,7 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-validator-provider-11</artifactId>
+            <artifactId>resteasy-validator-provider</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
         </dependency>
