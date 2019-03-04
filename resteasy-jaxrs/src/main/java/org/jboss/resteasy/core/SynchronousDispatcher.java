@@ -369,7 +369,8 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void clearContextData()
    {
-      Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+      Map<Class<?>, Object> map = ResteasyProviderFactory.getContextDataMap(false);
+      Cleanables cleanables = map != null ? (Cleanables) map.get(Cleanables.class) : null;
       if (cleanables != null)
       {
          for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
@@ -383,8 +384,8 @@ public class SynchronousDispatcher implements Dispatcher
                // Empty
             }
          }
+         ResteasyProviderFactory.clearContextData();
       }
-      ResteasyProviderFactory.clearContextData();
       // just in case there were internalDispatches that need to be cleaned up
       MessageBodyParameterInjector.clearBodies();
    }

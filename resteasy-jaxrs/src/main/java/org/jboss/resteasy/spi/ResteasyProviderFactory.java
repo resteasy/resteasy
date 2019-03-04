@@ -729,10 +729,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       contextualData.clear();
    }
 
-   private static Map<Class<?>, Object> getContextDataMap(boolean create)
+   public static Map<Class<?>, Object> getContextDataMap(boolean create)
    {
       Map<Class<?>, Object> map = contextualData.get();
-      if (map == null)
+      if (map == null && create)
       {
          contextualData.setLast(map = new HashMap<Class<?>, Object>());
       }

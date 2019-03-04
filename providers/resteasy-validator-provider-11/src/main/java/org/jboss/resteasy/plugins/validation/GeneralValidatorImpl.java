@@ -160,14 +160,14 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
-      Validator validator = getValidator(request);
-      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
-
       if (method.getParameterTypes().length == 0)
       {
          checkViolations(request);
          return;
       }
+
+      Validator validator = getValidator(request);
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
 
       Set<ConstraintViolation<Object>> cvs = null;
 
