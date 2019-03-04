@@ -27,7 +27,7 @@
                 <module>resteasy-atom</module>
                 <module>multipart</module>
                 <module>resteasy-html</module>
-                <module>resteasy-validator-provider-11</module>
+                <module>resteasy-validator-provider</module>
             </modules>
         </profile>
     </profiles>

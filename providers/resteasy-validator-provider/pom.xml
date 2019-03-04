@@ -7,9 +7,9 @@
         <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
   </parent>
-  <artifactId>resteasy-validator-provider-11</artifactId>
+  <artifactId>resteasy-validator-provider</artifactId>
   <packaging>jar</packaging>
-  <name>RESTEasy Validator Provider BV 1.1</name>
+  <name>RESTEasy Validator Provider</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -46,7 +46,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 

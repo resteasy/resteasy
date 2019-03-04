@@ -9,7 +9,7 @@
    </para>
    
    <para>
-   In Resteasy, validation is implemented in the resteasy-validator-provider-11 module, and
+   In Resteasy 3, validation is implemented in the resteasy-validator-provider-11 module, and
    <classname>@ValidateRequest</classname> is no longer relevant. In fact, validation is enabled
    by default, as long as resteasy-validator-provider-11 is on the classpath.
    </para>
