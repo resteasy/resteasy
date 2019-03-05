@@ -3,6 +3,8 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -30,8 +32,17 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.jboss.resteasy.spi.util.FindAnnotation.findAnnotation;
 
@@ -77,51 +88,57 @@ public class InjectorFactoryImpl implements InjectorFactory
    @Override
    public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
    {
-      switch (parameter.getParamType())
+      return OptionalInjections.wrap(parameter.getGenericType(), innerType -> createParameterExtractor0(parameter, providerFactory, innerType));
+   }
+
+   private ValueInjector createParameterExtractor0(Parameter parameter, ResteasyProviderFactory providerFactory, Type parameterType)
+   {
+    Class<?> rawType = Types.getRawType(parameterType);
+    switch (parameter.getParamType())
       {
          case QUERY_PARAM:
-            return new QueryParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+            return new QueryParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
          case QUERY:
-            return new QueryInjector(parameter.getType(), providerFactory);
+            return new QueryInjector(rawType, providerFactory);
          case HEADER_PARAM:
-            return new HeaderParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
+            return new HeaderParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
          case FORM_PARAM:
-            return new FormParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+            return new FormParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
          case COOKIE_PARAM:
-            return new CookieParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
+            return new CookieParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
          case PATH_PARAM:
-            return new PathParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+            return new PathParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
          case FORM:
          {
             String prefix = parameter.getParamName();
             if (prefix.length() > 0)
             {
-               if (parameter.getGenericType() instanceof ParameterizedType)
+               if (parameterType instanceof ParameterizedType)
                {
-                  ParameterizedType pType = (ParameterizedType) parameter.getGenericType();
+                  ParameterizedType pType = (ParameterizedType) parameterType;
                   if (Types.isA(List.class, pType))
                   {
-                     return new ListFormInjector(parameter.getType(), Types.getArgumentType(pType, 0), prefix, providerFactory);
+                     return new ListFormInjector(rawType, Types.getArgumentType(pType, 0), prefix, providerFactory);
                   }
                   if (Types.isA(Map.class, pType))
                   {
-                     return new MapFormInjector(parameter.getType(), Types.getArgumentType(pType, 0), Types.getArgumentType(pType, 1), prefix, providerFactory);
+                     return new MapFormInjector(rawType, Types.getArgumentType(pType, 0), Types.getArgumentType(pType, 1), prefix, providerFactory);
                   }
                }
-               return new PrefixedFormInjector(parameter.getType(), prefix, providerFactory);
+               return new PrefixedFormInjector(rawType, prefix, providerFactory);
             }
-            return new FormInjector(parameter.getType(), providerFactory);
+            return new FormInjector(rawType, providerFactory);
          }
          case BEAN_PARAM:
-            return new FormInjector(parameter.getType(), providerFactory);
+            return new FormInjector(rawType, providerFactory);
          case MATRIX_PARAM:
-            return new MatrixParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+            return new MatrixParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
          case CONTEXT:
-            return new ContextParameterInjector(null, parameter.getType(), parameter.getGenericType(), parameter.getAnnotations(), providerFactory);
+            return new ContextParameterInjector(null, rawType, parameterType, parameter.getAnnotations(), providerFactory);
          case SUSPENDED:
             return new AsynchronousResponseInjector();
          case MESSAGE_BODY:
-            return new MessageBodyParameterInjector(parameter.getResourceClass().getClazz(), parameter.getAccessibleObject(), parameter.getType(), parameter.getGenericType(), parameter.getAnnotations(), providerFactory);
+            return new MessageBodyParameterInjector(parameter.getResourceClass().getClazz(), parameter.getAccessibleObject(), rawType, parameterType, parameter.getAnnotations(), providerFactory);
          default:
             return null;
       }
@@ -248,4 +265,73 @@ public class InjectorFactoryImpl implements InjectorFactory
          return null;
       }
    }
+
+    enum OptionalInjections {
+        OPT     (Optional.class, OptionalInjections::getTypeArgument, Optional::empty, Optional::of),
+        OINT    (OptionalInt.class, x -> Integer.class, OptionalInt::empty, v -> OptionalInt.of((Integer) v)),
+        OLONG   (OptionalLong.class, x -> Long.class, OptionalLong::empty, v -> OptionalLong.of((Long) v)),
+        ODOUBLE (OptionalDouble.class, x -> Double.class, OptionalDouble::empty, v -> OptionalDouble.of((Double) v)),
+        ;
+
+        static Map<Class<?>, OptionalInjections> optionalTypes;
+
+        static {
+            optionalTypes = Arrays.stream(OptionalInjections.values())
+                    .collect(Collectors.toMap(o -> o.optional, Function.identity()));
+        }
+
+        final Class<?> optional;
+        final Function<Type, Type> valueType;
+        final Supplier<Object> empty;
+        final Function<Object, Object> present;
+
+        OptionalInjections(final Class<?> optional, final Function<Type, Type> valueType,
+                           final Supplier<Object> empty, final Function<Object, Object> present)
+        {
+            this.optional = optional;
+            this.valueType = valueType;
+            this.empty = empty;
+            this.present = present;
+        }
+
+
+        static ValueInjector wrap(Type paramType, Function<Type, ValueInjector> injectorFactory) {
+            return Optional.ofNullable(optionalTypes.get(Types.getRawType(paramType)))
+                    .<ValueInjector>map(oi -> new DelegatingInjector(oi, injectorFactory.apply(oi.valueType.apply(paramType))))
+                    .orElseGet(() -> injectorFactory.apply(paramType));
+        }
+
+        static Type getTypeArgument(Type type) {
+             if (!(type instanceof ParameterizedType))
+                 throw new UnsupportedOperationException("non-parameterized Optional type: " + type);
+             return ((ParameterizedType) type).getActualTypeArguments()[0];
+        }
+
+        static class DelegatingInjector implements ValueInjector {
+            private final OptionalInjections oi;
+            private final ValueInjector delegate;
+
+            DelegatingInjector(final OptionalInjections oi, final ValueInjector delegate) {
+                this.oi = oi;
+                this.delegate = delegate;
+            }
+
+            @Override
+            public CompletionStage<Object> inject(boolean unwrapAsync) {
+                return delegate.inject(unwrapAsync).thenApply(this::wrap);
+            }
+
+            @Override
+            public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+                return delegate.inject(request, response, unwrapAsync).thenApply(this::wrap);
+            }
+
+            public Object wrap(Object value) {
+                if (value == null) {
+                    return oi.empty.get();
+                }
+                return oi.present.apply(value);
+            }
+        }
+    }
 }
