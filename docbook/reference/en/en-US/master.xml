@@ -61,6 +61,7 @@
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
                 <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
                 <!ENTITY Deprecated_security_modules SYSTEM "modules/Deprecated_security_modules.xml">
+                <!ENTITY Client_Providers_With_Provider_Annotation SYSTEM "modules/Client_Providers_With_Provider_Annotation.xml">
                 ]>
 
 <book>
@@ -127,6 +128,7 @@ This one is short
     &Json-p;
     &Multipart;
     &Yaml;
+   &Client_Providers_With_Provider_Annotation;
    &JAX-RS_2.1_additions;
    &StringConverter;
    &Responses_using_javax.ws.rs.core.Response;

@@ -17,7 +17,9 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
+import java.security.AccessController;
 import java.security.KeyStore;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -380,6 +382,19 @@ public class ResteasyClientBuilder extends ClientBuilder
       {
          // create a new one
          providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
+
+         if (!AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+         {
+            final String propertyValue = System.getProperty("resteasy.client.providers.annotations.disabled");
+            return (propertyValue == null) ? Boolean.FALSE : Boolean.valueOf(propertyValue.isEmpty() ? "true" : propertyValue);
+         }))
+         {
+            if (ResteasyProviderFactory.peekInstance() != null)
+            {
+               providerFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+            }
+         }
+
          RegisterBuiltin.register(providerFactory);
       }
       return providerFactory;
