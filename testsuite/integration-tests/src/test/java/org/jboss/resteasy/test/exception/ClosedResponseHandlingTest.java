@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.client.Client;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -61,7 +62,12 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotAcceptableException.class)
    public void testNotAcceptable() {
-      new ResteasyClientBuilderImpl().build().target(generateURL("/testNotAcceptable")).request().get(String.class);
+      Client c = new ResteasyClientBuilderImpl().build();
+      try {
+         c.target(generateURL("/testNotAcceptable")).request().get(String.class);
+      } finally {
+         c.close();
+      }
    }
 
    /**
@@ -71,7 +77,12 @@ public class ClosedResponseHandlingTest {
     */
    @Test(expected = NotSupportedException.class)
    public void testNotSupportedTraced() {
-      new ResteasyClientBuilderImpl().build().target(generateURL("/testNotSupportedTraced")).request().get(String.class);
+      Client c = new ResteasyClientBuilderImpl().build();
+      try {
+         c.target(generateURL("/testNotSupportedTraced")).request().get(String.class);
+      } finally {
+         c.close();
+      }
    }
 
    private static String generateURL(String path) {

@@ -110,6 +110,7 @@ public class SseTest
       {
          Assert.assertTrue("Sent message \"" + s + "\" not found as result.", results.contains(s));
       }
+      client.close();
    }
 
    //Test for Last-Event-Id. This test uses the message items stores in testAddMessage()
@@ -119,8 +120,8 @@ public class SseTest
    {
       final CountDownLatch missedEventLatch = new CountDownLatch(3);
       final List<String> missedEvents = new ArrayList<String>();
-      WebTarget lastEventTarget = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build()
-            .target(generateURL("/service/server-sent-events"));
+      Client c = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
+      WebTarget lastEventTarget = c.target(generateURL("/service/server-sent-events"));
       SseEventSourceImpl lastEventSource = (SseEventSourceImpl) SseEventSource.target(lastEventTarget).build();
       lastEventSource.register(event -> {
          missedEvents.add(event.toString());
@@ -137,6 +138,7 @@ public class SseTest
       {}), missedEvents.size() == 3);
       lastEventTarget.request().delete();
       lastEventSource.close();
+      c.close();
    }
 
    @Test
@@ -244,6 +246,8 @@ public class SseTest
       WebTarget closeTarget = closeClient.target(generateURL("/service/sse"));
       Assert.assertTrue("Subscribed eventsink is not closed", closeTarget.request().delete().readEntity(Boolean.class));
       eventSource2.close();
+      client2.close();
+      closeClient.close();
    }
 
    //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will
@@ -308,6 +312,7 @@ public class SseTest
          target.request().delete();
          proxy.stop();
       }
+      client.close();
    }
 
 
@@ -345,6 +350,7 @@ public class SseTest
          t.interrupt();
       }
       Assert.assertFalse("InternalServerErrorException isn't processed in error consumer", errorList.isEmpty());
+      client.close();
    }
 
    @Test
@@ -391,7 +397,7 @@ public class SseTest
       {})[1].split("\n");
       Assert.assertTrue("3 data fields are expected, but is : " + lines.length, lines.length == 3);
       Assert.assertEquals("expect second data field value is : " + lines[1], "data1b", lines[1]);
-
+      client.close();
    }
 
    @Test
@@ -431,6 +437,7 @@ public class SseTest
       {
          Assert.assertTrue("Sent message \"" + s + "\" not found as result.", results.contains(s));
       }
+      client.close();
    }
 
    @Test
@@ -464,6 +471,7 @@ public class SseTest
       {
       }, MediaType.APPLICATION_XML_TYPE);
       Assert.assertEquals("xmldata is expceted", jaxbElement.getValue(), "xmldata");
+      client.close();
    }
 
    @Test
@@ -516,6 +524,7 @@ public class SseTest
          logger.info("Thread sleep interruped", e);
       }
       Assert.assertEquals("Received unexpected events", "[thing1, thing2, thing3]", results.toString());
+      client.close();
    }
 
    @Test
@@ -543,6 +552,7 @@ public class SseTest
          logger.info("Thread sleep interruped", e);
       }
       Assert.assertTrue("error is not expected", errors.get() == 0);
+      client.close();
    }
 
    //    @Test

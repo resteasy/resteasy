@@ -103,7 +103,6 @@ public class CompletionStageResponseTest {
    @Test
    public void testResponse() throws Exception
    {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/response")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);

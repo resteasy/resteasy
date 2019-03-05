@@ -46,5 +46,6 @@ public class GenericReturnTypeTest extends ClientTestBase{
       GenericReturnTypeInterface<?> server = ProxyBuilder.builder(GenericReturnTypeInterface.class, target).build();
       Object result = server.t();
       Assert.assertEquals("abc", result);
+      client.close();
    }
 }

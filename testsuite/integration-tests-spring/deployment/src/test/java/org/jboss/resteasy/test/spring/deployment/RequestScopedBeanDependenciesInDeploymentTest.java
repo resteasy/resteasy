@@ -88,6 +88,7 @@ public class RequestScopedBeanDependenciesInDeploymentTest {
 
       String result = response.readEntity(String.class);
       assertEquals("Request bean could not be injected", "configuredValue", result);
+      client.close();
    }
 
 }

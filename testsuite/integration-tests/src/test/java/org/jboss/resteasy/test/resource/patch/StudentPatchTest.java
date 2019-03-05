@@ -52,7 +52,6 @@ public class StudentPatchTest {
    }
 
    @Test
-   //@Ignore
    public void testPatchStudent() throws Exception {
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
 
@@ -85,5 +84,6 @@ public class StudentPatchTest {
       Assert.assertEquals("Expected firstname is replaced from Taylor to John", "John", patchedStudent.getFirstName());
       Assert.assertEquals("Expected school is null", null, patchedStudent.getSchool());
       Assert.assertEquals("Add gender", "male", patchedStudent.getGender());
+      client.close();
    }
 }

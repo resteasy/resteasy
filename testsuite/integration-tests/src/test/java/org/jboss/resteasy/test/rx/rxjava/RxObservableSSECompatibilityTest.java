@@ -26,7 +26,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilRxJava;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,7 +51,7 @@ import rx.Observable;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RxObservableSSECompatibilityTest {
 
-   private static ResteasyClient client;
+   private ResteasyClient client;
    private static final List<Thing>  eThingList =  new ArrayList<Thing>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
 
@@ -85,8 +85,8 @@ public class RxObservableSSECompatibilityTest {
       thingList.clear();
    }
 
-   @AfterClass
-   public static void after() throws Exception {
+   @After
+   public void after() throws Exception {
       client.close();
    }
 

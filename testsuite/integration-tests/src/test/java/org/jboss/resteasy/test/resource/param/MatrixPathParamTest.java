@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.param;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -76,11 +77,13 @@ public class MatrixPathParamTest
    @Test
    public void testSingleAcceptHeader() throws Exception
    {
-      ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
+      Client client = ClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
       TestInterfaceClient proxy = target.proxy(TestInterfaceClient.class);
 
       String result = proxy.getM1("a").getM2("b");
       Assert.assertEquals("ab", result);
+      client.close();
    }
 
 }

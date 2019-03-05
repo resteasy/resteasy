@@ -511,6 +511,7 @@ public class RxObservableProxyTest {
          Assert.assertEquals(0, errors.get());
          Assert.assertTrue(RxScheduledExecutorService.used);
          Assert.assertEquals(xStringList, stringList);
+         client.close();
       }
    }
 
@@ -577,6 +578,8 @@ public class RxObservableProxyTest {
       for (int i = 0; i < 6; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

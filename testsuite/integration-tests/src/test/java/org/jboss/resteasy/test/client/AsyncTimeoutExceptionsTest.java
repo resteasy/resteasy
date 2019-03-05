@@ -202,7 +202,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
          response.close();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       }
-
+      apacheClient.close();
    }
 
    //=============================================================================================================
@@ -295,6 +295,7 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
          response = future.get(5, TimeUnit.SECONDS);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       }
+      apacheClient.close();
    }
 
 

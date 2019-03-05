@@ -56,5 +56,6 @@ public class ComplexFormTest {
 
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("Wrong content of response", "name:'John Doe', invoice:'Main Street', shipping:'Station Street'", response.readEntity(String.class));
+      client.close();
    }
 }

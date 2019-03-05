@@ -4,7 +4,8 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationQueryBeanParam;
@@ -16,6 +17,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,6 +43,21 @@ public class SubresourceValidationTest {
       return TestUtil.finishContainerPrepare(war, null, SubresourceValidationResource.class);
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
+   }
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, SubresourceValidationTest.class.getSimpleName());
    }
@@ -50,7 +68,6 @@ public class SubresourceValidationTest {
     */
    @Test
    public void testSubresource() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/sub/17?limit=abcdef")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));
@@ -64,7 +81,6 @@ public class SubresourceValidationTest {
     */
    @Test
    public void testReturnValue() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/sub/return/abcd")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));

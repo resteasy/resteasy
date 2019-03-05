@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.basic;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -13,6 +14,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,7 @@ public class MultipleAcceptHeaderTest
    protected static String APPLICATION_XML = "Content-Type: application/xml";
 
    private TestInterfaceClient service;
+   private Client client;
 
    @Deployment
    public static Archive<?> deploy() throws Exception
@@ -88,8 +91,16 @@ public class MultipleAcceptHeaderTest
    @Before
    public void setUp() throws Exception
    {
-      ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
+      client = ClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
       service = target.proxy(TestInterfaceClient.class);
+   }
+
+   @After
+   public void tearDown() throws Exception
+   {
+      client.close();
+      client = null;
    }
 
    @Test

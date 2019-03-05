@@ -78,5 +78,6 @@ public class JavaConfigTest {
       Response response = target.request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("Unexpected response", "hello", response.readEntity(String.class));
+      client.close();
    }
 }

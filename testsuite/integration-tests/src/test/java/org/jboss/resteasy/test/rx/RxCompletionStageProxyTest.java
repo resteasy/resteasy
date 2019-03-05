@@ -226,6 +226,7 @@ public class RxCompletionStageProxyTest {
          CompletionStage<String> completionStage = proxy.get();
          Assert.assertEquals("x", completionStage.toCompletableFuture().get());
          Assert.assertTrue(RxScheduledExecutorService.used);
+         client.close();
       }
    }
 
@@ -272,6 +273,8 @@ public class RxCompletionStageProxyTest {
       {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

@@ -25,7 +25,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,7 +49,7 @@ import io.reactivex.Observable;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Rx2ObservableSSECompatibilityTest {
 
-   private static ResteasyClient client;
+   private ResteasyClient client;
    private static final List<Thing>  eThingList =  new ArrayList<Thing>();
    private static ArrayList<Thing>  thingList = new ArrayList<Thing>();
 
@@ -82,8 +82,8 @@ public class Rx2ObservableSSECompatibilityTest {
       thingList.clear();
    }
 
-   @AfterClass
-   public static void after() throws Exception {
+   @After
+   public void after() throws Exception {
       client.close();
    }
 

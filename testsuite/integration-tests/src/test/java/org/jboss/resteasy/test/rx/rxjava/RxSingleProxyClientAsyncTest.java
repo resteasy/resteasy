@@ -298,6 +298,7 @@ public class RxSingleProxyClientAsyncTest {
          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
          Assert.assertTrue(RxScheduledExecutorService.used);
          Assert.assertEquals("x", value.get());
+         client.close();
       }
    }
 
@@ -351,6 +352,8 @@ public class RxSingleProxyClientAsyncTest {
       for (int i = 0; i < 2; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

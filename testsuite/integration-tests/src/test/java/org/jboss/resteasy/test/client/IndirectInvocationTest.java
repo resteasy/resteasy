@@ -8,7 +8,7 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class IndirectInvocationTest extends ClientTestBase{
 
    public static final int REPEAT = 15;
 
-   static Client client;
+   Client client;
 
    @Before
    public void before() {
@@ -49,8 +49,8 @@ public class IndirectInvocationTest extends ClientTestBase{
       return TestUtil.finishContainerPrepare(war, null, IndirectInvocationTestResource.class);
    }
 
-   @AfterClass
-   public static void close() {
+   @After
+   public void close() {
       client.close();
    }
 

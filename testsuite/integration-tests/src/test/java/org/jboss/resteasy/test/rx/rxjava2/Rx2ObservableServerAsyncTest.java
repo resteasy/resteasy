@@ -424,6 +424,8 @@ public class Rx2ObservableServerAsyncTest {
       for (int i = 0; i < 6; i++) {
          Assert.assertEquals("x", list1.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

@@ -59,6 +59,7 @@ public class InjectionJpaEnumTypeTest {
       WebTarget base = client.target(generateURL("/user"));
       String val = base.request().accept(MediaType.APPLICATION_JSON_TYPE).get().readEntity(String.class);
       Assert.assertEquals("{\"id\":1,\"userType\":\"TYPE_ONE\"}", val);
+      client.close();
    }
 
    /**
@@ -71,5 +72,6 @@ public class InjectionJpaEnumTypeTest {
       WebTarget base = client.target(generateURL("/user"));
       String val = base.request().accept(MediaType.APPLICATION_XML_TYPE).get().readEntity(String.class);
       Assert.assertTrue(val.contains("<applicationUser><id>1</id><userType>TYPE_ONE</userType></applicationUser>"));
+      client.close();
    }
 }

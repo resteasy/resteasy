@@ -57,5 +57,6 @@ public class MultiInterfaceResLocatorTest {
       entity = response.readEntity(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("Wrong content of response", "resourceMethod2", entity);
+      client.close();
    }
 }

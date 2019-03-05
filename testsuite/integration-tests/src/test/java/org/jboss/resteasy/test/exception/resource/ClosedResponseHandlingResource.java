@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.exception.resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -26,7 +27,12 @@ public class ClosedResponseHandlingResource {
    @GET
    public String getNotAcceptable(@Context UriInfo uriInfo) {
       URI endpoint406 = UriBuilder.fromUri(uriInfo.getRequestUri()).path("406").build();
-      return ClientBuilder.newClient().target(endpoint406).request().get(String.class);
+      Client client = ClientBuilder.newClient();
+      try {
+         return client.target(endpoint406).request().get(String.class);
+      } finally {
+         client.close();
+      }
    }
 
    @Path("/testNotSupportedTraced/415")
@@ -39,10 +45,13 @@ public class ClosedResponseHandlingResource {
    @GET
    public String getNotSupportedTraced(@Context UriInfo uriInfo) {
       URI endpoint415 = UriBuilder.fromUri(uriInfo.getRequestUri()).path("415").build();
+      Client client = ClientBuilder.newClient();
       try {
-         return ClientBuilder.newClient().target(endpoint415).request().get(String.class);
+         return client.target(endpoint415).request().get(String.class);
       } catch(NotSupportedException e) {
          throw new ClosedResponseHandlingPleaseMapException(e.getResponse());
+      } finally {
+         client.close();
       }
    }
 }

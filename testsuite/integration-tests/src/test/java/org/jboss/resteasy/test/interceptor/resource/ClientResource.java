@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.interceptor.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
@@ -19,11 +20,16 @@ public class ClientResource
    public Response get()
    {
       // we need to create new client to verify that @Provider works
-      WebTarget base = ClientBuilder.newClient().target(uriInfo.getBaseUriBuilder().path("clientInvoke").build());
-      Response response = base.request().get();
+      Client client = ClientBuilder.newClient();
+      try {
+         WebTarget base = client.target(uriInfo.getBaseUriBuilder().path("clientInvoke").build());
+         Response response = base.request().get();
 
-      // return the client invocation response to make the verification in test class
-      return response;
+         // return the client invocation response to make the verification in test class
+         return response;
+      } finally {
+         client.close();
+      }
    }
 
    @GET

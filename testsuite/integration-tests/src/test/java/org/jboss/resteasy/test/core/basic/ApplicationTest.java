@@ -124,6 +124,7 @@ public class ApplicationTest {
 
       value = base.path("singletons/b").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+      client.close();
    }
 
    /**
@@ -146,5 +147,6 @@ public class ApplicationTest {
 
       value = base.path("singletons/b").request().get(String.class);
       Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+      client.close();
    }
 }

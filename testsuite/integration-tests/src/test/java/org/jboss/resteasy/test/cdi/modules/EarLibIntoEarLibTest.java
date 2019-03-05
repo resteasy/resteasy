@@ -73,5 +73,6 @@ public class EarLibIntoEarLibTest {
       log.info("Status: " + response.getStatus());
       assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       response.close();
+      client.close();
    }
 }

@@ -69,13 +69,11 @@ public class VariantsTest {
     */
    @Test
    public void evaluatePreconditionsTagNullAndSimpleGetTest() {
-      client = ClientBuilder.newClient();
       logger.info(generateURL("/preconditionsSimpleGet"));
       Response response = client.target(generateURL("/preconditionsSimpleGet")).request()
             .get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
-      client.close();
    }
 
    /**

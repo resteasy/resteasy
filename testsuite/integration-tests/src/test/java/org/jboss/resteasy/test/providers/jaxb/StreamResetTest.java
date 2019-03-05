@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -65,7 +64,6 @@ public class StreamResetTest {
     */
    @Test
    public void testJBEAP2138() throws Exception {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/test"));
       Response response = target.request().get();
 
@@ -86,7 +84,6 @@ public class StreamResetTest {
    @Test
    public void testJBEAP2138WithoutBufferedEntity() throws Exception {
       try {
-         Client client = ClientBuilder.newClient();
          WebTarget target = client.target(generateURL("/test"));
          Response response = target.request().get();
 

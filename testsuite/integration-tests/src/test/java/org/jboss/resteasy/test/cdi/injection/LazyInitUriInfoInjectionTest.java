@@ -56,5 +56,6 @@ public class LazyInitUriInfoInjectionTest {
       base = client.target(generateURL("test"));
       val = base.request().get().readEntity(String.class);
       Assert.assertEquals(val, "");
+      client.close();
    }
 }

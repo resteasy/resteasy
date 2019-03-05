@@ -124,5 +124,6 @@ public class PathParamTest {
       Response response = client.target(PortProviderUtil.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com", PathLimitedTest.class.getSimpleName())).request().get();
       String str = response.readEntity(String.class);
       Assert.assertEquals("burke", str);
+      client.close();
    }
 }

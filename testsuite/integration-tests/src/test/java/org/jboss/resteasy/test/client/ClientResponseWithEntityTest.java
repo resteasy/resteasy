@@ -284,5 +284,6 @@ public class ClientResponseWithEntityTest {
          Assert.assertTrue(ClientResponseWithEntityResponseFilter.called());
          Assert.assertTrue(response.bufferEntity());
       }
+      client.close();
    }
 }

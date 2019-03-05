@@ -26,6 +26,10 @@ public class AbortMessageResourceFilter implements ClientRequestFilter {
    @Produces({MediaType.TEXT_PLAIN})
    public Response showProblem() {
       Client c = ClientBuilder.newClient().register(this);
-      return c.target("http://doesnotmattersinceitisaborted").request().get();
+      try {
+         return c.target("http://doesnotmattersinceitisaborted").request().get();
+      } finally {
+         c.close();
+      }
    }
 }

@@ -6,7 +6,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreResource;
@@ -20,11 +21,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.Invocation;
 
 import static org.junit.Assert.assertEquals;
@@ -38,8 +39,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CDIValidationCoreTest {
-   private static final Logger log = LoggerFactory.getLogger(CDIValidationCoreTest.class);
-
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(CDIValidationCoreTest.class.getSimpleName())
@@ -56,13 +55,27 @@ public class CDIValidationCoreTest {
       return PortProviderUtil.generateURL(path, CDIValidationCoreTest.class.getSimpleName());
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
+   }
+
    /**
     * @tpTestDetails Check validation with all valid parameters
     * @tpSince RESTEasy 3.0.16
     */
    @Test
    public void testAllValid() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/input/11/13/17")).request();
       ClientResponse response = (ClientResponse) request.get();
       int answer = response.readEntity(Integer.class);
@@ -76,7 +89,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testInputsInvalid() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/input/1/2/3")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
@@ -99,7 +111,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testReturnValueInvalid() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/input/5/7/9")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
@@ -116,7 +127,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testLocatorAllValid() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/locator/5/7/17/19")).request();
       ClientResponse response = (ClientResponse) request.get();
       int result = response.readEntity(int.class);
@@ -130,7 +140,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testLocatorInvalidSubparameter() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/locator/5/7/13/0")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
@@ -147,7 +156,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testLocatorInvalidReturnValue() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/locator/5/7/13/15")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
@@ -164,7 +172,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testInputsInvalidNoExecutableValidation() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/none/1/2/3")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
@@ -185,7 +192,6 @@ public class CDIValidationCoreTest {
     */
    @Test
    public void testInputsInvalidNoParameters() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/noParams/1/2")).request();
       ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);

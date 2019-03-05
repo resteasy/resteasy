@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -55,6 +56,21 @@ public class DefaultNumberWriterTest {
             DefaultNumberWriterCustom.class);
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
+   }
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, DefaultNumberWriterTest.class.getSimpleName());
    }
@@ -70,7 +86,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testByte() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Byte")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -85,7 +100,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testBytePrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/byte")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -100,7 +114,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testDouble() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Double")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -115,7 +128,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testDoublePrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/double")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -130,7 +142,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testFloat() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Float")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -145,7 +156,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testFloatPrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/float")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -160,7 +170,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testInteger() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Integer")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -175,7 +184,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testIntegerPrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/integer")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -190,7 +198,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testLong() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Long")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -205,7 +212,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testLongPrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/long")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -220,7 +226,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testShort() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Short")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -235,7 +240,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testShortPrimitive() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/short")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -250,7 +254,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testBigDecimal() throws Exception {
-      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/bigDecimal")).request().get();
       response.bufferEntity();
       logger.info(response.readEntity(String.class));
@@ -265,7 +268,6 @@ public class DefaultNumberWriterTest {
     */
    @Test
    public void testProviderGetsUsed() throws Exception {
-      Client client = ClientBuilder.newClient();
       client.register(DefaultNumberWriterCustom.class);
       Response response = client.target(generateURL("/test/bigDecimal")).request().get();
       response.bufferEntity();

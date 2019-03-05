@@ -701,6 +701,7 @@ public class RxObservableTest {
          Assert.assertEquals(0, errors.get());
          Assert.assertTrue(RxScheduledExecutorService.used);
          Assert.assertEquals(xStringList, stringList);
+         client.close();
       }
    }
 
@@ -773,6 +774,8 @@ public class RxObservableTest {
       for (int i = 0; i < 6; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @SuppressWarnings({ "unchecked" })

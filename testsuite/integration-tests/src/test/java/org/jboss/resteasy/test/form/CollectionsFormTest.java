@@ -62,5 +62,6 @@ public class CollectionsFormTest {
       Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
       Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+      client.close();
    }
 }

@@ -12,7 +12,8 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.test.response.resource.VariantAcceptResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -20,6 +21,8 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -65,6 +68,21 @@ public class VariantAcceptTest {
       return TestUtil.finishContainerPrepare(war, null, VariantAcceptResource.class);
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
+   }
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, VariantAcceptTest.class.getSimpleName());
    }
@@ -75,7 +93,6 @@ public class VariantAcceptTest {
     */
    @Test
    public void testVariant() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/variant")).request();
       request.accept(MediaType.WILDCARD_TYPE);
       request.accept(MediaType.TEXT_HTML_TYPE);
@@ -91,7 +108,6 @@ public class VariantAcceptTest {
     */
    @Test
    public void testVariantWithParameters() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/params")).request();
       request.accept(WILDCARD_WITH_PARAMS);
       request.accept(MediaType.TEXT_HTML_TYPE);
@@ -108,7 +124,6 @@ public class VariantAcceptTest {
     */
    @Test
    public void testVariantWithQParameter() throws Exception {
-      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       Invocation.Builder request = client.target(generateURL("/simple")).request();
       request.accept("application/json;q=0.3, application/xml;q=0.2");
       Response response = request.get();

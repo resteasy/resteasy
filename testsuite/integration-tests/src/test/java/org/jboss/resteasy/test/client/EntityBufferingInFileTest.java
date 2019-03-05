@@ -202,6 +202,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
          String responseString = writer.toString();
          Assert.assertEquals(body, responseString);
          response.close();
+         client.close();
       } catch (OutOfMemoryError e) {
          logger.info("OutOfMemoryError on " + memoryUnit + " test.");
       }
