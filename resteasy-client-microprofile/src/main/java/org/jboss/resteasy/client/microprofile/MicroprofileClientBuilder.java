@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.microprofile;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -206,14 +208,11 @@ class MicroprofileClientBuilder implements RestClientBuilder {
          Set<String> allVariables = new HashSet<>(template.getPathParamNamesInDeclarationOrder());
          Map<String, Object> paramMap = new HashMap<>();
          for (Parameter p : method.getParameters()) {
-            PathParam pathParam = p.getAnnotation(PathParam.class);
-            org.jboss.resteasy.annotations.jaxrs.PathParam pathParam2 = p.getAnnotation(org.jboss.resteasy.annotations.jaxrs.PathParam.class);
-            if (pathParam != null) {
-               paramMap.put(pathParam.value(), "foobar");
-            } else if (pathParam2 != null) {
-               paramMap.put((pathParam2.value() != null && pathParam2.value().length() > 0) ?
-                               pathParam2.value() : p.getName(), "foobar");
-            }
+            populatePathParamMap(p.getAnnotation(PathParam.class),
+                    p.getAnnotation(org.jboss.resteasy.annotations.jaxrs.PathParam.class),
+                    p.getName(),
+                    paramMap);
+            extractPathParamsFromBeanParam(p, paramMap);
          }
 
          if (allVariables.size() != paramMap.size()) {
@@ -229,6 +228,33 @@ class MicroprofileClientBuilder implements RestClientBuilder {
       }
    }
 
+   private void extractPathParamsFromBeanParam(Parameter p, Map<String, Object> paramMap) {
+      if (p.getAnnotation(BeanParam.class) != null) {
+         //Fields
+         for(Field f : p.getType().getDeclaredFields()){
+            populatePathParamMap(f.getAnnotation(PathParam.class), f.getAnnotation(org.jboss.resteasy.annotations.jaxrs.PathParam.class), paramMap);
+         }
+         //Getters
+         for(Method m: p.getType().getDeclaredMethods()) {
+            populatePathParamMap(m.getAnnotation(PathParam.class), m.getAnnotation(org.jboss.resteasy.annotations.jaxrs.PathParam.class), paramMap);
+         }
+      }
+   }
+
+   private void populatePathParamMap(PathParam pathParam, org.jboss.resteasy.annotations.jaxrs.PathParam pathParam2, Map<String, Object> paramMap) {
+      populatePathParamMap(pathParam, pathParam2, "", paramMap);
+   }
+
+   private void populatePathParamMap(PathParam pathParam,
+                                     org.jboss.resteasy.annotations.jaxrs.PathParam pathParam2,
+                                     String defaultName,
+                                     Map<String, Object> paramMap) {
+      if (pathParam != null) {
+         paramMap.put(pathParam.value(), "foobar");
+      } else if (pathParam2 != null) {
+         paramMap.put((pathParam2.value() != null && !pathParam2.value().isEmpty()) ? pathParam2.value() : defaultName, "foobar");
+      }
+   }
 
    @Override
    public Configuration getConfiguration() {
