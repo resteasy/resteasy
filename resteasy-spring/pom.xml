@@ -11,10 +11,6 @@
     <name>RESTEasy Spring integration</name>
     <description/>
 
-    <properties>
-        <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
-    </properties>
-
     <repositories>
         <repository>
             <id>jboss</id>
@@ -63,19 +59,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -146,9 +139,9 @@
 
         <dependency>
             <groupId>commons-io</groupId>
-           <artifactId>commons-io</artifactId>
+            <artifactId>commons-io</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
@@ -160,9 +153,22 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
-        </dependency> 
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow-spring</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-    
+
     <profiles>
         <profile>
             <id>i18n</id>
@@ -184,7 +190,9 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/plugins/spring/i18n</outputDirectory>
+                                    <outputDirectory>
+                                        ${basedir}/src/main/resources/org/jboss/resteasy/plugins/spring/i18n
+                                    </outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/test/resources/i18n</directory>
@@ -200,24 +208,24 @@
                     </plugin>
 
                     <plugin>
-                       <groupId>org.apache.maven.plugins</groupId>
-                       <artifactId>maven-surefire-plugin</artifactId>
-                       <executions>
-                           <execution>
-                               <id>i18</id>
-                               <phase>test</phase>
-                               <goals>
-                                   <goal>test</goal>
-                               </goals>
-                               <configuration>
-                                   <skip>false</skip>
-                                   <reuseForks>false</reuseForks>
-                                   <includes>
-                                       <include>**/I18nTestMessages_*.java</include>
-                                   </includes>
-                               </configuration>
-                           </execution>
-                       </executions>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>i18</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <reuseForks>false</reuseForks>
+                                    <includes>
+                                        <include>**/I18nTestMessages_*.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
