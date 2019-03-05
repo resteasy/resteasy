@@ -67,7 +67,6 @@ public class PKCS7SignatureSmokeTest {
       WebTarget target = client.target(generateURL());
       String data = target.path("test/signed/text").request().get(String.class);
       logger.info(data);
-      client.close();
    }
 
    /**
