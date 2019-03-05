@@ -1,0 +1,25 @@
+<chapter id="Client_Providers_With_Provider_Annotation">
+   <title>Client providers with @Provider annotation</title>
+   
+   <para>
+      There are two types of client provider definitions:
+
+      <itemizedlist>
+
+         <listitem>
+            registered for particular Client or WebTarget instance with its <ulink url="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Configurable.html#register-java.lang.Class-">register method</ulink>.
+         </listitem>
+
+         <listitem>
+            registered for every client instance with service loader META-INF/services/javax.ws.rs.ext.Providers
+         </listitem>
+
+      </itemizedlist>
+      
+      The JAX-RS specification also requires that all provider classes annotated with <classname>@Provider</classname> 
+      annotation are registered for every client instance if the JAX-RS container runtime is able to process annotations. 
+      Since RESTEasy 3.7 this behavior is the default. However, to avoid possible problems with already created 
+      applications caused by unwanted or duplicated registrations of client providers this behavior can be disabled 
+      by "resteasy.client.providers.annotations.disabled" system property.
+   </para>
+</chapter>

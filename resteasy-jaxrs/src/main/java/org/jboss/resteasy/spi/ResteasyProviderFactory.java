@@ -380,9 +380,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistry(this, precedence) : parent.getContainerRequestFilterRegistry().clone(this);
       containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistry(this, precedence) : parent.getContainerResponseFilterRegistry().clone(this);
 
-      clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistry(this) : parent.getClientRequestFilterRegistry().clone(this);
-      clientRequestFilters = parent == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : parent.getClientRequestFilters().clone(this);
-      clientResponseFilters = parent == null ? new ClientResponseFilterRegistry(this) : parent.getClientResponseFilters().clone(this);
+      initializeClientProviders(parent);
       clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistry(this, precedence) : parent.getClientReaderInterceptorRegistry().clone(this);
       clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistry(this, precedence) : parent.getClientWriterInterceptorRegistry().clone(this);
       clientExecutionInterceptorRegistry = parent == null ? new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this) : parent.getClientExecutionInterceptorRegistry().cloneTo(this);
@@ -3171,5 +3169,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public boolean isReactive(Class<?> clazz)
    {
       return reactiveClasses.keySet().contains(clazz);
+   }
+
+   public void initializeClientProviders(ResteasyProviderFactory factory) {
+      clientRequestFilterRegistry = factory == null ? new ClientRequestFilterRegistry(this) : factory.getClientRequestFilterRegistry().clone(this);
+      clientRequestFilters = factory == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : factory.getClientRequestFilters().clone(this);
+      clientResponseFilters = factory == null ? new ClientResponseFilterRegistry(this) : factory.getClientResponseFilters().clone(this);
    }
 }
