@@ -26,7 +26,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -56,11 +58,24 @@ public class ApplicationScopeValidationTest {
       return PortProviderUtil.generateURL(path, ApplicationScopeValidationTest.class.getSimpleName());
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+   }
+
    @Test
    @Category({NotForForwardCompatibility.class})
    public void testValidationApplicationScope()
    {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/testapp/send"));
       ApplicationScopeMyDto dto = new ApplicationScopeMyDto();
       dto.setPath("path");
@@ -84,7 +99,6 @@ public class ApplicationScopeValidationTest {
    @Test
    public void testValidationRequestScope()
    {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/testreq/send"));
       ApplicationScopeMyDto dto = new ApplicationScopeMyDto();
       dto.setPath("path");

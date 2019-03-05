@@ -32,7 +32,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -65,6 +67,21 @@ public class ValidationWithCDITest
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
+   }
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, ValidationWithCDITest.class.getSimpleName());
    }
@@ -76,7 +93,6 @@ public class ValidationWithCDITest
    @Test
    public void testRoot() throws Exception
    {
-      Client client = ClientBuilder.newClient();
       WebTarget base = client.target(generateURL("/test/root/sub?foo=x"));
       Builder builder = base.request();
       builder.accept(MediaType.APPLICATION_XML);
@@ -97,7 +113,6 @@ public class ValidationWithCDITest
    @Category({NotForForwardCompatibility.class})
    public void testAsynch() throws Exception
    {
-      Client client = ClientBuilder.newClient();
       WebTarget base = client.target(generateURL("/test/async/sub"));
 
       {

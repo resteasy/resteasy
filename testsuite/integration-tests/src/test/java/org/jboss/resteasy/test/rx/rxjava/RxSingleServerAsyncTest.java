@@ -317,6 +317,8 @@ public class RxSingleServerAsyncTest {
       for (int i = 0; i < 2; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

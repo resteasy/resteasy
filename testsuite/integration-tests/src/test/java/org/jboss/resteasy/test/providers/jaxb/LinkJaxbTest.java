@@ -60,5 +60,6 @@ public class LinkJaxbTest {
       Client client = ClientBuilder.newClient();
       String str = client.target(generateURL("")).request().get(String.class);
       logger.info(str);
+      client.close();
    }
 }

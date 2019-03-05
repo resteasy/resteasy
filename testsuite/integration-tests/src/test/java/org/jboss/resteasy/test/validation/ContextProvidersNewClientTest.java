@@ -16,7 +16,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -54,9 +56,22 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
       return PortProviderUtil.generateURL(path, ContextProvidersNewClientTest.class.getSimpleName());
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+   }
+
    @Override
    <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL(path));
       ClientResponse response = (ClientResponse) target.request().get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -67,7 +82,6 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
    @Override
    <S, T> T post(String path, S payload, MediaType mediaType,
                   Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL(path));
       Entity<S> entity = Entity.entity(payload, mediaType, annotations);
       ClientResponse response = (ClientResponse) target.request().post(entity);

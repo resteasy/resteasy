@@ -52,5 +52,6 @@ public class FilterTest {
       Response response = request.get();
       assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       assertEquals("Wrong content of response", "forward", response.readEntity(String.class));
+      client.close();
    }
 }

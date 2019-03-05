@@ -67,5 +67,6 @@ public class ValidationThroughRestTest {
       String responseBody = response.readEntity(String.class);
       Assert.assertThat("Wrong validation error", responseBody, containsString("must be greater than or equal to 1"));
       Assert.assertTrue("Wrong validation error", responseBody.contains("may not be null") || responseBody.contains("must not be null"));
+      client.close();
    }
 }

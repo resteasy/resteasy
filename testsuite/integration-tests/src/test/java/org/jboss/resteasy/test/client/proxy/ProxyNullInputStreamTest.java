@@ -54,6 +54,8 @@ public class ProxyNullInputStreamTest {
          pResource.getUserHead("myDb");
       } catch (Exception e) {
          Assert.assertEquals("HTTP 404 Not Found", e.getMessage());
+      } finally {
+         client.close();
       }
 
    }

@@ -227,6 +227,8 @@ public class AsynchBasicTest {
       response = client.target(jobUrl2).request().get();
       Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
       response.close();
+
+      client.close();
    }
 
 
@@ -270,6 +272,8 @@ public class AsynchBasicTest {
          response.close();
          Thread.sleep(50);
       }
+
+      client.close();
    }
 
    /**
@@ -301,6 +305,8 @@ public class AsynchBasicTest {
       Thread.sleep(1000);
       Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
       response.close();
+
+      client.close();
    }
 
 }

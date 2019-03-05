@@ -11,7 +11,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.client.proxy.resource.Params;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyBeanParam;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyBeanParamResource;
@@ -90,7 +89,7 @@ public class RESTEasyParamBasicTest {
    public void proxyClientAllParamsTest() throws MalformedURLException {
       final String url = generateURL("");
       final String parameterValue = "parameterValue";
-      ProxyParameterAnotations proxy = new ResteasyClientBuilderImpl().build().target(url).proxy(ProxyParameterAnotations.class);
+      ProxyParameterAnotations proxy = client.target(url).proxy(ProxyParameterAnotations.class);
 
       String response = proxy.executeQueryParam(parameterValue);
       Assert.assertEquals("QueryParam = "+parameterValue, response);
@@ -147,7 +146,7 @@ public class RESTEasyParamBasicTest {
       params.setP3("param3");
       params.setQ1("queryParam");
 
-     ProxyBeanParam proxy = new ResteasyClientBuilderImpl().build().target(url).proxy(ProxyBeanParam.class);
+     ProxyBeanParam proxy = client.target(url).proxy(ProxyBeanParam.class);
      response = proxy.getAll(params, "param2", "queryParam1");
      Assert.assertEquals("test_param2_param3_queryParam_queryParam1", response);
 

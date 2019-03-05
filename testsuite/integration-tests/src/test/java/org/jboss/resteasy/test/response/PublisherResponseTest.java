@@ -244,12 +244,14 @@ public class PublisherResponseTest {
       Assert.assertEquals("one", collector.get(1));
 
       Thread.sleep(5000);
-      Invocation.Builder request = ClientBuilder.newClient().target(generateURL("/infinite-done")).request();
+      Client client = ClientBuilder.newClient();
+      Invocation.Builder request = client.target(generateURL("/infinite-done")).request();
       Response response = request.get();
       logger.info("part 2");
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("true", entity);
+      client.close();
    }
 
    /**
@@ -275,10 +277,12 @@ public class PublisherResponseTest {
       client.close();
 
       Thread.sleep(5000);
-      Builder request = ClientBuilder.newClient().target(generateURL("/infinite-done")).request();
+      client = ClientBuilder.newClient();
+      Builder request = client.target(generateURL("/infinite-done")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("true", entity);
+      client.close();
    }
 }

@@ -12,7 +12,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,6 +51,21 @@ public class AnnotationInheritanceGenericsTest {
       );
 
       return TestUtil.finishContainerPrepare(war, null, AnnotationInheritanceGenericsImpl.class);
+   }
+
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+      client = null;
    }
 
    @Test
@@ -145,7 +162,7 @@ public class AnnotationInheritanceGenericsTest {
             entity.getId());
    }
 
-   private static <T> T invokeRequest(
+   private <T> T invokeRequest(
          final Class<?> resourceClass,
          final String pathArgument,
          final String httpMethod,
@@ -156,7 +173,6 @@ public class AnnotationInheritanceGenericsTest {
       final String resourcePath = resourcePathAnnotation.value().startsWith("/") ? resourcePathAnnotation.value() : '/' + resourcePathAnnotation.value();
       final String resourceUrl = PortProviderUtil.generateURL(resourcePath, TEST_NAME);
 
-      final Client client = ClientBuilder.newClient();
       final WebTarget target = client.target(resourceUrl).path((pathArgument != null) ? pathArgument : "");
 
       final Invocation requestInvocation;

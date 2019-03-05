@@ -532,16 +532,9 @@ public class ComprehensiveJaxrsTest
       return future;
    }
 
-   private WebTarget createWebTarget(String resource)
-   {
-      Client client = ClientBuilder.newClient();
-      WebTarget target = client.target(generateURL("/resource/" + resource));
-      return target;
-   }
-
    private AsyncInvoker createAsyncInvoker(String resource)
    {
-      WebTarget target = createWebTarget(resource);
+      WebTarget target = client.target(generateURL("/resource/" + resource));
       AsyncInvoker async = target.request().async();
       return async;
    }

@@ -15,7 +15,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -72,6 +74,20 @@ public class CustomExceptionMapperTest {
       return war;
    }
 
+   protected Client client;
+
+   @Before
+   public void beforeTest()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @After
+   public void afterTest()
+   {
+      client.close();
+   }
+
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, CustomExceptionMapperTest.class.getSimpleName());
    }
@@ -82,7 +98,6 @@ public class CustomExceptionMapperTest {
     */
    @Test
    public void testExceptionMapperInputViolations() throws Exception {
-      Client client = ClientBuilder.newClient();
       Builder builder = client.target(generateURL("/all/a/b/c")).request();
       builder.accept(MediaType.APPLICATION_XML);
       ClientResponse response = (ClientResponse) builder.get();
@@ -97,7 +112,6 @@ public class CustomExceptionMapperTest {
     */
    @Test
    public void testExceptionMapperOutputViolations() throws Exception {
-      Client client = ClientBuilder.newClient();
       Builder builder = client.target(generateURL("/all/abc/defg/hijkl")).request();
       builder.accept(MediaType.APPLICATION_XML);
       ClientResponse response = (ClientResponse) builder.get();

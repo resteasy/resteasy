@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -183,7 +184,8 @@ public class ClientCacheTest {
    @Test
    public void testMaxSizeNoProxy() throws Exception {
       String url = PortProviderUtil.generateURL("/cache/cacheit/{id}", ClientCacheTest.class.getSimpleName());
-      ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(url);
+      Client client = ClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(url);
       LightweightBrowserCache cache = new LightweightBrowserCache();
       cache.setMaxBytes(20);
       BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
@@ -211,5 +213,6 @@ public class ClientCacheTest {
       rtn = target.resolveTemplate("id", "1").request().get(String.class);
       Assert.assertEquals("cachecache" + 3, rtn);
       Assert.assertEquals(3, count.get());
+      client.close();
    }
 }

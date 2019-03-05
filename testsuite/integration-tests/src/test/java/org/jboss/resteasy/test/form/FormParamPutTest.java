@@ -54,5 +54,6 @@ public class FormParamPutTest {
 
       WebTarget get = client.target(generateURL("/test"));
       assertEquals("Weinan Li", get.request().get().readEntity(String.class));
+      client.close();
    }
 }

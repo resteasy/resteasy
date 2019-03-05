@@ -64,7 +64,6 @@ public class PKCS7SignatureSmokeTest {
     */
    @Test
    public void encodedData() throws Exception {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL());
       String data = target.path("test/signed/text").request().get(String.class);
       logger.info(data);
@@ -77,7 +76,6 @@ public class PKCS7SignatureSmokeTest {
     */
    @Test
    public void decodedData() throws Exception {
-      Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL());
       target = target.path("test/signed/pkcs7-signature");
       PKCS7SignatureInput signed = target.request().get(PKCS7SignatureInput.class);

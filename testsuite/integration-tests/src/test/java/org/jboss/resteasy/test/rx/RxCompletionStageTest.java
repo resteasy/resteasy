@@ -295,6 +295,7 @@ public class RxCompletionStageTest {
          CompletionStage<Response> completionStage = invoker.get();
          Assert.assertTrue(RxScheduledExecutorService.used);
          Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+         client.close();
       }
    }
 
@@ -343,6 +344,8 @@ public class RxCompletionStageTest {
       for (int i = 0; i < 2; i++) {
          Assert.assertEquals("x", list.get(i));
       }
+      client1.close();
+      client2.close();
    }
 
    @Test

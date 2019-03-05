@@ -562,5 +562,6 @@ public class AsyncRequestFilterTest {
          .get();
       assertEquals(200, response.getStatus());
       assertEquals("resource", response.readEntity(String.class));
+      client.close();
    }
 }
