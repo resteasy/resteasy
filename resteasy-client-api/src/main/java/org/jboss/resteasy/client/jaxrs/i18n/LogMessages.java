@@ -23,4 +23,8 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = Messages.BASE + 171, value = "Ignoring exception thrown within InvocationCallback")
    void exceptionIgnored(@Cause Throwable ex);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = Messages.BASE + 187, value = "Closing a %s instance for you. Please close clients yourself.")
+   void closingForYou(Class<?> clazz);
 }

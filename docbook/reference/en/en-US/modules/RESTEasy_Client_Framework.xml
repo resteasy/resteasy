@@ -795,8 +795,16 @@ response.close();
      </para>
 
     <para>
-        Finally, if your javax.ws.rs.client.Client class has created the engine automatically for you, you should
+        If your javax.ws.rs.client.Client class has created the engine automatically for you, you should
         call Client.close() and this will clean up any socket connections.
+    </para>
+
+    <para>
+        Finally, given having explicit <methodname>finalize()</methodname> methods can badly affect performances, the 
+        <classname>org.jboss.resteasy.client.jaxrs.engines.ManualClosingApacheHttpClient43Engine</classname> flavour
+        of <classname>org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine</classname> can be used. With
+        that the user is always responsible for calling <methodname>close()</methodname> as no <methodname>finalize()</methodname>
+        is there to do that before object garbage collection.
     </para>
 
     </section>
