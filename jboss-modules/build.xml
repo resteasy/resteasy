@@ -184,8 +184,11 @@
             <maven-resource-bundle group="org.jboss.resteasy" artifact="resteasy-spring" subdir="bundled/resteasy-spring-jar"/>
         </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
+        <module-def name="org.jboss.resteasy.resteasy-validator-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
         </module-def>
 
         <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->
