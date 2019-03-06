@@ -220,7 +220,7 @@
                 </row>
                 <row>
                     <entry>
-                        org.jboss.resteasy.resteasy-validator-provider-11
+                        org.jboss.resteasy.resteasy-validator-provider
                     </entry>
                     <entry>
                         yes
