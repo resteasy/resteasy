@@ -114,8 +114,9 @@ public class ClientInvoker implements MethodInvoker
 
    protected Object invokeAsync(final Object[] args)
    {
-      ClientInvocationBuilder builder = (ClientInvocationBuilder) webTarget.request();
       ClientInvocation request = createRequest(args);
+      WebTarget t = request.getActualTarget();
+      ClientInvocationBuilder builder = (ClientInvocationBuilder) (t != null ? t : webTarget).request();
       builder.setInvocation(request);
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
@@ -183,6 +184,9 @@ public class ClientInvoker implements MethodInvoker
          }
       }
       ClientInvocation clientInvocation = (ClientInvocation)builder.build(httpMethod);
+      if (target != this.webTarget) {
+         clientInvocation.setActualTarget(target);
+      }
       clientInvocation.setClientInvoker(this);
       return clientInvocation;
    }
