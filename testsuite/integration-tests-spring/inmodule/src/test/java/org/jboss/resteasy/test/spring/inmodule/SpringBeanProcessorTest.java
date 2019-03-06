@@ -100,8 +100,10 @@ public class SpringBeanProcessorTest {
       // remaining permissions needed to run springframework
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new PropertyPermission("arquillian.*", "read"),
+            new PropertyPermission("jdk.lang.ref.disableClearBeforeEnqueue", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
       ), "permissions.xml");

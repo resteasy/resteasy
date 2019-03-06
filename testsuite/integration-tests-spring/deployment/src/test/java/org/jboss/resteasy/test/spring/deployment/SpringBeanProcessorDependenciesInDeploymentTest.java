@@ -105,6 +105,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
             new RuntimePermission("getProtectionDomain"),
             new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
             new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("getClassLoader"),
             new RuntimePermission("accessDeclaredMembers"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")

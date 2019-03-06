@@ -5,6 +5,7 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
+import java.security.SecurityPermission;
 import java.util.logging.LoggingPermission;
 
 import org.apache.http.HttpEntity;
@@ -85,9 +86,10 @@ public class AddSpringResteasyAsResourceRootTest {
       // PropertyPermission needed for "arquillian.debug" to run
       // remaining permissions needed to run springframework
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-         //new PropertyPermission("arquillian.*", "read"),
+         new SecurityPermission("insertProvider"),
          new ReflectPermission("suppressAccessChecks"),
          new RuntimePermission("accessDeclaredMembers"),
+         new RuntimePermission("getClassLoader"),
          new FilePermission("<<ALL FILES>>", "read"),
          new LoggingPermission("control", "")
       ), "permissions.xml");
