@@ -35,6 +35,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -81,6 +82,9 @@ public class ClientInvocation implements Invocation
    protected boolean chunked;
 
    protected ClientInvoker clientInvoker;
+
+   protected WebTarget actualTarget;
+
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing this request.
    // That is problematic for wrapping the output stream in e.g. a RequestFilter for transparent compressing.
    protected DelegatingOutputStream delegatingOutputStream = new DelegatingOutputStream();
@@ -798,5 +802,15 @@ public class ClientInvocation implements Invocation
       {
          return get();
       }
+   }
+
+   public void setActualTarget(WebTarget target)
+   {
+      this.actualTarget = target;
+   }
+
+   public WebTarget getActualTarget()
+   {
+      return this.actualTarget;
    }
 }
