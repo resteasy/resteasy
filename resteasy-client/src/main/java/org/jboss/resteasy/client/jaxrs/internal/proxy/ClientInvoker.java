@@ -52,7 +52,6 @@ public class ClientInvoker implements MethodInvoker
    protected RxInvokerProvider<?> rxInvokerProvider;
    protected SyncInvoker syncInvoker;
 
-
    public ClientInvoker(final ResteasyWebTarget parent, final Class<?> declaring, final Method method, final ProxyConfig config)
    {
       // webTarget must be a clone so that it has a cloned ClientConfiguration so we can apply DynamicFeature
@@ -116,8 +115,9 @@ public class ClientInvoker implements MethodInvoker
 
    protected Object invokeAsync(final Object[] args)
    {
-      ClientInvocationBuilder builder = (ClientInvocationBuilder) webTarget.request();
       ClientInvocation request = createRequest(args);
+      WebTarget t = request.getActualTarget();
+      ClientInvocationBuilder builder = (ClientInvocationBuilder) (t != null ? t : webTarget).request();
       builder.setClientInvocation(request);
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
@@ -169,6 +169,9 @@ public class ClientInvoker implements MethodInvoker
       ClientInvocation clientInvocation = new ClientInvocation(this.webTarget.getResteasyClient(), target.getUri(),
             new ClientRequestHeaders(parentConfiguration), parentConfiguration);
       clientInvocation.setClientInvoker(this);
+      if (target != this.webTarget) {
+         clientInvocation.setActualTarget(target);
+      }
       if (accepts != null)
       {
          clientInvocation.getHeaders().accept(accepts);
