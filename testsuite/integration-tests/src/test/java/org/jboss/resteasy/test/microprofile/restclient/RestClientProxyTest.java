@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -16,9 +20,12 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+
+import io.reactivex.Single;
 
 @RunWith(Arquillian.class)
 public class RestClientProxyTest
@@ -36,7 +43,7 @@ public class RestClientProxyTest
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addClass(PortProviderUtil.class);
       war.addClass(Category.class);
-      war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient\n"), "MANIFEST.MF");
+      war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient,org.jboss.resteasy.resteasy-rxjava2 services\n"), "MANIFEST.MF");
       return TestUtil.finishContainerPrepare(war, null);
    }
 
@@ -55,6 +62,46 @@ public class RestClientProxyTest
 
       assertNotNull(client);
       assertEquals("Hello", client.hello());
+   }
+
+   @Test
+   public void testGetSingle() throws Exception
+   {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
+
+      assertNotNull(client);
+      CountDownLatch latch = new CountDownLatch(1);
+      AtomicReference<String> value = new AtomicReference<String>();
+      value.set(null);
+      Single<String> single = client.single("foo");
+      single.subscribe((String s) -> {
+         value.set(s);
+         latch.countDown();
+      });
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      assertEquals("foo", value.get());
+   }
+
+   @Test
+   public void testGetCompletionStage() throws Exception
+   {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
+
+      assertNotNull(client);
+      CountDownLatch latch = new CountDownLatch(1);
+      AtomicReference<String> value = new AtomicReference<String>();
+      value.set(null);
+      CompletionStage<String> cs = client.cs("foo");
+      cs.whenComplete((String s, Throwable t) -> {
+         value.set(s);
+         latch.countDown();
+      });
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      assertEquals("foo", value.get());
    }
 
 }
