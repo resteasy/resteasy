@@ -2,16 +2,20 @@
    <title>Validation</title>
    
    <para>
-   Validation is yet another facility that appeared as an ad hoc extension in Resteasy 2 and
-   was later formalized in JAX-RS 2.0. In Resteasy 2, validation was implemented in the 
+   Validation is yet another facility that appeared as an ad hoc extension in RESTEasy 2 and
+   was later formalized in JAX-RS 2.0. In RESTEasy 2, validation was implemented in the 
    resteasy-hibernatevalidator-provider module, and it was necessary to annotate classes and/or methods
    with <classname>@ValidateRequest</classname> to enable validation.
    </para>
    
    <para>
-   In Resteasy 3, validation is implemented in the resteasy-validator-provider-11 module, and
+   In RESTEasy 3, validation is implemented in the resteasy-validator-provider-11 module, and
    <classname>@ValidateRequest</classname> is no longer relevant. In fact, validation is enabled
    by default, as long as resteasy-validator-provider-11 is on the classpath.
+   </para>
+
+   <para>
+   In RESTEasy 3.7, the resteasy-validator-provider-11 has been renamed to resteasy-validator-provider.
    </para>
 
 </chapter>
