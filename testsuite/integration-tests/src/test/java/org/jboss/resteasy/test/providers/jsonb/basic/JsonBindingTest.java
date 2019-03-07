@@ -137,6 +137,31 @@ public class JsonBindingTest {
             response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
    }
 
+   /**
+    * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
+    *                client should not ignore @JsonbTransient annotation and should not send a value in this variable
+    *                server verify that client doesn't sent a value in a variable with @JsonbTransient annotation
+    *                server returns json data with a value in a variable with @JsonbTransient annotation
+    *                client should not ignore @JsonbTransient annotation and should not receive a value in this variable
+    *
+    *                This test covers RESTEASY-2171.
+    *
+    * @tpPassCrit The resource returns object with correct values
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void jsonbOnClientTestWithoutEncoding() throws Exception {
+      WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/repeater", WAR_WITH_JSONB));
+      MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+      Entity<Cat> entity = Entity.entity(
+              new Cat("Graça", "brazilian", "gray", true,
+                      JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+      Cat response = target.request().post(entity, Cat.class);
+
+      Assert.assertThat("Failed to return the correct name", response.getName(), is("Graça"));
+      Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
+              response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+   }
 
    /**
     * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
