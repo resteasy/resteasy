@@ -9,6 +9,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import java.nio.charset.Charset;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 
 /**
@@ -18,6 +20,8 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
 
    private static final String JSON = "json";
    private static final String PLUS_JSON = "+json";
+   private static final Boolean DISABLE_CHARSET = AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+           Boolean.valueOf(System.getProperty("org.jboss.resteasy.jsonb.disable.charset", "true")));
 
    @Context
    javax.ws.rs.ext.Providers providers;
@@ -41,6 +45,11 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
    }
 
    public static Charset getCharset(final MediaType mediaType) {
+      if (DISABLE_CHARSET)
+      {
+         return Charset.forName("utf-8");
+      }
+
       if (mediaType != null)
       {
          String charset = mediaType.getParameters().get("charset");
