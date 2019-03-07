@@ -19,7 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.resteasy.core.InternalDispatcher;
 import org.jboss.resteasy.core.MessageBodyParameterInjector;
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.spi.BadRequestException;
+import javax.ws.rs.BadRequestException;
 import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
 import org.junit.Assert;
 

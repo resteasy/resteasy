@@ -7,7 +7,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
 import javax.ws.rs.MatrixParam;
-import org.jboss.resteasy.spi.NotFoundException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.PathSegment;
 
 import java.lang.annotation.Annotation;

@@ -11,8 +11,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.ConstructorParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.NotFoundException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 
 import javax.ws.rs.WebApplicationException;
 

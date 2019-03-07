@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -13,14 +14,13 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.BadRequestException;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -227,11 +227,24 @@ public class ExceptionHandler
 
       Response response = e.getResponse();
 
-      if (response != null) {
+      if (response != null)
+      {
+         BuiltResponse bResponse = (BuiltResponse)response;
+         if (bResponse.getStatus() == HttpResponseCodes.SC_BAD_REQUEST
+            || bResponse.getStatus() == HttpResponseCodes.SC_NOT_FOUND)
+         {
+            if (e.getMessage() != null)
+            {
+               Response.ResponseBuilder builder = bResponse.fromResponse(response);
+               builder.type(MediaType.TEXT_HTML).entity(e.getMessage());
+               return builder.build();
+            }
+         }
          return response;
-      } else {
-         Response.ResponseBuilder builder = Response.status(-1);
 
+      } else {
+
+         Response.ResponseBuilder builder = Response.status(-1);
          if (e instanceof BadRequestException) {
             builder.status(HttpResponseCodes.SC_BAD_REQUEST);
          } else if (e instanceof NotFoundException) {
@@ -239,7 +252,9 @@ public class ExceptionHandler
          }
 
          if (e.getMessage() != null)
+         {
             builder.type(MediaType.TEXT_HTML).entity(e.getMessage());
+         }
          Response resp = builder.build();
          return resp;
       }

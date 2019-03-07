@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-import org.jboss.resteasy.spi.BadRequestException;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ParamConverter;
