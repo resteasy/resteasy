@@ -342,7 +342,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       if (executor == null)
       {
          cleanupExecutor = true;
-         executor = Executors.newFixedThreadPool(10);
+         executor = Executors.newCachedThreadPool();
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
