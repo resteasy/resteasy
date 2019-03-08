@@ -47,12 +47,10 @@ public class ValidationSuppressPathTestBase {
       Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      TestUtil.countViolations(e, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, fieldPath, violation.getPath());
-      violation = e.getPropertyViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, propertyPath, violation.getPath());
-      violation = e.getClassViolations().iterator().next();
+      TestUtil.countViolations(e, 4, 2, 1, 1, 0);
+      Assert.assertNotNull(WRONG_ERROR_MSG, TestUtil.getViolationByPath(e.getPropertyViolations(), fieldPath));
+      Assert.assertNotNull(WRONG_ERROR_MSG, TestUtil.getViolationByPath(e.getPropertyViolations(), propertyPath));
+      ResteasyConstraintViolation violation = e.getClassViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, classPath, violation.getPath());
       violation = e.getParameterViolations().iterator().next();
       Assert.assertTrue(WRONG_ERROR_MSG + parameterPaths, Arrays.asList(parameterPaths).contains(violation.getPath()));

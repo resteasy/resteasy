@@ -77,7 +77,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 1, 0, 1, 0);
+      TestUtil.countViolations(r, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -91,7 +91,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 0, 1, 0);
+      TestUtil.countViolations(r, 0, 0, 1, 0);
    }
 
    /**
@@ -107,7 +107,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 1, 0, 1, 0);
+      TestUtil.countViolations(r, 1, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -121,7 +121,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 1, 0, 1, 0);
+      TestUtil.countViolations(r, 1, 0, 1, 0);
    }
 
    /**
@@ -142,7 +142,7 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, propertyViolations, 0, 1, 0);
+      TestUtil.countViolations(r, propertyViolations, 0, 1, 0);
 
       // Valid invocation
       response = base.path("set/xyz").request().get();
@@ -156,6 +156,6 @@ public class EJBCDIValidationTest {
       Assert.assertEquals(400, response.getStatus());
       answer = response.readEntity(String.class);
       r = new ViolationReport(answer);
-      TestUtil.countViolations(r, 0, 0, 0, 1, 0);
+      TestUtil.countViolations(r, 0, 0, 1, 0);
    }
 }

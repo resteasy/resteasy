@@ -130,7 +130,7 @@ public class ValidationTest {
          Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
          ViolationReport r = response.readEntity(ViolationReport.class);
          logger.info("entity: " + r);
-         TestUtil.countViolations(r, 0, 0, 0, 0, 1);
+         TestUtil.countViolations(r, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          logger.info("violation: " + violation);
          Assert.assertTrue(ERR_CONSTRAINT_MESSAGE, violation.getMessage().equals("s must have length: 3 <= length <= 5"));
@@ -148,7 +148,7 @@ public class ValidationTest {
          Assert.assertTrue(ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE, Boolean.valueOf(header));
          ViolationReport r = response.readEntity(ViolationReport.class);
          logger.info("entity: " + r);
-         TestUtil.countViolations(r, 0, 0, 0, 0, 2);
+         TestUtil.countViolations(r, 0, 0, 0, 2);
          Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator();
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
@@ -191,14 +191,12 @@ public class ValidationTest {
       ViolationReport r = response.readEntity(ViolationReport.class);
       logger.info("report: " + r);
       logger.info("testViolationsBeforeReturnValue(): exception:");
-      TestUtil.countViolations(r, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
-      logger.info("violation: " + violation);
-      Assert.assertEquals(ERR_CONSTRAINT_MESSAGE, "size must be between 2 and 4", violation.getMessage());
+      TestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      Assert.assertNotNull(ERR_CONSTRAINT_MESSAGE, violation);
       Assert.assertEquals(ERR_ENTITY_MESSAGE, "a", violation.getValue());
-      violation = r.getPropertyViolations().iterator().next();
-      logger.info("violation: " + violation);
-      Assert.assertEquals(ERR_CONSTRAINT_MESSAGE, "size must be between 3 and 5", violation.getMessage());
+      violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      Assert.assertNotNull(ERR_CONSTRAINT_MESSAGE, violation);
       Assert.assertEquals(ERR_ENTITY_MESSAGE, "z", violation.getValue());
       violation = r.getClassViolations().iterator().next();
       logger.info("violation: " + violation);

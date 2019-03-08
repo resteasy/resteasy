@@ -59,7 +59,7 @@ public class CDIValidationSessionBeanTest {
       String answer = response.readEntity(String.class);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
-      TestUtil.countViolations(e, 1, 0, 0, 0, 1, 0);
+      TestUtil.countViolations(e, 1, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue("Expected validation error is not in response", cv.getMessage().equals("must be greater than or equal to 7"));
       client.close();

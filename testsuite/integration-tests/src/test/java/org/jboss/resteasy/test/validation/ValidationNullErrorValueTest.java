@@ -67,7 +67,7 @@ public class ValidationNullErrorValueTest {
       Response response = client.target(PortProviderUtil.generateURL("/get",
             ValidationNullErrorValueResourceWithNullFieldAndProperty.class.getSimpleName())).request().accept(MediaType.APPLICATION_XML).get();
       ViolationReport report = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 1, 1, 0, 0, 0);
+      TestUtil.countViolations(report, 2, 0, 0, 0);
       response.close();
    }
 
@@ -83,7 +83,7 @@ public class ValidationNullErrorValueTest {
                ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
                .accept(MediaType.APPLICATION_XML).post(Entity.text(new String()));
          ViolationReport report = response.readEntity(ViolationReport.class);
-         TestUtil.countViolations(report, 0, 0, 0, 1, 0);
+         TestUtil.countViolations(report, 0, 0, 1, 0);
          response.close();
       }
 
@@ -93,7 +93,7 @@ public class ValidationNullErrorValueTest {
                ValidationNullErrorValueResourceWithNullParameterAndReturnValue.class.getSimpleName())).request()
                .accept(MediaType.APPLICATION_XML).get();
          ViolationReport report = response.readEntity(ViolationReport.class);
-         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
+         TestUtil.countViolations(report, 0, 0, 0, 1);
          response.close();
       }
    }

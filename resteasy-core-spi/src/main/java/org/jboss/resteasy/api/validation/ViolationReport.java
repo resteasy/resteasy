@@ -22,7 +22,6 @@ public class ViolationReport
 {
    private String exception;
 
-   private ArrayList<ResteasyConstraintViolation> fieldViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> propertyViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> classViolations = new ArrayList<ResteasyConstraintViolation>();
    private ArrayList<ResteasyConstraintViolation> parameterViolations = new ArrayList<ResteasyConstraintViolation>();
@@ -35,7 +34,6 @@ public class ViolationReport
       {
          this.exception = e.toString();
       }
-      this.fieldViolations = (ArrayList<ResteasyConstraintViolation>) exception.getFieldViolations();
       this.propertyViolations = (ArrayList<ResteasyConstraintViolation>) exception.getPropertyViolations();
       this.classViolations = (ArrayList<ResteasyConstraintViolation>) exception.getClassViolations();
       this.parameterViolations = (ArrayList<ResteasyConstraintViolation>) exception.getParameterViolations();
@@ -71,11 +69,6 @@ public class ViolationReport
       return exception;
    }
 
-   public ArrayList<ResteasyConstraintViolation> getFieldViolations()
-   {
-      return fieldViolations;
-   }
-
    public ArrayList<ResteasyConstraintViolation> getPropertyViolations()
    {
       return propertyViolations;
@@ -99,11 +92,6 @@ public class ViolationReport
    public void setException(String exception)
    {
       this.exception = exception;
-   }
-
-   public void setFieldViolations(ArrayList<ResteasyConstraintViolation> fieldViolations)
-   {
-      this.fieldViolations = fieldViolations;
    }
 
    public void setPropertyViolations(ArrayList<ResteasyConstraintViolation> propertyViolations)

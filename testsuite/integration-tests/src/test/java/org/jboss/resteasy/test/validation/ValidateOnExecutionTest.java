@@ -140,7 +140,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
+         TestUtil.countViolations(e, 2, 2, 0, 0, 0);
       }
 
       {
@@ -151,7 +151,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
+         TestUtil.countViolations(e, 2, 2, 0, 0, 0);
       }
 
       {
@@ -162,7 +162,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
+         TestUtil.countViolations(e, 2, 2, 0, 0, 0);
       }
 
       {
@@ -173,7 +173,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
+         TestUtil.countViolations(e, 3, 2, 0, 1, 0);
       }
 
       {
@@ -183,7 +183,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
+         TestUtil.countViolations(e, 2, 2, 0, 0, 0);
       }
 
       {
@@ -193,7 +193,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
+         TestUtil.countViolations(e, 3, 2, 0, 1, 0);
       }
 
       {
@@ -203,7 +203,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 2, 0, 2, 0, 0, 0);
+         TestUtil.countViolations(e, 2, 2, 0, 0, 0);
       }
 
       {
@@ -214,7 +214,7 @@ public class ValidateOnExecutionTest {
          String entity = response.readEntity(String.class);
          ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(entity));
          logger.info(String.format("Violation exception: %s", e).replace('\r', ' '));
-         TestUtil.countViolations(e, 3, 0, 2, 0, 1, 0);
+         TestUtil.countViolations(e, 3, 2, 0, 1, 0);
       }
    }
 

@@ -98,10 +98,16 @@ public class TestClassValidator implements ConstraintValidator<TestClassConstrai
    </para>
    
    <orderedlist>
-   <listitem>Create the resource and validate field, property, and class constraints.</listitem>
+   <listitem>Create the resource and validate property, and class constraints.</listitem>
    <listitem>Validate the resource method parameters.</listitem>
    <listitem>If no violations have been detected, call the resource method and validate the return value</listitem>
    </orderedlist>
+   
+   <para>
+      <emphasis role="bold">Note.</emphasis> Though fields and properties are technically different, they are subject
+      to the same kinds of constraints, so they are treated the same in the context of validation. Together,
+      they will both be referred to as "properties" herein.
+   </para>
    
    <section>
    <title>Violation reporting</title>
@@ -135,11 +141,6 @@ javax.validation.ValidationException: HV000028: Unexpected exception during isVa
 public class ViolationReport
 {
    ...
-
-   public ArrayList<ResteasyConstraintViolation> getFieldViolations()
-   {
-      return fieldViolations;
-   }
 
    public ArrayList<ResteasyConstraintViolation> getPropertyViolations()
    {
@@ -233,7 +234,7 @@ public class ResteasyConstraintViolation implements Serializable
 <programlisting><![CDATA[
 public class ConstraintType
 {
-   public enum Type {CLASS, FIELD, PROPERTY, PARAMETER, RETURN_VALUE};
+   public enum Type {CLASS, PROPERTY, PARAMETER, RETURN_VALUE};
 }
 ]]></programlisting>
 
@@ -251,7 +252,7 @@ public class ConstraintType
    </para>
    
 <programlisting><![CDATA[
-[FIELD]
+[PROPERTY]
 [s]
 [size must be between 2 and 4]
 [a]
@@ -283,7 +284,7 @@ public class ConstraintType
    
    <orderedlist>
       <listitem>type of constraint</listitem>
-      <listitem>path to violating element (e.g., field name, class name, method name and parameter name)</listitem>
+      <listitem>path to violating element (e.g., property name, class name, method name and parameter name)</listitem>
       <listitem>message</listitem>
       <listitem>violating element</listitem>
    </orderedlist>
@@ -298,7 +299,7 @@ Invocation.Builder request = client.target(...).request();
 Response response = request.get();
 if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER)))
 {
-   String s = response.getEntity(String.class);
+   String s = response.readEntity(String.class);
    ViolationReport report = new ViolationReport(s);
 }
 ]]></programlisting>
@@ -326,7 +327,7 @@ path fields.
    </para>
    
          <para>
-         RESTEasy obtains a bean validation implemenation by looking in the available
+         RESTEasy obtains a bean validation implementation by looking in the available
          META-INF/services/javax.ws.rs.Providers files for an implementation
          of <classname>ContextResolver&lt;GeneralValidator&gt;</classname>, where 
          <classname>org.jboss.resteasy.spi.GeneralValidator</classname> is

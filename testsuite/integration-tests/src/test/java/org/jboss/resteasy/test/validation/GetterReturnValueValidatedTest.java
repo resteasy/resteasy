@@ -81,7 +81,7 @@ public class GetterReturnValueValidatedTest {
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      TestUtil.countViolations(e, 1, 0, 0, 0, 0, 1);
+      TestUtil.countViolations(e, 1, 0, 0, 0, 1);
       response.close();
    }
 }

@@ -63,7 +63,7 @@ public class ValidationOnGetterTest {
    public void testGetter() throws Exception {
       Response response = client.target(generateURL("/resource/executable/getter")).request().accept(MediaType.APPLICATION_XML).get();
       ViolationReport report = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(report, 0, 1, 0, 0, 0);
+      TestUtil.countViolations(report, 1, 0, 0, 0);
       response.close();
    }
 }

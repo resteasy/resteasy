@@ -118,7 +118,7 @@ public class ValidationJaxbTest {
     */
    @Test
    public void testRawXML() throws Exception {
-      doRawXMLTest(MediaType.APPLICATION_XML_TYPE, "<fieldViolations><constraintType>FIELD</constraintType><path>s</path>", generateURL("/all/a/z"));
+      doRawXMLTest(MediaType.APPLICATION_XML_TYPE, "<propertyViolations><constraintType>PROPERTY</constraintType><path>s</path>", generateURL("/all/a/z"));
    }
 
    /**
@@ -172,11 +172,11 @@ public class ValidationJaxbTest {
       Assert.assertNotNull("Validation header is missing", header);
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       ViolationReport r = response.readEntity(ViolationReport.class);
-      TestUtil.countViolations(r, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
-      Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "s", violation.getPath());
-      violation = r.getPropertyViolations().iterator().next();
-      Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "t", violation.getPath());
+      TestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "s");
+      Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
+      violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "t");
+      Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
       violation = r.getClassViolations().iterator().next();
       Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());
       violation = r.getParameterViolations().iterator().next();
@@ -199,8 +199,8 @@ public class ValidationJaxbTest {
 
    private void assertValidationReport(Response response)  {
       JsonPath jsonPath = new JsonPath(response.readEntity(String.class));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("fieldViolations.constraintType"), Matchers.hasItem("FIELD"));
-      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("fieldViolations.path"), Matchers.hasItem("s"));
+      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.constraintType"), Matchers.hasItem("PROPERTY"));
+      Assert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("s"));
    }
 }
 

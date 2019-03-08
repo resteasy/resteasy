@@ -71,7 +71,7 @@ public class SubresourceValidationTest {
       Invocation.Builder request = client.target(generateURL("/sub/17?limit=abcdef")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));
-      TestUtil.countViolations(r, 0, 0, 0, 2, 0);
+      TestUtil.countViolations(r, 0, 0, 2, 0);
       assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
    }
 
@@ -84,7 +84,7 @@ public class SubresourceValidationTest {
       Invocation.Builder request = client.target(generateURL("/sub/return/abcd")).request();
       ClientResponse response = (ClientResponse) request.get();
       ViolationReport r = new ViolationReport(response.readEntity(String.class));
-      TestUtil.countViolations(r, 0, 0, 0, 0, 1);
+      TestUtil.countViolations(r, 0, 0, 0, 1);
       assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
    }
 }
