@@ -151,12 +151,12 @@ public class ExecutableValidationDisabledTest {
       Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      TestUtil.countViolations(e, 3, 1, 1, 1, 0, 0);
-      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", violation.getMessage());
+      TestUtil.countViolations(e, 3, 2, 1, 0, 0);
+      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 2 and 4");
+      Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
-      violation = e.getPropertyViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", violation.getMessage());
+      violation = TestUtil.getViolationByMessage(e.getPropertyViolations(), "size must be between 3 and 5");
+      Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
       violation = e.getClassViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", violation.getMessage());

@@ -61,7 +61,7 @@ public class ResteasyViolationExceptionImpl extends ResteasyViolationException
 
    public ConstraintTypeUtil getConstraintTypeUtil()
    {
-      return new ConstraintTypeUtil11();
+      return new ConstraintTypeUtilImpl();
    }
 
    protected ResteasyConfiguration getResteasyConfiguration()

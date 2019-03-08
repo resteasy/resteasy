@@ -59,7 +59,7 @@ public class ValidationSessionBeanTest {
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
       int c = e.getViolations().size();
       Assert.assertTrue(c == 1 || c == 2);
-      TestUtil.countViolations(e, c, 0, 0, 0, c, 0);
+      TestUtil.countViolations(e, c, 0, 0, c, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue("Expected validation error is not in response", cv.getMessage().startsWith("size must be between 4 and"));
       Assert.assertTrue("Expected validation error is not in response", answer.contains("size must be between 4 and"));

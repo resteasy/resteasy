@@ -41,8 +41,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
 
    private Exception exception;
 
-   private List<ResteasyConstraintViolation> fieldViolations;
-
    private List<ResteasyConstraintViolation> propertyViolations;
 
    private List<ResteasyConstraintViolation> classViolations;
@@ -144,19 +142,12 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       if (allViolations == null)
       {
          allViolations = new ArrayList<ResteasyConstraintViolation>();
-         allViolations.addAll(fieldViolations);
          allViolations.addAll(propertyViolations);
          allViolations.addAll(classViolations);
          allViolations.addAll(parameterViolations);
          allViolations.addAll(returnValueViolations);
       }
       return allViolations;
-   }
-
-   public List<ResteasyConstraintViolation> getFieldViolations()
-   {
-      convertViolations();
-      return fieldViolations;
    }
 
    public List<ResteasyConstraintViolation> getPropertyViolations()
@@ -231,10 +222,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
 
             switch (type)
             {
-               case FIELD :
-                  fieldViolations.add(rcv);
-                  break;
-
                case PROPERTY :
                   propertyViolations.add(rcv);
                   break;
@@ -264,7 +251,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       }
 
       violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
-      violationLists.add(fieldViolations);
       violationLists.add(propertyViolations);
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);
@@ -325,7 +311,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
          return;
       }
 
-      fieldViolations = new ArrayList<ResteasyConstraintViolation>();
       propertyViolations = new ArrayList<ResteasyConstraintViolation>();
       classViolations = new ArrayList<ResteasyConstraintViolation>();
       parameterViolations = new ArrayList<ResteasyConstraintViolation>();
@@ -338,10 +323,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
             ResteasyConstraintViolation rcv = convertViolation(it.next());
             switch (rcv.getConstraintType())
             {
-               case FIELD :
-                  fieldViolations.add(rcv);
-                  break;
-
                case PROPERTY :
                   propertyViolations.add(rcv);
                   break;
@@ -365,7 +346,6 @@ public abstract class ResteasyViolationException extends ConstraintViolationExce
       }
 
       violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
-      violationLists.add(fieldViolations);
       violationLists.add(propertyViolations);
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);

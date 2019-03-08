@@ -38,7 +38,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -175,18 +174,18 @@ public class ValidationXMLTest {
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
          String start = "<violationReport>";
-         String fieldViolation1 = "<fieldViolations><constraintType>FIELD</constraintType><path>s</path><message>size must be between 2 and 4</message><value>a</value></fieldViolations>";
-         String fieldViolation2 = "<fieldViolations><constraintType>FIELD</constraintType><path>t</path><message>size must be between 2 and 4</message><value>b</value></fieldViolations>";
-         String propertyViolation = "<propertyViolations><constraintType>PROPERTY</constraintType><path>u</path><message>size must be between 3 and 5</message><value>c</value></propertyViolations>";
+         String propertyViolation1 = "<propertyViolations><constraintType>PROPERTY</constraintType><path>s</path><message>size must be between 2 and 4</message><value>a</value></propertyViolations>";
+         String propertyViolation2 = "<propertyViolations><constraintType>PROPERTY</constraintType><path>t</path><message>size must be between 2 and 4</message><value>b</value></propertyViolations>";
+         String propertyViolation3 = "<propertyViolations><constraintType>PROPERTY</constraintType><path>u</path><message>size must be between 3 and 5</message><value>c</value></propertyViolations>";
          String classViolationStart = "<classViolations><constraintType>CLASS</constraintType><path></path><message>Concatenation of s and u must have length &gt; 5</message><value>org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations";
          String classViolationEnd = "</value></classViolations>";
          String parameterViolationP1 = "<parameterViolations><constraintType>PARAMETER</constraintType><path>post.";
          String parameterViolationP2 = "</path><message>s must have length: 3 &lt;= length &lt;= 5</message><value>ValidationXMLFoo[p]</value></parameterViolations>";
          String end = "</violationReport>";
          Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(start));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation1));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation2));
-         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation));
+         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation1));
+         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation2));
+         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation3));
          Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationStart));
          Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationEnd));
          Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP1));
@@ -202,21 +201,13 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 2, 1, 1, 1, 0);
-         Iterator<ResteasyConstraintViolation> iterator = report.getFieldViolations().iterator();
-         ResteasyConstraintViolation cv1 = iterator.next();
-         ResteasyConstraintViolation cv2 = iterator.next();
-         if (!("a").equals(cv1.getValue())) {
-            ResteasyConstraintViolation tmp = cv1;
-            cv1 = cv2;
-            cv2 = tmp;
-         }
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv1.getMessage());
-         Assert.assertEquals(WRONG_ERROR_MSG, "a", cv1.getValue());
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv2.getMessage());
-         Assert.assertEquals(WRONG_ERROR_MSG, "b", cv2.getValue());
-         ResteasyConstraintViolation cv = report.getPropertyViolations().iterator().next();
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", cv.getMessage());
+         TestUtil.countViolations(report, 3, 1, 1, 0);
+         ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+         cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+         cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
          Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
          cv = report.getClassViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and u must have length > 5", cv.getMessage());
@@ -249,7 +240,7 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
+         TestUtil.countViolations(report, 0, 0, 0, 1);
          ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
          Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
@@ -266,9 +257,9 @@ public class ValidationXMLTest {
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
          JsonPath jsonPath = new JsonPath(entity);
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.path"), Matchers.hasItems("s", "t"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.value"), Matchers.hasItems("a", "b"));
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations.message"), Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItems("s", "t"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItems("a", "b"));
+         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.message"), Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4"));
 
          Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.path"), Matchers.hasItem("u"));
          Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations.value"), Matchers.hasItem("c"));
@@ -291,21 +282,13 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 2, 1, 1, 1, 0);
-         Iterator<ResteasyConstraintViolation> iterator = report.getFieldViolations().iterator();
-         ResteasyConstraintViolation cv1 = iterator.next();
-         ResteasyConstraintViolation cv2 = iterator.next();
-         if (!("a").equals(cv1.getValue())) {
-            ResteasyConstraintViolation tmp = cv1;
-            cv1 = cv2;
-            cv2 = tmp;
-         }
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv1.getMessage());
-         Assert.assertEquals(WRONG_ERROR_MSG, "a", cv1.getValue());
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv2.getMessage());
-         Assert.assertEquals(WRONG_ERROR_MSG, "b", cv2.getValue());
-         ResteasyConstraintViolation cv = report.getPropertyViolations().iterator().next();
-         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", cv.getMessage());
+         TestUtil.countViolations(report, 3, 1, 1, 0);
+         ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "a");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+         cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+         cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
+         Assert.assertNotNull(WRONG_ERROR_MSG, cv);
          Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
          cv = report.getClassViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and u must have length > 5", cv.getMessage());
@@ -328,7 +311,6 @@ public class ValidationXMLTest {
          String entity = response.readEntity(String.class);
          logger.info("report: " + entity);
          JsonPath jsonPath = new JsonPath(entity);
-         Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("fieldViolations"), Matchers.hasSize(0));
          Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("propertyViolations"), Matchers.hasSize(0));
          Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("classViolations"), Matchers.hasSize(0));
          Assert.assertThat(WRONG_ERROR_MSG, jsonPath.getList("parameterViolations"), Matchers.hasSize(0));
@@ -347,7 +329,7 @@ public class ValidationXMLTest {
          Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
          ViolationReport report = response.readEntity(ViolationReport.class);
          logger.info("report: " + report);
-         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
+         TestUtil.countViolations(report, 0, 0, 0, 1);
          ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
          Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
          Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
@@ -362,17 +344,17 @@ public class ValidationXMLTest {
       String entity = response.readEntity(String.class);
       logger.info("report:");
       logger.info(entity);
-      String fieldViolation1 =
-            "[FIELD]\r" +
+      String propertyViolation1 =
+            "[PROPERTY]\r" +
                   "[s]\r" +
                   "[size must be between 2 and 4]\r" +
                   "[a]\r";
-      String fieldViolation2 =
-            "[FIELD]\r" +
+      String propertyViolation2 =
+            "[PROPERTY]\r" +
                   "[t]\r" +
                   "[size must be between 2 and 4]\r" +
                   "[b]\r";
-      String propertyViolation =
+      String propertyViolation3 =
             "[PROPERTY]\r" +
                   "[u]\r" +
                   "[size must be between 3 and 5]\r" +
@@ -389,9 +371,9 @@ public class ValidationXMLTest {
             "]\r" +
                   "[s must have length: 3 <= length <= 5]\r" +
                   "[ValidationXMLFoo[p]]";
-      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation1));
-      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation2));
-      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation));
+      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation1));
+      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation2));
+      Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation3));
       Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolation));
       Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP1));
       Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP2));

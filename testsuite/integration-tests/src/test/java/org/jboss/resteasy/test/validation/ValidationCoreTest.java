@@ -123,7 +123,7 @@ public class ValidationCoreTest {
          Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
          String entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(entity);
-         TestUtil.countViolations(r, 0, 0, 0, 0, 1);
+         TestUtil.countViolations(r, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          Assert.assertTrue(WRONG_ERROR_MSG, violation.getMessage().equals("s must have length: 3 <= length <= 5"));
          Assert.assertEquals(WRONG_ERROR_MSG, "ValidationCoreFoo[abcdef]", violation.getValue());
@@ -139,7 +139,7 @@ public class ValidationCoreTest {
          Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
          String entity = response.readEntity(String.class);
          ViolationReport r = new ViolationReport(entity);
-         TestUtil.countViolations(r, 0, 0, 0, 0, 2);
+         TestUtil.countViolations(r, 0, 0, 0, 2);
          Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator();
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
@@ -178,12 +178,12 @@ public class ValidationCoreTest {
       Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
       String entity = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(entity);
-      TestUtil.countViolations(r, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", violation.getMessage());
+      TestUtil.countViolations(r, 2, 1, 1, 0);
+      ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 2 and 4");
+      Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
-      violation = r.getPropertyViolations().iterator().next();
-      Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", violation.getMessage());
+      violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
+      Assert.assertNotNull(WRONG_ERROR_MSG, violation);
       Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
       violation = r.getClassViolations().iterator().next();
       Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", violation.getMessage());

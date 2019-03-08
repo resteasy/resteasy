@@ -47,9 +47,7 @@ public class MissingCDITest {
    @Test
    public void testMissingCDIValid() throws Exception {
       Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/17").request().get();
-//        System.out.println("Status: " + response.getStatus());
       String entity = response.readEntity(String.class);
-//        System.out.println("Result: " + entity);
       assertEquals(200, response.getStatus());
       Assert.assertEquals("17", entity);
    }
@@ -57,19 +55,16 @@ public class MissingCDITest {
    @Test
    public void testMissingCDIInvalid() throws Exception {
       Response response = ResteasyClientBuilder.newClient().target(baseUri.toString() + "test/0").request().get();
-//        System.out.println("Status: " + response.getStatus());
       String entity = response.readEntity(String.class);
-//        System.out.println("Result: " + entity);
       assertEquals(400, response.getStatus());
       ResteasyViolationException e = new ResteasyViolationExceptionImpl(entity);
-      countViolations(e, 1, 0, 0, 0, 1, 0);
+      countViolations(e, 1, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
    }
 
-   protected void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
+   protected void countViolations(ResteasyViolationException e, int totalCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
       Assert.assertEquals(totalCount, e.getViolations().size());
-      Assert.assertEquals(fieldCount, e.getFieldViolations().size());
       Assert.assertEquals(propertyCount, e.getPropertyViolations().size());
       Assert.assertEquals(classCount, e.getClassViolations().size());
       Assert.assertEquals(parameterCount, e.getParameterViolations().size());

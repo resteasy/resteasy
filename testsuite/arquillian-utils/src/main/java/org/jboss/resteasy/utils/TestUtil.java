@@ -2,6 +2,7 @@ package org.jboss.resteasy.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.utils.maven.MavenUtil;
@@ -376,21 +377,46 @@ public class TestUtil {
     * Check count of violations in ResteasyViolationException.
     */
    public static void countViolations(ResteasyViolationException e,
-                                   int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
+                                   int totalCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
       Assert.assertEquals("Different total count of violations expected", totalCount, e.getViolations().size());
-      Assert.assertEquals("Different count of field violations expected", fieldCount, e.getFieldViolations().size());
       Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
       Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
       Assert.assertEquals("Different count of parameter violations expected", parameterCount, e.getParameterViolations().size());
       Assert.assertEquals("Different count of return value violations expected", returnValueCount, e.getReturnValueViolations().size());
    }
 
-   public static void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
-      Assert.assertEquals("Different count of field violations expected", fieldCount, e.getFieldViolations().size());
+   public static void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
       Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
       Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
       Assert.assertEquals(parameterCount, e.getParameterViolations().size());
       Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+   }
+
+   public static ResteasyConstraintViolation getViolationByMessage(List<ResteasyConstraintViolation> list, String message) {
+      for (ResteasyConstraintViolation v : list) {
+         if (v.getMessage().contains(message)) {
+            return v;
+         }
+      }
+      return null;
+   }
+
+   public static ResteasyConstraintViolation getViolationByMessageAndValue(List<ResteasyConstraintViolation> list, String message, Object value) {
+      for (ResteasyConstraintViolation v : list) {
+         if (v.getMessage().contains(message) && v.getValue().equals(value)) {
+            return v;
+         }
+      }
+      return null;
+   }
+
+   public static ResteasyConstraintViolation getViolationByPath(List<ResteasyConstraintViolation> list, String path) {
+      for (ResteasyConstraintViolation v : list) {
+         if (v.getPath().contains(path)) {
+            return v;
+         }
+      }
+      return null;
    }
 
    /**

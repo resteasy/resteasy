@@ -72,7 +72,7 @@ public class ValidationHibernateI18NTest {
 
       ViolationReport report = response.readEntity(ViolationReport.class);
       String message = report.getReturnValueViolations().iterator().next().getMessage();
-      TestUtil.countViolations(report, 0, 0, 0, 0, 1);
+      TestUtil.countViolations(report, 0, 0, 0, 1);
       Assert.assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
       response.close();
    }
