@@ -15,7 +15,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,7 +32,6 @@ public class ProxyClassloaderTest
    }
 
    @Test
-   @Ignore("RESTEASY-2157")
    public void testNoTCCL() throws Exception
    {
       ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
