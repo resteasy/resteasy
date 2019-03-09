@@ -59,8 +59,7 @@ public class BasicTest {
         buffer.flush();
         byte[] byteArray = buffer.toByteArray();
 
-        String text = new String(byteArray, StandardCharsets.UTF_8);
-        System.out.println(text);
+        new String(byteArray, StandardCharsets.UTF_8);
     }
 
 }
