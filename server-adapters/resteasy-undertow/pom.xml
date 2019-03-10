@@ -36,6 +36,11 @@
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 
