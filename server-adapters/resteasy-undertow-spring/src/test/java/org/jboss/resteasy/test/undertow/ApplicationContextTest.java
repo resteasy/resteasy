@@ -2,9 +2,7 @@ package org.jboss.resteasy.test.undertow;
 
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.plugins.server.undertow.spring.UndertowJaxrsSpringServer;
-import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.springmvc.test.client.BasicSpringTest;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
