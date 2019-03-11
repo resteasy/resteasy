@@ -7,7 +7,6 @@ import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
 import org.junit.Assert;
 
@@ -28,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.util.Base64;
 import java.util.HashMap;
 
 @Path("/signed")
@@ -96,7 +96,7 @@ public class SigningResource {
       signature.sign(new HashMap<>(), "hello world".getBytes(), keys.getPrivate());
 
       byte[] sig = {0x0f, 0x03};
-      String encodedBadSig = Base64.encodeBytes(sig);
+      String encodedBadSig = Base64.getEncoder().encodeToString(sig);
 
       ParameterParser parser = new ParameterParser();
       String s = signature.toString();

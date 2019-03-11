@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * @tpSubChapter Crypto
@@ -47,7 +47,7 @@ public class ExampleSignTest {
       pem = pem.replace("-----END PUBLIC KEY-----", "");
       pem = pem.trim();
 
-      byte[] der = Base64.decode(pem);
+      byte[] der = Base64.getMimeDecoder().decode(pem);
 
       X509EncodedKeySpec spec =
             new X509EncodedKeySpec(der);

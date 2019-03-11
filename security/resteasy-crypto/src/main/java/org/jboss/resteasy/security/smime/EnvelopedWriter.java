@@ -9,7 +9,6 @@ import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.util.Base64;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +88,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
          _msg.writeTo(encrypted);
          encrypted.close();
          byte[] bytes = baos.toByteArray();
-         String str = Base64.encodeBytes(bytes, Base64.DO_BREAK_LINES);
+         String str = Base64.getMimeEncoder().encodeToString(bytes);
          os.write(str.getBytes());
       }
       catch (Exception e)

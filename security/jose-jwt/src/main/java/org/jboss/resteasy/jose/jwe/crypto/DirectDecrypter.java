@@ -1,7 +1,6 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
@@ -9,6 +8,7 @@ import org.jboss.resteasy.jose.jwe.JWEHeader;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 /**
@@ -73,9 +73,9 @@ public class DirectDecrypter
 
       // Compose the AAD
       byte[] aad =  encodedHeader.getBytes(StandardCharsets.UTF_8);
-      byte[] iv = Base64Url.decode(encodedIv);
-      byte[] cipherText = Base64Url.decode(encodedCipherText);
-      byte[] authTag = Base64Url.decode(encodedAuthTag);
+      byte[] iv = Base64.getUrlDecoder().decode(encodedIv);
+      byte[] cipherText = Base64.getUrlDecoder().decode(encodedCipherText);
+      byte[] authTag = Base64.getUrlDecoder().decode(encodedAuthTag);
 
       // Decrypt the cipher text according to the JWE enc
       EncryptionMethod enc = readOnlyJWEHeader.getEncryptionMethod();

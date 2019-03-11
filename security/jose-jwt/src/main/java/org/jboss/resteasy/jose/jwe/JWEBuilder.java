@@ -1,6 +1,5 @@
 package org.jboss.resteasy.jose.jwe;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.crypto.DirectEncrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSAEncrypter;
@@ -19,6 +18,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 /**
  *
@@ -94,7 +94,7 @@ public class JWEBuilder
       if (contentType != null) builder.append(",\"cty\":\"").append(contentType).append("\"");
       builder.append("}");
       String json = builder.toString();
-      return Base64Url.encode(json.getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
    }
 
    @SuppressWarnings({"unchecked", "rawtypes"})

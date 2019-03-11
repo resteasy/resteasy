@@ -1,7 +1,5 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
-
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
@@ -13,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 
 /**
@@ -80,13 +79,13 @@ public class RSAEncrypter
       if (alg.equals(Algorithm.RSA1_5))
       {
 
-         encryptedKey = Base64Url.encode(RSA1_5.encryptCEK(publicKey, cek));
+         encryptedKey = Base64.getUrlEncoder().encodeToString(RSA1_5.encryptCEK(publicKey, cek));
 
       }
       else if (alg.equals(Algorithm.RSA_OAEP))
       {
 
-         encryptedKey = Base64Url.encode(RSA_OAEP.encryptCEK(publicKey, cek));
+         encryptedKey = Base64.getUrlEncoder().encodeToString(RSA_OAEP.encryptCEK(publicKey, cek));
 
       }
       else
@@ -129,9 +128,9 @@ public class RSAEncrypter
       }
       StringBuilder builder = new StringBuilder(encodedJWEHeader)
               .append('.').append(encryptedKey)
-              .append('.').append(Base64Url.encode(iv))
-              .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
-              .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
+              .append('.').append(Base64.getUrlEncoder().encodeToString(iv))
+              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getCipherText()))
+              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getAuthenticationTag()));
 
       return builder.toString();
    }
