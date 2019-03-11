@@ -1,6 +1,5 @@
 package org.jboss.resteasy.jose.jws.crypto;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSInput;
@@ -10,6 +9,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -81,7 +81,7 @@ public class HMACProvider
       try
       {
          byte[] signature = sign(input.getContent(), input.getHeader().getAlgorithm(), key);
-         String x = Base64Url.encode(signature);
+         String x = Base64.getUrlEncoder().encodeToString(signature);
          return x.equals(input.getEncodedSignature());
       }
       catch (Exception e)
@@ -97,7 +97,7 @@ public class HMACProvider
       try
       {
          byte[] signature = sign(input.getContent(), input.getHeader().getAlgorithm(), sharedSecret);
-         String x = Base64Url.encode(signature);
+         String x = Base64.getUrlEncoder().encodeToString(signature);
          return x.equals(input.getEncodedSignature());
       }
       catch (Exception e)

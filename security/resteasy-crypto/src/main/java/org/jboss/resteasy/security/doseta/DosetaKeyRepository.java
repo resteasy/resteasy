@@ -9,6 +9,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +22,6 @@ import javax.ws.rs.core.SecurityContext;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.security.doseta.i18n.LogMessages;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
 
 /**
@@ -331,7 +331,7 @@ public class DosetaKeyRepository implements KeyRepository
             throw new RuntimeException(Messages.MESSAGES.noPEntry());
          }
          if (LogMessages.LOGGER.isDebugEnabled()) LogMessages.LOGGER.debug(Messages.MESSAGES.pem(pem));
-         byte[] der = Base64.decode(pem);
+         byte[] der = Base64.getMimeDecoder().decode(pem);
 
 
          X509EncodedKeySpec spec =

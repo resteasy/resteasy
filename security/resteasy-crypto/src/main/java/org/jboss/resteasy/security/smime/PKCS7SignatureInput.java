@@ -6,7 +6,6 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -18,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,7 +52,7 @@ public class PKCS7SignatureInput<T>
    {
       try
       {
-         byte[] bytes = Base64.decode(base64);
+         byte[] bytes = Base64.getDecoder().decode(base64);
          this.data = new CMSSignedData(bytes);
       }
       catch (Exception e)

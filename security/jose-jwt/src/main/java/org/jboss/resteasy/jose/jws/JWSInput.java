@@ -1,6 +1,5 @@
 package org.jboss.resteasy.jose.jws;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,6 +13,7 @@ import javax.ws.rs.ext.Providers;
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,14 +52,14 @@ public class JWSInput
       encodedContent = parts[1];
       try
       {
-         content = Base64Url.decode(encodedContent);
+         content = Base64.getUrlDecoder().decode(encodedContent);
          if (parts.length > 2)
          {
             encodedSignature = parts[2];
-            signature = Base64Url.decode(encodedSignature);
+            signature = Base64.getUrlDecoder().decode(encodedSignature);
 
          }
-         byte[] headerBytes = Base64Url.decode(encodedHeader);
+         byte[] headerBytes = Base64.getUrlDecoder().decode(encodedHeader);
          header = mapper.readValue(headerBytes, JWSHeader.class);
       }
       catch (Exception e)

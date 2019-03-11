@@ -2,7 +2,6 @@ package org.jboss.resteasy.security.smime;
 
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.WriterException;
-import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -17,6 +16,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,7 +52,7 @@ public class PKCS7SignatureTextWriter implements MessageBodyWriter<SignedOutput>
       try
       {
          byte[] encoded = PKCS7SignatureWriter.sign(providers, out);
-         os.write(Base64.encodeBytes(encoded).getBytes(StandardCharsets.UTF_8));
+         os.write(Base64.getEncoder().encodeToString(encoded).getBytes(StandardCharsets.UTF_8));
       }
       catch (Exception e)
       {

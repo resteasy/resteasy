@@ -1,6 +1,5 @@
 package org.jboss.resteasy.jose.jwe;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.crypto.DirectDecrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSADecrypter;
@@ -22,6 +21,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPrivateKey;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -65,7 +65,7 @@ public class JWEInput
       encodedAuthTag = parts[4];
       try
       {
-         byte[] headerBytes = Base64Url.decode(encodedHeader);
+         byte[] headerBytes = Base64.getUrlDecoder().decode(encodedHeader);
          header = mapper.readValue(headerBytes, JWEHeader.class);
       }
       catch (Exception e)

@@ -8,6 +8,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.util.Base64;
 import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
@@ -47,7 +48,6 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -200,7 +200,7 @@ public class SigningTest
          signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
 
          byte[] sig = {0x0f, 0x03};
-         String encodedBadSig = Base64.encodeBytes(sig);
+         String encodedBadSig = Base64.getEncoder().encodeToString(sig);
 
          ParameterParser parser = new ParameterParser();
          String s = signature.toString();

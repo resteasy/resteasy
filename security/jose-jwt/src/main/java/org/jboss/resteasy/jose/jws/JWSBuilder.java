@@ -1,6 +1,5 @@
 package org.jboss.resteasy.jose.jws;
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
@@ -17,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -80,7 +80,7 @@ public class JWSBuilder
       if (type != null) builder.append(",\"typ\" : \"").append(type).append("\"");
       if (contentType != null) builder.append(",\"cty\":\"").append(contentType).append("\"");
       builder.append("}");
-      return Base64Url.encode(builder.toString().getBytes(StandardCharsets.UTF_8));
+      return Base64.getUrlEncoder().encodeToString(builder.toString().getBytes(StandardCharsets.UTF_8));
    }
 
    protected String encode(Algorithm alg, byte[] data, byte[] signature)
@@ -88,11 +88,11 @@ public class JWSBuilder
       StringBuffer encoding = new StringBuffer();
       encoding.append(encodeHeader(alg));
       encoding.append('.');
-      encoding.append(Base64Url.encode(data));
+      encoding.append(Base64.getUrlEncoder().encodeToString(data));
       encoding.append('.');
       if (alg != Algorithm.none)
       {
-         encoding.append(Base64Url.encode(signature));
+         encoding.append(Base64.getUrlEncoder().encodeToString(signature));
       }
       return encoding.toString();
    }

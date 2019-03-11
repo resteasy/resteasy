@@ -20,7 +20,6 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.jboss.resteasy.security.PemUtils;
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,6 +41,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 /**
  * @tpSubChapter Crypto
@@ -101,7 +101,7 @@ public class EnvelopedTest {
       mimeBodyPart.writeTo(encrypted);
       encrypted.close();
 
-      String str = Base64.encodeBytes(os.toByteArray(), Base64.DO_BREAK_LINES);
+      String str = Base64.getMimeEncoder().encodeToString(os.toByteArray());
 
       internetHeaders = new InternetHeaders();
       internetHeaders.addHeader("Content-Disposition", "attachment; filename=\"smime.p7m\"");

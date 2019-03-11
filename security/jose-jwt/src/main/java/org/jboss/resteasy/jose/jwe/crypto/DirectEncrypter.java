@@ -1,7 +1,6 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
 
-import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
@@ -11,6 +10,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 
 /**
@@ -114,9 +114,9 @@ public class DirectEncrypter
 
       StringBuilder builder = new StringBuilder(encodedJWEHeader)
               .append('.')
-              .append('.').append(Base64Url.encode(iv))
-              .append('.').append(Base64Url.encode(authCipherText.getCipherText()))
-              .append('.').append(Base64Url.encode(authCipherText.getAuthenticationTag()));
+              .append('.').append(Base64.getUrlEncoder().encodeToString(iv))
+              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getCipherText()))
+              .append('.').append(Base64.getUrlEncoder().encodeToString(authCipherText.getAuthenticationTag()));
 
       return builder.toString();
    }
