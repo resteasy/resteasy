@@ -34,9 +34,10 @@ import java.util.Map.Entry;
  */
 public class UndertowJaxrsServer
 {
-   final PathHandler root = new PathHandler();
-   final ServletContainer container = ServletContainer.Factory.newInstance();
+   protected final PathHandler root = new PathHandler();
+   protected final ServletContainer container = ServletContainer.Factory.newInstance();
    protected Undertow server;
+   protected DeploymentManager manager;
 
    /**
     * Creates a web deployment for your ResteasyDeployent so you can set up things like security constraints
@@ -263,8 +264,9 @@ public class UndertowJaxrsServer
     */
    public UndertowJaxrsServer deploy(DeploymentInfo builder)
    {
-      DeploymentManager manager = container.addDeployment(builder);
+      manager = container.addDeployment(builder);
       manager.deploy();
+
       try
       {
          root.addPrefixPath(builder.getContextPath(), manager.start());
@@ -298,4 +300,7 @@ public class UndertowJaxrsServer
       server.stop();
    }
 
+   public DeploymentManager getManager() {
+      return manager;
+   }
 }

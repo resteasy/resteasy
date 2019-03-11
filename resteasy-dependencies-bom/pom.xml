@@ -90,6 +90,7 @@
         <version.org.hibernate.validator>6.0.14.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
+        <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
     </properties>
 
     <distributionManagement>
@@ -815,6 +816,21 @@
                 <groupId>org.jboss.marshalling</groupId>
                 <artifactId>jboss-marshalling-river</artifactId>
                 <version>${version.org.jboss.marshalling.jboss-marshalling}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${version.org.springframework}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
