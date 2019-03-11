@@ -4,7 +4,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.undertow.spring.UndertowJaxrsSpringServer;
-import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.springmvc.test.client.BasicSpringTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
