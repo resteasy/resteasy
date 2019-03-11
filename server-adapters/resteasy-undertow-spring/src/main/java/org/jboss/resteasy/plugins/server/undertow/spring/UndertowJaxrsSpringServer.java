@@ -9,7 +9,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import static io.undertow.servlet.Servlets.servlet;
 
 public class UndertowJaxrsSpringServer extends UndertowJaxrsServer {
-   private ServletInfo springDispatcherServletInfo;
+
+   public static final String SERVLET_NAME = "ResteasyServlet";
 
    public DeploymentInfo undertowDeployment(String contextConfigLocation, String mapping) {
       if (mapping == null) mapping = "/";
@@ -21,22 +22,18 @@ public class UndertowJaxrsSpringServer extends UndertowJaxrsServer {
       if (!mapping.equals("/*"))
          prefix = mapping.substring(0, mapping.length() - 2);
 
-      springDispatcherServletInfo =
-            servlet("ResteasyServlet", DispatcherServlet.class)
+      ServletInfo servlet =
+            servlet(SERVLET_NAME, DispatcherServlet.class)
                   .setLoadOnStartup(1)
                   .addInitParam("contextConfigLocation", contextConfigLocation)
                   .addMapping(mapping);
 
-
       DeploymentInfo deployment = new DeploymentInfo()
-            .addServlet(springDispatcherServletInfo);
+            .addServlet(servlet);
       if (prefix != null)
          deployment.setContextPath(prefix);
       return deployment;
 
    }
 
-   public ServletInfo getSpringDispatcherServletInfo() {
-      return springDispatcherServletInfo;
-   }
 }
