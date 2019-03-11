@@ -17,6 +17,7 @@ import java.io.IOException;
 public class BasicSpringTest {
 
    UndertowJaxrsSpringServer server;
+   ResteasyClient client;
 
    @Before
    public void before() throws Exception {
@@ -30,16 +31,19 @@ public class BasicSpringTest {
       deployment.setClassLoader(BasicSpringTest.class.getClassLoader());
 
       server.deploy(deployment);
+
+      client = new ResteasyClientBuilderImpl().build();
    }
 
    @After
    public void after() {
       server.stop();
+      client.close();
    }
 
    @Test
    public void testBasic() throws HttpException, IOException {
-      ResteasyClient client = new ResteasyClientBuilderImpl().build();
+
       ResteasyWebTarget target = client.target(TestPortProvider.generateURL("/"));
 
       BasicResource br = target.proxy(BasicResource.class);
