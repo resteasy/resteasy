@@ -2,13 +2,16 @@ package org.jboss.resteasy.springmvc.test.spring;
 
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.undertow.spring.UndertowJaxrsSpringServer;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.springmvc.test.client.BasicSpringTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
@@ -74,7 +77,6 @@ public class AsynchSpringTest {
       long end = System.currentTimeMillis() - start;
       Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
       String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
-//         System.out.println("JOB: " + jobUrl);
       response.close();
 
       Builder jobBuilder = client.target(jobUrl).request();
@@ -107,82 +109,84 @@ public class AsynchSpringTest {
 
    }
 
-//   @Test
-//   public void testasync2() throws Exception {
-//      Client client = ResteasyClientBuilder.newClient();
-//      Response response = null;
-//
-//
-//      dispatcher.setMaxCacheSize(1);
-//      latch = new CountDownLatch(1);
-//      Builder builder = client.target("http://localhost:" + TestPortProvider.getPort() + "?asynch=true").request();
-//      response = builder.post(Entity.entity("content", "text/plain"));
-//      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-//      String jobUrl1 = response.getHeaderString(HttpHeaders.LOCATION);
-////         System.out.println("JOB: " + jobUrl1);
-//      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-//      response.close();
-//
-//      latch = new CountDownLatch(1);
-//      response = builder.post(Entity.entity("content", "text/plain"));
-//      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-//      String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
-//      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-//      Assert.assertTrue(!jobUrl1.equals(jobUrl2));
-//      response.close();
-//
-//      builder = client.target(jobUrl1).request();
-//      response = builder.get();
-//      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-//      response.close();
-//
-//      // test its still there
-//      Thread.sleep(1000);
-//      builder = client.target(jobUrl2).request();
-//      response = builder.get();
-//      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-//      Assert.assertEquals("content", response.readEntity(String.class));
-//
-//      // delete and test delete
-//      response = builder.delete();
-//      Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
-//
-//      response = builder.get();
-//      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-//      response.close();
-//
-//
-//   }
-//
-//   @Test
-//   public void testasync3() throws Exception {
-//      Client client = ResteasyClientBuilder.newClient();
-//      Response response = null;
-//
-//      // test readAndRemove
-//      dispatcher.setMaxCacheSize(10);
-//      latch = new CountDownLatch(1);
-//      Builder builder = client.target("http://localhost:" + TestPortProvider.getPort() + "?asynch=true").request();
-//      response = builder.post(Entity.entity("content", "text/plain"));
-//      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-//      String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
-////         System.out.println("JOB: " + jobUrl2);
-//      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-//      response.close();
-//
-//      Thread.sleep(1000);
-//      // test its still there
-//      builder = client.target(jobUrl2).request();
-//      response = builder.post(Entity.entity("content", "text/plain"));
-//      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-//      Assert.assertEquals("content", response.readEntity(String.class));
-//
-//      builder = client.target(jobUrl2).request();
-//      response = builder.get();
-//      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-//      response.close();
-//
-//   }
+   @Test
+   public void testasync2() throws Exception {
+      Client client = ResteasyClientBuilder.newClient();
+      Response response = null;
+      AsynchronousDispatcher dispatcher = getDispatcher(server);
+      dispatcher.setMaxCacheSize(1);
+      latch = new CountDownLatch(1);
+      Builder builder = client.target("http://localhost:" + TestPortProvider.getPort() + "?asynch=true").request();
+      response = builder.post(Entity.entity("content", "text/plain"));
+      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+      String jobUrl1 = response.getHeaderString(HttpHeaders.LOCATION);
+      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+      response.close();
+
+      latch = new CountDownLatch(1);
+      response = builder.post(Entity.entity("content", "text/plain"));
+      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+      String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
+      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+      Assert.assertTrue(!jobUrl1.equals(jobUrl2));
+      response.close();
+
+      builder = client.target(jobUrl1).request();
+      response = builder.get();
+      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+      response.close();
+
+      // test its still there
+      Thread.sleep(1000);
+      builder = client.target(jobUrl2).request();
+      response = builder.get();
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      Assert.assertEquals("content", response.readEntity(String.class));
+
+      // delete and test delete
+      response = builder.delete();
+      Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+
+      response = builder.get();
+      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+      response.close();
+   }
+
+   private AsynchronousDispatcher getDispatcher(UndertowJaxrsSpringServer server) throws Exception {
+      DispatcherServlet servlet = (DispatcherServlet) server.getManager().getDeployment().getServlets().getManagedServlet(UndertowJaxrsSpringServer.SERVLET_NAME).getServlet().getInstance();
+      AsynchronousDispatcher dispatcher = (AsynchronousDispatcher) servlet.getWebApplicationContext().getBean("resteasy.dispatcher");
+      return dispatcher;
+   }
+
+   @Test
+   public void testasync3() throws Exception {
+      Client client = ResteasyClientBuilder.newClient();
+      Response response = null;
+
+      // test readAndRemove
+
+      getDispatcher(server).setMaxCacheSize(10);
+      latch = new CountDownLatch(1);
+      Builder builder = client.target("http://localhost:" + TestPortProvider.getPort() + "?asynch=true").request();
+      response = builder.post(Entity.entity("content", "text/plain"));
+      Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+      String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
+      Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
+      response.close();
+
+      Thread.sleep(1000);
+      // test its still there
+      builder = client.target(jobUrl2).request();
+      response = builder.post(Entity.entity("content", "text/plain"));
+      Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+      Assert.assertEquals("content", response.readEntity(String.class));
+
+      builder = client.target(jobUrl2).request();
+      response = builder.get();
+      Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
+      response.close();
+
+   }
 
    @Path("/")
    public static class MyResource {

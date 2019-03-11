@@ -70,7 +70,6 @@
             This abstract bean has default settings. You can optimize settings for
             this handler mappings by overriding the "resteasy.handlerMapping" bean
             and customizing the following:
-
             1) setting a list of interceptors into the "interceptors" property.
             This is useful when you want to do things like use the OpenSessionInViewInterceptor
 
