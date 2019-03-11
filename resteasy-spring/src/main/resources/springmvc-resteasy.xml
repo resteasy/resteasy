@@ -50,9 +50,6 @@
         </description>
     </bean>
 
-
-
-
     <bean id="resteasy.spring.bean.processor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
           depends-on="resteasy.deployment">
         <description>
