@@ -1,7 +1,6 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
 import io.undertow.servlet.api.DeploymentInfo;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.undertow.spring.UndertowJaxrsSpringServer;
 import org.jboss.resteasy.springmvc.test.client.BasicSpringTest;
@@ -17,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
@@ -30,6 +30,7 @@ public class AsynchSpringTest {
    private static CountDownLatch latch;
 
    UndertowJaxrsSpringServer server;
+   Client client;
 
    @Before
    public void before() {
@@ -43,18 +44,18 @@ public class AsynchSpringTest {
       deployment.setClassLoader(BasicSpringTest.class.getClassLoader());
 
       server.deploy(deployment);
+      client = ClientBuilder.newClient();
    }
 
    @After
    public void after() {
       server.stop();
+      client.close();
    }
 
    @Test
    public void testOneway() throws Exception {
       latch = new CountDownLatch(1);
-      Client client = ResteasyClientBuilder.newClient();
-
       WebTarget target = client.target("http://localhost:" + TestPortProvider.getPort() + "?oneway=true");
       long start = System.currentTimeMillis();
       Response response = target.request().put(Entity.entity("content", "text/plain"));
@@ -67,7 +68,6 @@ public class AsynchSpringTest {
 
    @Test
    public void testasync1() throws Exception {
-      Client client = ResteasyClientBuilder.newClient();
       Response response = null;
 
       latch = new CountDownLatch(1);
@@ -110,7 +110,6 @@ public class AsynchSpringTest {
 
    @Test
    public void testasync2() throws Exception {
-      Client client = ResteasyClientBuilder.newClient();
       Response response = null;
       AsynchronousDispatcher dispatcher = getDispatcher(server);
       dispatcher.setMaxCacheSize(1);
@@ -159,11 +158,9 @@ public class AsynchSpringTest {
 
    @Test
    public void testasync3() throws Exception {
-      Client client = ResteasyClientBuilder.newClient();
       Response response = null;
 
       // test readAndRemove
-
       getDispatcher(server).setMaxCacheSize(10);
       latch = new CountDownLatch(1);
       Builder builder = client.target("http://localhost:" + TestPortProvider.getPort() + "?asynch=true").request();
@@ -174,6 +171,7 @@ public class AsynchSpringTest {
       response.close();
 
       Thread.sleep(1000);
+
       // test its still there
       builder = client.target(jobUrl2).request();
       response = builder.post(Entity.entity("content", "text/plain"));
@@ -199,10 +197,8 @@ public class AsynchSpringTest {
 
       @PUT
       public void put(String content) throws Exception {
-//         System.out.println("IN PUT!!!!");
          Assert.assertEquals("content", content);
          Thread.sleep(500);
-//         System.out.println("******* countdown ****");
          latch.countDown();
       }
    }
