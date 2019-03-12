@@ -261,6 +261,12 @@ public interface Messages
    @Message(id = BASE + 290, value = "Entity is not backed by an input stream")
    String entityNotBackedByInputStream();
 
+   @Message(id = BASE + 291, value = "Input stream was empty, there is no entity")
+   String inputStreamWasEmpty();
+
+   @Message(id = BASE + 292, value = "Stream is closed")
+   String streamIsClosed();
+
    @Message(id = BASE + 295, value = "The object you supplied to registerInterceptor is not of an understood type")
    String entityNotOfUnderstoodType();
 

@@ -3,6 +3,7 @@ package org.jboss.resteasy.springmvc;
 import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -180,7 +181,7 @@ public class ResteasyView implements View
 
    private BuiltResponse createResponse(Object value, MediaType contentType)
    {
-      BuiltResponse responseImpl = new BuiltResponse();
+      BuiltResponseEntityNotBacked responseImpl = new BuiltResponseEntityNotBacked();
       responseImpl.setEntity(value);
       if (contentType != null)
          responseImpl.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);
