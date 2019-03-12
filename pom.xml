@@ -114,7 +114,6 @@
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-stats</module>
                 <module>resteasy-reactive-context</module>
-                <module>resteasy-rxjava</module>
                 <module>resteasy-rxjava2</module>
                 <module>server-adapters</module>
                 <module>jboss-modules</module>
@@ -169,7 +168,6 @@
                 <module>resteasy-servlet-initializer</module>
                 <module>resteasy-stats</module>
                 <module>resteasy-reactive-context</module>
-                <module>resteasy-rxjava</module>
                 <module>resteasy-rxjava2</module>
                 <module>server-adapters</module>
                 <module>jboss-modules</module>

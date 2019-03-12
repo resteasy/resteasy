@@ -84,19 +84,7 @@
         </dependency>
         <dependency>
             <groupId>io.reactiverse</groupId>
-            <artifactId>reactive-contexts-propagators-rxjava1</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.reactiverse</groupId>
             <artifactId>reactive-contexts-propagators-rxjava2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjava-reactive-streams</artifactId>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>

@@ -484,14 +484,12 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
     <para>
        JAX-RS 2.1 doesn't require support for any Reactive Streams implementations, but it does allow
        for extensibility to support various reactive libraries.
-       RESTEasy's optional modules <code>resteasy-rxjava1</code> and <code>resteasy-rxjava2</code> 
-       add support for <ulink url="https://github.com/ReactiveX/RxJava">RxJava 1 and 2</ulink>.
-       [Only <code>resteasy-rxjava2</code> will be discussed here, since <code>resteasy-rxjava1</code> is
-       deprecated, but the treatment of the two is quite similar.]
+       RESTEasy's optional module <code>resteasy-rxjava2</code> 
+       adds support for <ulink url="https://github.com/ReactiveX/RxJava">RxJava 2</ulink>.
     </para>
     
     <para>
-       In particular, <code>resteasy-rxjava2</code>
+       More in details, <code>resteasy-rxjava2</code>
        contributes support for reactive types <classname>io.reactivex.Single</classname>,
        <classname>io.reactivex.Flowable</classname>, and <classname>io.reactivex.Observable</classname>.
        Of these, <classname>Single</classname> is similar to <classname>CompletionStage</classname> in that
