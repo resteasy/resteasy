@@ -1,37 +1,33 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.ReaderInterceptor;
-
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
-import org.jboss.resteasy.plugins.providers.sse.EventInput;
+import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
+
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,10 +38,7 @@ public abstract class ClientResponse extends BuiltResponse
    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
-   protected byte[] bufferedEntity;
    protected RESTEasyTracingLogger tracingLogger;
-   protected volatile boolean streamRead;
-   protected volatile boolean streamFullyRead;
 
    @Deprecated
    protected ClientResponse(final ClientConfiguration configuration)
@@ -60,11 +53,11 @@ public abstract class ClientResponse extends BuiltResponse
       this.tracingLogger = tracingLogger;
    }
 
-   @SuppressWarnings({ "rawtypes", "unchecked" })
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
       this.metadata = new Headers<Object>();
-      this.metadata.putAll((Map)headers);
+      this.metadata.putAll((Map) headers);
    }
 
    public void setProperties(Map<String, Object> properties)
@@ -172,148 +165,24 @@ public abstract class ClientResponse extends BuiltResponse
       return configuration;
    }
 
-   protected abstract InputStream getInputStream();
-
    protected InputStream getEntityStream()
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
+
       if (isClosed()) throw new ProcessingException(Messages.MESSAGES.streamIsClosed());
       InputStream is = getInputStream();
-      return is != null ? new InputStreamWrapper(is, this) : null;
+      return is != null ? new AbstractBuiltResponse.InputStreamWrapper<ClientResponse>(is, this) : null;
    }
 
-   private static class InputStreamWrapper extends FilterInputStream {
-
-      private ClientResponse response;
-
-      protected InputStreamWrapper(final InputStream in, final ClientResponse response) {
-         super(in);
-         this.response = response;
-      }
-
-      public int read() throws IOException
-      {
-         return checkEOF(super.read());
-      }
-
-      public int read(byte[] b) throws IOException
-      {
-         return checkEOF(super.read(b));
-      }
-
-      public int read(byte[] b, int off, int len) throws IOException
-      {
-         return checkEOF(super.read(b, off, len));
-      }
-
-      private int checkEOF(int v)
-      {
-         response.streamRead=true;
-         if (v < 0)
-         {
-            response.streamFullyRead = true;
-         }
-         return v;
-      }
-
-      @Override
-      public void close() throws IOException {
-         super.close();
-         this.response.close();
-      }
-   }
-
+   // Method is defined here because the "protected" abstract declaration
+   // in AbstractBuiltResponse is not accessible to classes in this module.
+   // Making the method "public" causes different errors.
    protected abstract void setInputStream(InputStream is);
 
-   /**
-    * Release underlying connection but do not close.
-    *
-    * @throws IOException if I/O error occurred
-    */
-   public abstract void releaseConnection() throws IOException;
-
-   /**
-    * Release underlying connection but do not close.
-    *
-    * @param consumeInputStream boolean to indicate either the underlying input stream must be fully read before releasing the connection or not.
-    * <p>
-    * For most HTTP connection implementations, consuming the underlying input stream before releasing the connection will help to ensure connection reusability with respect of Keep-Alive policy.
-    * </p>
-    * @throws IOException if I/O error occured
-    */
-   public abstract void releaseConnection(boolean consumeInputStream) throws IOException;
-
    // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
-   @SuppressWarnings("unchecked")
-   public synchronized <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
-   {
-      abortIfClosed();
-      if (entity != null)
-      {
-         if (type.isInstance((this.entity)))
-         {
-            return (T)entity;
-         }
-         else if (entity instanceof InputStream)
-         {
-            setInputStream((InputStream)entity);
-            entity = null;
-         }
-         else if (bufferedEntity == null)
-         {
-            throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(entity.getClass()));
-         }
-         else
-         {
-            entity = null;
-         }
-      }
-
-      if (entity == null)
-      {
-         if (status == HttpResponseCodes.SC_NO_CONTENT)
-            return null;
-
-         try
-         {
-            entity = readFrom(type, genericType, getMediaType(), anns);
-            if (entity == null || (entity != null
-               && !InputStream.class.isInstance(entity)
-               && !Reader.class.isInstance(entity)
-               && bufferedEntity == null))
-            {
-               try
-               {
-                  if (!EventInput.class.isInstance(entity))
-                  {
-                     close();
-                  }
-               }
-               catch (Exception ignored)
-               {
-               }
-            }
-         }
-         catch (RuntimeException e)
-         {
-            //logger.error("failed", e);
-            try
-            {
-               close();
-            }
-            catch (Exception ignored)
-            {
-
-            }
-            throw e;
-         }
-      }
-      return (T) entity;
-   }
-
-   // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   @Override
    protected synchronized <T> Object readFrom(Class<T> type, Type genericType,
-                                  MediaType media, Annotation[] annotations)
+                                    MediaType media, Annotation[] annotations)
    {
       Type useGeneric = genericType == null ? type : genericType;
       Class<?> useType = type;
@@ -350,8 +219,9 @@ public abstract class ClientResponse extends BuiltResponse
          final Object finalObj;
 
          final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
-         AbstractReaderInterceptorContext context = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
-                 useGeneric, annotations, media, getStringHeaders(), is, properties);
+         AbstractReaderInterceptorContext context =
+               new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
+                     useGeneric, annotations, media, getStringHeaders(), is, properties);
          try {
             finalObj = context.proceed();
             obj = finalObj;
@@ -396,10 +266,7 @@ public abstract class ClientResponse extends BuiltResponse
       {
          ResteasyContext.popContextData(Providers.class);
          if (current != null) ResteasyContext.pushContext(Providers.class, current);
-         if (obj instanceof ProvidersContextRetainer)
-         {
-            ((ProvidersContextRetainer) obj).setProviders(configuration);
-         }
+         if (obj instanceof ProvidersContextRetainer) ((ProvidersContextRetainer) obj).setProviders(configuration);
       }
    }
 
@@ -430,14 +297,6 @@ public abstract class ClientResponse extends BuiltResponse
          }
       }
       return true;
-   }
-
-   protected void resetEntity()
-   {
-      entity = null;
-      bufferedEntity = null;
-      streamFullyRead = false;
-      streamRead = false;
    }
 
    @Override
