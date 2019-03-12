@@ -1,4 +1,4 @@
-package org.jboss.resteasy.api.validation;
+package org.jboss.resteasy.plugins.validation;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +13,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
+import org.jboss.resteasy.api.validation.ViolationReport;
 
 /**
  *
