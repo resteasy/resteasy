@@ -35,58 +35,58 @@ import java.util.Map;
  */
 public abstract class ClientResponse extends BuiltResponse
 {
-    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
-    protected Map<String, Object> properties;
-    protected ClientConfiguration configuration;
-    protected RESTEasyTracingLogger tracingLogger;
+   // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
+   protected Map<String, Object> properties;
+   protected ClientConfiguration configuration;
+   protected RESTEasyTracingLogger tracingLogger;
 
-    @Deprecated
-    protected ClientResponse(final ClientConfiguration configuration)
-    {
-        setClientConfiguration(configuration);
-        tracingLogger = RESTEasyTracingLogger.empty();
-    }
+   @Deprecated
+   protected ClientResponse(final ClientConfiguration configuration)
+   {
+      setClientConfiguration(configuration);
+      tracingLogger = RESTEasyTracingLogger.empty();
+   }
 
-    protected ClientResponse(final ClientConfiguration configuration, final RESTEasyTracingLogger tracingLogger)
-    {
-        setClientConfiguration(configuration);
-        this.tracingLogger = tracingLogger;
-    }
+   protected ClientResponse(final ClientConfiguration configuration, final RESTEasyTracingLogger tracingLogger)
+   {
+      setClientConfiguration(configuration);
+      this.tracingLogger = tracingLogger;
+   }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void setHeaders(MultivaluedMap<String, String> headers)
-    {
-        this.metadata = new Headers<Object>();
-        this.metadata.putAll((Map) headers);
-    }
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public void setHeaders(MultivaluedMap<String, String> headers)
+   {
+      this.metadata = new Headers<Object>();
+      this.metadata.putAll((Map) headers);
+   }
 
-    public void setProperties(Map<String, Object> properties)
-    {
-        this.properties = properties;
-    }
+   public void setProperties(Map<String, Object> properties)
+   {
+      this.properties = properties;
+   }
 
-    public Map<String, Object> getProperties()
-    {
-        return properties;
-    }
+   public Map<String, Object> getProperties()
+   {
+      return properties;
+   }
 
-    public void setClientConfiguration(ClientConfiguration configuration)
-    {
-        this.configuration = configuration;
-        this.processor = configuration;
-    }
+   public void setClientConfiguration(ClientConfiguration configuration)
+   {
+      this.configuration = configuration;
+      this.processor = configuration;
+   }
 
-    @Override
-    public synchronized Object getEntity()
-    {
-        abortIfClosed();
-        Object entity = super.getEntity();
-        if (entity != null)
-        {
-            return checkEntityReadAsInputStreamFullyConsumed(entity);
-        }
-        return checkEntityReadAsInputStreamFullyConsumed(getEntityStream());
-    }
+   @Override
+   public synchronized Object getEntity()
+   {
+      abortIfClosed();
+      Object entity = super.getEntity();
+      if (entity != null)
+      {
+         return checkEntityReadAsInputStreamFullyConsumed(entity);
+      }
+      return checkEntityReadAsInputStreamFullyConsumed(getEntityStream());
+   }
 
    //Check if the entity was previously fully consumed
    private <T> T checkEntityReadAsInputStreamFullyConsumed(T entity)
@@ -98,211 +98,211 @@ public abstract class ClientResponse extends BuiltResponse
       return entity;
    }
 
-    @Override
-    public Class<?> getEntityClass()
-    {
-        Class<?> classs = super.getEntityClass();
-        if (classs != null)
-        {
-            return classs;
-        }
-        Object entity = null;
-        try
-        {
-            entity = getEntity();
-        }
-        catch (Exception e)
-        {
-        }
-        return entity != null ? entity.getClass() : null;
-    }
+   @Override
+   public Class<?> getEntityClass()
+   {
+      Class<?> classs = super.getEntityClass();
+      if (classs != null)
+      {
+         return classs;
+      }
+      Object entity = null;
+      try
+      {
+         entity = getEntity();
+      }
+      catch (Exception e)
+      {
+      }
+      return entity != null ? entity.getClass() : null;
+   }
 
-    @Override
-    public boolean hasEntity()
-    {
-        abortIfClosed();
-        return getInputStream() != null && (entity != null || getMediaType() != null);
-    }
+   @Override
+   public boolean hasEntity()
+   {
+      abortIfClosed();
+      return getInputStream() != null && (entity != null || getMediaType() != null);
+   }
 
-    /**
-     * In case of an InputStream or Reader and a invocation that returns no Response object, we need to make
-     * sure the GC does not close the returned InputStream or Reader
-     */
-    public void noReleaseConnection()
-    {
+   /**
+    * In case of an InputStream or Reader and a invocation that returns no Response object, we need to make
+    * sure the GC does not close the returned InputStream or Reader
+    */
+   public void noReleaseConnection()
+   {
 
-        isClosed = true;
-    }
+      isClosed = true;
+   }
 
-    @Override
-    public void close()
-    {
-        if (isClosed()) return;
-        try {
-            isClosed = true;
+   @Override
+   public void close()
+   {
+      if (isClosed()) return;
+      try {
+         isClosed = true;
+         releaseConnection();
+      }
+      catch (Exception e) {
+         throw new ProcessingException(e);
+      }
+   }
+
+   @Override
+   // This method is synchronized to protect against premature calling of finalize by the GC
+   protected synchronized void finalize() throws Throwable
+   {
+      if (isClosed()) return;
+      try {
+         close();
+      }
+      catch (Exception ignored) {
+      }
+   }
+
+   @Override
+   protected HeaderValueProcessor getHeaderValueProcessor()
+   {
+      return configuration;
+   }
+
+   protected InputStream getEntityStream()
+   {
+      if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
+
+      if (isClosed()) throw new ProcessingException(Messages.MESSAGES.streamIsClosed());
+      InputStream is = getInputStream();
+      return is != null ? new AbstractBuiltResponse.InputStreamWrapper<ClientResponse>(is, this) : null;
+   }
+
+   // Method is defined here because the "protected" abstract declaration
+   // in AbstractBuiltResponse is not accessible to classes in this module.
+   // Making the method "public" causes different errors.
+   protected abstract void setInputStream(InputStream is);
+
+   // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   @Override
+   protected synchronized <T> Object readFrom(Class<T> type, Type genericType,
+                                    MediaType media, Annotation[] annotations)
+   {
+      Type useGeneric = genericType == null ? type : genericType;
+      Class<?> useType = type;
+      media = media == null ? MediaType.WILDCARD_TYPE : media;
+      annotations = annotations == null ? this.annotations : annotations;
+      boolean isMarshalledEntity = false;
+      if (type.equals(MarshalledEntity.class))
+      {
+         isMarshalledEntity = true;
+         ParameterizedType param = (ParameterizedType) useGeneric;
+         useGeneric = param.getActualTypeArguments()[0];
+         useType = Types.getRawType(useGeneric);
+      }
+
+
+      Providers current = ResteasyContext.getContextData(Providers.class);
+      ResteasyContext.pushContext(Providers.class, configuration);
+      Object obj = null;
+      try
+      {
+         InputStream is = getEntityStream();
+         if (is == null)
+         {
+            throw new IllegalStateException(Messages.MESSAGES.inputStreamWasEmpty());
+         }
+         if (isMarshalledEntity)
+         {
+            is = new InputStreamToByteArray(is);
+
+         }
+
+         ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
+
+         final Object finalObj;
+
+         final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
+         AbstractReaderInterceptorContext context =
+               new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
+                     useGeneric, annotations, media, getStringHeaders(), is, properties);
+         try {
+            finalObj = context.proceed();
+            obj = finalObj;
+         } finally {
+            tracingLogger.logDuration("RI_SUMMARY", timestamp, context.getProcessedInterceptorCount());
+         }
+
+         if (isMarshalledEntity)
+         {
+            InputStreamToByteArray isba = (InputStreamToByteArray) is;
+            final byte[] bytes = isba.toByteArray();
+            return new MarshalledEntity<Object>()
+            {
+               @Override
+               public byte[] getMarshalledBytes()
+               {
+                  return bytes;
+               }
+
+               @Override
+               public Object getEntity()
+               {
+                  return finalObj;
+               }
+            };
+         }
+         else
+         {
+            return finalObj;
+         }
+
+      }
+      catch (ProcessingException pe)
+      {
+         throw pe;
+      }
+      catch (Exception ex)
+      {
+         throw new ProcessingException(ex);
+      }
+      finally
+      {
+         ResteasyContext.popContextData(Providers.class);
+         if (current != null) ResteasyContext.pushContext(Providers.class, current);
+         if (obj instanceof ProvidersContextRetainer) ((ProvidersContextRetainer) obj).setProviders(configuration);
+      }
+   }
+
+   @Override
+   public boolean bufferEntity()
+   {
+      abortIfClosed();
+      if (bufferedEntity != null) return true;
+      if (streamRead) return false;
+      if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
+      InputStream is = getInputStream();
+      if (is == null) return false;
+      try
+      {
+         bufferedEntity = ReadFromStream.readFromStream(1024, is);
+      }
+      catch (IOException e)
+      {
+         throw new ProcessingException(e);
+      }
+      finally
+      {
+         try {
             releaseConnection();
-        }
-        catch (Exception e) {
+         }
+         catch (IOException e) {
             throw new ProcessingException(e);
-        }
-    }
+         }
+      }
+      return true;
+   }
 
-    @Override
-    // This method is synchronized to protect against premature calling of finalize by the GC
-    protected synchronized void finalize() throws Throwable
-    {
-        if (isClosed()) return;
-        try {
-            close();
-        }
-        catch (Exception ignored) {
-        }
-    }
-
-    @Override
-    protected HeaderValueProcessor getHeaderValueProcessor()
-    {
-        return configuration;
-    }
-
-    protected InputStream getEntityStream()
-    {
-        if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
-
-        if (isClosed()) throw new ProcessingException(Messages.MESSAGES.streamIsClosed());
-        InputStream is = getInputStream();
-        return is != null ? new AbstractBuiltResponse.InputStreamWrapper<ClientResponse>(is, this) : null;
-    }
-
-    // Method is defined here because the "protected" abstract declaration
-    // in AbstractBuiltResponse is not accessible to classes in this module.
-    // Making the method "public" causes different errors.
-    protected abstract void setInputStream(InputStream is);
-
-    // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
-    @Override
-    protected synchronized <T> Object readFrom(Class<T> type, Type genericType,
-                                               MediaType media, Annotation[] annotations)
-    {
-        Type useGeneric = genericType == null ? type : genericType;
-        Class<?> useType = type;
-        media = media == null ? MediaType.WILDCARD_TYPE : media;
-        annotations = annotations == null ? this.annotations : annotations;
-        boolean isMarshalledEntity = false;
-        if (type.equals(MarshalledEntity.class))
-        {
-            isMarshalledEntity = true;
-            ParameterizedType param = (ParameterizedType) useGeneric;
-            useGeneric = param.getActualTypeArguments()[0];
-            useType = Types.getRawType(useGeneric);
-        }
-
-
-        Providers current = ResteasyContext.getContextData(Providers.class);
-        ResteasyContext.pushContext(Providers.class, configuration);
-        Object obj = null;
-        try
-        {
-            InputStream is = getEntityStream();
-            if (is == null)
-            {
-                throw new IllegalStateException(Messages.MESSAGES.inputStreamWasEmpty());
-            }
-            if (isMarshalledEntity)
-            {
-                is = new InputStreamToByteArray(is);
-
-            }
-
-            ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
-
-            final Object finalObj;
-
-            final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
-            AbstractReaderInterceptorContext context =
-                    new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
-                            useGeneric, annotations, media, getStringHeaders(), is, properties);
-            try {
-                finalObj = context.proceed();
-                obj = finalObj;
-            } finally {
-                tracingLogger.logDuration("RI_SUMMARY", timestamp, context.getProcessedInterceptorCount());
-            }
-
-            if (isMarshalledEntity)
-            {
-                InputStreamToByteArray isba = (InputStreamToByteArray) is;
-                final byte[] bytes = isba.toByteArray();
-                return new MarshalledEntity<Object>()
-                {
-                    @Override
-                    public byte[] getMarshalledBytes()
-                    {
-                        return bytes;
-                    }
-
-                    @Override
-                    public Object getEntity()
-                    {
-                        return finalObj;
-                    }
-                };
-            }
-            else
-            {
-                return finalObj;
-            }
-
-        }
-        catch (ProcessingException pe)
-        {
-            throw pe;
-        }
-        catch (Exception ex)
-        {
-            throw new ProcessingException(ex);
-        }
-        finally
-        {
-            ResteasyContext.popContextData(Providers.class);
-            if (current != null) ResteasyContext.pushContext(Providers.class, current);
-            if (obj instanceof ProvidersContextRetainer) ((ProvidersContextRetainer) obj).setProviders(configuration);
-        }
-    }
-
-    @Override
-    public boolean bufferEntity()
-    {
-        abortIfClosed();
-        if (bufferedEntity != null) return true;
-        if (streamRead) return false;
-        if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
-        InputStream is = getInputStream();
-        if (is == null) return false;
-        try
-        {
-            bufferedEntity = ReadFromStream.readFromStream(1024, is);
-        }
-        catch (IOException e)
-        {
-            throw new ProcessingException(e);
-        }
-        finally
-        {
-            try {
-                releaseConnection();
-            }
-            catch (IOException e) {
-                throw new ProcessingException(e);
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void abortIfClosed()
-    {
-        if (bufferedEntity == null) super.abortIfClosed();
-    }
+   @Override
+   public void abortIfClosed()
+   {
+      if (bufferedEntity == null) super.abortIfClosed();
+   }
 
 }
