@@ -145,10 +145,6 @@
             <entry align="left">server-adapters/resteasy-jdk-http</entry>
          </row>
          <row>
-            <entry align="left">18000-18499</entry>
-            <entry align="left">server-adapters/resteasy-netty</entry>
-         </row>
-         <row>
             <entry align="left">18500-18999</entry>
             <entry align="left">server-adapters/resteasy-netty4</entry>
          </row>
