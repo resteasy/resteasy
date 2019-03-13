@@ -1,6 +1,7 @@
 package org.jboss.resteasy.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 /**
@@ -13,7 +14,7 @@ public class BasicAuthHelper
    {
       StringBuffer buf = new StringBuffer(username);
       buf.append(':').append(password);
-      return "Basic " + java.util.Base64.getEncoder().encodeToString(buf.toString().getBytes(StandardCharsets.UTF_8));
+      return "Basic " + Base64.getEncoder().encodeToString(buf.toString().getBytes(StandardCharsets.UTF_8));
    }
 
    public static String[] parseHeader(String header)
@@ -23,7 +24,7 @@ public class BasicAuthHelper
       type = type.toLowerCase();
       if (!type.equalsIgnoreCase("Basic")) return null;
       String val = header.substring(6);
-      val = new String(org.apache.commons.codec.binary.Base64.decodeBase64(val.getBytes()));
+      val = new String(Base64.getDecoder().decode(val.getBytes()));
       int pos = val.indexOf(':');
       String[] split = new String[2];
       split[0] = val.substring(0, pos);

@@ -2,10 +2,10 @@ package org.jboss.resteasy.plugins.server.sun.http;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -38,7 +38,7 @@ public class BasicAuthFilter extends Filter
          if ("basic".equals(type))
          {
             String cookie = auth.substring(6);
-            cookie = new String(Base64.decodeBase64(cookie.getBytes()));
+            cookie = new String(Base64.getDecoder().decode(cookie.getBytes()));
             String[] split = cookie.split(":");
             //System.out.println("Authenticating user: " + split[0] + " passwd: " + split[1]);
             Principal user = null;

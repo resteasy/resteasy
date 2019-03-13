@@ -2,11 +2,11 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -117,7 +117,7 @@ public class RequestDispatcher
             if ("basic".equals(type))
             {
                String cookie = auth.substring(6);
-               cookie = new String(Base64.decodeBase64(cookie.getBytes()));
+               cookie = new String(Base64.getDecoder().decode(cookie.getBytes()));
                String[] split = cookie.split(":");
                Principal user = null;
                try
