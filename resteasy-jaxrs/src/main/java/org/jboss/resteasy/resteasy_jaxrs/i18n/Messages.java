@@ -621,7 +621,7 @@ public interface Messages
    @Message(id = BASE + 865, value = "Unable to determine base class from Type")
    String unableToDetermineBaseClass();
 
-   @Message(id = BASE + 870, value = "Unable to extract parameter from http request: {0} value is '{1}' for {2}", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 870, value = "Unable to extract parameter from http request: {0} value is ''{1}'' for {2}", format=Format.MESSAGE_FORMAT)
    String unableToExtractParameter(String paramSignature, String strVal, AccessibleObject target);
 
    @Message(id = BASE + 875, value = "Unable to find a constructor that takes a String param or a valueOf() or fromString() method for {0} on {1} for basetype: {2}", format=Format.MESSAGE_FORMAT)
