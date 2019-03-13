@@ -166,7 +166,7 @@ public class UndertowTest
 <programlisting> <![CDATA[
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-netty</artifactId>
+      <artifactId>resteasy-netty4</artifactId>
       <version>4.0.0-SNAPSHOT</version>
   </dependency>
 ]]></programlisting>
