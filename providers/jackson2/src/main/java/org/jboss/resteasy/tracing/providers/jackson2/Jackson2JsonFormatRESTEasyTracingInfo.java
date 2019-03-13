@@ -1,8 +1,9 @@
-package org.jboss.resteasy.tracing.api.providers;
+package org.jboss.resteasy.tracing.providers.jackson2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingInfoFormat;
+import org.jboss.resteasy.tracing.api.providers.TextBasedRESTEasyTracingInfo;
 
 public class Jackson2JsonFormatRESTEasyTracingInfo extends TextBasedRESTEasyTracingInfo {
 
