@@ -31,7 +31,7 @@
         <version.io.netty.netty4>4.1.32.Final</version.io.netty.netty4>
         <version.io.vertx>3.6.2</version.io.vertx>
         <version.io.undertow>2.0.16.Final</version.io.undertow>
-        <version.javax.activation>1.1.1</version.javax.activation>
+        <version.javax.activation>1.2.0</version.javax.activation>
         <version.javax.enterprise.cdi-api>2.0.SP1</version.javax.enterprise.cdi-api>
         <version.javax.json-api>1.1.2</version.javax.json-api>
         <version.javax.json.bind-api>1.0</version.javax.json.bind-api>
@@ -306,7 +306,7 @@
 
             <dependency>
                 <groupId>javax.activation</groupId>
-                <artifactId>activation</artifactId>
+                <artifactId>javax.activation-api</artifactId>
                 <version>${version.javax.activation}</version>
             </dependency>
             <dependency>
