@@ -33,6 +33,7 @@
         <version.io.undertow>2.0.16.Final</version.io.undertow>
         <version.javax.activation>1.1.1</version.javax.activation>
         <version.javax.enterprise.cdi-api>2.0.SP1</version.javax.enterprise.cdi-api>
+        <version.javax.interceptor-api>1.0.1.Final</version.javax.interceptor-api>
         <version.javax.json-api>1.1.2</version.javax.json-api>
         <version.javax.json.bind-api>1.0</version.javax.json.bind-api>
         <version.javax.ws.rs-api>1.0.2.Final</version.javax.ws.rs-api>
@@ -345,6 +346,21 @@
                 <artifactId>cdi-api</artifactId>
                 <version>${version.javax.enterprise.cdi-api}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.interceptor</groupId>
+                        <artifactId>javax.interceptor-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.el</groupId>
+                        <artifactId>javax.el-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec.javax.interceptor</groupId>
+                <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
+                <version>${version.javax.interceptor-api}</version>
             </dependency>
             <dependency>
                 <groupId>javax.json</groupId>
