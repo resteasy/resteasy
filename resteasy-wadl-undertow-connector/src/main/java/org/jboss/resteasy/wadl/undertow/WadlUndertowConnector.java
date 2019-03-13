@@ -1,4 +1,4 @@
-package org.jboss.resteasy.wadl;
+package org.jboss.resteasy.wadl.undertow;
 
 import io.undertow.servlet.api.DeploymentInfo;
 

@@ -20,7 +20,7 @@ import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlWriter;
-import org.jboss.resteasy.wadl.WadlUndertowConnector;
+import org.jboss.resteasy.wadl.undertow.WadlUndertowConnector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
