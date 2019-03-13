@@ -26,6 +26,7 @@ import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.weld.proxy.WeldClientProxy;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
@@ -75,7 +76,12 @@ public class CdiPropertyInjector implements PropertyInjector
    {
       if (injectorEnabled)
       {
-         delegate.inject(request, response, target);
+         Object actualTarget = target;
+         if (actualTarget instanceof WeldClientProxy)
+         {
+            actualTarget = ((WeldClientProxy) target).getMetadata().getContextualInstance();
+         }
+         delegate.inject(request, response, actualTarget);
       }
    }
 

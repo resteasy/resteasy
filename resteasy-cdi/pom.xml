@@ -61,6 +61,12 @@
             <artifactId>jboss-logging-processor</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-api</artifactId>
+            <version>3.1.Final</version>
+        </dependency>
+
     </dependencies>
 
    <profiles>
