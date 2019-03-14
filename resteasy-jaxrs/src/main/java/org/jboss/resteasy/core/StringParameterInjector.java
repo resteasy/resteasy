@@ -697,19 +697,39 @@ public class StringParameterInjector
       }
       if (paramConverter != null)
       {
-         return paramConverter.fromString(strVal);
+         try {
+            return paramConverter.fromString(strVal);
+         } catch (Exception pce) {
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
+               getParamSignature(), strVal, target), pce);
+         }
       }
       if (converter != null)
       {
-         return converter.fromString(strVal);
+         try {
+            return converter.fromString(strVal);
+         } catch (Exception pce) {
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
+               getParamSignature(), strVal, target), pce);
+         }
       }
       else if (unmarshaller != null)
       {
-         return unmarshaller.fromString(strVal);
+         try {
+            return unmarshaller.fromString(strVal);
+         } catch (Exception ue) {
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
+               getParamSignature(), strVal, target), ue);
+         }
       }
       else if (delegate != null)
       {
-         return delegate.fromString(strVal);
+         try {
+            return delegate.fromString(strVal);
+         } catch (Exception pce) {
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
+               getParamSignature(), strVal, target), pce);
+         }
       }
       else if (constructor != null)
       {

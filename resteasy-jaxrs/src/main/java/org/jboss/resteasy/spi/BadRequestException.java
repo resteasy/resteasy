@@ -4,7 +4,10 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Bad Request (400) is encountered
+ *
+ * @deprecated This class is deprecated use javax.ws.rs.BadRequestException
  */
+@Deprecated
 public class BadRequestException extends Failure
 {
 

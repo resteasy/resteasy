@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.core.basic.resource;
 
 import org.jboss.resteasy.core.MessageBodyParameterInjector;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
 import org.junit.Assert;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
