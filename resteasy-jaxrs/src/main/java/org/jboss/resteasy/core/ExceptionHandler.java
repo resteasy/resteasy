@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -9,13 +10,16 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.BadRequestException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -171,6 +175,53 @@ public class ExceptionHandler
       }
    }
 
+
+   protected Response handleClientErrorException(Response response, final String message,
+                                                 final int errorCode, final Throwable cause) {
+
+      if (response != null)
+      {
+         BuiltResponse bResponse = (BuiltResponse)response;
+         if (bResponse.getStatus() == HttpResponseCodes.SC_BAD_REQUEST
+            || bResponse.getStatus() == HttpResponseCodes.SC_NOT_FOUND)
+         {
+            if (message != null)
+            {
+               Response.ResponseBuilder builder = bResponse.fromResponse(response);
+               builder.type(MediaType.TEXT_HTML).entity(message);
+               return builder.build();
+            }
+         }
+         return response;
+
+      } else {
+
+         Response.ResponseBuilder builder = Response.status(errorCode);
+
+         if (cause == null) {
+            if (message != null)
+            {
+               builder.type(MediaType.TEXT_HTML).entity(message);
+            }
+         } else {
+
+            if (cause instanceof BadRequestException) {
+               builder.status(HttpResponseCodes.SC_BAD_REQUEST);
+            } else if (cause instanceof NotFoundException) {
+               builder.status(HttpResponseCodes.SC_NOT_FOUND);
+            }
+
+            if (cause.getMessage() != null)
+            {
+               builder.type(MediaType.TEXT_HTML).entity(cause.getMessage());
+            }
+         }
+
+         Response resp = builder.build();
+         return resp;
+      }
+   }
+
    protected Response handleWriterException(HttpRequest request, WriterException e)
    {
       Response jaxrsResponse = null;
@@ -218,51 +269,93 @@ public class ExceptionHandler
       return wae.getResponse();
    }
 
-
    public Response handleException(HttpRequest request, Throwable e)
    {
       Response jaxrsResponse = null;
-      // See if there is an ExceptionMapper for the exact class of the exception instance being thrown
-      if ((jaxrsResponse = executeExactExceptionMapper(e)) != null) return jaxrsResponse;
 
-      // These are wrapper exceptions so they need to be processed first as they map e.getCause()
-      if (e instanceof ApplicationException) {
-         return handleApplicationException(request, (ApplicationException) e);
-      }
-      else if (e instanceof WriterException) {
-         return handleWriterException(request, (WriterException) e);
-      }
-      else if (e instanceof ReaderException) {
-         return handleReaderException(request, (ReaderException) e);
+      // lookup mapper on class name of exception
+      jaxrsResponse = executeExactExceptionMapper(e);
+      if (jaxrsResponse == null)
+      {
+         if (e instanceof InternalServerErrorException
+               || e instanceof ClientErrorException)
+         {
+
+            // These are BadRequestException and NotFoundException exceptions
+            jaxrsResponse = executeExceptionMapper(e);
+            if (jaxrsResponse == null)
+            {
+               LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(),
+                  request.getUri().getPath(), e);
+               if (e instanceof InternalServerErrorException){
+                  jaxrsResponse = handleClientErrorException(
+                     ((InternalServerErrorException)e).getResponse(), e.getMessage(),
+                     ((InternalServerErrorException)e).getErrorCode(), e.getCause());
+               } else {
+                  jaxrsResponse = handleClientErrorException(
+                     ((ClientErrorException)e).getResponse(), e.getMessage(),
+                     ((ClientErrorException)e).getResponse().getStatus(), e.getCause());
+               }
+
+            }
+
+         } else if (e instanceof WebApplicationException)
+         {
+            /*
+             * If the response property of the exception does not
+             * contain an entity and an exception mapping provider
+             * (see section 4.4) is available for
+             * WebApplicationException an implementation MUST use the
+             * provider to create a new Response instance, otherwise
+             * the response property is used directly.
+             */
+            WebApplicationException wae = (WebApplicationException) e;
+            if (wae.getResponse() != null && wae.getResponse().getEntity() != null)
+            {
+               jaxrsResponse = wae.getResponse();
+            } else
+            {
+               // look at exception's subClass tree for possible mappers
+               jaxrsResponse = executeExceptionMapper(e);
+               if (jaxrsResponse == null)
+               {
+                  jaxrsResponse = handleWebApplicationException((WebApplicationException) e);
+               }
+            }
+         } else if (e instanceof Failure)
+         {
+            // known exceptions that extend from Failure
+            if (e instanceof WriterException)
+            {
+               jaxrsResponse = handleWriterException(request, (WriterException) e);
+            } else if (e instanceof ReaderException)
+            {
+               jaxrsResponse = handleReaderException(request, (ReaderException) e);
+            } else
+            {
+               jaxrsResponse = executeExceptionMapper(e);
+               if (jaxrsResponse == null)
+               {
+                  jaxrsResponse = handleFailure(request, (Failure) e);
+               }
+            }
+         } else
+         {
+            if (e instanceof ApplicationException)
+            {
+               jaxrsResponse = handleApplicationException(request, (ApplicationException) e);
+            } else
+            {
+               jaxrsResponse = executeExceptionMapper(e);
+            }
+         }
       }
 
-      /*
-       *                If the response property of the exception does not
-       *                contain an entity and an exception mapping provider
-       *                (see section 4.4) is available for
-       *                WebApplicationException an implementation MUST use the
-       *                provider to create a new Response instance, otherwise
-       *                the response property is used directly.
-       */
-      if (e instanceof WebApplicationException) {
-         WebApplicationException wae = (WebApplicationException) e;
-         if (wae.getResponse() != null && wae.getResponse().getEntity() != null) return wae.getResponse();
-      }
-
-      // First try and handle it with a mapper
-      if ((jaxrsResponse = executeExceptionMapper(e)) != null) {
-         return jaxrsResponse;
-      }
-      // Otherwise do specific things
-      else if (e instanceof WebApplicationException) {
-         return handleWebApplicationException((WebApplicationException) e);
-      }
-      else if (e instanceof Failure) {
-         return handleFailure(request, (Failure) e);
-      }
-      else {
+      if (jaxrsResponse == null)
+      {
          LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }
+      return jaxrsResponse;
    }
 }

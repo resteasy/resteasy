@@ -140,7 +140,8 @@ public class FormParamTest {
       Response response = client.target(generateURL("/FormParamTest/IllegalArgumentException")).request().
             header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
       Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-      Assert.assertEquals(ERROR_CODE, "", response.readEntity(String.class));
+      String entity = response.readEntity(String.class);
+      Assert.assertTrue(ERROR_CODE, entity.contains("RESTEASY003870"));
       response.close();
    }
 
