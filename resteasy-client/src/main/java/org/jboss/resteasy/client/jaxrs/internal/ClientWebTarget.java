@@ -253,12 +253,12 @@ public class ClientWebTarget implements ResteasyWebTarget
       UriBuilder copy = uriBuilder.clone();
       if (values.length == 1 && values[0] == null)
       {
-         copy.replaceMatrixParam(name, null);
+         copy.replaceMatrixParam(name, (Object[]) null);
       }
       else
       {
          String[] stringValues = toStringValues(values);
-         copy.matrixParam(name, stringValues);
+         copy.matrixParam(name, (Object[]) stringValues);
       }
       return newInstance(client, copy, configuration);
    }
@@ -281,12 +281,12 @@ public class ClientWebTarget implements ResteasyWebTarget
       UriBuilder copy = uriBuilder.clone();
       if (values == null || (values.length == 1 && values[0] == null))
       {
-         copy.replaceQueryParam(name, null);
+         copy.replaceQueryParam(name, (Object[]) null);
       }
       else
       {
          String[] stringValues = toStringValues(values);
-         copy.queryParam(name, stringValues);
+         copy.queryParam(name, (Object[]) stringValues);
       }
       return newInstance(client, copy, configuration);
    }
@@ -300,7 +300,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
          String[] stringValues = toStringValues(entry.getValue().toArray());
-         copy.queryParam(entry.getKey(), stringValues);
+         copy.queryParam(entry.getKey(), (Object[]) stringValues);
       }
       return  newInstance(client, copy, configuration);
    }
@@ -324,7 +324,7 @@ public class ClientWebTarget implements ResteasyWebTarget
          copy = ResteasyUriBuilder.fromTemplate(uriBuilder.toTemplate());
       }
 
-      copy.clientQueryParam(name, stringValues);
+      copy.clientQueryParam(name, (Object[]) stringValues);
       return  newInstance(client, copy, configuration);
    }
 

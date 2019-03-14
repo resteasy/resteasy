@@ -35,7 +35,7 @@ public class ClientFilterResponseBuilderTest {
                 ClientFilterResponseBuilderTest.class.getSimpleName());
         war.addClasses(ResponseBuilderCustomResponseFilter.class,
                 PriorityExecutionResource.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null);
     }
 
     static Client client;
