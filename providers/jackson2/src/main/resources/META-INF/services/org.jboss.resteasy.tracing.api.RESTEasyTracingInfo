@@ -1,1 +1,1 @@
-org.jboss.resteasy.tracing.api.providers.Jackson2JsonFormatRESTEasyTracingInfo
+org.jboss.resteasy.tracing.providers.jackson2.Jackson2JsonFormatRESTEasyTracingInfo

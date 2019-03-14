@@ -1,6 +1,7 @@
-package org.jboss.resteasy.tracing.api.providers;
+package org.jboss.resteasy.tracing.providers.jsonb;
 
 import org.jboss.resteasy.tracing.api.RESTEasyTracingInfoFormat;
+import org.jboss.resteasy.tracing.api.providers.TextBasedRESTEasyTracingInfo;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
