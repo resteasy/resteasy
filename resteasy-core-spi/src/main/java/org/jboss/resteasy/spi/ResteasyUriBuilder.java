@@ -108,7 +108,7 @@ public abstract class ResteasyUriBuilder extends UriBuilder
     * instead be treated as literal text". This means that it is an
     * explicit bug to perform contextual URI encoding of this method's
     * name parameter; hence, we must always encode said parameter. This
-    * method also foregoes contextual URI encoding on this method's value
+    * method also foregoes contextual URI encoding on this method's values
     * parameter because it represents arbitrary data passed to a
     * {@code QueryParam} parameter of a client proxy (since the client
     * proxy is nothing more than a transport layer, it should not be
@@ -117,7 +117,7 @@ public abstract class ResteasyUriBuilder extends UriBuilder
     * </ul>
     *
     * @param name  the name of the query parameter.
-    * @param value the value of the query parameter.
+    * @param values the value(s) of the query parameter.
     * @return Returns this instance to allow call chaining.
     */
    public abstract UriBuilder clientQueryParam(String name, Object... values) throws IllegalArgumentException;
