@@ -72,7 +72,7 @@ public class Encode
             case '@':
                continue;
          }
-         pathEncoding[i] = URLEncoder.encode(String.valueOf((char) i));
+         pathEncoding[i] = encodeString(String.valueOf((char) i));
       }
       pathEncoding[' '] = "%20";
       System.arraycopy(pathEncoding, 0, matrixParameterEncoding, 0, pathEncoding.length);
@@ -105,7 +105,7 @@ public class Encode
                queryNameValueEncoding[i] = "+";
                continue;
          }
-         queryNameValueEncoding[i] = URLEncoder.encode(String.valueOf((char) i));
+         queryNameValueEncoding[i] = encodeString(String.valueOf((char) i));
       }
 
       /*
@@ -143,7 +143,7 @@ public class Encode
                queryStringEncoding[i] = "%20";
                continue;
          }
-         queryStringEncoding[i] = URLEncoder.encode(String.valueOf((char) i));
+         queryStringEncoding[i] = encodeString(String.valueOf((char) i));
       }
    }
 
@@ -451,16 +451,26 @@ public class Encode
       }
       else
       {
-         try
-         {
-            encoded = URLEncoder.encode(Character.toString((char) zhar), UTF_8);
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            throw new RuntimeException(e);
-         }
+         encoded = encodeString(Character.toString((char) zhar));
       }
       return encoded;
+   }
+
+   /**
+    * Calls URLEncoder.encode(s, "UTF-8") on given input.
+    * @param s string to encode
+    * @return encoded string returned by URLEncoder.encode(s, "UTF-8")
+    */
+   public static String encodeString(String s)
+   {
+      try
+      {
+         return URLEncoder.encode(s, UTF_8);
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    public static String pathParamReplacement(String segment, List<String> params)

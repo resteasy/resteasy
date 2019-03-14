@@ -5,13 +5,13 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
+import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.FormParam;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +45,7 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
          List<String> encodedList = new ArrayList<String>();
          for (String s : list)
          {
-            encodedList.add(URLEncoder.encode(s));
+            encodedList.add(Encode.encodeString(s));
          }
          list = encodedList;
       }
