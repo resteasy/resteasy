@@ -126,15 +126,7 @@
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
             <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-        </dependency>
-
-        <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-            <scope>test</scope>
+            <artifactId>activation</artifactId>
         </dependency>
 
         <dependency>
