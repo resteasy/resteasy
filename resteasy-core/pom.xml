@@ -80,7 +80,7 @@
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
             <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
+            <artifactId>activation</artifactId>
         </dependency>
 
         <!-- 4.0 refactor of apache httpclient -->

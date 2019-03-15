@@ -1,7 +1,6 @@
 package org.jboss.resteasy.springmvc.test.client;
 
 import io.undertow.servlet.api.DeploymentInfo;
-import org.apache.commons.httpclient.HttpException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
@@ -42,7 +41,7 @@ public class BasicSpringTest {
    }
 
    @Test
-   public void testBasic() throws HttpException, IOException {
+   public void testBasic() throws IOException {
 
       ResteasyWebTarget target = client.target(TestPortProvider.generateURL("/"));
 
