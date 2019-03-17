@@ -231,10 +231,6 @@
     </contributors>
 
     <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
     </repositories>
     <pluginRepositories>
     </pluginRepositories>
