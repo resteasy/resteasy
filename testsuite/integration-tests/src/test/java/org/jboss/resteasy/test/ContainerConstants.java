@@ -31,4 +31,8 @@ public class ContainerConstants {
 
    public static final int SSL_CONTAINER_PORT_OFFSET_SNI = 6000;
 
+   public static final String ENCODING_CONTAINER_QUALIFIER = "jbossas-managed-encoding";
+
+   public static final int ENCODING_CONTAINER_PORT_OFFSET = 7000;
+
 }
