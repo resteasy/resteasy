@@ -133,12 +133,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       Object result = null;
       try {
          if (System.getSecurityManager() == null) {
-            result = reader.withType(genericType).readValue(jp);
+            result = reader.forType(reader.getTypeFactory().constructType(genericType)).readValue(jp);
          } else {
             result = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
                @Override
                public Object run() throws Exception {
-                  return reader.withType(genericType).readValue(jp);
+                  return reader.forType(reader.getTypeFactory().constructType(genericType)).readValue(jp);
                }
             });
          }
@@ -230,7 +230,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          // Most of the configuration now handled through EndpointConfig, ObjectWriter
          // but we may need to force root type:
          if (rootType != null) {
-            writer = writer.withType(rootType);
+            writer = writer.forType(rootType);
          }
          value = endpoint.modifyBeforeWrite(value);
          ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
