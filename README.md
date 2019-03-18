@@ -32,7 +32,11 @@ After pulling down a clone of the RESTEasy repository run
 
 	mvn install
 
-Currently it can be built using JDK 1.8 and 9.
+Currently it can be built using JDK 1.8 and 11.
+If you don't have the JBoss Nexus repository configured in your own local Maven settings, you might need to add enable the 'jboss-repository' profile:
+
+       mvn -Pjboss-repository install
+
 
 ### Requirements
 - Java Cryptography Extension [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
