@@ -41,11 +41,6 @@ public class AbstractJsonBindingProvider extends JsonBindingProvider {
    }
 
    public static Charset getCharset(final MediaType mediaType) {
-      if (mediaType != null)
-      {
-         String charset = mediaType.getParameters().get("charset");
-         if (charset != null) return Charset.forName(charset);
-      }
       return Charset.forName("utf-8");
    }
 
