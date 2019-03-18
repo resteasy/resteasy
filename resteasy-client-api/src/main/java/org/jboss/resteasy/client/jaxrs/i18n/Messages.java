@@ -68,9 +68,6 @@ public interface Messages
    @Message(id = BASE + 65, value = "A GET request cannot have a body.")
    String getRequestCannotHaveBody();
 
-   @Message(id = BASE + 70, value = "Hostname verification failure")
-   String hostnameVerificationFailure();
-
    @Message(id = BASE + 75, value = "Input stream was empty, there is no entity")
    String inputStreamWasEmpty();
 
@@ -139,9 +136,6 @@ public interface Messages
 
    @Message(id = BASE + 170, value = "value was null")
    String valueWasNull();
-
-   @Message(id = BASE + 175, value = "This verification path not implemented")
-   String verificationPathNotImplemented();
 
    @Message(id = BASE + 180, value = "Could not close http response")
    String couldNotCloseHttpResponse();

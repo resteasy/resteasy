@@ -52,7 +52,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
    {
       HostnameVerifier verifier = null;
       if (that.getHostnameVerifier() != null) {
-         verifier = new VerifierWrapper(that.getHostnameVerifier());
+         verifier = that.getHostnameVerifier();
       }
       else
       {

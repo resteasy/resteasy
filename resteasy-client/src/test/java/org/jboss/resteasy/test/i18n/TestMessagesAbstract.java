@@ -22,7 +22,6 @@ public abstract class TestMessagesAbstract extends TestMessagesParent
 {
    private static final Logger LOG = Logger.getLogger(TestMessagesAbstract.class);
    protected String BASE = String.format("00%4s", Messages.BASE).substring(0, 4);
-   protected String BASE3 = BASE.substring(0, 3);
    protected TypeVariable<?> var;
    protected MediaType mediaType = new MediaType("xx", "yy", "zz");
 
@@ -41,7 +40,6 @@ public abstract class TestMessagesAbstract extends TestMessagesParent
       Assert.assertEquals(getExpected(BASE + "20", "couldNotCreateURL", "xx", "yy", "zz"), Messages.MESSAGES.couldNotCreateURL("xx", "yy", "zz"));
       Assert.assertEquals(getExpected(BASE + "40", "doesNotSpecifyTypeParameter", var), Messages.MESSAGES.doesNotSpecifyTypeParameter(var));
       Assert.assertEquals(getExpected(BASE + "60", "failedToBufferAbortedResponseNoWriter", mediaType, "class"), Messages.MESSAGES.failedToBufferAbortedResponseNoWriter(mediaType, "class"));
-      Assert.assertEquals(getExpected(BASE3 + "675", "verificationPathNotImplemented"), Messages.MESSAGES.verificationPathNotImplemented());
    }
 
    @Override
