@@ -24,8 +24,6 @@ import java.util.Map;
  */
 public class AbortedResponse extends ClientResponse
 {
-   protected InputStream is;
-
    @SuppressWarnings("unchecked")
    public AbortedResponse(final ClientConfiguration configuration, final Response response)
    {
@@ -89,47 +87,9 @@ public class AbortedResponse extends ClientResponse
    }
 
    @Override
-   protected InputStream getInputStream()
-   {
-      if (is == null && entity != null && entity instanceof InputStream) {
-         is = (InputStream) entity;
-      }
-      return is;
-   }
-
-   @Override
    protected void setInputStream(InputStream is)
    {
       this.is = is;
-   }
-
-   @Override
-   public void releaseConnection()
-   {
-      releaseConnection(false);
-   }
-
-   @Override
-   public void releaseConnection(boolean consumeInputStream)
-   {
-      try
-      {
-         if (is != null)
-         {
-            if (consumeInputStream)
-            {
-               while (is.read() > 0)
-               {
-               }
-            }
-            is.close();
-         }
-      }
-      catch (IOException e)
-      {
-
-      }
-
    }
 
    /**
