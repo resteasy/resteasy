@@ -135,7 +135,6 @@ public class BuiltResponse extends AbstractBuiltResponse
          useType = Types.getRawType(useGeneric);
       }
 
-      Object obj = null;
       try
       {
          InputStream is = getEntityStream();
@@ -161,7 +160,6 @@ public class BuiltResponse extends AbstractBuiltResponse
                  new HashMap<String, Object>());
 
          finalObj = context.proceed();
-         obj = finalObj;
 
          if (isMarshalledEntity)
          {
