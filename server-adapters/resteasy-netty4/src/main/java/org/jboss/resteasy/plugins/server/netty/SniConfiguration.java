@@ -56,7 +56,7 @@ public class SniConfiguration
       //Of course, we don't need to any specific engine configuration here... just a list of ciphers
       String[] ciphers = sslContext.createSSLEngine().getSupportedCipherSuites();
       return new JdkSslContext(sslContext, false, Arrays.asList(ciphers), IdentityCipherSuiteFilter.INSTANCE, null,
-              ClientAuth.OPTIONAL);
+              ClientAuth.OPTIONAL, null, false);
    }
 
 }
