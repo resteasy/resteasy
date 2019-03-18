@@ -10,8 +10,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <!-- Adding file.encoding in order to support RESTEASY-2171 -->
-                <property name="javaVmArguments">-Dfile.encoding=${encoding:utf-8} -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
                 </property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.managed}</property>
@@ -22,8 +21,7 @@
                 <property name="jbossHome">${jboss.home}</property>
                 <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <!-- Adding file.encoding in order to support RESTEASY-2171 -->
-                <property name="javaVmArguments">-Dfile.encoding=${encoding:utf-8} -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.gzip} -Dresteasy.allowGzip=true -Djboss.server.base.dir=${container.base.dir.manual.gzip}
+                <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.manual.gzip} -Dresteasy.allowGzip=true -Djboss.server.base.dir=${container.base.dir.manual.gzip}
                 </property>
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.manual.gzip}</property>
@@ -71,6 +69,18 @@
                 </property>
                 <property name="managementAddress">localhost</property>
                 <property name="managementPort">${container.management.port.manual.ssl.sni}</property>
+            </configuration>
+        </container>
+        <container qualifier="${container.qualifier.managed.encoding}">
+            <configuration>
+                <property name="jbossHome">${jboss.home}</property>
+                <property name="jbossArguments">${securityManagerArg}</property>
+                <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
+                <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
+                <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed.encoding} -Djboss.server.base.dir=${container.base.dir.managed.encoding}
+                </property>
+                <property name="managementAddress">${node}</property>
+                <property name="managementPort">${container.management.port.managed.encoding}</property>
             </configuration>
         </container>
     </group>

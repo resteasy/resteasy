@@ -1,9 +1,12 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingCustomRepeaterProvider;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingResource;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -52,6 +56,7 @@ public class JsonBindingTest {
 
    private static final String WAR_WITH_JSONB = "war_with_jsonb";
    private static final String CUSTOM_JSON_PROVIDER = "custom_json_provider";
+   private static final String WAR_WITH_JSONB_ASCII_ENCODING = "war_with_jsonb_ascii_encoding";
 
    @Deployment(name = WAR_WITH_JSONB)
    public static Archive<?> deployWithJsonB() {
@@ -61,6 +66,12 @@ public class JsonBindingTest {
    @Deployment(name = CUSTOM_JSON_PROVIDER)
    public static Archive<?> deployWithoutJsonB() {
       return deploy(CUSTOM_JSON_PROVIDER, false);
+   }
+
+   @Deployment(name = WAR_WITH_JSONB_ASCII_ENCODING)
+   @TargetsContainer(ContainerConstants.ENCODING_CONTAINER_QUALIFIER)
+   public static Archive<?> deploymentWithJsonBAsciiEncoding() {
+      return deploy(WAR_WITH_JSONB_ASCII_ENCODING, true);
    }
 
    public static Archive<?> deploy(String archiveName, boolean useJsonB) {
@@ -150,9 +161,43 @@ public class JsonBindingTest {
     * @tpSince RESTEasy 3.5
     */
    @Test
+   @OperateOnDeployment(WAR_WITH_JSONB_ASCII_ENCODING)
    public void jsonbOnClientTestWithoutEncoding() throws Exception {
-      WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/repeater", WAR_WITH_JSONB));
+      URI url = new URI("http://" + PortProviderUtil.getHost() + ":"
+              + (PortProviderUtil.getPort() + ContainerConstants.ENCODING_CONTAINER_PORT_OFFSET)
+               + "/" + WAR_WITH_JSONB_ASCII_ENCODING + "/test/jsonBinding/repeater");
+      WebTarget target = client.target(url);
       MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+      Entity<Cat> entity = Entity.entity(
+              new Cat("Graça", "brazilian", "gray", true,
+                      JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
+      Cat response = target.request().post(entity, Cat.class);
+
+      Assert.assertThat("Failed to return the correct name", response.getName(), is("Graça"));
+      Assert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
+              response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+   }
+
+   /**
+    * @tpTestDetails JSON-B is used on client, JSON-B is not used on server, server uses test's custom json provider
+    *                client should not ignore @JsonbTransient annotation and should not send a value in this variable
+    *                server verify that client doesn't sent a value in a variable with @JsonbTransient annotation
+    *                server returns json data with a value in a variable with @JsonbTransient annotation
+    *                client should not ignore @JsonbTransient annotation and should not receive a value in this variable
+    *
+    *                This test covers RESTEASY-2171.
+    *
+    * @tpPassCrit The resource returns object with correct values
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   @OperateOnDeployment(WAR_WITH_JSONB_ASCII_ENCODING)
+   public void jsonbOnClientTestWithAsciiEncoding() throws Exception {
+      URI url = new URI("http://" + PortProviderUtil.getHost() + ":"
+              + (PortProviderUtil.getPort() + ContainerConstants.ENCODING_CONTAINER_PORT_OFFSET)
+              + "/" + WAR_WITH_JSONB_ASCII_ENCODING + "/test/jsonBinding/repeater");
+      WebTarget target = client.target(url);
+      MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset("us-ascii");
       Entity<Cat> entity = Entity.entity(
               new Cat("Graça", "brazilian", "gray", true,
                       JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
