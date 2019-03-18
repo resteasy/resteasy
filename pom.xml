@@ -219,6 +219,15 @@
                 </plugins>
             </build>
       </profile>
+      <profile>
+          <id>jboss-repository</id>
+          <repositories>
+              <repository>
+                  <id>jboss</id>
+                  <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+              </repository>
+          </repositories>
+      </profile>
     </profiles>
 
     <contributors>
