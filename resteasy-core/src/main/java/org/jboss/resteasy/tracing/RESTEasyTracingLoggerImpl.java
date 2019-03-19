@@ -23,6 +23,7 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
    private final Logger logger;
    private final RESTEasyTracingLevel threshold;
    private final RESTEasyTracingInfo tracingInfo;
+   private final String requestId;
    private static final Map<String, RESTEasyTracingEvent> string2event = new HashMap<>();
 
    static {
@@ -39,6 +40,11 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
    }
 
    RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
+      this(null, threshold, loggerNameSuffix, format);
+   }
+
+   public RESTEasyTracingLoggerImpl(String requestId, RESTEasyTracingLevel threshold, String loggerNameSuffix, String format) {
+      this.requestId = requestId;
       this.threshold = threshold;
       if (loggerNameSuffix != null) {
          this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
@@ -133,8 +139,14 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
                loggingLevel = Logger.Level.INFO;
          }
          if (logger.isEnabled(loggingLevel)) {
-            logger.log(loggingLevel,
-                     event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
+            if (requestId == null) {
+               logger.log(loggingLevel,
+                       event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
+            } else {
+               logger.log(loggingLevel,
+                       requestId + ' ' + event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
+            }
+
          }
       }
    }

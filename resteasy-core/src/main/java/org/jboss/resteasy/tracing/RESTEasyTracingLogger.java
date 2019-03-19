@@ -55,10 +55,15 @@ public interface RESTEasyTracingLogger
 
 
    static RESTEasyTracingLogger create(String tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
+      return create(null, tracingThreshold, tracingLoggerNameSuffix, tracingInfoFormat);
+   }
+
+   static RESTEasyTracingLogger create(String requestId, String tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
       if (!TRACING.AVAILABLE) {
          return EMPTY;
       }
-      return new RESTEasyTracingLoggerImpl(RESTEasyTracingLevel.valueOf(tracingThreshold), tracingLoggerNameSuffix, tracingInfoFormat);
+      return new RESTEasyTracingLoggerImpl(requestId, RESTEasyTracingLevel.valueOf(tracingThreshold), tracingLoggerNameSuffix, tracingInfoFormat);
+
    }
 
    /**
@@ -149,7 +154,7 @@ public interface RESTEasyTracingLogger
 
       final RESTEasyTracingLogger tracingLogger;
       if (RESTEasyTracingUtils.isTracingSupportEnabled(RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration), request)) {
-         tracingLogger = RESTEasyTracingLogger.create(
+         tracingLogger = RESTEasyTracingLogger.create(request.toString(),
                  RESTEasyTracingUtils.getTracingThreshold(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), request),
                  RESTEasyTracingUtils.getTracingLoggerNameSuffix(request),
                    RESTEasyTracingUtils.getTracingInfoFormat(request));
@@ -160,6 +165,8 @@ public interface RESTEasyTracingLogger
       request.setAttribute(RESTEasyTracing.PROPERTY_NAME, tracingLogger);
 
    }
+
+
 
    /**
     * Log tracing messages START events.
