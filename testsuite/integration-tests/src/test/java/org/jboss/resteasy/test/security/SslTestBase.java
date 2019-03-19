@@ -6,6 +6,7 @@ import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
@@ -41,13 +42,31 @@ public abstract class SslTestBase {
     *
     * @return a full https URL
     */
-   protected static String generateHttpsURL(int offset) {
+   protected static String generateHttpsURL(int offset, String hostname) {
       // ipv4
       if (!isIpv6()) {
-         return String.format("https://%s:%d/%s%s", HOSTNAME, 8443 + offset, DEPLOYMENT_NAME, "/ssl/hello");
+         return String.format("https://%s:%d/%s%s", hostname, 8443 + offset, DEPLOYMENT_NAME, "/ssl/hello");
       }
       // ipv6
-      return String.format("https://[%s]:%d/%s%s", HOSTNAME, 8443 + offset, DEPLOYMENT_NAME, "/ssl/hello");
+      return String.format("https://[%s]:%d/%s%s", hostname, 8443 + offset, DEPLOYMENT_NAME, "/ssl/hello");
+   }
+
+   /**
+    * Generate a https URL, use localhost
+    */
+   protected static String generateHttpsURL(int offset) {
+      return generateHttpsURL(offset, true);
+   }
+
+   /**
+    * Generate a https URL, allow to use localhost or hostname from node property
+    */
+   protected static String generateHttpsURL(int offset, boolean forceLocalhost) {
+      if (forceLocalhost) {
+         return generateHttpsURL(offset, HOSTNAME);
+      } else {
+         return generateHttpsURL(offset, PortProviderUtil.getHost());
+      }
    }
 
    /**
