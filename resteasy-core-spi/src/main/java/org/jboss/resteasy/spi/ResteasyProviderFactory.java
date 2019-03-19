@@ -146,6 +146,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
       ResteasyProviderFactory.registerBuiltinByDefault = registerBuiltinByDefault;
    }
 
+   @SuppressWarnings("unchecked")
    public static boolean isA(Class target, Class type, Set<Class<?>> contracts)
    {
       if (!type.isAssignableFrom(target)) return false;

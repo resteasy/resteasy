@@ -26,7 +26,7 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ReaderUtility
 {
    private ResteasyProviderFactory factory;
@@ -106,7 +106,7 @@ public abstract class ReaderUtility
       {
          final Map<String, Object> attributes = new HashMap<String, Object>();
          AbstractReaderInterceptorContext messageBodyReaderContext = new ClientReaderInterceptorContext(interceptors, factory, type,
-                 genericType, annotations, mediaType, requestHeaders, inputStream, attributes);
+                 genericType, annotations, mediaType, requestHeaders, inputStream, attributes, null);
          return (T) messageBodyReaderContext
                  .proceed();
       }

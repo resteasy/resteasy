@@ -71,6 +71,7 @@ public class ServerResponseWriter
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, sendHeaders);
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete, boolean sendHeaders) throws IOException
    {
@@ -94,7 +95,6 @@ public class ServerResponseWriter
          Class type = jaxrsResponse.getEntityClass();
          Type generic = jaxrsResponse.getGenericType();
          Annotation[] annotations = jaxrsResponse.getAnnotations();
-         @SuppressWarnings(value = "unchecked")
          final MediaType mt = jaxrsResponse.getMediaType();
          MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
                type, generic, annotations, mt);
@@ -240,6 +240,7 @@ public class ServerResponseWriter
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
    }
 
+   @SuppressWarnings("rawtypes")
    protected static MediaType getDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
@@ -307,7 +308,6 @@ public class ServerResponseWriter
          chosen = MediaType.WILDCARD_TYPE;
          //JAX-RS 2.0 Section 3.8.2 step 3
          Class type = jaxrsResponse.getEntityClass();
-         Object ent = jaxrsResponse.getEntity();
          Type generic = jaxrsResponse.getGenericType();
          if (generic == null)
          {

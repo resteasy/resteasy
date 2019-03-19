@@ -25,7 +25,6 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 
-@SuppressWarnings("unchecked")
 public abstract class WriterUtility
 {
    private ResteasyProviderFactory factory;
@@ -78,12 +77,14 @@ public abstract class WriterUtility
    }
 
 
+   @SuppressWarnings("rawtypes")
    public void doWrite(Object toOutput, Class type, MediaType mediaType, OutputStream os)
          throws IOException
    {
       doWrite(toOutput, type, type, mediaType, null, null, os);
    }
 
+   @SuppressWarnings("rawtypes")
    public void doWrite(Object toOutput, Class type, Type genericType, MediaType mediaType,
                        MultivaluedMap<String, Object> requestHeaders, OutputStream os)
          throws IOException
@@ -91,6 +92,7 @@ public abstract class WriterUtility
       doWrite(toOutput, type, genericType, mediaType, null, requestHeaders, os);
    }
 
+   @SuppressWarnings("rawtypes")
    public void doWrite(HttpResponse response, Object toOutput, Class type, Type genericType,
                        Annotation[] annotations, MediaType mediaType) throws IOException
    {
@@ -98,6 +100,7 @@ public abstract class WriterUtility
               .getOutputHeaders(), response.getOutputStream());
    }
 
+   @SuppressWarnings("rawtypes")
    public void doWrite(Object toOutput, Class type, Type genericType,
                        MediaType mediaType, Annotation[] annotations,
                        MultivaluedMap<String, Object> requestHeaders,
@@ -105,7 +108,7 @@ public abstract class WriterUtility
    {
       final Map<String, Object> attributes = new HashMap<String, Object>();
       AbstractWriterInterceptorContext messageBodyWriterContext = new ClientWriterInterceptorContext(interceptors, factory, toOutput, type,
-              genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
+              genericType, annotations, mediaType, requestHeaders, outputStream, attributes, null);
       messageBodyWriterContext
               .proceed();
    }
