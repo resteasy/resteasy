@@ -54,6 +54,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
@@ -627,7 +628,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
 
       ConnectionResponse(final ClientConfiguration configuration, final Map<String, Object> properties)
       {
-         super(configuration);
+         super(configuration, RESTEasyTracingLogger.empty());
          setProperties(properties);
       }
 

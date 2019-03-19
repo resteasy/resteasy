@@ -173,7 +173,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException(Messages.MESSAGES.templateValuesWasNull());
       if (templateValues.isEmpty()) return this;
-      Map vals = new HashMap<String, String>();
+      Map<String, Object> vals = new HashMap<String, Object>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
          if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException(Messages.MESSAGES.templateValuesEntryWasNull());
@@ -215,7 +215,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException(Messages.MESSAGES.templateValuesWasNull());
       if (templateValues.isEmpty()) return this;
-      Map vals = new HashMap<String, String>();
+      Map<String, Object> vals = new HashMap<String, Object>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
          if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException(Messages.MESSAGES.templateValuesEntryWasNull());
@@ -233,7 +233,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException(Messages.MESSAGES.templateValuesWasNull());
       if (templateValues.isEmpty()) return this;
-      Map vals = new HashMap<String, String>();
+      Map<String, Object> vals = new HashMap<String, Object>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
          if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException(Messages.MESSAGES.templateValuesEntryWasNull());

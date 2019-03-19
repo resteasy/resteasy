@@ -221,7 +221,7 @@ public abstract class ClientResponse extends BuiltResponse
          final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
          AbstractReaderInterceptorContext context =
                new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
-                     useGeneric, annotations, media, getStringHeaders(), is, properties);
+                     useGeneric, annotations, media, getStringHeaders(), is, properties, tracingLogger);
          try {
             finalObj = context.proceed();
             obj = finalObj;

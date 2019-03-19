@@ -30,7 +30,6 @@ import java.util.HashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("rawtypes")
 public class BuiltResponse extends AbstractBuiltResponse
 {
 
@@ -52,6 +51,7 @@ public class BuiltResponse extends AbstractBuiltResponse
       super(status, reason, metadata, entity, entityAnnotations);
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
@@ -157,7 +157,7 @@ public class BuiltResponse extends AbstractBuiltResponse
          AbstractReaderInterceptorContext context = new ClientReaderInterceptorContext(
                  readerInterceptors, providerFactory, useType,
                  useGeneric, annotations, media, getStringHeaders(), is,
-                 new HashMap<String, Object>());
+                 new HashMap<String, Object>(), null);
 
          finalObj = context.proceed();
 

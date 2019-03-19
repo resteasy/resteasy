@@ -19,7 +19,7 @@ public class CacheEntry implements Entry, Serializable
    private final MultivaluedMap<String, String> headers;
    private Header[] validationHeaders = {};
    private final String key;
-   private Map extendedProperties = new ConcurrentHashMap();
+   private Map<Serializable, Serializable> extendedProperties = new ConcurrentHashMap<>();
 
    public CacheEntry(final String key, final MultivaluedMap<String, String> headers, final byte[] cached, final int expires, final String etag, final String lastModified, final MediaType mediaType)
    {

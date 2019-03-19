@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.HttpHeaders;
@@ -27,7 +28,7 @@ public class AbortedResponse extends ClientResponse
    @SuppressWarnings("unchecked")
    public AbortedResponse(final ClientConfiguration configuration,final Response response)
    {
-      super(configuration);
+      super(configuration, RESTEasyTracingLogger.empty());
 
       for (Map.Entry<String, List<Object>> entry : response.getMetadata().entrySet())
       {

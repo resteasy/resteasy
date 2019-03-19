@@ -31,7 +31,7 @@ public class DecoratorMatcher
     * @param <T> type
     * @return decorated target object
     */
-   @SuppressWarnings(value = "unchecked")
+   @SuppressWarnings(value = "rawtypes")
    public <T> T decorate(Class<T> targetClass, T target, Class type, Annotation[] annotations, MediaType mediaType)
    {
       HashMap<Class<?>, Annotation> meta = new HashMap<Class<?>, Annotation>();
@@ -81,6 +81,7 @@ public class DecoratorMatcher
       return target;
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    private <T> T doDecoration(T target, Class type, Annotation[] annotations, MediaType mediaType, Annotation annotation, Decorator decorator) {
       DecoratorProcessor processor = null;
       try {

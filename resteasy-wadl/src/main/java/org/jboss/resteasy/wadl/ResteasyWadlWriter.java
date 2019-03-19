@@ -168,7 +168,7 @@ public class ResteasyWadlWriter {
    private Response createResponse(ResteasyWadlServiceRegistry serviceRegistry, ResteasyWadlMethodMetaData methodMetaData) {
       Response response = new Response();
 
-      Class _type = methodMetaData.getMethod().getReturnType();
+      Class<?> _type = methodMetaData.getMethod().getReturnType();
       Type _generic = methodMetaData.getMethod().getGenericReturnType();
 
       MediaType mediaType;
@@ -292,7 +292,7 @@ public class ResteasyWadlWriter {
        private Map<String, byte[]> generatedSchemas = new ConcurrentHashMap<>();
 
        // the JAXB annotated classes need to be included to generate schemas
-       private Set<Class> schemaClasses = Collections.synchronizedSet(new HashSet<>());
+       private Set<Class<?>> schemaClasses = Collections.synchronizedSet(new HashSet<>());
 
        private ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
@@ -366,7 +366,7 @@ public class ResteasyWadlWriter {
            processClassesForSchema();
        }
 
-       private void _addClass(Class clazz) {
+       private void _addClass(Class<?> clazz) {
            if (clazz.getAnnotation(XmlRootElement.class) != null) {
                schemaClasses.add(clazz);
            }
