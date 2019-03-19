@@ -240,6 +240,7 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
       f.apply(new InvocationCallback<Response>() {
          @Override
          public void completed(Response response) {
+            response.bufferEntity();
             completableFuture.complete(response);
          }
 
