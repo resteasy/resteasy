@@ -43,7 +43,7 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
       this(null, threshold, loggerNameSuffix, format);
    }
 
-   public RESTEasyTracingLoggerImpl(String requestId, RESTEasyTracingLevel threshold, String loggerNameSuffix, String format) {
+   RESTEasyTracingLoggerImpl(String requestId, RESTEasyTracingLevel threshold, String loggerNameSuffix, String format) {
       this.requestId = requestId;
       this.threshold = threshold;
       if (loggerNameSuffix != null) {
