@@ -68,7 +68,6 @@ public class ServletContainerDispatcher
       String useGlobalStr = bootstrap.getInitParameter("resteasy.servlet.context.deployment");
       boolean useGlobal = globalFactory != null;
       if (useGlobalStr != null) useGlobal = Boolean.parseBoolean(useGlobalStr);
-
       // use global is backward compatible with 2.3.x and earlier and will store and/or use the dispatcher and provider factory
       // in the servlet context
       if (useGlobal)
@@ -105,27 +104,33 @@ public class ServletContainerDispatcher
                   Application app = ResteasyDeploymentImpl.createApplication(application.trim(), dispatcher, providerFactory);
                   // push context data so we can inject it
                   processApplication(app);
+                  servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+                  if (servletMappingPrefix == null) servletMappingPrefix = "";
+                  servletMappingPrefix = servletMappingPrefix.trim();
                }
                finally
                {
                   ResteasyContext.removeContextDataLevel();
                }
             }
+            else
+            {
+               servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+               if (servletMappingPrefix == null) servletMappingPrefix = "";
+               servletMappingPrefix = servletMappingPrefix.trim();
+            }
          }
-         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
-         if (servletMappingPrefix == null) servletMappingPrefix = "";
-         servletMappingPrefix = servletMappingPrefix.trim();
       }
       else
       {
+         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+         if (servletMappingPrefix == null) servletMappingPrefix = "";
+         servletMappingPrefix = servletMappingPrefix.trim();
+
          deployment = bootstrap.createDeployment();
          deployment.start();
          dispatcher = deployment.getDispatcher();
          providerFactory = deployment.getProviderFactory();
-
-         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
-         if (servletMappingPrefix == null) servletMappingPrefix = "";
-         servletMappingPrefix = servletMappingPrefix.trim();
       }
    }
 

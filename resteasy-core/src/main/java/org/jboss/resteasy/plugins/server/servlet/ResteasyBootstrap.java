@@ -1,6 +1,9 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -19,7 +22,8 @@ public class ResteasyBootstrap implements ServletContextListener
    public void contextInitialized(ServletContextEvent event)
    {
       ServletContext servletContext = event.getServletContext();
-
+      Map<Class<?>, Object> map = ResteasyContext.getContextDataMap();
+      map.put(ServletContext.class, servletContext);
       ListenerBootstrap config = new ListenerBootstrap(event.getServletContext());
       deployment = config.createDeployment();
       deployment.start();
