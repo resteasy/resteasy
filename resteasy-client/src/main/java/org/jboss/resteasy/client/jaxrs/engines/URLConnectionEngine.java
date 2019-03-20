@@ -52,7 +52,7 @@ public class URLConnectionEngine implements ClientHttpEngine
          status = connection.getResponseCode();
       } catch (IOException e)
       {
-         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
+         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(e.toString()), e);
       }
 
       //Creating response with stream content

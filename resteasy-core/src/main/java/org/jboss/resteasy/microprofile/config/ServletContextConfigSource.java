@@ -22,12 +22,9 @@ public class ServletContextConfigSource implements ConfigSource {
       }
       Map<String, String> map = new HashMap<String, String>();
       Enumeration<String> keys = context.getInitParameterNames();
-      if (keys != null) {
-         while (keys.hasMoreElements())
-         {
-            String key = keys.nextElement();
-            map.put(key, context.getInitParameter(key));
-         }
+
+      for (String key = keys.nextElement(); keys.hasMoreElements(); key = keys.nextElement()) {
+         map.put(key, context.getInitParameter(key));
       }
       return map;
    }

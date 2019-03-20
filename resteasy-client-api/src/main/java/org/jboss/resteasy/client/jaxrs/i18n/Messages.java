@@ -125,8 +125,8 @@ public interface Messages
    @Message(id = BASE + 152, value = "Unable to create new instance of %s")
    String unableToInstantiate(Class<?> clazz);
 
-   @Message(id = BASE + 155, value = "Unable to invoke request")
-   String unableToInvokeRequest();
+   @Message(id = BASE + 155, value = "Unable to invoke request: {0}", format=Format.MESSAGE_FORMAT)
+   String unableToInvokeRequest(String msg);
 
    @Message(id = BASE + 160, value = "uriBuilder was null")
    String uriBuilderWasNull();

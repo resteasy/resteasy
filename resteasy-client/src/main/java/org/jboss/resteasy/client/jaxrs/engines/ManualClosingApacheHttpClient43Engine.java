@@ -36,11 +36,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
@@ -104,7 +104,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(ResteasyConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
+   protected File fileUploadTempFileDir = new File(ConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
 
    public ManualClosingApacheHttpClient43Engine()
    {
@@ -270,7 +270,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       }
       catch (Exception e)
       {
-         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
+         LogMessages.LOGGER.clientSendProcessingFailure(e);
+         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(e.toString()), e);
       }
       finally
       {

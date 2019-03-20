@@ -44,7 +44,7 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
                List<List<Map>> messageList = objectMapper.readValue(jsonText, jsonTraceMsgsListTypeRef);
                assertNotNull(messageList);
                assertNotNull(messageList.get(0));
-               List<Map> list = messageList.get(0);
+               List<Map> list = (List<Map>) messageList.get(0);
 
                String[] keys = {"requestId", "duration", "text", "event", "timestamp"};
                for (Map map : list) {
