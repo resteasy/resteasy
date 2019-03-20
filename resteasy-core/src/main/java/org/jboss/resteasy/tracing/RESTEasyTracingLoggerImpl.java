@@ -35,13 +35,10 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
       }
    }
 
-   RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
-      this(threshold, loggerNameSuffix, null);
+   RESTEasyTracingLoggerImpl(final String requestId, final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
+      this(requestId, threshold, loggerNameSuffix, null);
    }
 
-   RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
-      this(null, threshold, loggerNameSuffix, format);
-   }
 
    RESTEasyTracingLoggerImpl(final String requestId, final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
       this.requestId = requestId;
@@ -139,14 +136,8 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
                loggingLevel = Logger.Level.INFO;
          }
          if (logger.isEnabled(loggingLevel)) {
-            if (requestId == null) {
-               logger.log(loggingLevel,
-                       event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
-            } else {
-               logger.log(loggingLevel,
-                       requestId + ' ' + event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
-            }
-
+            logger.log(loggingLevel,
+                    requestId + ' ' + event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
          }
       }
    }
