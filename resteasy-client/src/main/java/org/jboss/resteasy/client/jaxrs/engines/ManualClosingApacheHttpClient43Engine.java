@@ -36,6 +36,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
@@ -103,7 +104,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
+   protected File fileUploadTempFileDir = new File(ConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
 
    public ManualClosingApacheHttpClient43Engine()
    {

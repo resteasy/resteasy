@@ -19,6 +19,7 @@ import java.util.WeakHashMap;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.ext.Providers;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.core.providerfactory.ClientHelper;
 import org.jboss.resteasy.core.providerfactory.NOOPServerHelper;
@@ -190,7 +191,7 @@ public class RegisterBuiltin
       return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
          @Override
          public Boolean run() {
-            final String value = System.getProperty("resteasy.allowGzip");
+            final String value = ConfigProvider.getConfig().getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
             if ("".equals(value)) return Boolean.FALSE;
             return Boolean.parseBoolean(value);
          }

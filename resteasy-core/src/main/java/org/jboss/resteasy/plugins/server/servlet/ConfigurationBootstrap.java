@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -304,6 +305,11 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       {
          deployment.getUnwrappedExceptions().add(resource);
       }
+   }
+
+   public String getParameter(String name)
+   {
+      return ConfigProvider.getConfig().getOptionalValue(name, String.class).orElse(null);
    }
 
 }
