@@ -47,7 +47,7 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
                assertNotNull(messageList);
                assertNotNull(messageList.get(0));
                List<Map> list = (List<Map>) messageList.get(0);
-               String[] keys = {"duration", "text", "event", "timestamp"};
+               String[] keys = {"requestId", "duration", "text", "event", "timestamp"};
                for (Map map : list) {
                   assertNotNull(map);
                   for (String key : keys) {
