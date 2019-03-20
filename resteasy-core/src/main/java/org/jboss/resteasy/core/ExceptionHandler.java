@@ -222,7 +222,7 @@ public class ExceptionHandler
    protected Response handleClientErrorException(HttpRequest request,
                                                  ClientErrorException e) {
 
-      LogMessages.LOGGER.failedExecutingError(request.getHttpMethod(),
+      LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(),
               request.getUri().getPath(), e);
 
       Response response = e.getResponse();
