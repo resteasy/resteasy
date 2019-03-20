@@ -121,7 +121,7 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
          for (int i = 0; i < messageArgs.length; i++) {
             messageArgsStr[i] = formatInstance(messageArgs[i]);
          }
-         final RESTEasyTracingMessage message = new RESTEasyTracingMessage(event, duration, messageArgsStr);
+         final RESTEasyTracingMessage message = new RESTEasyTracingMessage(event, requestId, duration, messageArgsStr);
          tracingInfo.addMessage(message);
 
          final Logger.Level loggingLevel;
