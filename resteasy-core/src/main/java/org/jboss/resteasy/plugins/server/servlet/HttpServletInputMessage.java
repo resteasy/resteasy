@@ -187,7 +187,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
 
    public boolean formParametersRead()
    {
-      return decodedFormParameters != null;
+      return getDecodedFormParameters() != null;
    }
 
    @Override
