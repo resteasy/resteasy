@@ -120,17 +120,20 @@ public abstract class TracingTestBase {
    protected void verifyResults(Response response, Map<String, Boolean> results) {
       for (Map.Entry entry : response.getStringHeaders().entrySet()) {
          LOG.info("<K, V> ->" + entry);
-         String item = entry
-               .getValue()
-               .toString()
-               .split("\\[")[1].split(" ")[0];
 
-         if (results.keySet()
-               .contains(item)) {
-            results.put(item.replaceAll(" ", ""), true);
+         try {
+            String item = entry
+                    .getValue()
+                    .toString()
+                    .split("\\[")[1].split(" ")[1];
+
+            if (results.keySet()
+                    .contains(item)) {
+               results.put(item.replaceAll(" ", ""), true);
+            }
+         } catch (ArrayIndexOutOfBoundsException e) {
+            // irrelevant response headers
          }
       }
    }
-
-
 }

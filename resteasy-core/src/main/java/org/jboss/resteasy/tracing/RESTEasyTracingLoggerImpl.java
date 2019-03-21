@@ -23,6 +23,7 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
    private final Logger logger;
    private final RESTEasyTracingLevel threshold;
    private final RESTEasyTracingInfo tracingInfo;
+   private final String requestId;
    private static final Map<String, RESTEasyTracingEvent> string2event = new HashMap<>();
 
    static {
@@ -34,11 +35,13 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
       }
    }
 
-   RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
-      this(threshold, loggerNameSuffix, null);
+   RESTEasyTracingLoggerImpl(final String requestId, final RESTEasyTracingLevel threshold, final String loggerNameSuffix) {
+      this(requestId, threshold, loggerNameSuffix, null);
    }
 
-   RESTEasyTracingLoggerImpl(final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
+
+   RESTEasyTracingLoggerImpl(final String requestId, final RESTEasyTracingLevel threshold, final String loggerNameSuffix, final String format) {
+      this.requestId = requestId;
       this.threshold = threshold;
       if (loggerNameSuffix != null) {
          this.logger = Logger.getLogger(TRACING_LOGGER_NAME_PREFIX + "." + loggerNameSuffix);
@@ -115,7 +118,7 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
          for (int i = 0; i < messageArgs.length; i++) {
             messageArgsStr[i] = formatInstance(messageArgs[i]);
          }
-         final RESTEasyTracingMessage message = new RESTEasyTracingMessage(event, duration, messageArgsStr);
+         final RESTEasyTracingMessage message = new RESTEasyTracingMessage(event, requestId, duration, messageArgsStr);
          tracingInfo.addMessage(message);
 
          final Logger.Level loggingLevel;
@@ -134,7 +137,16 @@ class RESTEasyTracingLoggerImpl extends RESTEasyTracing implements RESTEasyTraci
          }
          if (logger.isEnabled(loggingLevel)) {
             logger.log(loggingLevel,
-                     event.name() + ' ' + message.toString() + " [" + tracingInfo.formatDuration(duration) + " ms]");
+                    new StringBuilder()
+                            .append(requestId)
+                            .append(' ')
+                            .append(event.name())
+                            .append(' ')
+                            .append(message.toString())
+                            .append(" [")
+                            .append(tracingInfo.formatDuration(duration))
+                            .append(" ms]")
+                            .toString());
          }
       }
    }

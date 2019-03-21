@@ -45,36 +45,39 @@ public interface RESTEasyTracingLogger
    /**
     * Create new Tracing logger.
     *
+    * @param requestId        request id.
     * @param threshold        tracing level threshold.
     * @param loggerNameSuffix tracing logger name suffix.
     * @return new tracing logger.
     */
-   static RESTEasyTracingLogger create(final String threshold, final String loggerNameSuffix) {
-      return create(threshold, loggerNameSuffix, null);
+   static RESTEasyTracingLogger create(final String requestId, final String threshold, final String loggerNameSuffix) {
+      return create(requestId, threshold, loggerNameSuffix, null);
    }
 
-
-   static RESTEasyTracingLogger create(String tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
+   static RESTEasyTracingLogger create(String requestId, String tracingThreshold, String tracingLoggerNameSuffix, String tracingInfoFormat) {
       if (!TRACING.AVAILABLE) {
          return EMPTY;
       }
-      return new RESTEasyTracingLoggerImpl(RESTEasyTracingLevel.valueOf(tracingThreshold), tracingLoggerNameSuffix, tracingInfoFormat);
+      return new RESTEasyTracingLoggerImpl(requestId, RESTEasyTracingLevel.valueOf(tracingThreshold), tracingLoggerNameSuffix, tracingInfoFormat);
+
    }
 
    /**
     * Create new Tracing logger.
+    * Used by client invocation.
     *
+    * @param invocationId calling ClientInvocation instance id
     * @param configuration configuration
     * @param loggerNameSuffix tracing logger name suffix.
     * @return new tracing logger.
     */
-   static RESTEasyTracingLogger create(final Configuration configuration, final String loggerNameSuffix)
+   static RESTEasyTracingLogger create(final String invocationId, final Configuration configuration, final String loggerNameSuffix)
    {
       if (!TRACING.AVAILABLE)
       {
          return EMPTY;
       }
-      return new RESTEasyTracingLoggerImpl(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), loggerNameSuffix);
+      return new RESTEasyTracingLoggerImpl(invocationId, RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), loggerNameSuffix);
    }
 
    /**
@@ -149,7 +152,7 @@ public interface RESTEasyTracingLogger
 
       final RESTEasyTracingLogger tracingLogger;
       if (RESTEasyTracingUtils.isTracingSupportEnabled(RESTEasyTracingUtils.getRESTEasyTracingConfig(configuration), request)) {
-         tracingLogger = RESTEasyTracingLogger.create(
+         tracingLogger = RESTEasyTracingLogger.create(request.toString(),
                  RESTEasyTracingUtils.getTracingThreshold(RESTEasyTracingUtils.getRESTEasyTracingThreshold(configuration), request),
                  RESTEasyTracingUtils.getTracingLoggerNameSuffix(request),
                    RESTEasyTracingUtils.getTracingInfoFormat(request));
@@ -160,6 +163,8 @@ public interface RESTEasyTracingLogger
       request.setAttribute(RESTEasyTracing.PROPERTY_NAME, tracingLogger);
 
    }
+
+
 
    /**
     * Log tracing messages START events.

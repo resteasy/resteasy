@@ -109,7 +109,7 @@ public class ClientInvocation implements Invocation
       final RESTEasyTracingLogger tracingLogger;
 
       if (RESTEasyTracingLogger.isTracingConfigALL(configuration)) {
-         tracingLogger = RESTEasyTracingLogger.create(
+         tracingLogger = RESTEasyTracingLogger.create(this.toString(),
                  configuration,
                  this.toString());
       } else {

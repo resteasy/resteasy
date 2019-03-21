@@ -18,6 +18,6 @@ public class ClosedResponseHandlingEnableTracingRequestFilter implements Contain
    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
       // force verbose tracing, enabling via finishContainerPrepare()'s contextParams didn't work
       containerRequestContext.setProperty(RESTEasyTracing.PROPERTY_NAME,
-            RESTEasyTracingLogger.create(RESTEasyTracingLevel.VERBOSE.name(), ClosedResponseHandlingTest.class.getSimpleName()));
+            RESTEasyTracingLogger.create(this.toString(), RESTEasyTracingLevel.VERBOSE.name(), ClosedResponseHandlingTest.class.getSimpleName()));
    }
 }
