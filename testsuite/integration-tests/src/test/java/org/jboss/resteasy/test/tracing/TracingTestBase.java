@@ -132,7 +132,7 @@ public abstract class TracingTestBase {
                results.put(item.replaceAll(" ", ""), true);
             }
          } catch (ArrayIndexOutOfBoundsException e) {
-            LOG.info("[BYPASSED] -> " + entry);
+            // irrelevant response headers
          }
       }
    }
