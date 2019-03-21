@@ -9,6 +9,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -186,8 +187,84 @@ public class RESTEasyParamCdiResource
       }
 
       if(!queryParam3.equals(queryParam1)
-              || !queryParam3.equals(queryParam2)
-              || !queryParam3.equals(queryParam3)) {
+              || !queryParam3.equals(queryParam2)) {
+         logger.error("query error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      return Response.ok(queryParam1).build();
+   }
+
+   @POST
+   @Path("{pathParam0}/{pathParam1}/{pathParam2}/{pathParam3}/{pathParam4}")
+   public Response post(@BeanParam RESTEasyParamBeanCdi paramBean)
+   {
+      StringBuilder details = new StringBuilder();
+      details.append("cookieParam1: "+cookieParam1+"\n");
+      details.append("cookieParam2: "+paramBean.getCookieParam2()+"\n");
+      details.append("cookieParam3: "+paramBean.getCookieParam3()+"\n");
+
+      details.append("formParam1: "+formParam1+"\n");
+      details.append("formParam2: "+paramBean.getFormParam2()+"\n");
+      details.append("formParam3: "+paramBean.getFormParam3()+"\n");
+
+      details.append("headerParam1: "+headerParam1+"\n");
+      details.append("headerParam2: "+paramBean.getHeaderParam2()+"\n");
+      details.append("headerParam3: "+paramBean.getHeaderParam3()+"\n");
+
+      details.append("matrixParam1: "+matrixParam1+"\n");
+      details.append("matrixParam2: "+paramBean.getMatrixParam2()+"\n");
+      details.append("matrixParam3: "+paramBean.getMatrixParam3()+"\n");
+
+      details.append("pathParam1: "+pathParam1+"\n");
+      details.append("pathParam2: "+pathParam2+"\n");
+      details.append("pathParam3: "+paramBean.getPathParam3()+"\n");
+      details.append("pathParam4: "+paramBean.getPathParam4()+"\n");
+
+      details.append("queryParam1: "+queryParam1+"\n");
+      details.append("queryParam2: "+paramBean.getQueryParam2()+"\n");
+      details.append("queryParam3: "+paramBean.getQueryParam3()+"\n");
+
+      logger.info(details);
+
+      if(!paramBean.getQueryParam3().equals(cookieParam1)
+              || !paramBean.getQueryParam3().equals(paramBean.getCookieParam2())
+              || !paramBean.getQueryParam3().equals(paramBean.getCookieParam3())) {
+         logger.error("cookie error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      if(!paramBean.getQueryParam3().equals(formParam1)
+              || !paramBean.getQueryParam3().equals(paramBean.getFormParam2())
+              || !paramBean.getQueryParam3().equals(paramBean.getFormParam3())) {
+         logger.error("form error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      if(!paramBean.getQueryParam3().equals(headerParam1)
+              || !paramBean.getQueryParam3().equals(paramBean.getHeaderParam2())
+              || !paramBean.getQueryParam3().equals(paramBean.getHeaderParam3())) {
+         logger.error("header error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      if(!paramBean.getQueryParam3().equals(matrixParam1)
+              || !paramBean.getQueryParam3().equals(paramBean.getMatrixParam2())
+              || !paramBean.getQueryParam3().equals(paramBean.getMatrixParam3())) {
+         logger.error("matrix error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      if(!paramBean.getQueryParam3().equals(pathParam1)
+              || !paramBean.getQueryParam3().equals(pathParam2)
+              || !paramBean.getQueryParam3().equals(paramBean.getPathParam3())
+              || !paramBean.getQueryParam3().equals(paramBean.getPathParam4())) {
+         logger.error("path error");
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      if(!paramBean.getQueryParam3().equals(queryParam1)
+              || !paramBean.getQueryParam3().equals(paramBean.getQueryParam2())) {
          logger.error("query error");
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
