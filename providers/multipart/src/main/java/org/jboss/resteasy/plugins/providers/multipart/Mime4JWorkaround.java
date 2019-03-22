@@ -48,7 +48,7 @@ import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.stream.BodyDescriptorBuilder;
 import org.apache.james.mime4j.stream.MimeConfig;
-import org.eclipse.microprofile.config.ConfigProvider;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 
 /**
  * Copy code from org.apache.james.mime4j.message.DefaultMessageBuilder.parseMessage().
@@ -75,7 +75,7 @@ public class Mime4JWorkaround {
             BodyDescriptorBuilder bdb = new DefaultBodyDescriptorBuilder(null, strict ? DefaultFieldParser.getParser() : LenientFieldParser.getParser(), mon);
 
             StorageProvider storageProvider;
-            if (ConfigProvider.getConfig().getOptionalValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class).orElse(null) != null) {
+            if (ResteasyConfigProvider.getConfig().getOptionalValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, String.class).orElse(null) != null) {
                 storageProvider = DefaultStorageProvider.getInstance();
             } else {
                 StorageProvider backend = new CustomTempFileStorageProvider();

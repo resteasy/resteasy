@@ -21,9 +21,9 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 
 public class RestClientDelegateBean implements Bean<Object>, PassivationCapable {
 
@@ -42,7 +42,7 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
    RestClientDelegateBean(final Class<?> proxyType, final BeanManager beanManager) {
       this.proxyType = proxyType;
       this.beanManager = beanManager;
-      this.config = ConfigProvider.getConfig(); // TODO should this be injected?
+      this.config = ResteasyConfigProvider.getConfig(); // TODO should this be injected?
       this.scope = this.resolveScope();
    }
    @Override
