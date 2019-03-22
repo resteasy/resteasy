@@ -6,6 +6,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import javax.ws.rs.client.ClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.EntityExtendingBaseEntity;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.GenericEntityExtendingBaseEntityProxy;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.GenericEntityExtendingBaseEntityResource;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.MultipleGenericEntities;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.MultipleGenericEntitiesProxy;
+import org.jboss.resteasy.test.client.proxy.resource.GenericEntities.MultipleGenericEntitiesResource;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxyBase;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxySpecificProxy;
 import org.jboss.resteasy.test.client.proxy.resource.GenericProxyResource;
@@ -22,6 +28,11 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.jboss.resteasy.test.client.proxy.resource.GenericEntities.GenericEntityExtendingBaseEntityResource.FIRST_NAME;
+import static org.jboss.resteasy.test.client.proxy.resource.GenericEntities.GenericEntityExtendingBaseEntityResource.LAST_NAME;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -48,7 +59,10 @@ public class GenericProxyTest {
    public static Archive<?> deployUriInfoSimpleResource() {
       WebArchive war = TestUtil.prepareArchive(GenericProxyTest.class.getSimpleName());
       war.addClasses(GenericProxyBase.class, GenericProxySpecificProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, GenericProxyResource.class);
+      war.addPackage(MultipleGenericEntities.class.getPackage());
+      return TestUtil.finishContainerPrepare(war, null, GenericProxyResource.class,
+              GenericEntityExtendingBaseEntityResource.class,
+              MultipleGenericEntitiesResource.class);
    }
 
    private static String generateBaseUrl() {
@@ -84,4 +98,28 @@ public class GenericProxyTest {
 
       response.close();
    }
+
+   /**
+    * @tpTestDetails Test generic proxy in client extending another interface. Test for RESTEASY-1432.
+    * @tpSince RESTEasy 3.7.0
+    */
+   @Test
+   public void testInterfaceWithGenericTypeWithClientProxy() {
+      GenericEntityExtendingBaseEntityProxy proxy = client.target(generateBaseUrl()).proxy(GenericEntityExtendingBaseEntityProxy.class);
+      EntityExtendingBaseEntity entity;
+
+      entity = proxy.findOne();
+      Assert.assertEquals(entity.getLastName(), LAST_NAME);
+
+      List<EntityExtendingBaseEntity> entities = proxy.findAll();
+      Assert.assertEquals(entities.get(0).getLastName(), LAST_NAME);
+
+
+      MultipleGenericEntitiesProxy proxy1 = client.target(generateBaseUrl()).proxy(MultipleGenericEntitiesProxy.class);
+
+      HashMap<String, EntityExtendingBaseEntity> hashMap = proxy1.findHashMap();
+      entity = hashMap.get(FIRST_NAME);
+      Assert.assertEquals(entity.getLastName(), LAST_NAME);
+   }
+
 }
