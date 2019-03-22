@@ -36,6 +36,7 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
 /**
@@ -104,17 +105,17 @@ class MicroprofileClientBuilder implements RestClientBuilder {
       ClassLoader classLoader = aClass.getClassLoader();
 
       List<String> noProxyHosts = Arrays.asList(
-            ConfigProvider.getConfig().getOptionalValue("http.nonProxyHosts", String.class).orElse("localhost|127.*|[::1]").split("\\|"));
+            ResteasyConfigProvider.getConfig().getOptionalValue("http.nonProxyHosts", String.class).orElse("localhost|127.*|[::1]").split("\\|"));
 
       final T actualClient;
 
-      final String proxyHost = ConfigProvider.getConfig().getOptionalValue("http.proxyHost", String.class).orElse(null);
+      final String proxyHost = ResteasyConfigProvider.getConfig().getOptionalValue("http.proxyHost", String.class).orElse(null);
 
       if (proxyHost != null && !noProxyHosts.contains(this.baseURI.getHost())) {
          // Use proxy, if defined
          actualClient = this.builderDelegate.defaultProxy(
                    proxyHost,
-                   Integer.parseInt(ConfigProvider.getConfig().getOptionalValue("http.proxyPort", String.class).orElse("80")))
+                   Integer.parseInt(ResteasyConfigProvider.getConfig().getOptionalValue("http.proxyPort", String.class).orElse("80")))
                    .build()
                    .target(this.baseURI)
                    .proxyBuilder(aClass)
