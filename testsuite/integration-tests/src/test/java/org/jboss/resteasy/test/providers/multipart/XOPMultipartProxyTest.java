@@ -1,20 +1,23 @@
 package org.jboss.resteasy.test.providers.multipart;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxy;
-import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyEngine;
-import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyFileProperty;
-import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGenericRestResponse;
-import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGetFileRequest;
-import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGetFileRestResponse;
+import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGetFileResponse;
+import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyPutFileRequest;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -27,19 +30,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * @tpSubChapter Multipart provider
+ * @tpSubChapter Multipart provider used to send and receive XOP messages. RESTEASY-2127.
  * @tpChapter Integration tests
- * @tpSince RESTEasy 3.0.16
+ * @tpSince RESTEasy 3.7.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class XOPMultipartProxyTest {
 
-   static Client client;
+   private static Client client;
+   private static XOPMultipartProxy proxy;
+
+   @Deployment
+   public static Archive<?> deploy() {
+      WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName());
+      war.addClass(XOPMultipartProxyGetFileResponse.class);
+      war.addClass(XOPMultipartProxyPutFileRequest.class);
+      war.addClass(XOPMultipartProxy.class);
+      return TestUtil.finishContainerPrepare(war, null, XOPMultipartProxyResource.class);
+   }
 
    @BeforeClass
    public static void before() throws Exception {
       client = ClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
+      proxy = target.proxy(XOPMultipartProxy.class);
    }
 
    @AfterClass
@@ -47,35 +62,39 @@ public class XOPMultipartProxyTest {
       client.close();
    }
 
-   @Deployment
-   public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName());
-      war.addClass(XOPMultipartProxyEngine.class);
-      war.addClass(XOPMultipartProxyFileProperty.class);
-      war.addClass(XOPMultipartProxyGenericRestResponse.class);
-      war.addClass(XOPMultipartProxyGetFileRequest.class);
-      war.addClass(XOPMultipartProxyGetFileRestResponse.class);
-      war.addClass(XOPMultipartProxy.class);
-      return TestUtil.finishContainerPrepare(war, null, XOPMultipartProxyResource.class);
-   }
-
    private static String generateURL(String path) {
       return PortProviderUtil.generateURL(path, XOPMultipartProxyTest.class.getSimpleName());
    }
 
    /**
-    * @tpTestDetails MultipartFormDataOutput entity in put request with data from file is used
-    * @tpSince RESTEasy 3.0.16
+    * @tpTestDetails Receive XOP message
+    * @tpSince RESTEasy 3.7.0
     */
    @Test
-   public void testXOP() throws Exception {
+   public void testXOPGet() throws Exception {
       ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
       XOPMultipartProxy test = target.proxy(XOPMultipartProxy.class);
-      XOPMultipartProxyGetFileRequest req = new XOPMultipartProxyGetFileRequest();
-      req.setFileName("testXOP");
-      XOPMultipartProxyGetFileRestResponse fileResp = test.getFileXOPMulti(req);
+      XOPMultipartProxyGetFileResponse fileResp = test.getFile("testXOPGet");
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       fileResp.getData().writeTo(out);
-      Assert.assertEquals("testXOP", new String(out.toByteArray()));
+      Assert.assertEquals("testXOPGet", new String(out.toByteArray()));
+   }
+
+   /**
+    * @tpTestDetails Send XOP message
+    * @tpSince RESTEasy 3.7.0
+    */
+   @Test
+   public void testXOPSend() throws Exception {
+      File tmpFile = File.createTempFile("pre", ".tmp");
+      tmpFile.deleteOnExit();
+      Writer writer = new FileWriter(tmpFile);
+      writer.write("testXOPSend");
+      writer.close();
+      XOPMultipartProxyPutFileRequest req = new XOPMultipartProxyPutFileRequest();
+      req.setContent(new DataHandler(new FileDataSource(tmpFile)));
+      Response response = proxy.putFile(req);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("testXOPSend", response.readEntity(String.class));
    }
 }
