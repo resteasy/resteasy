@@ -39,7 +39,8 @@
                 <!ENTITY RESTEasy_Client_Framework SYSTEM "modules/RESTEasy_Client_Framework.xml">
                 <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">               
                 <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
-                <!ENTITY WADL SYSTEM "modules/WADL.xml">				
+                <!ENTITY WADL SYSTEM "modules/WADL.xml">
+                <!ENTITY Tracing_Feature "modules/tracing.xml">
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
                 <!ENTITY Migration_to_3_1 SYSTEM "modules/Migration_to_3.1.xml">
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
@@ -153,6 +154,7 @@ This one is short
    &MicroProfile_Rest_Client;
    &AJAX_Client;
    &WADL;
+   &Tracing_Feature;
    &Validation;
    &I18N;
    &Maven_and_RESTEasy;
