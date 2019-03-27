@@ -18,6 +18,7 @@ import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -68,7 +69,7 @@ public class TestLinks
 
    @Before
    public void before(){
-      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
       httpClient = HttpClientBuilder.create().build();
       ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);

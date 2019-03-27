@@ -31,6 +31,7 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.embedded.SimplePrincipal;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -97,7 +98,7 @@ public class TestSecureLinks
 
    @Before
    public void before(){
-      POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
+      POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), resourceType);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
       url = generateBaseUrl();
 
