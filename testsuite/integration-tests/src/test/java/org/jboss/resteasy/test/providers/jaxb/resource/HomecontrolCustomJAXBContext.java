@@ -6,7 +6,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.Validator;
 
 public class HomecontrolCustomJAXBContext extends JAXBContext {
 
@@ -33,8 +32,9 @@ public class HomecontrolCustomJAXBContext extends JAXBContext {
       return this.delegate.createMarshaller();
    }
 
+   @SuppressWarnings("deprecation")
    @Override
-   public Validator createValidator() throws JAXBException {
+   public javax.xml.bind.Validator createValidator() throws JAXBException {
       return this.delegate.createValidator();
    }
 }

@@ -14,7 +14,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.Validator;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -311,7 +310,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @see javax.xml.bind.JAXBContext#createValidator()
     * @deprecated See javax.xml.bind.JAXBContext#createValidator().
     */
-   public Validator createValidator() throws JAXBException
+   public javax.xml.bind.Validator createValidator() throws JAXBException
    {
       return wrappedContext.createValidator();
    }
