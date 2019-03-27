@@ -37,8 +37,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
       for (Entry<String, List<String>> entry : requestContext.getHeaders().entrySet())
       {
          if(entry.getKey().startsWith("RequestFilterCallback"))
-            // cast required to disambiguate with Object... method
-            responseContext.getHeaders().addAll(entry.getKey(), (List)entry.getValue());
+            addValuesToContext(responseContext, entry);
       }
       responseContext.getHeaders().add("ResponseFilterCallback"+name, String.valueOf(callbackException));
       callbackException = null;
@@ -112,5 +111,12 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          });
       }
       LOG.error("Filter response for "+name+" with action: "+action+" done");
+   }
+
+   @SuppressWarnings("unchecked")
+   private void addValuesToContext(ContainerResponseContext responseContext, Entry<String, List<String>> entry)
+   {
+      // cast required to disambiguate with Object... method
+      responseContext.getHeaders().addAll(entry.getKey(), (List)entry.getValue());
    }
 }

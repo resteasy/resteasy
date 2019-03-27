@@ -166,6 +166,7 @@ public class RxCompletionStageResourceImpl {
       throw new TestException("handled");
    }
 
+   @SuppressWarnings("unchecked")
    @FilterException
    @GET
    @Path("exception/filter")
