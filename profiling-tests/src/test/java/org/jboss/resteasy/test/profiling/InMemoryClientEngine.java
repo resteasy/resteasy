@@ -31,6 +31,7 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -190,7 +191,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
 
       protected InMemoryClientResponse(final ClientConfiguration configuration, final InputStream is)
       {
-         super(configuration);
+         super(configuration, RESTEasyTracingLogger.empty());
          stream = is;
       }
 
