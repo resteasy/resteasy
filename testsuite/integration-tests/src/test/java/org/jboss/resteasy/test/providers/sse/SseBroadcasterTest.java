@@ -244,6 +244,7 @@ public class SseBroadcasterTest
       }
    }
 
+   @SuppressWarnings("unchecked")
    private ConcurrentLinkedQueue<SseEventSink> getOutputQueue(SseBroadcasterImpl sseBroadcasterImpl) throws NoSuchFieldException, IllegalAccessException {
       Field fld = SseBroadcasterImpl.class.getDeclaredField("outputQueue");
       fld.setAccessible(true);
