@@ -37,6 +37,7 @@ public class SeCdiNettyTest {
             .addClasses(EchoResource.class, DefaultExceptionMapper.class);
    }
 
+   @SuppressWarnings("unchecked")
    @Before
    public void init() {
       while (port < 8000)

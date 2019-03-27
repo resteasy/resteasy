@@ -21,7 +21,7 @@ public class FooResource {
    @GET
    @Produces({"application/json"})
    public List<String> getAll() {
-      List<String> data = new ArrayList();
+      List<String> data = new ArrayList<>();
 
       for(int i = 0; i < 10; ++i) {
          data.add(UUID.randomUUID().toString());

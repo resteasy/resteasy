@@ -137,6 +137,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientGet(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientGet(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -157,6 +158,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientGetClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientGetClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -175,6 +177,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientGetGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientGetGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -193,6 +196,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientPut(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientPut(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -212,6 +216,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientPutClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientPutClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -231,6 +236,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientPutGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientPutGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -250,6 +256,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientPost(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientPost(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -269,6 +276,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientPostClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientPostClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -288,6 +296,7 @@ public class RxInvokerTest extends ClientTestBase
       dotestRxClientPostGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void dotestRxClientPostGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -307,6 +316,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientDelete(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientDelete(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -326,6 +336,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientDeleteClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientDeleteClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -344,6 +355,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientDeleteGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientDeleteGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -362,6 +374,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientHead(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientHead(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -382,6 +395,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientOptions(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientOptions(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -401,6 +415,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientOptionsClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientOptionsClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -419,6 +434,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientOptionsGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientOptionsGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -437,6 +453,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientTrace(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientTrace(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -456,6 +473,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientTraceClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientTraceClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -474,6 +492,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientTraceGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientTraceGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -492,6 +511,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethod(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethod(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -511,6 +531,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodClass(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethodClass(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -529,6 +550,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodGenericType(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethodGenericType(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -547,6 +569,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodEntity(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethodEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -566,6 +589,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodClassEntity(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethodClassEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -585,6 +609,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestRxClientMethodGenericTypeEntity(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestRxClientMethodGenericTypeEntity(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);
@@ -610,6 +635,7 @@ public class RxInvokerTest extends ClientTestBase
       doTestGetDataWithDelay(true);
    }
 
+   @SuppressWarnings("unchecked")
    void doTestGetDataWithDelay(boolean useCustomInvoker) throws Exception
    {
       final Client client = newClient(useCustomInvoker);

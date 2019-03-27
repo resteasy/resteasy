@@ -55,10 +55,9 @@ public class ResponseHeaderTest {
               ResponseHeaderTest.class.getSimpleName()));
       Response response = base.request().get();
       MultivaluedMap<String, Object> headers = response.getHeaders();
-      Object obj = headers.get("Server");
+      List<Object> objs = headers.get("Server");
 
-      if (obj instanceof ArrayList) {
-         List<Object> objs = (List<Object>)obj;
+      if (objs instanceof ArrayList) {
          if (objs.size() != 2) {
             Assert.fail("2 array objects expected " + objs.size() + " were returned");
          }
