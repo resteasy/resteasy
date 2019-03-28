@@ -110,19 +110,15 @@ You can generate Jacoco test coverage report with the following steps.
 ### Generate Jacoco test coverage data
 Jacoco coverage data files are generated under target folder of the each testsuite module.
 
-> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Djacoco
+> mvn clean verify -Djacoco
 
 ### Generate Jacoco html report
 After jacoco data files are generated you can generate jacoco html report.
 
-You have option to provide jacoco report with the source files to see more detailed report:
-```
-mkdir $SOURCES
-for i in $(find . | grep "src/main/java$"); do echo $i; cp -r $i/* $SOURCES/; done
-```
+Run following command to generate html report:
+> mvn verify -DskipTests -Djacoco.generate.report
 
-Run following command to generate html report (property `sources.path` is optional):
-> mvn verify -Dserver.home=PATH_TO_WIDLFLY_HOME -DskipTests -Djacoco.generate.report -Dsources.path=$SOURCES
+> open testsuite/target/jacoco-report/index.html
 
 ## Test documentation
 With each new test write appropriate javadoc documentation.
