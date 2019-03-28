@@ -55,7 +55,7 @@
         <version.org.glassfish.javax.json>1.1.2</version.org.glassfish.javax.json>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
         <version.org.infinispan>8.2.8.Final</version.org.infinispan>
-        <version.org.jacoco>0.7.9</version.org.jacoco>
+        <version.org.jacoco>0.8.3</version.org.jacoco>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging>3.3.2.Final</version.org.jboss.logging.jboss-logging>

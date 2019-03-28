@@ -18,8 +18,6 @@
         <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
-        <!-- Optional property for jacoco report generation -->
-        <sources.path></sources.path>
         <jacoco.agent></jacoco.agent>
         <additionalJvmArgs></additionalJvmArgs>
         <ipv6ArquillianSettings></ipv6ArquillianSettings>
@@ -362,9 +360,9 @@
                                             </executiondata>
                                             <structure name="JaCoCo RESTEasy">
                                                 <classfiles>
-                                                    <fileset dir="${server.home}/modules/">
-                                                        <include name="**/resteasy*.jar"/>
-                                                        <include name="**/jose-jwt*.jar"/>
+                                                    <fileset dir="${basedir}/integration-tests/target/test-server">
+                                                        <include name="**/resteasy*${project.version}.jar"/>
+                                                        <include name="**/jose-jwt*${project.version}.jar"/>
                                                         <include name="**/async-http-servlet*.jar"/>
                                                         <include name="**/jboss-jaxrs-api*.jar"/>
                                                         <include name="**/jackson-jaxrs*.jar"/>
@@ -373,9 +371,9 @@
                                                     </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
-                                                    <fileset dir="${sources.path}">
-                                                        <include name="**/*.java"/>
-                                                    </fileset>
+                                                    <dirset dir="${basedir}/..">
+                                                        <include name="**/src/main/java"/>
+                                                    </dirset>
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="\${result.report.dir}"/>
