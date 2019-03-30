@@ -122,9 +122,13 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       final ObjectReader reader = endpoint.getReader();
       final JsonParser jp = _createParser(reader, entityStream);
       // If null is returned, considered to be empty stream
-      if (jp == null || jp.nextToken() == null) {
+      if (jp == null) {
+         return null;
+      } else if (jp.nextToken() == null) {
+         jp.close();
          return null;
       }
+
       // [Issue#1]: allow 'binding' to JsonParser
       if (((Class<?>) type) == JsonParser.class) {
          return jp;
@@ -144,6 +148,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          }
       } catch (PrivilegedActionException pae) {
          throw new IOException(pae);
+      } finally {
+         jp.close();
       }
       return result;
    }
