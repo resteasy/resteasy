@@ -56,8 +56,8 @@
    </para>
    <para>
 
-      You register ExceptionMappers the same way you do MessageBodyReader/Writers. By scanning, through the resteasy
-      provider context-param (if you're deploying via a WAR file), or programmatically through the
+      You register ExceptionMappers the same way you do MessageBodyReader/Writers. By scanning for @Provider
+      annotated classes, or programmatically through the
       ResteasyProviderFactory class.
    </para>
    <para>

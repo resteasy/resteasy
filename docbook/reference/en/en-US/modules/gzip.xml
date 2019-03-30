@@ -90,7 +90,8 @@ public class MyService {
    <para>
    The interceptors may be enabled by including their classnames in a
    META-INF/services/javax.ws.rs.ext.Providers file on the classpath. The upper limit on deflated files may
-   be configured by setting the web application context parameter "resteasy.gzip.max.input".
+   be configured by setting the parameter "resteasy.gzip.max.input".
+   [See <xref linkend="microprofile_config"/> for more information about application configuration.]
    If the limit is exceeded on the server side, GZIPDecodingInterceptor will return a 
    <classname>Response</classname> with status 413 ("Request Entity Too Large") and
    a message specifying the upper limit.
