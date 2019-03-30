@@ -124,7 +124,7 @@ Accept: application/json
 Some clients, like browsers, cannot use the Accept and Accept-Language headers to negotiation the representation's media type
 or language.  RESTEasy allows you to map file name suffixes like (.xml, .txt, .en, .fr) to media types and languages.  These file name suffixes
 take the place and override any Accept header sent by the client.  You configure this using the resteasy.media.type.mappings and resteasy.language.mappings
-context-param variables within your web.xml.
+parameters. If configured within your web.xml, it would look like:
 </para>
 <programlisting><![CDATA[
 <web-app>
@@ -142,6 +142,9 @@ context-param variables within your web.xml.
    ...
 </web-app>]]>
 </programlisting>
+
+<para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
+
 <para>
 Mappings are a comma delimited list of suffix/mediatype or suffix/language mappings.  Each mapping is delimited by a ':'.  So, if you invoked GET /foo/bar.xml.en, this would be equivalent to invoking the following request:
 </para>
@@ -158,7 +161,8 @@ The mapped file suffixes are stripped from the target URL path before the reques
 <sect1 id="param_media_mappings">
 <title>Query String Parameter-based negotiation</title>
 <para>
-RESTEasy can do content negotiation based in a parameter in query string. To enable this, the web.xml can be configured like follow:
+RESTEasy can do content negotiation based in a parameter in query string. To enable this, the parameter resteasy.media.type.param.mapping
+can be configured. In web.xml, it would look like the following:
 </para>
 <programlisting><![CDATA[
 <web-app>
@@ -171,6 +175,9 @@ RESTEasy can do content negotiation based in a parameter in query string. To ena
     ...
 </web-app>]]>
 </programlisting>
+
+<para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
+
 <para>The param-value is the name of the query string parameter that RESTEasy will use in the place of the Accept header.</para>
 <para>Invoking http://service.foo.com/resouce?someName=application/xml, will give the application/xml media type the highest priority in the content negotiation.</para>
 <para>In cases where the request contains both the parameter and the Accept header, the parameter will be more relevant.</para>

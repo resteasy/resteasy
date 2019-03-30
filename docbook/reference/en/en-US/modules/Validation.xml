@@ -306,8 +306,8 @@ if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER)
 
 <para>
 If the path field is considered to be too much server side information, it can be surpressed by setting
-the context parameter "resteasy.validation.suppress.path" to "true". In that case, "*" will be returned in the
-path fields.
+the parameter "resteasy.validation.suppress.path" to "true". In that case, "*" will be returned in the
+path fields. [See <xref linkend="microprofile_config"/> for more information about application configuration.]
 </para>
 
    </section>

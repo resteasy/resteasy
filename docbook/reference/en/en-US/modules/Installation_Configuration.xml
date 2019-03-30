@@ -274,8 +274,8 @@
 </web-app>]]></programlisting>
         </para>
         <para>
-            Also, RESTEasy context-params (see <xref linkend="configuration_switches"/>)
-            are available if you want to tweak or turn on/off any specific RESTEasy feature.
+            Also, web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
+            if you want to tweak or turn on/off any specific RESTEasy feature.
         </para>
         <para>
             Since we're not using a &lt;servlet-mapping&gt; element, we must define a
@@ -405,9 +405,168 @@ public class MyApplication extends Application
         </para>
         </section>
     </section>
+   <section id="microprofile_config">
+        <title>Configuration</title>
+        
+        <para>
+            RESTEasy uses the facilities of the MicroProfile Config project
+            (<ulink url="https://github.com/eclipse/microprofile-config">https://github.com/eclipse/microprofile-config</ulink>)
+            for accessing configuration properties. The use of MicroProfile Config offers to both RESTEasy users and
+            RESTEasy developers a great deal of flexibility in controlling runtime configuration.	
+        </para>
+        <para>
+            In MicroProfile Config, a <classname>ConfigSource</classname> represents a <classname>Map&lt;String, String&gt;</classname>
+            of property names to values, and a <classname>Config</classname> represents a sequence of <classname>ConfigSource</classname>s,
+            ordered by priority. The priority of a <classname>ConfigSource</classname> is given by an ordinal (represented by an
+            <classname>int</classname>), with a higher value indicating a higher priority. For a given property name, the
+            <classname>ConfigSource</classname>s are searched in order until a value is found.
+        </para>
+        <para>
+            MicroProfile Config mandates the presence of the following <classname>ConfigSource</classname>s:
+        </para>
+        <orderedlist>
+            <listitem>a <classname>ConfigSource</classname> based on System.getProperties() (ordinal = 400)</listitem>
+            <listitem>a <classname>ConfigSource</classname> based on System.getenv() (ordinal = 300)</listitem>
+            <listitem>a <classname>ConfigSource</classname> for each META-INF/microprofile-config.properties file on the ClassPath,
+            separately configurable via a config_ordinal property inside each file (default ordinal = 100)</listitem>
+        </orderedlist>
+        <para>
+            Note that a property which is found among the System properties and which is also in the System environment will be assigned
+            the System property value because of the relative priorities of the <classname>ConfigSource</classname>s.
+        </para>
+        <para>
+            The set of <classname>ConfigSources</classname> is extensible. For example, smallrye-config
+            (<ulink url="https://github.com/smallrye/smallrye-config">https://github.com/smallrye/smallrye-config</ulink>),
+            the implementation of the MicroProfile Config specification currently used by RESTEasy, adds the following
+            kinds of <classname>ConfigSource</classname>s:
+        </para>
+        <orderedlist>
+            <listitem><classname>PropertiesConfigSource</classname> creates a <classname>ConfigSource</classname> from a
+            Java <classname>Properties</classname> object or a Map&lt;String, String&gt; object or a properties file
+            (referenced by its URL) (default ordinal = 100).</listitem>
+            <listitem><classname>DirConfigSource</classname> creates a <classname>ConfigSource</classname> that will look into a directory
+            where each file corresponds to a property (the file name is the property key and its textual content is the property value).
+            This <classname>ConfigSource</classname> can be used to read configuration from Kubernetes ConfigMap (default ordinal = 100).</listitem>
+            <listitem><classname>ZkMicroProfileConfig</classname> creates a <classname>ConfigSource</classname>ConfigSource that is backed by Apache Zookeeper
+            (ordinal = 150).</listitem>
+        </orderedlist>
+        <para>
+            These can be registered programmatically by using an instance of <classname>ConfigProviderResolver</classname>:
+        </para>
+        <programlisting>
+Config config = new PropertiesConfigSource("file:/// ...");
+ConfigProviderResolver.instance().registerConfig(config, getClass().getClassLoader());
+        </programlisting>
+        <para>where <classname>ConfigProviderResolver</classname> is part of the Eclipse API.</para>
+        <para>
+            If the application is running in Wildfly, then Wildfly provides another set of <classname>ConfigSource</classname>s,
+            as described in the "MicroProfile Config Subsystem Configuration" section of the WildFly Admin guide
+            (<ulink url="https://github.com/eclipse/microprofile-config">https://github.com/eclipse/microprofile-config</ulink>).
+        </para>
+        <para>
+            Finally, RESTEasy automatically provides three more <classname>ConfigSource</classname>s:
+        </para>
+        <itemizedlist>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.ServletConfigSource</classname> represents
+            a servlet's &lt;init-param&gt;s from web.xml (ordinal = 60).</listitem>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.FilterConfigSource</classname> represents
+            a filter's &lt;init-param&gt;s from web.xml (ordinal = 50). (See <xref linkend="filter"/> for more information.)
+            </listitem>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.ServletContextConfigSource</classname> represents
+            &lt;context-param&gt;s from web.xml (ordinal = 40).</listitem>
+        </itemizedlist>
+        
+        <section>
+            <title>Using MicroProfileConfig</title>
+            
+            <para>
+                The MicroProfile Config API is very simple. A <classname>Config</classname> may be obtained either
+                programatically:
+            </para>
+            
+            <programlisting>
+Config config = ConfigProvider.getConfig();
+            </programlisting>
+            
+            <para>
+                or, in the presence of CDI, by way of injection:
+            </para>
+            
+            <programlisting>
+@Inject Config config;
+            </programlisting>
+            
+            <para>
+                Once a <classname>Config</classname> has been obtained, a property can be queried. For example,
+            </para>
+            
+            <programlisting>
+String s = config.getValue("prop_name", String.class);
+            </programlisting>
+            
+            <para>
+                or
+            </para>
+            
+            <programlisting>
+String s = config.getOptionalValue("prop_name", String.class).orElse("d'oh");
+            </programlisting>
+            
+            <para>
+                Now, consider a situation in which "prop_name" has been set by <code>System.setProperty("prop_name", "system")</code>
+                and also by
+            </para>
+            
+            <programlisting>
+   &lt;context-param&gt;
+      &lt;param-name&gt;prop_name&lt;/param-name&gt;
+      &lt;param-value&gt;context&lt;/param-value&gt;
+   &lt;/context-param&gt;
+            </programlisting>
+               
+            <para>
+                Then, since the system parameter <classname>ConfigSource</classname> has precedence over (has a higher ordinal than)
+                <classname>ServletContextConfigSource</classname>, <code>config.getValue("prop_name", String.class)</code> will
+                return "system" rather than "context".
+            </para>
+
+        </section>
+        
+        <section>
+            <title>Configuration MicroProfile Config</title>
+            
+            <para>
+                If an application is running inside Wildfly, then all of the dependencies are automatically available. Outside of
+                Wildfly, an application will need the Eclipse MicroProfile API at compile time. In maven, for example, use
+            </para>
+            
+            <programlisting>
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.eclipse.microprofile.config&lt;/groupId&gt;
+            &lt;artifactId&gt;microprofile-config-api&lt;/artifactId&gt;
+            &lt;scope&gt;compile&lt;/scope&gt;
+        &lt;/dependency&gt;
+            </programlisting>
+            
+            <para>
+                It will also need the implementation, smallrye-config, at runtime:
+            </para>
+            
+            <programlisting>
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.smallrye&lt;/groupId&gt;
+            &lt;artifactId&gt;smallrye-config&lt;/artifactId&gt;
+            &lt;scope&gt;runtime&lt;/scope&gt;
+        &lt;/dependency&gt;
+            </programlisting>
+        </section>
+   </section>
+   
     <section id="configuration_switches">
         <title>Configuration switches</title>
-        <para>RESTEasy receives configuration options from &lt;context-param&gt; elements.</para>
+        <para>RESTEasy can receive the following configuration options from any <classname>ConfigSource</classname>s
+        that are available at runtime:
+        </para>
         <para>
             <table frame="topbot">
                 <tgroup cols="3" rowsep="1" colsep="1">
