@@ -22,6 +22,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -61,7 +62,7 @@ public class SslServerWithoutCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testServerWithoutCertificate() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
@@ -76,7 +77,7 @@ public class SslServerWithoutCertificateTest extends SslTestBase {
     */
    @Test
    public void testServerWithoutCertificateDisabledTrustManager() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder = resteasyClientBuilder.disableTrustManager();

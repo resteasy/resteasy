@@ -25,6 +25,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WILDCARD;
@@ -79,7 +80,7 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
     */
    @Test
    public void testHostnameVerificationPolicyWildcard() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
@@ -100,7 +101,7 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
    @Test(expected = ProcessingException.class)
    @Ignore("RESTEASY-2176")
    public void testHostnameVerificationPolicyStrict() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);

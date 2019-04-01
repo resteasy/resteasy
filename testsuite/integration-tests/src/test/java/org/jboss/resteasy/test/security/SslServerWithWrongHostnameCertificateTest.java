@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.net.ssl.HostnameVerifier;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WRONG;
@@ -79,7 +80,7 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testHostnameVerificationPolicyStrict() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
@@ -97,7 +98,7 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testHostnameVerificationPolicyWildcard() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
@@ -115,7 +116,7 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
     */
    @Test
    public void testHostnameVerificationPolicyAny() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
@@ -136,7 +137,7 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
     */
    @Test
    public void testCustomHostnameVerifier() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       HostnameVerifier hostnameVerifier = (s, sslSession) -> s.equals(HOSTNAME);
@@ -157,7 +158,7 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
     */
    @Test
    public void testCustomHostnameVerifierAcceptAll() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       HostnameVerifier acceptAll = (hostname, session) -> true;
