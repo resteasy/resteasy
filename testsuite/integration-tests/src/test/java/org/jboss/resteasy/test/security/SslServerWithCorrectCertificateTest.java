@@ -6,7 +6,6 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.test.security.resource.CustomTrustManager;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -29,6 +28,7 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET;
@@ -91,7 +91,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testTrustedServer() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(correctTruststore).build();
@@ -108,7 +108,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testUntrustedServer() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(differentTruststore).build();
@@ -123,7 +123,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testClientWithoutTruststore() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.build();
@@ -138,7 +138,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testCustomSSLContext() throws Exception {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -159,7 +159,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testHostnameVerificationPolicyStrict() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
@@ -179,7 +179,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testHostnameVerificationPolicyAny() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
@@ -197,7 +197,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testDisableTrustManager() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder = resteasyClientBuilder.disableTrustManager();
@@ -216,7 +216,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testIsTrustSelfSignedCertificatesDefault() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
 
       client = resteasyClientBuilder.trustStore(differentTruststore).build();
       Response response = client.target(URL).request().get();
@@ -232,7 +232,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     */
    @Test
    public void testIsTrustSelfSignedCertificatesTrue() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(true);
 
       client = resteasyClientBuilder.trustStore(differentTruststore).build();
