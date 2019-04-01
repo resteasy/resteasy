@@ -29,6 +29,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_SNI;
@@ -85,7 +86,7 @@ public class SslSniHostNamesTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testException() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
@@ -100,7 +101,7 @@ public class SslSniHostNamesTest extends SslTestBase {
     */
    @Test
    public void test() {
-      resteasyClientBuilder = new ResteasyClientBuilder();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.sniHostNames(HOSTNAME);
