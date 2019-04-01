@@ -4,7 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -23,6 +23,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -64,7 +65,7 @@ public class SslServerWithoutCertificateTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testServerWithoutCertificate() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
@@ -79,7 +80,7 @@ public class SslServerWithoutCertificateTest extends SslTestBase {
     */
    @Test
    public void testServerWithoutCertificateDisabledTrustManager() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder = resteasyClientBuilder.disableTrustManager();

@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly14;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,6 +30,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_SNI;
@@ -88,7 +89,7 @@ public class SslSniHostNamesTest extends SslTestBase {
     */
    @Test(expected = ProcessingException.class)
    public void testException() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
@@ -103,7 +104,7 @@ public class SslSniHostNamesTest extends SslTestBase {
     */
    @Test
    public void test() {
-      resteasyClientBuilder = new ResteasyClientBuilderImpl();
+      resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.sniHostNames(HOSTNAME);
