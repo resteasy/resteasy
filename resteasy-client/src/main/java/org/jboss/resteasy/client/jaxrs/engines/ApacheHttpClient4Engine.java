@@ -318,7 +318,8 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
       catch (Exception e)
       {
-         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
+         LogMessages.LOGGER.clientSendProcessingFailure(e);
+         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(e.toString()), e);
       }
       finally
       {

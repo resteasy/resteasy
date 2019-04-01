@@ -23,4 +23,8 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = Messages.BASE + 171, value = "Ignoring exception thrown within InvocationCallback")
    void exceptionIgnored(@Cause Throwable ex);
+
+   @LogMessage(level = Level.DEBUG)
+   @Message(id = Messages.BASE + 172, value = "Client send processing failure.")
+   void clientSendProcessingFailure(@Cause Throwable cause);
 }
