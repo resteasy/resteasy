@@ -39,7 +39,7 @@
     <licenses>
         <license>
             <name>Apache License 2.0</name>
-            <url>http://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -47,7 +47,7 @@
     <scm>
         <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
-        <url>http://github.com/resteasy/Resteasy/tree/master/</url>
+        <url>https://github.com/resteasy/Resteasy/tree/master/</url>
     </scm>
 
     <distributionManagement>
@@ -60,7 +60,7 @@
 
     <issueManagement>
         <system>JIRA</system>
-        <url>http://jira.jboss.com/jira/browse/RESTEASY</url>
+        <url>https://jira.jboss.com/jira/browse/RESTEASY</url>
     </issueManagement>
 
     <developers>
