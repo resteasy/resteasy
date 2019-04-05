@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.jaxrs.cfg.AnnotationBundleKey;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -36,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -68,13 +68,13 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
    private static class ClassAnnotationKey
    {
-      private AnnotationBundleKey annotations;
+      private AnnotationArrayKey annotations;
       private ClassKey classKey;
       private int hash;
 
       private ClassAnnotationKey(final Class<?> clazz, final Annotation[] annotations)
       {
-         this.annotations = new AnnotationBundleKey(annotations, AnnotationBundleKey.class);
+         this.annotations = new AnnotationArrayKey(annotations);
          this.classKey = new ClassKey(clazz);
          hash = this.annotations.hashCode();
          hash = 31 * hash + classKey.hashCode();
@@ -98,6 +98,48 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       public int hashCode()
       {
          return hash;
+      }
+   }
+
+   // Alternative to Jackson's AnnotationBundleKey that uses object equality
+   // instead of referential equality (==) due to how parameter annotations are proxied and not cached.
+   private static class AnnotationArrayKey
+   {
+      private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
+
+      private final Annotation[] annotations;
+      private final int hash;
+
+      private AnnotationArrayKey(final Annotation[] annotations)
+      {
+         if (annotations == null || annotations.length == 0) {
+            this.annotations = NO_ANNOTATIONS;
+         } else {
+            this.annotations = annotations;
+         }
+         this.hash = calcHash(this.annotations);
+      }
+
+      private static int calcHash(Annotation[] annotations)
+      {
+         int result = annotations.length;
+         result = 31 * result + Arrays.hashCode(annotations);
+         return result;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return hash;
+      }
+
+      @Override
+      public boolean equals(Object object)
+      {
+         if (this == object) return true;
+         if (object == null || getClass() != object.getClass()) return false;
+         AnnotationArrayKey that = (AnnotationArrayKey) object;
+         return hash == that.hash && java.util.Arrays.equals(annotations, that.annotations);
       }
    }
 
