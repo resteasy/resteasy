@@ -9,11 +9,13 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
@@ -592,6 +594,65 @@ public class ClientInvocation implements Invocation
       });
    }
 
+   private <T> Future<T> doSubmit(final boolean buffered,
+                                  final InvocationCallback<T> callback,
+                                  final AsyncClientHttpEngine.ResultExtractor<T> extractor) {
+      final Function<AsyncClientHttpEngine, Future<T>> asyncSubmitFn =
+              asyncClientHttpEngine -> asyncSubmit(
+                      ext -> asyncClientHttpEngine.submit(this, buffered, callback, ext),
+                      extractor,
+                      result -> {
+                          callCompletedNoThrow(callback, result);
+                          return new CompletedFuture<>(result, null);
+                      },
+                      ex -> {
+                          callFailedNoThrow(callback, ex);
+                          return new CompletedFuture<T>(null, new ExecutionException(ex));
+                      });
+
+      return doSubmit(asyncSubmitFn, executorService -> executorSubmit(executorService, callback, extractor));
+   }
+
+   public CompletableFuture<Response> submitCF()
+   {
+      return doSubmit(false, response -> response);
+   }
+
+   public <T> CompletableFuture<T> submitCF(final Class<T> responseType)
+   {
+      return doSubmit(false, response -> {
+         if (Response.class.equals(responseType))
+            return (T) response;
+         return ClientInvocation.extractResult(new GenericType<T>(responseType), response, null);
+      });
+   }
+
+   public <T> CompletableFuture<T> submitCF(final GenericType<T> responseType)
+   {
+      return doSubmit(false, response -> {
+         if (responseType.getRawType().equals(Response.class))
+            return (T) response;
+         return ClientInvocation.extractResult(responseType, response, null);
+      });
+   }
+
+   private <T> CompletableFuture<T> doSubmit(final boolean buffered,
+                                  final AsyncClientHttpEngine.ResultExtractor<T> extractor) {
+
+      final Function<AsyncClientHttpEngine, CompletableFuture<T>> asyncSubmitFn =
+              asyncClientHttpEngine -> asyncSubmit(
+                      ext -> asyncClientHttpEngine.submit(this, buffered, ext, client.asyncInvocationExecutor()),
+                      extractor,
+                      result -> CompletableFuture.completedFuture(result),
+                      ex -> {
+                         CompletableFuture<T> completableFuture = new CompletableFuture<>();
+                         completableFuture.completeExceptionally(new ExecutionException(ex));
+                         return completableFuture;
+                      });
+
+      return doSubmit(asyncSubmitFn, executorService -> executorSubmit(executorService, extractor));
+   }
+
    @Override
    public Invocation property(String name, Object value)
    {
@@ -679,23 +740,26 @@ public class ClientInvocation implements Invocation
       return response;
    }
 
-   private <T> Future<T> doSubmit(boolean buffered, InvocationCallback<T> callback,
-         AsyncClientHttpEngine.ResultExtractor<T> extractor)
+   private <T> T doSubmit(final Function<AsyncClientHttpEngine, T> asyncSubmitFn,
+                          final Function<ExecutorService, T> executorSubmitFn)
    {
       ClientHttpEngine httpEngine = client.httpEngine();
       if (httpEngine instanceof AsyncClientHttpEngine)
       {
-         return asyncSubmit((AsyncClientHttpEngine) httpEngine, buffered, callback, extractor);
+         return asyncSubmitFn.apply((AsyncClientHttpEngine) httpEngine);
       }
       else
       {
          // never buffered, but always blocks in a thread
-         return executorSubmit(client.asyncInvocationExecutor(), callback, extractor);
+         return executorSubmitFn.apply(client.asyncInvocationExecutor());
       }
    }
 
-   private <T> Future<T> asyncSubmit(AsyncClientHttpEngine asyncHttpEngine, boolean buffered,
-         InvocationCallback<T> callback, final AsyncClientHttpEngine.ResultExtractor<T> extractor)
+   private <T extends Future<U>, U> T asyncSubmit(
+           final Function<AsyncClientHttpEngine.ResultExtractor<U>, T> asyncHttpEngineSubmitFn,
+           final AsyncClientHttpEngine.ResultExtractor<U> extractor,
+           final Function<U, T> abortedFn,
+           final Function<Exception, T> exceptionFn)
    {
       final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
       Providers current = pushProvidersContext();
@@ -706,42 +770,34 @@ public class ClientInvocation implements Invocation
          {
             // spec requires that aborted response go through filter/interceptor chains.
             aborted = filterResponse(requestContext, aborted);
-            T result = extractor.extractResult(aborted);
-            callCompletedNoThrow(callback, result);
-            return new CompletedFuture<T>(result, null);
+            U result = extractor.extractResult(aborted);
+            return abortedFn.apply(result);
          }
       }
       catch (Exception ex)
       {
-         callFailedNoThrow(callback, ex);
-         return new CompletedFuture<T>(null, new ExecutionException(ex));
+         exceptionFn.apply(ex);
       }
       finally
       {
          popProvidersContext(current);
       }
 
-      return asyncHttpEngine.submit(this, buffered, callback, new AsyncClientHttpEngine.ResultExtractor<T>()
-      {
-
-         @Override
-         public T extractResult(ClientResponse response)
+      return asyncHttpEngineSubmitFn.apply(response -> {
+         Providers currentProviders = pushProvidersContext();
+         try
          {
-            Providers current = pushProvidersContext();
-            try
-            {
-               return extractor.extractResult(filterResponse(requestContext, response));
-            }
-            finally
-            {
-               popProvidersContext(current);
-            }
+            return extractor.extractResult(filterResponse(requestContext, response));
+         }
+         finally
+         {
+            popProvidersContext(currentProviders);
          }
       });
    }
 
    private <T> Future<T> executorSubmit(ExecutorService executor, final InvocationCallback<T> callback,
-         final AsyncClientHttpEngine.ResultExtractor<T> extractor)
+                                        final AsyncClientHttpEngine.ResultExtractor<T> extractor)
    {
       return executor.submit(new Callable<T>()
       {
@@ -770,6 +826,22 @@ public class ClientInvocation implements Invocation
             }
          }
       });
+   }
+
+   private <T> CompletableFuture<T> executorSubmit(ExecutorService executor,
+                                                   final AsyncClientHttpEngine.ResultExtractor<T> extractor)
+   {
+      return CompletableFuture.supplyAsync(() -> {
+         // ensure the future and the callback see the same result
+         T result = null;
+         ClientResponse response = null;
+         try {
+            response = invoke(); // does filtering too
+            return extractor.extractResult(response);
+         } catch (Exception e) {
+            throw e;
+         }
+      },executor);
    }
 
    private <T> void callCompletedNoThrow(InvocationCallback<T> callback, T result)
