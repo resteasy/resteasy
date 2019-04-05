@@ -35,7 +35,7 @@ public class AsyncGenericEntityTest {
             AsyncGenericEntityMessageBodyWriter.class,
             AsyncGenericEntityResource.class);
    }
-   
+
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, AsyncGenericEntityTest.class.getSimpleName());
    }
@@ -51,6 +51,8 @@ public class AsyncGenericEntityTest {
        Response response = request.get();
        Assert.assertEquals(200, response.getStatus());
        Assert.assertEquals("ok", response.readEntity(String.class));
+       response.close();
+       client.close();
    }
 
 }

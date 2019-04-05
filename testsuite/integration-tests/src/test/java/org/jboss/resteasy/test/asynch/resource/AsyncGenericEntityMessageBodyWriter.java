@@ -35,5 +35,5 @@ public class AsyncGenericEntityMessageBodyWriter implements MessageBodyWriter<Li
          MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
                throws IOException, WebApplicationException {
       entityStream.write("ok".getBytes());
-   }   
+   }
 }
