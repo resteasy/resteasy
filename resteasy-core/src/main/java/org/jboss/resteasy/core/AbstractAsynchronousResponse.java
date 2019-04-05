@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.TimeoutHandler;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
@@ -184,7 +185,10 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
          if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
          MediaType type = method.resolveContentType(request, entity);
          BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
-         jaxrsResponse.setGenericType(method.getGenericReturnType());
+         if (!(entity instanceof GenericEntity))
+         {
+            jaxrsResponse.setGenericType(method.getGenericReturnType());
+         }
          jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
          response = jaxrsResponse;
       }
