@@ -23,6 +23,7 @@ import java.util.List;
 public class MockHttpResponse implements HttpResponse
 {
    private static final String CHARSET_PREFIX = "charset=";
+   private static final String PARAMETER_SEPARATOR = ";";
    protected int status;
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
    protected OutputStream os = baos;
@@ -89,10 +90,14 @@ public class MockHttpResponse implements HttpResponse
 
       if (value != null && !value.isEmpty())
       {
-         int charsetIndex = value.toLowerCase().indexOf(CHARSET_PREFIX);
-         if (charsetIndex != -1)
+         int charsetStartIndex = value.toLowerCase().indexOf(CHARSET_PREFIX);
+         if (charsetStartIndex != -1)
          {
-            characterEncoding = value.substring(charsetIndex + CHARSET_PREFIX.length());
+            characterEncoding = value.substring(charsetStartIndex + CHARSET_PREFIX.length());
+            int charsetEndIndex = characterEncoding.indexOf(PARAMETER_SEPARATOR);
+            if (charsetEndIndex != -1) {
+               characterEncoding = characterEncoding.substring(0, charsetEndIndex).trim();
+            }
          }
       }
       return characterEncoding;
