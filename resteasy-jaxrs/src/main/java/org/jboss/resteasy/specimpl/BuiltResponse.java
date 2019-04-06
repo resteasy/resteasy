@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -112,6 +113,7 @@ public class BuiltResponse extends AbstractBuiltResponse
             {
 
             }
+            LogMessages.LOGGER.clientSideProcessingFailure(e);
             throw e;
          }
       }
