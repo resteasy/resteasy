@@ -270,7 +270,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       }
       catch (Exception e)
       {
-         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
+         LogMessages.LOGGER.clientSendProcessingFailure(e);
+         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(e.toString()), e);
       }
       finally
       {
