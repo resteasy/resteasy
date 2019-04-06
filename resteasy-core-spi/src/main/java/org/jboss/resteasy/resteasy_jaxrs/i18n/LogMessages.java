@@ -288,6 +288,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 335, value = "Unable to retrieve config: enableSecureProcessingFeature defaults to true")
    void unableToRetrieveConfigSecure();
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(id = BASE + 340, value = "Client receive processing failure.")
+   void clientReceiveProcessingFailure(@Cause Throwable cause);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  TRACE                                                //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -71,7 +71,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
             return null;
          }
          // detail text provided in logger message
-         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e, e.getMessage()), e);
+         throw new ProcessingException(Messages.MESSAGES.jsonBDeserializationError(e.toString()), e);
       }
    }
 
