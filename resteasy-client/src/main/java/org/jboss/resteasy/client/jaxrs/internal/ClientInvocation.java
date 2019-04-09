@@ -618,6 +618,7 @@ public class ClientInvocation implements Invocation
       return doSubmit(false, response -> response);
    }
 
+   @SuppressWarnings("unchecked")
    public <T> CompletableFuture<T> submitCF(final Class<T> responseType)
    {
       return doSubmit(false, response -> {
@@ -627,6 +628,7 @@ public class ClientInvocation implements Invocation
       });
    }
 
+   @SuppressWarnings("unchecked")
    public <T> CompletableFuture<T> submitCF(final GenericType<T> responseType)
    {
       return doSubmit(false, response -> {
@@ -833,7 +835,6 @@ public class ClientInvocation implements Invocation
    {
       return CompletableFuture.supplyAsync(() -> {
          // ensure the future and the callback see the same result
-         T result = null;
          ClientResponse response = null;
          try {
             response = invoke(); // does filtering too
