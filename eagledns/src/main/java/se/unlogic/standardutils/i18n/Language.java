@@ -121,7 +121,7 @@ public enum Language {
    Mongolian("mn"),
    Nauru("na"),
    Navajo_Navaho("nv"),
-   Norwegian_Bokmål("nb"),
+   Norwegian_Bokmal("nb"),
    North_Ndebele("nd"),
    Nepali("ne"),
    Ndonga("ng"),
