@@ -176,11 +176,6 @@ public class ClientInvocationBuilder implements Invocation.Builder
       return new AsynchronousInvoke(createClientInvocation(this.invocation));
    }
 
-   public CompletionStageInvoke asyncCS()
-   {
-      return new CompletionStageInvoke(createClientInvocation(this.invocation));
-   }
-
    @Override
    public Response get()
    {
