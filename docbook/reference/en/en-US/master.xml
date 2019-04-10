@@ -40,7 +40,7 @@
                 <!ENTITY MicroProfile_Rest_Client SYSTEM "modules/MicroProfile_Rest_Client.xml">               
                 <!ENTITY AJAX_Client SYSTEM "modules/AJAX_Client.xml">
                 <!ENTITY WADL SYSTEM "modules/WADL.xml">
-                <!ENTITY Tracing_Feature "modules/tracing.xml">
+                <!ENTITY Tracing_Feature SYSTEM "modules/tracing.xml">
                 <!ENTITY Maven_and_RESTEasy SYSTEM "modules/Maven_and_RESTEasy.xml">
                 <!ENTITY Migration_to_3_1 SYSTEM "modules/Migration_to_3.1.xml">
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
