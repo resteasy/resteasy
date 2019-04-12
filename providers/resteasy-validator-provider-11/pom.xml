@@ -4,13 +4,13 @@
   <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.6.3.SPx-SNAPSHOT</version>
+        <version>3.6.3.SP1</version>
         <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>resteasy-validator-provider-11</artifactId>
   <packaging>jar</packaging>
   <name>RESTEasy Validator Provider BV 1.1</name>
-  <url>http://maven.apache.org</url>
+  <url>https://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

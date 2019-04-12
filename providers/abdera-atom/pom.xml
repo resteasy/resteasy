@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.6.3.SPx-SNAPSHOT</version>
+        <version>3.6.3.SP1</version>
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>abdera-atom-provider</artifactId>
@@ -16,7 +16,7 @@
         <repository>
             <id>apache-snapshots</id>
             <name>Apache Snapshot Repository</name>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <url>https://people.apache.org/repo/m2-incubating-repository</url>
         </repository>
     </repositories>
 

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.6.3.SPx-SNAPSHOT</version>
+        <version>3.6.3.SP1</version>
     </parent>
     <artifactId>resteasy-spring</artifactId>
     <packaging>jar</packaging>
@@ -19,7 +19,7 @@
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
     <dependencies>

@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.6.3.SPx-SNAPSHOT</version>
+    <version>3.6.3.SP1</version>
   </parent>
   <artifactId>resteasy-rxjava</artifactId>
   <name>RESTEasy RxJava integration</name>
-  <url>http://maven.apache.org</url>
+  <url>https://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

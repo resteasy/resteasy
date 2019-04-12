@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class TestUtilRxJava {
 
-   private static String defaultRxJavaVersion = "1.3.2";
+   private static String defaultRxJavaVersion = "1.3.8";
    private static String defaultRxJavaReactiveStreamsVersion = "1.2.1";
 
 
