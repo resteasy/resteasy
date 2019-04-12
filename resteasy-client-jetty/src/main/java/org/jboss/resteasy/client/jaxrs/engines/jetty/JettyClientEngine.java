@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -99,6 +100,16 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
     */
    @Override
    public <T> Future<T> submit(ClientInvocation invocation, boolean bufIn, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
+      return doSubmit(invocation, bufIn, callback, extractor);
+   }
+
+   @Override
+   public <T> CompletableFuture<T> submit(ClientInvocation request, boolean buffered, ResultExtractor<T> extractor,
+         ExecutorService executorService) {
+      return doSubmit(request, buffered, null, extractor);
+   }
+
+   private <T> CompletableFuture<T> doSubmit(ClientInvocation invocation, boolean bufIn, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
       final boolean buffered;
       if (!bufIn && extractor != null) {
          if (!WARN_BUF.getAndSet(true)) {

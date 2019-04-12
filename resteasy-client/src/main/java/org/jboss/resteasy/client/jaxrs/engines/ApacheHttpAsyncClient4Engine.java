@@ -53,7 +53,6 @@ import org.apache.http.nio.util.SharedInputBuffer;
 import org.apache.http.nio.util.SimpleInputBuffer;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
@@ -245,6 +244,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
     */
    private static class StreamingResponseConsumer<T> implements HttpAsyncResponseConsumer<T>
    {
+      @SuppressWarnings("serial")
       private static final IOException unallowedBlockingReadException = new IOException("blocking reads inside an async io-handler are not allowed") {
          public synchronized Throwable fillInStackTrace() {
             //do nothing and return
