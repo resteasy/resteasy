@@ -37,4 +37,99 @@
             the tracing feature, and this is the default mode.
         </para>
     </section>
+    <section>
+    <title>Tracing Info Type</title>
+    <para>On the other aspect, the tracing feature has different tracing logging levels. Here is the list of the
+        levels:
+    </para>
+    <itemizedlist>
+        <listitem>SUMMARY</listitem>
+        <listitem>TRACE</listitem>
+        <listitem>VERBOSE</listitem>
+    </itemizedlist>
+    <para>
+        The SUMMARY level will emit some brief tracing information. The TRACE level will produce more detailed
+        tracing information, and the VERBOSE level will generate extremely detailed tracing information. Because
+        there are no specs on these tracing levels yet, so the level of the tracing info is currently defined by
+        RESTEasy internally.
+    </para>
+    <para>
+        The tracing feature uses the JBoss Logging framework to output the trace log, so the jboss logger
+        configuration controls the final output of the tracing info. If you enable the tracing feature but disable
+        the jboss logger output, you still can't get the tracing info you want. In addition, the tracing logging
+        levels are mapped to jboss logger log levels, which means the jboss logger controls is the actual place to
+        control the tracing level threshold.
+    </para>
+    </section>
+
+    <section>
+        <title>Examples of using tracing feature</title>
+        <para>By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to
+            add the following dependency in your project:
+            <programlisting>
+                <![CDATA[<dependency>
+                        <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-tracing-api</artifactId>
+                        <version>1.0.0.Beta4-SNAPSHOT</version>
+                    </dependency>]]>
+            </programlisting>
+        </para>
+        <para>
+            The above dependency is provided by the `resteasy-extensions` project:
+
+            * [GitHub - resteasy/resteasy-extensions](https://github.com/resteasy/resteasy-extensions)
+
+            And then you can set the tracing mode and tracing level via the context-param parameters in your web
+            project’s web.xml file. Here is an example of the setting:
+            <programlisting>
+                <![CDATA[resteasy.server.tracing.type=ALL
+                    resteasy.server.tracing.threshold=SUMMARY]]>
+            </programlisting>
+        </para>
+        <para>
+            With above setting, we have enabled the server tracing, and put the tracing level to summary. If the
+            underlying jboss logger’s output threadshold is higher than the tracing level setting, then the users
+            can start to get the tracing info from server side and from response headers. Here is some sample text
+            of the server side tracing log:
+            <programlisting>
+                <![CDATA[16:21:40,110 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=n/a accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a  [ ---- ms]
+                    16:21:40,110 TRACE [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START_HEADERS Other request headers: Connection=[Keep-Alive] Host=[localhost:8081] User-Agent=[Apache-HttpClient/4.5.4 (Java/1.8.0_201)]  [ ---- ms]
+                    16:21:40,114 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff PRE_MATCH_SUMMARY PreMatchRequest summary: 0 filters [ 0.04 ms]
+                    16:21:40,118 DEBUG [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff REQUEST_FILTER Filter by [io.weli.tracing.HttpMethodOverride @60353244] [ 0.02 ms]
+                    ...
+                    16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
+                    16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]]]>
+            </programlisting>
+            From the above tracing log output, we can see it belongs to two requests. One request id is 42946517 and
+            another is 3a62b5dd.
+        </para>
+    </section>
+    <section>
+        <title>Client side tracing info</title>
+        <para>
+            For client side, here is some sample text in response header:
+
+            <programlisting>
+                <![CDATA[$ curl -i http://localhost:8081/foo
+                HTTP/1.1 200 OK
+                X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.57 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @1cbf0b08] is skipped
+                ...
+                Date: Wed, 27 Mar 2019 09:39:50 GMT
+                Connection: keep-alive
+                X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa START       [ ---- /  ---- ms |  ---- %] baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a
+                ...
+                X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped
+                ```]]>
+            </programlisting>
+            From above client side output, we can see there are `X-RESTEasy-Tracing-X` info in response headers, and
+            they are numbered in order.
+
+        </para>
+    </section>
+    <section>
+        <title>Json Formatted Response</title>
+    </section>
+    <section>
+        <title>Tracing Example</title>
+    </section>
 </chapter>
