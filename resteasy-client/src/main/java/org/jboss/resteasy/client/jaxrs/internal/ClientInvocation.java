@@ -615,23 +615,23 @@ public class ClientInvocation implements Invocation
 
    public CompletableFuture<Response> submitCF()
    {
-      return doSubmit(response -> response);
+      return doSubmit(response -> response, false);
    }
 
    public <T> CompletableFuture<T> submitCF(final Class<T> responseType)
    {
-      return doSubmit(getResponseTypeExtractor(responseType));
+      return doSubmit(getResponseTypeExtractor(responseType), true);
    }
 
    public <T> CompletableFuture<T> submitCF(final GenericType<T> responseType)
    {
-      return doSubmit(getGenericTypeExtractor(responseType));
+      return doSubmit(getGenericTypeExtractor(responseType), true);
    }
 
-   private <T> CompletableFuture<T> doSubmit(ResultExtractor<T> extractor) {
+   private <T> CompletableFuture<T> doSubmit(ResultExtractor<T> extractor, boolean buffered) {
       if (client.httpEngine() instanceof AsyncClientHttpEngine)
       {
-         return asyncSubmit(getCompletableFutureExtractorFunction(false),
+         return asyncSubmit(getCompletableFutureExtractorFunction(buffered),
                extractor,
                result -> CompletableFuture.completedFuture(result),
                ex -> {
