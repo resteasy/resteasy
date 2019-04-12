@@ -50,7 +50,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore
 public class RxCompletionStageAsyncClientAsyncTest {
 
    private static Client client;

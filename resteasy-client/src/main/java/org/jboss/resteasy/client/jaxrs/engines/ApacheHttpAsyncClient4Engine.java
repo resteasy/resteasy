@@ -8,8 +8,11 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -50,6 +53,7 @@ import org.apache.http.nio.util.SharedInputBuffer;
 import org.apache.http.nio.util.SimpleInputBuffer;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
@@ -187,6 +191,49 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
 
          Future<T> httpFuture = client.execute(requestProducer, responseConsumer, null);
          return responseConsumer.future(httpFuture);
+      }
+   }
+
+   @Override
+   public <T> CompletableFuture<T> submit(ClientInvocation request,
+         boolean buffered,
+         ResultExtractor<T> extractor,
+         ExecutorService executorService) {
+      if (buffered) {
+         final CompletableFuture<T> cf = new CompletableFuture<>();
+         final InvocationCallback<T> callback = new InvocationCallback<T>()
+         {
+            @Override
+            public void completed(T response)
+            {
+               cf.complete(response);
+            }
+
+            @Override
+            public void failed(Throwable throwable)
+            {
+               cf.completeExceptionally(throwable);
+            }
+         };
+         submit(request, buffered, callback, extractor);
+         return cf;
+      } else {
+         final Supplier<T> supplier = () -> {
+            try {
+               return submit(request, buffered, null, extractor).get();
+            } catch (InterruptedException|ExecutionException e) {
+               throw new RuntimeException(e);
+            }
+         };
+
+         if(executorService == null)
+         {
+            return CompletableFuture.supplyAsync(supplier);
+         }
+         else
+         {
+            return CompletableFuture.supplyAsync(supplier, executorService);
+         }
       }
    }
 
