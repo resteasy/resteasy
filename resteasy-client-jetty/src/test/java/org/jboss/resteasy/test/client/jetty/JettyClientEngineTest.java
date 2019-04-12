@@ -12,6 +12,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Random;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,11 +28,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.http.entity.ContentType;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -88,6 +91,59 @@ public class JettyClientEngineTest {
 
       assertEquals(200, response.getStatus());
       assertEquals("Success\n", response.readEntity(String.class));
+   }
+
+   @Test
+   public void testSimpleResponseRx() throws Exception {
+      server.setHandler(new AbstractHandler() {
+         @Override
+         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+            baseRequest.setHandled(true);
+            if (baseRequest.getHeader("User-Agent").contains("Apache")) {
+               response.setStatus(503);
+            } else if (!"abracadabra".equals(baseRequest.getHeader("Password"))) {
+               response.setStatus(403);
+            } else {
+               response.setStatus(200);
+               response.setContentType(ContentType.TEXT_PLAIN.getMimeType());
+               response.getWriter().println("Success");
+            }
+         }
+      });
+
+      final CompletionStage<Response> cs = client().target(baseUri()).request()
+         .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
+         .get();
+
+      Response response = cs.toCompletableFuture().get();
+      assertEquals(200, response.getStatus());
+      assertEquals("Success\n", response.readEntity(String.class));
+   }
+
+   @Test
+   public void testSimpleStringRx() throws Exception {
+      server.setHandler(new AbstractHandler() {
+         @Override
+         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+            baseRequest.setHandled(true);
+            if (baseRequest.getHeader("User-Agent").contains("Apache")) {
+               response.setStatus(503);
+            } else if (!"abracadabra".equals(baseRequest.getHeader("Password"))) {
+               response.setStatus(403);
+            } else {
+               response.setStatus(200);
+               response.setContentType(ContentType.TEXT_PLAIN.getMimeType());
+               response.getWriter().println("Success");
+            }
+         }
+      });
+
+      final CompletionStage<String> cs = client().target(baseUri()).request()
+         .header("Password", "abracadabra").rx(CompletionStageRxInvoker.class)
+         .get(String.class);
+
+      String response = cs.toCompletableFuture().get();
+      assertEquals("Success\n", response);
    }
 
    @Test
