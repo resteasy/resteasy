@@ -63,7 +63,7 @@
     </section>
 
     <section>
-        <title>Examples of using tracing feature</title>
+        <title>enabling the tracing feature</title>
         <para>By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to
             add the following dependency in your project:
             <programlisting>
