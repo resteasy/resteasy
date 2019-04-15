@@ -10,21 +10,22 @@
         <para>
             Tracing feature is a way for the users of the RESTEasy to understand what's going on internally in the
             container when a request is processed. It's different from the pure logging system or profiling feature,
-            which
-            provide more general information about the request and response.
+            which provides more general information about the request and response.
         </para>
         <para>
-            On the other hand, the tracing feature provides more internal states of the JAX-RS container. For example,
-            it could be able to show what filters a request is going through, or how long time a request is processed
-            and
-            other kinds of information.
+            The tracing feature provides more internal states of the JAX-RS container. For example, it could be able
+            to show what filters a request is going through, or how long time a request is processed and other kinds
+            of information.
+        </para>
+        <para>
+            Currently it doesn't have a standard or spec to define the tracing feature, so the tracing feature is
+            tightly coupled with the concrete JAX-RS implementation itself. In this chapter, let's check the design and
+            usage of the tracing feature.
         </para>
     </section>
     <section>
-        <title>Tracing Info Level</title>
-        <para>Currently it doesn't have a standard or spec to define the tracing feature, so the tracing feature is
-            tightly coupled with the concrete JAX-RS implementation itself. The RESTEasy tracing feature supports three
-            working modes:
+        <title>Tracing Info Mode</title>
+        <para>The RESTEasy tracing feature supports three logging mode:
         </para>
         <itemizedlist>
             <listitem>OFF</listitem>
@@ -32,54 +33,50 @@
             <listitem>ALL</listitem>
         </itemizedlist>
         <para>
-            ALL will enable the tracing feature. ON_DEMAND mode will give the control to client side: A client can send
-            a tracing request via HTTP header and get the tracing info back from response headers. OFF mode will disable
+            "ALL" will enable the tracing feature. "ON_DEMAND" mode will give the control to client side: A client can
+            send
+            a tracing request via HTTP header and get the tracing info back from response headers. "OFF" mode will
+            disable
             the tracing feature, and this is the default mode.
         </para>
     </section>
     <section>
-    <title>Tracing Info Type</title>
-    <para>On the other aspect, the tracing feature has different tracing logging levels. Here is the list of the
-        levels:
-    </para>
-    <itemizedlist>
-        <listitem>SUMMARY</listitem>
-        <listitem>TRACE</listitem>
-        <listitem>VERBOSE</listitem>
-    </itemizedlist>
-    <para>
-        The SUMMARY level will emit some brief tracing information. The TRACE level will produce more detailed
-        tracing information, and the VERBOSE level will generate extremely detailed tracing information. Because
-        there are no specs on these tracing levels yet, so the level of the tracing info is currently defined by
-        RESTEasy internally.
-    </para>
-    <para>
-        The tracing feature uses the JBoss Logging framework to output the trace log, so the jboss logger
-        configuration controls the final output of the tracing info. If you enable the tracing feature but disable
-        the jboss logger output, you still can't get the tracing info you want. In addition, the tracing logging
-        levels are mapped to jboss logger log levels, which means the jboss logger controls is the actual place to
-        control the tracing level threshold.
-    </para>
-    </section>
-
-    <section>
-        <title>enabling the tracing feature</title>
-        <para>By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to
-            add the following dependency in your project:
-            <programlisting>
-                <![CDATA[<dependency>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-tracing-api</artifactId>
-                        <version>1.0.0.Beta4-SNAPSHOT</version>
-                    </dependency>]]>
-            </programlisting>
+        <title>Tracing Info Level</title>
+        <para>The tracing info has three levels:
+        </para>
+        <itemizedlist>
+            <listitem>SUMMARY</listitem>
+            <listitem>TRACE</listitem>
+            <listitem>VERBOSE</listitem>
+        </itemizedlist>
+        <para>
+            The "SUMMARY" level will emit some brief tracing information. The "TRACE" level will produce more detailed
+            tracing information, and the "VERBOSE" level will generate extremely detailed tracing information.
         </para>
         <para>
-            The above dependency is provided by the `resteasy-extensions` project:
-
-            * [GitHub - resteasy/resteasy-extensions](https://github.com/resteasy/resteasy-extensions)
-
-            And then you can set the tracing mode and tracing level via the context-param parameters in your web
+            The tracing feature relies on the JBoss Logging framework to produce the tracing info, so the JBoss Logging
+            configuration actually controls the final output of the tracing info. So it is JBoss Logging framework
+            configuration
+            that controls the logging threshold of the tracing info.
+        </para>
+    </section>
+    <section>
+        <title>Basic Usage</title>
+        <para>By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to
+            add the following dependency in your project:
+            <programlisting><![CDATA[<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-tracing-api</artifactId>
+    <version>1.0.0.Beta4-SNAPSHOT</version>
+</dependency>]]></programlisting>
+        </para>
+        <para>
+            Because the tracing feature is an optional feature, the above dependency is provided by the
+            "resteasy-extensions" project: <ulink url="https://github.com/resteasy/resteasy-extensions">
+            resteasy-extensions</ulink>.
+        </para>
+        <para>
+            After including the dependency in your project, you can set the tracing mode and tracing level via the context-param parameters in your web
             project’s web.xml file. Here is an example of the setting:
             <programlisting>
                 <![CDATA[resteasy.server.tracing.type=ALL
@@ -246,5 +243,11 @@ ER_SUMMARY","text":"Request summary: 2 filters",
     </section>
     <section>
         <title>Tracing Example</title>
+        <para>
+            In the resteasy-example project, it contains a tracing-example to show the usages of tracing features, and
+            here is the link of the sample project: <ulink
+                url="https://github.com/resteasy/resteasy-examples/tree/master/tracing-example">RESTEasy Tracing
+            Example</ulink>. Please check the example to see the usages in action.
+        </para>
     </section>
 </chapter>
