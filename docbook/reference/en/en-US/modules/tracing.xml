@@ -61,7 +61,7 @@
         </para>
     </section>
     <section>
-        <title>Basic Usage</title>
+        <title>Basic Usages</title>
         <para>By default, the tracing feature is turned off. If you want to enable the tracing feature, you need to
             add the following dependency in your project:
             <programlisting><![CDATA[<dependency>
@@ -72,55 +72,89 @@
         </para>
         <para>
             Because the tracing feature is an optional feature, the above dependency is provided by the
-            "resteasy-extensions" project: <ulink url="https://github.com/resteasy/resteasy-extensions">
-            resteasy-extensions</ulink>.
+            <ulink url="https://github.com/resteasy/resteasy-extensions">resteasy-extensions</ulink>
+            project.
         </para>
         <para>
-            After including the dependency in your project, you can set the tracing mode and tracing level via the context-param parameters in your web
-            project’s web.xml file. Here is an example of the setting:
-            <programlisting>
-                <![CDATA[resteasy.server.tracing.type=ALL
-                    resteasy.server.tracing.threshold=SUMMARY]]>
-            </programlisting>
+            After including the dependency in your project, you can set the tracing mode and tracing level via the
+            context-param parameters in your web
+            project’s web.xml file. Here is the example:
+            <programlisting><![CDATA[<context-param>
+    <param-name>resteasy.server.tracing.type</param-name>
+    <param-value>ALL</param-value>
+    <param-name>resteasy.server.tracing.threshold</param-name>
+    <param-value>SUMMARY</param-value>
+</context-param>]]></programlisting>
         </para>
         <para>
-            With above setting, we have enabled the server tracing, and put the tracing level to summary. If the
-            underlying jboss logger’s output threadshold is higher than the tracing level setting, then the users
-            can start to get the tracing info from server side and from response headers. Here is some sample text
-            of the server side tracing log:
-            <programlisting>
-                <![CDATA[16:21:40,110 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=n/a accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a  [ ---- ms]
-                    16:21:40,110 TRACE [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START_HEADERS Other request headers: Connection=[Keep-Alive] Host=[localhost:8081] User-Agent=[Apache-HttpClient/4.5.4 (Java/1.8.0_201)]  [ ---- ms]
-                    16:21:40,114 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff PRE_MATCH_SUMMARY PreMatchRequest summary: 0 filters [ 0.04 ms]
-                    16:21:40,118 DEBUG [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff REQUEST_FILTER Filter by [io.weli.tracing.HttpMethodOverride @60353244] [ 0.02 ms]
-                    ...
-                    16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
-                    16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]]]>
-            </programlisting>
-            From the above tracing log output, we can see it belongs to two requests. One request id is 42946517 and
-            another is 3a62b5dd.
+            Besides the above configuration, we also need to make sure that the underlying JBoss Logger is configured
+            properly so it can output the tracing info as required. Here is an example of the "logging.properties":
+
+            <programlisting><![CDATA[# Additional logger names to configure (root logger is always configured)
+#loggers=org.foo.bar, org.foo.baz
+# Root logger level
+logger.level=ALL
+# Declare handlers for the root logger
+logger.handlers=CONSOLE, FILE
+# Declare handlers for additional loggers
+#logger.org.foo.bar.handlers=XXX, YYY
+# Console handler configuration
+handler.CONSOLE=org.jboss.logmanager.handlers.ConsoleHandler
+handler.CONSOLE.properties=autoFlush
+handler.CONSOLE.level=ALL
+handler.CONSOLE.autoFlush=true
+handler.CONSOLE.formatter=PATTERN
+# File handler configuration
+handler.FILE=org.jboss.logmanager.handlers.FileHandler
+handler.FILE.level=ALL
+handler.FILE.properties=autoFlush,fileName
+handler.FILE.autoFlush=true
+handler.FILE.fileName=/tmp/jboss.log
+handler.FILE.formatter=PATTERN
+# The log format pattern for both logs
+formatter.PATTERN=org.jboss.logmanager.formatters.PatternFormatter
+formatter.PATTERN.properties=pattern
+formatter.PATTERN.pattern=%d{HH:mm:ss,SSS} %-5p [%c{1}] %m%n]]></programlisting>
+
+            In above setting, we have set the logger level to "ALL", and output log file to "/tmp/jboss.log". In this
+            case, we can make sure that we get all the tracing info.
+        </para>
+        <para>
+            After enabling the tracing feature as shown above, we should get the tracing info output like following:
+            <programlisting><![CDATA[16:21:40,110 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=n/a accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a  [ ---- ms]
+16:21:40,110 TRACE [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START_HEADERS Other request headers: Connection=[Keep-Alive] Host=[localhost:8081] User-Agent=[Apache-HttpClient/4.5.4 (Java/1.8.0_201)]  [ ---- ms]
+16:21:40,114 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff PRE_MATCH_SUMMARY PreMatchRequest summary: 0 filters [ 0.04 ms]
+16:21:40,118 DEBUG [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff REQUEST_FILTER Filter by [io.weli.tracing.HttpMethodOverride @60353244] [ 0.02 ms]
+...
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]]]></programlisting>
+            From the above tracing log output, we can many aspects on how does RESTEasy deal with request, and it
+            exposes a lot of internal details on how RESTEasy container works. Above is the server side tracing info
+            output. In next section let's see how do we fetch the tracing info from client side.
         </para>
     </section>
     <section>
-        <title>Client side tracing info</title>
+        <title>Client Side Tracing Info</title>
         <para>
-            For client side, here is some sample text in response header:
+            From client side, we can send request to the server side as usual, and the if the server side is configured
+            properly to produce tracing info, then the info will also be sent back to client side via response headers.
+            For
+            example, we can send request to the server like this:
 
-            <programlisting>
-                <![CDATA[$ curl -i http://localhost:8081/foo
-                HTTP/1.1 200 OK
-                X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.57 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @1cbf0b08] is skipped
-                ...
-                Date: Wed, 27 Mar 2019 09:39:50 GMT
-                Connection: keep-alive
-                X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa START       [ ---- /  ---- ms |  ---- %] baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a
-                ...
-                X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped
-                ```]]>
-            </programlisting>
-            From above client side output, we can see there are `X-RESTEasy-Tracing-X` info in response headers, and
-            they are numbered in order.
+            <programlisting><![CDATA[$ curl -i http://localhost:8081/foo]]></programlisting>
 
+            And then we can get the tracing info from the response header like the following:
+
+            <programlisting><![CDATA[HTTP/1.1 200 OK
+X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.57 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @1cbf0b08] is skipped
+...
+Date: Wed, 27 Mar 2019 09:39:50 GMT
+Connection: keep-alive
+X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa START       [ ---- /  ---- ms |  ---- %] baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a
+...
+X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped]]></programlisting>
+
+            From above output, we can see the tracing info is in response headers, and it's marked in sequence as in the form of "X-RESTEasy-Tracing-nnn".
         </para>
     </section>
     <section>
