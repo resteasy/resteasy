@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 import javax.annotation.Priority;
@@ -43,7 +43,7 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
       if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
          Object entity = responseContext.getEntity();
          if (entity != null && entity instanceof String) {
-            ArrayList contentTypes = (ArrayList)responseContext.getHeaders().get("Content-Type");
+            List<Object> contentTypes = responseContext.getHeaders().get("Content-Type");
             if (contentTypes != null  && containsHtmlText(contentTypes)) {
                String escapedMsg = escapeXml((String) entity);
                responseContext.setEntity(escapedMsg);
@@ -88,8 +88,8 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
       return sb.toString();
    }
 
-   private boolean containsHtmlText(ArrayList<Object> list) {
-      for (Object o : list) {
+   private boolean containsHtmlText(List<Object> list) {
+      for (Object o :list) {
          if (o instanceof MediaType && MediaType.TEXT_HTML_TYPE.isCompatible((MediaType) o)) {
             return true;
          }
