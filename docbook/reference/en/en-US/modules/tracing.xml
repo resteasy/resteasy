@@ -67,7 +67,6 @@
             <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-tracing-api</artifactId>
-    <version>1.0.0.Beta4-SNAPSHOT</version>
 </dependency>]]></programlisting>
         </para>
         <para>
@@ -154,67 +153,40 @@ X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncH
 ...
 X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped]]></programlisting>
 
-            From above output, we can see the tracing info is in response headers, and it's marked in sequence as in the form of "X-RESTEasy-Tracing-nnn".
+            From above output, we can see the tracing info is in response headers, and it's marked in sequence as in the
+            form of "X-RESTEasy-Tracing-nnn".
         </para>
     </section>
     <section>
-        <title>Json formatted response</title>
-        <para>The Resteasy Tracing Feature has the ability to let tracing info to be returned in JSON format. To use
-            this feature, you need to add the tracing-api as dependency firstly:
-            <programlisting>
-                <![CDATA[
-<dependency>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-tracing-api</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-</dependency>
-]]>
-            </programlisting>
-        </para>
-        <para>
-            After including the above basic package, then we need to choose a JSON provider for tracing module to
+        <title>Json Formatted Response</title>
+        <para>The tracing log can be returned to client side in JSON format. To use
+            this feature, we need to choose a JSON provider for tracing module to
             generate JSON formatted info. There are two JSON providers you can choose from and they both support the
-            tracing feature. One is the jackson2 provider:
-            <programlisting>
-                <![CDATA[
-<dependency>
+            JSON data marshalling. The first choice is to use the jackson2 provider:
+            <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jackson2-provider</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-</dependency>
-]]>
-            </programlisting>
+</dependency>]]></programlisting>
         </para>
         <para>
-            The other option is to use the json-binding provider:
-            <programlisting>
-                <![CDATA[
-<dependency>
+            The second choice is to use the json-binding provider:
+
+            <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-json-binding-provider</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-</dependency>
-                ]]>
-            </programlisting>
+</dependency>]]></programlisting>
         </para>
         <para>
-            After including either of the above module, now we can request the resource server for JSON formatted data.
-            The method is to send a format request header:
-            <programlisting>
-                <![CDATA[
-X-RESTEasy-Tracing-Accept-Format: JSON
-]]>
-            </programlisting>
-        </para>
-        <para>
+            After including either of the above module, we can send request to server to get the JSON formatted tracing
+            info.
             Here is a request example:
-            <programlisting>
-                <![CDATA[
-$ curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/foo
-]]></programlisting>
-        </para>
-        <para>
-            And the response will be like this:
+
+            <programlisting><![CDATA[
+$ curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/foo]]></programlisting>
+
+            Please note we have added "X-RESTEasy-Tracing-Accept-Format: JSON" into request header, in this way we are
+            requesting the json formatted tracing info from server, and the tracing info in response header is like the
+            following:
 
             <programlisting>
                 <![CDATA[
@@ -238,10 +210,9 @@ ER_SUMMARY","text":"Request summary: 2 filters",
 ]]></programlisting>
         </para>
         <para>
-            After reformat the above response, we can see the response structure is like this:
+            After reformat the above json data, we can see the response structure is like this:
 
-            <programlisting><![CDATA[
-[
+            <programlisting><![CDATA[[
 {
 “duration”: 0,
 “event”: “START”,
@@ -269,19 +240,15 @@ ER_SUMMARY","text":"Request summary: 2 filters",
 ...
 ]]]>
             </programlisting>
-            The timestamp is the event start time, and the other fields are quite straightforward. The JSON formatted
-            data should be more suitable to be parsed by code. This feature is currently just in 4.0.0-SNAPSHOT, and
-            haven’t been officially released yet.
-
         </para>
     </section>
     <section>
         <title>Tracing Example</title>
         <para>
-            In the resteasy-example project, it contains a tracing-example to show the usages of tracing features, and
-            here is the link of the sample project: <ulink
+            In the "resteasy-example" project, it contains a <ulink
                 url="https://github.com/resteasy/resteasy-examples/tree/master/tracing-example">RESTEasy Tracing
-            Example</ulink>. Please check the example to see the usages in action.
+            Example
+        </ulink> to show the usages of tracing features. Please check the example to see the usages in action.
         </para>
     </section>
 </chapter>
