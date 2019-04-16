@@ -30,7 +30,7 @@
     <dependencies>
         <module name="javax.ws.rs.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
-        <module name="org.jboss.resteasy.resteasy-reactive-context"/>
+        <module name="org.jboss.resteasy.resteasy-context-propagation"/>
         <module name="org.reactivestreams"/>
     </dependencies>
 </module>

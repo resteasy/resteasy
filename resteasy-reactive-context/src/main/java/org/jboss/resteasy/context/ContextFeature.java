@@ -1,19 +1,17 @@
-package org.resteasy.reactivecontext;
+package org.jboss.resteasy.context;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
+import org.eclipse.microprofile.context.spi.ContextManagerProvider;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.Dispatcher;
-
-import io.reactiverse.reactivecontexts.core.Context;
 
 @Provider
 public class ContextFeature implements Feature
 {
-
    @Override
    public boolean configure(FeatureContext context)
    {
@@ -25,7 +23,8 @@ public class ContextFeature implements Feature
          // this can happen, but it means we're not able to find a deployment
          return false;
       }
-      dispatcher.getDefaultContextObjects().put(Context.class, new Context());
+      // Make sure we have context propagation for this class loader
+      ContextManagerProvider.instance().getContextManager();
       return true;
    }
 
