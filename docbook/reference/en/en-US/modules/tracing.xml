@@ -179,67 +179,56 @@ X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncH
         <para>
             After including either of the above module, we can send request to server to get the JSON formatted tracing
             info.
-            Here is a request example:
+            Here is a request example(the example is provided at last section of this chapter):
 
             <programlisting><![CDATA[
-$ curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/foo]]></programlisting>
+$ curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/type]]></programlisting>
 
-            Please note we have added "X-RESTEasy-Tracing-Accept-Format: JSON" into request header, in this way we are
+            In the above curl command, we have added "X-RESTEasy-Tracing-Accept-Format: JSON" into request header, in
+            this way we are
             requesting the json formatted tracing info from server, and the tracing info in response header is like the
             following:
 
-            <programlisting>
-                <![CDATA[
-X-RESTEasy-Tracing-000:
-[{"duration":0,"event":"START","text":"baseUri=[http://localhost:8081/]
-requestUri=[http://localhost:8081/foo] method=[GET] authScheme=[n/a] accept=*/*
-accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a
-content-length=n/a
-","timestamp":46600869878437},{"duration":0,"event":"START_HEADERS","text":"Other
-request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.55.1]
-X-RESTEasy-Tracing-Accept-Format=[JSON]
-","timestamp":46600870751617},{"duration":18336,"event":"PRE_MATCH_SUMMARY","tex
-t":"PreMatchRequest summary: 0
-filters","timestamp":46600872781491},{"duration":20724,"event":"REQUEST_FILTER",
-"text":"Filter by [io.weli.tracing.HttpMethodOverride
-@585b0020]","timestamp":46600876716467},{"duration":19414,"event":"REQUEST_FILTE
-R","text":"Filter by [org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter
-@3779d352]","timestamp":46600877017341},{"duration":657192,"event":"REQUEST_FILT
-ER_SUMMARY","text":"Request summary: 2 filters",
-...
-]]></programlisting>
+            <programlisting><![CDATA[
+X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":195286694509932,"text":"baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"},{"event":"START_HEADERS","duration":0,"timestamp":195286695053606,"text":"Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}...{"event":"FINISHED","duration":0,"timestamp":195286729758836,"text":"Response status: 200","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}]]]></programlisting>
         </para>
         <para>
-            After reformat the above json data, we can see the response structure is like this:
+            The above text is the raw output from response, and we can format it to make it readable:
 
-            <programlisting><![CDATA[[
-{
-“duration”: 0,
-“event”: “START”,
-“text”: “baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/foo] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a “,
-“timestamp”: 46600869878437
-},
-{
-“duration”: 0,
-“event”: “START_HEADERS”,
-“text”: “Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.55.1] X-RESTEasy-Tracing-Accept-Format=[JSON] “,
-“timestamp”: 46600870751617
-},
-{
-“duration”: 18336,
-“event”: “PRE_MATCH_SUMMARY”,
-“text”: “PreMatchRequest summary: 0 filters”,
-“timestamp”: 46600872781491
-},
-{
-“duration”: 20724,
-“event”: “REQUEST_FILTER”,
-“text”: “Filter by [io.weli.tracing.HttpMethodOverride @585b0020]”,
-“timestamp”: 46600876716467
-},
-...
-]]]>
-            </programlisting>
+            <programlisting><![CDATA[[{
+    "X-RESTEasy-Tracing-000": [
+        {
+            "event": "START",
+            "duration": 0,
+            "timestamp": 195286694509932,
+            "text": "baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "START_HEADERS",
+            "duration": 0,
+            "timestamp": 195286695053606,
+            "text": "Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "PRE_MATCH_SUMMARY",
+            "duration": 14563,
+            "timestamp": 195286697637157,
+            "text": "PreMatchRequest summary: 0 filters",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+ ...
+        {
+            "event": "FINISHED",
+            "duration": 0,
+            "timestamp": 195286729758836,
+            "text": "Response status: 200",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        }
+    ]
+}]]]></programlisting>
+            From above we can see the tracing info is returned as JSON text.
         </para>
     </section>
     <section>
