@@ -134,6 +134,7 @@ public class ClientInvocation implements Invocation
       this.uri = clientInvocation.uri;
       this.chunked = clientInvocation.chunked;
       this.tracingLogger = clientInvocation.tracingLogger;
+      this.clientInvoker = clientInvocation.clientInvoker;
    }
 
    /**
