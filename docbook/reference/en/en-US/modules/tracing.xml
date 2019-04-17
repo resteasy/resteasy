@@ -127,9 +127,44 @@ formatter.PATTERN.pattern=%d{HH:mm:ss,SSS} %-5p [%c{1}] %m%n]]></programlisting>
 ...
 16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
 16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]]]></programlisting>
-            From the above tracing log output, we can many aspects on how does RESTEasy deal with request, and it
-            exposes a lot of internal details on how RESTEasy container works. Above is the server side tracing info
-            output. In next section let's see how do we fetch the tracing info from client side.
+
+            From the above tracing log output shown above, we can see the the entry of tracing log contains several
+            parts:
+
+            <itemizedlist>
+                <listitem>
+                    <para>Level Of The Log Entry</para>
+                    <para>We can see the log entries have different log levels, such as "TRACE",
+                        "INFO", "DEBUG". The tracing feature maps its own tracing info levels to the JBoss Logger output
+                        levels like this.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>The Request Scope Id</para>
+                    <para>
+                        We can see the request id like:
+                        <programlisting><![CDATA[
+org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff]]></programlisting>
+                        So we can know which request the log entry belongs to.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>The Type Of The Tracing Log</para>
+                    <para>tracing log entries are divided into multiple categories, such as
+                        "START_HEADERS", "REQUEST_FILTER", "FINISHED", etc.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The Detail Of The Log Entry
+                    </para>
+                    <para>The last part of a log entry is the detail message of this
+                        entry.
+                    </para>
+                </listitem>
+            </itemizedlist>
+
+            In next section let's see how do we fetch the tracing info from client side.
         </para>
     </section>
     <section>
