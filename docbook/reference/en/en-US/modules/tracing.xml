@@ -128,7 +128,7 @@ formatter.PATTERN.pattern=%d{HH:mm:ss,SSS} %-5p [%c{1}] %m%n]]></programlisting>
 16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
 16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]]]></programlisting>
 
-            From the above tracing log output shown above, we can see the the entry of tracing log contains several
+            From the above tracing log output shown above, we can see that the entry of tracing log contains several
             parts:
 
             <itemizedlist>
@@ -170,7 +170,7 @@ org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff]]></
     <section>
         <title>Client Side Tracing Info</title>
         <para>
-            From client side, we can send request to the server side as usual, and the if the server side is configured
+            From client side, we can send request to the server side as usual, and if the server side is configured
             properly to produce tracing info, then the info will also be sent back to client side via response headers.
             For
             example, we can send request to the server like this:
@@ -264,6 +264,183 @@ X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":1952866945099
     ]
 }]]]></programlisting>
             From above we can see the tracing info is returned as JSON text.
+        </para>
+    </section>
+    <section>
+        <title>List Of Tracing Events</title>
+        <para>
+            The tracing events are defined in <ulink url="https://github.com/resteasy/resteasy-extensions/blob/master/tracing/src/main/java/org/jboss/resteasy/tracing/api/RESTEasyServerTracingEvent.java">RESTEasyServerTracingEvent</ulink>. Here is a complete list of the tracing events and its descriptions:
+
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        DISPATCH_RESPONSE
+                    </para>
+                    <para>
+                        Resource method invocation results to JAX-RS Response.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        EXCEPTION_MAPPING
+                    </para>
+                    <para>
+                        ExceptionMapper invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        FINISHED
+                    </para>
+                    <para>
+                        Request processing finished.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_LOCATOR
+                    </para>
+                    <para>
+                        Matched sub-resource locator method.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_PATH_FIND
+                    </para>
+                    <para>
+                        Matching path pattern.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_PATH_NOT_MATCHED
+                    </para>
+                    <para>
+                        Path pattern not matched.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_PATH_SELECTED
+                    </para>
+                    <para>
+                        Path pattern matched/selected.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_PATH_SKIPPED
+                    </para>
+                    <para>
+                        Path pattern skipped as higher-priority pattern has been selected already.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_RESOURCE
+                    </para>
+                    <para>
+                        Matched resource instance.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_RESOURCE_METHOD
+                    </para>
+                    <para>
+                        Matched resource method.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_RUNTIME_RESOURCE
+                    </para>
+                    <para>
+                        Matched runtime resource.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MATCH_SUMMARY
+                    </para>
+                    <para>
+                        Matching summary.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        METHOD_INVOKE
+                    </para>
+                    <para>
+                        Resource method invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        PRE_MATCH
+                    </para>
+                    <para>
+                        RESTEasy HttpRequestPreprocessor invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        PRE_MATCH_SUMMARY
+                    </para>
+                    <para>
+                        RESTEasy HttpRequestPreprocessor invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        REQUEST_FILTER
+                    </para>
+                    <para>
+                        ContainerRequestFilter invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        REQUEST_FILTER_SUMMARY
+                    </para>
+                    <para>
+                        ContainerRequestFilter invocation summary.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        RESPONSE_FILTER
+                    </para>
+                    <para>
+                        ContainerResponseFilter invoked.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        RESPONSE_FILTER_SUMMARY
+                    </para>
+                    <para>
+                        ContainerResponseFilter invocation summary.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        START
+                    </para>
+                    <para>
+                        Request processing started.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        START_HEADERS
+                    </para>
+                    <para>
+                        All HTTP request headers.
+                    </para>
+                </listitem>
+            </itemizedlist>
         </para>
     </section>
     <section>
