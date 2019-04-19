@@ -33,7 +33,7 @@
         <version.surefire.plugin>2.19.1</version.surefire.plugin>
     </properties>
 
-    <url>http://rest-easy.org</url>
+    <url>https://rest-easy.org</url>
 
     <licenses>
         <license>
@@ -46,7 +46,7 @@
     <scm>
         <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
-        <url>http://github.com/resteasy/Resteasy/tree/master/</url>
+        <url>https://github.com/resteasy/Resteasy/tree/master/</url>
     </scm>
 
     <distributionManagement>
@@ -59,7 +59,7 @@
 
     <issueManagement>
         <system>JIRA</system>
-        <url>http://jira.jboss.com/jira/browse/RESTEASY</url>
+        <url>https://jira.jboss.com/jira/browse/RESTEASY</url>
     </issueManagement>
 
     <developers>
@@ -67,7 +67,7 @@
             <id>rmcdonough</id>
             <name>Ryan J. McDonough</name>
             <email>ryan@damnhandy.com</email>
-            <url>http://damnhandy.com</url>
+            <url>https://damnhandy.com</url>
             <roles>
                 <role>project-owner</role>
             </roles>
@@ -238,7 +238,7 @@
     <repositories>
         <repository>
             <id>jboss</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
     <pluginRepositories>

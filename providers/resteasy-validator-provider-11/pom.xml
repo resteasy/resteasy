@@ -10,7 +10,7 @@
   <artifactId>resteasy-validator-provider-11</artifactId>
   <packaging>jar</packaging>
   <name>RESTEasy Validator Provider BV 1.1</name>
-  <url>http://maven.apache.org</url>
+  <url>https://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
