@@ -100,7 +100,6 @@
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
@@ -155,7 +154,6 @@
                 <module>resteasy-jaxrs-testsuite</module>
                 <module>resteasy-client</module>
                 <module>resteasy-client-jetty</module>
-                <module>resteasy-client-microprofile</module>  
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>

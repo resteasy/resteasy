@@ -9,6 +9,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.client.proxy.resource.Params;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyBeanParam;
@@ -31,6 +32,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.MalformedURLException;
@@ -118,10 +120,22 @@ public class RESTEasyParamBasicTest {
               "formParam0",
               "matrixParam0");
       Assert.assertEquals("queryParam0 headerParam0 cookieParam0 pathParam0 formParam0 matrixParam0", response);
+   }
+
+   /**
+    * @tpTestDetails Basic check of new query parameters, matrix parameters, header parameters, cookie parameters and form parameters in MP clients
+    *                Test checks that RESTEasy can inject correct values to method attributes in MP clients
+    *                This test uses new annotations without any annotation value in the proxy, however the annotation values are used in the server side resource.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   @Category(ExpectedFailing.class)
+   public void microprofileClientAllParamsTest() throws MalformedURLException {
+      final String url = generateURL("");
 
       //AllAtOnce with MicroProfile client
       ProxyParameterAnotations mpRestClient = RestClientBuilder.newBuilder().baseUrl(new URL(url)).build(ProxyParameterAnotations.class);
-      response = mpRestClient.executeAllParams(
+      String response = mpRestClient.executeAllParams(
               "queryParam0",
               "headerParam0",
               "cookieParam0",
@@ -132,13 +146,13 @@ public class RESTEasyParamBasicTest {
    }
 
    /**
-    * @tpTestDetails Basic check of the Resteasy Microprofile client with BeanParam.
-    *                Test checks that Resteasy Microprofile client can inject correct values when BeanParam is used.
+    * @tpTestDetails Basic check of the Resteasy proxy client with BeanParam.
+    *                Test checks that Resteasy proxy client can inject correct values when BeanParam is used.
     *                This test uses new annotation only without any annotation value.
     * @tpSince RESTEasy 3.7
     */
    @Test
-   public void testMicroprofileBeanParam() throws MalformedURLException {
+   public void testProxyBeanParam() throws MalformedURLException {
       final String url = generateURL("");
       String response;
       Params params = new Params();
@@ -149,6 +163,23 @@ public class RESTEasyParamBasicTest {
      ProxyBeanParam proxy = new ResteasyClientBuilder().build().target(url).proxy(ProxyBeanParam.class);
      response = proxy.getAll(params, "param2", "queryParam1");
      Assert.assertEquals("test_param2_param3_queryParam_queryParam1", response);
+   }
+
+   /**
+    * @tpTestDetails Basic check of the Resteasy Microprofile client with BeanParam.
+    *                Test checks that Resteasy Microprofile client can inject correct values when BeanParam is used.
+    *                This test uses new annotation only without any annotation value.
+    * @tpSince RESTEasy 3.7
+    */
+   @Test
+   @Category(ExpectedFailing.class) //https://github.com/smallrye/smallrye-rest-client/issues/69
+   public void testMicroprofileBeanParam() throws MalformedURLException {
+      final String url = generateURL("");
+      String response;
+      Params params = new Params();
+      params.setP1("test");
+      params.setP3("param3");
+      params.setQ1("queryParam");
 
      ProxyBeanParam mpRestClient = RestClientBuilder.newBuilder().baseUrl(new URL(url)).build(ProxyBeanParam.class);
      response = mpRestClient.getAll(params, "param2", "queryParam1");

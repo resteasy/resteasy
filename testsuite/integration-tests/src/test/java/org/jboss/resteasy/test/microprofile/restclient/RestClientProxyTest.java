@@ -13,7 +13,6 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.client.microprofile.MicroprofileClientBuilderResolver;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,8 +55,6 @@ public class RestClientProxyTest
    public void testGetClient() throws Exception
    {
       RestClientBuilder builder = RestClientBuilder.newBuilder();
-      RestClientBuilder resteasyBuilder = MicroprofileClientBuilderResolver.instance().newBuilder();
-      assertEquals(resteasyBuilder.getClass(), builder.getClass());
       HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
 
       assertNotNull(client);

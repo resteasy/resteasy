@@ -233,13 +233,6 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client-microprofile</artifactId>
-            <version>${version.resteasy.testsuite}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
@@ -257,6 +250,16 @@
             <artifactId>resteasy-jackson-provider</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-rest-client</artifactId>
         </dependency>
 
         <dependency>

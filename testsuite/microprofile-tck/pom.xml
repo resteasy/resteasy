@@ -34,7 +34,7 @@
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-client-microprofile</artifactId>
+      <artifactId>resteasy-client</artifactId>
       <scope>test</scope>
       <version>${project.version}</version>
     </dependency>
@@ -46,6 +46,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.smallrye</groupId>
+      <artifactId>smallrye-rest-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Config Implementation -->
 
     <dependency>
@@ -55,8 +61,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.wildfly</groupId>
-      <artifactId>wildfly-microprofile-config-smallrye</artifactId>
+      <groupId>io.smallrye</groupId>
+      <artifactId>smallrye-config</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -150,6 +156,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
+              <forkMode>always</forkMode>
               <dependenciesToScan>
                 <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
               </dependenciesToScan>
@@ -159,7 +166,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 </project>
