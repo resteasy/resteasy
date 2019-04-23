@@ -117,16 +117,16 @@ public class JsonBindingDebugLoggingTest {
       ));
 
       Assert.assertThat("Application Exception should be logged",
-              applicationExcpetionLog.count(), is(2));
+              applicationExcpetionLog.count(), is(1));
       Assert.assertThat("RESTEasy exception should be logged",
-              resteasyExceptionLog.count(), is(1));
+              resteasyExceptionLog.count(), is(0));
       Assert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(2));
+              yassonExceptionLog.count(), is(1));
       Assert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
       Assert.assertThat("There are not only 2 error logs in server",
-              errorStringLog.count(), is(2));
+              errorStringLog.count(), is(1));
    }
 
 
