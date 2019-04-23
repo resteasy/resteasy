@@ -335,6 +335,7 @@ public class SseEventSourceImpl implements SseEventSource
                if (eventInput == null && !alwaysReconnect)
                {
                   internalClose();
+                  return;
                }
             }
             else
@@ -357,16 +358,17 @@ public class SseEventSourceImpl implements SseEventSource
                   consumer.accept(ex);
                });
                reconnect(localReconnectDelay);
-               return;
             }
             else
             {
                onUnrecoverableError(ex);
             }
+            return;
          }
          catch (Throwable e)
          {
             onUnrecoverableError(e);
+            return;
          }
 
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
