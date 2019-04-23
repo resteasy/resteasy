@@ -319,7 +319,6 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          SseEventInputImpl eventInput = null;
-         long delay = reconnectDelay;
          try
          {
             final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
@@ -341,6 +340,7 @@ public class SseEventSourceImpl implements SseEventSource
                if (eventInput == null && !alwaysReconnect)
                {
                   internalClose();
+                  return;
                }
             }
             else
@@ -358,26 +358,29 @@ public class SseEventSourceImpl implements SseEventSource
             {
                onConnection();
                Date requestTime = new Date();
-               delay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+               long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
                onErrorConsumers.forEach(consumer -> {
                   consumer.accept(ex);
                });
+               reconnect(localReconnectDelay);
             }
             else
             {
                onUnrecoverableError(ex);
             }
+            return;
          }
          catch (Throwable e)
          {
             onUnrecoverableError(e);
+            return;
          }
 
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput == null || eventInput.isClosed())
             {
-               reconnect(delay);
+               reconnect(reconnectDelay);
                break;
             }
             try
@@ -387,13 +390,6 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
-                  if (event.isReconnectDelaySet())
-                  {
-                     delay = event.getReconnectDelay();
-                  }
-                  onEventConsumers.forEach(consumer -> {
-                     consumer.accept(event);
-                  });
                }
                //event sink closed
                else if (!alwaysReconnect)
@@ -404,7 +400,7 @@ public class SseEventSourceImpl implements SseEventSource
             }
             catch (IOException e)
             {
-               reconnect(delay);
+               reconnect(reconnectDelay);
                break;
             }
          }
@@ -439,15 +435,17 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void onEvent(final InboundSseEvent event)
       {
-         if (event == null)
-         {
-            return;
-         }
          if (event.getId() != null)
          {
             lastEventId = event.getId();
          }
-
+         if (event.isReconnectDelaySet())
+         {
+            reconnectDelay = event.getReconnectDelay();
+         }
+         onEventConsumers.forEach(consumer -> {
+            consumer.accept(event);
+         });
       }
 
       private Invocation.Builder buildRequest(MediaType... mediaTypes)
