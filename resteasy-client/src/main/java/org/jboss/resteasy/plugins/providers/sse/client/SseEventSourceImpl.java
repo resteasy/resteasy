@@ -428,10 +428,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void onEvent(final InboundSseEvent event)
       {
-         if (event == null)
-         {
-            return;
-         }
          if (event.getId() != null)
          {
             lastEventId = event.getId();
