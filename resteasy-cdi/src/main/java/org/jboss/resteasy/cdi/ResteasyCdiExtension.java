@@ -1,11 +1,8 @@
 package org.jboss.resteasy.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
+import org.jboss.resteasy.util.GetRestful;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
@@ -25,10 +22,13 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.cdi.i18n.LogMessages;
-import org.jboss.resteasy.cdi.i18n.Messages;
-import org.jboss.resteasy.util.GetRestful;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This Extension handles default scopes for discovered JAX-RS components. It
@@ -120,7 +120,8 @@ public class ResteasyCdiExtension implements Extension
       if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && annotatedType.isAnnotationPresent(Provider.class))
+               && annotatedType.isAnnotationPresent(Provider.class)
+               && !isFinalClass(annotatedType.getJavaClass()))
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
          event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
@@ -261,4 +262,16 @@ public class ResteasyCdiExtension implements Extension
    {
       return resources;
    }
+
+   /**
+    * Check for select case of unproxyable bean type.
+    * (see CDI 2.0 spec, section 3.11)
+    * @param clazz
+    * @return
+    */
+   private boolean isFinalClass(Class clazz) {
+      // Unproxyable bean type: classes which are declared final
+      return Modifier.isFinal(clazz.getModifiers());
+   }
+
 }
