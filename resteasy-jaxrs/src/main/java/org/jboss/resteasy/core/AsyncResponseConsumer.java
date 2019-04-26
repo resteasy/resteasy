@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -237,7 +238,13 @@ public abstract class AsyncResponseConsumer
          }
          else
          {
-            internalResume(u, x -> complete(u));
+            // since this is called by the CompletionStage API, we want to unwrap its exceptions in order for the
+            // exception mappers to function
+            if(u instanceof CompletionException) {
+                u = u.getCause();
+            }
+            Throwable throwable = u;
+            internalResume(throwable, x -> complete(throwable));
          }
       }
 
