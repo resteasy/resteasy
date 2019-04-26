@@ -183,6 +183,27 @@ public class CompletionStageResponseTest {
    }
 
    /**
+    * @tpTestDetails Resource method throws a WebApplicationException in a CompletionStage
+    * pipeline
+    * @tpSince RESTEasy 3.5
+    */
+   @Test
+   public void testExceptionDelayWrapped() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/exception/delay-wrapped")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(444, response.getStatus());
+      Assert.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
+
+      // make sure the completion callback was called with with an error
+      request = client.target(generateURL("/callback-called-with-error")).request();
+      response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
+
+   /**
     * @tpTestDetails Resource method return type is CompletionStage<String>, but it
     * throws a RuntimeException without creating a CompletionStage.
     * @tpSince RESTEasy 3.5
