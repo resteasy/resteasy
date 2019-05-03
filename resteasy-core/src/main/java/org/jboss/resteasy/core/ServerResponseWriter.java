@@ -61,9 +61,9 @@ public class ServerResponseWriter
       @Override
       public String[] value() {
          return new String[]{"*", "*"};
-      }    
+      }
    };
-	   
+
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
