@@ -8,6 +8,7 @@ import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
 import java.io.ByteArrayInputStream;
@@ -233,7 +234,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return DataSource.class.isAssignableFrom(type);
+      return DataSource.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    /**

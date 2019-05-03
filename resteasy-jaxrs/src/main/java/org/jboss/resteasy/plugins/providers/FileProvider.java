@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
 import javax.ws.rs.Consumes;
@@ -109,7 +110,7 @@ public class FileProvider implements MessageBodyReader<File>,
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType)
    {
-      return File.class.isAssignableFrom(type); // catch subtypes
+      return File.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType); // catch subtypes
    }
 
    public long getSize(File o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
