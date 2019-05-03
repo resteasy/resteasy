@@ -89,7 +89,7 @@
         <version.io.smallrye.context-propagation>1.0.1</version.io.smallrye.context-propagation>
         <version.io.reactivex.rxjava2-rxjava>2.2.5</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
-        <version.org.hibernate.validator>6.0.14.Final</version.org.hibernate.validator>
+        <version.org.hibernate.validator>6.0.16.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
