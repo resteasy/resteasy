@@ -46,19 +46,6 @@ import java.util.function.Consumer;
  */
 public class ServerResponseWriter
 {
-   private static Produces WILDCARD_PRODUCES = new Produces() {
-
-      @Override
-      public Class<? extends Annotation> annotationType() {
-         return Produces.class;
-      }
-
-      @Override
-      public String[] value() {
-         return new String[]{"*", "*"};
-      }
-   };
-
    @FunctionalInterface
    public interface RunnableWithIOException {
       void run() throws IOException;
