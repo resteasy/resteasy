@@ -64,6 +64,19 @@ public class ServerResponseWriter
       void run() throws IOException;
    }
 
+   private static Produces WILDCARD_PRODUCES = new Produces() {
+
+      @Override
+      public Class<? extends Annotation> annotationType() {
+         return Produces.class;
+      }
+
+      @Override
+      public String[] value() {
+         return new String[]{"*", "*"};
+      }
+   };
+
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response,
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
