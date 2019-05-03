@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.ReadFromStream;
 
@@ -40,7 +41,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.isArray() && type.getComponentType().equals(byte.class);
+      return type.isArray() && type.getComponentType().equals(byte.class) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(byte[] bytes, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

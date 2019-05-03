@@ -14,6 +14,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.util.MediaTypeHelper;
+
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  */
@@ -26,7 +28,7 @@ public class DefaultBooleanWriter implements MessageBodyWriter<Boolean>
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return !String.class.equals(type) && !type.isArray();
+      return !String.class.equals(type) && !type.isArray() && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    @Override

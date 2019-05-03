@@ -16,6 +16,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
@@ -39,7 +40,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return InputStream.class.isAssignableFrom(type);
+      return InputStream.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
