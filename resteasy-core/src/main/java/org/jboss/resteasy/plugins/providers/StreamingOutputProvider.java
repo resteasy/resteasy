@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,7 +23,7 @@ public class StreamingOutputProvider implements MessageBodyWriter<StreamingOutpu
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return StreamingOutput.class.isAssignableFrom(type);
+      return StreamingOutput.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(StreamingOutput streamingOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

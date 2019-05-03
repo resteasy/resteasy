@@ -5,6 +5,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.util.MediaTypeHelper;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,7 +24,7 @@ public class FileRangeWriter implements MessageBodyWriter<FileRange>
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.equals(FileRange.class);
+      return type.equals(FileRange.class) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    @Override
