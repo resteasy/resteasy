@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
 import javax.ws.rs.Consumes;
@@ -44,7 +45,7 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return String.class.equals(type);
+      return String.class.equals(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    public long getSize(String o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

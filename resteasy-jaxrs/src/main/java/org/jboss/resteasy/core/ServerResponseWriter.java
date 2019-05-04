@@ -45,6 +45,19 @@ import java.util.function.Consumer;
  */
 public class ServerResponseWriter
 {
+   private static Produces WILDCARD_PRODUCES = new Produces() {
+
+      @Override
+      public Class<? extends Annotation> annotationType() {
+         return Produces.class;
+      }
+
+      @Override
+      public String[] value() {
+         return new String[]{"*", "*"};
+      }
+   };
+
    @FunctionalInterface
    public interface RunnableWithIOException {
       void run() throws IOException;
@@ -321,7 +334,7 @@ public class ServerResponseWriter
                MessageBodyWriter<?> mbw = e.getKey();
                Class<?> wt = e.getValue();
                Produces produces = mbw.getClass().getAnnotation(Produces.class);
-               if (produces == null) continue;
+               if (produces == null) produces = WILDCARD_PRODUCES; // Spec, section 4.2.3 "Declaring Media Type Capabilities"
                for (String produceValue : produces.value())
                {
                   pFound = true;

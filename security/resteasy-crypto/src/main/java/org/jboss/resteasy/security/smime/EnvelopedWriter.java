@@ -10,6 +10,7 @@ import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.Base64;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
@@ -50,7 +51,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return EnvelopedOutput.class.isAssignableFrom(type);
+      return EnvelopedOutput.class.isAssignableFrom(type) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    @Override

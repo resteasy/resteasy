@@ -1,10 +1,14 @@
 package org.jboss.resteasy.plugins.providers;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.util.MediaTypeHelper;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,12 +20,13 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @Provider
+@Produces("*/*")
 public class FileRangeWriter implements MessageBodyWriter<FileRange>
 {
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.equals(FileRange.class);
+      return type.equals(FileRange.class) && !MediaTypeHelper.isBlacklisted(mediaType);
    }
 
    @Override
