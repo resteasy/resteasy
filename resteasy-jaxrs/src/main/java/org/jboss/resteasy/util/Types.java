@@ -5,6 +5,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -12,6 +13,9 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Type conversions and generic type manipulations
@@ -689,5 +693,49 @@ public class Types
       {
          return EMPTY_TYPE_ARRAY;
       }
+   }
+
+   public static boolean hasPostConstruct(Class<?> clazz)
+   {
+      return hasPostConstruct(clazz, (Method mm)-> mm.getParameterCount() == 0);
+   }
+
+   public static boolean hasPostConstruct(Class<?> clazz, Function<Method, Boolean> validateParameterCount)
+   {
+      for (Method m : clazz.getMethods())
+      {
+         if (m.getAnnotation(PostConstruct.class) != null)
+         {
+            if (validatePostConstructMethod(m, validateParameterCount))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   private static boolean validatePostConstructMethod(Method m, Function<Method, Boolean> validateParameterCount)
+   {
+      if (!validateParameterCount.apply(m))
+      {
+         return false;
+      }
+      if (!void.class.equals(m.getReturnType()))
+      {
+         return false;
+      }
+      for (Class<?> c : m.getExceptionTypes())
+      {
+         if (!RuntimeException.class.isAssignableFrom(c))
+         {
+            return false;
+         }
+      }
+      if (Modifier.isStatic(m.getModifiers()))
+      {
+         return false;
+      }
+      return true;
    }
 }
