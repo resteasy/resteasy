@@ -1203,7 +1203,7 @@ public class RxCompletionStageProxyTest {
    private static RxCompletionStageResource proxy;
    
    static {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(RxCompletionStageResource.class);
    }
    
@@ -1245,7 +1245,7 @@ public class Rx2FlowableProxyTest {
    private static Rx2FlowableResource proxy;
    
    static {
-      client = new ResteasyClientBuilder().build();
+      client = (ResteasyClient)ClientBuilder.newClient();
       proxy = client.target(generateURL("/")).proxy(Rx2FlowableResource.class);
    }
    

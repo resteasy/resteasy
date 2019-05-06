@@ -377,6 +377,27 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
               side, the resolution of the current instance is cached for each thread local context classloader.
             </listitem>
             <listitem>
+              The <classname>ResteasyClient</classname> and <classname>ResteasyClientBuilder</classname> are now abstract
+              classes (from <classname>resteasy-client-api</classname>) and are not meant for user direct instantiation;
+              plain JAX-RS API usage is expected instead:
+              <programlisting>
+//ResteasyClient client = new ResteasyClientBuilder().build(); NO!
+//if plan JAX-RS is enough ...
+Client client = ClientBuilder.newClient();
+...
+//if RESTEasy API is needed ...
+ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+
+
+//ResteasyClientBuilder builder = new ResteasyClientBuilder(); NO!
+//if plan JAX-RS is enough ...
+ClientBuilder builder = ClientBuilder.newBuilder();
+...
+//if RESTEasy API is needed ...
+ResteayClientBuilder builder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
+              </programlisting>
+            </listitem>
+            <listitem>
               The package <classname>org.jboss.resteasy.plugins.stats</classname> (which contains a resource and some related classes) has
               been moved out of the <classname>resteasy-jaxb-provider</classname> module into a <classname>new resteasy-stats</classname> module.
             </listitem>
