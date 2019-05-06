@@ -505,7 +505,7 @@ private static &lt;T&gt; String stringify(List&lt;T&gt; list) {
    <programlisting>
 @Test
 public void testQueryParamStandard() throws Exception {
-   ResteasyClient client = new ResteasyClientBuilder().build();
+   Client client = ClientBuilder.newClient();
    Invocation.Builder request = client.target("http://localhost:8081/queryParam?q=20161217&amp;q=20161218&amp;q=20161219").request();
    Response response = request.get();
    System.out.println("response: " + response.readEntity(String.class));
@@ -568,7 +568,7 @@ public static class MultiValuedParamConverter implements ParamConverter&lt;List&
    <programlisting>
 @Test
 public void testQueryParamCustom() throws Exception {
-   ResteasyClient client = new ResteasyClientBuilder().build();
+   Client client = ClientBuilder.newClient();
    Invocation.Builder request = client.target("http://localhost:8081/queryParam?q=20161217,20161218,20161219").request();
    Response response = request.get();
    System.out.println("response: " + response.readEntity(String.class));

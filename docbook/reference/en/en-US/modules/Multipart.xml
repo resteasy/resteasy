@@ -576,7 +576,7 @@ public interface JsonForm {
        <para>And then you can use the proxy class above to send request to the resource method correctly.
            Here is the sample code:</para>
 <programlisting>
-ResteasyClient client = new ResteasyClientBuilder().build();
+ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
 ...
 JsonForm proxy = client.target("your_request_url_address").proxy(JsonForm.class);
 String name = proxy.putMultipartForm(new JsonFormResource.Form(new JsonUser("bill")));

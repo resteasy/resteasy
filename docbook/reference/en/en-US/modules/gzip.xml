@@ -116,7 +116,7 @@ public class MyService {
    </para>
    
 <programlisting>
-Client client = new ResteasyClientBuilder() // Activate gzip compression on client:
+Client client = ClientBuilder.newBuilder() // Activate gzip compression on client:
                     .register(AcceptEncodingGZIPFilter.class)
                     .register(GZIPDecodingInterceptor.class)
                     .register(GZIPEncodingInterceptor.class)
@@ -129,7 +129,7 @@ Client client = new ResteasyClientBuilder() // Activate gzip compression on clie
    </para>
    
 <programlisting>
-Client client = new ResteasyClientBuilder() // Activate gzip compression on client:
+Client client = ClientBuilder.newBuilder() // Activate gzip compression on client:
                     .register(AcceptEncodingGZIPFilter.class)
                     .register(new GZIPDecodingInterceptor(256))
                     .register(GZIPEncodingInterceptor.class)
@@ -244,7 +244,7 @@ public class ClientContentEncodingAnnotationFilter implements WriterInterceptor
    @Test
    public void testCompress() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      Client client = ClientBuilder.newClient();
       Invocation.Builder request = client.target("http://localhost:8081/a").request();
       request.acceptEncoding("gzip,compress");
       Response response = request.get();
