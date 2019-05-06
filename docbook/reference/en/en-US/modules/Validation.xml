@@ -294,7 +294,7 @@ public class ConstraintType
    </para>
    
 <programlisting><![CDATA[
-ResteasyClient client = new ResteasyClientBuilder().build();
+Client client = ClientBuilder.newClient();
 Invocation.Builder request = client.target(...).request();
 Response response = request.get();
 if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER)))
