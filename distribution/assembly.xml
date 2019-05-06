@@ -39,6 +39,8 @@
                 <include>org.jboss.resteasy:resteasy-core</include>
                 <include>org.jboss.resteasy:resteasy-client-api</include>
                 <include>org.jboss.resteasy:resteasy-client</include>
+                <include>org.jboss.resteasy:resteasy-client-jetty</include>
+                <include>org.jboss.resteasy:resteasy-client-microprofile</include>
                 <include>org.jboss.resteasy:resteasy-servlet-initializer</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
@@ -50,21 +52,14 @@
                 <include>org.jboss.resteasy:resteasy-spring</include>
                 <include>org.jboss.resteasy:resteasy-guice</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
-                <include>org.jboss.resteasy:resteasy-oauth</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
+                <include>org.jboss.resteasy:resteasy-rxjava2</include>
                 <include>org.jboss.resteasy:jose-jwt</include>
                 <include>org.jboss.resteasy:resteasy-validator-provider</include>
             </includes>
-            <excludes>
-                <exclude>org.jboss.resteasy:resteasy-undertow</exclude>
-                <exclude>org.jboss.resteasy:resteasy-jdk-http</exclude>
-                <exclude>org.jboss.resteasy:resteasy-netty4</exclude>
-                <exclude>org.jboss.resteasy:resteasy-vertx</exclude>
-                <exclude>javax.servlet:servlet-api</exclude>
-            </excludes>
             <outputDirectory>lib</outputDirectory>
         </dependencySet>
         <dependencySet>
@@ -75,7 +70,7 @@
                 <include>org.jboss.resteasy:resteasy-netty4</include>
                 <include>org.jboss.resteasy:resteasy-vertx</include>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
-                <include>javax.servlet:servlet-api</include>
+                <include>org.jboss.spec.javax.servlet:jboss-servlet-api_4.0_spec</include>
             </includes>
             <outputDirectory>embedded-lib</outputDirectory>
         </dependencySet>
