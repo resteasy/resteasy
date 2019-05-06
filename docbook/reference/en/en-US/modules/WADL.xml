@@ -69,7 +69,7 @@ public class ResteasyWadlDefaultResource]]></programlisting>
         <title>RESTEasy WADL support for Netty Container</title>
         <para>RESTEasy WADL support for Netty Container is simliar to the support for JDK HTTP Server. It also uses ResteasyWadlDefaultResource to serve '/application.xml' and ResteasyWadlGenerator to generate WADL info for resources. Here is the sample code:
         </para>
-        <programlisting><![CDATA[ResteasyDeployment deployment = new ResteasyDeployment();
+        <programlisting><![CDATA[ResteasyDeployment deployment = new ResteasyDeploymentImpl();
 
 netty = new NettyJaxrsServer();
 netty.setDeployment(deployment);

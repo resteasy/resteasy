@@ -163,7 +163,7 @@ Customer cust = (Customer)input.getEntity(Customer.class, privateKey, cert);
 
 
 // client side
-      Client client = new ResteasyClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/smime/signed");
       Customer cust = new Customer();
       cust.setName("Bill");
@@ -226,7 +226,7 @@ AAA=
    }
 
 // client side
-      Client client = new ResteasyClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/smime/signed");
       SignedInput input = target.request().get(SignedInput.class);
       Customer cust = (Customer)input.getEntity(Customer.class)
