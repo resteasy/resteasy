@@ -245,7 +245,7 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
             there's no real demarcation between what is internal implementation detail and what is for public
             consumption. In WildFly, the artifact archives from those modules are also included in a public module.
             Given the common expectation of full backward compatibility of whatever comes from public modules,
-            to allow for easier project evolution and maintenance, in RESTEasy 4.0.0.Final those big components
+            to allow for easier project evolution and maintenance, in RESTEasy 4.0.1-SNAPSHOT those big components
             have been split as follows: 
         </para>
         <section>
