@@ -1,9 +1,13 @@
 package org.jboss.resteasy.cdi;
 
-import org.jboss.resteasy.cdi.i18n.LogMessages;
-import org.jboss.resteasy.cdi.i18n.Messages;
-import org.jboss.resteasy.util.GetRestful;
-
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -22,13 +26,10 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
+import org.jboss.resteasy.util.GetRestful;
 
 /**
  * This Extension handles default scopes for discovered JAX-RS components. It
@@ -120,8 +121,8 @@ public class ResteasyCdiExtension implements Extension
       if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && annotatedType.isAnnotationPresent(Provider.class)
-               && !isFinalClass(annotatedType.getJavaClass()))
+         && annotatedType.isAnnotationPresent(Provider.class)
+         && !isFinalClass(annotatedType.getJavaClass()))
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
          event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
@@ -271,7 +272,26 @@ public class ResteasyCdiExtension implements Extension
     */
    private boolean isFinalClass(Class clazz) {
       // Unproxyable bean type: classes which are declared final
-      return Modifier.isFinal(clazz.getModifiers());
-   }
+      boolean isFinal = Modifier.isFinal(clazz.getModifiers());
 
+      if (!isFinal) {
+         // check methods
+         for (Method m : clazz.getMethods()) {
+            if (clazz == m.getDeclaringClass())
+            {
+               int mod = m.getModifiers();
+               if (Modifier.isFinal(mod) && !Modifier.isStatic(mod)
+                  && !Modifier.isPrivate(mod))
+               {
+                  isFinal = true;
+                  break;
+               }
+            }
+
+
+         }
+      }
+
+      return isFinal;
+   }
 }
