@@ -1503,6 +1503,42 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   ////////////////////////////////////////////////////////////////////////////
+   // Restoring five addContextResolver() methods previously replaced by versions with priority parameter.
+   // See RESTEASY-2231
+   protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
+   {
+      ContextResolver writer = createProviderInstance(resolver);
+      addContextResolver(writer, resolver, builtin);
+   }
+
+   protected void addContextResolver(ContextResolver provider)
+   {
+      addContextResolver(provider, false);
+   }
+
+   protected void addContextResolver(ContextResolver provider, boolean builtin)
+   {
+      addContextResolver(provider, provider.getClass(), builtin);
+   }
+
+   protected void addContextResolver(ContextResolver provider, Class providerClass, boolean builtin)
+   {
+      // RESTEASY-1725
+      if (providerClass.getName().contains("$$Lambda$")) {
+         throw new RuntimeException(Messages.MESSAGES.registeringContextResolverAsLambda());
+      }
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
+      addContextResolver(provider, parameter, providerClass, builtin);
+   }
+
+   protected void addContextResolver(ContextResolver provider, Type typeParameter, Class providerClass, boolean builtin)
+   {
+      int priority = getPriority(null, null, ContextResolver.class, providerClass);
+      addContextResolver(provider, priority, typeParameter, providerClass, builtin);
+   }
+   ////////////////////////////////////////////////////////////////////////////
+
    protected void addStringConverter(Class<? extends StringConverter> resolver)
    {
       StringConverter writer = createProviderInstance(resolver);
