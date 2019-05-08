@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -272,6 +272,26 @@ public class ResteasyCdiExtension implements Extension
     */
    private boolean isFinalClass(Class clazz) {
       // Unproxyable bean type: classes which are declared final
-      return Modifier.isFinal(clazz.getModifiers());
+      boolean isFinal = Modifier.isFinal(clazz.getModifiers());
+
+      if (!isFinal) {
+         // check methods
+         for (Method m : clazz.getMethods()) {
+            if (clazz == m.getDeclaringClass())
+            {
+               int mod = m.getModifiers();
+               if (Modifier.isFinal(mod) && !Modifier.isStatic(mod)
+                  && !Modifier.isPrivate(mod) )
+               {
+                  isFinal = true;
+                  break;
+               }
+            }
+
+
+         }
+      }
+
+      return isFinal;
    }
 }
