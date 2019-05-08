@@ -460,12 +460,6 @@ public class StringParameterInjector
 
    private boolean initialize(Annotation[] annotations, ResteasyProviderFactory factory){
 
-      //No need to find any conversion mechanism if we are dealing with primitive type
-      if(baseType.isPrimitive())
-      {
-         return true;
-      }
-
       // First try to find a ParamConverter if any
       paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
       if (paramConverter != null)
@@ -556,6 +550,10 @@ public class StringParameterInjector
       }
       catch (NoSuchMethodException e)
       {
+      }
+      if (baseType.isPrimitive())
+      {
+         return true;
       }
       if (valueOf == null)
       {
@@ -680,20 +678,14 @@ public class StringParameterInjector
          {
             //System.out.println("NO DEFAULT VALUE");
             if (!baseType.isPrimitive()) return null;
+            else
+               return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
          }
          else
          {
             strVal = defaultValue;
             //System.out.println("DEFAULT VAULUE: " + strVal);
          }
-      }
-      try
-      {
-         if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
-      }
-      catch (Exception e)
-      {
-         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
       }
       if (paramConverter != null)
       {
@@ -774,6 +766,14 @@ public class StringParameterInjector
             }
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), targetException);
          }
+      }
+      try
+      {
+         if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
+      }
+      catch (Exception e)
+      {
+         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
       }
       return null;
    }
