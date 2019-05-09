@@ -28,7 +28,9 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.Constants;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -302,6 +304,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    public ClientResponse invoke(ClientInvocation request)
    {
+      ResteasyProviderFactory.getInstance().property(Constants.USING_HTTPCLIENT, "true");
       String uri = request.getUri().toString();
       final HttpRequestBase httpMethod = createHttpMethod(uri, request.getMethod());
       final HttpResponse res;
@@ -324,6 +327,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       finally
       {
          cleanUpAfterExecute(httpMethod);
+         ResteasyProviderFactory.getInstance().property(Constants.USING_HTTPCLIENT, null);
       }
 
       ClientResponse response = new ClientResponse(request.getClientConfiguration())
