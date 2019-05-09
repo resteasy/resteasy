@@ -14,7 +14,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.util.Constants;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
@@ -56,7 +58,11 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
          int c = inputStream.read();
          if (c == -1)
          {
-            httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(0));
+            Object s = ResteasyContext.getContextDataMap().get(Constants.USING_HTTPCLIENT);
+            if (s == null || s.equals("false"))
+            {
+               httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(0));
+            }
             entityStream.write(new byte[0]); // fix RESTEASY-204
             return;
          }

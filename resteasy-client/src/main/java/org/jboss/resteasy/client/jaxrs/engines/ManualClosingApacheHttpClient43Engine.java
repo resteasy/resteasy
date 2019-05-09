@@ -40,8 +40,10 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.Constants;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
@@ -253,6 +255,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
    @Override
    public Response invoke(Invocation inv)
    {
+      ResteasyContext.getContextDataMap().put(Constants.USING_HTTPCLIENT, "true");
       ClientInvocation request = (ClientInvocation)inv;
       String uri = request.getUri().toString();
       final HttpRequestBase httpMethod = createHttpMethod(uri, request.getMethod());
@@ -276,6 +279,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       finally
       {
          cleanUpAfterExecute(httpMethod);
+         ResteasyContext.getContextDataMap().remove(Constants.USING_HTTPCLIENT);
       }
 
       ClientResponse response = new ClientResponse(request.getClientConfiguration(), request.getTracingLogger())
