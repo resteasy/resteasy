@@ -103,8 +103,8 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
     * HostnameVerificationPolicy is set to STRICT so exception should be thrown.
     * @tpSince RESTEasy 3.7.0
     */
-   @Test(expected = ProcessingException.class)
-   public void testHostnameVerificationPolicyStrict() {
+   @Test
+   public void testHostnameVerificationPolicyStrict() throws Exception {
       resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
@@ -116,7 +116,15 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
          if (InetAddress.getByName("localhost.localdomain") != null)
          {
             String anotherURL = URL.replace("localhost", "localhost.localdomain");
-            client.target(anotherURL).request().get();
+            try
+            {
+               client.target(anotherURL).request().get();
+               Assert.fail("ProcessingException ie expected");
+            }
+            catch (ProcessingException e)
+            {
+               //expected
+            }
          }
       }
       catch (UnknownHostException e)
@@ -126,13 +134,21 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
             if (InetAddress.getByName("localhost.localhost") != null)
             {
                String anotherURL = URL.replace("localhost", "localhost.localhost");
-               client.target(anotherURL).request().get();
+               try
+               {
+                  client.target(anotherURL).request().get();
+                  Assert.fail("ProcessingException ie expected");
+               }
+               catch (ProcessingException e1)
+               {
+                  //expected
+               }
             }
          }
-         catch (UnknownHostException e1)
+         catch (UnknownHostException e2)
          {
            LOG.warn("Neither 'localhost.localdomain' nor 'local.localhost'can be resolved, "
-                 + "testHostnameVerificationPolicyStrict doesn't check anything");
+                 + "nothing is checked");
          }
       }
    }
