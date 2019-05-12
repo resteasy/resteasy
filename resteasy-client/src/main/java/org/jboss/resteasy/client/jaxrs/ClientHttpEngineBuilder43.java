@@ -26,6 +26,7 @@ import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.util.PublicSuffixMatcherLoader;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -63,7 +64,10 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                verifier = new DefaultHostnameVerifier();
                break;
             case STRICT:
-               verifier = new DefaultHostnameVerifier();
+               //this will load default file from httplcient.jar!/mozilla/public-suffix-list.txt
+               //if this default file isn't what you want, set a customized HostNameVerifier
+               //to ResteasyClientBuilder instead
+               verifier = new DefaultHostnameVerifier(PublicSuffixMatcherLoader.getDefault());
                break;
          }
       }
