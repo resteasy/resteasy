@@ -192,6 +192,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       public <T> T getBody(Class<T> type, Type genericType)
               throws IOException
       {
+         boolean pushProviders = savedProviders != null && ResteasyContext.getContextData(Providers.class) == null;
          if (MultipartInput.class.equals(type))
          {
             if (bodyPart.getBody() instanceof Multipart)
@@ -202,7 +203,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          }
          try
          {
-            if (savedProviders != null)
+            if (pushProviders)
             {
                ResteasyContext.pushContext(Providers.class, savedProviders);
             }
@@ -218,7 +219,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          }
          finally
          {
-            if (savedProviders != null)
+            if (pushProviders)
             {
                ResteasyContext.popContextData(Providers.class);
             }
