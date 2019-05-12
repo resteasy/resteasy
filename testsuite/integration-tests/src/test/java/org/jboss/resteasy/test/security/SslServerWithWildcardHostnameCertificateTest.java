@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -13,13 +14,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -41,6 +43,7 @@ import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER
 @RunAsClient
 public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
 
+   private static final Logger LOG = Logger.getLogger(SslServerWithWildcardHostnameCertificateTest.class.getName());
    private static KeyStore truststore;
 
    private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wildcard-hostname.keystore";
@@ -98,16 +101,54 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
     * HostnameVerificationPolicy is set to STRICT so exception should be thrown.
     * @tpSince RESTEasy 3.7.0
     */
-   @Test(expected = ProcessingException.class)
-   @Ignore("RESTEASY-2176")
-   public void testHostnameVerificationPolicyStrict() {
+   @Test()
+   public void testHostnameVerificationPolicyStrict() throws Exception {
       resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
-      client.target(URL).request().get();
+      try
+      {
+         if (InetAddress.getByName("localhost.localdomain") != null)
+         {
+            String anotherURL = URL.replace("localhost", "localhost.localdomain");
+            try
+            {
+               client.target(anotherURL).request().get();
+               Assert.fail("ProcessingException ie expected");
+            }
+            catch (ProcessingException e)
+            {
+               //expected
+            }
+         }
+      }
+      catch (UnknownHostException e)
+      {
+         try
+         {
+            if (InetAddress.getByName("localhost.localhost") != null)
+            {
+               String anotherURL = URL.replace("localhost", "localhost.localhost");
+               try
+               {
+                  client.target(anotherURL).request().get();
+                  Assert.fail("ProcessingException is expected");
+               }
+               catch (ProcessingException e1)
+               {
+                  //expected
+               }
+            }
+         }
+         catch (UnknownHostException e2)
+         {
+            LOG.warn("Neither 'localhost.localdomain' nor 'local.localhost'can be resolved, "
+                  + "nothing is checked");
+         }
+      }
    }
 
    @After
