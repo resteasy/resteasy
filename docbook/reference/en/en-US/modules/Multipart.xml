@@ -143,7 +143,7 @@ public class MyService
     {
         for (InputPart part : input.getParts())
         {
-            List<Customer> cust = part.getBody(new GenericType>List>Customer<<() {});
+            List<Customer> cust = part.getBody(new GenericType<List<Customer>>() {});
         }
         input.close();
     }
@@ -182,17 +182,25 @@ public class MyService
             of content has a name associated with it. The interface used for form-data input is
             <code>org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput</code>
         </para>
-        <programlisting><![CDATA[
-public interface MultipartFormDataInput extends MultipartInput
-{
-    @Deprecated
-    Map<String, InputPart> getFormData();
+        <programlisting><![CDATA[package org.jboss.resteasy.plugins.providers.multipart;
 
-    Map<String, List<InputPart>> getFormDataMap();
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
-    <T> T getFormDataPart(String key, Class<T> rawType, Type genericType) throws IOException;
+import javax.ws.rs.core.GenericType;
 
-    <T> T getFormDataPart(String key, GenericType<T> type) throws IOException;
+public interface MultipartFormDataInput extends MultipartInput {
+   /**
+    * @return A parameter map containing a list of values per name.
+    */
+   Map<String, List<InputPart>> getFormDataMap();
+
+   <T> T getFormDataPart(String key, Class<T> rawType, Type genericType)
+         throws IOException;
+
+   <T> T getFormDataPart(String key, GenericType<T> type) throws IOException;
 }]]></programlisting>
         <para>
             It works in much the same way as MultipartInput described earlier in this chapter.
