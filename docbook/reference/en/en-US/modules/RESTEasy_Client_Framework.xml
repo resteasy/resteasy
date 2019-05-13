@@ -676,6 +676,57 @@ Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(e
      </programlisting>
       </para>
     </section>
+    <section id="https">
+        <title>Configuring SSL</title>
+        <para>
+            To enable SSL on client, a <classname>ClientHttpEngine</classname> contains SSLContext can be created to build
+            client as the following example :
+            <programlisting>
+ClientHttpEngine myEngine = new ClientHttpEngine() {
+   ...
+public void setSslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
+}
+
+@Override
+public HostnameVerifier getHostnameVerifier() {
+                     return hostnameVerifier;
+       }
+};
+ myEngine.setSslContext(mySslContext)
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
+            </programlisting>
+            Or setup keystore, truststore or custom SslContext to ClientBuilder:
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().sslContext(mySslContext).build();
+            </programlisting>
+            If you don't want to create a SSLContext, build client with keystore and truststore. Note if both setup
+            SSLContext and keystore/truststore, the later will be ignored by Resteasy ClientBuilder.
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().keystore(keystore,mypassword).
+trustKeystore(trustStore).build();
+            </programlisting>
+            During handshaking, custom HostNameVerifier can be called to allow connection if URL's hostname and
+            the server's identification hostname mismatch.
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+      .hostnameVerifier(myhostnameVerifier).build();
+            </programlisting>
+            Resteasy provides another simple way to verify hostname . It allows setup <classname>HostnameVerificationPolicy</classname>
+            without create HostNameVerifier to ResteasyClientBuilder:
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+        .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
+            </programlisting>
+            <itemizedlist>
+                <listitem>Setting HostnameVerificationPolicy.ANY will allow all connection without check.</listitem>
+                <listitem>HostnameVerificationPolicy.WILDCARD only allows wildcards in subdomain names i.e. *.foo.com.</listitem>
+                <listitem>HostnameVerificationPolicy.STRICT checks if DNS names match the content of the Public Suffix List
+            (https://publicsuffix.org/list/public_suffix_list.dat). Please note if this public suffix list isn't the check
+            you want, create your own HostNameVerifier instead of this policy setting.</listitem>
+            </itemizedlist>
+        </para>
+    </section>
     <section id="http_proxy">
       <title>HTTP proxy</title>
       <para>
