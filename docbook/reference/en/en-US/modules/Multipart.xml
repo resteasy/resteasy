@@ -22,7 +22,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 public interface MultipartInput
 {
-   List&lt;InputPart&gt; getParts();
+   List<InputPart> getParts();
 
    String getPreamble();
 
@@ -33,13 +33,13 @@ public interface MultipartInput
 
 public interface InputPart
 {
-   MultivaluedMap&lt;String, String&gt; getHeaders();
+   MultivaluedMap<String, String> getHeaders();
 
    String getBodyAsString();
 
-   &lt;T&gt; T getBody(Class&lt;T&gt; type, Type genericType) throws IOException;
+   <T> T getBody(Class<T> type, Type genericType) throws IOException;
 
-   &lt;T&gt; T getBody(org.jboss.resteasy.util.GenericType&lt;T&gt; type) throws IOException;
+   <T> T getBody(org.jboss.resteasy.util.GenericType<T> type) throws IOException;
 
    MediaType getMediaType();
 
@@ -61,7 +61,7 @@ public class MyService
     @Consumes("multipart/mixed")
     public void put(MultipartInput input)
     {
-        List&lt;Customer&gt; customers = new ArrayList...;
+        List<Customer> customers = new ArrayList...;
         for (InputPart part : input.getParts())
         {
             Customer cust = part.getBody(Customer.class, null);
@@ -84,7 +84,7 @@ public class MyService
     {
         for (InputPart part : input.getParts())
         {
-            List&lt;Customer&gt; cust = part.getBody(new GenericType&gt;List&gt;Customer&lt;&lt;() {});
+            List<Customer> cust = part.getBody(new GenericType>List>Customer<<() {});
         }
         input.close();
     }
@@ -107,7 +107,7 @@ public class MyService
 {
     @PUT
     @Consumes("multipart/mixed")
-    public void put(List&lt;Customer&gt; customers)
+    public void put(List<Customer> customers)
     {
         ...
     }
@@ -126,13 +126,13 @@ public class MyService
 public interface MultipartFormDataInput extends MultipartInput
 {
     @Deprecated
-    Map&lt;String, InputPart&gt; getFormData();
+    Map<String, InputPart> getFormData();
 
-    Map&lt;String, List&lt;InputPart&gt;&gt; getFormDataMap();
+    Map<String, List<InputPart>> getFormDataMap();
 
-    &lt;T&gt; T getFormDataPart(String key, Class&lt;T&gt; rawType, Type genericType) throws IOException;
+    <T> T getFormDataPart(String key, Class<T> rawType, Type genericType) throws IOException;
 
-    &lt;T&gt; T getFormDataPart(String key, GenericType&lt;T&gt; type) throws IOException;
+    <T> T getFormDataPart(String key, GenericType<T> type) throws IOException;
 }]]></programlisting>
         <para>
             It works in much the same way as MultipartInput described earlier in this chapter.
@@ -152,7 +152,7 @@ public class MyService
 {
     @PUT
     @Consumes("multipart/form-data")
-    public void put(Map&lt;String, Customer&gt; customers)
+    public void put(Map<String, Customer> customers)
     {
         ...
     }
@@ -179,7 +179,7 @@ public interface MultipartRelatedInput extends MultipartInput
 
     InputPart getRootPart();
 
-    Map&lt;String, InputPart&gt; getRelatedMap();
+    Map<String, InputPart> getRelatedMap();
 }
 ]]></programlisting>
         <para>
@@ -259,7 +259,7 @@ public class MyService
     @GET
     @Produces("multipart/mixed")
     @PartType("application/xml")
-    public List&lt;Customer&gt; get()
+    public List<Customer> get()
     {
         ...
     }
@@ -345,7 +345,7 @@ public class MyService
     @GET
     @Produces("multipart/form-data")
     @PartType("application/xml")
-    public Map&lt;String, Customer&gt; get()
+    public Map<String, Customer> get()
     {
         ...
     }
@@ -389,22 +389,22 @@ public class MyService
         MultipartRelatedOutput output = new MultipartRelatedOutput();
         output.setStartInfo("text/html");
 
-        Map&lt;String, String&gt; mediaTypeParameters = new LinkedHashMap&lt;String, String&gt;();
+        Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>();
         mediaTypeParameters.put("charset", "UTF-8");
         mediaTypeParameters.put("type", "text/html");
         output.addPart(
-            "&lt;html&gt;&lt;body&gt;\n"
-            + "This is me: &lt;img src='cid:http://example.org/me.png' /&gt;\n"
-            + "&lt;br /&gt;This is you: &lt;img src='cid:http://example.org/you.png' /&gt;\n"
-            + "&lt;/body&gt;&lt;/html&gt;",
+            "<html><body>\n"
+            + "This is me: <img src='cid:http://example.org/me.png' />\n"
+            + "<br />This is you: <img src='cid:http://example.org/you.png' />\n"
+            + "</body></html>",
             new MediaType("text", "html", mediaTypeParameters),
-            "&lt;mymessage.xml@example.org&gt;", "8bit");
+            "<mymessage.xml@example.org>", "8bit");
         output.addPart("// binary octets for me png",
-            new MediaType("image", "png"), "&lt;http://example.org/me.png&gt;",
+            new MediaType("image", "png"), "<http://example.org/me.png>",
             "binary");
         output.addPart("// binary octets for you png", new MediaType(
             "image", "png"),
-            "&lt;http://example.org/you.png&gt;", "binary");
+            "<http://example.org/you.png>", "binary");
         client.putRelated(output);
         return output;
     }
@@ -715,7 +715,7 @@ public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInter
 @Produces(MediaType.TEXT_PLAIN)
 public Response setMediaType(MultipartInput input) throws IOException
 {
-    List&lt;InputPart&gt; parts = input.getParts();
+    List<InputPart> parts = input.getParts();
     InputPart part = parts.get(0);
     part.setMediaType(MediaType.valueOf("application/foo+xml"));
     String s = part.getBody(String.class, null);
