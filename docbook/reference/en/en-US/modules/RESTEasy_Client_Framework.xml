@@ -713,7 +713,7 @@ Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslConte
                        .hostnameVerifier(myhostnameVerifier).build();
             </programlisting>
             Resteasy provides another simple way to set up a HostnameVerifier. It allows configuring ResteasyClientBuilder with
-            a <classname>HostnameVerificationPolicy</classname without creating a custom HostNameVerifier:
+            a <classname>HostnameVerificationPolicy</classname> without creating a custom HostNameVerifier:
             <programlisting>
 Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
                        .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
