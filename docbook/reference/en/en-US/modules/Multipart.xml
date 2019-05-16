@@ -302,37 +302,55 @@ public interface MultipartRelatedInput extends MultipartInput {
     <section id="multipart_output">
         <title>Output with multipart</title>
         <para>RESTEasy provides a simple API to output multipart data:</para>
-        <programlisting><![CDATA[package org.jboss.resteasy.plugins.providers.multipart;
-
-public class MultipartOutput
+        <programlisting><![CDATA[public class MultipartOutput
 {
-    public OutputPart addPart(Object entity, MediaType mediaType)
+   public OutputPart addPart(Object entity, MediaType mediaType);
 
-    public OutputPart addPart(Object entity, GenericType type, MediaType mediaType)
+   public OutputPart addPart(Object entity, MediaType mediaType, String filename);
 
-    public OutputPart addPart(Object entity, Class type, Type genericType, MediaType mediaType)
+   public OutputPart addPart(Object entity, MediaType mediaType, String filename, boolean utf8Encode);
 
-    public List<OutputPart> getParts()
+   public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType);
 
-    public String getBoundary()
+   public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename);
 
-    public void setBoundary(String boundary)
+   public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename, boolean utf8Encode);
+
+   public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType);
+
+   public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename);
+
+   public OutputPart addPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename, boolean utf8Encode);
+
+   public List<OutputPart> getParts();
+
+   public String getBoundary();
+
+   public void setBoundary(String boundary);
 }]]></programlisting>
 
         Each part is represented by an <code>OutputPart</code> interface:
-        <programlisting><![CDATA[public class OutputPart
-{
-    public MultivaluedMap<String, Object> getHeaders()
+        <programlisting><![CDATA[public class OutputPart {
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType);
 
-    public Object getEntity()
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType, final String filename);
 
-    public Class getType()
+   public OutputPart(final Object entity, final Class<?> type, final Type genericType, final MediaType mediaType, final String filename, final boolean utf8Encode);
 
-    public Type getGenericType()
+   public MultivaluedMap<String, Object> getHeaders();
 
-    public MediaType getMediaType()
-}
-]]></programlisting>
+   public Object getEntity();
+
+   public Class<?> getType();
+
+   public Type getGenericType();
+
+   public MediaType getMediaType();
+
+   public String getFilename();
+
+   public boolean isUtf8Encode();
+}]]></programlisting>
         <para>When you want to output multipart data it is as simple as creating a MultipartOutput object
             and calling addPart() methods. RESTEasy will automatically find a MessageBodyWriter
             to marshall your entity objects. Like MultipartInput, sometimes you may have marshalling
@@ -839,8 +857,7 @@ public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInter
         request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
         return null;
     }
-}]]>
-        </programlisting>
+}]]></programlisting>
 
         <para>If both <code>InputPart.DEFAULT_CONTENT_TYPE_PROPERTY</code> and
             <code>InputPart.DEFAULT_CHARSET_PROPERTY</code>
