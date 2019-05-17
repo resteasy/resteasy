@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletionStage;
+import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 
 import javax.ws.rs.core.Response;
 
@@ -19,4 +20,6 @@ public interface ResourceInvoker
 
    // optimizations
    boolean hasProduces();
+   void setMethodStatisticsLogger(MethodStatisticsLogger msLogger);
+   MethodStatisticsLogger getMethodStatisticsLogger();
 }

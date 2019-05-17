@@ -24,6 +24,7 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -50,12 +51,14 @@ public class ResourceMethodRegistry implements Registry
    protected boolean widerMatching;
    protected RootNode rootNode = new RootNode();
    protected ResourceBuilder resourceBuilder;
+   protected StatisticsController statisticsController;
 
 
    public ResourceMethodRegistry(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
       this.resourceBuilder = providerFactory.getResourceBuilder();
+      this.statisticsController = providerFactory.getStatisticsController();
    }
 
    public boolean isWiderMatching()
@@ -355,6 +358,7 @@ public class ResourceMethodRegistry implements Registry
          if (widerMatching)
             rootNode.addInvoker(fullpath, invoker);
          else root.addInvoker(classExpression, fullpath, invoker);
+         statisticsController.register(invoker);
       }
       else
       {
@@ -362,6 +366,7 @@ public class ResourceMethodRegistry implements Registry
          if (widerMatching)
             rootNode.addInvoker(fullpath, locator);
          else root.addInvoker(classExpression, fullpath, locator);
+         statisticsController.register(locator);
       }
    }
 

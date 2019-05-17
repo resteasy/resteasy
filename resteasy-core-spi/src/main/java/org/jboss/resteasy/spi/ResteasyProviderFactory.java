@@ -29,6 +29,7 @@ import javax.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -332,4 +333,6 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    public abstract ResourceBuilder getResourceBuilder();
 
    public abstract void initializeClientProviders(ResteasyProviderFactory factory);
+
+   public abstract StatisticsController getStatisticsController();
 }
