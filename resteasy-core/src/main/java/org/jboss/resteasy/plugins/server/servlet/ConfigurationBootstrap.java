@@ -234,6 +234,12 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 
       if (applicationConfig != null) deployment.setApplicationClass(applicationConfig);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
+
+      String statisticsEnabled = getParameter(ResteasyContextParameters.RESTEASY_STATISTICS_ENABLED);
+      if (statisticsEnabled != null)
+      {
+         deployment.setStatisticsEnabled(Boolean.valueOf(statisticsEnabled));
+      }
       return deployment;
    }
 

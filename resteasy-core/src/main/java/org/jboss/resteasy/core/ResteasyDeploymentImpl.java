@@ -81,6 +81,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    private String paramMapping;
    private Map<String, Object> properties = new TreeMap<String, Object>();
+   protected boolean statisticsEnabled;
 
    public void start()
    {
@@ -101,6 +102,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = ResteasyProviderFactory.newInstance();
       providerFactory.setRegisterBuiltins(registerBuiltin);
+      providerFactory.getStatisticsController().setEnabled(statisticsEnabled);
 
       Object tracingText;
       Object thresholdText;
@@ -999,5 +1001,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    @Override
    public void setProperty(String key, Object value) {
       properties.put(key, value);
+   }
+
+   @Override
+   public void setStatisticsEnabled(boolean statisticsEnabled) {
+      this.statisticsEnabled = statisticsEnabled;
    }
 }

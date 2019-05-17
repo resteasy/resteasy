@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 import java.lang.reflect.Proxy;
 
@@ -21,10 +22,12 @@ public class LocatorRegistry
 {
    protected RootNode root = new RootNode();
    protected ResteasyProviderFactory providerFactory;
+   protected StatisticsController statisticsController;
 
    public LocatorRegistry(final Class<?> clazz, final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
+      this.statisticsController = providerFactory.getStatisticsController();
       ResourceBuilder resourceBuilder = providerFactory.getResourceBuilder();
       if (Proxy.isProxyClass(clazz))
       {
@@ -62,6 +65,7 @@ public class LocatorRegistry
       {
          ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod)method, injectorFactory, null, providerFactory);
          root.addInvoker(fullpath, invoker);
+         statisticsController.register(invoker);
       }
       else
       {

@@ -166,4 +166,6 @@ public interface ResteasyDeployment
    Object getProperty(String key);
 
    void setProperty(String key, Object value);
+
+   void setStatisticsEnabled(boolean statisticsEnabled);
 }

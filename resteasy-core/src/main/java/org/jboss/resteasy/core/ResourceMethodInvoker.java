@@ -29,8 +29,10 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
+import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 
@@ -88,8 +90,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected boolean expectsBody;
    protected final boolean hasProduces;
-
-
+   protected MethodStatisticsLogger methodStatisticsLogger;
 
 
 
@@ -100,6 +101,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.parentProviderFactory = providerFactory;
       this.method = method;
       this.methodAnnotations = this.method.getAnnotatedMethod().getAnnotations();
+      methodStatisticsLogger = ((StatisticsControllerImpl)providerFactory.getStatisticsController()).EMPTY;
 
       resourceInfo = new ResourceInfo()
       {
@@ -411,6 +413,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
       final RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
       final long timestamp = tracingLogger.timestamp("METHOD_INVOKE");
+      final long msTimeStamp = methodStatisticsLogger.timestamp();
       try {
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
@@ -419,6 +422,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          // let it handle the continuation
          return requestContext.filter();
       } finally {
+         methodStatisticsLogger.duration(msTimeStamp);
          if (resource instanceof SingletonResource) {
             tracingLogger.logDuration("METHOD_INVOKE", timestamp, ((SingletonResource) resource).traceInfo(), method.getMethod());
          } else {
@@ -745,5 +749,13 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public void markMethodAsAsync()
    {
       method.markAsynchronous();
+   }
+
+   public void setMethodStatisticsLogger(MethodStatisticsLogger msLogger) {
+      methodStatisticsLogger = msLogger;
+   }
+
+   public MethodStatisticsLogger getMethodStatisticsLogger() {
+      return methodStatisticsLogger;
    }
 }

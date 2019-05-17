@@ -89,10 +89,12 @@ import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 import org.jboss.resteasy.spi.util.PickConstructor;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.FeatureContextDelegate;
+import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -121,6 +123,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    private Set<Class<?>> providerClasses;
    private Set<Object> providerInstances;
    private boolean initialized = false;
+   private StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
    public ResteasyProviderFactoryImpl()
    {
@@ -1771,5 +1774,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
    {
       Utils.injectProperties(this, obj, request, response);
+   }
+
+   public StatisticsController getStatisticsController() {
+      return statisticsController;
    }
 }
