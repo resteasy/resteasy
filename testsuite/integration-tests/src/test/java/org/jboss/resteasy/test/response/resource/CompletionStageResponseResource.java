@@ -123,7 +123,7 @@ public class CompletionStageResponseResource {
             new Runnable() {
                public void run() {
                   try {
-                     Thread.sleep(3000L); // make sure that response will be created after end-point method ends
+                     Thread.sleep(1500L); // make sure that response will be created after end-point method ends
                   } catch (InterruptedException e) {
                      throw new RuntimeException(e);
                   }
