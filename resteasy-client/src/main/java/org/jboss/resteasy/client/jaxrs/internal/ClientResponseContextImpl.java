@@ -160,4 +160,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
    {
       return response.getHeaderString(name);
    }
+
+   // hack for MP exception mapping.  TODO revisit this implementation
+   public ClientResponse getClientResponse() { return response; }
 }
