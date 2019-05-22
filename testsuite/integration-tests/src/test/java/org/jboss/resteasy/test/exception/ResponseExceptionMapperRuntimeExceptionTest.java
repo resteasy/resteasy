@@ -13,8 +13,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.ws.rs.WebApplicationException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -58,5 +61,22 @@ public class ResponseExceptionMapperRuntimeExceptionTest {
          assertEquals(ExceptionMapperRuntimeExceptionWithReasonMapper.REASON, e.getMessage());
       }
    }
+
+   @Test
+   public void testRuntimeAException() throws Exception {
+      ResponseExceptionMapperRuntimeExceptionResourceInterface service = BuilderResolver.instance()
+              .newBuilder()
+              .baseUrl(new URL(PortProviderUtil.generateURL("/test",
+                      ResponseExceptionMapperRuntimeExceptionTest.class.getSimpleName())))
+              .build(ResponseExceptionMapperRuntimeExceptionResourceInterface.class);
+      try {
+         service.get();
+         fail("Should not get here");
+      } catch (WebApplicationException e) {
+         String str = e.getResponse().readEntity(String.class);
+         Assert.assertEquals("Test error occurred", str);
+      }
+   }
+
 
 }

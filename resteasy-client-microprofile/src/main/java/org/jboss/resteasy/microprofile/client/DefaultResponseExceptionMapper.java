@@ -28,7 +28,6 @@ public class DefaultResponseExceptionMapper implements ResponseExceptionMapper {
         try {
             response.bufferEntity();
         } catch (Exception ignored) {}
-        response.close();
         return new WebApplicationException("Unknown error, status code " + response.getStatus(), response);
     }
 

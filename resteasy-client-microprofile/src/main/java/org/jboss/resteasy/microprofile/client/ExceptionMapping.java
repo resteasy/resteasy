@@ -1,12 +1,12 @@
 /**
  * Copyright 2015-2017 Red Hat, Inc, and individual contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,24 +41,23 @@ public class ExceptionMapping implements ClientResponseFilter {
 
         public HandlerException(final ClientResponseContext context, final List<ResponseExceptionMapper> candidates) {
             super(null, "Handled Internally");
-            this.handled = ((ClientResponseContextImpl)context).getClientResponse();
+            this.handled = ((ClientResponseContextImpl) context).getClientResponse();
             this.candidates = candidates;
         }
 
-       public void mapException(final Method method) throws Exception {
-            try {
-                for (ResponseExceptionMapper mapper : candidates) {
-                    Throwable exception = mapper.toThrowable(handled);
-                    if (exception instanceof RuntimeException) throw (RuntimeException)exception;
-                    if (exception instanceof Error) throw (Error)exception;
-                    for (Class exc : method.getExceptionTypes()) {
-                        if (exc.isAssignableFrom(exception.getClass())) throw (Exception)exception;
-                    }
+        public void mapException(final Method method) throws Exception {
+            // we cannot close the Response as a pointer to the Response could be used in the application
+            // So, instead, let's buffer it which will close the underlying stream.
+            handled.bufferEntity();
+            for (ResponseExceptionMapper mapper : candidates) {
+                Throwable exception = mapper.toThrowable(handled);
+                if (exception instanceof RuntimeException) throw (RuntimeException) exception;
+                if (exception instanceof Error) throw (Error) exception;
+                for (Class exc : method.getExceptionTypes()) {
+                    if (exc.isAssignableFrom(exception.getClass())) throw (Exception) exception;
                 }
-            } finally {
-                handled.close();
             }
-       }
+        }
     }
 
     public ExceptionMapping(final Set<Object> instances) {

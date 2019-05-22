@@ -25,6 +25,7 @@ import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
+import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
@@ -195,6 +196,7 @@ class RestClientBuilderImpl implements RestClientBuilder {
 
         client = resteasyClientBuilder
                 .build();
+        client.register(AsyncInterceptorRxInvokerProvider.class);
 
         actualClient = client.target(baseURI)
                 .proxyBuilder(aClass)

@@ -55,8 +55,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.wildfly</groupId>
-      <artifactId>wildfly-microprofile-config-smallrye</artifactId>
+      <groupId>io.smallrye</groupId>
+      <artifactId>smallrye-config</artifactId>
+      <version>1.3.6</version>
       <scope>test</scope>
     </dependency>
 
@@ -150,6 +151,8 @@
               <goal>test</goal>
             </goals>
             <configuration>
+              <forkCount>1</forkCount>
+              <reuseForks>false</reuseForks>
               <dependenciesToScan>
                 <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
               </dependenciesToScan>

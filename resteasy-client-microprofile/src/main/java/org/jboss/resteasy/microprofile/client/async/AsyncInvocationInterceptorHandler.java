@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 
 public class AsyncInvocationInterceptorHandler {
 
-    private static final ThreadLocal<Collection<AsyncInvocationInterceptor>> threadBoundInterceptors = new ThreadLocal<>();
+    static final ThreadLocal<Collection<AsyncInvocationInterceptor>> threadBoundInterceptors = new ThreadLocal<>();
 
     public static void register(Collection<AsyncInvocationInterceptor> interceptor) {
         threadBoundInterceptors.set(interceptor);
@@ -37,32 +37,22 @@ public class AsyncInvocationInterceptorHandler {
         @Override
         public Runnable decorate(Runnable runnable) {
             Collection<AsyncInvocationInterceptor> interceptors = threadBoundInterceptors.get();
-            threadBoundInterceptors.remove();
             return () -> {
                 if (interceptors != null) {
                     interceptors.forEach(AsyncInvocationInterceptor::applyContext);
                 }
-                try {
-                    runnable.run();
-                } finally {
-                    interceptors.forEach(AsyncInvocationInterceptor::removeContext);
-                }
+                runnable.run();
             };
         }
 
         @Override
         public <V> Callable<V> decorate(Callable<V> callable) {
             Collection<AsyncInvocationInterceptor> interceptors = threadBoundInterceptors.get();
-            threadBoundInterceptors.remove();
             return () -> {
                 if (interceptors != null) {
                     interceptors.forEach(AsyncInvocationInterceptor::applyContext);
                 }
-                try {
-                    return callable.call();
-                } finally {
-                    interceptors.forEach(AsyncInvocationInterceptor::removeContext);
-                }
+                return callable.call();
             };
         }
     }
