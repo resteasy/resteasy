@@ -605,7 +605,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       final Map<String, Object> properties = config.getProperties();
       if (properties != null && !properties.isEmpty())
       {
-         Feature appliationPropertiesRegistrationfeature = new Feature()
+         Feature applicationPropertiesRegistrationFeature = new Feature()
          {
             @Override
             public boolean configure(FeatureContext featureContext)
@@ -617,7 +617,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
                return true;
             }
          };
-         this.providers.add(0, appliationPropertiesRegistrationfeature);
+         this.providers.add(0, applicationPropertiesRegistrationFeature);
       }
       return registered;
    }
