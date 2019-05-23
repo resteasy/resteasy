@@ -6,12 +6,14 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.GenericType;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 /**
@@ -48,13 +50,13 @@ public class BodyEntityExtractor implements EntityExtractor
          {
             throw new RuntimeException(Messages.MESSAGES.noTypeInformation());
          }
+         Type type = Types.resolveTypeVariables(context.getInvocation().getClientInvoker().getDeclaring(),
+                 method.getGenericReturnType());
          GenericType gt = null;
-         if (method.getGenericReturnType() != null && !(method.getGenericReturnType() instanceof TypeVariable))
-         {
-            gt = new GenericType(method.getGenericReturnType());
-         }
-         else
-         {
+
+         if(!(type instanceof TypeVariable)) {
+            gt = new GenericType(type);
+         } else {
             gt = new GenericType(method.getReturnType());
          }
          Object obj = ClientInvocation.extractResult(gt, response, method.getAnnotations());
