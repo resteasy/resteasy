@@ -568,6 +568,7 @@
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-config</artifactId>
                 <version>${version.io.smallrye.smallrye-config}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- testsuite dependencies -->
