@@ -4,7 +4,7 @@
     <para>RESTEasy integrates with Spring 3.0.x. We are interested in other forms of Spring integration, so please help
         contribute.
     </para>
-    <sect2 id="SpringBeanProcessor">
+    <sect id="SpringBeanProcessor">
         <title>Basic Integration</title>
         <para>For Maven users, you must use the resteasy-spring artifact. Otherwise, the jar is available in the
             downloaded distribution.
@@ -62,8 +62,8 @@
             affects if you are doing handcoded proxying with Spring, i.e., with ProxyFactoryBean. If you are using
             auto-proxied beans, you will be ok.
         </para>
-    </sect2>
-    <sect2 id="SpringMVC">
+    </sect>
+    <sect id="SpringMVC">
         <title>Spring MVC Integration</title>
         <para>
             RESTEasy can also integrate with the Spring DispatcherServlet. The advantages of using this are that you
@@ -127,9 +127,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
     </bean>
 ...]]></programlisting>
-    </sect2>
+    </sect>
 
-    <sect2 id="JaxrsWithSpringMVC">
+    <sect id="JaxrsWithSpringMVC">
         <title>JAX-RS with Spring MVC</title>
         <para>
             A JAX-RS Application subclass can be combined with a Spring DispatcherServlet
@@ -228,9 +228,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
     <context:component-scan base-package="org.my.app"/>
   </beans>]]></programlisting>
-    </sect2>
+    </sect>
 
-    <sect2>
+    <sect>
         <title>Spring Boot starter</title>
 
         <para>
@@ -267,15 +267,15 @@ public class JaxrsApplication extends Application {
             providers must be singletons.
         </para>
 
-    </sect2>
+    </sect>
 
 
-    <sect2>
+    <sect>
         <title>Upgrading in WildFly</title>
 
         <para>
             <emphasis role="bold">Note.</emphasis>
-            As noted in<xref linkend="upgrading-wildfly"/>, the RESTEasy distribution comes with a zip file
+            As noted in <xref linkend="upgrading-wildfly"/>, the RESTEasy distribution comes with a zip file
             called <code><![CDATA[resteasy-jboss-modules-<version>.zip]]></code>,
             which can be unzipped into the modules/system/layers/base/ directory of WildFly to upgrade to a new version
             of RESTEasy.
@@ -284,5 +284,5 @@ public class JaxrsApplication extends Application {
             old resteasy-spring jar from
             <![CDATA[modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar]]>.
         </para>
-    </sect2>
+    </sect>
 </chapter>
