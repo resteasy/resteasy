@@ -29,12 +29,22 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 import javax.enterprise.util.AnnotationLiteral;
+import javax.net.ssl.HostnameVerifier;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +69,21 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
     public static final String REST_READ_TIMEOUT_FORMAT = "%s/mp-rest/readTimeout";
 
     public static final String REST_PROVIDERS = "%s/mp-rest/providers";
+
+    public static final String TRUST_STORE = "%s/mp-rest/trustStore";
+
+    public static final String TRUST_STORE_PASSWORD = "%s/mp-rest/trustStorePassword";
+
+    public static final String TRUST_STORE_TYPE = "%s/mp-rest/trustStoreType";
+
+    public static final String KEY_STORE = "%s/mp-rest/keyStore";
+
+    public static final String KEY_STORE_PASSWORD = "%s/mp-rest/keyStorePassword";
+
+    public static final String KEY_STORE_TYPE = "%s/mp-rest/keyStoreType";
+
+    public static final String HOSTNAME_VERIFIER = "%s/mp-rest/hostnameVerifier";
+
 
     private static final String PROPERTY_PREFIX = "%s/property/";
 
@@ -110,8 +135,101 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
         configureProviders(builder);
 
+        configureSsl(builder);
+
         getConfigProperties().forEach(builder::property);
         return builder.build(proxyType);
+    }
+
+    private void configureSsl(RestClientBuilder builder) {
+        Optional<String> maybeTrustStore = getOptionalProperty(TRUST_STORE, String.class);
+
+        maybeTrustStore.ifPresent(trustStore -> registerTrustStore(trustStore, builder));
+
+        Optional<String> maybeKeyStore = getOptionalProperty(KEY_STORE, String.class);
+        maybeKeyStore.ifPresent(keyStore -> registerKeyStore(keyStore, builder));
+
+        Optional<String> maybeHostnameVerifier = getOptionalProperty(HOSTNAME_VERIFIER, String.class);
+        maybeHostnameVerifier.ifPresent(verifier -> registerHostnameVerifier(verifier, builder));
+
+    }
+
+    private void registerHostnameVerifier(String verifier, RestClientBuilder builder) {
+        try {
+            Class<?> verifierClass = Class.forName(verifier, true, Thread.currentThread().getContextClassLoader());
+            builder.hostnameVerifier((HostnameVerifier) verifierClass.newInstance());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Could not find hostname verifier class" + verifier, e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to instantiate hostname verifier class. Make sure it has a public, no-argument constructor", e);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("The provided hostname verifier " + verifier + " is not an instance of HostnameVerifier", e);
+        }
+    }
+
+    private void registerKeyStore(String keyStorePath, RestClientBuilder builder) {
+        Optional<String> keyStorePassword = getOptionalProperty(KEY_STORE_PASSWORD, String.class);
+        Optional<String> keyStoreType = getOptionalProperty(KEY_STORE_TYPE, String.class);
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType.orElse("JKS"));
+            String password = keyStorePassword.orElseThrow(() -> new IllegalArgumentException("No password provided for keystore"));
+
+            try (InputStream input = locateStream(keyStorePath)) {
+                keyStore.load(input, password.toCharArray());
+            } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException("Failed to initialize trust store from classpath resource " + keyStorePath, e);
+            }
+
+            builder.keyStore(keyStore, password);
+        } catch (KeyStoreException e) {
+            throw new IllegalArgumentException("Failed to initialize trust store from " + keyStorePath, e);
+        }
+    }
+
+    private void registerTrustStore(String trustStorePath, RestClientBuilder builder) {
+        Optional<String> maybeTrustStorePassword = getOptionalProperty(TRUST_STORE_PASSWORD, String.class);
+        Optional<String> maybeTrustStoreType = getOptionalProperty(TRUST_STORE_TYPE, String.class);
+
+        try {
+            KeyStore trustStore = KeyStore.getInstance(maybeTrustStoreType.orElse("JKS"));
+            String password = maybeTrustStorePassword.orElseThrow(() -> new IllegalArgumentException("No password provided for truststore"));
+
+            try (InputStream input = locateStream(trustStorePath)) {
+                trustStore.load(input, password.toCharArray());
+            } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException("Failed to initialize trust store from classpath resource " + trustStorePath, e);
+            }
+
+            builder.trustStore(trustStore);
+        } catch (KeyStoreException e) {
+            throw new IllegalArgumentException("Failed to initialize trust store from " + trustStorePath, e);
+        }
+    }
+
+    private InputStream locateStream(String path) throws FileNotFoundException {
+        if (path.startsWith("classpath:")) {
+            if (path.startsWith("classpath:")) {
+                path = path.replaceFirst("classpath:", "");
+            }
+            InputStream resultStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+            if (resultStream == null) {
+                resultStream = getClass().getResourceAsStream(path);
+            }
+            if (resultStream == null) {
+                throw new IllegalArgumentException("Classpath resource " + path + " not found for MicroProfile Rest Client SSL configuration");
+            }
+            return resultStream;
+        } else {
+            if (path.startsWith("file:")) {
+                path = path.replaceFirst("file:", "");
+            }
+            File certificateFile = new File(path);
+            if (!certificateFile.isFile()) {
+                throw new IllegalArgumentException("Certificate file: " + path + " not found for MicroProfile Rest Client SSL configuration");
+            }
+            return new FileInputStream(certificateFile);
+        }
     }
 
     private void configureProviders(RestClientBuilder builder) {

@@ -68,7 +68,7 @@
         <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
-        <version.microprofile.restclient>1.2.1</version.microprofile.restclient>
+        <version.microprofile.restclient>1.3.1</version.microprofile.restclient>
         <version.microprofile.config>1.3</version.microprofile.config>
         <version.org.slf4j>1.7.25</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
@@ -710,6 +710,12 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
+                <version>${version.org.eclipse.jetty}</version>
+            </dependency>
+           <!-- required to align the Jetty Servlet version for MicroProfile Rest Client tests-->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlets</artifactId>
                 <version>${version.org.eclipse.jetty}</version>
             </dependency>
             <dependency>
