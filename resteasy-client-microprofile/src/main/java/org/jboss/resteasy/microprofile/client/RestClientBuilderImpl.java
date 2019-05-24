@@ -30,6 +30,8 @@ import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
@@ -50,6 +52,7 @@ import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -124,6 +127,32 @@ class RestClientBuilderImpl implements RestClientBuilder {
         return this;
     }
 
+
+    @Override
+    public RestClientBuilder sslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
+        return this;
+    }
+
+    @Override
+    public RestClientBuilder trustStore(KeyStore trustStore) {
+        this.trustStore = trustStore;
+        return this;
+    }
+
+    @Override
+    public RestClientBuilder keyStore(KeyStore keyStore, String keystorePassword) {
+        this.keyStore = keyStore;
+        this.keystorePassword = keystorePassword;
+        return this;
+    }
+
+    @Override
+    public RestClientBuilder hostnameVerifier(HostnameVerifier hostnameVerifier) {
+        this.hostnameVerifier = hostnameVerifier;
+        return this;
+    }
+
     @Override
     public RestClientBuilder executorService(ExecutorService executor) {
         if (executor == null) {
@@ -186,6 +215,12 @@ class RestClientBuilderImpl implements RestClientBuilder {
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
         resteasyClientBuilder.register(HEADERS_REQUEST_FILTER);
+        resteasyClientBuilder.sslContext(sslContext);
+        resteasyClientBuilder.trustStore(trustStore);
+        resteasyClientBuilder.keyStore(keyStore, keystorePassword);
+
+        resteasyClientBuilder.hostnameVerifier(hostnameVerifier);
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
         if (readTimeout != null) {
             resteasyClientBuilder.readTimeout(readTimeout, readTimeoutUnit);
@@ -536,6 +571,13 @@ class RestClientBuilderImpl implements RestClientBuilder {
 
     private Long readTimeout;
     private TimeUnit readTimeoutUnit;
+
+    private SSLContext sslContext;
+    private KeyStore trustStore;
+    private KeyStore keyStore;
+    private String keystorePassword;
+    private HostnameVerifier hostnameVerifier;
+
 
     private Set<Object> localProviderInstances = new HashSet<>();
 
