@@ -37,6 +37,4 @@
             <artifactId>undertow-core</artifactId>
         </dependency>
     </dependencies>
-
-
 </project>
