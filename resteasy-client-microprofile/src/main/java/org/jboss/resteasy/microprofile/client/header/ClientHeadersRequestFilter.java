@@ -17,12 +17,10 @@ package org.jboss.resteasy.microprofile.client.header;
 
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 import org.jboss.resteasy.microprofile.client.utils.ClientRequestContextUtils;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
@@ -92,8 +90,6 @@ public class ClientHeadersRequestFilter implements ClientRequestFilter {
                 .forEach(
                         (key, values) -> requestContext.getHeaders().put(key, castToListOfObjects(values))
                 );
-
-        ResteasyProviderFactory.getContextDataMap().put(HttpHeaders.class, new HttpHeadersContextProvider(requestContext));
     }
 
     private MultivaluedMap<String, String> updateHeaders(MultivaluedMap<String, String> headers, ClientHeadersFactory factory) {
