@@ -97,12 +97,15 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
     private final Optional<String> baseUri;
 
-    RestClientDelegateBean(final Class<?> proxyType, final BeanManager beanManager, final Optional<String> baseUri) {
+    private final Optional<String> configKey;
+
+    RestClientDelegateBean(final Class<?> proxyType, final BeanManager beanManager, final Optional<String> baseUri, final Optional<String> configKey) {
         this.proxyType = proxyType;
         this.beanManager = beanManager;
         this.config = ConfigProvider.getConfig();
         this.scope = this.resolveScope();
         this.baseUri = baseUri;
+        this.configKey = configKey;
     }
 
     @Override
@@ -272,7 +275,9 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
     }
 
     private <T> Optional<T> getOptionalProperty(String propertyFormat, Class<T> type) {
-        return config.getOptionalValue(String.format(propertyFormat, proxyType.getName()), type);
+        Optional<T> value = config.getOptionalValue(String.format(propertyFormat, proxyType.getName()), type);
+        if (value.isPresent() || !configKey.isPresent()) return value;
+        return config.getOptionalValue(String.format(propertyFormat, configKey.get()), type);
     }
 
     private URL urlFromString(Optional<String> baseUrlFromConfig, String urlString) {
@@ -333,9 +338,20 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
     private Map<String, Integer> getConfigProperties() {
 
-        String property = String.format(PROPERTY_PREFIX, proxyType.getName());
         Map<String, Integer> configProperties = new HashMap<>();
+        // fill with configKey properites
+        if (configKey.isPresent()) {
+            String configKeyProperty = String.format(PROPERTY_PREFIX, configKey.get());
+            getConfigProperties(configKeyProperty, configProperties);
+        }
+        String property = String.format(PROPERTY_PREFIX, proxyType.getName());
+        // override with FQN properties
+        getConfigProperties(property, configProperties);
+        return configProperties;
+    }
 
+    private void getConfigProperties(String property, Map<String, Integer> configProperties) {
+        // TODO If the property isn't an integer it will fail!
         for (String propertyName : config.getPropertyNames()) {
             if (propertyName.startsWith(property)) {
                 Integer value = config.getValue(propertyName, Integer.class);
@@ -343,7 +359,6 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
                 configProperties.put(strippedProperty, value);
             }
         }
-        return configProperties;
     }
 
     private Class<? extends Annotation> resolveScope() {

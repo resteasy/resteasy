@@ -40,24 +40,30 @@ public class RestClientExtension implements Extension {
                                    @WithAnnotations(RegisterRestClient.class) ProcessAnnotatedType<?> type) {
         Class<?> javaClass = type.getAnnotatedType().getJavaClass();
         if (javaClass.isInterface()) {
-            Optional<String> maybeUri = extractBaseUri(type);
+            RegisterRestClient annotation = type.getAnnotatedType().getAnnotation(RegisterRestClient.class);
+            Optional<String> maybeUri = extractBaseUri(annotation);
+            Optional<String> maybeConfigKey = extractConfigKey(annotation);
 
-            proxyTypes.add(new RestClientData(javaClass, maybeUri));
+            proxyTypes.add(new RestClientData(javaClass, maybeUri, maybeConfigKey));
             type.veto();
         } else {
             errors.add(new IllegalArgumentException("Rest client needs to be an interface " + javaClass));
         }
     }
 
-    private Optional<String> extractBaseUri(ProcessAnnotatedType<?> type) {
-        RegisterRestClient annotation = type.getAnnotatedType().getAnnotation(RegisterRestClient.class);
+    private Optional<String> extractBaseUri(RegisterRestClient annotation) {
         String baseUri = annotation.baseUri();
         return Optional.ofNullable("".equals(baseUri) ? null : baseUri);
     }
 
+    private Optional<String> extractConfigKey(RegisterRestClient annotation) {
+        String configKey = annotation.configKey();
+        return Optional.ofNullable("".equals(configKey) ? null : configKey);
+    }
+
     public void createProxy(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
         for (RestClientData clientData : proxyTypes) {
-            afterBeanDiscovery.addBean(new RestClientDelegateBean(clientData.javaClass, beanManager, clientData.baseUri));
+            afterBeanDiscovery.addBean(new RestClientDelegateBean(clientData.javaClass, beanManager, clientData.baseUri, clientData.configKey));
         }
     }
 
@@ -70,10 +76,12 @@ public class RestClientExtension implements Extension {
     private static class RestClientData {
         private final Class<?> javaClass;
         private final Optional<String> baseUri;
+        private final Optional<String> configKey;
 
-        private RestClientData(final Class<?> javaClass, final Optional<String> baseUri) {
+        private RestClientData(final Class<?> javaClass, final Optional<String> baseUri, final Optional<String> configKey) {
             this.javaClass = javaClass;
             this.baseUri = baseUri;
+            this.configKey = configKey;
         }
 
         @Override
