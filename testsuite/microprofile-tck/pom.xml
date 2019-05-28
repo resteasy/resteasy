@@ -154,8 +154,6 @@
                 <exclude>org.eclipse.microprofile.rest.client.tck.CloseTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.DefaultMIMETypeTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIInvokeWithRegisteredProvidersTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.ConfigKeyForMultipleInterfacesTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.ConfigKeyTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasAppScopeTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasConversationScopeTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasRequestScopeTest</exclude>
