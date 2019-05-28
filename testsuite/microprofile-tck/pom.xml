@@ -151,7 +151,6 @@
               </dependenciesToScan>
               <excludes>
                 <!-- TODO: remove exclusions when the required features are implemented -->
-                <exclude>org.eclipse.microprofile.rest.client.tck.CloseTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIInvokeWithRegisteredProvidersTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasAppScopeTest</exclude>
                 <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasConversationScopeTest</exclude>
