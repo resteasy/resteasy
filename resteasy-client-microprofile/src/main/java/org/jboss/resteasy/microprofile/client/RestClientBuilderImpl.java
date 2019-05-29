@@ -236,8 +236,8 @@ class RestClientBuilderImpl implements RestClientBuilder {
         actualClient = client.target(baseURI)
                 .proxyBuilder(aClass)
                 .classloader(classLoader)
-                .defaultConsumes(MediaType.WILDCARD)
-                .defaultProduces(MediaType.WILDCARD).build();
+                .defaultConsumes(MediaType.APPLICATION_JSON)
+                .defaultProduces(MediaType.APPLICATION_JSON).build();
 
         Class<?>[] interfaces = new Class<?>[2];
         interfaces[0] = aClass;
