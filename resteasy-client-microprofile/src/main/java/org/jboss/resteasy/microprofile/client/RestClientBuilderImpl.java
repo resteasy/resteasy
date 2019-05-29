@@ -42,6 +42,7 @@ import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
+import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -239,9 +240,10 @@ class RestClientBuilderImpl implements RestClientBuilder {
                 .defaultConsumes(MediaType.APPLICATION_JSON)
                 .defaultProduces(MediaType.APPLICATION_JSON).build();
 
-        Class<?>[] interfaces = new Class<?>[2];
+        Class<?>[] interfaces = new Class<?>[3];
         interfaces[0] = aClass;
         interfaces[1] = RestClientProxy.class;
+        interfaces[2] = Closeable.class;
 
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, asyncInterceptorFactories));
         ClientHeaderProviders.registerForClass(aClass, proxy);

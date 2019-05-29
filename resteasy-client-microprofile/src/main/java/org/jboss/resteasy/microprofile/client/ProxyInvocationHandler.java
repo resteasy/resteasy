@@ -92,6 +92,11 @@ public class ProxyInvocationHandler implements InvocationHandler {
         if (RestClientProxy.class.equals(method.getDeclaringClass())) {
             return invokeRestClientProxyMethod(proxy, method, args);
         }
+        // Autocloseable/Closeable
+        if (method.getName().equals("close") && (args == null || args.length == 0)) {
+            close();
+            return null;
+        }
         if (closed.get()) {
             throw new IllegalStateException("RestClientProxy is closed");
         }
