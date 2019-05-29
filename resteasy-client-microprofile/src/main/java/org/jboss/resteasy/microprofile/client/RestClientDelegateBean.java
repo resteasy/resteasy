@@ -102,10 +102,10 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
     RestClientDelegateBean(final Class<?> proxyType, final BeanManager beanManager, final Optional<String> baseUri, final Optional<String> configKey) {
         this.proxyType = proxyType;
         this.beanManager = beanManager;
-        this.config = ConfigProvider.getConfig();
-        this.scope = this.resolveScope();
         this.baseUri = baseUri;
         this.configKey = configKey;
+        this.config = ConfigProvider.getConfig();
+        this.scope = this.resolveScope();
     }
 
     @Override
@@ -363,8 +363,7 @@ public class RestClientDelegateBean implements Bean<Object>, PassivationCapable 
 
     private Class<? extends Annotation> resolveScope() {
 
-        String property = String.format(REST_SCOPE_FORMAT, proxyType.getName());
-        String configuredScope = config.getOptionalValue(property, String.class).orElse(null);
+        String configuredScope = getOptionalProperty(REST_SCOPE_FORMAT, String.class).orElse(null);
 
         if (configuredScope != null) {
             try {
