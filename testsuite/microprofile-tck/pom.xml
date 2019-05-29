@@ -149,19 +149,6 @@
               <dependenciesToScan>
                 <dependency>org.eclipse.microprofile.rest.client:microprofile-rest-client-tck</dependency>
               </dependenciesToScan>
-              <excludes>
-                <!-- TODO: remove exclusions when the required features are implemented -->
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.CDIInvokeWithRegisteredProvidersTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasAppScopeTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasConversationScopeTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasRequestScopeTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasSessionScopeTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.cditests.HasSingletonScopeTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutBuilderIndependentOfMPConfigTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigTest</exclude>
-                <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigWithConfigKeyTest</exclude>
-              </excludes>
             </configuration>
           </execution>
         </executions>
