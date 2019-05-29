@@ -22,16 +22,19 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    protected int configuredPort = 8080;
    protected int runtimePort = -1;
 
+   @Override
    public void setRootResourcePath(String rootResourcePath)
    {
       context.setPath(rootResourcePath);
    }
 
+   @Override
    public ResteasyDeployment getDeployment()
    {
       return context.getDeployment();
    }
 
+   @Override
    public void setDeployment(ResteasyDeployment deployment)
    {
       this.context.setDeployment(deployment);
@@ -42,6 +45,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
     *
     * @param securityDomain
     */
+   @Override
    public void setSecurityDomain(SecurityDomain securityDomain)
    {
       this.context.setSecurityDomain(securityDomain);
