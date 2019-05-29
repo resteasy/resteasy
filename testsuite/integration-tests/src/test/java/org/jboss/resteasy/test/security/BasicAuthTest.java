@@ -152,6 +152,7 @@ public class BasicAuthTest {
             Assert.fail();
       } catch (NotAuthorizedException e) {
             Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, e.getResponse().getStatus());
+            Assert.assertTrue("WWW-Authenticate header is not included", e.getResponse().getHeaderString("WWW-Authenticate").contains("Basic realm="));
       }
    }
 
@@ -218,6 +219,7 @@ public class BasicAuthTest {
       {
             Response response = noAutorizationClient.target(generateURL("/secured")).request().get();
             Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+            Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
             response.close();
       }
 
@@ -275,6 +277,7 @@ public class BasicAuthTest {
       Response response = noAutorizationClient.target(generateURL("/secured/denyWithContentType")).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
       Assert.assertEquals("Incorrect Content-type header", "text/html;charset=UTF-8", response.getHeaderString("Content-type"));
+      Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
    }
 
     /**
@@ -296,6 +299,7 @@ public class BasicAuthTest {
     public void testWithClientRequestFilterWrongPassword(){
         Response response = unauthorizedClientUsingRequestFilterWithWrongPassword.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+        Assert.assertTrue("WWW-Authenticate header is not included", response.getHeaderString("WWW-Authenticate").contains("Basic realm="));
     }
 
     /**
