@@ -32,6 +32,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+
 /*
 * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
 */
@@ -39,29 +41,34 @@ import com.github.fge.jsonpatch.JsonPatchException;
 @Priority(Integer.MAX_VALUE)
 public class PatchMethodFilter implements ContainerRequestFilter
 {
+   //TODO:thse should go to jaxrs spec apis
+   public static final String APPLICATION_JSON_MERGE_PATCH_JSON = "application/merge-patch+json";
+
+   public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application",
+         "merge-patch+json");
+
    @Override
-   @SuppressWarnings({"rawtypes", "unchecked"})
+   @SuppressWarnings(
+   {"rawtypes", "unchecked"})
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
       if (requestContext.getMethod().equals("PATCH")
-            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
+            && (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
+            || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())))
       {
-
          HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
-         HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
          request.setHttpMethod("GET");
+         HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
          Registry methodRegistry = ResteasyContext.getContextData(Registry.class);
          ResourceInvoker resourceInovker = methodRegistry.getResourceInvoker(request);
-         if (resourceInovker == null)
-         {
-            throw new ProcessingException("Get method not found and patch method failed");
-         }
-         ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
-         Object object;
          try
          {
-            object = methodInvoker.invokeDryRun(request, response).toCompletableFuture().getNow(null);
+            ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
+            if (resourceInovker == null)
+            {
+               throw new ProcessingException("Get method not found and patch method failed");
+            }
+            Object object = methodInvoker.invokeDryRun(request, response).toCompletableFuture().getNow(null);
             ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
             MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
                   object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
@@ -70,8 +77,19 @@ public class PatchMethodFilter implements ContainerRequestFilter
                   MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
-            JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
-            JsonNode result = patch.apply(targetJson);
+
+            JsonNode result = null;
+            if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
+            {
+               JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+               result = patch.apply(targetJson);
+            }
+            else
+            {
+               final JsonMergePatch mergePatch = JsonMergePatch.fromJson(mapper.readValue(request.getInputStream(),
+                     JsonNode.class));
+               result = mergePatch.apply(targetJson);
+            }
             ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
             mapper.writeValue(targetOutputStream, result);
             request.setInputStream(new ByteArrayInputStream(targetOutputStream.toByteArray()));
@@ -80,15 +98,18 @@ public class PatchMethodFilter implements ContainerRequestFilter
          catch (ProcessingException pe)
          {
             Throwable c = pe.getCause();
-            if (c != null && c instanceof ApplicationException) {
+            if (c != null && c instanceof ApplicationException)
+            {
                c = c.getCause();
-               if (c != null && c instanceof NotFoundException) {
-                  throw (NotFoundException)c;
+               if (c != null && c instanceof NotFoundException)
+               {
+                  throw (NotFoundException) c;
                }
             }
             throw pe;
          }
-         catch (JsonMappingException | JsonParseException e) {
+         catch (JsonMappingException | JsonParseException e)
+         {
             throw new BadRequestException(e);
          }
          catch (JsonPatchException e)
@@ -96,7 +117,5 @@ public class PatchMethodFilter implements ContainerRequestFilter
             throw new Failure(e, HttpResponseCodes.SC_CONFLICT);
          }
       }
-
    }
-
 }
