@@ -36,6 +36,8 @@ import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+
 /*
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  */
@@ -43,20 +45,26 @@ import com.github.fge.jsonpatch.JsonPatchException;
 @Priority(Integer.MAX_VALUE)
 public class PatchMethodFilter implements ContainerRequestFilter
 {
+
    private volatile ObjectMapper objectMapper;
 
    @Context
    protected Providers providers;
+   //TODO:thse should go to jaxrs spec apis
+   public static final String APPLICATION_JSON_MERGE_PATCH_JSON = "application/merge-patch+json";
+
+   public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application",
+         "merge-patch+json");
 
    @Override
-   @SuppressWarnings({"rawtypes", "unchecked"})
+   @SuppressWarnings(
+   {"rawtypes", "unchecked"})
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
       if (requestContext.getMethod().equals("PATCH")
-            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
+            && (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
+            || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())))
       {
-
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
          HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
          request.setHttpMethod("GET");
@@ -85,8 +93,19 @@ public class PatchMethodFilter implements ContainerRequestFilter
                mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
             }
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
-            JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
-            JsonNode result = patch.apply(targetJson);
+
+            JsonNode result = null;
+            if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
+            {
+               JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
+               result = patch.apply(targetJson);
+            }
+            else
+            {
+               final JsonMergePatch mergePatch = JsonMergePatch.fromJson(mapper.readValue(request.getInputStream(),
+                     JsonNode.class));
+               result = mergePatch.apply(targetJson);
+            }
             ByteArrayOutputStream targetOutputStream = new ByteArrayOutputStream();
             mapper.writeValue(targetOutputStream, result);
             request.setInputStream(new ByteArrayInputStream(targetOutputStream.toByteArray()));
@@ -95,15 +114,18 @@ public class PatchMethodFilter implements ContainerRequestFilter
          catch (ProcessingException pe)
          {
             Throwable c = pe.getCause();
-            if (c != null && c instanceof ApplicationException) {
+            if (c != null && c instanceof ApplicationException)
+            {
                c = c.getCause();
-               if (c != null && c instanceof NotFoundException) {
-                  throw (NotFoundException)c;
+               if (c != null && c instanceof NotFoundException)
+               {
+                  throw (NotFoundException) c;
                }
             }
             throw pe;
          }
-         catch (JsonMappingException | JsonParseException e) {
+         catch (JsonMappingException | JsonParseException e)
+         {
             throw new BadRequestException(e);
          }
          catch (JsonPatchException e)
@@ -111,7 +133,6 @@ public class PatchMethodFilter implements ContainerRequestFilter
             throw new Failure(e, HttpResponseCodes.SC_CONFLICT);
          }
       }
-
    }
    private ObjectMapper getObjectMapper() {
       if (objectMapper == null) {
@@ -131,5 +152,4 @@ public class PatchMethodFilter implements ContainerRequestFilter
       if (resolver == null) return null;
       return resolver.getContext(ObjectMapper.class);
    }
-
 }
