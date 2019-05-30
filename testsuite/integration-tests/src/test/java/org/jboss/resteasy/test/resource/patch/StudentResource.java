@@ -72,5 +72,18 @@ public class StudentResource
       studentsMap.put(id, student);
       return student;
    }
+   @PATCH
+   @Path("/{id}")
+   @Consumes("application/merge-patch+json")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Student mergePatchStudent(@PathParam("id") long id, Student student)
+   {
+      if (studentsMap.get(id) == null)
+      {
+         throw new NotFoundException();
+      }
+      studentsMap.put(id, student);
+      return student;
+   }
 
 }

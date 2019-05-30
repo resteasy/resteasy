@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.resource.patch;
 
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -86,4 +87,28 @@ public class StudentPatchTest {
       Assert.assertEquals("Add gender", "male", patchedStudent.getGender());
       client.close();
    }
+
+   @Test
+   public void testMergePatchStudent() throws Exception {
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
+      WebTarget base = client.target(generateURL("/students"));
+      Student newStudent = new Student().setId(2L).setFirstName("Alice").setSchool("school2");
+      Response response = base.request().post(Entity.<Student>entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
+      Student s = response.readEntity(Student.class);
+      Assert.assertNotNull("Add student failed", s);
+      Assert.assertEquals("Alice", s.getFirstName());
+      Assert.assertNull("Last name is not null", s.getLastName());
+      Assert.assertEquals("school2", s.getSchool());
+      Assert.assertNull("Gender is not null", s.getGender());
+      WebTarget patchTarget = client.target(generateURL("/students/2"));
+      JsonObject object = Json.createObjectBuilder().add("lastName", "Green").addNull("school").build();
+      Response result = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(object, "application/merge-patch+json")).invoke();
+      Student patchedStudent = result.readEntity(Student.class);
+      Assert.assertEquals("Expected lastname is changed to Green", "Green", patchedStudent.getLastName());
+      Assert.assertEquals("Expected firstname is Alice", "Alice", patchedStudent.getFirstName());
+      Assert.assertEquals("Expected school is null", null, patchedStudent.getSchool());
+      Assert.assertEquals("Expected gender is null", null, patchedStudent.getGender());
+      client.close();
+   }
+
 }
