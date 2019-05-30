@@ -306,7 +306,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
       cachedPreMatch = null;
       for (JaxrsInterceptorRegistryListener listener : listeners)
       {
-         listener.registryUpdated(this);
+         listener.registryUpdated(this, factory);
       }
    }
 

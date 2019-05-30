@@ -24,6 +24,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.Parameter;
@@ -46,11 +47,8 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.sse.SseEventSink;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -236,45 +234,44 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    @Override
-   public void registryUpdated(JaxrsInterceptorRegistry registry)
+   public void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory)
    {
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         WriterInterceptor[] writerInterceptors = this.parentProviderFactory.getServerWriterInterceptorRegistry()
-               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
-         this.writerInterceptors = merge(this.writerInterceptors, writerInterceptors, WriterInterceptor.class);
+         JaxrsInterceptorRegistry<WriterInterceptor> serverWriterInterceptorRegistry = this.resourceMethodProviderFactory
+               .getServerWriterInterceptorRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != serverWriterInterceptorRegistry)
+         {
+            serverWriterInterceptorRegistry.register(factory);
+         }
+         this.writerInterceptors = serverWriterInterceptorRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         ContainerRequestFilter[] requestFilters = this.parentProviderFactory.getContainerRequestFilterRegistry()
-               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
-         this.requestFilters = merge(this.requestFilters, requestFilters, ContainerRequestFilter.class);
+         JaxrsInterceptorRegistry<ContainerRequestFilter> containerRequestFilterRegistry = this.resourceMethodProviderFactory
+               .getContainerRequestFilterRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != containerRequestFilterRegistry)
+         {
+            containerRequestFilterRegistry.register(factory);
+         }
+         this.requestFilters = containerRequestFilterRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         ContainerResponseFilter[] responseFilters = this.parentProviderFactory.getContainerResponseFilterRegistry()
-               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
-         this.responseFilters = merge(this.responseFilters, responseFilters, ContainerResponseFilter.class);
-      }
-   }
-
-   private <T> T[] merge(T[] array1, T[] array2, Class<T> classz)
-   {
-      Set<T> providers = null;
-      if (array1 != null || array2 != null)
-      {
-         providers = new HashSet<>();
-         if (array1 != null)
+         JaxrsInterceptorRegistry<ContainerResponseFilter> containerResponseFilterRegistry = this.resourceMethodProviderFactory
+               .getContainerResponseFilterRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != containerResponseFilterRegistry)
          {
-            Collections.addAll(providers, array1);
+            containerResponseFilterRegistry.register(factory);
          }
-         if (array2 != null)
-         {
-            Collections.addAll(providers, array2);
-         }
+         this.responseFilters = containerResponseFilterRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
-      T[] array = (T[]) Array.newInstance(classz, providers == null ? 0 : providers.size());
-      return providers.toArray(array);
    }
 
    protected void incrementMethodCount(String httpMethod)

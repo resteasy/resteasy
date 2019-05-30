@@ -28,6 +28,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.InputStreamToByteArray;
@@ -107,9 +108,10 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       this.factory.getServerReaderInterceptorRegistry().getListeners().add(this);
    }
 
-   public void registryUpdated(JaxrsInterceptorRegistry registry)
+   @Override
+   public void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory)
    {
-      this.interceptors = factory
+      this.interceptors = this.factory
               .getServerReaderInterceptorRegistry().postMatch(
                       declaringClass, target);
    }
