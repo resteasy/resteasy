@@ -32,7 +32,6 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
-import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -47,8 +46,11 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.sse.SseEventSink;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -233,34 +235,47 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
+   @Override
    public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(parentProviderFactory) {
-         @Override
-         protected void initializeUtils()
-         {
-            clientHelper = NOOPClientHelper.INSTANCE;
-            serverHelper = new ServerHelper(this);
-         }
-      };
-      for (DynamicFeature feature : parentProviderFactory.getServerDynamicFeatures())
-      {
-         feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
-      }
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         WriterInterceptor[] writerInterceptors = this.parentProviderFactory.getServerWriterInterceptorRegistry()
+               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
+         this.writerInterceptors = merge(this.writerInterceptors, writerInterceptors, WriterInterceptor.class);
       }
       else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         ContainerRequestFilter[] requestFilters = this.parentProviderFactory.getContainerRequestFilterRegistry()
+               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
+         this.requestFilters = merge(this.requestFilters, requestFilters, ContainerRequestFilter.class);
       }
       else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         ContainerResponseFilter[] responseFilters = this.parentProviderFactory.getContainerResponseFilterRegistry()
+               .postMatch(this.method.getResourceClass().getClazz(), this.method.getAnnotatedMethod());
+         this.responseFilters = merge(this.responseFilters, responseFilters, ContainerResponseFilter.class);
       }
    }
 
+   private <T> T[] merge(T[] array1, T[] array2, Class<T> classz)
+   {
+      Set<T> providers = null;
+      if (array1 != null || array2 != null)
+      {
+         providers = new HashSet<>();
+         if (array1 != null)
+         {
+            Collections.addAll(providers, array1);
+         }
+         if (array2 != null)
+         {
+            Collections.addAll(providers, array2);
+         }
+      }
+      T[] array = (T[]) Array.newInstance(classz, providers == null ? 0 : providers.size());
+      return providers.toArray(array);
+   }
 
    protected void incrementMethodCount(String httpMethod)
    {
