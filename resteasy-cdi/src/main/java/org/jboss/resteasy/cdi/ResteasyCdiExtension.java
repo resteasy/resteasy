@@ -1,12 +1,13 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -120,7 +121,8 @@ public class ResteasyCdiExtension implements Extension
       if(!annotatedType.getJavaClass().isInterface()
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && annotatedType.isAnnotationPresent(Provider.class))
+         && annotatedType.isAnnotationPresent(Provider.class)
+         && !isFinalClass(annotatedType.getJavaClass()))
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
          event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
@@ -260,5 +262,36 @@ public class ResteasyCdiExtension implements Extension
    public List<Class> getResources()
    {
       return resources;
+   }
+
+   /**
+    * Check for select case of unproxyable bean type.
+    * (see CDI 2.0 spec, section 3.11)
+    * @param clazz
+    * @return
+    */
+   private boolean isFinalClass(Class clazz) {
+      // Unproxyable bean type: classes which are declared final
+      boolean isFinal = Modifier.isFinal(clazz.getModifiers());
+
+      if (!isFinal) {
+         // check methods
+         for (Method m : clazz.getMethods()) {
+            if (clazz == m.getDeclaringClass())
+            {
+               int mod = m.getModifiers();
+               if (Modifier.isFinal(mod) && !Modifier.isStatic(mod)
+                  && !Modifier.isPrivate(mod))
+               {
+                  isFinal = true;
+                  break;
+               }
+            }
+
+
+         }
+      }
+
+      return isFinal;
    }
 }

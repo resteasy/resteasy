@@ -123,7 +123,7 @@ public class CompletionStageResponseResource {
             new Runnable() {
                public void run() {
                   try {
-                     Thread.sleep(3000L); // make sure that response will be created after end-point method ends
+                     Thread.sleep(1500L); // make sure that response will be created after end-point method ends
                   } catch (InterruptedException e) {
                      throw new RuntimeException(e);
                   }
@@ -132,6 +132,24 @@ public class CompletionStageResponseResource {
                }
             });
       return cs;
+   }
+
+   @GET
+   @Path("exception/delay-wrapped")
+   @Produces("text/plain")
+   public CompletionStage<String> exceptionDelayWrapped(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      CompletableFuture<String> cs = CompletableFuture.completedFuture("OK");
+      ExecutorService executor = Executors.newSingleThreadExecutor();
+      return cs.thenApplyAsync(text -> {
+         try {
+            Thread.sleep(3000L); // make sure that response will be created after end-point method ends
+         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+         }
+         Response response = Response.status(444).entity(EXCEPTION).build();
+         throw new WebApplicationException(response);
+      }, executor);
    }
 
    @GET

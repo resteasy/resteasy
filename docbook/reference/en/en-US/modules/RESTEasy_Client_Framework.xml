@@ -20,8 +20,8 @@
             String value = response.readEntity(String.class);
             response.close();  // You should close connections!
 
-            ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target = client.target("http://foo.com/resource");
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target("http://foo.com/resource");
         </programlisting>
         <para>
             RESTEasy will automatically load a set of default providers. (Basically all classes listed in all
@@ -42,7 +42,7 @@
         </para>
         
         <programlisting>
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       target.setChunked(b.booleanValue());
       Invocation.Builder request = target.request();
@@ -53,7 +53,7 @@
         </para>
         
         <programlisting>
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       ResteasyWebTarget target = client.target("http://localhost:8081/test");
       ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
       request.setChunked(b);
@@ -142,7 +142,7 @@ public interface SimpleClient
         </programlisting>
         Alternatively you can use the RESTEasy client extension interfaces directly:
         <programlisting>
-            ResteasyClient client = new ResteasyClientBuilder().build();
+            ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
             SimpleClient simple = target.proxy(SimpleClient.class);
@@ -465,7 +465,7 @@ followNextLink(): forwarded
    ...
    public void test() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       TestResource proxy = client.target(BASE_URL).proxy(TestResource.class);
       String name = proxy.dispatch(BASE_URL + "a");
       System.out.println("name: " + name);
@@ -605,7 +605,7 @@ ClientHttpEngine myEngine = new ClientHttpEngine() {
     }
 };
 
-ResteasyClient client = new RESTEasyClientBuilder().httpEngine(myEngine).build();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
        </programlisting>
 
        <para>
@@ -672,9 +672,60 @@ ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient,
          <programlisting>
 ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
 engine.setFollowRedirects(true);
-Client client = new ResteasyClientBuilder().httpEngine(engine).build();
+Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
      </programlisting>
       </para>
+    </section>
+    <section id="https">
+        <title>Configuring SSL</title>
+        <para>
+            To enable SSL on client, a <classname>ClientHttpEngine</classname> containing a SSLContext can be created to build
+            client as in the following example:
+            <programlisting>
+ClientHttpEngine myEngine = new ClientHttpEngine() {
+   ...
+   public void setSslContext(SSLContext sslContext) {
+      this.sslContext = sslContext;
+   }
+
+   @Override
+   public HostnameVerifier getHostnameVerifier() {
+      return hostnameVerifier;
+   }
+};
+myEngine.setSslContext(mySslContext)
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
+            </programlisting>
+            An alternative is to set up a keystore and truststore and pass a custom SslContext to ClientBuilder:
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().sslContext(mySslContext).build();
+            </programlisting>
+            If you don't want to create a SSLContext, you can build client with a keystore and truststore. Note if both
+            SSLContext and keystore/truststore are configured, the later will be ignored by Resteasy ClientBuilder.
+            <programlisting>
+Client sslClient = ClientBuilder.newBuilder().keystore(keystore,mypassword).
+                      trustKeystore(trustStore).build();
+            </programlisting>
+            During handshaking, a custom HostNameVerifier can be called to allow the connection if URL's hostname and
+            the server's identification hostname match.
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerifier(myhostnameVerifier).build();
+            </programlisting>
+            Resteasy provides another simple way to set up a HostnameVerifier. It allows configuring ResteasyClientBuilder with
+            a <classname>HostnameVerificationPolicy</classname> without creating a custom HostNameVerifier:
+            <programlisting>
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
+            </programlisting>
+            <itemizedlist>
+                <listitem>Setting HostnameVerificationPolicy.ANY will allow all connections without a check.</listitem>
+                <listitem>HostnameVerificationPolicy.WILDCARD only allows wildcards in subdomain names i.e. *.foo.com.</listitem>
+                <listitem>HostnameVerificationPolicy.STRICT checks if DNS names match the content of the Public Suffix List
+            (https://publicsuffix.org/list/public_suffix_list.dat). Please note if this public suffix list isn't the check
+            you want, you should create your own HostNameVerifier instead of this policy setting.</listitem>
+            </itemizedlist>
+        </para>
     </section>
     <section id="http_proxy">
       <title>HTTP proxy</title>
@@ -818,7 +869,7 @@ response.close();
             <emphasis>ResteasyClientBuilder</emphasis>.
         </para>
         <programlisting>
-    Client asyncClient = new ResteasyClientBuilder().useAsyncHttpEngine()
+    Client asyncClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).useAsyncHttpEngine()
                              .build();
     Future&lt;Response&gt; future = asyncClient
                              .target("http://locahost:8080/test").request()
@@ -901,7 +952,7 @@ response.close();
             artifact to the Maven project; then the client can be built as follows:
         </para>
         <programlisting>
-   ResteasyClient client = new ResteasyClientBuilder().clientEngine(
+   ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
       new JettyClientEngine(new HttpClient())).build();
         </programlisting>
     </section>

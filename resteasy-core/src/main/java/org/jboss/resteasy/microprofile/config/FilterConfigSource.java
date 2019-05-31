@@ -13,10 +13,26 @@ import org.jboss.resteasy.core.ResteasyContext;
 
 public class FilterConfigSource implements ConfigSource {
 
+   private static final boolean SERVLET_AVAILABLE;
+   static {
+      Class<?> clazz = null;
+      try {
+         clazz = Class.forName(FilterConfig.class.getName());
+      }
+      catch (Throwable e)
+      {
+         //RESTEASY-2228: allow loading and running this ConfigSource even when Servlet API is not available
+      }
+      SERVLET_AVAILABLE = clazz != null;
+   }
+
    private volatile String name;
 
    @Override
    public Map<String, String> getProperties() {
+      if (!SERVLET_AVAILABLE) {
+         return Collections.<String, String>emptyMap();
+      }
       FilterConfig config = ResteasyContext.getContextData(FilterConfig.class);
       if (config == null) {
          return Collections.<String, String>emptyMap();
@@ -35,6 +51,9 @@ public class FilterConfigSource implements ConfigSource {
 
    @Override
    public String getValue(String propertyName) {
+      if (!SERVLET_AVAILABLE) {
+         return null;
+      }
       FilterConfig config = ResteasyContext.getContextData(FilterConfig.class);
       if (config == null) {
          return null;
@@ -47,6 +66,9 @@ public class FilterConfigSource implements ConfigSource {
       if (name == null) {
          synchronized(this) {
             if (name == null) {
+               if (!SERVLET_AVAILABLE) {
+                  name = toString();
+               }
                ServletContext servletContext = ResteasyContext.getContextData(ServletContext.class);
                FilterConfig filterConfig = ResteasyContext.getContextData(FilterConfig.class);
                StringBuilder sb = new StringBuilder();

@@ -378,7 +378,6 @@ public class ExceptionHandler
       }
 
       if (jaxrsResponse == null) {
-         LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }
       return jaxrsResponse;

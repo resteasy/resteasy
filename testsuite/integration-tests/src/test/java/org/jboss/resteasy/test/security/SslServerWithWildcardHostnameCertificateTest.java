@@ -14,17 +14,19 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -101,16 +103,54 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
     * HostnameVerificationPolicy is set to STRICT so exception should be thrown.
     * @tpSince RESTEasy 3.7.0
     */
-   @Test(expected = ProcessingException.class)
-   @Ignore("RESTEASY-2176")
-   public void testHostnameVerificationPolicyStrict() {
+   @Test
+   public void testHostnameVerificationPolicyStrict() throws Exception {
       resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
       resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
       resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
 
       client = resteasyClientBuilder.trustStore(truststore).build();
-      client.target(URL).request().get();
+      try
+      {
+         if (InetAddress.getByName("localhost.localdomain") != null)
+         {
+            String anotherURL = URL.replace("localhost", "localhost.localdomain");
+            try
+            {
+               client.target(anotherURL).request().get();
+               Assert.fail("ProcessingException ie expected");
+            }
+            catch (ProcessingException e)
+            {
+               //expected
+            }
+         }
+      }
+      catch (UnknownHostException e)
+      {
+         try
+         {
+            if (InetAddress.getByName("localhost.localhost") != null)
+            {
+               String anotherURL = URL.replace("localhost", "localhost.localhost");
+               try
+               {
+                  client.target(anotherURL).request().get();
+                  Assert.fail("ProcessingException ie expected");
+               }
+               catch (ProcessingException e1)
+               {
+                  //expected
+               }
+            }
+         }
+         catch (UnknownHostException e2)
+         {
+           LOG.warn("Neither 'localhost.localdomain' nor 'local.localhost'can be resolved, "
+                 + "nothing is checked");
+         }
+      }
    }
 
    @After
