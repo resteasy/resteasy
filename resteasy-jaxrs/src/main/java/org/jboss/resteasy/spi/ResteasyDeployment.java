@@ -80,6 +80,7 @@ public class ResteasyDeployment
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
    private Map<String, Object> properties = new TreeMap<String, Object>();
+   protected boolean statisticsEnabled;
 
    @SuppressWarnings(value = "unchecked")
    public void start()
@@ -101,6 +102,7 @@ public class ResteasyDeployment
       // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
       providerFactory.setRegisterBuiltins(registerBuiltin);
+      providerFactory.getStatisticsController().setEnabled(statisticsEnabled);
 
       if (deploymentSensitiveFactoryEnabled)
       {
@@ -1035,5 +1037,9 @@ public class ResteasyDeployment
 
    public void setProperty(String key, Object value) {
       properties.put(key, value);
+   }
+
+   public void setStatisticsEnabled(boolean statisticsEnabled) {
+      this.statisticsEnabled = statisticsEnabled;
    }
 }

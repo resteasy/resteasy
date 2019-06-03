@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 
 import java.lang.reflect.Method;
 
@@ -16,4 +17,7 @@ public interface ResourceInvoker
    BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target);
 
    Method getMethod();
+
+   void setMethodStatisticsLogger(MethodStatisticsLogger msLogger);
+   MethodStatisticsLogger getMethodStatisticsLogger();
 }
