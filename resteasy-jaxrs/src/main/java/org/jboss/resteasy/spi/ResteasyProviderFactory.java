@@ -48,6 +48,8 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
+import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -284,7 +286,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, Class<? extends RxInvokerProvider<?>>> reactiveClasses;
 
    protected ResourceBuilder resourceBuilder;
-
+   private StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
    public ResteasyProviderFactory()
    {
@@ -3211,5 +3213,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       clientRequestFilterRegistry = factory == null ? new ClientRequestFilterRegistry(this) : factory.getClientRequestFilterRegistry().clone(this);
       clientRequestFilters = factory == null ? new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class) : factory.getClientRequestFilters().clone(this);
       clientResponseFilters = factory == null ? new ClientResponseFilterRegistry(this) : factory.getClientResponseFilters().clone(this);
+   }
+
+   public StatisticsController getStatisticsController() {
+      return statisticsController;
    }
 }
