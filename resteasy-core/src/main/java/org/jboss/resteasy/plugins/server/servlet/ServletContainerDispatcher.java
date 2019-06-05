@@ -100,7 +100,7 @@ public class ServletContainerDispatcher
                try
                {
                   Map contextDataMap = ResteasyContext.getContextDataMap();
-                  contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+                  dispatcher.getDefaultContextObjects().forEach((key, value) -> contextDataMap.putIfAbsent(key, value));
                   Application app = ResteasyDeploymentImpl.createApplication(application.trim(), dispatcher, providerFactory);
                   // push context data so we can inject it
                   processApplication(app);
