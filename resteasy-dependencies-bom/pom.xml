@@ -93,6 +93,8 @@
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
+        <version.io.projectreactor>Californium-SR8</version.io.projectreactor>
+
     </properties>
 
     <distributionManagement>
@@ -882,6 +884,13 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${version.org.springframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor</groupId>
+                <artifactId>reactor-bom</artifactId>
+                <version>${version.io.projectreactor}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
