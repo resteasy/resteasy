@@ -2,7 +2,6 @@ package org.jboss.resteasy.core;
 
 import java.net.URI;
 
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -123,13 +122,8 @@ public class InternalDispatcher
       HttpRequest previousRequest = ResteasyContext.getContextData(HttpRequest.class);
       if (previousRequest != null)
       {
-         getHeaders(request).putAll(getHeaders(previousRequest));
+         request.getMutableHeaders().putAll(previousRequest.getHttpHeaders().getRequestHeaders());
       }
-   }
-
-   private MultivaluedMap<String, String> getHeaders(HttpRequest request)
-   {
-      return request.getHttpHeaders().getRequestHeaders();
    }
 
    public static MockHttpRequest createRequest(String relativeUri, String verb)

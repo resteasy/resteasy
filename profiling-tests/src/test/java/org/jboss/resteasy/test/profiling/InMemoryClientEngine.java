@@ -152,7 +152,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
 
    public void commitHeaders(ClientInvocation request, MockHttpRequest mockHttpRequest)
    {
-      MultivaluedMap<String, String> headers = mockHttpRequest.getHttpHeaders().getRequestHeaders();
+      MultivaluedMap<String, String> headers = mockHttpRequest.getMutableHeaders();
       headers.putAll(request.getHeaders().asMap());
    }
 
