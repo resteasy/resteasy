@@ -1,6 +1,6 @@
 /*
  * JBoss, the OpenSource J2EE webOS
- * 
+ *
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
@@ -17,7 +17,7 @@ import org.junit.Test;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for UnmodifiableMultivaluedMap
- * @tpSince RESTEasy 
+ * @tpSince RESTEasy
  * @author Nicolas NESMON
  */
 public class ResteasyHttpHeadersTest
