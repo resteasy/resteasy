@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -134,7 +135,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    @Override
    public MultivaluedMap<String, String> getHeaders()
    {
-      return httpRequest.getHttpHeaders().getRequestHeaders();
+      return ((ResteasyHttpHeaders) httpRequest.getHttpHeaders()).getMutableHeaders();
    }
 
    @Override
