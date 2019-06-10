@@ -173,7 +173,7 @@ public class InMemoryClientExecutor implements ClientExecutor
 
    public void commitHeaders(ClientRequest request, MockHttpRequest mockHttpRequest)
    {
-      MultivaluedMap headers = mockHttpRequest.getHttpHeaders().getRequestHeaders();
+      MultivaluedMap headers = mockHttpRequest.getMutableHeaders();
       headers.putAll(request.getHeaders());
    }
 
