@@ -161,7 +161,7 @@ public class MockHttpRequest extends BaseHttpRequest
 
    public MockHttpRequest header(String name, String value)
    {
-      httpHeaders.getRequestHeaders().add(name, value);
+      httpHeaders.getMutableHeaders().add(name, value);
       return this;
    }
 
