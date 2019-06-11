@@ -176,12 +176,12 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          final HttpHost defaultProxy, final int responseBufferSize, final HostnameVerifier verifier, final SSLContext theContext)
    {
       final HttpClient httpClient;
+      rcBuilder.setProxy(that.defaultProxy);
       if (System.getSecurityManager() == null)
       {
          httpClient = HttpClientBuilder.create()
                  .setConnectionManager(cm)
                  .setDefaultRequestConfig(rcBuilder.build())
-                 .setProxy(defaultProxy)
                  .disableContentCompression().build();
       }
       else
@@ -194,7 +194,6 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                return HttpClientBuilder.create()
                         .setConnectionManager(cm)
                         .setDefaultRequestConfig(rcBuilder.build())
-                        .setProxy(defaultProxy)
                         .disableContentCompression().build();
             }
          });
