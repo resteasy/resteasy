@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
@@ -81,6 +82,19 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected int responseBufferSize;
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
+
+   /**
+    * Client properties to enable proxy. Proxy host property name (string).
+    */
+   public static final String PROPERTY_PROXY_HOST = "org.jboss.resteasy.jaxrs.client.proxy.host";
+   /**
+    * Proxy port property name (integer).
+    */
+   public static final String PROPERTY_PROXY_PORT = "org.jboss.resteasy.jaxrs.client.proxy.port";
+   /**
+    * Proxy scheme property name (string).
+    */
+   public static final String PROPERTY_PROXY_SCHEME = "org.jboss.resteasy.jaxrs.client.proxy.scheme";
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -409,6 +423,8 @@ public class ResteasyClientBuilder extends ClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
+      // check for proxy config parameters
+      setProxyIfNeeded(config);
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -434,6 +450,8 @@ public class ResteasyClientBuilder extends ClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
+      // check for proxy config parameters
+      setProxyIfNeeded(config);
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -447,7 +465,32 @@ public class ResteasyClientBuilder extends ClientBuilder
 
    }
 
-   protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
+   /** This method sets http proxy if {@link ResteasyClientBuilder#PROPERTY_PROXY_HOST} is set in the properties.
+   *
+   * @param clientConfig client config
+   */
+  private void setProxyIfNeeded(ClientConfiguration clientConfig) {
+     try {
+        Object proxyHostProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_HOST);
+        if (proxyHostProp != null) {
+           Object proxyPortProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_PORT);
+           // default if the port is not set or if it is not string or number
+           Integer proxyPort = -1;
+           if (proxyPortProp != null && proxyPortProp instanceof Number) {
+              proxyPort = ((Number) proxyPortProp).intValue();
+           } else if (proxyPortProp != null && proxyPortProp instanceof String) {
+              proxyPort = Integer.parseInt((String) proxyPortProp);
+           }
+           Object proxySchemeProp = clientConfig.getProperty(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME);
+           defaultProxy((String)proxyHostProp, proxyPort, (String)proxySchemeProp);
+        }
+     } catch(Exception e) {
+        // catch possible exceptions (in this case we do not set proxy at all)
+        LogMessages.LOGGER.warn(Messages.MESSAGES.unableToSetHttpProxy(), e);
+     }
+  }
+
+  protected ResteasyClient createResteasyClient(ClientHttpEngine engine,ExecutorService executor, boolean cleanupExecutor, ScheduledExecutorService scheduledExecutorService, ClientConfiguration config ) {
       return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
    }
 
@@ -476,6 +519,21 @@ public class ResteasyClientBuilder extends ClientBuilder
    public Configuration getConfiguration()
    {
       return getProviderFactory().getConfiguration();
+   }
+
+   public String getDefaultProxyHostname()
+   {
+      return defaultProxy != null ? defaultProxy.getHostName() : null;
+   }
+
+   public int getDefaultProxyPort()
+   {
+      return defaultProxy != null ? defaultProxy.getPort() : -1;
+   }
+
+   public String getDefaultProxyScheme()
+   {
+      return defaultProxy != null ? defaultProxy.getSchemeName() : null;
    }
 
    @Override
