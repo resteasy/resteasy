@@ -115,6 +115,7 @@
                 <module>resteasy-stats</module>
                 <module>resteasy-reactive-context</module>
                 <module>resteasy-rxjava2</module>
+                <module>resteasy-reactor</module>
                 <module>server-adapters</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
