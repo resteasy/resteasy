@@ -386,7 +386,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     */
    public ResteasyClientBuilder defaultProxy(String hostname, int port, final String scheme)
    {
-      this.defaultProxy = new HttpHost(hostname, port, scheme);
+      this.defaultProxy = hostname != null ? new HttpHost(hostname, port, scheme) : null;
       return this;
    }
 
@@ -423,8 +423,6 @@ public class ResteasyClientBuilder extends ClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
-      // check for proxy config parameters
-      setProxyIfNeeded(config);
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -433,7 +431,16 @@ public class ResteasyClientBuilder extends ClientBuilder
          executor = Executors.newFixedThreadPool(10);
       }
 
+      boolean resetProxy = false;
+      if (this.defaultProxy == null) {
+         resetProxy = true;
+         // check for proxy config parameters
+         setProxyIfNeeded(config);
+      }
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder4().resteasyClientBuilder(this).build();
+      if (resetProxy) {
+         this.defaultProxy = null;
+      }
       return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
@@ -450,8 +457,6 @@ public class ResteasyClientBuilder extends ClientBuilder
          config.property(entry.getKey(), entry.getValue());
       }
 
-      // check for proxy config parameters
-      setProxyIfNeeded(config);
       ExecutorService executor = asyncExecutor;
 
       if (executor == null)
@@ -460,7 +465,16 @@ public class ResteasyClientBuilder extends ClientBuilder
          executor = Executors.newCachedThreadPool();
       }
 
+      boolean resetProxy = false;
+      if (this.defaultProxy == null) {
+         resetProxy = true;
+         // check for proxy config parameters
+         setProxyIfNeeded(config);
+      }
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
+      if (resetProxy) {
+         this.defaultProxy = null;
+      }
       return createResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
@@ -519,21 +533,6 @@ public class ResteasyClientBuilder extends ClientBuilder
    public Configuration getConfiguration()
    {
       return getProviderFactory().getConfiguration();
-   }
-
-   public String getDefaultProxyHostname()
-   {
-      return defaultProxy != null ? defaultProxy.getHostName() : null;
-   }
-
-   public int getDefaultProxyPort()
-   {
-      return defaultProxy != null ? defaultProxy.getPort() : -1;
-   }
-
-   public String getDefaultProxyScheme()
-   {
-      return defaultProxy != null ? defaultProxy.getSchemeName() : null;
    }
 
    @Override
