@@ -14,12 +14,16 @@
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <container.base.dir.managed>${project.build.directory}${file.separator}${container.qualifier.managed}</container.base.dir.managed>
+        <container.base.dir.managed.encoding>${project.build.directory}${file.separator}${container.qualifier.managed.encoding}</container.base.dir.managed.encoding>
         <container.base.dir.manual.gzip>${project.build.directory}${file.separator}${container.qualifier.manual.gzip}</container.base.dir.manual.gzip>
         <container.offset.managed>0</container.offset.managed>
+        <container.offset.managed.encoding>7000</container.offset.managed.encoding>
         <container.offset.manual.gzip>1000</container.offset.manual.gzip>
         <container.management.port.managed>9990</container.management.port.managed><!-- keep in sync with port offset -->
+        <container.management.port.managed.encoding>16990</container.management.port.managed.encoding><!-- keep in sync with port offset -->
         <container.management.port.manual.gzip>10990</container.management.port.manual.gzip><!-- keep in sync with port offset -->
         <container.qualifier.managed>jbossas-managed</container.qualifier.managed>
+        <container.qualifier.managed.encoding>jbossas-managed-encoding</container.qualifier.managed.encoding>
         <container.qualifier.manual.gzip>jbossas-manual-gzip</container.qualifier.manual.gzip>
     </properties>
 
@@ -120,7 +124,7 @@
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
@@ -148,7 +152,7 @@
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
@@ -248,19 +252,19 @@
             <artifactId>resteasy-netty4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-wadl-undertow-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-html</artifactId>
             <version>${project.version}</version>
         </dependency>
-                         
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -326,7 +330,7 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
@@ -369,13 +373,13 @@
             <artifactId>rxjava</artifactId>
             <scope>provided</scope>
         </dependency>
-                
+
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-rxjava</artifactId>
@@ -394,7 +398,7 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
 	    <scope>provided</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <build>
@@ -427,7 +431,7 @@
                                      the original into new place.
                                      This helps to isolate the multiple running instances.
                                      One copy per each container in arquillian.xml -->
-                                
+
                                 <delete quiet="true" dir="${container.base.dir.managed}" />
                                 <copy todir="${container.base.dir.managed}" overwrite="true" failonerror="true">
                                     <fileset dir="${jboss.home}/standalone"/>
@@ -435,6 +439,10 @@
 
                                 <delete quiet="true" dir="${container.base.dir.manual.gzip}" />
                                 <copy todir="${container.base.dir.manual.gzip}" overwrite="true" failonerror="true">
+                                    <fileset dir="${jboss.home}/standalone"/>
+                                </copy>
+                                <delete quiet="true" dir="${container.base.dir.managed.encoding}" />
+                                <copy todir="${container.base.dir.managed.encoding}" overwrite="true" failonerror="true">
                                     <fileset dir="${jboss.home}/standalone"/>
                                 </copy>
                             </target>
