@@ -24,6 +24,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.Parameter;
@@ -32,7 +33,6 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
-import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -233,34 +233,46 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
-   public void registryUpdated(JaxrsInterceptorRegistry registry)
+   @Override
+   public void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory)
    {
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(parentProviderFactory) {
-         @Override
-         protected void initializeUtils()
-         {
-            clientHelper = NOOPClientHelper.INSTANCE;
-            serverHelper = new ServerHelper(this);
-         }
-      };
-      for (DynamicFeature feature : parentProviderFactory.getServerDynamicFeatures())
-      {
-         feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
-      }
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         JaxrsInterceptorRegistry<WriterInterceptor> serverWriterInterceptorRegistry = this.resourceMethodProviderFactory
+               .getServerWriterInterceptorRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != serverWriterInterceptorRegistry)
+         {
+            serverWriterInterceptorRegistry.register(factory);
+         }
+         this.writerInterceptors = serverWriterInterceptorRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         JaxrsInterceptorRegistry<ContainerRequestFilter> containerRequestFilterRegistry = this.resourceMethodProviderFactory
+               .getContainerRequestFilterRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != containerRequestFilterRegistry)
+         {
+            containerRequestFilterRegistry.register(factory);
+         }
+         this.requestFilters = containerRequestFilterRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+         JaxrsInterceptorRegistry<ContainerResponseFilter> containerResponseFilterRegistry = this.resourceMethodProviderFactory
+               .getContainerResponseFilterRegistry();
+         //Check to prevent StackOverflowError
+         if (registry != containerResponseFilterRegistry)
+         {
+            containerResponseFilterRegistry.register(factory);
+         }
+         this.responseFilters = containerResponseFilterRegistry.postMatch(this.method.getResourceClass().getClazz(),
+               this.method.getAnnotatedMethod());
       }
    }
-
 
    protected void incrementMethodCount(String httpMethod)
    {

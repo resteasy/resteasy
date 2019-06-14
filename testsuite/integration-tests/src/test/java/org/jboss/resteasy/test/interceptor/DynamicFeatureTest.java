@@ -15,7 +15,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -68,7 +67,6 @@ public class DynamicFeatureTest {
     */
    @Test
    @InSequence(1)
-   @Ignore("RESTEASY-2246")
    public void testDynamicFeatureProcessing() {
       int counter = logCounter.count();
       Assert.assertNotEquals("Dynamic features were not processed at application deployment time", 0, counter);
