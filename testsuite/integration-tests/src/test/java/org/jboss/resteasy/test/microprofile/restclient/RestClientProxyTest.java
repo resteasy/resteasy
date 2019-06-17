@@ -56,7 +56,7 @@ public class RestClientProxyTest
    public void testGetClient() throws Exception
    {
       RestClientBuilder builder = RestClientBuilder.newBuilder();
-      RestClientBuilder resteasyBuilder = BuilderResolver.instance().newBuilder();
+      RestClientBuilder resteasyBuilder = new BuilderResolver().newBuilder();
       assertEquals(resteasyBuilder.getClass(), builder.getClass());
       HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
 
