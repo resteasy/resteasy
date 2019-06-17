@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,18 @@ public class ServletContainerDispatcher
    protected ResteasyDeployment deployment = null;
    protected HttpRequestFactory requestFactory;
    protected HttpResponseFactory responseFactory;
+
+   protected ServletConfig servletConfig;
+
+   public ServletContainerDispatcher(final ServletConfig servletConfig)
+   {
+      this.servletConfig = servletConfig;
+      ResteasyContext.pushContext(ServletConfig.class, servletConfig);
+   }
+
+   public ServletContainerDispatcher()
+   {
+   }
 
    public Dispatcher getDispatcher()
    {
@@ -229,6 +242,8 @@ public class ServletContainerDispatcher
             ResteasyContext.pushContext(HttpServletResponse.class, response);
 
             ResteasyContext.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+            ResteasyContext.pushContext(ServletConfig.class, servletConfig);
+
             if (handleNotFound)
             {
                dispatcher.invoke(in, theResponse);
