@@ -37,10 +37,9 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       Map<Class<?>, Object> map = ResteasyContext.getContextDataMap();
       map.put(ServletContext.class, servletConfig.getServletContext());
       map.put(ServletConfig.class, servletConfig);
-      servletContainerDispatcher = new ServletContainerDispatcher();
+      servletContainerDispatcher = new ServletContainerDispatcher(servletConfig);
       ServletBootstrap bootstrap = new ServletBootstrap(servletConfig);
       servletContainerDispatcher.init(servletConfig.getServletContext(), bootstrap, this, this);
-      servletContainerDispatcher.getDispatcher().getDefaultContextObjects().put(ServletConfig.class, servletConfig);
    }
 
    @Override
