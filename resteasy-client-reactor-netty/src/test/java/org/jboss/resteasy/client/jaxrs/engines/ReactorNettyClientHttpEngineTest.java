@@ -53,13 +53,12 @@ public class ReactorNettyClientHttpEngineTest {
     @BeforeClass
     public static void setup() {
         setupMockServer();
-        client = setupClient("http://localhost:" + mockServer.port());
+        client = setupClient(HttpClient.create());
     }
 
-    private static Client setupClient(String baseUrl) {
+    private static Client setupClient(HttpClient httpClient) {
         ClientBuilder builder = ClientBuilder.newBuilder();
         ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
-        HttpClient httpClient = HttpClient.create().baseUrl(baseUrl);
         ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
                         httpClient,
@@ -121,30 +120,34 @@ public class ReactorNettyClientHttpEngineTest {
         mockServer.dispose();
     }
 
+    private static String url(String path) {
+        return "http://localhost:" + mockServer.port() + path;
+    }
+
     @Test
     public void testSyncGet() {
-        final Response response = client.target("/hello").request().get();
+        final Response response = client.target(url("/hello")).request().get();
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
     }
 
     @Test
     public void testSyncGetWithType() {
-        final String entity = client.target("/hello").request().get(String.class);
+        final String entity = client.target(url("/hello")).request().get(String.class);
         assertEquals(HELLO_WORLD, entity);
     }
 
     @Test
     public void testSyncGetWithGenericType() {
         final GenericType<List<String>> stringListType = new GenericType<List<String>>() {};
-        final List<String> listOfStrings = client.target("/listofstrings").request().get(stringListType);
+        final List<String> listOfStrings = client.target(url("/listofstrings")).request().get(stringListType);
         assertEquals("somestring1", listOfStrings.get(0));
         assertEquals("somestring2", listOfStrings.get(1));
     }
 
     @Test
     public void testSyncGetNoResponseEntity() {
-        final Response response = client.target("/noentity").request().get();
+        final Response response = client.target(url("/noentity")).request().get();
         assertEquals(204, response.getStatus());
         assertFalse(response.hasEntity());
     }
@@ -153,7 +156,7 @@ public class ReactorNettyClientHttpEngineTest {
     public void testSyncPost() {
         final Person person = new Person("Mike", 24);
         final Person agedPerson =
-                client.target("/birthday")
+                client.target(url("/birthday"))
                         .request()
                         .post(Entity.entity(person, MediaType.APPLICATION_JSON), Person.class);
 
@@ -163,13 +166,13 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testSyncHead() {
-        final Response response = client.target("/hello").request().head();
+        final Response response = client.target(url("/hello")).request().head();
         assertEquals(200, response.getStatus());
     }
 
     @Test
     public void testAsyncGet() throws ExecutionException, InterruptedException {
-        final Future<Response> future = client.target("/hello").request().async().get();
+        final Future<Response> future = client.target(url("/hello")).request().async().get();
         final Response response = future.get();
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
@@ -177,17 +180,17 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testAsyncHead() throws ExecutionException, InterruptedException {
-        final Future<Response> future = client.target("/hello").request().async().head();
+        final Future<Response> future = client.target(url("/hello")).request().async().head();
         final Response response = future.get();
         assertEquals(200, response.getStatus());
     }
 
     @Test
     public void testAsyncGetWithType() throws ExecutionException, InterruptedException {
-        final String entity2 = client.target("/hello").request().get(String.class);
+        final String entity2 = client.target(url("/hello")).request().get(String.class);
         assertEquals(HELLO_WORLD, entity2);
 
-        final Future<String> future = client.target("/hello").request().async().get(String.class);
+        final Future<String> future = client.target(url("/hello")).request().async().get(String.class);
         final String entity = future.get();
         assertEquals(HELLO_WORLD, entity);
 
@@ -196,7 +199,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testAsyncGetWithGenericType() throws ExecutionException, InterruptedException {
         final GenericType<List<String>> stringListType = new GenericType<List<String>>() {};
-        final Future<List<String>> future = client.target("/listofstrings").request().async().get(stringListType);
+        final Future<List<String>> future = client.target(url("/listofstrings")).request().async().get(stringListType);
         final List<String> listOfStrings = future.get();
         assertEquals("somestring1", listOfStrings.get(0));
         assertEquals("somestring2", listOfStrings.get(1));
@@ -204,7 +207,7 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testAsyncGetNoResponseEntity() throws ExecutionException, InterruptedException {
-        final Future<Response> future = client.target("/noentity").request().async().get();
+        final Future<Response> future = client.target(url("/noentity")).request().async().get();
         final Response response = future.get();
         assertEquals(204, response.getStatus());
         assertFalse(response.hasEntity());
@@ -214,7 +217,7 @@ public class ReactorNettyClientHttpEngineTest {
     public void testAsyncGetWithInvocationCallbackCompleted() throws ExecutionException, InterruptedException {
         final AtomicReference<String> entity = new AtomicReference<>();
         final Future<String> future =
-                client.target("/hello")
+                client.target(url("/hello"))
                         .request()
                         .async()
                         .get(new InvocationCallback<String>() {
@@ -235,7 +238,7 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testAsyncGetWithInvocationCallbackFailed() throws ExecutionException, InterruptedException {
-        final Client client = setupClient("invalid");
+        final Client client = setupClient(HttpClient.create().baseUrl("invalid"));
         final AtomicReference<String> entity = new AtomicReference<>();
         final Future<String> future =
                 client.target("/hello")
@@ -264,7 +267,7 @@ public class ReactorNettyClientHttpEngineTest {
 
         final Person person = new Person("Mike", 24);
         final Future<Person> future =
-                client.target("/birthday")
+                client.target(url("/birthday"))
                         .request()
                         .async()
                         .post(Entity.entity(person, MediaType.APPLICATION_JSON), Person.class);
@@ -276,7 +279,7 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testRxInvocationGet() throws ExecutionException, InterruptedException {
-        final CompletionStage<Response> completionStage = client.target("/hello").request().rx().get();
+        final CompletionStage<Response> completionStage = client.target(url("/hello")).request().rx().get();
         final Response response = completionStage.toCompletableFuture().get();
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
@@ -284,7 +287,7 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testRxInvocationGetWithType() throws ExecutionException, InterruptedException {
-        final CompletionStage<String> completionStage = client.target("/hello").request().rx().get(String.class);
+        final CompletionStage<String> completionStage = client.target(url("/hello")).request().rx().get(String.class);
         final String entity = completionStage.toCompletableFuture().get();
         assertEquals(HELLO_WORLD, entity);
     }
@@ -292,7 +295,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testHeaderPropagation() {
         final int randomInt = (new Random()).nextInt();
-        final Response response = client.target("/hello").request().header("randomInt", randomInt).get();
+        final Response response = client.target(url("/hello")).request().header("randomInt", randomInt).get();
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
         assertEquals(response.getHeaders().getFirst("id"), Integer.toString(randomInt + 1));
@@ -300,46 +303,46 @@ public class ReactorNettyClientHttpEngineTest {
 
     @Test
     public void testPathParamPropagation() {
-        final Response response = client.target("/param/Mike").request().get();
+        final Response response = client.target(url("/param/Mike")).request().get();
         assertEquals(200, response.getStatus());
         assertEquals("Mike", response.readEntity(String.class));
     }
 
     @Test
     public void test404() {
-        final Response response = client.target("/notfound").request().get();
+        final Response response = client.target(url("/notfound")).request().get();
         assertEquals(404, response.getStatus());
         assertFalse(response.hasEntity());
 
-        final Response response2 = client.target("/invalidpath").request().get();
+        final Response response2 = client.target(url("/invalidpath")).request().get();
         assertEquals(404, response2.getStatus());
         assertFalse(response2.hasEntity());
     }
 
     @Test
     public void test404WithEntity() {
-        final Response response = client.target("/notfoundwithentity").request().get();
+        final Response response = client.target(url("/notfoundwithentity")).request().get();
         assertEquals(404, response.getStatus());
         assertEquals(RESOURCE_COULD_NOT_BE_FOUND, response.readEntity(String.class));
     }
 
     @Test
     public void test500() {
-        final Response response = client.target("/internalservererror").request().get();
+        final Response response = client.target(url("/internalservererror")).request().get();
         assertEquals(500, response.getStatus());
         assertFalse(response.hasEntity());
     }
 
     @Test
     public void test500WithEntity() {
-        final Response response = client.target("/internalservererrorwithentity").request().get();
+        final Response response = client.target(url("/internalservererrorwithentity")).request().get();
         assertEquals(500, response.getStatus());
         assertEquals(SERVER_IS_NOT_ABLE_TO_RESPONSE, response.readEntity(String.class));
     }
 
     @Test
     public void testQueryParamPropagation() {
-        final Response response = client.target("/query?name=Mike&age=24").request().get();
+        final Response response = client.target(url("/query?name=Mike&age=24")).request().get();
         assertEquals(200, response.getStatus());
         assertEquals("name=Mike&age=24", response.readEntity(String.class));
     }
@@ -419,7 +422,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testThatRequestContentLengthIsSet() {
         final String payload = "hello";
-        final WebTarget target = client.target("/headers");
+        final WebTarget target = client.target(url("/headers"));
         final Response response = target.request().post(Entity.text(payload));
         assertEquals(200, response.getStatus());
         assertEquals(Integer.toString(payload.length()), response.readEntity(String.class));
@@ -428,7 +431,7 @@ public class ReactorNettyClientHttpEngineTest {
     @Test
     public void testThatRequestContentLengthHeaderIsOverwritten() {
         final String payload = "hello";
-        final WebTarget target = client.target("/headers");
+        final WebTarget target = client.target(url("/headers"));
         final Response response =
             target
                 .request()
