@@ -9,9 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client-reactor-netty</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <name>RESTEasy JAX-RS Client - Reactor Netty Engine</name>
 
     <dependencies>
         <dependency>

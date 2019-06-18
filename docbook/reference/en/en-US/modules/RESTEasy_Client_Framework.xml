@@ -529,6 +529,11 @@ name: b
            option for those already running on the Jetty server.
        </para>
        <para>
+           <code class="classname">ReactorNettyClientHttpEngine</code> is built on top
+           of <emphasis>Reactor Netty</emphasis>, which provides a non-blocking HTTP client based
+           on Netty framework.
+       </para>
+       <para>
            Finally,
            <code class="classname">InMemoryClientEngine</code> is
            an implementation that dispatches requests to a server in the same JVM and
@@ -556,6 +561,10 @@ name: b
                    <row>
                        <entry>JettyClientEngine</entry>
                        <entry>Uses Eclipse Jetty</entry>
+                   </row>
+                   <row>
+                       <entry>ReactorNettyClientHttpEngine</entry>
+                       <entry>Uses Reactor Netty</entry>
                    </row>
                    <row>
                        <entry>InMemoryClientEngine</entry>
@@ -943,7 +952,7 @@ response.close();
         <title>Jetty Client Engine</title>
         <para>
             As a drop in replacement, RESTEasy allows selecting a Jetty 9.4+ based HTTP engine.
-            The Jetty implementation is newer and lessl tested, but if may end up being a good choice
+            The Jetty implementation is newer and less tested, but it may end up being a good choice
             when relying on Jetty as server side already.  The Jetty Server can even share execution
             resources with Client libraries if you configure them to use e.g. the same QueuedThreadPool.
         </para>
@@ -952,8 +961,29 @@ response.close();
             artifact to the Maven project; then the client can be built as follows:
         </para>
         <programlisting>
-   ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
-      new JettyClientEngine(new HttpClient())).build();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
+   new JettyClientEngine(new HttpClient())).build();
+        </programlisting>
+    </section>
+
+    <section id="reactor_netty_client">
+        <title>Reactor Netty Client Engine</title>
+        <para>
+            Still as a drop in replacement, RESTEasy allows selecting a Reactor Netty based HTTP engine.
+            The Reactor Netty implementation is newer and less tested, but can be a good choice if the user
+            application is already dependening on Netty and performs asynchronous client invocations.
+        </para>
+        <para>
+            The Reactor Netty engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-reactor-netty</emphasis>
+            artifact to the Maven project; then the client can be built as follows:
+        </para>
+        <programlisting>
+ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
+   HttpClient.create(),
+   new DefaultChannelGroup(new DefaultEventExecutor()),
+   HttpResources.get());
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+   .clientEngine(engine).build();
         </programlisting>
     </section>
 
