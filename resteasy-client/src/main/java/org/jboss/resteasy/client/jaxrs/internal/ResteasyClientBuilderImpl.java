@@ -71,7 +71,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     */
    public ResteasyClientBuilderImpl providerFactory(ResteasyProviderFactory providerFactory)
    {
-      this.providerFactory = providerFactory;
+      withConfig(providerFactory);
       return this;
    }
 
