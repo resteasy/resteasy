@@ -6,7 +6,7 @@ script:
 language: java
 jdk:
   - openjdk8
-  - oraclejdk11
+  - openjdk11
 env:
   - SERVER_VERSION=15.0.0.Final
   - SERVER_VERSION=16.0.0.Final
@@ -14,7 +14,7 @@ env:
   - SERVER_VERSION=17.0.0.Final ELYTRON=true
 jobs:
   exclude:
-    - jdk: oraclejdk11
+    - jdk: openjdk11
       env: SERVER_VERSION=17.0.0.Final ELYTRON=true
   include:
     - stage: "javadoc"
