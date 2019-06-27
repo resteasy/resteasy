@@ -23,7 +23,7 @@ jobs:
       env: SERVER_VERSION=17.0.0.Final
     - stage: "javadoc"
       script: mvn -B -Pjboss-repository -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
-      jdk: oraclejdk11
+      jdk: openjdk11
       env: SERVER_VERSION=17.0.0.Final
 addons:
   hosts:
