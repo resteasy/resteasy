@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.resource.resource;
 
+import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
+
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -23,6 +25,12 @@ public class OptionalResource {
     @GET
     public String holder(@QueryParam("value") Optional<Holder<String>> value) {
         return value.map(Holder::get).orElse("none");
+    }
+
+    @Path("/matrix")
+    @POST
+    public String matrix(@MatrixParam("value") OptionalLong value) {
+        return Long.toString(value.orElse(42));
     }
 
     @Path("/long")

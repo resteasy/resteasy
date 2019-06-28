@@ -33,6 +33,7 @@ public class OptionalInjectionTest {
                 .toCompletableFuture().get().getEntity());
     }
 
+
     @Test
     public void testOptionalStringPresent() throws Exception {
         MockHttpRequest req = MockHttpRequest.get("/optional/string?value=88");
@@ -62,6 +63,17 @@ public class OptionalInjectionTest {
 
         Assert.assertEquals("42", registry.getResourceInvoker(req).invoke(req, resp)
                 .toCompletableFuture().get().getEntity());
+    }
+
+    @Test
+    public void testMatrixParamAbsent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix");
+        System.out.println(registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
     }
 
     @Test
