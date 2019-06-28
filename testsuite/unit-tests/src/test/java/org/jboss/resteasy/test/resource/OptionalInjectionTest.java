@@ -68,7 +68,7 @@ public class OptionalInjectionTest {
     @Test
     public void testMatrixParamAbsent() throws Exception {
         MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix");
-        System.out.println(registry
+        Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .toCompletableFuture()
