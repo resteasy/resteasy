@@ -11,9 +11,11 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactoryDelegate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Configuration;
 
 import java.security.KeyStore;
@@ -69,9 +71,24 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * @param providerFactory provider factory
     * @return the updated client builder instance
     */
+   @Override
    public ResteasyClientBuilderImpl providerFactory(ResteasyProviderFactory providerFactory)
    {
-      withConfig(providerFactory);
+      if (providerFactory instanceof LocalResteasyProviderFactory)
+      {
+         this.providerFactory = providerFactory;
+      }
+      else
+      {
+         this.providerFactory = new ResteasyProviderFactoryDelegate(providerFactory)
+         {
+            @Override
+            public javax.ws.rs.RuntimeType getRuntimeType()
+            {
+               return RuntimeType.CLIENT;
+            }
+         };
+      }
       return this;
    }
 
