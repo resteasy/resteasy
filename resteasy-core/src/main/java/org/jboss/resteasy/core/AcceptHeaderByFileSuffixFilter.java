@@ -46,11 +46,10 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      if (mediaTypeMappings == null && languageMappings == null)
+      if ((mediaTypeMappings == null || mediaTypeMappings.isEmpty()) && (languageMappings == null || languageMappings.isEmpty()))
       {
          return;
       }
-
       URI uri = requestContext.getUriInfo().getRequestUri();
       String rawPath = uri.getRawPath();
       int lastSegment = rawPath.lastIndexOf('/');

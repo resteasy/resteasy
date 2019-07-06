@@ -32,7 +32,15 @@ public class ServletUtil
                contextPath += "/";
          contextPath += servletPrefix;
       }
-      return new ResteasyUriInfo(request.getRequestURL(), request.getQueryString(), contextPath);
+      String queryString = request.getQueryString();
+      StringBuffer builder = request.getRequestURL();
+      String absolute;
+      if (queryString != null && queryString.length() > 0) {
+         absolute = request.getRequestURL().append('?').append(queryString).toString();
+      } else {
+         absolute = request.getRequestURL().toString();
+      }
+      return new ResteasyUriInfo(absolute, contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)

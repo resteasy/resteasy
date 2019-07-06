@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Priority;
@@ -40,13 +41,13 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ContainerRe
 
    protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)
    {
-      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       List<Object> signatures = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (signatures == null || signatures.isEmpty())
       {
-         return list;
+         return Collections.EMPTY_LIST;
       }
+      List<DKIMSignature> list = new ArrayList<DKIMSignature>();
 
       for (Object obj : signatures)
       {
