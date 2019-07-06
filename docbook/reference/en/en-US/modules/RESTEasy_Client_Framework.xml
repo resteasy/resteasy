@@ -529,6 +529,11 @@ name: b
            option for those already running on the Jetty server.
        </para>
        <para>
+           <code class="classname">VertxClientHttpEngine</code> is built on top
+           of <emphasis>Eclipse Vertx</emphasis>, which provides a non-blocking HTTP client based
+           on Vertx framework.
+       </para>
+       <para>
            <code class="classname">ReactorNettyClientHttpEngine</code> is built on top
            of <emphasis>Reactor Netty</emphasis>, which provides a non-blocking HTTP client based
            on Netty framework.
@@ -965,6 +970,60 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clie
    new JettyClientEngine(new HttpClient())).build();
         </programlisting>
     </section>
+
+     <section id="vertx_client">
+         <title>Vertx Client Engine</title>
+         <para>
+           Still as a drop in replacement, RESTEasy allows selecting a Vertx based HTTP engine.
+           The Vertx implementation can perform asynchronous client invocations. It can be used with
+           and without Vert.x and it provides the following features:
+         </para>
+         <itemizedlist>
+             <listitem>
+                 <para>HTTP/1.1</para>
+             </listitem>
+             <listitem>
+                 <para>HTTP/2</para>
+             </listitem>
+             <listitem>
+                 <para>SSL/TLS (including native SSL engine)</para>
+             </listitem>
+             <listitem>
+                 <para>Efficient client connection pooling</para>
+             </listitem>
+             <listitem>
+                 <para>Optional native IO on Linux and BSD for greater performance</para>
+             </listitem>
+             <listitem>
+                 <para>Domain sockets</para>
+             </listitem>
+             <listitem>
+                 <para>HTTP Metrics with Dropwizard or Micrometer</para>
+             </listitem>
+         </itemizedlist>
+         <para>
+           The Vertx engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-vertx</emphasis>
+           artifact to the Maven project; then the client can be built as follows:
+         </para>
+         <programlisting>
+VertxClientHttpEngine engine = new VertxClientHttpEngine();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+  .clientEngine(engine).build();
+         </programlisting>
+         <para>
+           A Vertx instance can also be provided when creating the client engine, as well as options configuration:
+         </para>
+         <programlisting>
+HttpClientOptions options = new HttpClientOptions()
+ .setSsl(true);
+ .setTrustStoreOptions(new JksOptions()
+   .setPath("/path/to/your/truststore.jks")
+   .setPassword("password-of-your-truststore")
+);
+VertxClientHttpEngine engine = new VertxClientHttpEngine(vertx, options);
+         </programlisting>
+       <para>You can read more about HttpClient configuration <ulink url="https://vertx.io/docs/vertx-core/java/#_making_requests">here</ulink>.</para>
+     </section>
 
     <section id="reactor_netty_client">
         <title>Reactor Netty Client Engine</title>

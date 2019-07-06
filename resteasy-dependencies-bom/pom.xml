@@ -349,6 +349,13 @@
                 <version>${version.io.vertx}</version>
             </dependency>
             <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-core</artifactId>
+                <version>${version.io.vertx}</version>
+                <classifier>tests</classifier>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>
                 <version>${version.io.undertow}</version>

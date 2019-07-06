@@ -102,6 +102,7 @@
                 <module>resteasy-client</module>
                 <module>resteasy-client-microprofile</module>  
                 <module>resteasy-client-jetty</module>
+                <module>resteasy-client-vertx</module>
                 <module>resteasy-client-reactor-netty</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
