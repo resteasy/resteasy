@@ -974,7 +974,7 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clie
      <section id="vertx_client">
          <title>Vertx Client Engine</title>
          <para>
-           Still as a drop in replacement, RESTEasy allows selecting a Vert.x based HTTP engine.
+           Still as a drop in replacement, RESTEasy allows selecting a Vert.x-based HTTP engine.
            The Vert.x implementation can perform asynchronous client invocations. It provides the following features:
          </para>
          <itemizedlist>
