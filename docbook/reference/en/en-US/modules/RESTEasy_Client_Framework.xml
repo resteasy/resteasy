@@ -530,8 +530,8 @@ name: b
        </para>
        <para>
            <code class="classname">VertxClientHttpEngine</code> is built on top
-           of <emphasis>Eclipse Vertx</emphasis>, which provides a non-blocking HTTP client based
-           on Vertx framework.
+           of <emphasis>Eclipse Vert.x</emphasis>, which provides a non-blocking HTTP client based
+           on Vert.x framework.
        </para>
        <para>
            <code class="classname">ReactorNettyClientHttpEngine</code> is built on top
@@ -974,9 +974,8 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clie
      <section id="vertx_client">
          <title>Vertx Client Engine</title>
          <para>
-           Still as a drop in replacement, RESTEasy allows selecting a Vertx based HTTP engine.
-           The Vertx implementation can perform asynchronous client invocations. It can be used with
-           and without Vert.x and it provides the following features:
+           Still as a drop in replacement, RESTEasy allows selecting a Vert.x based HTTP engine.
+           The Vert.x implementation can perform asynchronous client invocations. It provides the following features:
          </para>
          <itemizedlist>
              <listitem>
@@ -1002,7 +1001,7 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clie
              </listitem>
          </itemizedlist>
          <para>
-           The Vertx engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-vertx</emphasis>
+           The Vert.x engine is enabled by adding a dependency to the <emphasis>org.jboss.resteasy:resteasy-client-vertx</emphasis>
            artifact to the Maven project; then the client can be built as follows:
          </para>
          <programlisting>
@@ -1011,7 +1010,7 @@ ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
   .clientEngine(engine).build();
          </programlisting>
          <para>
-           A Vertx instance can also be provided when creating the client engine, as well as options configuration:
+           A Vert.x instance can also be provided when creating the client engine, as well as options configuration:
          </para>
          <programlisting>
 HttpClientOptions options = new HttpClientOptions()
