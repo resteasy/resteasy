@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,11 @@ import io.vertx.core.http.HttpHeaders;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 public class VertxClientHttpEngine implements AsyncClientHttpEngine {
+
+    /**
+     * Client config property to set when a request timeout is needed.
+     */
+    public static final String REQUEST_TIMEOUT_MS = Vertx.class + "$RequestTimeout";
 
     private final Vertx vertx;
     private final HttpClient httpClient;
@@ -148,6 +154,14 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
             clientRequest.setRawMethod(request.getMethod());
         }
 
+        Object timeout = request.getConfiguration().getProperty(REQUEST_TIMEOUT_MS);
+        if (timeout != null) {
+            long timeoutMs = unwrapTimeout(timeout);
+            if (timeoutMs > 0) {
+                clientRequest.setTimeout(timeoutMs);
+            }
+        }
+
         clientRequest.exceptionHandler(future::completeExceptionally);
         if (body != null) {
             clientRequest.end(body);
@@ -156,6 +170,18 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         }
 
         return future;
+    }
+
+    private long unwrapTimeout(final Object timeout) {
+        if (timeout instanceof Duration) {
+            return ((Duration) timeout).toMillis();
+        } else if (timeout instanceof Number) {
+            return ((Number) timeout).longValue();
+        } else if (timeout != null) {
+            return Long.parseLong(timeout.toString());
+        } else {
+            return -1L;
+        }
     }
 
     @Override

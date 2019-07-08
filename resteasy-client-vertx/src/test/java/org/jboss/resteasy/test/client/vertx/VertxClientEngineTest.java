@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client.vertx;
 
+import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -17,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
@@ -27,6 +30,7 @@ import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -220,32 +224,26 @@ public class VertxClientEngineTest {
       final String result = cf.get(10, TimeUnit.SECONDS);
       assertEquals(valuableData, result);
    }
-/*
+
    @Test
    public void testTimeout() throws Exception {
-      server.setHandler(new AbstractHandler() {
-         @Override
-         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
-            try {
-               Thread.sleep(1000);
-            } catch (InterruptedException e) {
-               Thread.currentThread().interrupt();
-               throw new AssertionError(e);
-            }
-            baseRequest.setHandled(true);
-         }
+      server.requestHandler(req -> {
+         vertx.setTimer(1000, id -> {
+            req.response().end();
+         });
       });
-
       try {
-         client().target(baseUri()).request()
-            .property(JettyClientEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(500))
+         Invocation.Builder property = client()
+             .target(baseUri())
+             .request()
+             .property(VertxClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(500));
+         property
             .get();
          fail();
       } catch (ProcessingException e) {
          assertTrue(e.getCause() instanceof TimeoutException);
       }
    }
-*/
 
    @Test
    public void testDeferContent() throws Exception {
