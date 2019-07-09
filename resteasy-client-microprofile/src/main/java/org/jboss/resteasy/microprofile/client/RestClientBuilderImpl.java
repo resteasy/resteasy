@@ -24,10 +24,13 @@ import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactor
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
+import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
 import javax.net.ssl.HostnameVerifier;
@@ -66,7 +69,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-class RestClientBuilderImpl implements RestClientBuilder {
+public class RestClientBuilderImpl implements RestClientBuilder {
 
     private static final String RESTEASY_PROPERTY_PREFIX = "resteasy.";
 
@@ -76,11 +79,31 @@ class RestClientBuilderImpl implements RestClientBuilder {
     public static final MethodInjectionFilter METHOD_INJECTION_FILTER = new MethodInjectionFilter();
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
 
-    RestClientBuilderImpl() {
+    static boolean SSL_ENABLED = true;
+    static ResteasyProviderFactory PROVIDER_FACTORY;
+
+    public static void setSslEnabled(boolean enabled) {
+        SSL_ENABLED = enabled;
+    }
+
+    public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
+        PROVIDER_FACTORY = providerFactory;
+    }
+
+    public RestClientBuilderImpl() {
         ClientBuilder availableBuilder = ClientBuilder.newBuilder();
 
         if (availableBuilder instanceof ResteasyClientBuilder) {
             builderDelegate = (ResteasyClientBuilder) availableBuilder;
+
+            if (PROVIDER_FACTORY != null) {
+                ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
+                if (ResteasyProviderFactory.peekInstance() != null) {
+                    localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+                }
+                builderDelegate.providerFactory(localProviderFactory);
+            }
+
             configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
             try {
@@ -228,6 +251,13 @@ class RestClientBuilderImpl implements RestClientBuilder {
         }
         if (connectTimeout != null) {
             resteasyClientBuilder.connectTimeout(connectTimeout, connectTimeoutUnit);
+        }
+
+        if (!SSL_ENABLED) {
+            resteasyClientBuilder.httpEngine(new URLConnectionEngine());
+            resteasyClientBuilder.sslContext(null);
+            resteasyClientBuilder.trustStore(null);
+            resteasyClientBuilder.keyStore(null, "");
         }
 
         client = resteasyClientBuilder
