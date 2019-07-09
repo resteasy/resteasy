@@ -571,6 +571,10 @@ name: b
                        <entry>ReactorNettyClientHttpEngine</entry>
                        <entry>Uses Reactor Netty</entry>
                    </row>
+                 <row>
+                   <entry>VertxClientHttpEngine</entry>
+                   <entry>Uses Eclipse Vert.x</entry>
+                 </row>
                    <row>
                        <entry>InMemoryClientEngine</entry>
                        <entry>Dispatches requests to a server in the same JVM</entry>

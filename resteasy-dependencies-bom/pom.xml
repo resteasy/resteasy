@@ -353,6 +353,7 @@
                 <artifactId>vertx-core</artifactId>
                 <version>${version.io.vertx}</version>
                 <classifier>tests</classifier>
+                <scope>test</scope>
                 <type>test-jar</type>
             </dependency>
             <dependency>

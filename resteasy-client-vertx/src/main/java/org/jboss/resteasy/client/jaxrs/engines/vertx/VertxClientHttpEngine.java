@@ -114,7 +114,7 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         });
     }
 
-    public CompletableFuture<ClientResponse> submit(final ClientInvocation request) {
+    private CompletableFuture<ClientResponse> submit(final ClientInvocation request) {
 
         HttpMethod method;
         try {
@@ -147,6 +147,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
         CompletableFuture<ClientResponse> future = new CompletableFuture<>();
 
+        // Using this method is fine
+        // This will go away with Vert.x 4
+        @SuppressWarnings("deprecation")
         HttpClientRequest clientRequest = httpClient.request(method, options, response -> {
             future.complete(toRestEasyResponse(request.getClientConfiguration(), response));
         });
