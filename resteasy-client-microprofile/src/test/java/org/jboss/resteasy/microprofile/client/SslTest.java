@@ -12,7 +12,12 @@ public class SslTest {
 
     @Test
     public void testDisabled() {
-        RestClientBuilderImpl.setSslEnabled(false);
-        Assert.assertFalse(RestClientBuilderImpl.SSL_ENABLED);
+        try {
+            RestClientBuilderImpl.setSslEnabled(false);
+            Assert.assertFalse(RestClientBuilderImpl.SSL_ENABLED);
+        } finally {
+            // Reset to default state
+            RestClientBuilderImpl.setSslEnabled(true);
+        }
     }
 }

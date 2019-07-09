@@ -12,9 +12,6 @@ public class ProviderFactoryTest {
 
     @Test
     public void testDefaultProvider() {
-        // Reset to ensure we start from clean slate
-        RestClientBuilderImpl.setProviderFactory(null);
-
         RestClientBuilderImpl builder = (RestClientBuilderImpl) RestClientBuilder.newBuilder();
 
         Assert.assertTrue(builder.getBuilderDelegate().getProviderFactory().getProviderClasses().contains(IIOImageProvider.class));
@@ -23,13 +20,18 @@ public class ProviderFactoryTest {
 
     @Test
     public void testCustomProvider() {
-        ResteasyProviderFactory provider = new ResteasyProviderFactoryImpl(null, true);
-        provider.registerProvider(IIOImageProvider.class);
-        RestClientBuilderImpl.setProviderFactory(provider);
+        try {
+            ResteasyProviderFactory provider = new ResteasyProviderFactoryImpl(null, true);
+            provider.registerProvider(IIOImageProvider.class);
+            RestClientBuilderImpl.setProviderFactory(provider);
 
-        RestClientBuilderImpl builder = (RestClientBuilderImpl) RestClientBuilder.newBuilder();
+            RestClientBuilderImpl builder = (RestClientBuilderImpl) RestClientBuilder.newBuilder();
 
-        Assert.assertTrue(builder.getBuilderDelegate().getProviderFactory().getProviderClasses().contains(IIOImageProvider.class));
-        Assert.assertFalse(builder.getBuilderDelegate().getProviderFactory().getProviderClasses().contains(DefaultTextPlain.class));
+            Assert.assertTrue(builder.getBuilderDelegate().getProviderFactory().getProviderClasses().contains(IIOImageProvider.class));
+            Assert.assertFalse(builder.getBuilderDelegate().getProviderFactory().getProviderClasses().contains(DefaultTextPlain.class));
+        } finally {
+            // Reset to default state
+            RestClientBuilderImpl.setProviderFactory(null);
+        }
     }
 }
