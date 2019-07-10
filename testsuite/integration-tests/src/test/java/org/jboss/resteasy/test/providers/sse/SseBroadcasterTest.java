@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
@@ -178,10 +179,12 @@ public class SseBroadcasterTest
       sseBroadcasterImpl.register(sseEventSink);
       Assert.assertFalse(sseEventSink.isClosed());
 
-      CountDownLatch countDownLatch = new CountDownLatch(2);
+      AtomicBoolean onCloseListenerInvoked = new AtomicBoolean(false);
       sseBroadcasterImpl.onClose(ses -> {
-         Assert.fail("Close listeners should not have been notified");
+         onCloseListenerInvoked.set(true);
       });
+
+      CountDownLatch countDownLatch = new CountDownLatch(2);
       sseBroadcasterImpl.onError((ses, error) -> {
          countDownLatch.countDown();
       });
@@ -193,6 +196,10 @@ public class SseBroadcasterTest
       if (!countDownLatch.await(5, TimeUnit.SECONDS))
       {
          Assert.fail("All error listeners should have been notified");
+      }
+      if (onCloseListenerInvoked.get())
+      {
+         Assert.fail("Close listeners should not have been notified");
       }
    }
 
