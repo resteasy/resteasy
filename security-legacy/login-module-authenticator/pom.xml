@@ -13,6 +13,14 @@
     <name>RESTEasy Security: AS7 Login Module Authenticator</name>
     <description/>
 
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <name>jboss repo</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>

@@ -16,6 +16,14 @@
         <project.build.sourceEncoding>ISO8859_1</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jboss</id>
+            <name>jboss repo</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.xbill</groupId>

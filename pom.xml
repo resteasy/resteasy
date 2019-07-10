@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>26</version>
+        <version>35</version>
         <relativePath/>
     </parent>
 
@@ -233,10 +233,6 @@
     </contributors>
 
     <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
     </repositories>
     <pluginRepositories>
     </pluginRepositories>
