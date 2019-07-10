@@ -36,8 +36,6 @@
             <property name="message" value="Line has trailing spaces."/>
         </module>
 
-        <property name="cacheFile" value="${checkstyle.cache.file}"/>
-
         <!-- Checks for imports                              -->
         <module name="AvoidStarImport">
             <property name="allowStaticMemberImports" value="true"/>
