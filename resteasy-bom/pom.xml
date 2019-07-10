@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.8.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>26</version>
+        <relativePath/>
     </parent>
 
     <name>RESTEasy Maven Import (BOM)</name>
