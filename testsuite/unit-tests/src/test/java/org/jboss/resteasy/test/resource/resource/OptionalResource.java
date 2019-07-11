@@ -1,17 +1,20 @@
 package org.jboss.resteasy.test.resource.resource;
 
 import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 
 @Path("/optional")
 public class OptionalResource {
@@ -25,12 +28,6 @@ public class OptionalResource {
     @GET
     public String holder(@QueryParam("value") Optional<Holder<String>> value) {
         return value.map(Holder::get).orElse("none");
-    }
-
-    @Path("/matrix")
-    @POST
-    public String matrix(@MatrixParam("value") OptionalLong value) {
-        return Long.toString(value.orElse(42));
     }
 
     @Path("/long")
@@ -65,4 +62,22 @@ public class OptionalResource {
             return new Holder<>(value);
         }
     }
+
+    @Path("/matrix")
+    @POST
+    public String matrix(@MatrixParam("value") OptionalLong value) {
+        return Long.toString(value.orElse(42));
+    }
+
+    @Path("/path/{value}")
+    @GET
+    public String path(@PathParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
+
+    @Path("/header")
+    @GET
+    public String header(@HeaderParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
+
+    @Path("/cookie")
+    @GET
+    public String cookie(@CookieParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
 }
