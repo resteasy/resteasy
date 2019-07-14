@@ -94,7 +94,7 @@ public abstract class ReaderUtility
                         Annotation[] annotations, MediaType mediaType) throws IOException
    {
       return doRead(type, genericType, mediaType, annotations, request
-            .getHttpHeaders().getRequestHeaders(), request.getInputStream());
+            .getMutableHeaders(), request.getInputStream());
    }
 
    public <T> T doRead(Class<T> type, Type genericType, MediaType mediaType,
