@@ -194,7 +194,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          }
          AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
                  genericType, annotations, mediaType, request
-                 .getHttpHeaders().getRequestHeaders(), is, request);
+                 .getMutableHeaders(), is, request);
          final Object obj = messageBodyReaderContext.proceed();
          if (isMarshalledEntity)
          {
