@@ -1,23 +1,5 @@
 package org.jboss.resteasy.mock;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
@@ -29,6 +11,22 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.ReadFromStream;
+
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -58,20 +56,23 @@ public class MockHttpRequest extends BaseHttpRequest
       return initWithUri(absoluteUri, baseUri);
    }
 
+   public static MockHttpRequest create(String httpMethod, String absolute, String query, String contextPath) {
+      MockHttpRequest request = new MockHttpRequest();
+      request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
+      if (query != null && query.length() > 0) {
+         absolute = absolute + "?" + query;
+      }
+      request.uri = new ResteasyUriInfo(absolute, contextPath);
+      request.httpMethod = httpMethod;
+      return request;
+   }
+
    private static MockHttpRequest initWithUri(URI absoluteUri, URI baseUri)
    {
       if (baseUri == null) baseUri = EMPTY_URI;
       MockHttpRequest request = new MockHttpRequest();
       request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
-      //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-
-      // remove query part
-      URI absolutePath = UriBuilder.fromUri(absoluteUri).replaceQuery(null).build();
-      // path must be relative to the application's base uri
-      URI relativeUri = baseUri.relativize(absoluteUri);
-      relativeUri = UriBuilder.fromUri(relativeUri.getRawPath()).replaceQuery(absoluteUri.getRawQuery()).build();
-
-      request.uri = new ResteasyUriInfo(absoluteUri.toString(), absoluteUri.getRawQuery(), baseUri.getRawPath());
+      request.uri = new ResteasyUriInfo(absoluteUri.toString(), baseUri.getRawPath());
       return request;
    }
 

@@ -45,7 +45,7 @@ public class MethodExpression extends Expression
       this.invoker = invoker;
    }
 
-   public void populatePathParams(HttpRequest request, Matcher matcher, String path)
+  public void populatePathParams(HttpRequest request, Matcher matcher, String path)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       for (Group group : groups)

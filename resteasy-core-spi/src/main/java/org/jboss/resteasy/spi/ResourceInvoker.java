@@ -16,4 +16,7 @@ public interface ResourceInvoker
    CompletionStage<? extends Response> invoke(HttpRequest request, HttpResponse response, Object target);
 
    Method getMethod();
+
+   // optimizations
+   boolean hasProduces();
 }

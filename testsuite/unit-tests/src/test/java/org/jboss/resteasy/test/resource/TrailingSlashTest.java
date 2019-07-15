@@ -62,13 +62,13 @@ public class TrailingSlashTest {
     * @tpSince RESTEasy 3.0.17
     */
    @Test
-   public void threeArgConstructorTest() throws Exception {
-      doThreeArgConstructorTest("http://localhost/abc", "/abc");
-      doThreeArgConstructorTest("http://localhost/abc/", "/abc/");
+   public void twoStringArgConstructorTest() throws Exception {
+      doTwoStringArgConstructorTest("http://localhost/abc", "/abc");
+      doTwoStringArgConstructorTest("http://localhost/abc/", "/abc/");
    }
 
-   void doThreeArgConstructorTest(String s, String path) throws URISyntaxException {
-      ResteasyUriInfo ruri = new ResteasyUriInfo(s, "", "");
+   void doTwoStringArgConstructorTest(String s, String path) throws URISyntaxException {
+      ResteasyUriInfo ruri = new ResteasyUriInfo(s, "");
       URI uri = new URI(s);
       Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
       Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));

@@ -11,7 +11,6 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ public class NettyUtil
 {
    public static ResteasyUriInfo extractUriInfo(HttpRequest request, String contextPath, String protocol)
    {
-      String host = request.headers().get(HttpHeaderNames.HOST, "unknown");
       String uri = request.uri();
 
       String uriString;
@@ -34,11 +32,11 @@ public class NettyUtil
       if (uri.startsWith(protocol + "://")) {
          uriString = uri;
       } else {
+         String host = request.headers().get(HttpHeaderNames.HOST, "unknown");
          uriString = protocol + "://" + host + uri;
       }
 
-      URI absoluteURI = URI.create(uriString);
-      return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
+      return new ResteasyUriInfo(uriString, contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpRequest request)
@@ -49,8 +47,6 @@ public class NettyUtil
 
       Map<String, Cookie> cookies = extractCookies(requestHeaders);
       headers.setCookies(cookies);
-      // test parsing should throw an exception on error
-      headers.testParsing();
       return headers;
 
    }

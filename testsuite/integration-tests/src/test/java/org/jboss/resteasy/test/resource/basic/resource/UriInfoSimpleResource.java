@@ -33,6 +33,7 @@ public class UriInfoSimpleResource {
 
       logger.info("BASE URI: " + info.getBaseUri());
       logger.info("Request URI: " + info.getRequestUri());
+      logger.info("Absolute URI: " + info.getAbsolutePath());
       Assert.assertEquals(base.getPath(), info.getBaseUri().getPath());
       Assert.assertEquals("/simple", info.getPath());
       return "CONTENT";

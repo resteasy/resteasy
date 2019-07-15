@@ -92,12 +92,12 @@ public class TrailingSlashTest {
     */
    @Test
    public void threeArgConstructorTest() throws Exception {
-      doThreeArgConstructorTest("http://localhost/abc", "/abc");
-      doThreeArgConstructorTest("http://localhost/abc/", "/abc/");
+      doTwoArgConstructorTest("http://localhost/abc", "/abc");
+      doTwoArgConstructorTest("http://localhost/abc/", "/abc/");
    }
 
-   void doThreeArgConstructorTest(String s, String path) throws URISyntaxException {
-      ResteasyUriInfo ruri = new ResteasyUriInfo(s, "", "");
+   void doTwoArgConstructorTest(String s, String path) throws URISyntaxException {
+      ResteasyUriInfo ruri = new ResteasyUriInfo(s, "");
       URI uri = new URI(s);
       Assert.assertEquals(ERROR_MSG, path, ruri.getPath());
       Assert.assertEquals(ERROR_MSG, path, ruri.getPath(true));
