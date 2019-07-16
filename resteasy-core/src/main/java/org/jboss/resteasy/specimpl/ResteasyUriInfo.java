@@ -29,8 +29,8 @@ public class ResteasyUriInfo implements UriInfo
    private String path;
    private String encodedPath;
    private String matchingPath;
-   private MultivaluedMap<String, String> queryParameters = new MultivaluedMapImpl<>();
-   private MultivaluedMap<String, String> encodedQueryParameters = new MultivaluedMapImpl<>();
+   private MultivaluedMap<String, String> queryParameters;
+   private MultivaluedMap<String, String> encodedQueryParameters;
    private MultivaluedMap<String, String> pathParameters;
    private MultivaluedMap<String, String> encodedPathParameters;
    private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments;
@@ -45,11 +45,53 @@ public class ResteasyUriInfo implements UriInfo
    private List<String> encodedMatchedUris;
    private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
+   private String absoluteString;
+   private String contextPath;
+   private int queryIdx;
+   private int endPath;
+   private int pathStart;
 
 
-   public ResteasyUriInfo(final CharSequence absoluteUri, final String queryString, final String contextPath)
-   {
-      initialize(absoluteUri, queryString, contextPath);
+   public ResteasyUriInfo(final String absoluteUri, final String contextPath) {
+      initialize(absoluteUri, contextPath);
+   }
+
+   protected void initialize(String absoluteUri, String contextPath) {
+      this.absoluteString = absoluteUri;
+      this.contextPath = contextPath;
+
+      int pathIdx = absoluteUri.indexOf('/');
+      if (pathIdx > 0 && absoluteUri.length() > 3) {
+         if (absoluteUri.charAt(pathIdx - 1) == ':' && absoluteUri.charAt(pathIdx + 1) == '/') {
+            pathIdx = pathIdx + 2;
+            int tmp = absoluteUri.indexOf('/', pathIdx);
+            if (tmp > -1) pathIdx = tmp;
+         }
+      }
+      queryIdx = pathIdx > -1 ? absoluteUri.indexOf('?', pathIdx) : absoluteUri.indexOf('?');
+      endPath = queryIdx > -1 ? queryIdx : absoluteUri.length();
+      pathStart = pathIdx > -1 ? pathIdx : 0;
+      String tmpEncodedPath = pathStart >= 0 && endPath > pathStart ? absoluteUri.substring(pathStart, endPath) : "";
+      encodedPath = PathHelper.getEncodedPathInfo(tmpEncodedPath, contextPath);
+
+      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
+      {
+         encodedPath = "/" + encodedPath;
+      }
+      path = Encode.decodePath(encodedPath);
+      processPath();
+   }
+
+   private void processUris() {
+      requestURI = URI.create(absoluteString);
+      absolutePath = queryIdx < 0 ? requestURI : URI.create(absoluteString.substring(0, queryIdx));
+      baseURI = absolutePath;
+      String tmpContextPath = contextPath;
+      if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+      if (!tmpContextPath.startsWith("/")) tmpContextPath = "/" + tmpContextPath;
+      String baseString = absoluteString.substring(0, pathStart);
+      baseString += tmpContextPath;
+      baseURI = URI.create(baseString);
    }
 
    protected void initialize(CharSequence absoluteUri, String queryString, String contextPath)
@@ -78,6 +120,8 @@ public class ResteasyUriInfo implements UriInfo
       path = UriBuilder.fromPath(encodedPath).build().getPath();
       processPath();
    }
+
+
 
    public ResteasyUriInfo(final URI base, final URI relative)
    {
@@ -120,7 +164,6 @@ public class ResteasyUriInfo implements UriInfo
       {
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
-      extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
       else
       {
@@ -190,6 +233,7 @@ public class ResteasyUriInfo implements UriInfo
     */
    public void setRequestUri(URI relative)
    {
+      if (baseURI == null) processUris();
       setUri(baseURI, relative);
    }
 
@@ -217,32 +261,35 @@ public class ResteasyUriInfo implements UriInfo
 
    public URI getRequestUri()
    {
+      if (requestURI == null) processUris();
       return requestURI;
    }
 
    public UriBuilder getRequestUriBuilder()
    {
-      return UriBuilder.fromUri(requestURI);
+      return UriBuilder.fromUri(getRequestUri());
    }
 
    public URI getAbsolutePath()
    {
+      if (absolutePath == null) processUris();
       return absolutePath;
    }
 
    public UriBuilder getAbsolutePathBuilder()
    {
-      return UriBuilder.fromUri(absolutePath);
+      return UriBuilder.fromUri(getAbsolutePath());
    }
 
    public URI getBaseUri()
    {
+      if (baseURI == null) processUris();
       return baseURI;
    }
 
    public UriBuilder getBaseUriBuilder()
    {
-      return UriBuilder.fromUri(baseURI);
+      return UriBuilder.fromUri(getBaseUri());
    }
 
    public MultivaluedMap<String, String> getPathParameters()
@@ -296,11 +343,17 @@ public class ResteasyUriInfo implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
+      if (queryParameters == null) {
+         extractParameters();
+      }
       return new UnmodifiableMultivaluedMap<>(queryParameters);
    }
 
    protected MultivaluedMap<String, String> getEncodedQueryParameters()
    {
+      if (encodedQueryParameters == null) {
+         extractParameters();
+      }
       return new UnmodifiableMultivaluedMap<>(encodedQueryParameters);
    }
 
@@ -311,25 +364,16 @@ public class ResteasyUriInfo implements UriInfo
       else return getEncodedQueryParameters();
    }
 
-   public void clearQueryParameters(boolean decode) {
-      if (decode) clearQueryParameters();
-      else clearEncodedQueryParameters();
+   private void clearQueryParameters(boolean decode) {
+      queryParameters = null;
+      encodedQueryParameters = null;
    }
 
-   private void clearQueryParameters() {
-      if (queryParameters != null) {
-         queryParameters.clear();
-      }
-   }
-
-   private void clearEncodedQueryParameters() {
-      if (encodedQueryParameters != null) {
-         encodedQueryParameters.clear();
-      }
-   }
-
-   protected void extractParameters(String queryString)
+   protected void extractParameters()
    {
+      queryParameters = new MultivaluedMapImpl<>();
+      encodedQueryParameters = new MultivaluedMapImpl<>();
+      String queryString = getRequestUri().getRawQuery();
       if (queryString == null || queryString.equals("")) return;
 
       String[] params = queryString.split("&");

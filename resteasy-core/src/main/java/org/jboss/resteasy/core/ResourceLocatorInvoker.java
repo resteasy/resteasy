@@ -16,6 +16,7 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.Produces;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,6 +35,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected ResourceLocator method;
    protected ConcurrentHashMap<Class<?>, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class<?>, LocatorRegistry>();
+   protected final boolean hasProduces;
 
    public ResourceLocatorInvoker(final ResourceFactory resource, final InjectorFactory injector, final ResteasyProviderFactory providerFactory, final ResourceLocator locator)
    {
@@ -42,7 +44,14 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.providerFactory = providerFactory;
       this.method = locator;
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
+      hasProduces = method.getMethod().isAnnotationPresent(Produces.class) || method.getMethod().getClass().isAnnotationPresent(Produces.class);
    }
+
+   @Override
+   public boolean hasProduces() {
+      return hasProduces;
+   }
+
 
    protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response)
    {

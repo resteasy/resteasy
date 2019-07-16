@@ -11,7 +11,6 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +24,6 @@ public class VertxUtil
 {
    public static ResteasyUriInfo extractUriInfo(HttpServerRequest req, String contextPath)
    {
-      String host = req.host();
-      if (host == null)
-      {
-         host = "unknown";
-      }
       String uri = req.absoluteURI();
       String protocol = req.scheme();
 
@@ -39,13 +33,18 @@ public class VertxUtil
       if (uri.startsWith(protocol + "://"))
       {
          uriString = uri;
-      } else
+      }
+      else
       {
+         String host = req.host();
+         if (host == null)
+         {
+            host = "unknown";
+         }
          uriString = protocol + "://" + host + uri;
       }
 
-      URI absoluteURI = URI.create(uriString);
-      return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
+      return new ResteasyUriInfo(uriString, contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServerRequest request)

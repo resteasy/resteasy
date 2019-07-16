@@ -35,6 +35,7 @@ import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -86,6 +87,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ResourceInfo resourceInfo;
 
    protected boolean expectsBody;
+   protected final boolean hasProduces;
+
+
 
 
 
@@ -167,6 +171,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          isSse = true;
          method.markAsynchronous();
       }
+      hasProduces = method.getMethod().isAnnotationPresent(Produces.class) || method.getMethod().getClass().isAnnotationPresent(Produces.class);
+   }
+
+   @Override
+   public boolean hasProduces() {
+      return hasProduces;
    }
 
    // spec section 9.3 Server API:
