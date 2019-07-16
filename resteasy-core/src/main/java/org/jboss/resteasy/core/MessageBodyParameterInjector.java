@@ -202,7 +202,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          }
          AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
                  genericType, annotations, mediaType, request
-                 .getHttpHeaders().getRequestHeaders(), is, request);
+                 .getMutableHeaders(), is, request);
 
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
          final long timestamp = tracingLogger.timestamp("RI_SUMMARY");
