@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.NotFoundException;
+
 /**
  * @tpSubChapter Resource tests
  * @tpChapter Unit tests
@@ -32,6 +34,7 @@ public class OptionalInjectionTest {
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .toCompletableFuture().get().getEntity());
     }
+
 
     @Test
     public void testOptionalStringPresent() throws Exception {
@@ -63,6 +66,97 @@ public class OptionalInjectionTest {
         Assert.assertEquals("42", registry.getResourceInvoker(req).invoke(req, resp)
                 .toCompletableFuture().get().getEntity());
     }
+
+    @Test
+    public void testMatrixParamAbsent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix");
+        Assert.assertEquals("42", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+    @Test
+    public void testMatrixParamPresent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.post("/optional/matrix;value=24");
+        Assert.assertEquals("24", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+    @Test
+    public void testPathParamPresent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/path/24");
+        Assert.assertEquals("24", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void testPathParamNeverAbsentThrowsException() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/path/");
+        registry.getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity();
+    }
+
+    @Test
+    public void testHeaderParamAbsent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/header");
+        Assert.assertEquals("42", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+
+    @Test
+    public void testHeaderParamPresent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/header");
+        httpRequest.header("value", "24");
+        Assert.assertEquals("24", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+    @Test
+    public void testCookieParamAbsent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/cookie");
+        Assert.assertEquals("42", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
+    @Test
+    public void testCookieParamPresent() throws Exception {
+        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/cookie");
+        httpRequest.cookie("value", "24");
+        Assert.assertEquals("24", registry
+                .getResourceInvoker(httpRequest)
+                .invoke(httpRequest, resp)
+                .toCompletableFuture()
+                .get()
+                .getEntity());
+    }
+
 
     @Test
     public void testOptionalLongPresent() throws Exception {
