@@ -227,6 +227,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    protected ResteasyProviderFactory providerFactory;
    protected Class<T> intf;
    protected volatile T[] cachedPreMatch;
+   protected volatile T[] cachedPostMatch;
 
    public JaxrsInterceptorRegistryImpl(final ResteasyProviderFactory providerFactory, final Class<T> intf)
    {
@@ -238,6 +239,8 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    {
       JaxrsInterceptorRegistryImpl<T> clone = new JaxrsInterceptorRegistryImpl(factory, intf);
       clone.interceptors.addAll(interceptors);
+      clone.cachedPreMatch = this.cachedPreMatch;
+      clone.cachedPostMatch = this.cachedPostMatch;
       return clone;
    }
 
@@ -272,16 +275,17 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
 
    public T[] postMatch(Class declaring, AccessibleObject target)
    {
-      List<Match> matches = new ArrayList<Match>();
-      for (InterceptorFactory factory : interceptors)
-      {
-         Match match = factory.postMatch(declaring, target);
-         if (match != null)
-         {
-            matches.add(match);
+      if(cachedPostMatch == null || declaring != null || target != null) {
+         List<Match> matches = new ArrayList<Match>();
+         for (InterceptorFactory factory : interceptors) {
+            Match match = factory.postMatch(declaring, target);
+            if (match != null) {
+               matches.add(match);
+            }
          }
+         cachedPostMatch = createArray(matches);
       }
-      return createArray(matches);
+      return cachedPostMatch;
    }
 
    private T[] createArray(List<Match> matches)
@@ -304,6 +308,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
    {
       interceptors.add(factory);
       cachedPreMatch = null;
+      cachedPostMatch = null;
       for (JaxrsInterceptorRegistryListener listener : listeners)
       {
          listener.registryUpdated(this, factory);
