@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -324,11 +323,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (providerClasses == null && parent != null)
          return parent.getProviderClasses();
-      Set<Class<?>> set = new HashSet<Class<?>>();
-      if (parent != null)
-         set.addAll(parent.getProviderClasses());
-      set.addAll(providerClasses);
-      return set;
+
+      return providerClasses;
    }
 
    /**
@@ -340,11 +336,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (providerInstances == null && parent != null)
          return parent.getProviderInstances();
-      Set<Object> set = new HashSet<Object>();
-      if (parent != null)
-         set.addAll(parent.getProviderInstances());
-      set.addAll(providerInstances);
-      return set;
+
+      return providerInstances;
    }
 
    private Map<Class<?>, Map<Class<?>, Integer>> getClassContracts()
@@ -1498,11 +1491,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (enabledFeatures == null && parent != null)
          return parent.getEnabledFeatures();
-      Set<Feature> set = new HashSet<Feature>();
-      if (parent != null)
-         set.addAll(parent.getEnabledFeatures());
-      set.addAll(enabledFeatures);
-      return set;
+
+      return enabledFeatures;
    }
 
    @Override
