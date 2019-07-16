@@ -196,7 +196,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers() .entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       contextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getContextInjectors());
@@ -692,7 +692,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers()
                .entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);

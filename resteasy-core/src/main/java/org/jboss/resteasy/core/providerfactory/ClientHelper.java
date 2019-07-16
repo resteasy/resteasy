@@ -61,8 +61,8 @@ public class ClientHelper
 
    protected void initialize(ResteasyProviderFactoryImpl parent)
    {
-      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyReaders().clone();
-      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyWriters().clone();
+      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getClientMessageBodyReaders());
+      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getClientMessageBodyWriters());
       clientRequestFilterRegistry = parent == null ? new ClientRequestFilterRegistryImpl(rpf) : parent.getClientRequestFilterRegistry().clone(rpf);
       clientResponseFilters = parent == null ? new ClientResponseFilterRegistryImpl(rpf) : parent.getClientResponseFilters().clone(rpf);
       clientReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistryImpl(rpf) : parent.getClientReaderInterceptorRegistry().clone(rpf);
@@ -439,7 +439,7 @@ public class ClientHelper
 
       if ((type == null || type == RuntimeType.CLIENT) && clientMessageBodyReaders == null)
       {
-         clientMessageBodyReaders = parent.getClientMessageBodyReaders().clone();
+         clientMessageBodyReaders = new MediaTypeMap(parent.getClientMessageBodyReaders());
       }
       if (consumeMime != null)
       {
@@ -482,7 +482,7 @@ public class ClientHelper
 
       if ((type == null || type == RuntimeType.CLIENT) && clientMessageBodyWriters == null)
       {
-         clientMessageBodyWriters = parent.getClientMessageBodyWriters().clone();
+         clientMessageBodyWriters = new MediaTypeMap(parent.getClientMessageBodyWriters());
       }
       if (consumeMime != null)
       {
