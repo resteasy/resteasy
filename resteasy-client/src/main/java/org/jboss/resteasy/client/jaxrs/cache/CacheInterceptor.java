@@ -206,7 +206,17 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 
       byte[] cached = ReadFromStream.readFromStream(1024, response.getEntityStream());
       // if Accept is present, use it, if not fallback to response Content-Type
-      MediaType mediaType = accept != null ? MediaType.valueOf(accept) : MediaType.valueOf(contentType);
+      MediaType mediaType = MediaType.valueOf(contentType);
+      if (accept != null) {
+         for (String acceptItem : accept.split("\\s*,\\s*")) {
+            MediaType acceptMediaType = MediaType.valueOf(acceptItem);
+            if (mediaType.isCompatible(acceptMediaType)) {
+               mediaType = acceptMediaType;
+               break;
+            }
+         }
+      }
+
       final BrowserCache.Entry entry = cache.put(request.getUri().toString(), mediaType,
               response.getHeaders(), cached, expires, etag, lastModified);
 
