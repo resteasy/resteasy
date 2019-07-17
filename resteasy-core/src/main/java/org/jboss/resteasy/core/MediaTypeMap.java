@@ -176,7 +176,7 @@ public class MediaTypeMap<T>
       }
 
       private Map<String, List<Entry<T>>> copy(final Map<String, List<Entry<T>>> original) {
-         final Map<String, List<Entry<T>>> copy = new HashMap<>();
+         final Map<String, List<Entry<T>>> copy = new HashMap<>(original.size());
          original.forEach((key, value) -> copy.put(key, new CopyOnWriteArrayList<>(value)));
          return copy;
       }
@@ -351,9 +351,7 @@ public class MediaTypeMap<T>
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
-         ArrayList<T> copy = new ArrayList<T>();
-         copy.addAll(convert(all));
-         return copy;
+         return convert(all);
       }
       else
       {
