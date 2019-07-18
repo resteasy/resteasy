@@ -275,17 +275,25 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
 
    public T[] postMatch(Class declaring, AccessibleObject target)
    {
-      if(cachedPostMatch == null || declaring != null || target != null) {
-         List<Match> matches = new ArrayList<Match>();
-         for (InterceptorFactory factory : interceptors) {
-            Match match = factory.postMatch(declaring, target);
-            if (match != null) {
-               matches.add(match);
-            }
-         }
-         cachedPostMatch = createArray(matches);
+      if(cachedPostMatch != null && declaring == null && target == null) {
+         return cachedPostMatch;
       }
-      return cachedPostMatch;
+
+      List<Match> matches = new ArrayList<Match>();
+      for (InterceptorFactory factory : interceptors) {
+         Match match = factory.postMatch(declaring, target);
+         if (match != null) {
+            matches.add(match);
+         }
+      }
+
+      final T[] array = createArray(matches);
+
+      if(declaring == null && target == null) {
+         cachedPostMatch = array;
+      }
+
+      return array;
    }
 
    private T[] createArray(List<Match> matches)
