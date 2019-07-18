@@ -324,9 +324,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
     */
    public Set<Class<?>> getProviderClasses()
    {
-      if (providerClasses == null && parent != null)
-         return parent.getProviderClasses();
-
       if(initialized) {
          return providerClasses;
       }
@@ -345,9 +342,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
     */
    public Set<Object> getProviderInstances()
    {
-      if (providerInstances == null && parent != null)
-         return parent.getProviderInstances();
-
       if(initialized) {
          return providerInstances;
       }
@@ -1508,9 +1502,6 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public Collection<Feature> getEnabledFeatures()
    {
-      if (enabledFeatures == null && parent != null)
-         return parent.getEnabledFeatures();
-
       if(initialized) {
          return enabledFeatures;
       }
