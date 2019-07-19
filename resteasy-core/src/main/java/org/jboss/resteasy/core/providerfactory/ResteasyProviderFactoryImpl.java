@@ -120,6 +120,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    private Set<Feature> enabledFeatures;
    private Set<Class<?>> providerClasses;
    private Set<Object> providerInstances;
+   private boolean initialized = false;
 
    public ResteasyProviderFactoryImpl()
    {
@@ -197,7 +198,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers() .entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       contextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getContextInjectors());
@@ -226,6 +227,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       registerBuiltins = true;
 
       injectorFactory = parent == null ? InjectorFactoryImpl.INSTANCE : parent.getInjectorFactory();
+      initialized = true;
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()
@@ -322,8 +324,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
     */
    public Set<Class<?>> getProviderClasses()
    {
-      if (providerClasses == null && parent != null)
-         return parent.getProviderClasses();
+      if(initialized) {
+         return providerClasses;
+      }
+
       Set<Class<?>> set = new HashSet<Class<?>>();
       if (parent != null)
          set.addAll(parent.getProviderClasses());
@@ -338,8 +342,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
     */
    public Set<Object> getProviderInstances()
    {
-      if (providerInstances == null && parent != null)
-         return parent.getProviderInstances();
+      if(initialized) {
+         return providerInstances;
+      }
+
       Set<Object> set = new HashSet<Object>();
       if (parent != null)
          set.addAll(parent.getProviderInstances());
@@ -699,7 +705,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers()
                .entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
@@ -1496,8 +1502,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public Collection<Feature> getEnabledFeatures()
    {
-      if (enabledFeatures == null && parent != null)
-         return parent.getEnabledFeatures();
+      if(initialized) {
+         return enabledFeatures;
+      }
+
       Set<Feature> set = new HashSet<Feature>();
       if (parent != null)
          set.addAll(parent.getEnabledFeatures());

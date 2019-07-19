@@ -59,8 +59,8 @@ public class ServerHelper
       asyncResponseProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
       asyncStreamProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
 
-      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyReaders().clone();
-      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyWriters().clone();
+      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyReaders());
+      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyWriters());
       containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistryImpl(rpf) : parent.getContainerRequestFilterRegistry().clone(rpf);
       containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistryImpl(rpf) : parent.getContainerResponseFilterRegistry().clone(rpf);
       serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistryImpl(rpf) : parent.getServerReaderInterceptorRegistry().clone(rpf);
@@ -434,7 +434,7 @@ public class ServerHelper
 
       if ((type == null || type == RuntimeType.SERVER) && serverMessageBodyReaders == null)
       {
-         serverMessageBodyReaders = parent.getServerMessageBodyReaders().clone();
+         serverMessageBodyReaders = new MediaTypeMap<>(parent.getServerMessageBodyReaders());
       }
       if (consumeMime != null)
       {
@@ -477,7 +477,7 @@ public class ServerHelper
 
       if ((type == null || type == RuntimeType.SERVER) && serverMessageBodyWriters == null)
       {
-         serverMessageBodyWriters = parent.getServerMessageBodyWriters().clone();
+         serverMessageBodyWriters = new MediaTypeMap(parent.getServerMessageBodyWriters());
       }
       if (consumeMime != null)
       {
