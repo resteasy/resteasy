@@ -4,9 +4,9 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.HttpMethod;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -21,11 +21,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static java.util.Objects.requireNonNull;
+import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
 
 public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
 
@@ -84,21 +85,18 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         final HttpClient.RequestSender requestSender =
                 httpClient
                         .headers(headerBuilder -> {
+                            final ClientRequestHeaders resteasyHeaders = request.getHeaders();
+                            resteasyHeaders.getHeaders().entrySet()
+                                    .forEach(entry -> headerBuilder.add(entry.getKey(), entry.getValue()));
+
                             payload.ifPresent(bytes -> {
-                                headerBuilder.add(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
-                            });
-                            request.getHeaders().asMap().forEach((key, value) -> {
+
+                                headerBuilder.set(CONTENT_LENGTH, bytes.length);
+
                                 if (log.isDebugEnabled() &&
-                                    HttpHeaderNames.CONTENT_LENGTH.equals(key) &&
-                                    !validContentLength(value, payload)) {
-                                    log.debug("The request's Content-Length header is being replaced " +
-                                        " by the size of the byte array computed from the request entity.");
-                                } else {
-                                    // For some reason, this doesn't have to be in an else branch.
-                                    // Is that because header values are a list and content-length will
-                                    // only take the first one by default??  Do I need to figure that
-                                    // out?
-                                    headerBuilder.add(key, value);
+                                    isContentLengthInvalid(resteasyHeaders.getHeader(CONTENT_LENGTH), bytes)) {
+                                    log.debug("The request's Content-Length header is replaced " +
+                                            " by the size of the byte array computed from the request entity.");
                                 }
                             });
                         })
@@ -128,24 +126,14 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                 .toFuture();
     }
 
-    static boolean validContentLength(
-        final List<String> headerValues,
-        final Optional<byte[]> actualPayload
-    ) {
-        // Impl may seem a little confusing so be sure and look at the call-site for context.
-        // Basically, this is just used to log a warning if the Content-Length header value is
-        // specified, but does not match what we expect given the actual payload.
-        if (headerValues == null || headerValues.isEmpty()) return true;
-        return actualPayload.map(bytes -> {
-            try {
-                // I guess we take the first??
-                final long contentLength = Long.parseLong(headerValues.get(0));
-                return contentLength == bytes.length;
-            } catch (Exception e) {
-                log.warn("Problem parsing the Content-Length header values.", e);
-                return false;
-            }
-        }).orElse(true);
+    private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
+
+        try {
+            return headerValue != null && Long.parseLong(headerValue) != payload.length;
+        } catch (Exception e) {
+            log.warn("Problem parsing the Content-Length header value.", e);
+        }
+        return true;
     }
 
     @Override
@@ -232,7 +220,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
             private InputStream is;
 
             RestEasyClientResponse(final ClientConfiguration configuration, final InputStream is) {
-                super(configuration);
+                super(configuration, RESTEasyTracingLogger.empty());
                 this.is = is;
             }
 
@@ -272,13 +260,12 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
             }
         }
 
-        ClientResponse restEasyClientResponse = new RestEasyClientResponse(clientConfiguration, inputStream);
+        final ClientResponse restEasyClientResponse = new RestEasyClientResponse(clientConfiguration, inputStream);
         restEasyClientResponse.setStatus(reactorNettyResponse.status().code());
 
-        CaseInsensitiveMap<String> restEasyHeaders = new CaseInsensitiveMap<>();
+        final MultivaluedMap<String, Object> resteasyHeaders =  restEasyClientResponse.getHeaders();
         reactorNettyResponse.responseHeaders()
-                .forEach(header -> restEasyHeaders.add(header.getKey(), header.getValue()));
-        restEasyClientResponse.setHeaders(restEasyHeaders);
+                .forEach(header -> resteasyHeaders.add(header.getKey(), header.getValue()));
 
         return restEasyClientResponse;
     }
