@@ -1,4 +1,0 @@
-package org.jboss.resteasy.test.providers.jackson.resource;
-
-public interface ProxyWithGenericReturnTypeJacksonSubResourceSubIntf extends ProxyWithGenericReturnTypeJacksonSubResourceIntf {
-}
