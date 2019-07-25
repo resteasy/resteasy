@@ -179,6 +179,9 @@ public class CompletionStageResponseTest {
       // make sure the completion callback was called with with an error
       request = client.target(generateURL("/callback-called-with-error")).request();
       response = request.get();
+      String s = response.readEntity(String.class);
+      Assert.assertEquals("dummy", s);
+      
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
