@@ -4,11 +4,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.container.CompletionCallback;
+import org.jboss.logging.Logger;
 
 public class AsyncResponseCallback implements CompletionCallback {
 
    private static CountDownLatch latch;
    private static Throwable error;
+   protected final Logger logger = Logger.getLogger(AsyncResponseCallback.class.getName());
 
    public AsyncResponseCallback()
    {
@@ -19,10 +21,10 @@ public class AsyncResponseCallback implements CompletionCallback {
    @Override
    public void onComplete(Throwable throwable)
    {
-      System.out.println(this + ": entering onComplete(): " + throwable.getMessage());
+      logger.info(this + ": entering onComplete(): " + throwable.getMessage());
       latch.countDown();
       error = throwable;
-      System.out.println(this + ": leaving onComplete()");
+      logger.info(this + ": leaving onComplete()");
    }
 
    public static void assertCalled(boolean withError)
