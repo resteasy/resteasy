@@ -19,8 +19,10 @@ public class AsyncResponseCallback implements CompletionCallback {
    @Override
    public void onComplete(Throwable throwable)
    {
+      System.out.println(this + ": entering onComplete(): " + throwable.getMessage());
       latch.countDown();
       error = throwable;
+      System.out.println(this + ": leaving onComplete()");
    }
 
    public static void assertCalled(boolean withError)

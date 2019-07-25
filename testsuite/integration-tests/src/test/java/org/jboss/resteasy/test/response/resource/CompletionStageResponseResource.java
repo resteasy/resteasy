@@ -118,20 +118,26 @@ public class CompletionStageResponseResource {
    public CompletionStage<String> exceptionDelay(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       CompletableFuture<String> cs = new CompletableFuture<>();
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(
-            new Runnable() {
-               public void run() {
-                  try {
-                     Thread.sleep(1500L); // make sure that response will be created after end-point method ends
-                  } catch (InterruptedException e) {
-                     throw new RuntimeException(e);
+      try {
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(
+               new Runnable() {
+                  public void run() {
+                     try {
+                        Thread.sleep(1500L); // make sure that response will be created after end-point method ends
+                     } catch (InterruptedException e) {
+                        Response response = Response.status(445).entity(e).build();
+                        cs.completeExceptionally(new WebApplicationException(response));
+                     }
+                     Response response = Response.status(444).entity(EXCEPTION).build();
+                     cs.completeExceptionally(new WebApplicationException(response));
                   }
-                  Response response = Response.status(444).entity(EXCEPTION).build();
-                  cs.completeExceptionally(new WebApplicationException(response));
-               }
-            });
-      return cs;
+               });
+         return cs;
+      } catch (Exception e) {
+         cs.completeExceptionally(e);
+         return cs;
+      }
    }
 
    @GET
@@ -178,8 +184,12 @@ public class CompletionStageResponseResource {
    @GET
    @Path("callback-called-with-error")
    public String callbackCalledWithError() {
+      try {
       AsyncResponseCallback.assertCalled(true);
       return "OK";
+      } catch (Error e) {
+         return e.getMessage();
+      }
    }
 
    @GET
