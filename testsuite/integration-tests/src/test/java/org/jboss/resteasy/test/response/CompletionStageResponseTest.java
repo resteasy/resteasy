@@ -181,7 +181,7 @@ public class CompletionStageResponseTest {
       response = request.get();
       String s = response.readEntity(String.class);
       Assert.assertEquals("dummy", s);
-      
+
       Assert.assertEquals(200, response.getStatus());
       response.close();
    }
