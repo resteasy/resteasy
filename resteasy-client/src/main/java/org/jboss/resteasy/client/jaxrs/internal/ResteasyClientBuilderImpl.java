@@ -9,7 +9,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -69,11 +69,26 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Changing the providerFactory will wipe clean any registered components or properties.
     *
     * @param providerFactory provider factory
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
+   @Override
    public ResteasyClientBuilderImpl providerFactory(ResteasyProviderFactory providerFactory)
    {
-      this.providerFactory = providerFactory;
+      if (providerFactory instanceof LocalResteasyProviderFactory)
+      {
+         this.providerFactory = providerFactory;
+      }
+      else
+      {
+         this.providerFactory = new ResteasyProviderFactoryDelegate(providerFactory)
+         {
+            @Override
+            public javax.ws.rs.RuntimeType getRuntimeType()
+            {
+               return RuntimeType.CLIENT;
+            }
+         };
+      }
       return this;
    }
 
@@ -81,7 +96,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Executor to use to run AsyncInvoker invocations.
     *
     * @param asyncExecutor executor service
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     * @deprecated use {@link ResteasyClientBuilderImpl#executorService(ExecutorService)} instead
     */
    @Deprecated
@@ -95,7 +110,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param asyncExecutor executor service
     * @param cleanupExecutor true if the Client should close the executor when it is closed
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    @Deprecated
    public ResteasyClientBuilderImpl asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
@@ -110,7 +125,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param ttl time to live
     * @param unit the time unit of the ttl argument
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionTTL(long ttl, TimeUnit unit)
    {
@@ -139,7 +154,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * If connection pooling enabled, how many connections to pool per url?
     *
     * @param maxPooledPerRoute max pool size per url
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl maxPooledPerRoute(int maxPooledPerRoute)
    {
@@ -151,7 +166,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * If connection pooling is enabled, how long will we wait to get a connection?
     * @param timeout the timeout
     * @param unit the units the timeout is in
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionCheckoutTimeout(long timeout, TimeUnit unit)
    {
@@ -163,7 +178,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Number of connections allowed to pool.
     *
     * @param connectionPoolSize connection pool size
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl connectionPoolSize(int connectionPoolSize)
    {
@@ -176,7 +191,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Value of -1 will use a SelfExpandingBufferedInputStream.
     *
     * @param size response buffer size
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl responseBufferSize(int size)
    {
@@ -189,7 +204,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Disable trust management and hostname verification.  <i>NOTE</i> this is a security
     * hole, so only set this option if you cannot or do not want to verify the identity of the
     * host you are communicating with.
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl disableTrustManager()
    {
@@ -201,7 +216,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * SSL policy used to verify hostnames
     *
     * @param policy SSL policy
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl hostnameVerification(HostnameVerificationPolicy policy)
    {
@@ -213,7 +228,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Negates all ssl and connection specific configuration
     *
     * @param httpEngine http engine
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl httpEngine(ClientHttpEngine httpEngine)
    {
@@ -268,7 +283,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Adds a TLS/SSL SNI Host Name for authentication.
     *
     * @param sniHostNames host names
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl sniHostNames(String... sniHostNames) {
       this.sniHostNames.addAll(Arrays.asList(sniHostNames));
@@ -279,7 +294,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * Specify a default proxy.  Default port and schema will be used.
     *
     * @param hostname host name
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname)
    {
@@ -291,7 +306,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     *
     * @param hostname host name
     * @param port port
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname, int port)
    {
@@ -304,7 +319,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
     * @param hostname host name
     * @param port port
     * @param scheme scheme
-    * @return an updated client builder instance
+    * @return the updated client builder instance
     */
    public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme)
    {
@@ -459,13 +474,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    @Override
    public ResteasyClientBuilderImpl withConfig(Configuration config)
    {
-      providerFactory = new ResteasyProviderFactoryImpl() {
-         @Override
-         public RuntimeType getRuntimeType()
-         {
-            return RuntimeType.CLIENT;
-         }
-      };
+      providerFactory = new LocalResteasyProviderFactory();
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {
