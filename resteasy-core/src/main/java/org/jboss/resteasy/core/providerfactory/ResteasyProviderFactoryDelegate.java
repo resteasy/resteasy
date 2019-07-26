@@ -49,6 +49,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 /**
  *
@@ -621,6 +622,12 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    public Builder createLinkBuilder()
    {
       return resteasyProviderFactoryDelegator.createLinkBuilder();
+   }
+
+   @Override
+   public StatisticsController getStatisticsController()
+   {
+      return resteasyProviderFactoryDelegator.getStatisticsController();
    }
 
 }
