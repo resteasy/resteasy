@@ -31,7 +31,7 @@ public class AsyncResponseCallback implements CompletionCallback {
    {
       boolean called = false;
       try {
-         called = latch.await(2, TimeUnit.SECONDS);
+         called = latch.await(5, TimeUnit.SECONDS);
       } catch (Exception e) {
          //ignore
       }
