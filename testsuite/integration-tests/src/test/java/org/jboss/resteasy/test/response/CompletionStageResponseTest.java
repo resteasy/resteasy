@@ -79,7 +79,7 @@ public class CompletionStageResponseTest {
     * @tpTestDetails Resource method returns CompletionStage<String>.
     * @tpSince RESTEasy 3.5
     */
-   @Test
+//   @Test
    public void testText() throws Exception
    {
       Invocation.Builder request = client.target(generateURL("/text")).request();
