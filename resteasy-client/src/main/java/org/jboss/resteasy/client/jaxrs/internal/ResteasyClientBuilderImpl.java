@@ -11,7 +11,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactoryDelegate;
+import org.jboss.resteasy.util.ResteasyProviderFactoryDelegate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;

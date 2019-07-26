@@ -4,7 +4,7 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jboss.resteasy.spi;
+package org.jboss.resteasy.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -38,6 +38,15 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.ContextInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 
@@ -284,7 +293,7 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    @Override
    protected void registerBuiltin()
    {
-      resteasyProviderFactoryDelegator.registerBuiltin();
+     throw new UnsupportedOperationException();
    }
 
    @Override
