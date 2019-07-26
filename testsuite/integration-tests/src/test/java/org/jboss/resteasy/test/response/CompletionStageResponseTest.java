@@ -85,8 +85,8 @@ public class CompletionStageResponseTest {
       Invocation.Builder request = client.target(generateURL("/text")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
+//      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO + ":200", entity + ":" + response.getStatus());
 
       // make sure the completion callback was called with no error
       request = client.target(generateURL("/callback-called-no-error")).request();
