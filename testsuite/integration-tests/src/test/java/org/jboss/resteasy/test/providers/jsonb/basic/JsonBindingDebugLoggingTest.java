@@ -12,6 +12,7 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLo
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedGet;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedSet;
 import org.jboss.resteasy.utils.LogCounter;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,9 +29,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.io.FilePermission;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -58,6 +61,18 @@ public class JsonBindingDebugLoggingTest {
       war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
       war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
       war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new ReflectPermission("suppressAccessChecks"),
+              new RuntimePermission("accessDeclaredMembers"),
+              new PropertyPermission("arquillian.debug", "read"),
+              new PropertyPermission("user.dir", "read"),
+              new FilePermission("<<ALL FILES>>", "read"), // required to read jbossas-managed/log/server.log file
+              new PropertyPermission("node", "read"),
+              new PropertyPermission("ipv6", "read"),
+              new RuntimePermission("getenv.RESTEASY_PORT"),
+              new PropertyPermission("org.jboss.resteasy.port", "read"),
+              new PropertyPermission("jboss.server.base.dir", "read")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
    }
 
@@ -104,7 +119,6 @@ public class JsonBindingDebugLoggingTest {
       // perform request
       WebTarget base = client.target(generateURL("/get/nok"));
       Response response = base.request().get();
-
       // check response
       Assert.assertThat("Wrong response code", response.getStatus(), is(500));
       Assert.assertThat("Response message doesn't contains full stacktrace",
