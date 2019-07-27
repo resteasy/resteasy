@@ -59,6 +59,7 @@ public class TypeMappingDependenciesInDeploymentTest {
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getClassLoader"),
+            new RuntimePermission("getenv.resteasy.server.tracing.type"),
             new FilePermission("<<ALL FILES>>", "read"),
             new LoggingPermission("control", "")
       ), "permissions.xml");

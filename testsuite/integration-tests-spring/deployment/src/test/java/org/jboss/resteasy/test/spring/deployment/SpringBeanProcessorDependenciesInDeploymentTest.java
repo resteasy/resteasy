@@ -103,7 +103,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
               new PropertyPermission("org.springframework.cglib.test.stressHashCodes", "read"),
             new PropertyPermission("arquillian.*", "read"),
             new PropertyPermission("cglib.debugLocation", "read"),
-              new RuntimePermission("getClassLoader"),
+            new RuntimePermission("getClassLoader"),
             new RuntimePermission("getProtectionDomain"),
             new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
             new ReflectPermission("suppressAccessChecks"),
