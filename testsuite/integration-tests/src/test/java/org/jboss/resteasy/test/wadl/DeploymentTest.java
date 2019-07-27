@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -18,6 +19,8 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import java.lang.reflect.ReflectPermission;
+
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(Arquillian.class)
@@ -30,7 +33,11 @@ public class DeploymentTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchiveWithApplication(DeploymentTest.class.getSimpleName(), WadlTestApplication.class);
       war.addPackages(true, "org.jboss.resteasy.wadl");
-
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new RuntimePermission("getClassLoader"),
+              new ReflectPermission("suppressAccessChecks"),
+              new RuntimePermission("accessDeclaredMembers")
+      ), "permissions.xml");
       TestUtil.finishContainerPrepare(war, null, ExtendedResource.class, ListType.class);
       return war;
    }

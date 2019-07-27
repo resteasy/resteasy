@@ -46,6 +46,7 @@ public class ClientBuilderTest {
             new LoggingPermission("control", ""),
             new PropertyPermission("arquillian.*", "read"),
             new PropertyPermission("jboss.home.dir", "read"),
+            new PropertyPermission("jboss.server.base.dir", "read"),
             new RuntimePermission("accessDeclaredMembers")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);

@@ -4,12 +4,14 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBInterceptorResource;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,6 +45,9 @@ public class PostConstructInjectionTest {
    public static Archive<?> deployCdiOn() {
       WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_ON");
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_on.xml", "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new HibernateValidatorPermission("accessPrivateMembers")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class, PostConstructInjectionEJBInterceptorResource.class);
    }
 
@@ -53,6 +58,9 @@ public class PostConstructInjectionTest {
    public static Archive<?> deployCdiOff() {
       WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_OFF");
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_off.xml", "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new HibernateValidatorPermission("accessPrivateMembers")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class);
    }
 
