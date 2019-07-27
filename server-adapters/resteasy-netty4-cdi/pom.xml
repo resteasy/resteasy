@@ -14,7 +14,6 @@
     <description/>
     <properties>
         <dep.arq.weld.se>2.0.0.Final</dep.arq.weld.se>
-       <dep.arq.version>1.4.1.Final</dep.arq.version>
     </properties>
     <dependencies>
         <dependency>
@@ -76,13 +75,11 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <version>${dep.arq.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-container-spi</artifactId>
-            <version>${dep.arq.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

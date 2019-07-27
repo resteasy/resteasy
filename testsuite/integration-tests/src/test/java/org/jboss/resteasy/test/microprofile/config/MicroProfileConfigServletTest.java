@@ -1,14 +1,12 @@
 package org.jboss.resteasy.test.microprofile.config;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigFilter;
 import org.jboss.resteasy.test.microprofile.config.resource.MicroProfileConfigResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -19,6 +17,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter MicroProfile Config
@@ -38,6 +40,9 @@ public class MicroProfileConfigServletTest {
             .addClass(MicroProfileConfigFilter.class)
             .setWebXML(MicroProfileConfigServletTest.class.getPackage(), "web_servlet.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("system", "write")
+      ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, MicroProfileConfigResource.class);
    }
 

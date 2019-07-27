@@ -48,7 +48,9 @@ public class CustomJackson2ProviderTest {
       war.addAsWebInfResource(CustomJackson2ProviderTest.class.getPackage(), "jboss-deployment-structure-exclude-jaxrs.xml","jboss-deployment-structure.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new RuntimePermission("getProtectionDomain"),
+            new RuntimePermission("accessDeclaredMembers"),
             new ReflectPermission("suppressAccessChecks"),
+            new PropertyPermission("org.jboss.resteasy.max_mediatype_cache_size", "read"),
             new PropertyPermission("resteasy.allowGzip", "read"),
             new PropertyPermission("resteasy.server.tracing.*", "read")
       ), "permissions.xml");
