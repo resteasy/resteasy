@@ -18,8 +18,8 @@
     <bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping" p:order="1" p:throwNotFound="true">
         <property name="interceptors" ref="resteasy.dispatcher.interceptors"/>
     </bean>
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="0"/>
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" p:order="0"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
 
     <!-- Register the same class twice, under two different scopes and URL "root contexts" -->
     <bean id="singletonScopedResource" scope="singleton"
