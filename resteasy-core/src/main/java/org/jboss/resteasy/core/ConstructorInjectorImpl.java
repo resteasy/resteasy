@@ -21,6 +21,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -176,7 +179,22 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             .thenApply(args -> {
                try
                {
-                  return constructor.newInstance(args);
+                  Object obj = null;
+                  if (System.getSecurityManager() == null) {
+                     obj = constructor.newInstance(args);
+                  } else {
+                     try {
+                        obj = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                           @Override
+                           public Object run() throws Exception {
+                              return constructor.newInstance(args);
+                           }
+                        });
+                     } catch (PrivilegedActionException pae) {
+                        throw new RuntimeException(pae);
+                     }
+                  }
+                  return obj;
                }
                catch (InstantiationException e)
                {

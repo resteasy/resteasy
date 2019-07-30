@@ -83,10 +83,18 @@ public class ContactsDependenciesInDeploymentTest {
       // for spring to introspect annotations.  Security exception is eaten by spring
       // and not posted via the server.
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("org.graalvm.nativeimage.imagecode", "read"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_THRESHOLD"),
+              new RuntimePermission("getenv.resteasy_server_tracing_threshold"),
+              new RuntimePermission("getenv.resteasy.server.tracing.threshold"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_TYPE"),
+              new RuntimePermission("getenv.resteasy_server_tracing_type"),
+              new RuntimePermission("getenv.resteasy.server.tracing.type"),
             new MBeanServerPermission("createMBeanServer"),
             new MBeanPermission("org.springframework.context.support.LiveBeansView#-[liveBeansView:application=/ContactsDependenciesInDeploymentTest]", "registerMBean,unregisterMBean"),
             new MBeanTrustPermission("register"),
             new PropertyPermission("spring.liveBeansView.mbeanDomain", "read"),
+              new RuntimePermission("getClassLoader"),
             new RuntimePermission("getenv.spring.liveBeansView.mbeanDomain"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
@@ -110,7 +118,7 @@ public class ContactsDependenciesInDeploymentTest {
     */
    @Test
    public void testData() {
-      client = (ResteasyClient)ClientBuilder.newClient();
+      client = (ResteasyClient) ClientBuilder.newClient();
       proxy = client.target(generateURL("")).proxy(ContactProxy.class);
       Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
       Assert.assertEquals(201, response.getStatus());

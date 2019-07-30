@@ -2,6 +2,9 @@ package org.jboss.resteasy.spi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +136,23 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
       //TODO implement this differently: call getInstance(), retrieve the class, classloader, constructor from it, store locally in singletons, use those starting from now.
       try
       {
-         return (ResteasyProviderFactory) Thread.currentThread().getContextClassLoader()
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         } else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
+
+         return (ResteasyProviderFactory) loader
                .loadClass("org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl").getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
