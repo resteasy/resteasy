@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
 import static org.junit.Assert.assertEquals;
@@ -48,6 +49,13 @@ public class TypeMappingDependenciesInDeploymentTest {
       archive.addClass(TypeMappingResource.class);
 
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("org.graalvm.nativeimage.imagecode", "read"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_THRESHOLD"),
+              new RuntimePermission("getenv.resteasy_server_tracing_threshold"),
+              new RuntimePermission("getenv.resteasy.server.tracing.threshold"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_TYPE"),
+              new RuntimePermission("getenv.resteasy_server_tracing_type"),
+            new RuntimePermission("getenv.resteasy.server.tracing.type"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
             new RuntimePermission("getClassLoader"),

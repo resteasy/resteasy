@@ -5,6 +5,8 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
+import java.security.SecurityPermission;
+import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
 import org.apache.http.HttpEntity;
@@ -85,7 +87,15 @@ public class AddSpringResteasyAsResourceRootTest {
       // PropertyPermission needed for "arquillian.debug" to run
       // remaining permissions needed to run springframework
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-         //new PropertyPermission("arquillian.*", "read"),
+              new PropertyPermission("org.graalvm.nativeimage.imagecode", "read"),
+              new SecurityPermission("insertProvider"),
+              new RuntimePermission("getClassLoader"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_THRESHOLD"),
+              new RuntimePermission("getenv.resteasy_server_tracing_threshold"),
+              new RuntimePermission("getenv.resteasy.server.tracing.threshold"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_TYPE"),
+              new RuntimePermission("getenv.resteasy_server_tracing_type"),
+              new RuntimePermission("getenv.resteasy.server.tracing.type"),
          new ReflectPermission("suppressAccessChecks"),
          new RuntimePermission("accessDeclaredMembers"),
          new FilePermission("<<ALL FILES>>", "read"),

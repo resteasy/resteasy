@@ -18,7 +18,10 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.Configuration;
 
+import java.security.AccessController;
 import java.security.KeyStore;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -331,8 +334,23 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    {
       if (providerFactory == null)
       {
+         ClassLoader loader = null;
+         if (System.getSecurityManager() == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+         }else {
+            try {
+               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+                  @Override
+                  public ClassLoader run() throws Exception {
+                     return Thread.currentThread().getContextClassLoader();
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
+         }
          // create a new one
-         providerFactory = new LocalResteasyProviderFactory(RegisterBuiltin.getClientInitializedResteasyProviderFactory(Thread.currentThread().getContextClassLoader()));
+         providerFactory = new LocalResteasyProviderFactory(RegisterBuiltin.getClientInitializedResteasyProviderFactory(loader));
 
          if (ResteasyProviderFactory.peekInstance() != null)
          {

@@ -61,6 +61,14 @@ public class RequestScopedBeanDependenciesInDeploymentTest {
       // "suppressAccessChecks" required for access to arquillian-core.jar
       // remaining permissions needed to run springframework
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("org.graalvm.nativeimage.imagecode", "read"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_THRESHOLD"),
+              new RuntimePermission("getenv.resteasy_server_tracing_threshold"),
+              new RuntimePermission("getenv.resteasy.server.tracing.threshold"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_TYPE"),
+              new RuntimePermission("getenv.resteasy_server_tracing_type"),
+              new RuntimePermission("getenv.resteasy.server.tracing.type"),
+              new RuntimePermission("getClassLoader"),
             new PropertyPermission("arquillian.*", "read"),
             new ReflectPermission("suppressAccessChecks"),
             new RuntimePermission("accessDeclaredMembers"),
