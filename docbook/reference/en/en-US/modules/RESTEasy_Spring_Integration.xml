@@ -332,4 +332,118 @@ server.deploy(deployment);]]></programlisting>
             <![CDATA[modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar]]>.
         </para>
     </section>
+    <section>
+        <title>Processing Spring Web REST annotations in RESTEasy</title>
+        <para>
+            RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated with @RestController)
+            and handle related REST requests without delegating to Spring MVC. This functionality is currently experimental.
+        </para>
+        <para>
+            In order for RESTEasy to be able to process Spring @RestController, you first need to include the following dependency.
+        </para>
+        <para><programlisting>        &lt;dependency&gt;
+            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+            &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
+            &lt;version&gt;4.2.0-SNAPSHOT&lt;/version&gt;
+            &lt;/dependency&gt;
+
+        </programlisting></para>
+        <para>
+            Currently RESTEasy does not auto-scan for @RestController annotated classes,
+            so you need to add all @RestController annotated classes to your web.xml file as shown in the following example.
+        </para>
+        <programlisting><![CDATA[<web-app>
+   <display-name>RESTEasy application using Spring REST annotations</display-name>
+
+    <context-param>
+        <param-name>resteasy.scanned.resource.classes.with.builder</param-name>
+        <param-value>org.jboss.resteasy.spi.metadata.SpringResourceBuilder:org.example.Controller1,org.example.Controller2</param-value>
+    </context-param>
+
+   ...
+</web-app>]]></programlisting>
+    </section>
+    <para>
+        In the example above, Controller1 and Controller2 are registered and are expected to be annotated with @RestController.
+    </para>
+    <para>
+        The list of the currently supported annotations can be found below
+    </para>
+    <table frame="topbot">
+        <tgroup cols="2" rowsep="1" colsep="1">
+            <thead>
+                <row>
+                    <entry>Annotation</entry>
+                    <entry>Comment</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry>@RestController</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@RequestMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@GetMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@PostMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@PutMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@DeleteMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@PatchMapping</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@RequestParam</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@RequestHeader</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@MatrixVariable</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@PathVariable</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@CookieValue</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@RequestBody</entry>
+                    <entry/>
+                </row>
+                <row>
+                    <entry>@ResponseStatus</entry>
+                    <entry>Only supported as a method annotation</entry>
+                </row>
+                <row>
+                    <entry>@RequestParam</entry>
+                    <entry/>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    <para>
+        Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is supported as
+        is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
+        <literal>javax.servlet.http.HttpServletResponse</literal> as method parameters
+    </para>
 </chapter>
