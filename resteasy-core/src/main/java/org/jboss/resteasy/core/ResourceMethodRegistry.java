@@ -25,6 +25,7 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
+import org.jboss.resteasy.util.AnnotationResolver;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -85,6 +86,11 @@ public class ResourceMethodRegistry implements Registry
    public void addPerRequestResource(Class clazz)
    {
       addResourceFactory(new POJOResourceFactory(resourceBuilder, clazz));
+   }
+
+   @Override
+   public void addPerRequestResource(Class<?> clazz, ResourceBuilder resourceBuilder) {
+      addResourceFactory(new POJOResourceFactory(resourceBuilder, clazz), resourceBuilder);
    }
 
    @Override
@@ -167,7 +173,12 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref)
    {
-      addResourceFactory(ref, null);
+      addResourceFactory(ref, (String)null);
+   }
+
+   public void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder)
+   {
+      addResourceFactory(ref, resourceBuilder, null);
    }
 
    /**
@@ -179,8 +190,13 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref, String base)
    {
+      addResourceFactory(ref, resourceBuilder, base);
+   }
+
+   public void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base)
+   {
       Class<?> clazz = ref.getScannableClass();
-      Class restful = GetRestful.getRootResourceClass(clazz);
+      Class restful = AnnotationResolver.getClassWithAnnotation(clazz, resourceBuilder.getCorrespondingRootAnnotation());
       if (restful == null)
       {
          String msg = Messages.MESSAGES.classIsNotRootResource(clazz.getName());
@@ -190,7 +206,7 @@ public class ResourceMethodRegistry implements Registry
          }
          throw new RuntimeException(msg);
       }
-      addResourceFactory(ref, base, restful);
+      addResourceFactory(ref, resourceBuilder, base, restful);
    }
 
    /**
@@ -203,8 +219,13 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
+      addResourceFactory(ref, resourceBuilder, base, clazz);
+   }
+
+   public void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base, Class<?> clazz)
+   {
       Class<?>[] classes = {clazz};
-      addResourceFactory(ref, base, classes);
+      addResourceFactory(ref, resourceBuilder, base, classes);
       if (ref != null) ref.registered(providerFactory);
    }
 
@@ -217,6 +238,11 @@ public class ResourceMethodRegistry implements Registry
     * @param classes specific class
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?>[] classes)
+   {
+      addResourceFactory(ref, resourceBuilder, base, classes);
+   }
+
+   public void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base, Class<?>[] classes)
    {
       if (ref != null) ref.registered(providerFactory);
       for (Class<?> clazz : classes)
@@ -354,7 +380,8 @@ public class ResourceMethodRegistry implements Registry
       InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
       if (method instanceof ResourceMethod)
       {
-         ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod) method, injectorFactory, rf, providerFactory);
+         ResourceMethodInvoker invoker
+                 = new ResourceMethodInvoker((ResourceMethod) method, injectorFactory, rf, providerFactory);
          if (widerMatching)
             rootNode.addInvoker(fullpath, invoker);
          else root.addInvoker(classExpression, fullpath, invoker);

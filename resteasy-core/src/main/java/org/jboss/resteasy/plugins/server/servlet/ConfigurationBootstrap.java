@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.Application;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,6 +136,11 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       if (scannedJndi != null)
       {
          processScannedJndiComponentResources(scannedJndi);
+      }
+
+      String scannedResourceClassesWithBuilder = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCE_CLASSES_WITH_BUILDER);
+      if (scannedResourceClassesWithBuilder != null) {
+         processScannedResourceClassesWithBuilder(scannedResourceClassesWithBuilder);
       }
 
 
@@ -283,6 +289,29 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       for (String resource : resources)
       {
          deployment.getJndiComponentResources().add(resource);
+      }
+   }
+
+   // this string should be in the form: builder_class1:resource_class1,resource_class2;builder_class2:resource_class3
+   protected void processScannedResourceClassesWithBuilder(String scannedResourceClassesWithBuilder)
+   {
+      String[] parts = scannedResourceClassesWithBuilder.trim().split(";");
+      for (String part : parts)
+      {
+         int separationIndex = part.indexOf(":");
+         if (separationIndex > 0 && (separationIndex < part.length() - 1)) {
+            String resourceBuilder = part.substring(0, separationIndex);
+            String resourceClassesStr = part.substring(separationIndex + 1);
+            final String[] newResourceClasses = resourceClassesStr.trim().split(",");
+            if (newResourceClasses.length == 0) {
+               continue;
+            }
+            if (deployment.getScannedResourceClassesWithBuilder().get(resourceBuilder) == null) {
+               deployment.getScannedResourceClassesWithBuilder().put(resourceBuilder, Arrays.asList(newResourceClasses));
+            } else {
+               deployment.getScannedResourceClassesWithBuilder().get(resourceBuilder).addAll(Arrays.asList(newResourceClasses));
+            }
+         }
       }
    }
 
