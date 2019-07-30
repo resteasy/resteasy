@@ -1,21 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ManagementFactory;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,13 +19,30 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
@@ -261,12 +262,22 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       {
          loadHttpMethod(request, httpMethod);
 
-         HttpContext ctx = null;
-         if (httpContextProvider != null)
-         {
-            ctx = httpContextProvider.getContext();
+         if (System.getSecurityManager() == null) {
+            res = httpClient.execute(httpMethod,
+                    ((httpContextProvider == null)? null : httpContextProvider.getContext()));
+         } else {
+            try {
+               res = AccessController.doPrivileged(new PrivilegedExceptionAction<HttpResponse>() {
+                  @Override
+                  public HttpResponse run() throws Exception {
+                     return httpClient.execute(httpMethod,
+                             ((httpContextProvider == null)? null : httpContextProvider.getContext()));
+                  }
+               });
+            } catch (PrivilegedActionException pae) {
+               throw new RuntimeException(pae);
+            }
          }
-         res = httpClient.execute(httpMethod, ctx);
       }
       catch (Exception e)
       {

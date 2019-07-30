@@ -30,6 +30,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
+import java.security.SecurityPermission;
 import java.util.PropertyPermission;
 import java.util.logging.LoggingPermission;
 
@@ -61,6 +62,14 @@ public class JaxrsWithSpringMVCTest {
       // for spring to introspect annotations.  Security exception is eaten by spring
       // and not posted via the server.
       archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+              new PropertyPermission("org.graalvm.nativeimage.imagecode", "read"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_THRESHOLD"),
+              new RuntimePermission("getenv.resteasy_server_tracing_threshold"),
+              new RuntimePermission("getenv.resteasy.server.tracing.threshold"),
+              new RuntimePermission("getenv.RESTEASY_SERVER_TRACING_TYPE"),
+              new RuntimePermission("getenv.resteasy_server_tracing_type"),
+              new RuntimePermission("getenv.resteasy.server.tracing.type"),
+         new SecurityPermission("insertProvider"),
          new MBeanServerPermission("createMBeanServer"),
          new MBeanPermission("org.springframework.context.support.LiveBeansView#-[liveBeansView:application=/JaxrsWithSpringMVCTest]", "registerMBean,unregisterMBean"),
          new MBeanTrustPermission("register"),
@@ -69,6 +78,7 @@ public class JaxrsWithSpringMVCTest {
          new ReflectPermission("suppressAccessChecks"),
          new RuntimePermission("accessDeclaredMembers"),
          new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+         new RuntimePermission("getClassLoader"),
          new FilePermission("<<ALL FILES>>", "read"),
          new LoggingPermission("control", "")
       ), "permissions.xml");
