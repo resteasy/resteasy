@@ -1,7 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.util.Set;
-
 import org.eclipse.microprofile.config.Config;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
@@ -19,20 +17,21 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
-
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -60,6 +59,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private List<String> scannedResourceClasses = new ArrayList<String>();
    private List<String> scannedProviderClasses = new ArrayList<String>();
    private List<String> scannedJndiComponentResources = new ArrayList<String>();
+   private Map<String, List<String>> scannedResourceClassesWithBuilder = new HashMap<>();
    private List<String> jndiComponentResources = new ArrayList<String>();
    private List<String> providerClasses = new ArrayList<String>();
    private List<Class> actualProviderClasses = new ArrayList<Class>();
@@ -333,6 +333,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       scannedResourceClasses.addAll(other.getScannedResourceClasses());
       scannedProviderClasses.addAll(other.getScannedProviderClasses());
       scannedJndiComponentResources.addAll(other.getScannedJndiComponentResources());
+      scannedResourceClassesWithBuilder.putAll(other.getScannedResourceClassesWithBuilder());
 
       jndiComponentResources.addAll(other.getJndiComponentResources());
       providerClasses.addAll(other.getProviderClasses());
@@ -473,6 +474,47 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             registry.addPerRequestResource(clazz);
          }
       }
+
+      if (useScanning && scannedResourceClassesWithBuilder != null)
+      {
+         for (Map.Entry<String, List<String>> entry : scannedResourceClassesWithBuilder.entrySet())
+         {
+            Class resourceBuilderClass;
+            try
+            {
+               resourceBuilderClass = Thread.currentThread().getContextClassLoader().loadClass(entry.getKey().trim());
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+            if (!ResourceBuilder.class.isAssignableFrom(resourceBuilderClass)) {
+               throw new IllegalArgumentException("Supplied class: " + resourceBuilderClass + "must be a subclass of " + ResourceBuilder.class.getName());
+            }
+
+            ResourceBuilder resourceBuilder;
+            try {
+               resourceBuilder = (ResourceBuilder) resourceBuilderClass.newInstance();
+            } catch (Exception e) {
+               throw new RuntimeException(e);
+            }
+
+            for (String resource : entry.getValue()) {
+               Class resourceClass;
+               try
+               {
+                  resourceClass = Thread.currentThread().getContextClassLoader().loadClass(resource.trim());
+               }
+               catch (ClassNotFoundException e)
+               {
+                  throw new RuntimeException(e);
+               }
+
+               registry.addPerRequestResource(resourceClass, resourceBuilder);
+            }
+         }
+      }
+
       if (resourceClasses != null)
       {
          for (String resource : resourceClasses)
@@ -961,6 +1003,16 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    public void setScannedJndiComponentResources(List<String> scannedJndiComponentResources)
    {
       this.scannedJndiComponentResources = scannedJndiComponentResources;
+   }
+
+   @Override
+   public Map<String, List<String>> getScannedResourceClassesWithBuilder() {
+      return scannedResourceClassesWithBuilder;
+   }
+
+   @Override
+   public void setScannedResourceClassesWithBuilder(Map<String, List<String>> scannedResourceClassesWithBuilder) {
+      this.scannedResourceClassesWithBuilder = scannedResourceClassesWithBuilder;
    }
 
    public boolean isWiderRequestMatching()

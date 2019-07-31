@@ -151,6 +151,10 @@ public interface ResteasyDeployment
 
    void setScannedJndiComponentResources(List<String> scannedJndiComponentResources);
 
+   Map<String, List<String>> getScannedResourceClassesWithBuilder();
+
+   void setScannedResourceClassesWithBuilder(Map<String, List<String>> scannedResourceClassesWithBuilder);
+
    boolean isWiderRequestMatching();
 
    void setWiderRequestMatching(boolean widerRequestMatching);

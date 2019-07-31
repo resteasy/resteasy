@@ -50,6 +50,10 @@ public abstract class Parameter
       return resourceClass;
    }
 
+   public void setResourceClass(ResourceClass resourceClass) {
+      this.resourceClass = resourceClass;
+   }
+
    public Class<?> getType()
    {
       return type;
@@ -78,6 +82,22 @@ public abstract class Parameter
    public String getDefaultValue()
    {
       return defaultValue;
+   }
+
+   public void setParamType(ParamType paramType) {
+      this.paramType = paramType;
+   }
+
+   public void setParamName(String paramName) {
+      this.paramName = paramName;
+   }
+
+   public void setDefaultValue(String defaultValue) {
+      this.defaultValue = defaultValue;
+   }
+
+   public void setEncoded(boolean encoded) {
+      this.encoded = encoded;
    }
 
    public abstract AccessibleObject getAccessibleObject();

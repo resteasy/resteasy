@@ -134,6 +134,10 @@ public class ResourceBuilder
          this.parameter = parameter;
       }
 
+      public Parameter getParameter() {
+         return parameter;
+      }
+
       public T type(Class<?> type)
       {
          parameter.type = type;
@@ -475,7 +479,7 @@ public class ResourceBuilder
       @Override
       public ResourceMethodParameterBuilder fromAnnotations()
       {
-         super.fromAnnotations();
+         doFromAnnotations();
          if (param.paramType == Parameter.ParamType.SUSPENDED)
          {
             method.method.asynchronous = true;
@@ -485,6 +489,10 @@ public class ResourceBuilder
             param.paramType = Parameter.ParamType.MESSAGE_BODY;
          }
          return this;
+      }
+
+      protected void doFromAnnotations() {
+         super.fromAnnotations();
       }
    }
 
@@ -528,6 +536,10 @@ public class ResourceBuilder
       {
          this.resourceClassBuilder = resourceClassBuilder;
          this.locator = new DefaultResourceLocator(resourceClassBuilder.resourceClass, method, annotatedMethod);
+      }
+
+      public DefaultResourceLocator getLocator() {
+         return locator;
       }
 
       public T returnType(Class<?> type)
@@ -584,7 +596,7 @@ public class ResourceBuilder
    {
       DefaultResourceMethod method;
 
-      ResourceMethodBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
+      public ResourceMethodBuilder(final ResourceClassBuilder resourceClassBuilder, final Method method, final Method annotatedMethod)
       {
          this.method = new DefaultResourceMethod(resourceClassBuilder.resourceClass, method, annotatedMethod);
          this.locator = this.method;
@@ -818,6 +830,10 @@ public class ResourceBuilder
       return new ResourceBuilder().getConstructor(annotatedResourceClass);
    }
 
+   public Class<? extends Annotation> getCorrespondingRootAnnotation() {
+      return Path.class;
+   }
+
    /**
     * Picks a constructor from an annotated resource class based on spec rules.
     *
@@ -883,11 +899,7 @@ public class ResourceBuilder
          builder = buildLocator(clazz);
       else
       {
-         Path path = clazz.getAnnotation(Path.class);
-         if (path == null)
-            builder = buildRootResource(clazz, null);
-         else
-            builder = buildRootResource(clazz, path.value());
+         builder = createResourceClassBuilder(clazz);
       }
       for (Method method : clazz.getMethods())
       {
@@ -901,6 +913,16 @@ public class ResourceBuilder
       }
       processSetters(builder, clazz);
       return applyProcessors(builder.buildClass());
+   }
+
+   protected ResourceClassBuilder createResourceClassBuilder(Class<?> clazz) {
+      ResourceClassBuilder builder;
+      Path path = clazz.getAnnotation(Path.class);
+      if (path == null)
+         builder = buildRootResource(clazz, null);
+      else
+         builder = buildRootResource(clazz, path.value());
+      return builder;
    }
 
    private static Set<String> getHttpMethods(Method method)

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 
 /**
@@ -14,6 +15,10 @@ public interface Registry
     * @param clazz class
     */
    void addPerRequestResource(Class<?> clazz);
+
+   default void addPerRequestResource(Class<?> clazz, ResourceBuilder resourceBuilder) {
+      throw new IllegalStateException("Not implemented");
+   }
 
    /**
     * Add a JAX-RS endpoint.  Objects of clazz will be created and destroy and the beginning/end of every request.
@@ -61,6 +66,10 @@ public interface Registry
     */
    void addResourceFactory(ResourceFactory ref);
 
+   default void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder) {
+      throw new IllegalStateException("Not implemented");
+   }
+
    /**
     * Add a custom resource implementation endpoint.
     *
@@ -68,6 +77,10 @@ public interface Registry
     * @param basePath prefix path of resource
     */
    void addResourceFactory(ResourceFactory ref, String basePath);
+
+   default void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String basePath) {
+      throw new IllegalStateException("Not implemented");
+   }
 
    /**
     * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
@@ -79,7 +92,15 @@ public interface Registry
     */
    void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz);
 
+   default void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base, Class<?> clazz) {
+      throw new IllegalStateException("Not implemented");
+   }
+
    void addResourceFactory(ResourceFactory ref, String base, Class<?>[] classes);
+
+   default void addResourceFactory(ResourceFactory ref, ResourceBuilder resourceBuilder, String base, Class<?>[] classes) {
+      throw new IllegalStateException("Not implemented");
+   }
 
    void removeRegistrations(Class<?> clazz);
 
