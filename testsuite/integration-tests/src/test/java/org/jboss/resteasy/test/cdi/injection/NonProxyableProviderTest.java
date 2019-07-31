@@ -6,9 +6,14 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.test.cdi.injection.resource.ProviderFinalClassResource;
+import org.jboss.resteasy.test.cdi.injection.resource.FinalMethodSuperclass;
+import org.jboss.resteasy.test.cdi.injection.resource.NonProxyableProviderResource;
 import org.jboss.resteasy.test.cdi.injection.resource.ProviderFinalClassStringHandler;
 import org.jboss.resteasy.test.cdi.injection.resource.ProviderFinalClassStringHandlerBodyWriter;
+import org.jboss.resteasy.test.cdi.injection.resource.ProviderFinalInheritedMethodStringHandler;
+import org.jboss.resteasy.test.cdi.injection.resource.ProviderFinalInheritedMethodStringHandlerBodyWriter;
+import org.jboss.resteasy.test.cdi.injection.resource.ProviderOneArgConstructorStringHandler;
+import org.jboss.resteasy.test.cdi.injection.resource.ProviderOneArgConstructorStringHandlerBodyWriter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -32,15 +37,15 @@ import static org.junit.Assert.assertEquals;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for RESTEASY-1015
  *                    Test that proxy class is not created for provider class
- *                    declared final.
+ *                    that cannot be proxied.
  * @tpSince RESTEasy 3.7
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ProviderFinalClassTest {
+public class NonProxyableProviderTest {
 
    protected static final Logger logger = LogManager.getLogger(
-      ProviderFinalClassTest.class.getName());
+      NonProxyableProviderTest.class.getName());
 
    Client client;
 
@@ -48,12 +53,18 @@ public class ProviderFinalClassTest {
    public static Archive<?> deploy() {
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "SingleLibrary.jar");
       jar.addClasses(ProviderFinalClassStringHandler.class,
-         ProviderFinalClassStringHandlerBodyWriter.class);
+         ProviderFinalClassStringHandlerBodyWriter.class,
+         ProviderFinalInheritedMethodStringHandler.class,
+         ProviderFinalInheritedMethodStringHandlerBodyWriter.class,
+         FinalMethodSuperclass.class,
+         ProviderOneArgConstructorStringHandler.class,
+         ProviderOneArgConstructorStringHandlerBodyWriter.class);
 
       WebArchive war = ShrinkWrap.create(WebArchive.class,
-         ProviderFinalClassTest.class.getSimpleName()+".war");
-      war.addClass(ProviderFinalClassResource.class);
-      war.addAsWebInfResource(ProviderFinalClassTest.class.getPackage(),
+         NonProxyableProviderTest.class.getSimpleName()+".war");
+      war.addClass(NonProxyableProviderResource.class);
+      war.addAsWebInfResource(
+          NonProxyableProviderTest.class.getPackage(),
          "ProviderFinalClass_web.xml", "web.xml");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsLibrary(jar);
@@ -75,9 +86,31 @@ public class ProviderFinalClassTest {
     * @tpSince RESTEasy 3.7
     */
    @Test
-   public void testAppcliationScope() throws Exception {
-      String url = PortProviderUtil.generateURL("/new/a",
-         ProviderFinalClassTest.class.getSimpleName());
+   public void testFinalProvider() throws Exception {
+      test("a");
+   }
+
+   /**
+    * @tpTestDetails Test CDI does not create proxy class for provider bean with an inherited final method
+    * @tpSince RESTEasy 3.7
+    */
+   @Test
+   public void testInheritedFinalMethodProvider() throws Exception {
+      test("b");
+   }
+
+   /**
+    * @tpTestDetails Test CDI does not create proxy class for provider bean without a non-private no-arg constructor
+    * @tpSince RESTEasy 3.7
+    */
+   @Test
+   public void testOneArgConstructorProvider() throws Exception {
+      test("c");
+   }
+
+   private void test(String subpath) {
+      String url = PortProviderUtil.generateURL("/new/" + subpath,
+            NonProxyableProviderTest.class.getSimpleName());
       WebTarget base = client.target(url);
 
       Response response = base.request().get();
