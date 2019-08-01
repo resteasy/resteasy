@@ -247,7 +247,7 @@ public class ServerResponseWriter
       MediaType chosen = (MediaType)request.getAttribute(SegmentNode.RESTEASY_CHOSEN_ACCEPT);
       boolean hasProduces = chosen != null && Boolean.valueOf(chosen.getParameters().get(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES));
       hasProduces |= method != null && method.getProduces() != null && method.getProduces().length > 0;
-      hasProduces |= method != null && method.getMethod().getClass().getAnnotation(Produces.class) != null;
+      hasProduces |= method != null && method.getMethod().getDeclaringClass().getAnnotation(Produces.class) != null;
 
       if (hasProduces)
       {
@@ -265,7 +265,7 @@ public class ServerResponseWriter
                }
                else
                {
-                  String[] producesValues = method.getMethod().getClass().getAnnotation(Produces.class).value();
+                  String[] producesValues = method.getMethod().getDeclaringClass().getAnnotation(Produces.class).value();
                   produces = new MediaType[producesValues.length];
                   for (int i = 0; i < producesValues.length; i++)
                   {
