@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -86,8 +87,11 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                 httpClient
                         .headers(headerBuilder -> {
                             final ClientRequestHeaders resteasyHeaders = request.getHeaders();
-                            resteasyHeaders.getHeaders().entrySet()
-                                    .forEach(entry -> headerBuilder.add(entry.getKey(), entry.getValue()));
+                            resteasyHeaders.getHeaders().entrySet().forEach(entry -> {
+                                final String key = entry.getKey();
+                                final List<Object> valueList = entry.getValue();
+                                valueList.forEach(value -> headerBuilder.add(key, value != null ? value : ""));
+                            });
 
                             payload.ifPresent(bytes -> {
 

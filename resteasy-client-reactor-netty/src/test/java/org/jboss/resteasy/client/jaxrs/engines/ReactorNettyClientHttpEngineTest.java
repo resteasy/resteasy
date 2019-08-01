@@ -21,6 +21,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -299,6 +300,18 @@ public class ReactorNettyClientHttpEngineTest {
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
         assertEquals(response.getHeaders().getFirst("id"), Integer.toString(randomInt + 1));
+    }
+
+    @Test
+    public void testHeaderPropagationWithNullHeader() {
+
+        final ClientRequestFilter nullHeaderFilter =
+                requestContext -> requestContext.getHeaders().add("someHeader", null);
+
+        final WebTarget webTarget = client.target(url("/hello")).register(nullHeaderFilter);
+        final Response response = webTarget.request().header("someHeader", null).get();
+        assertEquals(200, response.getStatus());
+        assertEquals(HELLO_WORLD, response.readEntity(String.class));
     }
 
     @Test
