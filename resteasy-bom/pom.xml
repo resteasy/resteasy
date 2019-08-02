@@ -12,6 +12,7 @@
     <name>RESTEasy Maven Import (BOM)</name>
     <description/>
     <artifactId>resteasy-bom</artifactId>
+    <version>4.2.0.Final</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
