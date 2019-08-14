@@ -17,6 +17,10 @@ import java.util.concurrent.ScheduledExecutorService;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+// Note. Setting value to "/RESTEASY_HttpServlet30Dispatcher" frees up the root "/" context
+//       to serve static content. The path "/RESTEASY_HttpServlet30Dispatcher" will be installed
+//       and it will lead to HttpServlet30Dispatcher, but no resources will be there and status
+//       404 will be returned.
 @WebServlet(asyncSupported = true, value="/RESTEASY_HttpServlet30Dispatcher")
 public class HttpServlet30Dispatcher extends HttpServletDispatcher
 {
