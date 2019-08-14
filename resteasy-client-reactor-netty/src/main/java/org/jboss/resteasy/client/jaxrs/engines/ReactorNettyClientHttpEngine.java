@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +44,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     private final HttpClient httpClient;
     private final ChannelGroup channelGroup;
     private final ConnectionProvider connectionProvider;
+    private final Optional<Duration> timeout;
 
     /**
      * Constructor for ReactorNettyClientHttpEngine
@@ -50,13 +52,37 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
      * @param httpClient The {@link HttpClient} instance to be used by this {@link AsyncClientHttpEngine}
      * @param channelGroup The {@link ChannelGroup} instance used by the provided {@link HttpClient}
      * @param connectionProvider The {@link ConnectionProvider} instance used to create the provided {@link HttpClient}
+     * @param timeout The {@link Optional<Duration>} instance used to configure timeout on response
      */
-    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
+    ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider) {
+                                        final ConnectionProvider connectionProvider,
+                                        final Optional<Duration> timeout) {
         this.httpClient = requireNonNull(httpClient);
         this.channelGroup = requireNonNull(channelGroup);
         this.connectionProvider = requireNonNull(connectionProvider);
+        this.timeout = requireNonNull(timeout);
+
+        timeout
+                .ifPresent( duration -> {
+                    if(duration.isNegative())
+                        throw new IllegalArgumentException("Required positive value for timeout");
+                    if(duration.isZero())
+                        throw new IllegalArgumentException("Required non zero value for timeout");
+                });
+    }
+
+    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
+                                        final ChannelGroup channelGroup,
+                                        final ConnectionProvider connectionProvider) {
+        this(httpClient, channelGroup, connectionProvider, Optional.empty());
+    }
+
+    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
+                                        final ChannelGroup channelGroup,
+                                        final ConnectionProvider connectionProvider,
+                                        final Duration timeout) {
+        this(httpClient, channelGroup, connectionProvider, Optional.of(timeout));
     }
 
     @Override
@@ -115,7 +141,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                     outbound.sendObject(Mono.just(outbound.alloc().buffer().writeBytes(bytes))))
             ).orElse(requestSender);
 
-        return responseReceiver
+        final Mono<T> responseMono =  responseReceiver
                 .responseSingle((response, bytes) -> bytes
                         .asInputStream()
                         .map(is -> extractResult(request.getClientConfiguration(), response, is, extractor))
@@ -126,8 +152,11 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                                                         request.getClientConfiguration(),
                                                         response,
                                                         null,
-                                                        extractor)))))
-                .toFuture();
+                                                        extractor)))));
+
+        return timeout
+                .map(timeout -> responseMono.timeout(timeout))
+                .orElse(responseMono).toFuture();
     }
 
     private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
@@ -273,4 +302,5 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
 
         return restEasyClientResponse;
     }
+
 }

@@ -40,3 +40,4 @@ myDB.script
 myDB.properties
 
 .DS_Store
+.java-version
