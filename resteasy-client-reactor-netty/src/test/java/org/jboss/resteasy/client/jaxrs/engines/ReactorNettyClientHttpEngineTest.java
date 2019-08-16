@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -64,7 +64,7 @@ public class ReactorNettyClientHttpEngineTest {
 
     private static Client setupClient(HttpClient httpClient, Duration timeout) {
 
-        ReactorNettyClientHttpEngine engine =
+        final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
@@ -72,20 +72,20 @@ public class ReactorNettyClientHttpEngineTest {
                         timeout);
 
         final ClientBuilder builder = ClientBuilder.newBuilder();
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
+        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
         clientBuilder.httpEngine(engine);
         return builder.build();
     }
 
     private static Client setupClient(HttpClient httpClient) {
-        ReactorNettyClientHttpEngine engine =
+        final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get());
 
         final ClientBuilder builder = ClientBuilder.newBuilder();
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
+        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
         clientBuilder.httpEngine(engine);
         return builder.build();
     }

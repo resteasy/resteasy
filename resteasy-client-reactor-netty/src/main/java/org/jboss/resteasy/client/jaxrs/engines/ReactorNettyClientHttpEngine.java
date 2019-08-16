@@ -44,7 +44,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     private final HttpClient httpClient;
     private final ChannelGroup channelGroup;
     private final ConnectionProvider connectionProvider;
-    private final Optional<Duration> timeout;
+    private final Optional<Duration> requestTimeout;
 
     /**
      * Constructor for ReactorNettyClientHttpEngine
@@ -52,23 +52,23 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
      * @param httpClient The {@link HttpClient} instance to be used by this {@link AsyncClientHttpEngine}
      * @param channelGroup The {@link ChannelGroup} instance used by the provided {@link HttpClient}
      * @param connectionProvider The {@link ConnectionProvider} instance used to create the provided {@link HttpClient}
-     * @param timeout The {@link Optional<Duration>} instance used to configure timeout on response
+     * @param requestTimeout The {@link Optional<Duration>} instance used to configure requestTimeout on response
      */
     ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
                                         final ConnectionProvider connectionProvider,
-                                        final Optional<Duration> timeout) {
+                                        final Optional<Duration> requestTimeout) {
         this.httpClient = requireNonNull(httpClient);
         this.channelGroup = requireNonNull(channelGroup);
         this.connectionProvider = requireNonNull(connectionProvider);
-        this.timeout = requireNonNull(timeout);
+        this.requestTimeout = requireNonNull(requestTimeout);
 
-        timeout
+        requestTimeout
                 .ifPresent( duration -> {
                     if(duration.isNegative())
-                        throw new IllegalArgumentException("Required positive value for timeout");
+                        throw new IllegalArgumentException("Required positive value for requestTimeout");
                     if(duration.isZero())
-                        throw new IllegalArgumentException("Required non zero value for timeout");
+                        throw new IllegalArgumentException("Required non zero value for requestTimeout");
                 });
     }
 
@@ -81,8 +81,8 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     public ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
                                         final ConnectionProvider connectionProvider,
-                                        final Duration timeout) {
-        this(httpClient, channelGroup, connectionProvider, Optional.of(timeout));
+                                        final Duration requestTimeout) {
+        this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout));
     }
 
     @Override
@@ -154,9 +154,10 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                                                         null,
                                                         extractor)))));
 
-        return timeout
-                .map(timeout -> responseMono.timeout(timeout))
-                .orElse(responseMono).toFuture();
+        return requestTimeout
+                .map(duration -> responseMono.timeout(duration))
+                .orElse(responseMono)
+                .toFuture();
     }
 
     private static boolean isContentLengthInvalid(final String headerValue, final byte[] payload) {
@@ -302,5 +303,4 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
 
         return restEasyClientResponse;
     }
-
 }
