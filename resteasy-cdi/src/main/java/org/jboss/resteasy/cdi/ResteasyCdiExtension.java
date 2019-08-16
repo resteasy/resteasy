@@ -1,6 +1,8 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -122,7 +124,7 @@ public class ResteasyCdiExtension implements Extension
                && !isSessionBean(annotatedType)
                // This check is redundant for CDI 1.1 containers but required for CDI 1.0
          && annotatedType.isAnnotationPresent(Provider.class)
-         && !isFinalClass(annotatedType.getJavaClass()))
+         && !isUnproxyableClass(annotatedType.getJavaClass()))
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass().getCanonicalName()));
          event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
@@ -270,28 +272,53 @@ public class ResteasyCdiExtension implements Extension
     * @param clazz
     * @return
     */
-   private boolean isFinalClass(Class clazz) {
-      // Unproxyable bean type: classes which are declared final
-      boolean isFinal = Modifier.isFinal(clazz.getModifiers());
+   private boolean isUnproxyableClass(Class clazz) {
+      // Unproxyable bean type: classes which are declared final,
+      // or expose final methods,
+      // or have no non-private no-args constructor
+      return isFinal(clazz) ||
+            hasNonPrivateNonStaticFinalMethod(clazz) ||
+            hasNoNonPrivateNoArgsConstructor(clazz);
+   }
 
-      if (!isFinal) {
-         // check methods
-         for (Method m : clazz.getMethods()) {
-            if (clazz == m.getDeclaringClass())
-            {
-               int mod = m.getModifiers();
-               if (Modifier.isFinal(mod) && !Modifier.isStatic(mod)
-                  && !Modifier.isPrivate(mod))
-               {
-                  isFinal = true;
-                  break;
-               }
+   private boolean isFinal(Class clazz) {
+      return Modifier.isFinal(clazz.getModifiers());
+   }
+
+   // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
+   private boolean hasNonPrivateNonStaticFinalMethod(Class<?> type) {
+      for (Class<?> clazz = type; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+         for (Method method : clazz.getDeclaredMethods()) {
+            if (isFinal(method) && !isPrivate(method) && !isStatic(method)) {
+               return true;
             }
-
-
          }
       }
+      return false;
+   }
 
-      return isFinal;
+   private boolean hasNoNonPrivateNoArgsConstructor(Class<?> clazz) {
+      Constructor<?> constructor;
+      try {
+         constructor = clazz.getConstructor();
+      } catch (NoSuchMethodException exception) {
+         return true;
+      }
+
+      // Note: this probably can only be private if the provider also has
+      // a non-private @Context constructor, which is unlikely but possible.
+      return isPrivate(constructor);
+   }
+
+   private boolean isFinal(Member member) {
+      return Modifier.isFinal(member.getModifiers());
+   }
+
+   private boolean isPrivate(Member member) {
+      return Modifier.isPrivate(member.getModifiers());
+   }
+
+   private boolean isStatic(Member member) {
+      return Modifier.isStatic(member.getModifiers());
    }
 }
