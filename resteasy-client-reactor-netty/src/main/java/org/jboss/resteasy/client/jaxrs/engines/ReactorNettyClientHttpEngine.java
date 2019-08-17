@@ -54,7 +54,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
      * @param connectionProvider The {@link ConnectionProvider} instance used to create the provided {@link HttpClient}
      * @param requestTimeout The {@link Optional<Duration>} instance used to configure requestTimeout on response
      */
-    ReactorNettyClientHttpEngine(final HttpClient httpClient,
+    private ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
                                         final ConnectionProvider connectionProvider,
                                         final Optional<Duration> requestTimeout) {
