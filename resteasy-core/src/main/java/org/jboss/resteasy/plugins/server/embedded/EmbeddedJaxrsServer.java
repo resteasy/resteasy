@@ -2,21 +2,22 @@ package org.jboss.resteasy.plugins.server.embedded;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-public interface EmbeddedJaxrsServer
-{
-   void setRootResourcePath(String rootResourcePath);
+public interface EmbeddedJaxrsServer<T> {
+   T deploy();
 
-   void start();
+   T start();
 
    void stop();
 
    ResteasyDeployment getDeployment();
 
-   void setDeployment(ResteasyDeployment deployment);
+   T setDeployment(ResteasyDeployment deployment);
 
-   void setSecurityDomain(SecurityDomain sc);
+   T setPort(int port);
+
+   T setHostname(String hostname);
+
+   T setRootResourcePath(String rootResourcePath);
+
+   T setSecurityDomain(SecurityDomain sc);
 }

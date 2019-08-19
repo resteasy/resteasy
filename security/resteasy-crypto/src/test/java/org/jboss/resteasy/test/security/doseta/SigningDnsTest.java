@@ -71,8 +71,8 @@ public class SigningDnsTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      server.start();
       deployment = server.getDeployment();
+      deployment.start();
 
       clientRepository = new DosetaKeyRepository();
       clientRepository.setKeyStorePath("test1.jks");
@@ -95,6 +95,9 @@ public class SigningDnsTest
       deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, serverRepository);
       addPerRequestResource(SignedResource.class);
       configureDNS();
+
+      server.start();
+
       client = ClientBuilder.newClient();
    }
 

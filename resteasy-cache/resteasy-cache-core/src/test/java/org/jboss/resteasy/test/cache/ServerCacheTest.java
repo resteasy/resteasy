@@ -54,8 +54,8 @@ public class ServerCacheTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      server.start();
       deployment = server.getDeployment();
+      server.start();
       client = ClientBuilder.newClient();
    }
 

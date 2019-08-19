@@ -18,6 +18,7 @@ import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
@@ -42,8 +43,10 @@ public class TestFacadeLinks
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
+      ResteasyDeployment deployment = server.getDeployment();
+      deployment.start();
+      dispatcher = deployment.getDispatcher();
       server.start();
-      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @AfterClass

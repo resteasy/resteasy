@@ -26,7 +26,7 @@ public class WadlUndertowConnector {
       ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setApplicationClass(application.getName());
 
-      DeploymentInfo di = server.undertowDeployment(deployment);
+      DeploymentInfo di = server.undertowDeployment(deployment, "/");
 
       di.setClassLoader(application.getClassLoader());
       di.setContextPath(contextPath);

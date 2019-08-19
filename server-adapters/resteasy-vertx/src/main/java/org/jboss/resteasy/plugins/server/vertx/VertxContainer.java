@@ -46,7 +46,7 @@ public class VertxContainer
       vertx.setRootResourcePath(bindPath);
       vertx.setSecurityDomain(domain);
       vertx.start();
-      return vertx.getDeployment();
+      return (VertxResteasyDeployment)vertx.getDeployment();
    }
 
    public static void stop() throws Exception

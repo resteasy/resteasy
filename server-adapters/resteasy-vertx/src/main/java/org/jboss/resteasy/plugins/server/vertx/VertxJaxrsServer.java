@@ -1,13 +1,5 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -21,6 +13,16 @@ import io.vertx.core.json.JsonObject;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.util.EmbeddedServerHelper;
+import org.jboss.resteasy.util.PortProvider;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -32,108 +34,55 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  * @author Julien Viet
  * @version $Rev: 2080 $, $Date: 2010-01-26 18:04:19 +0900 (Tue, 26 Jan 2010) $
  */
-public class VertxJaxrsServer implements EmbeddedJaxrsServer
+public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer>
 {
    private static final ConcurrentMap<String, Helper> deploymentMap = new ConcurrentHashMap<>();
    protected VertxOptions vertxOptions = new VertxOptions();
    protected Vertx vertx;
    protected HttpServerOptions serverOptions = new HttpServerOptions();
-   protected VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+   protected VertxResteasyDeployment deployment;
    protected String root = "";
    protected SecurityDomain domain;
    private String deploymentID;
+   private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
    // default no idle timeout.
 
-   public String getHostname()
-   {
-      return serverOptions.getHost();
-   }
-
-   public void setHostname(String hostname)
-   {
-      serverOptions.setHost(hostname);
-   }
-
-   public int getPort()
-   {
-      return serverOptions.getPort();
-   }
-
-   public void setPort(int port)
-   {
-      serverOptions.setPort(port);
-   }
-
-   public VertxOptions getVertxOptions()
-   {
-      return vertxOptions;
-   }
-
-   /**
-    * Set {@link io.vertx.core.VertxOptions}.
-    *
-    * @param options the {@link io.vertx.core.VertxOptions}.
-    * @see Vertx#vertx(VertxOptions)
-    */
-   public void setVertxOptions(VertxOptions options)
-   {
-      this.vertxOptions = options;
-   }
-
-   /**
-    * Set {@link io.vertx.core.http.HttpServerOptions}.
-    *
-    * @param options the {@link io.vertx.core.http.HttpServerOptions}.
-    * @see Vertx#createHttpServer(HttpServerOptions)
-    */
-   public void setServerOptions(HttpServerOptions options)
-   {
-      this.serverOptions = options;
-   }
-
-   public HttpServerOptions getServerOptions()
-   {
-      return serverOptions;
+   public VertxJaxrsServer() {
+      // provide default port
+      serverOptions.setPort(PortProvider.getPort());
    }
 
    @Override
-   public void setDeployment(ResteasyDeployment deployment)
-   {
-      this.deployment = (VertxResteasyDeployment) deployment;
-   }
-
-   @Override
-   public void setRootResourcePath(String rootResourcePath)
-   {
-      root = rootResourcePath;
-      if (root != null && root.equals("/")) root = "";
-   }
-
-   @Override
-   public VertxResteasyDeployment getDeployment()
-   {
-      return deployment;
-   }
-
-   @Override
-   public void setSecurityDomain(SecurityDomain sc)
-   {
-      this.domain = sc;
+   public VertxJaxrsServer deploy() {
+      // no-op
+      return this;
    }
 
    @SuppressWarnings("unchecked")
    @Override
-   public void start()
+   public VertxJaxrsServer start()
    {
+      if (deployment == null) {
+         throw new IllegalArgumentException("A ResteasyDeployment object required");
+      } else if (deployment.getProviderFactory() == null) {
+         deployment.start();
+      }
+
+      String aPath = serverHelper.checkAppDeployment(deployment);
+      if (aPath == null) {
+         aPath = root;
+      }
+      setRootResourcePath(serverHelper.checkContextPath(aPath));
+
       vertx = Vertx.vertx(vertxOptions);
-      deployment.start();
+      //deployment.start();
       String key = UUID.randomUUID().toString();
       deploymentMap.put(key, new Helper(root, serverOptions, deployment, domain));
       // Configure the server.
       CompletableFuture<String> fut = new CompletableFuture<>();
       DeploymentOptions deploymentOptions = new DeploymentOptions()
-            .setInstances(vertxOptions.getEventLoopPoolSize())
-            .setConfig(new JsonObject().put("helper", key));
+         .setInstances(vertxOptions.getEventLoopPoolSize())
+         .setConfig(new JsonObject().put("helper", key));
       vertx.deployVerticle(Verticle.class.getName(), deploymentOptions, ar -> {
          deploymentMap.remove(key);
          if (ar.succeeded())
@@ -157,6 +106,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
       {
          throw new RuntimeException(e);
       }
+      return this;
    }
 
    @Override
@@ -180,7 +130,103 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
          {
          }
       }
+
+      if (deployment != null) {
+         deployment.stop();
+      }
    }
+
+
+   @Override
+   public ResteasyDeployment getDeployment() {
+      if(deployment == null) {
+         deployment = new VertxResteasyDeployment();
+      }
+      return deployment;
+   }
+
+   @Override
+   public VertxJaxrsServer setDeployment(ResteasyDeployment deployment)
+   {
+      this.deployment = (VertxResteasyDeployment) deployment;
+      return this;
+   }
+
+   @Override
+   public VertxJaxrsServer setPort(int port)
+   {
+      serverOptions.setPort(port);
+      return this;
+   }
+
+   public int getPort()
+   {
+      return serverOptions.getPort();
+   }
+
+   @Override
+   public VertxJaxrsServer setHostname(String hostname)
+   {
+      serverOptions.setHost(hostname);
+      return this;
+   }
+
+   public String getHostname()
+   {
+      return serverOptions.getHost();
+   }
+
+   @Override
+   public VertxJaxrsServer setRootResourcePath(String rootResourcePath)
+   {
+      root = rootResourcePath;
+      if (root != null && root.equals("/")) root = "";
+      return this;
+   }
+
+   @Override
+   public VertxJaxrsServer setSecurityDomain(SecurityDomain sc)
+   {
+      this.domain = sc;
+      return this;
+   }
+
+
+   public VertxOptions getVertxOptions()
+   {
+      return vertxOptions;
+   }
+
+   /**
+    * Set {@link io.vertx.core.VertxOptions}.
+    *
+    * @param options the {@link io.vertx.core.VertxOptions}.
+    * @see Vertx#vertx(VertxOptions)
+    */
+   public VertxJaxrsServer setVertxOptions(VertxOptions options)
+   {
+      this.vertxOptions = options;
+      return this;
+   }
+
+   /**
+    * Set {@link io.vertx.core.http.HttpServerOptions}.
+    *
+    * @param options the {@link io.vertx.core.http.HttpServerOptions}.
+    * @see Vertx#createHttpServer(HttpServerOptions)
+    */
+   public VertxJaxrsServer setServerOptions(HttpServerOptions options)
+   {
+      this.serverOptions = options;
+      return this;
+   }
+
+   public HttpServerOptions getServerOptions()
+   {
+      return serverOptions;
+   }
+
+
 
    private static class Helper
    {

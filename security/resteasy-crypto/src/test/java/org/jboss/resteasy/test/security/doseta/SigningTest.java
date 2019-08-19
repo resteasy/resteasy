@@ -100,8 +100,8 @@ public class SigningTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
-      server.start();
       deployment = server.getDeployment();
+      deployment.start();
 
       repository = new DosetaKeyRepository();
       repository.setKeyStorePath("test.jks");
@@ -120,6 +120,9 @@ public class SigningTest
 
       deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, repository);
       addPerRequestResource(SignedResource.class);
+
+      server.start();
+
       client = (ResteasyClient)ClientBuilder.newClient();
    }
 

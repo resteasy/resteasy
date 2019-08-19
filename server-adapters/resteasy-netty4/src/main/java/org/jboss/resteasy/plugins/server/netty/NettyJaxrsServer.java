@@ -17,17 +17,16 @@ import io.netty.handler.ssl.SniHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
-
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.util.EmbeddedServerHelper;
+import org.jboss.resteasy.util.PortProvider;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.ws.rs.ApplicationPath;
-
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
@@ -46,13 +45,13 @@ import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder
  * @author Norman Maurer
  * @version $Rev: 2080 $, $Date: 2010-01-26 18:04:19 +0900 (Tue, 26 Jan 2010) $
  */
-public class NettyJaxrsServer implements EmbeddedJaxrsServer
+public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
 {
    protected ServerBootstrap bootstrap = new ServerBootstrap();
    protected String hostname = null;
-   protected int configuredPort = 8080;
+   protected int configuredPort = PortProvider.getPort();
    protected int runtimePort = -1;
-   protected ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+   protected ResteasyDeployment deployment;
    protected String root = "";
    protected SecurityDomain domain;
    private EventLoopGroup eventLoopGroup;
@@ -72,192 +71,34 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
    private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
-
-   public void setSSLContext(SSLContext sslContext)
-   {
-      this.sslContext = sslContext;
-   }
-
-   public void setSniConfiguration(SniConfiguration sniConfiguration)
-   {
-      this.sniConfiguration = sniConfiguration;
-   }
-
-   public SniConfiguration getSniConfiguration()
-   {
-      return sniConfiguration;
-   }
-
-   /**
-    * Specify the worker count to use. For more information about this please see the javadocs of {@link EventLoopGroup}
-    *
-    * @param ioWorkerCount worker count
-    */
-   public void setIoWorkerCount(int ioWorkerCount)
-   {
-      this.ioWorkerCount = ioWorkerCount;
-   }
-
-   /**
-    * Set the number of threads to use for the EventExecutor. For more information please see the javadocs of {@link EventExecutor}.
-    * If you want to disable the use of the {@link EventExecutor} specify a value {@literal <=} 0.  This should only be done if you are 100% sure that you don't have any blocking
-    * code in there.
-    *
-    * @param executorThreadCount thread count
-    */
-   public void setExecutorThreadCount(int executorThreadCount)
-   {
-      this.executorThreadCount = executorThreadCount;
-   }
-
-   /**
-    * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
-    *
-    * @param maxRequestSize the max request size. This is 10mb by default.
-    */
-   public void setMaxRequestSize(int maxRequestSize) {
-      this.maxRequestSize = maxRequestSize;
-   }
-
-   public void setMaxInitialLineLength(int maxInitialLineLength) {
-      this.maxInitialLineLength = maxInitialLineLength;
-   }
-
-   public void setMaxHeaderSize(int maxHeaderSize) {
-      this.maxHeaderSize = maxHeaderSize;
-   }
-
-   public void setMaxChunkSize(int maxChunkSize) {
-      this.maxChunkSize = maxChunkSize;
-   }
-
-   public String getHostname() {
-      return hostname;
-   }
-
-   public void setHostname(String hostname) {
-      this.hostname = hostname;
-   }
-
-   public int getPort() {
-      return runtimePort > 0 ? runtimePort : configuredPort;
-   }
-
-   public void setPort(int port) {
-      this.configuredPort = port;
-   }
-
-   public void setBacklog(int backlog)
-   {
-      this.backlog = backlog;
-   }
-
-   public int getIdleTimeout() {
-      return idleTimeout;
-   }
-
-   /**
-    * Set the idle timeout.
-    * Set this value to turn on idle connection cleanup.
-    * If there is no traffic within idleTimeoutSeconds, it'll close connection.
-    * @param idleTimeoutSeconds - How many seconds to cleanup client connection. default value -1 meaning no idle timeout.
-    */
-   public void setIdleTimeout(int idleTimeoutSeconds) {
-      this.idleTimeout = idleTimeoutSeconds;
-   }
-
-   /**
-    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-    * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
-    *
-    * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
-    */
-   public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
-      this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
-   }
-
-   /**
-    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-    * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
-    *
-    * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
-    */
-   public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
-      this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
-   }
-
-   /**
-    * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-    *
-    * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
-    * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
-    */
-   public void setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-      this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
-   }
-
-   /**
-    * Add child options to the {@link io.netty.bootstrap.ServerBootstrap}.
-    *
-    * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
-    * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
-    */
-   public void setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-      this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
-   }
+   private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
 
    @Override
-   public void setDeployment(ResteasyDeployment deployment)
-   {
-      this.deployment = deployment;
-   }
-
-   @Override
-   public void setRootResourcePath(String rootResourcePath)
-   {
-      root = rootResourcePath;
-      if (root != null && root.equals("/")) root = "";
-   }
-
-   @Override
-   public ResteasyDeployment getDeployment()
-   {
-      return deployment;
-   }
-
-   @Override
-   public void setSecurityDomain(SecurityDomain sc)
-   {
-      this.domain = sc;
-   }
-
-   protected RequestDispatcher createRequestDispatcher()
-   {
-      return new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(),
-               deployment.getProviderFactory(), domain);
+   public NettyJaxrsServer deploy() {
+      // no-op
+      return this;
    }
 
    @SuppressWarnings("unchecked")
    @Override
-   public void start() {
+   public NettyJaxrsServer start() {
+      serverHelper.checkDeployment(deployment);
+
       eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
       eventExecutor = new NioEventLoopGroup(executorThreadCount);
-      deployment.start();
+
       // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
-      if (deployment.getApplication() != null) {
-         ApplicationPath appPath = deployment.getApplication().getClass().getAnnotation(ApplicationPath.class);
-         if (appPath != null && (root == null || "".equals(root))) {
-            // annotation is present and original root is not set
-            String path = appPath.value();
-            setRootResourcePath(path);
-         }
+      String appPath = serverHelper.checkAppDeployment(deployment);
+      if (appPath != null && (root == null || "".equals(root))) {
+         setRootResourcePath(appPath);
       }
+
       // Configure the server.
       bootstrap.group(eventLoopGroup)
-            .channel(NioServerSocketChannel.class)
-            .childHandler(createChannelInitializer())
-            .option(ChannelOption.SO_BACKLOG, backlog)
-            .childOption(ChannelOption.SO_KEEPALIVE, true);
+         .channel(NioServerSocketChannel.class)
+         .childHandler(createChannelInitializer())
+         .option(ChannelOption.SO_BACKLOG, backlog)
+         .childOption(ChannelOption.SO_KEEPALIVE, true);
 
       for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
          bootstrap.option(entry.getKey(), entry.getValue());
@@ -276,6 +117,218 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
       Channel channel = bootstrap.bind(socketAddress).syncUninterruptibly().channel();
       runtimePort = ((InetSocketAddress) channel.localAddress()).getPort();
+      return this;
+   }
+
+   @Override
+   public void stop()
+   {
+      runtimePort = -1;
+      eventLoopGroup.shutdownGracefully();
+      eventExecutor.shutdownGracefully();
+
+      if (deployment != null) {
+         deployment.stop();
+      }
+   }
+
+   @Override
+   public ResteasyDeployment getDeployment() {
+      if (deployment == null)
+      {
+         deployment = new ResteasyDeploymentImpl();
+      }
+      return deployment;
+   }
+
+   @Override
+   public NettyJaxrsServer setDeployment(ResteasyDeployment deployment)
+   {
+      this.deployment = deployment;
+      return this;
+   }
+
+   @Override
+   public NettyJaxrsServer setPort(int port) {
+      this.configuredPort = port;
+      return this;
+   }
+
+   public int getPort() {
+      return runtimePort > 0 ? runtimePort : configuredPort;
+   }
+
+   @Override
+   public NettyJaxrsServer setHostname(String hostname) {
+      this.hostname = hostname;
+      return this;
+   }
+
+   public String getHostname() {
+      return hostname;
+   }
+
+   @Override
+   public NettyJaxrsServer setRootResourcePath(String rootResourcePath)
+   {
+      root = rootResourcePath;
+      if (root != null && root.equals("/")) {
+         root = "";
+      } else if (!root.startsWith("/")) {
+         root = "/" + root;
+      }
+      return this;
+   }
+
+   @Override
+   public NettyJaxrsServer setSecurityDomain(SecurityDomain sc)
+   {
+      this.domain = sc;
+      return this;
+   }
+
+
+
+   public NettyJaxrsServer setSSLContext(SSLContext sslContext)
+   {
+      this.sslContext = sslContext;
+      return this;
+   }
+
+   public NettyJaxrsServer setSniConfiguration(SniConfiguration sniConfiguration)
+   {
+      this.sniConfiguration = sniConfiguration;
+      return this;
+   }
+
+   public SniConfiguration getSniConfiguration()
+   {
+      return sniConfiguration;
+   }
+
+   /**
+    * Specify the worker count to use. For more information about this please see the javadocs of {@link EventLoopGroup}
+    *
+    * @param ioWorkerCount worker count
+    */
+   public NettyJaxrsServer setIoWorkerCount(int ioWorkerCount)
+   {
+      this.ioWorkerCount = ioWorkerCount;
+      return this;
+   }
+
+   /**
+    * Set the number of threads to use for the EventExecutor. For more information please see the javadocs of {@link EventExecutor}.
+    * If you want to disable the use of the {@link EventExecutor} specify a value {@literal <=} 0.  This should only be done if you are 100% sure that you don't have any blocking
+    * code in there.
+    *
+    * @param executorThreadCount thread count
+    */
+   public NettyJaxrsServer setExecutorThreadCount(int executorThreadCount)
+   {
+      this.executorThreadCount = executorThreadCount;
+      return this;
+   }
+
+   /**
+    * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
+    *
+    * @param maxRequestSize the max request size. This is 10mb by default.
+    */
+   public NettyJaxrsServer setMaxRequestSize(int maxRequestSize) {
+      this.maxRequestSize = maxRequestSize;
+      return this;
+   }
+
+   public NettyJaxrsServer setMaxInitialLineLength(int maxInitialLineLength) {
+      this.maxInitialLineLength = maxInitialLineLength;
+      return this;
+   }
+
+   public NettyJaxrsServer setMaxHeaderSize(int maxHeaderSize) {
+      this.maxHeaderSize = maxHeaderSize;
+      return this;
+   }
+
+   public NettyJaxrsServer setMaxChunkSize(int maxChunkSize) {
+      this.maxChunkSize = maxChunkSize;
+      return this;
+   }
+
+   public NettyJaxrsServer setBacklog(int backlog)
+   {
+      this.backlog = backlog;
+      return this;
+   }
+
+   public int getIdleTimeout() {
+      return idleTimeout;
+   }
+
+   /**
+    * Set the idle timeout.
+    * Set this value to turn on idle connection cleanup.
+    * If there is no traffic within idleTimeoutSeconds, it'll close connection.
+    * @param idleTimeoutSeconds - How many seconds to cleanup client connection. default value -1 meaning no idle timeout.
+    */
+   public NettyJaxrsServer setIdleTimeout(int idleTimeoutSeconds) {
+      this.idleTimeout = idleTimeoutSeconds;
+      return this;
+   }
+
+   /**
+    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+    *
+    * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+    */
+   public NettyJaxrsServer setChannelHandlers(final List<ChannelHandler> channelHandlers) {
+      this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+      return this;
+   }
+
+   /**
+    * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
+    *
+    * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+    */
+   public NettyJaxrsServer setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
+      this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
+      return this;
+   }
+
+   /**
+    * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+    *
+    * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
+    * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
+    */
+   public NettyJaxrsServer setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+      this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+      return this;
+   }
+
+   /**
+    * Add child options to the {@link io.netty.bootstrap.ServerBootstrap}.
+    *
+    * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
+    * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
+    */
+   public NettyJaxrsServer setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+      this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+      return this;
+   }
+
+
+   protected RequestDispatcher createRequestDispatcher()
+   {
+      if (deployment == null) {
+         throw new IllegalArgumentException("A ResteasyDeployment object required");
+      }
+
+      return new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(),
+               deployment.getProviderFactory(), domain);
    }
 
    private ChannelInitializer<SocketChannel> createChannelInitializer() {
@@ -323,11 +376,4 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
    }
 
-   @Override
-   public void stop()
-   {
-      runtimePort = -1;
-      eventLoopGroup.shutdownGracefully();
-      eventExecutor.shutdownGracefully();
-   }
 }
