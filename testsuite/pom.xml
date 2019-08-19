@@ -27,6 +27,13 @@
 
     <build>
         <plugins>
+            <!-- rls test -->
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>3.2.0</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -86,6 +93,19 @@
     </build>
 
     <profiles>
+        <profile>
+            <!-- todo add description on README.MD about usage in testsuite -->
+            <id>embedded</id>
+            <activation>
+                <property>
+                    <!-- todo remove cmt: this forces test run -->
+                    <name>embedded-servers</name>
+                </property>
+            </activation>
+            <modules>
+                <module>integration-tests-embedded</module>
+            </modules>
+        </profile>
         <profile>
             <id>default</id>
             <activation>

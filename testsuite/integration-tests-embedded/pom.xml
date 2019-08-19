@@ -1,0 +1,256 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-testsuite</artifactId>
+      <version>4.3.0-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+   </parent>
+
+   <description>A set of tests that runs with server-adapters,
+      resteasy-jdk-http, resteasy-netty4, resteasy-undertow, resteasy-vertx</description>
+   <artifactId>integration-tests-embedded</artifactId>
+   <name>RESTEasy Main testsuite: Embedded Server tests</name>
+
+
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+   </properties>
+
+   <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-netty4</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-undertow</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+      </dependency>
+
+      <!-- needed for test ResteasyJdkHttpTest -->
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-jdk-http</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-core-spi</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.eclipse.microprofile.config</groupId>
+               <artifactId>microprofile-config-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-core</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>resteasy-client</artifactId>
+         <version>${version.resteasy.testsuite}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.spec.javax.servlet</groupId>
+         <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.spec.javax.annotation</groupId>
+         <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.spec.javax.ws.rs</groupId>
+         <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-annotations</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-processor</artifactId>
+      </dependency>
+   </dependencies>
+
+   <profiles>
+      <profile>
+         <id>undertow</id>
+         <dependencies>
+            <dependency>
+               <groupId>org.jboss.resteasy</groupId>
+               <artifactId>resteasy-undertow</artifactId>
+               <version>${version.resteasy.testsuite}</version>
+            </dependency>
+         </dependencies>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <artifactId>maven-surefire-plugin</artifactId>
+                     <configuration>
+                        <!-- since 2.5 -->
+                        <!--
+                        <systemPropertyVariables>
+                          <fileName>${fileName}</fileName>
+                        </systemPropertyVariables>
+                        -->
+                        <!-- deprecated -->
+                        <systemProperties>
+                           <property>
+                              <name>fileName</name>
+                              <value>org.jboss.resteasy.plugins.server.undertow.UNDERTOWJaxrsServer</value>
+                           </property>
+                        </systemProperties>
+                        <excludes>
+                        </excludes>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+
+
+      <profile>
+         <id>netty</id>
+         <dependencies>
+            <dependency>
+               <groupId>org.jboss.resteasy</groupId>
+               <artifactId>resteasy-netty4</artifactId>
+               <version>${version.resteasy.testsuite}</version>
+            </dependency>
+         </dependencies>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <artifactId>maven-surefire-plugin</artifactId>
+                     <configuration>
+                        <!-- since 2.5 -->
+                        <!--
+                        <systemPropertyVariables>
+                          <fileName>${fileName}</fileName>
+                        </systemPropertyVariables>
+                        -->
+                        <!-- deprecated -->
+                        <systemProperties>
+                           <property>
+                              <name>fileName</name>
+                              <value>org.jboss.resteasy.plugins.server.netty.NETTYJaxrsServer</value>
+                           </property>
+                        </systemProperties>
+                        <excludes>
+                        </excludes>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+
+      <profile>
+         <id>sun</id>
+         <dependencies>
+            <dependency>
+               <groupId>org.jboss.resteasy</groupId>
+               <artifactId>resteasy-jdk-http</artifactId>
+               <version>${version.resteasy.testsuite}</version>
+            </dependency>
+         </dependencies>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <artifactId>maven-surefire-plugin</artifactId>
+                     <configuration>
+                        <!-- since 2.5 -->
+                        <!--
+                        <systemPropertyVariables>
+                          <fileName>${fileName}</fileName>
+                        </systemPropertyVariables>
+                        -->
+                        <!-- deprecated -->
+                        <systemProperties>
+                           <property>
+                              <name>fileName</name>
+                              <value>org.jboss.resteasy.plugins.server.sun.http.SUNHttpJaxrsServer</value>
+                           </property>
+                        </systemProperties>
+                        <excludes>
+                        </excludes>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+
+
+      <profile>
+         <id>vertx</id>
+         <dependencies>
+            <dependency>
+               <groupId>org.jboss.resteasy</groupId>
+               <artifactId>resteasy-vertx</artifactId>
+               <version>${version.resteasy.testsuite}</version>
+            </dependency>
+            <dependency>
+               <groupId>io.vertx</groupId>
+               <artifactId>vertx-core</artifactId>
+            </dependency>
+
+         </dependencies>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <artifactId>maven-surefire-plugin</artifactId>
+                     <configuration>
+                        <!-- since 2.5 -->
+                        <!--
+                        <systemPropertyVariables>
+                          <fileName>${fileName}</fileName>
+                        </systemPropertyVariables>
+                        -->
+                        <!-- deprecated -->
+                        <systemProperties>
+                           <property>
+                              <name>fileName</name>
+                              <value>org.jboss.resteasy.plugins.server.vertx.VERTXJaxrsServer</value>
+                           </property>
+                        </systemProperties>
+                        <excludes>
+                        </excludes>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+
+   </profiles>
+
+</project>
