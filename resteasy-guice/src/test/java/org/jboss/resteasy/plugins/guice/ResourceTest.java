@@ -5,6 +5,7 @@ import javax.ws.rs.Path;
 
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -27,8 +28,10 @@ public class ResourceTest
       server = new NettyJaxrsServer();
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("/");
+      ResteasyDeployment deployment = server.getDeployment();
+      deployment.start();
+      dispatcher = deployment.getDispatcher();
       server.start();
-      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @AfterClass

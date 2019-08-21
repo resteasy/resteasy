@@ -159,7 +159,7 @@
                         <systemProperties>
                            <property>
                               <name>fileName</name>
-                              <value>org.jboss.resteasy.plugins.server.netty.NETTYJaxrsServer</value>
+                              <value>org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer</value>
                            </property>
                         </systemProperties>
                         <excludes>
@@ -196,7 +196,7 @@
                         <systemProperties>
                            <property>
                               <name>fileName</name>
-                              <value>org.jboss.resteasy.plugins.server.sun.http.SUNHttpJaxrsServer</value>
+                              <value>org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer</value>
                            </property>
                         </systemProperties>
                         <excludes>
@@ -239,7 +239,7 @@
                         <systemProperties>
                            <property>
                               <name>fileName</name>
-                              <value>org.jboss.resteasy.plugins.server.vertx.VERTXJaxrsServer</value>
+                              <value>org.jboss.resteasy.plugins.server.vertx.VertxJaxrsServer</value>
                            </property>
                         </systemProperties>
                         <excludes>

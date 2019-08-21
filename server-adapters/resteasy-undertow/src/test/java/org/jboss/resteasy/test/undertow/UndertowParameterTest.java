@@ -97,7 +97,7 @@ public class UndertowParameterTest {
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      server = new UndertowJaxrsServer().start();
+      server = new UndertowJaxrsServer();
       ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setDeploymentSensitiveFactoryEnabled(true);
       deployment.setApplication(new TestApp());
@@ -111,7 +111,8 @@ public class UndertowParameterTest {
          .setInitParams(initParams)
          .setRootResourcePath("/")
          .deploy(deployment);
-      // tpdo rls server.deploy(deployment, "/", contextParams, initParams);
+      server.start();
+
       client = ClientBuilder.newClient();
    }
 

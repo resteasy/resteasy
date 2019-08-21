@@ -57,7 +57,7 @@ public class UndertowTest
    @BeforeClass
    public static void init() throws Exception
    {
-      server = new UndertowJaxrsServer().start();
+      server = new UndertowJaxrsServer();
    }
 
    @AfterClass
@@ -70,6 +70,8 @@ public class UndertowTest
    public void testApplicationPath() throws Exception
    {
       server.deploy(MyApp.class);
+      server.start();
+
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/base/test")).request().get(String.class);
       Assert.assertEquals("hello world", val);
@@ -80,6 +82,8 @@ public class UndertowTest
    public void testApplicationContext() throws Exception
    {
       server.deploy(MyApp.class, "/root");
+      server.start();
+
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/root/test")).request().get(String.class);
       Assert.assertEquals("hello world", val);
@@ -93,6 +97,8 @@ public class UndertowTest
       di.setContextPath("/di");
       di.setDeploymentName("DI");
       server.deploy(di);
+      server.start();
+
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/di/base/test")).request().get(String.class);
       Assert.assertEquals("hello world", val);

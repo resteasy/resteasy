@@ -1,4 +1,4 @@
-package org.jboss.resteasy.utils;
+package org.jboss.resteasy.embedded.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

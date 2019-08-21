@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.embedded.test;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 
