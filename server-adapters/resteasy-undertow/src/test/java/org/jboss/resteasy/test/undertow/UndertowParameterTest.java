@@ -107,7 +107,11 @@ public class UndertowParameterTest {
       initParams.put("initKey1", "initValue1");
       initParams.put("initKey2", "initValue2");
       initParams.put("resteasy.servlet.context.deployment", "false");
-      server.deploy(deployment, "/", contextParams, initParams);
+      server.setContextParams(contextParams)
+         .setInitParams(initParams)
+         .setRootResourcePath("/")
+         .deploy(deployment);
+      // tpdo rls server.deploy(deployment, "/", contextParams, initParams);
       client = ClientBuilder.newClient();
    }
 

@@ -121,7 +121,7 @@
                         <systemProperties>
                            <property>
                               <name>fileName</name>
-                              <value>org.jboss.resteasy.plugins.server.undertow.UNDERTOWJaxrsServer</value>
+                              <value>org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer</value>
                            </property>
                         </systemProperties>
                         <excludes>

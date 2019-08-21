@@ -7,20 +7,22 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
 import io.undertow.servlet.api.ServletInfo;
-
-import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
+import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.util.EmbeddedServerHelper;
+import org.jboss.resteasy.util.PortProvider;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-
-import static io.undertow.servlet.Servlets.servlet;
-
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import static io.undertow.servlet.Servlets.servlet;
 
 
 /**
@@ -32,12 +34,135 @@ import java.util.Map.Entry;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class UndertowJaxrsServer
+public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsServer>
 {
    protected final PathHandler root = new PathHandler();
    protected final ServletContainer container = ServletContainer.Factory.newInstance();
    protected Undertow server;
    protected DeploymentManager manager;
+   protected Map<String, String> contextParams;
+   protected Map<String, String> initParams;
+
+   private ResteasyDeployment deployment;
+   private int port = PortProvider.getPort();
+   private String hostname = "localhost";
+   private String rootResourcePath;
+   private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
+
+   @Override
+   public UndertowJaxrsServer deploy() {
+      serverHelper.checkDeployment(deployment);
+      return deploy(deployment, serverHelper.checkContextPath(rootResourcePath),
+         deployment.getClass().getClassLoader());
+   }
+
+   @Override
+   public UndertowJaxrsServer start()
+   {
+      server = Undertow.builder()
+         .addHttpListener(port, hostname)
+         .setHandler(root)
+         .build();
+      server.start();
+      return this;
+   }
+
+   @Override
+   public void stop()
+   {
+      server.stop();
+
+      if (deployment != null) {
+         deployment.stop();
+      }
+   }
+
+   public ResteasyDeployment getDeployment() {
+      if (deployment == null) {
+         deployment = new ResteasyDeploymentImpl();
+      }
+      return deployment;
+   }
+   @Override
+   public UndertowJaxrsServer setDeployment(ResteasyDeployment deployment) {
+      this.deployment = deployment;
+      return this;
+   }
+
+   @Override
+   public UndertowJaxrsServer setPort(int port) {
+      this.port = port;
+      return this;
+   }
+
+   @Override
+   public UndertowJaxrsServer setHostname(String hostname) {
+      this.hostname = hostname;
+      return this;
+   }
+
+   @Override
+   public UndertowJaxrsServer setRootResourcePath(String rootResourcePath) {
+      this.rootResourcePath = rootResourcePath;
+      return this;
+   }
+
+   @Override
+   public UndertowJaxrsServer setSecurityDomain(SecurityDomain sc) {
+      // no-op; does not apply to undertow setup
+      return this;
+   }
+
+   /*************************************************************************/
+
+   public UndertowJaxrsServer deploy(Application application) {
+      ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+      resteasyDeployment.setApplication(application);
+      return deploy(resteasyDeployment,
+         serverHelper.checkAppPath(application.getClass().getAnnotation(ApplicationPath.class)),
+         application.getClass().getClassLoader());
+   }
+
+   public UndertowJaxrsServer deploy(Class<? extends Application> application) {
+      ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+      resteasyDeployment.setApplicationClass(application.getName());
+      return deploy(resteasyDeployment,
+         serverHelper.checkAppPath(application.getAnnotation(ApplicationPath.class)),
+         resteasyDeployment.getClass().getClassLoader());
+   }
+
+   public UndertowJaxrsServer deploy(Class<? extends Application> application,
+                                     String contextPath) {
+      ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+      resteasyDeployment.setApplicationClass(application.getName());
+      return deploy(resteasyDeployment, serverHelper.checkContextPath(contextPath),
+         resteasyDeployment.getClass().getClassLoader());
+   }
+
+   private UndertowJaxrsServer deploy(ResteasyDeployment resteasyDeployment,
+                                     String contextPath, ClassLoader clazzLoader) {
+      DeploymentInfo di = undertowDeployment(resteasyDeployment);
+      di.setClassLoader(clazzLoader);
+      di.setContextPath(contextPath);
+      di.setDeploymentName("Resteasy" + contextPath);
+
+      if (contextParams != null)
+      {
+         for (Entry<String, String> e : contextParams.entrySet())
+         {
+            di.addInitParameter(e.getKey(), e.getValue());
+         }
+      }
+      if (initParams != null)
+      {
+         ServletInfo servletInfo = di.getServlets().get("ResteasyServlet");
+         for (Entry<String, String> e : initParams.entrySet())
+         {
+            servletInfo.addInitParam(e.getKey(), e.getValue());
+         }
+      }
+      return deploy(di);
+   }
 
    /**
     * Creates a web deployment for your ResteasyDeployent so you can set up things like security constraints
@@ -53,80 +178,53 @@ public class UndertowJaxrsServer
     * di.setContextRoot("root");
     * server.deploy(di);
     *
-    * @param deployment
-    * @param mapping resteasy.servlet.mapping.prefix
+    * @param resteasyDeployment
+    * @param mappingPrefix resteasy.servlet.mapping.prefix
     * @return must be deployed by calling deploy(DeploymentInfo), also does not set context path or deployment name
     */
-   public DeploymentInfo undertowDeployment(ResteasyDeployment deployment, String mapping)
+   public DeploymentInfo undertowDeployment(ResteasyDeployment resteasyDeployment, String mappingPrefix)
    {
-      if (mapping == null) mapping = "/";
-      if (!mapping.startsWith("/")) mapping = "/" + mapping;
-      if (!mapping.endsWith("/")) mapping += "/";
+      String mapping = serverHelper.checkContextPath(mappingPrefix);
+      if (!mapping.endsWith("/")) {
+         mapping += "/";
+      }
       mapping = mapping + "*";
-      String prefix = null;
-      if (!mapping.equals("/*")) prefix = mapping.substring(0, mapping.length() - 2);
+
       ServletInfo resteasyServlet = servlet("ResteasyServlet", HttpServlet30Dispatcher.class)
               .setAsyncSupported(true)
               .setLoadOnStartup(1)
               .addMapping(mapping);
-      if (prefix != null) resteasyServlet.addInitParam("resteasy.servlet.mapping.prefix", prefix);
+
+      if (!mapping.equals("/*")) {
+         String prefix = mapping.substring(0, mapping.length() - 2);
+         resteasyServlet.addInitParam("resteasy.servlet.mapping.prefix", prefix);
+      }
 
       return  new DeploymentInfo()
-              .addServletContextAttribute(ResteasyDeployment.class.getName(), deployment)
-              .addServlet(
-                      resteasyServlet
-                         );
+              .addServletContextAttribute(ResteasyDeployment.class.getName(), resteasyDeployment)
+              .addServlet(resteasyServlet);
    }
 
-   /**
-    * Creates a web deployment for your ResteasyDeployent so you can set up things like security constraints
-    * You'd call this method, add your servlet security constraints, then call deploy(DeploymentInfo)
-    *
-    * Note, only one ResteasyDeployment can be applied per DeploymentInfo.  Resteasy servlet is mapped to "/*"
-    *
-    * @param deployment
-    * @return
-    */
-   public DeploymentInfo undertowDeployment(ResteasyDeployment deployment)
+   public DeploymentInfo undertowDeployment(ResteasyDeployment resteasyDeployment)
    {
-      return undertowDeployment(deployment, "/");
+      return undertowDeployment(resteasyDeployment, serverHelper.checkAppDeployment(resteasyDeployment));
    }
 
-   /**
-    * Creates a web deployment for the jaxrs Application.  Will ignore any @ApplicationPath annotation.
-    *
-    * @param application
-    * @param mapping resteasy.servlet.mapping.prefix
-    * @return
-    */
-   public DeploymentInfo undertowDeployment(Class<? extends Application> application, String mapping)
+   public DeploymentInfo undertowDeployment(Class<? extends Application> application)
    {
-      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-      deployment.setApplicationClass(application.getName());
-      DeploymentInfo di = undertowDeployment(deployment, mapping);
+      ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+      resteasyDeployment.setApplicationClass(application.getName());
+      DeploymentInfo di = undertowDeployment (resteasyDeployment,
+         serverHelper.checkAppPath(application.getAnnotation(ApplicationPath.class)));
       di.setClassLoader(application.getClassLoader());
       return di;
    }
 
    /**
-    * Creates a web deployment for the jaxrs Application.  Will bind the resteasy.servlet.mapping.prefix
-    * to @ApplicationPath if it exists, otherwise "/".
-    *
-    * @param application
-    * @return
-    */
-   public DeploymentInfo undertowDeployment(Class<? extends Application> application)
-   {
-      ApplicationPath appPath = application.getAnnotation(ApplicationPath.class);
-      String path = "/";
-      if (appPath != null) path = appPath.value();
-      return undertowDeployment(application, path);
-   }
-
-   /**
-    * Maps a path prefix to a resource handler to allow serving resources other than the JAX-RS endpoints.
-    * For example, this can be used for serving static resources like web pages or API documentation that might
-    * be deployed with the REST application server.
+    * Maps a path prefix to a resource handler to allow serving resources other
+    * than the JAX-RS endpoints.
+    * For example, this can be used for serving static resources like web pages
+    * or API documentation that might be deployed with the REST application server.
     *
     * @param path
     * @param handler
@@ -136,128 +234,15 @@ public class UndertowJaxrsServer
       root.addPrefixPath(path, handler);
    }
 
-   /**
-    * Creates a web deployment under "/"
-    *
-    * @param deployment
-    * @return
-    */
-   public UndertowJaxrsServer deploy(ResteasyDeployment deployment)
+   public UndertowJaxrsServer deploy(ResteasyDeployment resteasyDeployment)
    {
-      return deploy(deployment, "/");
+      return deploy(resteasyDeployment, serverHelper.checkContextPath(rootResourcePath),
+         resteasyDeployment.getClass().getClassLoader());
    }
 
    /**
-    * Creates a web deployment under contextPath
-    *
-    * @param deployment
-    * @param contextPath
-    * @return
-    */
-   public UndertowJaxrsServer deploy(ResteasyDeployment deployment, String contextPath)
-   {
-      return deploy(deployment, contextPath, null, null);
-   }
-
-   public UndertowJaxrsServer deploy(ResteasyDeployment deployment, String contextPath, Map<String, String> contextParams, Map<String, String> initParams)
-   {
-      if (contextPath == null) contextPath = "/";
-      if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
-      DeploymentInfo builder = undertowDeployment(deployment);
-      builder.setContextPath(contextPath);
-      builder.setDeploymentName("Resteasy" + contextPath);
-      builder.setClassLoader(deployment.getApplication().getClass().getClassLoader());
-      if (contextParams != null)
-      {
-         for (Entry<String, String> e : contextParams.entrySet())
-         {
-            builder.addInitParameter(e.getKey(), e.getValue());
-         }
-      }
-      if (initParams != null)
-      {
-         ServletInfo servletInfo = builder.getServlets().get("ResteasyServlet");
-         for (Entry<String, String> e : initParams.entrySet())
-         {
-            servletInfo.addInitParam(e.getKey(), e.getValue());
-         }
-      }
-      return deploy(builder);
-   }
-
-   /**
-    * Creates a web deployment for the jaxrs Application.  Will bind the contextPath
-    * to @ApplicationPath if it exists, otherwise "/".
-    *
-    * @param application
-    * @return
-    */
-   public UndertowJaxrsServer deploy(Class<? extends Application> application)
-   {
-      ApplicationPath appPath = application.getAnnotation(ApplicationPath.class);
-      String path = "/";
-      if (appPath != null) path = appPath.value();
-      return deploy(application, path);
-   }
-
-   /**
-    * Creates a web deployment for the jaxrs Application.  Will ignore any @ApplicationPath annotation.
-    *
-    * @param application
-    * @param contextPath
-    * @return
-    */
-   public UndertowJaxrsServer deploy(Class<? extends Application> application, String contextPath)
-   {
-      if (contextPath == null) contextPath = "/";
-      if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
-      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-      deployment.setApplicationClass(application.getName());
-      DeploymentInfo di = undertowDeployment(deployment);
-      di.setClassLoader(application.getClassLoader());
-      di.setContextPath(contextPath);
-      di.setDeploymentName("Resteasy" + contextPath);
-      return deploy(di);
-   }
-
-   /**
-    * Creates a web deployment for the jaxrs Application.  Will bind the contextPath
-    * to @ApplicationPath if it exists, otherwise "/".
-    *
-    * @param application
-    * @return
-    */
-   public UndertowJaxrsServer deploy(Application application)
-   {
-      ApplicationPath appPath = application.getClass().getAnnotation(ApplicationPath.class);
-      String path = "/";
-      if (appPath != null) path = appPath.value();
-      return deploy(application, path);
-   }
-
-   /**
-    * Creates a web deployment for the jaxrs Application.  Will ignore any @ApplicationPath annotation.
-    *
-    * @param application
-    * @param contextPath
-    * @return
-    */
-   public UndertowJaxrsServer deploy(Application application, String contextPath)
-   {
-      if (contextPath == null) contextPath = "/";
-      if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
-      ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-      deployment.setApplication(application);
-      DeploymentInfo di = undertowDeployment(deployment);
-      di.setClassLoader(application.getClass().getClassLoader());
-      di.setContextPath(contextPath);
-      di.setDeploymentName("Resteasy" + contextPath);
-      return deploy(di);
-   }
-
-
-   /**
-    * Adds an arbitrary web deployment to underlying Undertow server.  This is for your own deployments
+    * Adds an arbitrary web deployment to underlying Undertow server.
+    * This is for your own deployments
     *
     * @param builder
     * @return
@@ -285,22 +270,31 @@ public class UndertowJaxrsServer
       return this;
    }
 
-   public UndertowJaxrsServer start()
-   {
-      server = Undertow.builder()
-              .addHttpListener(PortProvider.getPort(), "localhost")
-              .setHandler(root)
-              .build();
-      server.start();
+   public DeploymentManager getManager() {
+      return manager;
+   }
+
+   public Map<String, String> getContextParams() {
+      if (contextParams == null) {
+         contextParams = new HashMap<>();
+      }
+      return contextParams;
+   }
+
+   public UndertowJaxrsServer setContextParams(Map<String, String> contextParams) {
+      this.contextParams = contextParams;
       return this;
    }
 
-   public void stop()
-   {
-      server.stop();
+   public Map<String, String> getInitParams () {
+      if (initParams == null) {
+         initParams = new HashMap<>();
+      }
+      return initParams;
    }
 
-   public DeploymentManager getManager() {
-      return manager;
+   public UndertowJaxrsServer setInitParams(Map<String, String> initParams) {
+      this.initParams = initParams;
+      return this;
    }
 }

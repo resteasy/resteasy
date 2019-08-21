@@ -77,13 +77,14 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
    {
       UndertowJaxrsServer server = new UndertowJaxrsServer().start(Undertow.builder()
             .addHttpListener(8080, "localhost"));
-      server.deploy(new Application() {
+      Application tmpApp = new Application() {
          @Override
          public Set<Class<?>> getClasses()
          {
             return classes;
          }
-      }, super.getTestClass().getJavaClass().getSimpleName());
+      };
+      server.deploy(tmpApp.getClass(), super.getTestClass().getJavaClass().getSimpleName());
       try
       {
          super.run(notifier);
@@ -94,4 +95,5 @@ public class UndertowTestRunner extends BlockJUnit4ClassRunner
       }
 
    }
+
 }
