@@ -38,10 +38,8 @@ public class ResteasyTrailingSlashTest {
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("");
       server.setSecurityDomain(null);
-
-      server.start();
-
       server.getDeployment().getRegistry().addPerRequestResource(Resource.class);
+      server.start();
    }
 
    @AfterClass
