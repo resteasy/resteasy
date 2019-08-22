@@ -97,7 +97,7 @@ public class UndertowParameterTest {
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      server = new UndertowJaxrsServer();
+      server = new UndertowJaxrsServer().start();
       ResteasyDeployment deployment = new ResteasyDeploymentImpl();
       deployment.setDeploymentSensitiveFactoryEnabled(true);
       deployment.setApplication(new TestApp());
@@ -111,7 +111,6 @@ public class UndertowParameterTest {
          .setInitParams(initParams)
          .setRootResourcePath("/")
          .deploy(deployment);
-      server.start();
 
       client = ClientBuilder.newClient();
    }

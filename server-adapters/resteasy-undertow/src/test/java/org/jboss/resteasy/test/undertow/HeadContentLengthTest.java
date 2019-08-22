@@ -54,7 +54,7 @@ public class HeadContentLengthTest
    @BeforeClass
    public static void init() throws Exception
    {
-      server = new UndertowJaxrsServer();
+      server = new UndertowJaxrsServer().start();
    }
 
    @AfterClass
@@ -66,8 +66,7 @@ public class HeadContentLengthTest
    @Test
    public void testHeadContentLength() throws Exception
    {
-      server.deploy(MyApp.class);
-      server.start();
+      server.deploy(MyApp.class, "/");
 
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target(generateURL("/base/test"));

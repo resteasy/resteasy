@@ -142,25 +142,7 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
    private UndertowJaxrsServer deploy(ResteasyDeployment resteasyDeployment,
                                      String contextPath, ClassLoader clazzLoader) {
       DeploymentInfo di = undertowDeployment(resteasyDeployment);
-      di.setClassLoader(clazzLoader);
-      di.setContextPath(contextPath);
-      di.setDeploymentName("Resteasy" + contextPath);
-
-      if (contextParams != null)
-      {
-         for (Entry<String, String> e : contextParams.entrySet())
-         {
-            di.addInitParameter(e.getKey(), e.getValue());
-         }
-      }
-      if (initParams != null)
-      {
-         ServletInfo servletInfo = di.getServlets().get("ResteasyServlet");
-         for (Entry<String, String> e : initParams.entrySet())
-         {
-            servletInfo.addInitParam(e.getKey(), e.getValue());
-         }
-      }
+      populateDeploymentInfo(di, clazzLoader, contextPath);
       return deploy(di);
    }
 
@@ -296,5 +278,42 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
    public UndertowJaxrsServer setInitParams(Map<String, String> initParams) {
       this.initParams = initParams;
       return this;
+   }
+
+
+   // OldStyle requires a mapping prefix to be "/" when the ApplicationPath is some other value
+   public UndertowJaxrsServer deployOldStyle(Class<? extends Application> application) {
+      return deployOldStyle(application, serverHelper.checkAppPath(application
+              .getAnnotation(ApplicationPath.class)));
+   }
+   // OldStyle requires a mapping prefix to be "/" when the ApplicationPath is some other value
+   public UndertowJaxrsServer deployOldStyle(Class<? extends Application> application,
+                                             String ctxtPath) {
+      ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+      resteasyDeployment.setApplicationClass(application.getName());
+      String contextPath = serverHelper.checkContextPath(ctxtPath);
+      DeploymentInfo di = undertowDeployment(resteasyDeployment, "/");
+      populateDeploymentInfo(di, resteasyDeployment.getClass().getClassLoader(), contextPath);
+      return deploy(di);
+   }
+
+   private void populateDeploymentInfo(DeploymentInfo di, ClassLoader clazzLoader,
+                                       String contextPath) {
+      di.setClassLoader(clazzLoader);
+      di.setContextPath(contextPath);
+      di.setDeploymentName("Resteasy" + contextPath);
+
+      if (contextParams != null) {
+         for (Entry<String, String> e : contextParams.entrySet()) {
+            di.addInitParameter(e.getKey(), e.getValue());
+         }
+      }
+      if (initParams != null) {
+         ServletInfo servletInfo = di.getServlets().get("ResteasyServlet");
+         for (Entry<String, String> e : initParams.entrySet()) {
+            servletInfo.addInitParam(e.getKey(), e.getValue());
+         }
+      }
+
    }
 }
