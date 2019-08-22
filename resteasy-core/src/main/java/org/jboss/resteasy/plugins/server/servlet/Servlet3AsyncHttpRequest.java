@@ -300,6 +300,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          return asynchronousResponse;
       }
 
+      @Override
+      public void complete() {
+         if (wasSuspended && asynchronousResponse != null) asynchronousResponse.complete();
+      }
+
       protected AsyncContext setupAsyncContext()
       {
          if (servletRequest.isAsyncStarted())

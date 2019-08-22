@@ -2,17 +2,17 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResourceInvoker;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -96,10 +96,10 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       private int getMaxUses()
       {
          maxUses = DEFAULT_MAX_USES;
-         ServletContext context = ResteasyContext.getContextData(ServletContext.class);
+         ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
          if (context != null)
          {
-            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
+            String s = context.getParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
             if (s != null)
             {
                try

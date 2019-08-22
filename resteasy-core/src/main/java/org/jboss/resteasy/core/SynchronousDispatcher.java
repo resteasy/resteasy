@@ -21,8 +21,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
-import org.jboss.resteasy.plugins.server.servlet.Cleanable;
-import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.plugins.server.Cleanable;
+import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;

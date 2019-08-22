@@ -20,7 +20,7 @@ import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;

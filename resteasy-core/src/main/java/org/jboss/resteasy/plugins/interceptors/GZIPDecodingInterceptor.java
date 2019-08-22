@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Priority;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
@@ -18,9 +17,10 @@ import javax.ws.rs.ext.ReaderInterceptorContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.ServerReaderInterceptorContext;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -132,10 +132,10 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
       }
 
       int size = -1;
-      ServletContext context = ResteasyContext.getContextData(ServletContext.class);
+      ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
-         String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT);
+         String s = context.getParameter(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT);
          if (s != null)
          {
             try

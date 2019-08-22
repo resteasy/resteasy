@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.servlet;
 
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.plugins.servlet.i18n.Messages;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 

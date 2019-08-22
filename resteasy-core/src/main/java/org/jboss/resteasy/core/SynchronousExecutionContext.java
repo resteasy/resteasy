@@ -62,6 +62,11 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       return wasSuspended;
    }
 
+   public void complete()
+   {
+      if (wasSuspended) asynchronousResponse.complete();
+   }
+
    protected class SynchronousAsynchronousResponse extends AbstractAsynchronousResponse
    {
       protected boolean cancelled;

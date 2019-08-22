@@ -17,7 +17,6 @@ import javax.ws.rs.ext.ReaderInterceptor;
 
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ServerReaderInterceptorContext;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -148,7 +147,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       InputStream is = null;
       if (MediaType.APPLICATION_FORM_URLENCODED_TYPE.equals(mediaType))
       {
-         if (request instanceof HttpServletInputMessage && ((HttpServletInputMessage) request).formParametersRead())
+         if (request.formParametersRead())
          {
             MultivaluedMap<String, String> map = request.getDecodedFormParameters();
             if (map != null)

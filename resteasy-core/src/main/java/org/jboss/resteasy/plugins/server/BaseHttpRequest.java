@@ -36,6 +36,10 @@ public abstract class BaseHttpRequest implements HttpRequest
       return uri;
    }
 
+   @Override
+   public boolean formParametersRead() {
+      return formParameters != null || decodedFormParameters != null;
+   }
 
    public MultivaluedMap<String, String> getFormParameters()
    {

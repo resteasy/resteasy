@@ -12,7 +12,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbJsonXmlRootElementClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbXmlRootElementClient;

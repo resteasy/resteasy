@@ -237,6 +237,14 @@ public class NettyHttpRequest extends BaseHttpRequest
          return asyncResponse;
       }
 
+      @Override
+      public void complete() {
+         if (wasSuspended) {
+            asyncResponse.complete();
+         }
+      }
+
+
 
       /**
        * Netty implementation of {@link AsyncResponse}.

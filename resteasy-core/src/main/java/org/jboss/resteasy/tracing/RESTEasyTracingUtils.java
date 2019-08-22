@@ -6,7 +6,7 @@ import java.util.List;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.tracing.api.RESTEasyTracingConfig;

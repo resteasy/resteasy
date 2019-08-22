@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
@@ -416,8 +415,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          if(weSuspended)
          {
             // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
-            HttpServletRequest httpServletRequest = (HttpServletRequest) contextDataMap.get(HttpServletRequest.class);
-            httpServletRequest.getAsyncContext().complete();
+            request.getAsyncContext().complete();
          }
       } catch (IOException e)
       {
