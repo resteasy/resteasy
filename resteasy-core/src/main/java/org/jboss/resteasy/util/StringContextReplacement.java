@@ -2,10 +2,10 @@ package org.jboss.resteasy.util;
 
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 
 /**
  * Utility to replace predefined expressions within a string with  values from the HTTP request;
@@ -53,14 +53,14 @@ public class StringContextReplacement
          original = absolutepath.matcher(original).replaceAll(abs);
          original = absoluteUri.matcher(original).replaceAll(absU);
          original = baseUri.matcher(original).replaceAll(baseU);
+         
+         if (uriInfo instanceof ResteasyUriInfo) {
+            original = contextPath.matcher(original).replaceAll(((ResteasyUriInfo)uriInfo).getContextPath());
+
+         }
 
       }
-      HttpServletRequest request = ResteasyContext.getContextData(HttpServletRequest.class);
-      if (request != null)
-      {
-         original = contextPath.matcher(original).replaceAll(request.getContextPath());
 
-      }
       return original;
    }
 
