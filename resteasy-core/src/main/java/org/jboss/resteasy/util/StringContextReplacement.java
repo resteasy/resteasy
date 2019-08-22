@@ -53,7 +53,7 @@ public class StringContextReplacement
          original = absolutepath.matcher(original).replaceAll(abs);
          original = absoluteUri.matcher(original).replaceAll(absU);
          original = baseUri.matcher(original).replaceAll(baseU);
-         
+
          if (uriInfo instanceof ResteasyUriInfo) {
             original = contextPath.matcher(original).replaceAll(((ResteasyUriInfo)uriInfo).getContextPath());
 
