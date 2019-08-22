@@ -79,7 +79,7 @@ public class MultivaluedTreeMap<K, V> implements MultivaluedMap<K, V>, Serializa
 
    private List<V> createValueList(K key)
    {
-      return new ArrayList<V>();
+      return new ArrayList<V>(1);
    }
 
    public MultivaluedTreeMap<K, V> clone()
