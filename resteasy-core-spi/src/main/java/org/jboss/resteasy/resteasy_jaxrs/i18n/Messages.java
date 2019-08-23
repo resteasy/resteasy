@@ -839,6 +839,9 @@ public interface Messages
    @Message(id = BASE + 1099, value = "MultiValuedCollectionParamConverter unable to parse: %s")
    String unableToParse(String s);
 
+   @Message(id = BASE + 2042, value = "Multiple resource methods match request %s. Matching methods: %s")
+   String multipleMethodsMatchFailFast(String request, String[] methods);
+
    @Message(id = BASE + 13, value = "Error creating array from %s")
    String errorCreatingArray(String s);
 }
