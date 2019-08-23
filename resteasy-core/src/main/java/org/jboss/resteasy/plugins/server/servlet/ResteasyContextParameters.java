@@ -93,4 +93,7 @@ public interface ResteasyContextParameters {
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
 
     String RESTEASY_STATISTICS_ENABLED = "resteasy.statistics.enabled";
+
+    // Added for quarkus.  Initial use switch from warning msg to exception message.
+    String RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING = "resteasy.fail.fast.on.multiple.resources.matching";
 }
