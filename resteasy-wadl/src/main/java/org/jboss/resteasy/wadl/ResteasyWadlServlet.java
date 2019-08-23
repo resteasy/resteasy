@@ -1,6 +1,6 @@
 package org.jboss.resteasy.wadl;
 
-import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.wadl.i18n.LogMessages;
 import org.jboss.resteasy.wadl.i18n.Messages;

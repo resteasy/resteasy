@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 

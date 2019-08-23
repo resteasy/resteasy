@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.server;
+package org.jboss.resteasy.plugins.server.servlet;
 
 /**
  * constant names of resteasy configuration variables within a servlet

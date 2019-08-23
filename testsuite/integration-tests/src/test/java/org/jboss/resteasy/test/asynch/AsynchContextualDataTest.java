@@ -15,7 +15,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import javax.ws.rs.client.ClientBuilder;
-import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataProduct;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataResource;
 import org.jboss.resteasy.utils.PortProviderUtil;

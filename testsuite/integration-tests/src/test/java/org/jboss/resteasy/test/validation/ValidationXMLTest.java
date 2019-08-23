@@ -21,7 +21,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationXMLFooConstraint;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFooReaderWriter;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations;
-import org.jboss.resteasy.plugins.server.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
