@@ -259,6 +259,7 @@ public class VertxHttpRequest extends BaseHttpRequest
                if (done) return;
                if (cancelled) return;
                done = true;
+               if (vertxResponse.isCommitted()) return;
                vertxFlush();
             }
          }

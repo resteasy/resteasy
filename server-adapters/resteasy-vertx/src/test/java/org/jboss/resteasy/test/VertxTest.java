@@ -2,11 +2,13 @@ package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
+import org.jboss.resteasy.util.StringContextReplacement;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
@@ -119,6 +121,14 @@ public class VertxTest
       {
          return "uri: " + info.getRequestUri().toString();
       }
+
+      @POST
+      @Path("/replace")
+      @Produces("text/plain")
+      @Consumes("text/plain")
+      public String replace(String replace) {
+         return StringContextReplacement.replace(replace);
+      }
    }
 
    static Client client;
@@ -230,6 +240,15 @@ public class VertxTest
       WebTarget target = client.target(generateURL("/context"));
       String val = target.request().get(String.class);
       Assert.assertEquals("pass", val);
+   }
+
+   @Test
+   public void testReplacement() throws Exception
+   {
+      // this test was put in to make sure that without servlet it still works.
+      WebTarget target = client.target(generateURL("/replace"));
+      String val = target.request().post(Entity.text("${contextpath}"), String.class);
+      Assert.assertEquals("", val);
    }
 
    @Test
