@@ -107,8 +107,8 @@ public class InjectorFactoryImpl implements InjectorFactory
          case COOKIE_PARAM:
             return new CookieParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
          case PATH_PARAM:
-            return new PathParamInjector(rawType, parameterType, parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
-         case FORM:
+             return new PathParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+          case FORM:
          {
             String prefix = parameter.getParamName();
             if (prefix.length() > 0)
