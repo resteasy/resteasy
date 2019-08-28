@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.resource.resource;
 
 import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
