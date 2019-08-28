@@ -69,10 +69,6 @@ public class OptionalResource {
         return Long.toString(value.orElse(42));
     }
 
-    @Path("/path/{value}")
-    @GET
-    public String path(@PathParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
-
     @Path("/header")
     @GET
     public String header(@HeaderParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
