@@ -223,6 +223,10 @@ public class VertxHttpRequest extends BaseHttpRequest
          return asyncResponse;
       }
 
+      @Override
+      public void complete() {
+         if (wasSuspended && asyncResponse != null) asyncResponse.complete();
+      }
 
       /**
        * Vertx implementation of {@link AsyncResponse}.
@@ -255,6 +259,7 @@ public class VertxHttpRequest extends BaseHttpRequest
                if (done) return;
                if (cancelled) return;
                done = true;
+               if (vertxResponse.isCommitted()) return;
                vertxFlush();
             }
          }

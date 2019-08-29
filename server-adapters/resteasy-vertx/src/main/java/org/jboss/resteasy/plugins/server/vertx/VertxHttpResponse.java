@@ -27,6 +27,7 @@ public class VertxHttpResponse implements HttpResponse
    private ResteasyProviderFactory providerFactory;
    private final HttpMethod method;
    private Throwable vertxException;
+   private boolean ended;
 
    public VertxHttpResponse(final HttpServerResponse response, final ResteasyProviderFactory providerFactory)
    {
@@ -112,6 +113,7 @@ public class VertxHttpResponse implements HttpResponse
          response.end();
       }
       committed = true;
+      ended = true;
    }
 
    @Override
@@ -171,6 +173,8 @@ public class VertxHttpResponse implements HttpResponse
 
    public void finish() throws IOException
    {
+      if (ended) return;
+      ended = true;
       checkException();
       if (os != null) {
          os.flush();

@@ -16,4 +16,6 @@ public interface ResteasyAsynchronousContext
    ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException;
 
    ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
+
+   void complete();
 }

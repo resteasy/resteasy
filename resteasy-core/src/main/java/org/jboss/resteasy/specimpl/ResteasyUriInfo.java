@@ -217,6 +217,15 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    /**
+    * i.e. servlet context path.  May not be set.
+    *
+    * @return
+    */
+   public String getContextPath() {
+      return contextPath;
+   }
+
+   /**
     * Encoded path without matrix parameters.
     *
     * @return matching path

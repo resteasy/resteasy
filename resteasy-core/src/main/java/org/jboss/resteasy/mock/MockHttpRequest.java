@@ -354,6 +354,10 @@ public class MockHttpRequest extends BaseHttpRequest
          {
             return null;
          }
+
+         @Override
+         public void complete() {
+         }
       };
    }
 

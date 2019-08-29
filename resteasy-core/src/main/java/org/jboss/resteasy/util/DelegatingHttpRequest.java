@@ -91,6 +91,11 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
+   public boolean formParametersRead() {
+      return delegate.formParametersRead();
+   }
+
+   @Override
    public Object getAttribute(String attribute)
    {
       return delegate.getAttribute(attribute);

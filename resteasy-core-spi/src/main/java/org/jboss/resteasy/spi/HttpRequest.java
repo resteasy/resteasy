@@ -62,6 +62,13 @@ public interface HttpRequest
    MultivaluedMap<String, String> getDecodedFormParameters();
 
    /**
+    * Were form parameters read before marshalling to body?
+    *
+    * @return
+    */
+   boolean formParametersRead();
+
+   /**
     * Map of contextual data.  Similar to HttpServletRequest attributes
     * @param attribute attribute name
     * @return attribute

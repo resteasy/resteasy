@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.server.servlet;
+package org.jboss.resteasy.plugins.server;
 
 import java.util.HashSet;
 /**
