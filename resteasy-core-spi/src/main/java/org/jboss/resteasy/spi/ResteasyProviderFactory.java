@@ -339,7 +339,7 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
    // Configurable
    public abstract Map<String, Object> getMutableProperties();
 
-   public abstract ResteasyProviderFactory setProperties(Map<String, ?> properties);
+   public abstract ResteasyProviderFactory setProperties(Map<String, Object> properties);
 
    public abstract Collection<Feature> getEnabledFeatures();
 

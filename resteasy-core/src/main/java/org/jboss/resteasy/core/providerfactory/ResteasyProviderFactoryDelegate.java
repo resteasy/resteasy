@@ -546,7 +546,7 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory
    }
 
    @Override
-   public ResteasyProviderFactory setProperties(Map<String, ?> properties)
+   public ResteasyProviderFactory setProperties(Map<String, Object> properties)
    {
       return resteasyProviderFactoryDelegator.setProperties(properties);
    }

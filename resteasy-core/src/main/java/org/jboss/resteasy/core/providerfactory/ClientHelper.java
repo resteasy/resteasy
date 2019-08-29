@@ -3,7 +3,6 @@ package org.jboss.resteasy.core.providerfactory;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.ws.rs.ConstrainedTo;
@@ -56,7 +55,7 @@ public class ClientHelper
 
    protected void initializeDefault()
    {
-      reactiveClasses = new ConcurrentHashMap<>();
+      reactiveClasses = new CopyOnWriteMap<>();
    }
 
    protected void initialize(ResteasyProviderFactoryImpl parent)
@@ -69,8 +68,8 @@ public class ClientHelper
       clientWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistryImpl(rpf) : parent.getClientWriterInterceptorRegistry().clone(rpf);
 
       clientDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getClientDynamicFeatures());
-      asyncClientResponseProviders = parent == null ? new ConcurrentHashMap<>(1) : new ConcurrentHashMap<>(parent.getAsyncClientResponseProviders());
-      reactiveClasses = parent == null ? new ConcurrentHashMap<>(8) : new ConcurrentHashMap<>(parent.clientHelper.reactiveClasses);
+      asyncClientResponseProviders = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getAsyncClientResponseProviders());
+      reactiveClasses = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.clientHelper.reactiveClasses);
    }
 
    protected void initializeClientProviders(ResteasyProviderFactory factory)
@@ -521,8 +520,7 @@ public class ClientHelper
       Class<?> asyncClass = Types.getRawType(asyncType);
       if (asyncClientResponseProviders == null)
       {
-         asyncClientResponseProviders = new ConcurrentHashMap<Class<?>, AsyncClientResponseProvider>();
-         asyncClientResponseProviders.putAll(parent.getAsyncClientResponseProviders());
+         asyncClientResponseProviders = new CopyOnWriteMap<>(parent.getAsyncClientResponseProviders());
       }
       asyncClientResponseProviders.put(asyncClass, provider);
    }

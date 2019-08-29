@@ -335,7 +335,7 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
    }
 
    @Override
-   public ResteasyProviderFactory setProperties(Map<String, ?> properties)
+   public ResteasyProviderFactory setProperties(Map<String, Object> properties)
    {
       return getDelegate().setProperties(properties);
    }

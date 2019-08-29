@@ -165,8 +165,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          clientHelper.initializeDefault();
          providerClasses = new CopyOnWriteArraySet<>();
          providerInstances = new CopyOnWriteArraySet<>();
-         properties = new ConcurrentHashMap<>();
-         properties.putAll(parent.getProperties());
+         properties = new CopyOnWriteMap<>(parent.getProperties());
          enabledFeatures = new CopyOnWriteArraySet<>();
          resourceBuilder = new ResourceBuilder();
       }
@@ -191,11 +190,11 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    protected void initialize(ResteasyProviderFactoryImpl parent)
    {
       enabledFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getEnabledFeatures());
-      properties = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getProperties());
+      properties = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getProperties());
       providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderClasses());
       providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderInstances());
-      classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClassContracts());
-      sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
+      classContracts = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getClassContracts());
+      sortedExceptionMappers = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getSortedExceptionMappers());
       contextResolvers = new ConcurrentHashMap<>();
       if (parent != null)
       {
@@ -204,14 +203,14 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
-      contextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getContextInjectors());
-      asyncContextInjectors = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getAsyncContextInjectors());
+      contextInjectors = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getContextInjectors());
+      asyncContextInjectors = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getAsyncContextInjectors());
       sortedParamConverterProviders = Collections.synchronizedSortedSet(parent == null ? new TreeSet<>() : new TreeSet<>(parent.getSortedParamConverterProviders()));
-      stringParameterUnmarshallers = parent == null ? new ConcurrentHashMap<>(2) : new ConcurrentHashMap<>(parent.getStringParameterUnmarshallers());
+      stringParameterUnmarshallers = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getStringParameterUnmarshallers());
 
       resourceBuilder = new ResourceBuilder();
 
-      headerDelegates = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getHeaderDelegates());
+      headerDelegates = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getHeaderDelegates());
       addHeaderDelegateIfAbsent(MediaType.class, MediaTypeHeaderDelegate.INSTANCE);
       addHeaderDelegateIfAbsent(NewCookie.class, NewCookieHeaderDelegate.INSTANCE);
       addHeaderDelegateIfAbsent(Cookie.class, CookieHeaderDelegate.INSTANCE);
@@ -360,17 +359,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (classContracts != null)
          return classContracts;
-      Map<Class<?>, Map<Class<?>, Integer>> map = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
-      if (parent != null)
-      {
-         for (Map.Entry<Class<?>, Map<Class<?>, Integer>> entry : parent.getClassContracts().entrySet())
-         {
-            Map<Class<?>, Integer> mapEntry = new HashMap<Class<?>, Integer>();
-            mapEntry.putAll(entry.getValue());
-            map.put(entry.getKey(), mapEntry);
-         }
-      }
-      classContracts = map;
+
+      classContracts = parent == null ? new CopyOnWriteMap<>() : new CopyOnWriteMap<>(parent.getClassContracts());
+
       return classContracts;
    }
 
@@ -511,8 +502,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (headerDelegates == null)
        {
-          headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
-          headerDelegates.putAll(parent.getHeaderDelegates());
+          headerDelegates = new CopyOnWriteMap<>(parent.getHeaderDelegates());
        }
        headerDelegates.put(clazz, header);
    }
@@ -654,8 +644,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
       if (sortedExceptionMappers == null)
       {
-         sortedExceptionMappers = new ConcurrentHashMap<Class<?>, SortedKey<ExceptionMapper>>();
-         sortedExceptionMappers.putAll(parent.getSortedExceptionMappers());
+         sortedExceptionMappers = new CopyOnWriteMap<>(parent.getSortedExceptionMappers());
       }
       int priority = Utils.getPriority(null, null, ExceptionMapper.class, providerClass);
       SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, providerClass, priority,
@@ -676,8 +665,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
       if (contextInjectors == null)
       {
-         contextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
-         contextInjectors.putAll(parent.getContextInjectors());
+         contextInjectors = new CopyOnWriteMap<>(parent.getContextInjectors());
       }
       contextInjectors.put(typeArgs[0], provider);
 
@@ -685,8 +673,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          if (asyncContextInjectors == null)
          {
-            asyncContextInjectors = new ConcurrentHashMap<Type, ContextInjector>();
-            asyncContextInjectors.putAll(parent.getAsyncContextInjectors());
+            asyncContextInjectors = new CopyOnWriteMap<>(parent.getAsyncContextInjectors());
          }
          asyncContextInjectors.put(typeArgs[1], provider);
       }
@@ -737,8 +724,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       if (stringParameterUnmarshallers == null)
       {
-         stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
-         stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
+         stringParameterUnmarshallers = new CopyOnWriteMap<>(parent.getStringParameterUnmarshallers());
       }
       Type[] intfs = provider.getGenericInterfaces();
       for (Type type : intfs)
@@ -885,7 +871,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
          return;
       }
-      Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
+      final Map<Class<?>, Integer> newContracts = new CopyOnWriteMap<>();
       processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
       providerClasses.add(provider);
       classContracts.put(provider, newContracts);
@@ -1025,7 +1011,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
          LogMessages.LOGGER.providerInstanceAlreadyRegistered(providerClass.getName());
          return;
       }
-      Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
+      Map<Class<?>, Integer> newContracts = new CopyOnWriteMap<>();
       processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
       providerInstances.add(provider);
       classContracts.put(providerClass, newContracts);
@@ -1485,11 +1471,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       return properties.get(name);
    }
 
-   public ResteasyProviderFactory setProperties(Map<String, ?> properties)
+   public ResteasyProviderFactory setProperties(Map<String, Object> properties)
    {
-      Map<String, Object> newProp = new ConcurrentHashMap<String, Object>();
-      newProp.putAll(properties);
-      this.properties = newProp;
+      this.properties = new CopyOnWriteMap<>(properties);
       return this;
    }
 
