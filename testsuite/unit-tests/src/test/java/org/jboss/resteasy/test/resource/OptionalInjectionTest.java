@@ -6,6 +6,7 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.resource.resource.NotSupportedOpitionalPathParamResource;
 import org.jboss.resteasy.test.resource.resource.OptionalResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,13 +86,9 @@ public class OptionalInjectionTest {
                 .getEntity());
     }
 
-    @Test
-    public void testPathParamPresent() throws Exception {
-        MockHttpRequest httpRequest = MockHttpRequest.get("/optional/path/24");
-        Assert.assertEquals("24", registry
-                .getResourceInvoker(httpRequest)
-                .invoke(httpRequest, resp)
-                .getEntity());
+    @Test(expected = RuntimeException.class)
+    public void testPathParamNotSupportedAndBehavedSameAsBeforeAsDiscussedInEAP7_1248() throws Exception {
+        registry.addPerRequestResource(NotSupportedOpitionalPathParamResource.class);
     }
 
     @Test(expected = NotFoundException.class)

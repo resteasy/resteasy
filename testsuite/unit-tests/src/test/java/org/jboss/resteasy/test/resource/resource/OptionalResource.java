@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource.resource;
 
+
 import org.jboss.resteasy.annotations.jaxrs.MatrixParam;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -68,10 +68,6 @@ public class OptionalResource {
     public String matrix(@MatrixParam("value") OptionalLong value) {
         return Long.toString(value.orElse(42));
     }
-
-    @Path("/path/{value}")
-    @GET
-    public String path(@PathParam("value") OptionalLong value) { return Long.toString(value.orElse(42)); }
 
     @Path("/header")
     @GET
