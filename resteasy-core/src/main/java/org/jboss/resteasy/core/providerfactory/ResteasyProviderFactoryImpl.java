@@ -1462,7 +1462,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    @Override
    public Map<String, Object> getProperties()
    {
-      return properties;
+      return Collections.unmodifiableMap(properties);
    }
 
    @Override
