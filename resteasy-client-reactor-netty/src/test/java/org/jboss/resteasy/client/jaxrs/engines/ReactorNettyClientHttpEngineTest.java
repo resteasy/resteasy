@@ -6,8 +6,10 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
+import static org.hamcrest.CoreMatchers.containsString;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -30,6 +32,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -40,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ReactorNettyClientHttpEngineTest {
@@ -50,6 +54,7 @@ public class ReactorNettyClientHttpEngineTest {
     private static final String RESOURCE_COULD_NOT_BE_FOUND = "Resource could not be found!";
     private static final String SERVER_IS_NOT_ABLE_TO_RESPONSE = "Server is not able to response!";
     private static final String LIST_OF_STRINGS_IN_JSON = "[\"somestring1\", \"somestring2\"]";
+    private static final String DELAYED_HELLO_WORLD = "Delayed Hello World!";
 
     @BeforeClass
     public static void setup() {
@@ -57,14 +62,30 @@ public class ReactorNettyClientHttpEngineTest {
         client = setupClient(HttpClient.create());
     }
 
+    private static Client setupClient(HttpClient httpClient, Duration timeout) {
+
+        final ReactorNettyClientHttpEngine engine =
+                new ReactorNettyClientHttpEngine(
+                        httpClient,
+                        new DefaultChannelGroup(new DefaultEventExecutor()),
+                        HttpResources.get(),
+                        timeout);
+
+        final ClientBuilder builder = ClientBuilder.newBuilder();
+        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
+        clientBuilder.httpEngine(engine);
+        return builder.build();
+    }
+
     private static Client setupClient(HttpClient httpClient) {
-        ClientBuilder builder = ClientBuilder.newBuilder();
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
-        ReactorNettyClientHttpEngine engine =
+        final ReactorNettyClientHttpEngine engine =
                 new ReactorNettyClientHttpEngine(
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get());
+
+        final ClientBuilder builder = ClientBuilder.newBuilder();
+        final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
         clientBuilder.httpEngine(engine);
         return builder.build();
     }
@@ -95,7 +116,11 @@ public class ReactorNettyClientHttpEngineTest {
                         .get("/internalservererrorwithentity", (request, response) ->
                                 response.status(HttpResponseStatus.INTERNAL_SERVER_ERROR)
                                         .sendString(Mono.just(SERVER_IS_NOT_ABLE_TO_RESPONSE)))
-                        .get("/param/{name}", (request, response) ->
+                        .get("/sleep/{timeout}", (request, response) ->
+                                response.sendString(
+                                        Mono.just(DELAYED_HELLO_WORLD)
+                                            .delayElement(Duration.ofMillis(Long.parseLong(request.param("timeout")))))
+                        ).get("/param/{name}", (request, response) ->
                                 response.sendString(Mono.just(request.param("name"))))
                         .get("/query", (request, response) -> {
                             QueryStringDecoder query = new QueryStringDecoder(request.uri());
@@ -452,6 +477,88 @@ public class ReactorNettyClientHttpEngineTest {
                 .post(Entity.text(payload));
         assertEquals(200, response.getStatus());
         assertEquals(Integer.toString(payload.length()), response.readEntity(String.class));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeTimeout() {
+        setupClient(HttpClient.create(), Duration.ofMillis(-1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testZeroTimeout() {
+        setupClient(HttpClient.create(), Duration.ofMillis(0));
+    }
+
+    @Test
+    public void testTimeoutSyncInvocation() {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        try {
+            timeoutClient.target(url("/sleep/500")).request().get();
+            Assert.fail("timeout exception expected");
+        } catch(ProcessingException ex) {
+            assertThat(ex.getMessage(),
+                    containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
+        }
+    }
+
+    @Test
+    public void testTimeoutAsyncInvocation() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(),Duration.ofMillis(200));
+
+        final Future<Response> future = timeoutClient.target(url("/sleep/300")).request().async().get();
+
+        try {
+            future.get();
+            Assert.fail("timeout exception expected");
+        } catch (ExecutionException ex) {
+            assertThat(ex.getMessage(),
+                    containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
+        }
+    }
+
+    @Test
+    public void testTimeoutRxInvocation() throws ExecutionException, InterruptedException {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
+
+        final CompletionStage<String> completionStage = timeoutClient.target(url("/sleep/200")).request().rx().get(String.class);
+
+        try {
+            completionStage.toCompletableFuture().get();
+            Assert.fail("timeout exception expected");
+        } catch (ExecutionException ex) {
+            assertThat(ex.getMessage(),
+                    containsString("java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 100ms"));
+        }
+    }
+
+    @Test
+    public void testSyncInvocationWithTimeoutConfig() {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
+
+        final Response response = timeoutClient.target(url("/hello")).request().get();
+        assertEquals(200, response.getStatus());
+        assertEquals(HELLO_WORLD, response.readEntity(String.class));
+    }
+
+    @Test
+    public void testAsyncInvocationWithTimeoutConfig() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
+        final Future<Response> future = timeoutClient.target(url("/hello")).request().async().get();
+
+        final Response response = future.get();
+        assertEquals(200, response.getStatus());
+        assertEquals(HELLO_WORLD, response.readEntity(String.class));
+    }
+
+    @Test
+    public void testRxInvocationWithTimeoutConfig() throws ExecutionException, InterruptedException {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
+
+        final CompletionStage<Response> completionStage = timeoutClient.target(url("/hello")).request().rx().get();
+        final Response response = completionStage.toCompletableFuture().get();
+        assertEquals(200, response.getStatus());
+        assertEquals(HELLO_WORLD, response.readEntity(String.class));
     }
 
     private static String incrementAge(final String json) {
