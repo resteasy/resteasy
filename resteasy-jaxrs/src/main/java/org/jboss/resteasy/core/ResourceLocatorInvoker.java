@@ -12,8 +12,6 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
-import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
-import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.NotFoundException;
@@ -34,7 +32,6 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected ResourceLocator method;
    protected ConcurrentHashMap<Class<?>, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class<?>, LocatorRegistry>();
-   protected MethodStatisticsLogger methodStatisticsLogger;
 
    public ResourceLocatorInvoker(final ResourceFactory resource, final InjectorFactory injector, final ResteasyProviderFactory providerFactory, final ResourceLocator locator)
    {
@@ -43,7 +40,6 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.providerFactory = providerFactory;
       this.method = locator;
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
-      methodStatisticsLogger = ((StatisticsControllerImpl)providerFactory.getStatisticsController()).EMPTY;
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
@@ -133,29 +129,12 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       if (invoker instanceof ResourceLocatorInvoker)
       {
          ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
-
-         final long timeStamp = methodStatisticsLogger.timestamp();
-
-         try
-         {
-            return locator.invoke(request, response, target);
-         } finally
-         {
-            methodStatisticsLogger.duration(timeStamp);
-         }
+         return locator.invoke(request, response, target);
       }
       else
       {
          ResourceMethodInvoker method = (ResourceMethodInvoker) invoker;
          return method.invoke(request, response, target);
       }
-   }
-
-   public void setMethodStatisticsLogger(MethodStatisticsLogger msLogger) {
-      methodStatisticsLogger = msLogger;
-   }
-
-   public MethodStatisticsLogger getMethodStatisticsLogger() {
-      return methodStatisticsLogger;
    }
 }

@@ -24,8 +24,6 @@ import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
-import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
-import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
@@ -78,7 +76,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ResourceInfo resourceInfo;
 
    protected boolean expectsBody;
-   protected MethodStatisticsLogger methodStatisticsLogger;
+
 
 
    public ResourceMethodInvoker(final ResourceMethod method, final InjectorFactory injector, final ResourceFactory resource, final ResteasyProviderFactory providerFactory)
@@ -88,7 +86,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.parentProviderFactory = providerFactory;
       this.method = method;
       this.methodAnnotations = this.method.getAnnotatedMethod().getAnnotations();
-      methodStatisticsLogger = ((StatisticsControllerImpl)providerFactory.getStatisticsController()).EMPTY;
 
       resourceInfo = new ResourceInfo()
       {
@@ -367,18 +364,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
-      final long msTimeStamp = methodStatisticsLogger.timestamp();
-      try
-      {
-         ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
-            () -> invokeOnTargetAfterFilter(request, response, target));
-         // let it handle the continuation
-         return requestContext.filter();
-      } finally {
-         methodStatisticsLogger.duration(msTimeStamp);
-      }
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
+         () -> invokeOnTargetAfterFilter(request, response, target));
+      // let it handle the continuation
+      return requestContext.filter();
    }
 
    protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
@@ -671,13 +662,5 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public void markMethodAsAsync()
    {
       method.markAsynchronous();
-   }
-
-   public void setMethodStatisticsLogger(MethodStatisticsLogger msLogger) {
-      methodStatisticsLogger = msLogger;
-   }
-
-   public MethodStatisticsLogger getMethodStatisticsLogger() {
-      return methodStatisticsLogger;
    }
 }
