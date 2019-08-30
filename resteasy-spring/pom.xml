@@ -11,10 +11,6 @@
     <name>RESTEasy Spring integration</name>
     <description/>
 
-    <properties>
-        <version.org.springframework>4.3.22.RELEASE</version.org.springframework>
-    </properties>
-
     <repositories>
         <repository>
             <id>jboss</id>
@@ -58,19 +54,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${version.org.springframework}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
