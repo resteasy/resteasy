@@ -2,7 +2,7 @@ package org.jboss.resteasy.embedded.test.core.interceptors;
 
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedServerTestBase;
+import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextArrayListEntityProvider;
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextFirstReaderInterceptor;
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextFirstWriterInterceptor;
@@ -26,7 +26,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jboss.resteasy.embedded.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @tpSubChapter

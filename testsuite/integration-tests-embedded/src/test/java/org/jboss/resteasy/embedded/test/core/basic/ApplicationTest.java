@@ -23,7 +23,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static org.jboss.resteasy.embedded.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @tpChapter Embedded Containers

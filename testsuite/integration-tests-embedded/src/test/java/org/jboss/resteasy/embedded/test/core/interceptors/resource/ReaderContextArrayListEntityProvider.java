@@ -1,6 +1,6 @@
 package org.jboss.resteasy.embedded.test.core.interceptors.resource;
 
-import org.jboss.resteasy.utils.TestUtil;
+import org.jboss.resteasy.embedded.utils.TestUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

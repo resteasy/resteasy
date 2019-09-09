@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedServerTestBase;
+import org.jboss.resteasy.embedded.test.EmbeddedServerTestBase;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter1;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter2;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter3;
@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.List;
-import static org.jboss.resteasy.embedded.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @tpSubChapter
