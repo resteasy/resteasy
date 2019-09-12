@@ -551,7 +551,7 @@ public class StringParameterInjector
       catch (NoSuchMethodException e)
       {
       }
-      if (baseType.isPrimitive())
+      if (StringToPrimitive.isPrimitive(baseType))
       {
          return true;
       }
@@ -677,7 +677,7 @@ public class StringParameterInjector
          if (defaultValue == null)
          {
             //System.out.println("NO DEFAULT VALUE");
-            if (!baseType.isPrimitive()) return null;
+            if (!StringToPrimitive.isPrimitive(baseType)) return null;
             else
                return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
          }
@@ -769,7 +769,7 @@ public class StringParameterInjector
       }
       try
       {
-         if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
+         if (StringToPrimitive.isPrimitive(baseType)) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
       }
       catch (Exception e)
       {
