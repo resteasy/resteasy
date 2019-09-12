@@ -141,22 +141,22 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                     outbound.sendObject(Mono.just(outbound.alloc().buffer().writeBytes(bytes))))
             ).orElse(requestSender);
 
-        final Mono<T> responseMono =  responseReceiver
+        final Mono<ClientResponse> responseMono = responseReceiver
                 .responseSingle((response, bytes) -> bytes
                         .asInputStream()
-                        .map(is -> extractResult(request.getClientConfiguration(), response, is, extractor))
+                        .map(is -> toRestEasyResponse(request.getClientConfiguration(), response, is))
                         .switchIfEmpty(
                                 Mono.defer(
                                         () -> Mono.just(
-                                                extractResult(
+                                                toRestEasyResponse(
                                                         request.getClientConfiguration(),
                                                         response,
-                                                        null,
-                                                        extractor)))));
+                                                        null)))));
 
         return requestTimeout
                 .map(duration -> responseMono.timeout(duration))
                 .orElse(responseMono)
+                .map(clientResponse -> extractor.extractResult(clientResponse))
                 .toFuture();
     }
 
@@ -235,14 +235,6 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         } catch (IOException e) {
             throw new RuntimeException("Failed to write the request body!", e);
         }
-    }
-
-    private <T> T extractResult(final ClientConfiguration clientConfiguration,
-                                final HttpClientResponse reactorNettyResponse,
-                                final InputStream inputStream,
-                                final ResultExtractor<T> extractor) {
-
-        return extractor.extractResult(toRestEasyResponse(clientConfiguration, reactorNettyResponse, inputStream));
     }
 
     private ClientResponse toRestEasyResponse(final ClientConfiguration clientConfiguration,
