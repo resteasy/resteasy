@@ -17,7 +17,7 @@ public class ResponseEntityContainerResponseFilter implements ContainerResponseF
         responseContext.setStatus(responseEntity.getStatusCodeValue());
         responseContext.setEntity(responseEntity.getBody());
         for (Map.Entry<String, List<String>> entry : responseEntity.getHeaders().entrySet()) {
-            responseContext.getHeaders().addAll(entry.getKey(), entry.getValue());
+            responseContext.getHeaders().addAll(entry.getKey(), entry.getValue().toArray(new Object[0]));
         }
     }
 }
