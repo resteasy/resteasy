@@ -40,8 +40,12 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
    public JsonBindingProvider() {
       super();
       ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
-      disabled = (context != null && (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
-            || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"))));
+      if (context == null) {
+         disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
+      } else {
+         disabled = (Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB))
+                 || Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable")));
+      }
    }
 
    @Override
