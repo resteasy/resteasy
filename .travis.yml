@@ -20,7 +20,3 @@ matrix:
 #cache:
 # directories:
 #  - $HOME/.m2
-addons:
-  apt:
-    packages:
-      - java-1.8.0-openjdk
