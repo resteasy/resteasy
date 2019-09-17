@@ -5,22 +5,18 @@ script:
 
 language: java
 jdk:
-  - oraclejdk8
-  - oraclejdk11
+  - openjdk8
+  - openjdk11
 env:
   - SERVER_VERSION=12.0.0.Final
   - SERVER_VERSION=13.0.0.Final
   - SERVER_VERSION=14.0.0.Final
 matrix:
   exclude:
-    - jdk: oraclejdk11
+    - jdk: openjdk11
       env: SERVER_VERSION=12.0.0.Final
-    - jdk: oraclejdk11
+    - jdk: openjdk11
       env: SERVER_VERSION=13.0.0.Final
 #cache:
 # directories:
 #  - $HOME/.m2
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
