@@ -9,7 +9,9 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.Validation;
-import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBInterceptorResource;
+import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBInterceptor;
+import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBResource;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -19,6 +21,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,11 +47,12 @@ public class PostConstructInjectionTest {
    @Deployment(name = WAR_CDI_ON)
    public static Archive<?> deployCdiOn() {
       WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_ON");
+      war.addClass(PostConstructInjectionEJBInterceptor.class);
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_on.xml", "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
       ), "permissions.xml");
-      return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class, PostConstructInjectionEJBInterceptorResource.class);
+      return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class, PostConstructInjectionEJBResource.class);
    }
 
    /**
@@ -57,6 +61,7 @@ public class PostConstructInjectionTest {
    @Deployment(name = WAR_CDI_OFF)
    public static Archive<?> deployCdiOff() {
       WebArchive war = TestUtil.prepareArchive(PostConstructInjectionTest.class.getSimpleName() + "_CDI_OFF");
+      war.addClass(PostConstructInjectionEJBInterceptor.class);
       war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_off.xml", "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
@@ -85,8 +90,18 @@ public class PostConstructInjectionTest {
     */
    @Test
    public void TestPostInjectCdiOn() throws Exception {
-      doTestPostInjectCdiOn("ON", "normal");
-      doTestPostInjectCdiOn("ON", "ejb");
+      doTestPostInjectCdiOn("ON", "/normal");
+   }
+
+   /**
+    * @tpTestDetails In an environment with managed beans, a @PostConstruct method on either an ordinary
+    *                resource or an EJB interceptor should execute before class and property validation is done.
+    * @tpSince RESTEasy 3.7.0
+    */
+   @Test
+   @Ignore ("This test doesn't work yet. See RESTEASY-2264")
+   public void TestPostInjectCdiOnEJB() throws Exception {
+      doTestPostInjectCdiOn("ON", "/ejb");
    }
 
    /**
@@ -102,10 +117,12 @@ public class PostConstructInjectionTest {
    }
 
    void doTestPostInjectCdiOn(String cdi, String resource) {
-      Response response = client.target(generateURL(cdi, "/normal/get")).request().get();
+      Response response = client.target(generateURL(cdi, resource + "/get")).request().get();
       Assert.assertEquals(400, response.getStatus());
       String header = response.getHeaderString(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      Assert.assertEquals(1, report.getFieldViolations().size());
       response.close();
    }
 }
