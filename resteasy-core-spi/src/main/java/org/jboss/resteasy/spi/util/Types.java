@@ -810,7 +810,7 @@ public final class Types
 
    public static boolean hasPostConstruct(Class<?> clazz, Function<Method, Boolean> validateParameterCount)
    {
-      for (Method m : clazz.getMethods())
+      for (Method m : clazz.getDeclaredMethods())
       {
          if (m.getAnnotation(PostConstruct.class) != null)
          {
@@ -820,6 +820,12 @@ public final class Types
             }
          }
       }
+
+      Class<?> parent = clazz.getSuperclass();
+      if (parent != null && parent != Object.class) {
+         return hasPostConstruct(parent, validateParameterCount);
+      }
+
       return false;
    }
 
