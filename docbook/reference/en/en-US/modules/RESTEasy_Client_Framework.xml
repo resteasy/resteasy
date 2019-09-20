@@ -75,11 +75,11 @@
 
 		<note>
 			<para>
-	          To follow REST principles and not introduce no state management in applications, <classname>javax.ws.rs.client.Client</classname> instance does not provide support for cookie management by default.
-	          However you can enable it if necessary using <classname>ResteasyClientBuilder</classname>:
+	          To follow REST principles and avoid introducing state management in applications, <classname>javax.ws.rs.client.Client</classname> instances do not provide support for cookie management by default.
+	          However, you can enable it if necessary using <classname>ResteasyClientBuilder</classname>:
 			</para>
 			<programlisting>
-				Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build()
+				Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
 			</programlisting>
 		</note>
     </section>

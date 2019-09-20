@@ -67,7 +67,7 @@ public class CookieInjectionTest {
 
    @BeforeClass
    public static void init() {
-      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build();
+      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
    }
 
    @AfterClass

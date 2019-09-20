@@ -277,7 +277,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
    public void testSessionScope() throws Exception {
       log.info("starting testSessionScope()");
       client.close();
-      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build();
+      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
 
       // Need to supply each ClientRequest with a single ClientExecutor to maintain a single
       // cookie cache, which keeps the session alive.
