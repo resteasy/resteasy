@@ -200,6 +200,16 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
     */
    public abstract ResteasyClientBuilder defaultProxy(String hostname, int port, String scheme);
 
+   /**
+    * Enable state (cookie) management.
+    *
+    * @param cookieManagementEnabled
+    * @return the updated client builder instance
+    */
+   public abstract ResteasyClientBuilder cookieManagementEnabled(boolean cookieManagementEnabled);
+
+   public abstract boolean isCookieManagementEnabled();
+
    public abstract SSLContext getSSLContext();
 
    public abstract KeyStore getKeyStore();

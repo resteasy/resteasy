@@ -44,6 +44,7 @@ import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -276,7 +277,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
    public void testSessionScope() throws Exception {
       log.info("starting testSessionScope()");
       client.close();
-      client = ClientBuilder.newClient();
+      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build();
 
       // Need to supply each ClientRequest with a single ClientExecutor to maintain a single
       // cookie cache, which keeps the session alive.
