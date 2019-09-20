@@ -334,22 +334,16 @@ class RestClientBuilderImpl implements RestClientBuilder {
         // invalid parameter
         Path classPathAnno = typeDef.getAnnotation(Path.class);
 
-        final Set<String> classLevelVariables = new HashSet<>();
-        ResteasyUriBuilder classTemplate = null;
-        if (classPathAnno != null) {
-            classTemplate = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
-            classLevelVariables.addAll(classTemplate.getPathParamNamesInDeclarationOrder()); // TODO: doesn't seem to be used!
-        }
-        ResteasyUriBuilder template;
+        ResteasyUriBuilder template = null;
         for (Method method : methods) {
-
             Path methodPathAnno = method.getAnnotation(Path.class);
             if (methodPathAnno != null) {
                 template = classPathAnno == null ? (ResteasyUriBuilder) UriBuilder.fromUri(methodPathAnno.value())
                         : (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value() + "/" + methodPathAnno.value());
-            } else {
-                template = classTemplate;
+            } else if (classPathAnno != null) {
+                template = (ResteasyUriBuilder) UriBuilder.fromUri(classPathAnno.value());
             }
+
             if (template == null) {
                 continue;
             }
