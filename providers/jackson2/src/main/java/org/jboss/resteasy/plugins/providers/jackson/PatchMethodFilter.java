@@ -9,9 +9,12 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
@@ -38,13 +41,18 @@ import com.github.fge.jsonpatch.JsonPatchException;
 @Priority(Integer.MAX_VALUE)
 public class PatchMethodFilter implements ContainerRequestFilter
 {
+   private volatile ObjectMapper objectMapper;
+
+   @Context
+   protected Providers providers;
+
    @Override
    @SuppressWarnings({"rawtypes", "unchecked"})
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
       //Strict the filter is only executed for patch method and media type is APPLICATION_JSON_PATCH_JSON_TYPE
       if (requestContext.getMethod().equals("PATCH")
-            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.equals(requestContext.getMediaType()))
+            && MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
       {
 
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
@@ -67,7 +75,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
                   MediaType.APPLICATION_JSON_TYPE);
             msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
                   MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = getObjectMapper();
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
             JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
             JsonNode result = patch.apply(targetJson);
@@ -96,6 +104,25 @@ public class PatchMethodFilter implements ContainerRequestFilter
          }
       }
 
+   }
+
+   private ObjectMapper getObjectMapper() {
+      if (objectMapper == null) {
+         synchronized(this) {
+            if (objectMapper == null) {
+               ObjectMapper contextMapper = getContextObjectMapper();
+               objectMapper = (contextMapper == null) ? new ObjectMapper() : contextMapper;
+            }
+         }
+       }
+       return objectMapper;
+   }
+
+   private ObjectMapper getContextObjectMapper()
+   {
+      ContextResolver<ObjectMapper> resolver = providers.getContextResolver(ObjectMapper.class, MediaType.APPLICATION_JSON_TYPE);
+      if (resolver == null) return null;
+      return resolver.getContext(ObjectMapper.class);
    }
 
 }
