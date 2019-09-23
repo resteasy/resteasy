@@ -1,7 +1,9 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.InterceptorTimestampPair;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -16,6 +18,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -151,7 +156,14 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
             tracingLogger.log("MBW_WRITE_TO", writer.getClass().getName());
             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
          }
-         writeTo(writer);
+         try {
+            // if we haven't gone async and we have a result right now, then let's propagate any exception
+            // otherwise the exception will be delivered asynchronously
+            writeTo(writer).toCompletableFuture().getNow(null);
+         } catch(CompletionException x) {
+            // unwrap
+            SynchronousDispatcher.rethrow(x.getCause());
+         }
       }
       else
       {
@@ -187,9 +199,15 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    }
 
    @SuppressWarnings(value = "unchecked")
-   protected void writeTo(MessageBodyWriter writer) throws IOException
+   protected CompletionStage<Void> writeTo(MessageBodyWriter writer) throws IOException
    {
-      writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+      if(writer instanceof AsyncMessageBodyWriter
+            && outputStream instanceof AsyncOutputStream) {
+         return ((AsyncMessageBodyWriter) writer).asyncWriteTo(entity, type, genericType, annotations, mediaType, headers, (AsyncOutputStream)outputStream);
+      } else {
+         writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+         return CompletableFuture.completedFuture(null);
+      }
    }
 
    protected MessageBodyWriter getWriter()

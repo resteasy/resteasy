@@ -1,10 +1,16 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-import io.vertx.core.buffer.Buffer;
 import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 
 /**
  * Class to help application that are built to write to an
@@ -24,7 +30,7 @@ import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
  *
  * @author tbussier
  */
-public class ChunkOutputStream extends OutputStream
+public class ChunkOutputStream extends AsyncOutputStream
 {
    private Buffer buffer;
    private final VertxHttpResponse response;
@@ -68,6 +74,11 @@ public class ChunkOutputStream extends OutputStream
    @Override
    public void write(byte[] b, int off, int len) throws IOException
    {
+      write(b, off, len, null);
+   }
+
+   private void write(byte[] b, int off, int len, Handler<AsyncResult<Void>> handler) throws IOException
+   {
       int dataLengthLeftToWrite = len;
       int dataToWriteOffset = off;
       int spaceLeftInCurrentChunk;
@@ -76,24 +87,69 @@ public class ChunkOutputStream extends OutputStream
          buffer.appendBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
          dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
          dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
-         flush();
+         flush(handler);
       }
       if (dataLengthLeftToWrite > 0)
       {
          buffer.appendBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
+         if(handler != null)
+            handler.handle(Future.succeededFuture());
       }
    }
 
    @Override
    public void flush() throws IOException
    {
+      flush(null);
+   }
+
+   private void flush(Handler<AsyncResult<Void>> handler) throws IOException
+   {
       int readable = buffer.length();
       if (readable == 0) return;
       if (!response.isCommitted()) response.prepareChunkStream();
       response.checkException();
-      response.response.write(buffer);
+      response.response.write(buffer, handler);
       buffer = Buffer.buffer();
       super.flush();
+   }
+
+   @Override
+   public CompletionStage<Void> rxFlush()
+   {
+      CompletableFuture<Void> ret = new CompletableFuture<>();
+      try
+      {
+         flush(res -> {
+            if(res.succeeded())
+               ret.complete(null);
+            else
+               ret.completeExceptionally(res.cause());
+         });
+      } catch (IOException e)
+      {
+         ret.completeExceptionally(e);
+      }
+      return ret;
+   }
+
+   @Override
+   public CompletionStage<Void> rxWrite(byte[] bytes)
+   {
+      CompletableFuture<Void> ret = new CompletableFuture<>();
+      try
+      {
+         write(bytes, 0, bytes.length, res -> {
+            if(res.succeeded())
+               ret.complete(null);
+            else
+               ret.completeExceptionally(res.cause());
+         });
+      } catch (IOException e)
+      {
+         ret.completeExceptionally(e);
+      }
+      return ret;
    }
 
 }

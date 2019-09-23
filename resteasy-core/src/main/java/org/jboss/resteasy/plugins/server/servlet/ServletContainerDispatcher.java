@@ -234,7 +234,7 @@ public class ServletContainerDispatcher
             return;
          }
 
-         try (HttpResponse theResponse = responseFactory.createResteasyHttpResponse(response))
+         try (HttpResponse theResponse = responseFactory.createResteasyHttpResponse(response, request))
          {
             HttpRequest in = requestFactory.createResteasyHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
 

@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,16 +28,18 @@ import java.util.Enumeration;
 public class ServerWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
    private HttpRequest request;
+   private Consumer<Throwable> onWriteComplete;
 
    public ServerWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
                                          final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
                                          final MediaType mediaType, final MultivaluedMap<String, Object> headers,
                                          final OutputStream outputStream,
-                                         final HttpRequest request)
+                                         final HttpRequest request, final Consumer<Throwable> onWriteComplete)
    {
       // server side must use request instead of provider factory to get tracing logger.
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers, RESTEasyTracingLogger.getInstance(request));
       this.request = request;
+      this.onWriteComplete = onWriteComplete;
    }
 
    @SuppressWarnings(value = "unchecked")
@@ -59,9 +63,11 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
-   protected void writeTo(MessageBodyWriter writer) throws IOException
+   protected CompletionStage<Void> writeTo(MessageBodyWriter writer) throws IOException
    {
-      super.writeTo(writer);
+      return super.writeTo(writer).whenComplete((v, t) -> {
+         onWriteComplete.accept(t);
+      });
    }
 
    @Override

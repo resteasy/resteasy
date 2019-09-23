@@ -358,6 +358,22 @@ public class MockHttpRequest extends BaseHttpRequest
          @Override
          public void complete() {
          }
+
+         @Override
+         public void initialRequestStarted()
+         {
+         }
+
+         @Override
+         public void initialRequestEnded()
+         {
+         }
+
+         @Override
+         public boolean isOnInitialRequest()
+         {
+            return true;
+         }
       };
    }
 

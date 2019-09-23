@@ -8,6 +8,10 @@ import java.util.concurrent.TimeUnit;
  */
 public interface ResteasyAsynchronousContext
 {
+   void initialRequestStarted();
+   void initialRequestEnded();
+   boolean isOnInitialRequest();
+
    boolean isSuspended();
    ResteasyAsynchronousResponse getAsyncResponse();
 

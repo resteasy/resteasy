@@ -13,6 +13,7 @@ public abstract class AbstractExecutionContext implements ResteasyAsynchronousCo
    protected SynchronousDispatcher dispatcher;
    protected HttpRequest request;
    protected HttpResponse response;
+   private Thread initialRequestThread;
 
    protected AbstractExecutionContext(final SynchronousDispatcher dispatcher,final HttpRequest request,final HttpResponse response)
    {
@@ -21,5 +22,21 @@ public abstract class AbstractExecutionContext implements ResteasyAsynchronousCo
       this.response = response;
    }
 
+   @Override
+   public void initialRequestStarted()
+   {
+      this.initialRequestThread = Thread.currentThread();
+   }
 
+   @Override
+   public boolean isOnInitialRequest()
+   {
+      return initialRequestThread == Thread.currentThread();
+   }
+
+   @Override
+   public void initialRequestEnded()
+   {
+      initialRequestThread = null;
+   }
 }

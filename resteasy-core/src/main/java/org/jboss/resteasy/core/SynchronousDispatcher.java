@@ -439,7 +439,10 @@ public class SynchronousDispatcher implements Dispatcher
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
          logger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
+         request.getAsyncContext().initialRequestStarted();
          jaxrsResponse = invoker.invoke(request, response);
+         request.getAsyncContext().initialRequestEnded();
+
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -481,7 +484,9 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
+         request.getAsyncContext().initialRequestStarted();
          jaxrsResponse = invoker.invoke(request, response);
+         request.getAsyncContext().initialRequestEnded();
 
          tracingLogger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
@@ -584,8 +589,19 @@ public class SynchronousDispatcher implements Dispatcher
       {
          ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
             t -> {
-               if(t != null)
-                  writeException(request, response, t, t2 -> {});
+               if(t != null) {
+                  // if we're async we can't trust UnhandledException to be caught
+                  if(request.getAsyncContext().isSuspended()
+                        && !request.getAsyncContext().isOnInitialRequest()) {
+                     try {
+                        writeException(request, response, t, t2 -> {});
+                     }catch(Throwable ex) {
+                        unhandledAsynchronousException(response, ex);
+                     }
+                  } else {
+                     rethrow(t);
+                  }
+               }
             });
       }
       catch (Exception e)

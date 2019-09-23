@@ -7,12 +7,15 @@ import org.jboss.resteasy.core.interception.jaxrs.ServerWriterInterceptorContext
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.util.CommitHeaderAsyncOutputStream;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
+import org.jboss.resteasy.util.CommitHeaderOutputStream.CommitCallback;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
@@ -47,7 +50,7 @@ public class ServerResponseWriter
 {
    @FunctionalInterface
    public interface RunnableWithIOException {
-      void run() throws IOException;
+      void run(Consumer<Throwable> onComplete) throws IOException;
    }
 
    private static Produces WILDCARD_PRODUCES = new Produces() {
@@ -93,7 +96,7 @@ public class ServerResponseWriter
       // which is used by marshalling, and NPEs otherwise
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
 
-      executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, () -> {
+      executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, (onWriteComplete) -> {
          Object entity = jaxrsResponse.isClosed() ? null : jaxrsResponse.getEntity();
 
          //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests
@@ -101,6 +104,7 @@ public class ServerResponseWriter
          {
             response.setStatus(jaxrsResponse.getStatus());
             commitHeaders(jaxrsResponse, response);
+            onWriteComplete.accept(null);
             return;
          }
 
@@ -115,7 +119,8 @@ public class ServerResponseWriter
 
          if (writer == null)
          {
-            throw new NoMessageBodyWriterFoundFailure(type, mt);
+             onWriteComplete.accept(new NoMessageBodyWriterFoundFailure(type, mt));
+             return;
          }
 
          if(sendHeaders)
@@ -133,7 +138,7 @@ public class ServerResponseWriter
                commitHeaders(built, response);
             }
          };
-         OutputStream os = sendHeaders ? new CommitHeaderOutputStream(response.getOutputStream(), callback) : response.getOutputStream();
+         OutputStream os = sendHeaders ? makeCommitOutputStream(response.getOutputStream(), callback) : response.getOutputStream();
 
          WriterInterceptor[] writerInterceptors = null;
          if (method != null)
@@ -147,7 +152,7 @@ public class ServerResponseWriter
 
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
                providerFactory, entity, type, generic, annotations, mt,
-               jaxrsResponse.getMetadata(), os, request);
+               jaxrsResponse.getMetadata(), os, request, onWriteComplete);
 
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
          final long timestamp = tracingLogger.timestamp("WI_SUMMARY");
@@ -162,6 +167,13 @@ public class ServerResponseWriter
             callback.commit(); // just in case the output stream is never used
          }
       });
+   }
+
+   private static OutputStream makeCommitOutputStream(OutputStream delegate, CommitCallback headers)
+   {
+      return delegate instanceof AsyncOutputStream
+            ? new CommitHeaderAsyncOutputStream((AsyncOutputStream) delegate, headers)
+                  : new CommitHeaderOutputStream(delegate, headers);
    }
 
    public static void setResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
@@ -235,8 +247,7 @@ public class ServerResponseWriter
       {
          try
          {
-            continuation.run();
-            onComplete.accept(null);
+            continuation.run(onComplete);
          }
          catch(Throwable t)
          {
