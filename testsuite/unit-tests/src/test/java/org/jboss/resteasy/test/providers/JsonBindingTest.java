@@ -23,7 +23,7 @@ public class JsonBindingTest {
 
         System.setProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
         JsonBindingProvider jbp = new JsonBindingProvider();
-        boolean result = jbp.isReadable(null, null, null, mediaType);
+        boolean result = jbp.isReadable(this.getClass(), null, null, mediaType);
 
         if (origValue == null) {
             System.setProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "");
@@ -37,7 +37,7 @@ public class JsonBindingTest {
     public void testUseJSONB() throws Exception
     {
         JsonBindingProvider jbp = new JsonBindingProvider();
-        boolean result = jbp.isReadable(null, null, null, mediaType);
+        boolean result = jbp.isReadable(this.getClass(), null, null, mediaType);
         assertTrue(result);
     }
 }
