@@ -537,16 +537,37 @@ Now, in MicroProfile Rest Client, any interface that is to be managed as a CDI b
 <para>
 Here, the MicroProfile Rest Client implementation creates a proxy for a <classname>TestDataBase</classname> service,
 allowing easy access by <classname>TestResourceImpl</classname>. Notice, though, that there's no indication of
-where the <classname>TestDataBase</classname> implementation lives. That information can be supplied externally with
-the system variable
-</para>
+where the <classname>TestDataBase</classname> implementation lives. That information can be supplied by the optional
+<classname>@RegisterProvider</classname> parameter <code>baseUri</code>:</para>
 
 <programlisting>
-            &lt;fqn of TestDataBase&gt;/mp-rest/url=&lt;URL&gt;
+   @Path("database")
+   @RegisterRestClient(baseUri="https://localhost:8080/webapp")
+   public interface TestDataBase {
+      
+      @Path("")
+      @POST
+      public String getByName(String name);
+   }
 </programlisting>
 
 <para>
- For example,
+which indicates that an implementation of <classname>TestDatabase</classname> can be
+accessed at https://localhost:8080/webapp. The same information can be supplied externally with the system variable
+</para>
+
+<programlisting>
+&lt;fqn of TestDataBase&gt;/mp-rest/uri=&lt;URL&gt;
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+&lt;fqn of TestDataBase&gt;/mp-rest/url=&lt;URL&gt;
+</programlisting>
+
+<para>
+which will override the value hardcoded in <classname>@RegisterRestClient</classname>. For example,
 </para>
 
 <programlisting>
@@ -554,9 +575,7 @@ com.bluemonkeydiamond.TestDatabase/mp-rest/url=https://localhost:8080/webapp
 </programlisting>
 
 <para>
-indicates that an implementation of <classname>com.bluemonkeydiamond.TestDatabase</classname> can be
-accessed at https://localhost:8080/webapp. A number of other properties will be examined in the course
-of creating the proxy, including, for example
+A number of other properties will be examined in the course of creating the proxy, including, for example
 </para>
 
 <programlisting>
