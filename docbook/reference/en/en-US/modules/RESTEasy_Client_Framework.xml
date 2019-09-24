@@ -72,16 +72,6 @@
         supports chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
-
-		<note>
-			<para>
-	          To follow REST principles and not introduce no state management in applications, <classname>javax.ws.rs.client.Client</classname> instance does not provide support for cookie management by default.
-	          However you can enable it if necessary using <classname>ResteasyClientBuilder</classname>:
-			</para>
-			<programlisting>
-				Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build()
-			</programlisting>
-		</note>
     </section>
     <para>
 

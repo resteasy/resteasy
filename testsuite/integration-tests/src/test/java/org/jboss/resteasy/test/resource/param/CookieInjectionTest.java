@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.resource.param;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.CookieInjectionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class CookieInjectionTest {
 
+   private final Logger logger = Logger.getLogger(CookieInjectionTest.class);
    static Client client;
 
    public interface CookieProxy {
@@ -67,7 +68,7 @@ public class CookieInjectionTest {
 
    @BeforeClass
    public static void init() {
-      client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).cookieManagementEnabled(true).build();
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass

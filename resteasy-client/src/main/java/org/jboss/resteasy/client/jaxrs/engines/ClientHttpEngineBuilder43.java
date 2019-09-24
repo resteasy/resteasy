@@ -197,15 +197,10 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       rcBuilder.setProxy(defaultProxy);
       if (System.getSecurityManager() == null)
       {
-         HttpClientBuilder httpClientBuilder= HttpClientBuilder.create()
+         httpClient = HttpClientBuilder.create()
                  .setConnectionManager(cm)
                  .setDefaultRequestConfig(rcBuilder.build())
-                 .disableContentCompression();
-         if (!that.isCookieManagementEnabled())
-         {
-            httpClientBuilder.disableCookieManagement();
-         }
-         httpClient = httpClientBuilder.build();
+                 .disableContentCompression().build();
       }
       else {
          httpClient = AccessController.doPrivileged(new PrivilegedAction<HttpClient>()
@@ -213,15 +208,10 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
             @Override
             public HttpClient run()
             {
-               HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
+               return HttpClientBuilder.create()
                         .setConnectionManager(cm)
                         .setDefaultRequestConfig(rcBuilder.build())
-                        .disableContentCompression();
-               if (!that.isCookieManagementEnabled())
-               {
-                  httpClientBuilder.disableCookieManagement();
-               }
-               return httpClientBuilder.build();
+                        .disableContentCompression().build();
             }
          });
       }

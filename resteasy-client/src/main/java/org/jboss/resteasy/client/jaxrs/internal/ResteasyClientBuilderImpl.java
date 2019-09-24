@@ -67,7 +67,6 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected int responseBufferSize;
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
-   protected boolean cookieManagementEnabled;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -654,19 +653,6 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    public HostnameVerifier getHostnameVerifier()
    {
       return verifier;
-   }
-
-   @Override
-   public ResteasyClientBuilder cookieManagementEnabled(boolean cookieManagementEnabled)
-   {
-      this.cookieManagementEnabled = cookieManagementEnabled;
-      return this;
-   }
-
-   @Override
-   public boolean isCookieManagementEnabled()
-   {
-      return cookieManagementEnabled;
    }
 
 }
