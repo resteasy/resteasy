@@ -657,9 +657,9 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder enableCookieManagement()
+   public ResteasyClientBuilder cookieManagementEnabled(boolean cookieManagementEnabled)
    {
-      this.cookieManagementEnabled = true;
+      this.cookieManagementEnabled = cookieManagementEnabled;
       return this;
    }
 

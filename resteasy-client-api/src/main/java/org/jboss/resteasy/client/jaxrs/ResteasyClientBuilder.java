@@ -203,9 +203,10 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
    /**
     * Enable state (cookie) management.
     *
+    * @param cookieManagementEnabled
     * @return the updated client builder instance
     */
-   public abstract ResteasyClientBuilder enableCookieManagement();
+   public abstract ResteasyClientBuilder cookieManagementEnabled(boolean cookieManagementEnabled);
 
    public abstract boolean isCookieManagementEnabled();
 
