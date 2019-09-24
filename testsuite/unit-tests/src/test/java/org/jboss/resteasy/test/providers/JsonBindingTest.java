@@ -17,7 +17,7 @@ public class JsonBindingTest {
     private MediaType mediaType = new MediaType("application", "json");
 
     @Test
-    public void testUseJSONB() throws Exception
+    public void testUseJackson2() throws Exception
     {
         String origValue = System.getProperty(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB);
 
@@ -34,7 +34,7 @@ public class JsonBindingTest {
     }
 
     @Test
-    public void testUseJACKSON() throws Exception
+    public void testUseJSONB() throws Exception
     {
         JsonBindingProvider jbp = new JsonBindingProvider();
         boolean result = jbp.isReadable(null, null, null, mediaType);
