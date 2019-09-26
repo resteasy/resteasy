@@ -94,7 +94,10 @@ public class ChunkOutputStream extends AsyncOutputStream {
 
    private void flush(ChannelPromise promise) throws IOException {
       int readable = buffer.readableBytes();
-      if (readable == 0) return;
+      if (readable == 0) {
+         promise.setSuccess();
+         return;
+      }
       if (!response.isCommitted()) response.prepareChunkStream();
       ctx.writeAndFlush(new DefaultHttpContent(buffer.copy()), promise);
       buffer.clear();

@@ -106,7 +106,11 @@ public class ChunkOutputStream extends AsyncOutputStream
    private void flush(Handler<AsyncResult<Void>> handler) throws IOException
    {
       int readable = buffer.length();
-      if (readable == 0) return;
+      if (readable == 0) {
+         if(handler != null)
+            handler.handle(Future.succeededFuture());
+         return;
+      }
       if (!response.isCommitted()) response.prepareChunkStream();
       response.checkException();
       response.response.write(buffer, handler);
