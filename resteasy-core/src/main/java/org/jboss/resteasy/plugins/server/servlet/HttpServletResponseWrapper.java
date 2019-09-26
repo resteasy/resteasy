@@ -73,6 +73,12 @@ public class HttpServletResponseWrapper implements HttpResponse
             future.completeExceptionally(e);
          }
       }
+
+      @Override
+      public String toString()
+      {
+         return "[write: "+new String(bytes)+"]";
+      }
    }
 
    public class FlushOperation extends AsyncOperation
@@ -100,6 +106,11 @@ public class HttpServletResponseWrapper implements HttpResponse
          }
       }
 
+      @Override
+      public String toString()
+      {
+         return "[flush]";
+      }
    }
 
    protected HttpServletResponse response;
@@ -188,6 +199,9 @@ public class HttpServletResponseWrapper implements HttpResponse
                   addToQueue(op);
                   os.setWriteListener(this);
                } else if(os.isReady()) {
+                  // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
+                  // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
+                  flushQueue(os);
                   // we're not allowed to queue work if the output is ready
                   lastAsyncOperation = op;
                   op.work(os);
@@ -198,6 +212,19 @@ public class HttpServletResponseWrapper implements HttpResponse
             }
          } else {
             op.work(null);
+         }
+      }
+
+      private void flushQueue(ServletOutputStream sos)
+      {
+         if(lastAsyncOperation != null) {
+            lastAsyncOperation.future.complete(null);
+            lastAsyncOperation = null;
+         }
+
+         while(!asyncQueue.isEmpty() && sos.isReady()) {
+            lastAsyncOperation = asyncQueue.poll();
+            lastAsyncOperation.work(sos);
          }
       }
 
@@ -212,16 +239,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       @Override
       public synchronized void onWritePossible() throws IOException
       {
-         if(lastAsyncOperation != null) {
-            lastAsyncOperation.future.complete(null);
-            lastAsyncOperation = null;
-         }
-
-         ServletOutputStream sos = response.getOutputStream();
-         while(!asyncQueue.isEmpty() && sos.isReady()) {
-            lastAsyncOperation = asyncQueue.poll();
-            lastAsyncOperation.work(sos);
-         }
+         flushQueue(response.getOutputStream());
       }
 
       @Override
