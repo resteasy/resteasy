@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
@@ -81,9 +82,26 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public void close()
    {
+      close(true);
+   }
+
+   protected void close(boolean flushBeforeClose)
+   {
       synchronized (lock)
       {
          closed = true;
+         if(flushBeforeClose && responseFlushed) {
+            ResteasyContext.pushContextDataMap(contextDataMap);
+            try {
+               // make sure we flush to await for any queued data being sent
+               AsyncOutputStream aos = response.getAsyncOutputStream();
+               aos.rxFlush().toCompletableFuture().get();
+            }catch(IOException | InterruptedException | ExecutionException x) {
+               // ignore it and let's just close
+            }finally {
+               ResteasyContext.removeContextDataLevel();
+            }
+         }
          if (asyncContext.isSuspended())
          {
             ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
@@ -188,21 +206,25 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            aos = response.getAsyncOutputStream();
                         } catch (IOException x)
                         {
-                           close();
+                           close(false);
                            ret.completeExceptionally(x);
                            return;
                         }
-                        aos.rxWrite(SseConstants.EOL)
-                        .thenCompose(v -> aos.rxWrite(SseConstants.EOL))
-                        .thenCompose(v -> aos.rxFlush())
+                        // eager composition to guarantee ordering
+                        CompletionStage<Void> a = aos.rxWrite(SseConstants.EOL);
+                        CompletionStage<Void> b = aos.rxWrite(SseConstants.EOL);
+                        CompletionStage<Void> c = aos.rxFlush();
+                        // we've queued a response flush, so avoid a second one being queued
+                        responseFlushed = true;
+
+                        a.thenCompose(v -> b).thenCompose(v -> c)
                         .thenAccept(v -> {
-                           responseFlushed = true;
                            ret.complete(null);
                         }).exceptionally(e -> {
                            if(e instanceof CompletionException)
                               e = e.getCause();
                            if(e instanceof IOException)
-                              close();
+                              close(false);
                            if(throwIOException)
                               ret.completeExceptionally(e);
                            else
@@ -214,7 +236,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             }
             catch (IOException e)
             {
-               close();
+               close(false);
                CompletableFuture<Void> ret = new CompletableFuture<>();
                if (throwIOException)
                {
@@ -246,8 +268,10 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ret.completeExceptionally(new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed()));
             return ret;
          }
-         return internalFlushResponseToClient(true)
-               .thenCompose(v -> writeEvent(event));
+         // eager composition to guarantee ordering
+         CompletionStage<Void> a = internalFlushResponseToClient(true);
+         CompletionStage<Void> b = writeEvent(event);
+         return a.thenCompose(v -> b);
       }
    }
 
@@ -303,13 +327,16 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                }
                writer.writeTo(event, event.getClass(), null, new Annotation[]{}, mediaType, null, bout);
                AsyncOutputStream aos = response.getAsyncOutputStream();
-               return aos.rxWrite(bout.toByteArray())
-                     .thenCompose(v -> aos.rxFlush())
+               // eager composition to guarantee ordering
+               CompletionStage<Void> a = aos.rxWrite(bout.toByteArray());
+               CompletionStage<Void> b = aos.rxFlush();
+               return a
+                     .thenCompose(v -> b)
                      .exceptionally(e -> {
                         if(e instanceof CompletionException)
                            e = e.getCause();
                         if(e instanceof IOException)
-                           close();
+                           close(false);
                         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
                         SynchronousDispatcher.rethrow(e);
                         // never reached
@@ -321,7 +348,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          {
             //The connection could be broken or closed. whenever IO error happens, mark closed to true to
             //stop event writing
-            close();
+            close(false);
             LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
             CompletableFuture<Void> ret = new CompletableFuture<>();
             ret.completeExceptionally(e);
