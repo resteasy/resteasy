@@ -75,16 +75,18 @@ public class ChunkOutputStream extends AsyncOutputStream {
       int dataLengthLeftToWrite = len;
       int dataToWriteOffset = off;
       int spaceLeftInCurrentChunk;
+      MultiPromise mp = new MultiPromise(ctx, promise);
       while ((spaceLeftInCurrentChunk = buffer.maxWritableBytes()) < dataLengthLeftToWrite) {
          buffer.writeBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
          dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
          dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
-         flush(promise);
+         flush(mp.newPromise());
       }
       if (dataLengthLeftToWrite > 0) {
          buffer.writeBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
-         promise.setSuccess();
+         flush(mp.newPromise());
       }
+      mp.readyToForward();
    }
 
    @Override
