@@ -728,6 +728,10 @@ public class ResourceBuilder
          resourceClassBuilder.resourceMethods.add(method);
          return resourceClassBuilder;
       }
+
+      public DefaultResourceMethod getMethod() {
+         return method;
+      }
    }
 
    public static class FieldParameterBuilder extends ParameterBuilder<FieldParameterBuilder>
