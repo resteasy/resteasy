@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
 import io.vertx.core.Context;
+import io.vertx.core.http.HttpServerRequest;
+
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -49,16 +51,18 @@ public class VertxHttpRequest extends BaseHttpRequest
    private VertxExecutionContext executionContext;
    private final Context context;
    private volatile boolean flushed;
+   private HttpServerRequest request;
 
-   public VertxHttpRequest(final Context context, final ResteasyHttpHeaders httpHeaders, final ResteasyUriInfo uri, final String httpMethod, final SynchronousDispatcher dispatcher, final VertxHttpResponse response, final boolean is100ContinueExpected)
+   public VertxHttpRequest(final Context context, final HttpServerRequest request, final ResteasyUriInfo uri, final SynchronousDispatcher dispatcher, final VertxHttpResponse response, final boolean is100ContinueExpected)
    {
       super(uri);
       this.context = context;
       this.is100ContinueExpected = is100ContinueExpected;
       this.response = response;
+      this.request = request;
       this.dispatcher = dispatcher;
-      this.httpHeaders = httpHeaders;
-      this.httpMethod = httpMethod;
+      this.httpHeaders = VertxUtil.extractHttpHeaders(request);
+      this.httpMethod = request.rawMethod();
       this.executionContext = new VertxExecutionContext(this, response, dispatcher);
    }
 
@@ -390,5 +394,17 @@ public class VertxHttpRequest extends BaseHttpRequest
             resume(new ServiceUnavailableException());
          }
       }
+   }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return request.remoteAddress().host();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return request.remoteAddress().host();
    }
 }

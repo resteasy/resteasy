@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -399,5 +400,17 @@ public class NettyHttpRequest extends BaseHttpRequest
             resume(new ServiceUnavailableException());
          }
       }
+   }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return ((InetSocketAddress)ctx.channel().remoteAddress()).getHostName();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress();
    }
 }

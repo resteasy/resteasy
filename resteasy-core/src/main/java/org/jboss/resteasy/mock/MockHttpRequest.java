@@ -372,4 +372,16 @@ public class MockHttpRequest extends BaseHttpRequest
    {
       return false;
    }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return null;
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return null;
+   }
 }

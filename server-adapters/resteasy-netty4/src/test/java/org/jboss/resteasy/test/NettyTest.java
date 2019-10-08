@@ -28,6 +28,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -110,6 +111,14 @@ public class NettyTest
       public String absolute(@Context UriInfo info)
       {
          return "uri: " + info.getRequestUri().toString();
+      }
+
+      @GET
+      @Path("request")
+      @Produces("text/plain")
+      public String getRequest(@Context HttpRequest req)
+      {
+         return req.getRemoteAddress() + "/" + req.getRemoteHost();
       }
    }
 
@@ -280,5 +289,13 @@ public class NettyTest
       client.close();
       Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
       Assert.assertEquals(uri, response.subSequence(5, response.length()));
+   }
+
+   @Test
+   public void testRequest() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/request"));
+      String val = target.request().get(String.class);
+      Assert.assertEquals("127.0.0.1/localhost", val);
    }
 }

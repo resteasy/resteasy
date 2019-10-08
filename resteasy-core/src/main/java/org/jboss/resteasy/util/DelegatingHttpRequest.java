@@ -143,4 +143,16 @@ public class DelegatingHttpRequest implements HttpRequest
    {
       return delegate.wasForwarded();
    }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return delegate.getRemoteHost();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return delegate.getRemoteAddress();
+   }
 }
