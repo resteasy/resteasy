@@ -20,7 +20,7 @@ public class TestController {
     public static final String CONTROLLER_PATH = "spring";
 
     @GetMapping("/hello")
-    public String string(@RequestParam(name = "name") String name) {
+    public String string(@RequestParam String name) {
         return "hello " + name;
     }
 
@@ -29,18 +29,28 @@ public class TestController {
         return "hello " + name;
     }
 
+    @GetMapping("/hello3")
+    public String stringWithNameValue(@RequestParam(name = "name") String name) {
+        return "hello " + name;
+    }
+
     @GetMapping("/int/{num}")
     public Integer intPathVariable(@PathVariable("num") Integer number) {
         return number + 1;
     }
 
+    @GetMapping("/{msg}")
+    public String stringPathVariable(@PathVariable("msg") String message) {
+        return message;
+    }
+
     @GetMapping(path = "/json/{message}")
-    public SomeClass json(@PathVariable("message") String message) {
+    public SomeClass json(@PathVariable String message) {
         return new SomeClass(message);
     }
 
     @RequestMapping(path = "/json2/{message}", produces = MediaType.APPLICATION_JSON)
-    public SomeClass jsonFromRequestMapping(@PathVariable("message") String message) {
+    public SomeClass jsonFromRequestMapping(@PathVariable String message) {
         return new SomeClass(message);
     }
 
