@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.logging.Logger;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -10,7 +8,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.spi.HttpRequest;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -69,5 +71,13 @@ public class SimpleResource
    public Response getHeader()
    {
       return Response.ok().header("header", "headervalue").build();
+   }
+
+   @GET
+   @Path("request")
+   @Produces("text/plain")
+   public String getRequest(@Context HttpRequest req)
+   {
+      return req.getRemoteAddress() + "/" + req.getRemoteHost();
    }
 }

@@ -284,4 +284,16 @@ public class HttpServletInputMessage extends BaseHttpRequest
       }
       return true;
    }
+
+   @Override
+   public String getRemoteHost()
+   {
+      return request.getRemoteHost();
+   }
+
+   @Override
+   public String getRemoteAddress()
+   {
+      return request.getRemoteAddr();
+   }
 }

@@ -1,12 +1,14 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
-import org.jboss.resteasy.util.StringContextReplacement;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Locale;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,15 +25,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Locale;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.jboss.resteasy.test.TestPortProvider.getHost;
-import static org.jboss.resteasy.test.TestPortProvider.getPort;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
+import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.util.StringContextReplacement;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -128,6 +130,14 @@ public class VertxTest
       @Consumes("text/plain")
       public String replace(String replace) {
          return StringContextReplacement.replace(replace);
+      }
+
+      @GET
+      @Path("request")
+      @Produces("text/plain")
+      public String getRequest(@Context HttpRequest req)
+      {
+         return req.getRemoteAddress() + "/" + req.getRemoteHost();
       }
    }
 
@@ -297,5 +307,13 @@ public class VertxTest
       client.close();
       Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
       Assert.assertEquals(uri, response.subSequence(5, response.length()));
+   }
+
+   @Test
+   public void testRequest() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/request"));
+      String val = target.request().get(String.class);
+      Assert.assertEquals("127.0.0.1/127.0.0.1", val);
    }
 }
