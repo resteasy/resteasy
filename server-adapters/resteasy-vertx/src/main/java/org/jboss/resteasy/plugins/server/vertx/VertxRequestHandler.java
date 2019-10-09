@@ -10,6 +10,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.vertx.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
@@ -49,9 +50,10 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
       request.bodyHandler(buff -> {
          Context ctx = vertx.getOrCreateContext();
          ResteasyUriInfo uriInfo = VertxUtil.extractUriInfo(request, servletMappingPrefix);
+         ResteasyHttpHeaders headers = VertxUtil.extractHttpHeaders(request);
          HttpServerResponse response = request.response();
          VertxHttpResponse vertxResponse = new VertxHttpResponse(response, dispatcher.getProviderFactory(), request.method());
-         VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, request, uriInfo, dispatcher.getDispatcher(), vertxResponse, false);
+         VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, headers, uriInfo, request.rawMethod(), dispatcher.getDispatcher(), vertxResponse, false);
          if (buff.length() > 0)
          {
             ByteBufInputStream in = new ByteBufInputStream(buff.getByteBuf());

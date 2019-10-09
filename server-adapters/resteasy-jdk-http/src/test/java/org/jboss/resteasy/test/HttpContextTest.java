@@ -75,12 +75,6 @@ public class HttpContextTest
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals("1234", response.readEntity(String.class));
       }
-
-      {
-          Response response = client.target(generateURL("/request")).request().get();
-          Assert.assertEquals(200, response.getStatus());
-          Assert.assertEquals("127.0.0.1/localhost", response.readEntity(String.class));
-       }
-}
+   }
 
 }

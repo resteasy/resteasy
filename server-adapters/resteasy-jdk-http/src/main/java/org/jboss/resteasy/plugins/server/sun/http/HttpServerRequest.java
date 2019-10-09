@@ -139,14 +139,4 @@ public class HttpServerRequest extends BaseHttpRequest
    {
       return false;
    }
-
-   @Override
-   public String getRemoteHost() {
-       return exchange.getRemoteAddress().getHostName();
-   }
-
-   @Override
-   public String getRemoteAddress() {
-       return exchange.getRemoteAddress().getAddress().getHostAddress();
-   }
 }
