@@ -246,7 +246,7 @@ public class UndertowTest
        <classname>EmbeddedJaxrsServer</classname> is an interface provided to enable each embedded container
        wrapper class to configurate, start and stop its container in a standard fashion.
        Each of <classname>UndertowJaxrsServer</classname>, <classname>SunHttpJaxrsServer</classname>,
-       <classname>NettyJaxrsServer</classname>, and <classname>VertxJaxrsServer<classname> implements
+       <classname>NettyJaxrsServer</classname>, and <classname>VertxJaxrsServer</classname> implements
        <classname>EmbeddedJaxrsServer</classname>.
    </para>
    <programlisting> <![CDATA[
