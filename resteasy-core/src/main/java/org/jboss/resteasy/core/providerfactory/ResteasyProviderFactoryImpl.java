@@ -106,6 +106,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    protected ClientHelper clientHelper;
    protected ServerHelper serverHelper;
    private Map<Class<?>, HeaderDelegate> headerDelegates;
+   private Set<Class<?>> alreadyEstablishedNullHeaderDelegate = ConcurrentHashMap.newKeySet();
    private Map<Class<?>, SortedKey<ExceptionMapper>> sortedExceptionMappers;
    private Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    private Map<Type, ContextInjector> contextInjectors;
@@ -488,7 +489,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       if (headerDelegates == null && parent != null)
          return parent.createHeaderDelegate(tClass);
 
-      return Utils.createHeaderDelegate(headerDelegates, tClass);
+      return Utils.createHeaderDelegate(headerDelegates, alreadyEstablishedNullHeaderDelegate, tClass);
    }
 
    private Map<Class<?>, HeaderDelegate> getHeaderDelegates()

@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.providerfactory;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -122,8 +123,11 @@ public final class Utils
       return new LinkBuilderImpl();
    }
 
-   static <T> HeaderDelegate<T> createHeaderDelegate(Map<Class<?>, HeaderDelegate> headerDelegates, Class<T> tClass)
+   static <T> HeaderDelegate<T> createHeaderDelegate(Map<Class<?>, HeaderDelegate> headerDelegates, Set<Class<?>> nullDelegates, Class<T> tClass)
    {
+      if (nullDelegates.contains(tClass)) {
+         return null;
+      }
       Class<?> clazz = tClass;
       while (clazz != null)
       {
@@ -140,7 +144,11 @@ public final class Utils
          clazz = clazz.getSuperclass();
       }
 
-      return createHeaderDelegateFromInterfaces(headerDelegates, tClass.getInterfaces());
+      HeaderDelegate result = createHeaderDelegateFromInterfaces(headerDelegates, tClass.getInterfaces());
+      if (result == null) {
+         nullDelegates.add(tClass);
+      }
+      return result;
    }
 
    private static <T> HeaderDelegate<T> createHeaderDelegateFromInterfaces(Map<Class<?>, HeaderDelegate> headerDelegates, Class<?>[] interfaces)
