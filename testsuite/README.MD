@@ -10,6 +10,7 @@ The integration tests run with specified Wildfly server.
 categories for tests, server setup task etc.
 - integration-tests - contains tests to run in container (Wildfly)
 - integration-tests-spring - tests for resteasy integration with spring
+- integration-tests-embedded - contain tests that are configured to run in each of the standalone containers, (Undertow, Vertx, Netty4, Sun jdk).
 - unit-tests - standalone tests not running in container
 
 ## Guidance for new tests

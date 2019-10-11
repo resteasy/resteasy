@@ -43,10 +43,8 @@ public class SniTest
       server.setPort(TestPortProvider.getPort());
       server.setRootResourcePath("");
       server.setSecurityDomain(null);
-
+      server.getDeployment().getScannedResourceClasses().add(ResteasyTrailingSlashTest.Resource.class.getName());
       server.start();
-
-      server.getDeployment().getRegistry().addPerRequestResource(ResteasyTrailingSlashTest.Resource.class);
    }
 
    @AfterClass

@@ -19,6 +19,7 @@ public class PortAssigningTest
       //given
       NettyJaxrsServer server = new NettyJaxrsServer();
       server.setPort(0);
+      server.getDeployment();
 
       //when
       server.start();
