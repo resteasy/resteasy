@@ -349,12 +349,16 @@ public class MyApplication extends Application
 
         <section>
         <title>Servlet 3.0 containers</title>
-
         <para>
-            RESTEasy uses the <literal>ServletContainerInitializer</literal> integration interface in Servlet 3.0 containers
-            to initialize an application, automatically scanning for resources and providers. To enable automatic
-            scanning, you must also include the <literal>resteasy-servlet-initializer</literal> artifact in your WAR
-            file as well:
+            RESTEasy provides an implementation of the Servlet 3.0 <literal>ServletContainerInitializer</literal>
+            integration interface for containers to use in initializing an application.
+            The container calls this interface during the application's startup phase.
+            The RESTEasy implementation performs automatic scanning for resources and providers,
+            and programmatic registration of a servlet.
+
+            RESTEasy's implementation is provided in maven artifact, <literal>resteasy-servlet-initializer</literal>.
+            Add this artifact dependency to your project's pom.xml file so the JAR file will be included
+            in your WAR file.
         </para>
         <programlisting><![CDATA[
 <dependency>
