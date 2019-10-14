@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
@@ -48,8 +50,9 @@ public class ResteasyUriInfo implements UriInfo
    private String absoluteString;
    private String contextPath;
    private int queryIdx;
-   private int endPath;
    private int pathStart;
+
+   private static final Map<String, InitData> initDataMap = new ConcurrentHashMap<>();
 
 
    public ResteasyUriInfo(final String absoluteUri, final String contextPath) {
@@ -60,26 +63,23 @@ public class ResteasyUriInfo implements UriInfo
       this.absoluteString = absoluteUri;
       this.contextPath = contextPath;
 
-      int pathIdx = absoluteUri.indexOf('/');
-      if (pathIdx > 0 && absoluteUri.length() > 3) {
-         if (absoluteUri.charAt(pathIdx - 1) == ':' && absoluteUri.charAt(pathIdx + 1) == '/') {
-            pathIdx = pathIdx + 2;
-            int tmp = absoluteUri.indexOf('/', pathIdx);
-            if (tmp > -1) pathIdx = tmp;
-         }
-      }
-      queryIdx = pathIdx > -1 ? absoluteUri.indexOf('?', pathIdx) : absoluteUri.indexOf('?');
-      endPath = queryIdx > -1 ? queryIdx : absoluteUri.length();
-      pathStart = pathIdx > -1 ? pathIdx : 0;
-      String tmpEncodedPath = pathStart >= 0 && endPath > pathStart ? absoluteUri.substring(pathStart, endPath) : "";
-      encodedPath = PathHelper.getEncodedPathInfo(tmpEncodedPath, contextPath);
+      String key = absoluteString + "\\someextrapaddingstring\\" + contextPath;
+      InitData initData = initDataMap.get(key);
 
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
+      // we don't really to synchronize since even if multiple threads enter the block at the same time
+      // they will produce the same data
+      // we do it this way because map.computeIfAbsent does have a performance penalty in Java 8
+      if (initData == null) {
+         initData = new InitData(absoluteUri, contextPath);
+         initDataMap.put(key, initData);
       }
-      path = Encode.decodePath(encodedPath);
-      processPath();
+      this.queryIdx = initData.getQueryIdx();
+      this.pathStart = initData.getPathStart();
+      this.encodedPath = initData.getEncodedPath();
+      this.path = initData.getPath();
+      this.encodedPathSegments = initData.getEncodedPathSegments();
+      this.pathSegments = initData.getPathSegments();
+      this.matchingPath = initData.getMatchingPath();
    }
 
    private void processUris() {
@@ -157,14 +157,26 @@ public class ResteasyUriInfo implements UriInfo
 
    protected void processPath()
    {
+      ProcessPathResult processPathResult = doProcessPath(encodedPath);
+      this.encodedPathSegments = processPathResult.getEncodedPathSegments();
+      this.pathSegments = processPathResult.getPathSegments();
+      this.matchingPath = processPathResult.getMatchingPath();
+   }
+
+   private static ProcessPathResult doProcessPath(String encodedPath) {
       PathSegmentImpl.SegmentParse parse = PathSegmentImpl.parseSegmentsOptimization(encodedPath, false);
-      encodedPathSegments = parse.segments;
-      this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
+      List<PathSegment> encodedPathSegments = parse.segments;
+
+      List<PathSegment> pathSegments = new ArrayList<>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
       {
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
-      if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
+
+      String matchingPath;
+      if (parse.hasMatrixParams) {
+         matchingPath = doExtractMatchingPath(encodedPathSegments);
+      }
       else
       {
          matchingPath = encodedPath;
@@ -173,7 +185,32 @@ public class ResteasyUriInfo implements UriInfo
             matchingPath = matchingPath.substring(0, matchingPath.length() - 1);
          }
       }
+      return new ProcessPathResult(encodedPathSegments, pathSegments, matchingPath);
+   }
 
+   private static class ProcessPathResult {
+      private final List<PathSegment> encodedPathSegments;
+      private final List<PathSegment> pathSegments;
+      private final String matchingPath;
+
+
+      private ProcessPathResult(final List<PathSegment> encodedPathSegments, final List<PathSegment> pathSegments, final String matchingPath) {
+         this.encodedPathSegments = encodedPathSegments;
+         this.pathSegments = pathSegments;
+         this.matchingPath = matchingPath;
+      }
+
+      public List<PathSegment> getEncodedPathSegments() {
+         return encodedPathSegments;
+      }
+
+      public List<PathSegment> getPathSegments() {
+         return pathSegments;
+      }
+
+      public String getMatchingPath() {
+         return matchingPath;
+      }
    }
 
    public ResteasyUriInfo(final URI requestURI)
@@ -208,12 +245,17 @@ public class ResteasyUriInfo implements UriInfo
     */
    protected void extractMatchingPath(List<PathSegment> encodedPathSegments)
    {
+      matchingPath = doExtractMatchingPath(encodedPathSegments);
+   }
+
+   private static String doExtractMatchingPath(List<PathSegment> encodedPathSegments)
+   {
       StringBuilder preprocessedPath = new StringBuilder();
       for (PathSegment pathSegment : encodedPathSegments)
       {
          preprocessedPath.append("/").append(pathSegment.getPath());
       }
-      matchingPath = preprocessedPath.toString();
+      return preprocessedPath.toString();
    }
 
    /**
@@ -497,6 +539,72 @@ public class ResteasyUriInfo implements UriInfo
          to = getBaseUriBuilder().replaceQuery(null).path(uri.getPath()).replaceQuery(uri.getQuery()).fragment(uri.getFragment()).build();
       }
       return ResteasyUriBuilderImpl.relativize(from, to);
+   }
+
+   private static class InitData {
+      private final int queryIdx;
+      private final int pathStart;
+      private final String encodedPath;
+      private final String path;
+      private final List<PathSegment> encodedPathSegments;
+      private final List<PathSegment> pathSegments;
+      private final String matchingPath;
+
+      private InitData(final String absoluteUri, final String contextPath) {
+         int pathIdx = absoluteUri.indexOf('/');
+         if (pathIdx > 0 && absoluteUri.length() > 3) {
+            if (absoluteUri.charAt(pathIdx - 1) == ':' && absoluteUri.charAt(pathIdx + 1) == '/') {
+               pathIdx = pathIdx + 2;
+               int tmp = absoluteUri.indexOf('/', pathIdx);
+               if (tmp > -1) pathIdx = tmp;
+            }
+         }
+         queryIdx = pathIdx > -1 ? absoluteUri.indexOf('?', pathIdx) : absoluteUri.indexOf('?');
+         int endPath = queryIdx > -1 ? queryIdx : absoluteUri.length();
+         pathStart = pathIdx > -1 ? pathIdx : 0;
+
+         String tmpEncodedPath = pathStart >= 0 && endPath > pathStart ? absoluteUri.substring(pathStart, endPath) : "";
+         tmpEncodedPath = PathHelper.getEncodedPathInfo(tmpEncodedPath, contextPath);
+         if (tmpEncodedPath.length() == 0 || tmpEncodedPath.charAt(0) != '/')
+         {
+            tmpEncodedPath = "/" + tmpEncodedPath;
+         }
+         encodedPath = tmpEncodedPath;
+
+         path = Encode.decodePath(encodedPath);
+         ProcessPathResult processPathResult = doProcessPath(encodedPath);
+         this.encodedPathSegments = processPathResult.getEncodedPathSegments();
+         this.pathSegments = processPathResult.getPathSegments();
+         this.matchingPath = processPathResult.getMatchingPath();
+      }
+
+      public int getQueryIdx() {
+         return queryIdx;
+      }
+
+      public int getPathStart() {
+         return pathStart;
+      }
+
+      public String getEncodedPath() {
+         return encodedPath;
+      }
+
+      public String getPath() {
+         return path;
+      }
+
+      public List<PathSegment> getEncodedPathSegments() {
+         return encodedPathSegments;
+      }
+
+      public List<PathSegment> getPathSegments() {
+         return pathSegments;
+      }
+
+      public String getMatchingPath() {
+         return matchingPath;
+      }
    }
 
 }
