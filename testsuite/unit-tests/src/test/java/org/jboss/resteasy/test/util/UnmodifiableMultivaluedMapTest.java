@@ -29,7 +29,7 @@ public class UnmodifiableMultivaluedMapTest
 {
 
    @Test
-   public void testNotModifiable()
+   public void testEagerlyCreatedNotModifiable()
    {
       MultivaluedMap<String, String> modifiableMultivaluedMap = new MultivaluedHashMap<>();
       modifiableMultivaluedMap.addAll("Hello", "Bonjour");
@@ -37,6 +37,22 @@ public class UnmodifiableMultivaluedMapTest
       UnmodifiableMultivaluedMap<String, String> unmodifiableMultivaluedMap = new UnmodifiableMultivaluedMap<>(
             modifiableMultivaluedMap);
 
+      doTest(unmodifiableMultivaluedMap);
+   }
+
+   @Test
+   public void testLazilyCreatedNotModifiable()
+   {
+      MultivaluedMap<String, String> modifiableMultivaluedMap = new MultivaluedHashMap<>();
+      modifiableMultivaluedMap.addAll("Hello", "Bonjour");
+
+      UnmodifiableMultivaluedMap<String, String> unmodifiableMultivaluedMap = new UnmodifiableMultivaluedMap<>(
+              modifiableMultivaluedMap, false);
+
+      doTest(unmodifiableMultivaluedMap);
+   }
+
+   private void doTest(UnmodifiableMultivaluedMap<String, String> unmodifiableMultivaluedMap) {
       try
       {
          unmodifiableMultivaluedMap.add("Forbidden", "Interdit");

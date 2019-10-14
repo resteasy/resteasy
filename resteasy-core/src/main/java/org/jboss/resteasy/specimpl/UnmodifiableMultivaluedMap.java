@@ -20,21 +20,24 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
 
    private final MultivaluedMap<K, V> delegate;
 
-   private final Set<java.util.Map.Entry<K, List<V>>> entrySet;
+   private volatile Set<java.util.Map.Entry<K, List<V>>> entrySet;
 
    public UnmodifiableMultivaluedMap(final MultivaluedMap<K, V> delegate)
    {
+      this(delegate, true);
+   }
+
+   public UnmodifiableMultivaluedMap(final MultivaluedMap<K, V> delegate, final boolean eagerlyInitializeEntrySet)
+   {
       this.delegate = delegate;
-      this.entrySet = buildEntrySet();
+      if (eagerlyInitializeEntrySet) {
+         this.entrySet = buildEntrySet();
+      }
    }
 
    private Set<java.util.Map.Entry<K, List<V>>> buildEntrySet()
    {
       Set<java.util.Map.Entry<K, List<V>>> entrySetDelegator = delegate.entrySet();
-      if (entrySetDelegator == null)
-      {
-         return null;
-      }
       Set<java.util.Map.Entry<K, List<V>>> entrySetToReturn = new HashSet<>();
       for (final java.util.Map.Entry<K, List<V>> entry : entrySetDelegator)
       {
@@ -116,6 +119,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
    @Override
    public Set<Entry<K, List<V>>> entrySet()
    {
+      if (this.entrySet == null) {
+         this.entrySet = buildEntrySet();
+      }
       return this.entrySet;
    }
 
