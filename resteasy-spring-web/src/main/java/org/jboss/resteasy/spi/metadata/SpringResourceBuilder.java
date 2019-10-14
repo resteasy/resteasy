@@ -368,14 +368,21 @@ public class SpringResourceBuilder extends ResourceBuilder {
 
         @Override
         public ResourceMethodParameterBuilder param(int i) {
-            return new SpringResourceMethodParameterBuilder(this, getLocator().getParams()[i]);
+            String defaultName = null;
+            if (this.getMethod().getAnnotatedMethod().getParameters()[i].isNamePresent()) {
+                defaultName = this.getMethod().getAnnotatedMethod().getParameters()[i].getName();
+            }
+            return new SpringResourceMethodParameterBuilder(this, getLocator().getParams()[i], defaultName);
         }
     }
 
     private static class SpringResourceMethodParameterBuilder extends ResourceMethodParameterBuilder {
 
-        SpringResourceMethodParameterBuilder(final ResourceMethodBuilder method, final MethodParameter param) {
+        final String defaultName;
+
+        SpringResourceMethodParameterBuilder(final ResourceMethodBuilder method, final MethodParameter param, final String defaultName) {
             super(method, param);
+            this.defaultName = defaultName;
         }
 
         @Override
@@ -454,6 +461,9 @@ public class SpringResourceBuilder extends ResourceBuilder {
                 parameter.setParamType(Parameter.ParamType.CONTEXT);
             } else {
                 parameter.setParamType(Parameter.ParamType.UNKNOWN);
+            }
+            if (parameter.getParamName().isEmpty() && (defaultName != null)){
+                parameter.setParamName(defaultName);
             }
         }
     }
