@@ -34,10 +34,20 @@ public class ResteasyHttpHeaders implements HttpHeaders
       this(requestHeaders, new HashMap<String, Cookie>());
    }
 
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final boolean eagerlyInitializeEntrySet)
+   {
+      this(requestHeaders, new HashMap<String, Cookie>(), eagerlyInitializeEntrySet);
+   }
+
    public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final Map<String, Cookie> cookies)
    {
+      this(requestHeaders, cookies, true);
+   }
+
+   public ResteasyHttpHeaders(final MultivaluedMap<String, String> requestHeaders, final Map<String, Cookie> cookies, final boolean eagerlyInitializeEntrySet)
+   {
       this.requestHeaders = requestHeaders;
-      this.unmodifiableRequestHeaders = new UnmodifiableMultivaluedMap<>(requestHeaders);
+      this.unmodifiableRequestHeaders = new UnmodifiableMultivaluedMap<>(requestHeaders, eagerlyInitializeEntrySet);
       this.cookies = (cookies == null ? new HashMap<>() : cookies);
    }
 
