@@ -33,7 +33,7 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
 
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          boolean hasTracing = false;
-         for (Map.Entry entry : response.getStringHeaders().entrySet()) {
+         for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
             if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
                hasTracing = true;
                String jsonText = entry.getValue().toString();
@@ -41,13 +41,13 @@ public class JsonFormattedTracingInfoTest extends BasicTracingTest {
 
                TypeReference<List<List<Map<String, String>>>> jsonTraceMsgsListTypeRef =
                      new TypeReference<List<List<Map<String, String>>>>() {};
-               List<List<Map>> messageList = objectMapper.readValue(jsonText, jsonTraceMsgsListTypeRef);
+               List<List<Map<String, String>>> messageList = objectMapper.readValue(jsonText, jsonTraceMsgsListTypeRef);
                assertNotNull(messageList);
                assertNotNull(messageList.get(0));
-               List<Map> list = messageList.get(0);
+               List<Map<String, String>> list = messageList.get(0);
 
                String[] keys = {"requestId", "duration", "text", "event", "timestamp"};
-               for (Map map : list) {
+               for (Map<String, String> map : list) {
                   assertNotNull(map);
                   LOG.info("<K, V> ->" + map.toString());
 
