@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class TestUtilSpring {
 
-   private static String defaultSpringVersion = "5.0.14.RELEASE";
+   private static String defaultSpringVersion = "5.2.0.RELEASE";
    //protected static Logger logger;
 
 
