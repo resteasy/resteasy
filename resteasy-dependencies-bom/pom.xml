@@ -21,12 +21,12 @@
         <version.com.fasterxml.classmate>1.4.0</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.9.10</version.com.fasterxml.jackson>
         <version.com.fasterxml.jackson.databind>2.9.10.1</version.com.fasterxml.jackson.databind>
-        <version.com.google.guava>25.0-jre</version.com.google.guava>
-        <version.com.google.inject.guice>4.1.0</version.com.google.inject.guice>
+        <version.com.google.guava>28.1-jre</version.com.google.guava>
+        <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>1.6.4</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>2.3.1</version.org.glassfish.jaxb.jaxb>
-        <version.com.sun.xml.fastinfoset>1.2.13</version.com.sun.xml.fastinfoset>
+        <version.com.sun.xml.fastinfoset>1.2.15</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.13</version.commons-codec.commons-codec>
         <version.hamcrest>1.3</version.hamcrest>
@@ -59,7 +59,7 @@
         <version.org.glassfish.jakarta.el>3.0.2</version.org.glassfish.jakarta.el>
         <version.org.glassfish.jakarta.json>1.1.6</version.org.glassfish.jakarta.json>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
-        <version.org.infinispan>8.2.8.Final</version.org.infinispan>
+        <version.org.infinispan>8.2.11.Final</version.org.infinispan>
         <version.org.jacoco>0.7.9</version.org.jacoco>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
@@ -92,7 +92,7 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.5</version.io.reactivex.rxjava2-rxjava>
         <version.io.smallrye.smallrye-config>1.3.6</version.io.smallrye.smallrye-config>
         <version.org.reactivestreams>1.0.2</version.org.reactivestreams>
-        <version.org.hibernate.validator>6.0.16.Final</version.org.hibernate.validator>
+        <version.org.hibernate.validator>6.0.17.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
     </properties>
