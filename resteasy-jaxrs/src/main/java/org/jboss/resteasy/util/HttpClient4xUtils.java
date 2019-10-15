@@ -22,7 +22,8 @@ public class HttpClient4xUtils
    {
       try
       {
-         EntityUtils.consume(response.getEntity());
+         if (response != null)
+             EntityUtils.consume(response.getEntity());
       } catch (IOException e)
       {
          LogMessages.LOGGER.unableToCloseEntityStream(e);

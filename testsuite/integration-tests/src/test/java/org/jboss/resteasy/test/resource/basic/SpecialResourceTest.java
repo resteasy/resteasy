@@ -118,7 +118,7 @@ public class SpecialResourceTest {
       HttpPut method = new HttpPut(generateURL("/api"));
       HttpResponse response = null;
       try {
-            method.setEntity(new StringEntity("hello", ContentType.create("vnd.net.juniper.space.target-management.targets+xml;version=1;charset=UTF-8")));
+            method.setEntity(new StringEntity("hello", ContentType.create("vnd.net.juniper.space.target-management.targets+xml")));
             response = client.execute(method);
             Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpResponseCodes.SC_BAD_REQUEST);
       } catch (IOException e) {
