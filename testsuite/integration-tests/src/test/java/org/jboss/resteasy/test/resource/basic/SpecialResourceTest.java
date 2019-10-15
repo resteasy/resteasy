@@ -114,7 +114,7 @@ public class SpecialResourceTest {
       HttpPut method = new HttpPut(generateURL("/api"));
       HttpResponse response = null;
       try {
-         method.setEntity(new StringEntity("hello", ContentType.create("vnd.net.juniper.space.target-management.targets+xml;version=1;charset=UTF-8")));
+         method.setEntity(new StringEntity("hello", ContentType.create("vnd.net.juniper.space.target-management.targets+xml")));
          response = client.execute(method);
          Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpResponseCodes.SC_BAD_REQUEST);
       } catch (IOException e) {
@@ -122,7 +122,9 @@ public class SpecialResourceTest {
       } finally {
          try
          {
-            EntityUtils.consume(response.getEntity());
+            if (response != null) {
+               EntityUtils.consume(response.getEntity());
+            }
          } catch (IOException e)
          {
             LogMessages.LOGGER.unableToCloseEntityStream(e);
