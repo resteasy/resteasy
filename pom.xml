@@ -237,6 +237,10 @@
             <id>jboss</id>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>redhat</id>
+            <url>https://maven.repository.redhat.com/ga/</url>
+        </repository>
     </repositories>
     <pluginRepositories>
     </pluginRepositories>
