@@ -47,7 +47,7 @@ public class SpringResourceBuilder extends ResourceBuilder {
             }
         }
 
-        return new SpringResourceClassBuilder(clazz, null);
+        return new SpringResourceClassBuilder(clazz, "/");
     }
 
     @Override

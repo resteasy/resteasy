@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.spring.web.deployment.resource.Greeting;
+import org.jboss.resteasy.test.spring.web.deployment.resource.GreetingControllerWithNoRequestMapping;
 import org.jboss.resteasy.test.spring.web.deployment.resource.ResponseEntityController;
 import org.jboss.resteasy.test.spring.web.deployment.resource.ResponseStatusController;
 import org.jboss.resteasy.test.spring.web.deployment.resource.SomeClass;
@@ -180,6 +181,15 @@ public class SpringWebTest {
         Assert.assertEquals("Unexpected response content from the server", "accepted", str);
     }
 
+    @Test
+    public void verifyControllerWithoutRequestMapping() {
+        WebTarget target = client.target(getBaseURL() + "hello");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "hello world", str);
+    }
+
 
     private String getBaseURL() {
         return PortProviderUtil.generateURL("/", DEPLOYMENT_NAME);
@@ -195,7 +205,7 @@ public class SpringWebTest {
         TestUtilSpring.addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", DEPLOYMENT_NAME + ".war"), true);
         return TestUtil.finishContainerPrepare(archive, null,
-                SomeClass.class, Greeting.class, TestController.class, ResponseEntityController.class, ResponseStatusController.class);
+                SomeClass.class, Greeting.class, TestController.class, ResponseEntityController.class, ResponseStatusController.class, GreetingControllerWithNoRequestMapping.class);
     }
 
 }
