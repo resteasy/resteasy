@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.util.FindAnnotation;
 
+import java.beans.Introspector;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.WebApplicationException;
@@ -84,13 +85,23 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
 
       for (Method method : type.getMethods())
       {
-         if (method.isAnnotationPresent(FormParam.class)
+         if ((method.isAnnotationPresent(FormParam.class)
+                 || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
                  && method.getName().startsWith("set")
                  && method.getParameterTypes().length == 1)
          {
             FormParam param = method.getAnnotation(FormParam.class);
+            String name;
+            if(param != null) {
+                name = param.value();
+            } else {
+                org.jboss.resteasy.annotations.jaxrs.FormParam param2 = method.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+                name = param2.value();
+                if(name == null || name.isEmpty())
+                    name = Introspector.decapitalize(method.getName().substring(3));
+            }
             List<InputPart> list = input.getFormDataMap()
-               .get(param.value());
+               .get(name);
             if (list == null || list.isEmpty())
                continue;
             InputPart part = list.get(0);
@@ -141,12 +152,22 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
       boolean hasInputStream = false;
       for (Field field : type.getDeclaredFields())
       {
-         if (field.isAnnotationPresent(FormParam.class))
+         if (field.isAnnotationPresent(FormParam.class)
+                 || field.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
          {
             AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
             FormParam param = field.getAnnotation(FormParam.class);
+            String name;
+            if(param != null) {
+                name = param.value();
+            } else {
+                org.jboss.resteasy.annotations.jaxrs.FormParam param2 = field.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+                name = param2.value();
+                if(name == null || name.isEmpty())
+                    name = field.getName();
+            }
             List<InputPart> list = input.getFormDataMap()
-               .get(param.value());
+               .get(name);
             if (list == null || list.isEmpty())
                continue;
             InputPart part = list.get(0);
