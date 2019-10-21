@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.providers.multipart;
 
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
@@ -35,12 +38,14 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedOutput;
+import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersCustomer;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersCustomerForm;
+import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersCustomerFormNewAnnotationOnField;
+import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersCustomerFormNewAnnotationOnSetter;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersName;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersResource;
 import org.jboss.resteasy.test.providers.multipart.resource.ContextProvidersXop;
-import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -50,9 +55,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 
 /**
  * @tpSubChapter Multipart provider
@@ -91,7 +93,10 @@ public class ContextProvidersTest {
    @Deployment
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
-      war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
+      war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class,
+            ContextProvidersCustomerFormNewAnnotationOnField.class,
+            ContextProvidersCustomerFormNewAnnotationOnSetter.class,
+            ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new ReflectPermission("suppressAccessChecks")
@@ -282,6 +287,14 @@ public class ContextProvidersTest {
       ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
       ContextProvidersCustomer customer = form.getCustomer();
       Assert.assertEquals("Wrong response", "Bill", customer.getName());
+
+      ContextProvidersCustomerFormNewAnnotationOnField form2 = get("/get/multipartform2", ContextProvidersCustomerFormNewAnnotationOnField.class, annotations);
+      customer = form.getCustomer();
+      Assert.assertEquals("Wrong response", "Bill", customer.getName());
+
+      ContextProvidersCustomerFormNewAnnotationOnSetter form3 = get("/get/multipartform3", ContextProvidersCustomerFormNewAnnotationOnSetter.class, annotations);
+      customer = form.getCustomer();
+      Assert.assertEquals("Wrong response", "Bill", customer.getName());
    }
 
    /**
@@ -434,11 +447,22 @@ public class ContextProvidersTest {
    }
 
    void doTestPostMultipartForm() throws Exception {
-      ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
-      form.setCustomer(new ContextProvidersCustomer("Bill"));
       Annotation[] annotations = new Annotation[1];
       annotations[0] = MULTIPART_FORM;
+
+      ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
+      form.setCustomer(new ContextProvidersCustomer("Bill"));
       String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
+      Assert.assertEquals("Wrong response", "Bill", name);
+
+      ContextProvidersCustomerFormNewAnnotationOnField form2 = new ContextProvidersCustomerFormNewAnnotationOnField();
+      form2.setCustomer(new ContextProvidersCustomer("Bill"));
+      name = post("/post/multipartform2", form2, MULTIPART_FORM_DATA, String.class, null, annotations);
+      Assert.assertEquals("Wrong response", "Bill", name);
+
+      ContextProvidersCustomerFormNewAnnotationOnSetter form3 = new ContextProvidersCustomerFormNewAnnotationOnSetter();
+      form3.setCustomer(new ContextProvidersCustomer("Bill"));
+      name = post("/post/multipartform3", form3, MULTIPART_FORM_DATA, String.class, null, annotations);
       Assert.assertEquals("Wrong response", "Bill", name);
    }
 
