@@ -48,38 +48,36 @@ public class ResteasyUriInfo implements UriInfo
    private String absoluteString;
    private String contextPath;
    private int queryIdx;
-   private int endPath;
    private int pathStart;
 
 
    public ResteasyUriInfo(final String absoluteUri, final String contextPath) {
-      initialize(absoluteUri, contextPath);
+      this(absoluteUri, contextPath, null);
    }
 
-   protected void initialize(String absoluteUri, String contextPath) {
+   /**
+    * Meant to be called by a layer that know that the absoluteUri will result in the successful
+    * invocation of a JAX-RS endpoint.
+    * The caller is also expected to ensure that InitData is cacheable
+    */
+   public ResteasyUriInfo(final String absoluteUri, final String contextPath, final InitData initData) {
+      initialize(absoluteUri, contextPath, initData != null && InitData.canBeCached(absoluteUri) ? initData : null);
+   }
+
+   protected void initialize(String absoluteUri, String contextPath, InitData initData) {
       this.absoluteString = absoluteUri;
       this.contextPath = contextPath;
 
-      int pathIdx = absoluteUri.indexOf('/');
-      if (pathIdx > 0 && absoluteUri.length() > 3) {
-         if (absoluteUri.charAt(pathIdx - 1) == ':' && absoluteUri.charAt(pathIdx + 1) == '/') {
-            pathIdx = pathIdx + 2;
-            int tmp = absoluteUri.indexOf('/', pathIdx);
-            if (tmp > -1) pathIdx = tmp;
-         }
+      if (initData == null) {
+         initData = new InitData(absoluteUri, contextPath);
       }
-      queryIdx = pathIdx > -1 ? absoluteUri.indexOf('?', pathIdx) : absoluteUri.indexOf('?');
-      endPath = queryIdx > -1 ? queryIdx : absoluteUri.length();
-      pathStart = pathIdx > -1 ? pathIdx : 0;
-      String tmpEncodedPath = pathStart >= 0 && endPath > pathStart ? absoluteUri.substring(pathStart, endPath) : "";
-      encodedPath = PathHelper.getEncodedPathInfo(tmpEncodedPath, contextPath);
-
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
-      }
-      path = Encode.decodePath(encodedPath);
-      processPath();
+      this.queryIdx = initData.getQueryIdx();
+      this.pathStart = initData.getPathStart();
+      this.encodedPath = initData.getEncodedPath();
+      this.path = initData.getPath();
+      this.encodedPathSegments = initData.getEncodedPathSegments();
+      this.pathSegments = initData.getPathSegments();
+      this.matchingPath = initData.getMatchingPath();
    }
 
    private void processUris() {
@@ -157,14 +155,26 @@ public class ResteasyUriInfo implements UriInfo
 
    protected void processPath()
    {
+      ProcessPathResult processPathResult = doProcessPath(encodedPath);
+      this.encodedPathSegments = processPathResult.getEncodedPathSegments();
+      this.pathSegments = processPathResult.getPathSegments();
+      this.matchingPath = processPathResult.getMatchingPath();
+   }
+
+   private static ProcessPathResult doProcessPath(String encodedPath) {
       PathSegmentImpl.SegmentParse parse = PathSegmentImpl.parseSegmentsOptimization(encodedPath, false);
-      encodedPathSegments = parse.segments;
-      this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
+      List<PathSegment> encodedPathSegments = parse.segments;
+
+      List<PathSegment> pathSegments = new ArrayList<>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
       {
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
-      if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
+
+      String matchingPath;
+      if (parse.hasMatrixParams) {
+         matchingPath = doExtractMatchingPath(encodedPathSegments);
+      }
       else
       {
          matchingPath = encodedPath;
@@ -173,7 +183,32 @@ public class ResteasyUriInfo implements UriInfo
             matchingPath = matchingPath.substring(0, matchingPath.length() - 1);
          }
       }
+      return new ProcessPathResult(encodedPathSegments, pathSegments, matchingPath);
+   }
 
+   private static class ProcessPathResult {
+      private final List<PathSegment> encodedPathSegments;
+      private final List<PathSegment> pathSegments;
+      private final String matchingPath;
+
+
+      private ProcessPathResult(final List<PathSegment> encodedPathSegments, final List<PathSegment> pathSegments, final String matchingPath) {
+         this.encodedPathSegments = encodedPathSegments;
+         this.pathSegments = pathSegments;
+         this.matchingPath = matchingPath;
+      }
+
+      public List<PathSegment> getEncodedPathSegments() {
+         return encodedPathSegments;
+      }
+
+      public List<PathSegment> getPathSegments() {
+         return pathSegments;
+      }
+
+      public String getMatchingPath() {
+         return matchingPath;
+      }
    }
 
    public ResteasyUriInfo(final URI requestURI)
@@ -201,19 +236,14 @@ public class ResteasyUriInfo implements UriInfo
       processPath();
    }
 
-   /**
-    * Matching path without matrix parameters.
-    *
-    * @param encodedPathSegments list of path segments
-    */
-   protected void extractMatchingPath(List<PathSegment> encodedPathSegments)
+   private static String doExtractMatchingPath(List<PathSegment> encodedPathSegments)
    {
       StringBuilder preprocessedPath = new StringBuilder();
       for (PathSegment pathSegment : encodedPathSegments)
       {
          preprocessedPath.append("/").append(pathSegment.getPath());
       }
-      matchingPath = preprocessedPath.toString();
+      return preprocessedPath.toString();
    }
 
    /**
@@ -497,6 +527,93 @@ public class ResteasyUriInfo implements UriInfo
          to = getBaseUriBuilder().replaceQuery(null).path(uri.getPath()).replaceQuery(uri.getQuery()).fragment(uri.getFragment()).build();
       }
       return ResteasyUriBuilderImpl.relativize(from, to);
+   }
+
+   /**
+    * Holds the data that is needed to initialize ResteasyUriInfo
+    * The reason to extract this data into a separate class is that it's expensive
+    * to produce and can be cached under certain circumstances
+    */
+   public static class InitData {
+      private final int queryIdx;
+      private final int pathStart;
+      private final String encodedPath;
+      private final String path;
+      private final List<PathSegment> encodedPathSegments;
+      private final List<PathSegment> pathSegments;
+      private final String matchingPath;
+
+      public InitData(final String absoluteUri, final String contextPath) {
+         int pathIdx = absoluteUri.indexOf('/');
+         if (pathIdx > 0 && absoluteUri.length() > 3) {
+            if (absoluteUri.charAt(pathIdx - 1) == ':' && absoluteUri.charAt(pathIdx + 1) == '/') {
+               pathIdx = pathIdx + 2;
+               int tmp = absoluteUri.indexOf('/', pathIdx);
+               if (tmp > -1) pathIdx = tmp;
+            }
+         }
+         queryIdx = pathIdx > -1 ? absoluteUri.indexOf('?', pathIdx) : absoluteUri.indexOf('?');
+         int endPath = queryIdx > -1 ? queryIdx : absoluteUri.length();
+         pathStart = pathIdx > -1 ? pathIdx : 0;
+
+         String tmpEncodedPath = pathStart >= 0 && endPath > pathStart ? absoluteUri.substring(pathStart, endPath) : "";
+         tmpEncodedPath = PathHelper.getEncodedPathInfo(tmpEncodedPath, contextPath);
+         if (tmpEncodedPath.length() == 0 || tmpEncodedPath.charAt(0) != '/')
+         {
+            tmpEncodedPath = "/" + tmpEncodedPath;
+         }
+         encodedPath = tmpEncodedPath;
+
+         path = Encode.decodePath(encodedPath);
+         ProcessPathResult processPathResult = doProcessPath(encodedPath);
+         this.encodedPathSegments = processPathResult.getEncodedPathSegments();
+         this.pathSegments = processPathResult.getPathSegments();
+         this.matchingPath = processPathResult.getMatchingPath();
+      }
+
+      public int getQueryIdx() {
+         return queryIdx;
+      }
+
+      public int getPathStart() {
+         return pathStart;
+      }
+
+      public String getEncodedPath() {
+         return encodedPath;
+      }
+
+      public String getPath() {
+         return path;
+      }
+
+      public List<PathSegment> getEncodedPathSegments() {
+         return encodedPathSegments;
+      }
+
+      public List<PathSegment> getPathSegments() {
+         return pathSegments;
+      }
+
+      public String getMatchingPath() {
+         return matchingPath;
+      }
+
+      /**
+       * The InitData can be cached if it doesn't contain matrix variables which would result
+       * in a cache entry per different value of any matrix param
+       * Query params are not a problem since there names and values don't affect the production of InitData
+       */
+      public static boolean canBeCached(String absoluteUri) {
+         return !absoluteUri.contains(";");
+      }
+
+      // ensure that we don't include any of the query params into the cache key
+      // since they don't affect the production of data at all
+      public static String getCacheKey(String absoluteUri, String contextPath) {
+         int queryIdx = absoluteUri.lastIndexOf('?');
+         return (queryIdx > -1 ? absoluteUri.substring(0, queryIdx) : absoluteUri) + "ResteasyUriInfo-Delimiter" + contextPath;
+      }
    }
 
 }
