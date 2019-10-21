@@ -102,6 +102,26 @@ public class ContextProvidersResource {
    }
 
    @GET
+   @Path("get/multipartform2")
+   @Produces("multipart/form-data")
+   @MultipartForm
+   public ContextProvidersCustomerFormNewAnnotationOnField getMultipartForm2() {
+      ContextProvidersCustomerFormNewAnnotationOnField form = new ContextProvidersCustomerFormNewAnnotationOnField();
+      form.setCustomer(new ContextProvidersCustomer("Bill"));
+      return form;
+   }
+
+   @GET
+   @Path("get/multipartform3")
+   @Produces("multipart/form-data")
+   @MultipartForm
+   public ContextProvidersCustomerFormNewAnnotationOnSetter getMultipartForm3() {
+      ContextProvidersCustomerFormNewAnnotationOnSetter form = new ContextProvidersCustomerFormNewAnnotationOnSetter();
+      form.setCustomer(new ContextProvidersCustomer("Bill"));
+      return form;
+   }
+
+   @GET
    @Path("get/xop")
    @Produces("multipart/related")
    @XopWithMultipartRelated
@@ -195,6 +215,22 @@ public class ContextProvidersResource {
    @Consumes("multipart/form-data")
    @Path("post/multipartform")
    public String postMultipartForm(@MultipartForm ContextProvidersCustomerForm form) throws IOException {
+      logger.info("entering postMultipartForm()");
+      return form.getCustomer().getName();
+   }
+
+   @POST
+   @Consumes("multipart/form-data")
+   @Path("post/multipartform2")
+   public String postMultipartForm2(@MultipartForm ContextProvidersCustomerFormNewAnnotationOnField form) throws IOException {
+      logger.info("entering postMultipartForm()");
+      return form.getCustomer().getName();
+   }
+
+   @POST
+   @Consumes("multipart/form-data")
+   @Path("post/multipartform3")
+   public String postMultipartForm3(@MultipartForm ContextProvidersCustomerFormNewAnnotationOnSetter form) throws IOException {
       logger.info("entering postMultipartForm()");
       return form.getCustomer().getName();
    }

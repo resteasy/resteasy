@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.beans.Introspector;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -54,10 +55,21 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
 
       for (Method method : type.getMethods())
       {
-         if (method.isAnnotationPresent(FormParam.class) && method.getName().startsWith("get") && method.getParameterTypes().length == 0
+         if ((method.isAnnotationPresent(FormParam.class)
+                 || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
+                 && method.getName().startsWith("get") && method.getParameterTypes().length == 0
                  && method.isAnnotationPresent(PartType.class))
          {
             FormParam param = method.getAnnotation(FormParam.class);
+            String name;
+            if(param != null) {
+                name = param.value();
+            } else {
+                org.jboss.resteasy.annotations.jaxrs.FormParam param2 = method.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+                name = param2.value();
+                if(name == null || name.isEmpty())
+                    name = Introspector.decapitalize(method.getName().substring(3));
+            }
             Object value = null;
             try
             {
@@ -74,7 +86,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
             PartType partType = method.getAnnotation(PartType.class);
             String filename = getFilename(method);
 
-            multipart.addFormData(param.value(), value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()), filename);
+            multipart.addFormData(name, value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()), filename);
          }
       }
 
@@ -93,10 +105,21 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
    {
       for (Field field : type.getDeclaredFields())
       {
-         if (field.isAnnotationPresent(FormParam.class) && field.isAnnotationPresent(PartType.class))
+         if ((field.isAnnotationPresent(FormParam.class)
+                 || field.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
+                 && field.isAnnotationPresent(PartType.class))
          {
             AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
             FormParam param = field.getAnnotation(FormParam.class);
+            String name;
+            if(param != null) {
+                name = param.value();
+            } else {
+                org.jboss.resteasy.annotations.jaxrs.FormParam param2 = field.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+                name = param2.value();
+                if(name == null || name.isEmpty())
+                    name = field.getName();
+            }
             Object value = null;
             try
             {
@@ -109,7 +132,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
             PartType partType = field.getAnnotation(PartType.class);
             String filename = getFilename(field);
 
-            output.addFormData(param.value(), value, field.getType(), field.getGenericType(), MediaType.valueOf(partType.value()), filename);
+            output.addFormData(name, value, field.getType(), field.getGenericType(), MediaType.valueOf(partType.value()), filename);
          }
       }
    }
