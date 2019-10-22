@@ -137,12 +137,6 @@
             </dependencyManagement>
         </profile>
         <profile>
-            <id>jsapi-testing</id>
-            <modules>
-                <module>resteasy-jsapi-testing</module>
-            </modules>
-        </profile>
-        <profile>
             <id>resteasy-dependencies-eap</id>
             <activation>
                 <property>
