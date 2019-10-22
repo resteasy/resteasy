@@ -31,6 +31,8 @@ public class URLConnectionEngine implements ClientHttpEngine
 
    protected SSLContext sslContext;
    protected HostnameVerifier hostnameVerifier;
+   protected Integer readTimeout;
+   protected Integer connectTimeout;
 
    /**
     * {@inheritDoc}
@@ -160,6 +162,15 @@ public class URLConnectionEngine implements ClientHttpEngine
       HttpURLConnection connection = (HttpURLConnection) request.getUri().toURL().openConnection();
       connection.setRequestMethod(request.getMethod());
 
+      if (this.connectTimeout != null)
+      {
+         connection.setConnectTimeout(this.connectTimeout);
+      }
+      if (this.readTimeout != null)
+      {
+         connection.setReadTimeout(this.readTimeout);
+      }
+
       return connection;
    }
 
@@ -246,5 +257,15 @@ public class URLConnectionEngine implements ClientHttpEngine
    public void setHostnameVerifier(HostnameVerifier hostnameVerifier)
    {
       this.hostnameVerifier = hostnameVerifier;
+   }
+
+   public void setConnectTimeout(Integer connectTimeout)
+   {
+      this.connectTimeout = connectTimeout;
+   }
+
+   public void setReadTimeout(Integer readTimeout)
+   {
+      this.readTimeout = readTimeout;
    }
 }
