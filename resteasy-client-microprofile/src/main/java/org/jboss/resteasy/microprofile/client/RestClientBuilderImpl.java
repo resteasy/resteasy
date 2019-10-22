@@ -24,7 +24,7 @@ import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactor
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
+import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
@@ -254,7 +254,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         }
 
         if (!SSL_ENABLED) {
-            resteasyClientBuilder.httpEngine(new URLConnectionEngine());
+            resteasyClientBuilder.httpEngine(new URLConnectionClientEngineBuilder().resteasyClientBuilder(resteasyClientBuilder).build());
             resteasyClientBuilder.sslContext(null);
             resteasyClientBuilder.trustStore(null);
             resteasyClientBuilder.keyStore(null, "");
