@@ -364,15 +364,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
    private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
       ChannelPipeline channelPipeline = ch.pipeline();
       channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
+      if (idleTimeout > 0) {
+         channelPipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTimeout));
+      }
       channelPipeline.addLast(new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize));
       channelPipeline.addLast(new HttpResponseEncoder());
       channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
       channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
       channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
       channelPipeline.addLast(new RestEasyHttpResponseEncoder());
-      if (idleTimeout > 0) {
-         channelPipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTimeout));
-      }
       channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
    }
 
