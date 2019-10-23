@@ -83,24 +83,6 @@
             <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
         </module-def>
 
-        <module-def name="javax.json.api">
-            <maven-resource group="javax.json" artifact="javax.json-api"/>
-        </module-def>
-
-        <module-def name="javax.json.bind.api">
-            <maven-resource group="javax.json.bind" artifact="javax.json.bind-api"/>
-        </module-def>
-
-        <!-- todo this is temporary and should be removed when wildfly makes the needed update
-     -->
-        <module-def name="org.eclipse.yasson">
-            <maven-resource group="org.eclipse" artifact="yasson"/>
-        </module-def>
-        <!-- todo this is temporary and should be removed when wildfly makes the needed update
-     -->
-        <module-def name="org.glassfish.javax.json">
-            <maven-resource group="org.glassfish" artifact="javax.json"/>
-        </module-def>
         <!-- todo this is temporary and should be removed when wildfly makes the needed update
              -->
         <module-def name="org.apache.james.mime4j">
@@ -134,7 +116,7 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-context-propagation"/>
             <maven-resource group="io.smallrye" artifact="smallrye-context-propagation"/>
             <maven-resource group="io.smallrye" artifact="smallrye-context-propagation-api"/>
-            <maven-resource group="javax.enterprise" artifact="cdi-api"/>
+            <maven-resource group="jakarta.enterprise" artifact="jakarta.enterprise.cdi-api"/>
             <maven-resource group="org.eclipse.microprofile.context-propagation" artifact="microprofile-context-propagation-api"/>
         </module-def>
 

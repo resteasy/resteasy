@@ -125,8 +125,8 @@
 
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
         </dependency>
 
         <dependency>
