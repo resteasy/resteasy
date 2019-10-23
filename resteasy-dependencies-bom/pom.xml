@@ -23,7 +23,7 @@
         <version.com.google.guava>28.1-jre</version.com.google.guava>
         <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
-        <version.com.sun.mail>1.6.2</version.com.sun.mail>
+        <version.jakarta.mail>1.6.4</version.jakarta.mail>
         <version.org.glassfish.jaxb.jaxb>2.3.1</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.15</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
@@ -244,14 +244,8 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>${version.com.sun.mail}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${version.jakarta.mail}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.stream</groupId>
