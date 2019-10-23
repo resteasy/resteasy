@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.jsonb.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.DebugLoggingServerSetup;
@@ -51,7 +50,6 @@ import static org.hamcrest.Matchers.greaterThan;
 @ServerSetup({DebugLoggingServerSetup.class}) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
-   private static final Logger LOG = Logger.getLogger(JsonBindingDebugLoggingTest.class);
    static ResteasyClient client;
 
    @Deployment
@@ -135,7 +133,7 @@ public class JsonBindingDebugLoggingTest {
       Assert.assertThat("RESTEasy exception should be logged",
               resteasyExceptionLog.count(), is(0));
       Assert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
+              yassonExceptionLog.count(), greaterThan(0));
       Assert.assertThat("Yasson exception stacktrace should be logged",
               yassonStacktraceLog.count(), greaterThan(0));
 
@@ -301,7 +299,7 @@ public class JsonBindingDebugLoggingTest {
       Assert.assertThat("Application Exception should be logged",
               applicationExcpetionLog.count(), is(1));
       Assert.assertThat("Yasson exception should be logged",
-              yassonExceptionLog.count(), is(1));
+              yassonExceptionLog.count(), greaterThan(0));
       Assert.assertThat("RESTEasy exception should be logged",
          resteasyExceptionLog.count(), is(1));
       Assert.assertThat("Yasson exception stacktrace should be logged",
