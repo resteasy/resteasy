@@ -328,6 +328,56 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${version.enforcer.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>ban-bad-dependencies</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <searchTransitive>true</searchTransitive>
+                                    <excludes>
+                                        <exclude>javax.activation:activation</exclude>
+                                        <exclude>javax.activation:javax.activation-api</exclude>
+                                        <exclude>javax.enterprise:cdi-api</exclude>
+                                        <exclude>javax.inject:javax.inject</exclude>
+                                        <exclude>javax.json:javax.json-api</exclude>
+                                        <exclude>javax.persistence:javax.persistence-api</exclude>
+                                        <exclude>javax.persistence:persistence-api</exclude>
+                                        <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
+                                        <exclude>javax.transaction:jta</exclude>
+                                        <exclude>javax.validation:validation-api</exclude>
+                                        <exclude>javax.xml:jaxrpc-api</exclude>
+                                        <exclude>javax.xml.bind:jaxb-api</exclude>
+                                        <exclude>javax.xml.soap:saaj-api</exclude>
+                                        <exclude>javax.xml.stream:stax-api</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>use-java-8-for-release</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.8,9)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>

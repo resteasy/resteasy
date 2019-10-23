@@ -88,8 +88,14 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.json</groupId>
-      <artifactId>javax.json-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -109,7 +115,7 @@
 
     <dependency>
       <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
+      <artifactId>jakarta.json</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
