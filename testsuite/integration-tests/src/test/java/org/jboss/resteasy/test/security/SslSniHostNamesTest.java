@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly14;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
@@ -16,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
@@ -44,7 +42,6 @@ import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({ExpectedFailingOnWildFly14.class})
 public class SslSniHostNamesTest extends SslTestBase {
 
    private static final Logger LOG = Logger.getLogger(SslSniHostNamesTest.class.getName());

@@ -33,12 +33,13 @@
         <version.io.netty.netty4>4.1.42.Final</version.io.netty.netty4>
         <version.io.vertx>3.7.1</version.io.vertx>
         <version.io.undertow>2.0.23.Final</version.io.undertow>
-        <version.javax.activation>1.1.1</version.javax.activation>
-        <version.javax.enterprise.cdi-api>2.0.SP1</version.javax.enterprise.cdi-api>
-        <version.javax.interceptor-api>1.0.1.Final</version.javax.interceptor-api>
-        <version.javax.json-api>1.1.2</version.javax.json-api>
-        <version.javax.json.bind-api>1.0</version.javax.json.bind-api>
-        <version.javax.ws.rs-api>1.0.3.Final</version.javax.ws.rs-api>
+        <version.jakarta.activation>1.2.1</version.jakarta.activation>
+        <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
+        <version.jakarta.inject.jakarta.inject-api>1.0</version.jakarta.inject.jakarta.inject-api>
+        <version.jakarta.json-api>1.1.6</version.jakarta.json-api>
+        <version.jakarta.json.bind-api>1.0.2</version.jakarta.json.bind-api>
+        <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
+        <version.javax.ws.rs-api>2.0.1.Final</version.javax.ws.rs-api>
         <version.junit>4.12</version.junit>
         <version.log4j>2.9.1</version.log4j>
         <version.stephenc.jcip.jcip-annotations>1.0-1</version.stephenc.jcip.jcip-annotations>
@@ -51,10 +52,10 @@
         <version.org.codehaus.jackson>1.9.13</version.org.codehaus.jackson>
         <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.4.21.v20190926</version.org.eclipse.jetty>
-        <version.org.eclipse.yasson>1.0.4</version.org.eclipse.yasson>
+        <version.org.eclipse.yasson>1.0.5</version.org.eclipse.yasson>
         <version.com.github.tomakehurst.wiremock>2.20.0</version.com.github.tomakehurst.wiremock>
-        <version.org.glassfish.javax.el>3.0.1-b08</version.org.glassfish.javax.el>
-        <version.org.glassfish.javax.json>1.1.2</version.org.glassfish.javax.json>
+        <version.org.glassfish.jakarta.el>3.0.2</version.org.glassfish.jakarta.el>
+        <version.org.glassfish.jakarta.json>1.1.6</version.org.glassfish.jakarta.json>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
         <version.org.infinispan>8.2.11.Final</version.org.infinispan>
         <version.org.jacoco>0.8.3</version.org.jacoco>
@@ -65,13 +66,14 @@
         <version.org.jboss.marshalling.jboss-marshalling-osgi>2.0.5.Final</version.org.jboss.marshalling.jboss-marshalling-osgi>
         <version.org.jboss.resteasy.tracing.api>1.0.0.Beta4</version.org.jboss.resteasy.tracing.api>
         <version.org.jboss.resteasy.eagledns>1.0.0.Beta2</version.org.jboss.resteasy.eagledns>
-        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>1.0.1.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
-        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.13.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
-        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>1.0.1.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
-        <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>1.0.2.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
+        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>2.0.1.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec>
+        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>2.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>2.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
+        <version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>2.0.0.Final</version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec>
+        <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
         <version.org.jboss.spec.javax.xml.bind-api_2.3_spec>1.0.1.Final</version.org.jboss.spec.javax.xml.bind-api_2.3_spec>
-        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
-        <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec>1.1.1.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec>
+        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>2.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_4.0_spec>
+        <version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>2.0.0.Final</version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.25</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>7.0.0.Final</version.org.wildfly.core.wildfly-cli>
@@ -79,7 +81,6 @@
         <version.org.wildfly.wildfly-arquillian-container-managed>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly.wildfly-arquillian-container-remote>2.2.0.Final</version.org.wildfly.wildfly-arquillian-container-remote>
         <version.org.wildfly.security.wildfly-elytron>1.7.0.Final</version.org.wildfly.security.wildfly-elytron>
-        <version.javax.validation-api>2.0.1.Final</version.javax.validation-api>
         <version.weld.api>3.0.SP4</version.weld.api>
         <version.weld>3.0.5.Final</version.weld>
         <version.json.patch>1.9</version.json.patch>
@@ -209,8 +210,8 @@
 
             <dependency>
                 <groupId>org.jboss.spec.javax.transaction</groupId>
-                <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                <version>${version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec}</version>
+                <artifactId>jboss-transaction-api_1.3_spec</artifactId>
+                <version>${version.org.jboss.spec.javax.transaction.jboss-transaction-api_1.3_spec}</version>
             </dependency>
 
             <dependency>
@@ -294,6 +295,12 @@
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${version.org.hibernate.validator}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
@@ -335,14 +342,14 @@
             </dependency>
 
             <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>activation</artifactId>
-                <version>${version.javax.activation}</version>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>jakarta.activation</artifactId>
+                <version>${version.jakarta.activation}</version>
             </dependency>
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${version.javax.validation-api}</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${version.jakarta.validation-api}</version>
             </dependency>
 
             <dependency>
@@ -385,35 +392,35 @@
                 <version>${version.io.undertow}</version>
             </dependency>
             <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>${version.javax.enterprise.cdi-api}</version>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${version.jakarta.enterprise.cdi-api}</version>
                 <scope>provided</scope>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.interceptor</groupId>
-                        <artifactId>javax.interceptor-api</artifactId>
+                        <groupId>jakarta.interceptor</groupId>
+                        <artifactId>jakarta.interceptor-api</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.el</groupId>
-                        <artifactId>javax.el-api</artifactId>
+                        <groupId>jakarta.el</groupId>
+                        <artifactId>jakarta.el-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.interceptor</groupId>
                 <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
-                <version>${version.javax.interceptor-api}</version>
+                <version>${version.org.jboss.spec.javax.interceptor.jboss-interceptors-api_1.2_spec}</version>
             </dependency>
             <dependency>
-                <groupId>javax.json</groupId>
-                <artifactId>javax.json-api</artifactId>
-                <version>${version.javax.json-api}</version>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${version.jakarta.json-api}</version>
             </dependency>
             <dependency>
-                <groupId>javax.json.bind</groupId>
-                <artifactId>javax.json.bind-api</artifactId>
-                <version>${version.javax.json.bind-api}</version>
+                <groupId>jakarta.json.bind</groupId>
+                <artifactId>jakarta.json.bind-api</artifactId>
+                <version>${version.jakarta.json.bind-api}</version>
             </dependency>
             <dependency> <!-- json-b ri -->
                 <groupId>org.eclipse</groupId>
@@ -428,12 +435,16 @@
                         <groupId>jakarta.json</groupId>
                         <artifactId>jakarta.json-api</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>jakarta.json</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.glassfish</groupId>
-                <artifactId>javax.json</artifactId>
-                <version>${version.org.glassfish.javax.json}</version>
+                <artifactId>jakarta.json</artifactId>
+                <version>${version.org.glassfish.jakarta.json}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.servlet</groupId>
@@ -477,7 +488,18 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>${version.com.google.inject.guice}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+            <dependency>
+                <groupId>jakarta.inject</groupId>
+                <artifactId>jakarta.inject-api</artifactId>
+                <version>${version.jakarta.inject.jakarta.inject-api}</version>
+             </dependency>
             <!-- Needed by org.jboss.resteasy.utils.PermissionUtil -->
             <dependency>
                 <groupId>com.io7m.xom</groupId>
@@ -601,8 +623,8 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>${version.org.glassfish.javax.el}</version>
+                <artifactId>jakarta.el</artifactId>
+                <version>${version.org.glassfish.jakarta.el}</version>
             </dependency>
 
             <!-- Microprofile related -->
@@ -610,6 +632,12 @@
                 <groupId>org.eclipse.microprofile.rest.client</groupId>
                 <artifactId>microprofile-rest-client-api</artifactId>
                 <version>${version.microprofile.restclient}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
@@ -628,12 +656,16 @@
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-config</artifactId>
                 <version>${version.io.smallrye.smallrye-config}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>smallrye-config</artifactId>
-                <version>${version.io.smallrye.smallrye-config}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- testsuite dependencies -->
@@ -660,6 +692,12 @@
                 <version>${version.org.jboss.shrinkwrap.resolver}</version>
                 <type>pom</type>
                 <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
@@ -797,6 +835,12 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-annotations</artifactId>
                 <version>${version.org.eclipse.jetty}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
@@ -817,6 +861,12 @@
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-api</artifactId>
                 <version>${version.weld.api}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
            </dependency>
            <dependency>
                 <groupId>org.jboss.weld</groupId>
@@ -827,7 +877,17 @@
            <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-core</artifactId>
-                <version>${version.weld}</version> 
+                <version>${version.weld}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
            </dependency> 
 
             <dependency>
@@ -844,11 +904,23 @@
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-managed</artifactId>
                 <version>${version.org.wildfly.wildfly-arquillian-container-managed}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-remote</artifactId>
                 <version>${version.org.wildfly.wildfly-arquillian-container-remote}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.github.fge</groupId>
@@ -864,11 +936,31 @@
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-context-propagation</artifactId>
                 <version>${version.io.smallrye.context-propagation}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-context-propagation-api</artifactId>
                 <version>${version.io.smallrye.context-propagation}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.smallrye</groupId>
