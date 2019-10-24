@@ -32,9 +32,9 @@ import java.util.Set;
 
 public class RestClientExtension implements Extension {
 
-    private static Set<RestClientData> proxyTypes = new LinkedHashSet<>();
+    private Set<RestClientData> proxyTypes = new LinkedHashSet<>();
 
-    private static Set<Throwable> errors = new LinkedHashSet<>();
+    private Set<Throwable> errors = new LinkedHashSet<>();
 
     public void registerRestClient(@Observes
                                    @WithAnnotations(RegisterRestClient.class) ProcessAnnotatedType<?> type) {
