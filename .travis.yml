@@ -28,6 +28,6 @@ jobs:
 addons:
   hosts:
     - localhost.localdomain
-##cache:
-# directories:
-#  - $HOME/.m2
+cache:
+ directories:
+  - $HOME/.m2
