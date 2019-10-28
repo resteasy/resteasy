@@ -24,7 +24,7 @@
         <version.com.google.inject.guice>4.2.2</version.com.google.inject.guice>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
         <version.jakarta.mail>1.6.4</version.jakarta.mail>
-        <version.org.glassfish.jaxb.jaxb>2.3.1</version.org.glassfish.jaxb.jaxb>
+        <version.org.glassfish.jaxb.jaxb>2.3.3-b01</version.org.glassfish.jaxb.jaxb>
         <version.com.sun.xml.fastinfoset>1.2.15</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.13</version.commons-codec.commons-codec>
@@ -237,8 +237,8 @@
                         <artifactId>javax.activation-api</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
