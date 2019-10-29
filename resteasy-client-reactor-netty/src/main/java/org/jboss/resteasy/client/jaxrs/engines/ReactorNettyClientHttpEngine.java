@@ -151,12 +151,33 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                                                 toRestEasyResponse(
                                                         request.getClientConfiguration(),
                                                         response,
-                                                        null)))));
+                                                        null)))
+                        )
+                        // If RestEasyClientResponse or InputStream is in buffer of an operator when
+                        // the stream is closed with an error or cancellation, make sure
+                        // to close it so that underlying resources (InputStream, Netty ByteBuf, etc)
+                        // are released.
+                        .doOnDiscard(InputStream.class, is -> {
+                            try {
+                                is.close();
+                            } catch (IOException e) {
+                                log.warn("Not able to close InputStream.  This may lead to direct memory leaks", e);
+                            }
+                        })
+                        .doOnDiscard(RestEasyClientResponse.class, RestEasyClientResponse::close)
+                );
 
         return requestTimeout
                 .map(duration -> responseMono.timeout(duration))
                 .orElse(responseMono)
-                .map(clientResponse -> extractor.extractResult(clientResponse))
+                .map(response -> {
+                    try {
+                        return extractor.extractResult(response);
+                    } catch (Exception e) {
+                        response.close();
+                        throw e;
+                    }
+                })
                 .toFuture();
     }
 
@@ -241,51 +262,6 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                                               final HttpClientResponse reactorNettyResponse,
                                               final InputStream inputStream) {
 
-        class RestEasyClientResponse extends ClientResponse {
-
-            private InputStream is;
-
-            RestEasyClientResponse(final ClientConfiguration configuration, final InputStream is) {
-                super(configuration, RESTEasyTracingLogger.empty());
-                this.is = is;
-            }
-
-            @Override
-            protected InputStream getInputStream() {
-                return this.is;
-            }
-
-            @Override
-            protected void setInputStream(InputStream inputStream) {
-                this.is = inputStream;
-            }
-
-            @Override
-            public void releaseConnection() throws IOException {
-                this.releaseConnection(false);
-            }
-
-            @Override
-            public void releaseConnection(boolean consumeInputStream) throws IOException {
-                try {
-                    if (is != null) {
-                        if (consumeInputStream) {
-                            while (is.available() > 0) {
-                                is.read();
-                            }
-                        }
-                        is.close();
-                    }
-                }
-                catch (IOException e) {
-                    // Swallowing because other ClientHttpEngine implementations are swallowing as well.
-                    // What is better?  causing a potential leak with inputstream slowly or cause an unexpected
-                    // and unhandled io error and potentially cause the service go down?
-                    log.warn("Exception while releasing the connection!", e);
-                }
-            }
-        }
-
         final ClientResponse restEasyClientResponse = new RestEasyClientResponse(clientConfiguration, inputStream);
         restEasyClientResponse.setStatus(reactorNettyResponse.status().code());
 
@@ -294,5 +270,50 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                 .forEach(header -> resteasyHeaders.add(header.getKey(), header.getValue()));
 
         return restEasyClientResponse;
+    }
+
+    private class RestEasyClientResponse extends ClientResponse {
+
+        private InputStream is;
+
+        RestEasyClientResponse(final ClientConfiguration configuration, final InputStream is) {
+            super(configuration, RESTEasyTracingLogger.empty());
+            this.is = is;
+        }
+
+        @Override
+        protected InputStream getInputStream() {
+            return this.is;
+        }
+
+        @Override
+        protected void setInputStream(InputStream inputStream) {
+            this.is = inputStream;
+        }
+
+        @Override
+        public void releaseConnection() throws IOException {
+            this.releaseConnection(false);
+        }
+
+        @Override
+        public void releaseConnection(boolean consumeInputStream) throws IOException {
+            try {
+                if (is != null) {
+                    if (consumeInputStream) {
+                        while (is.available() > 0) {
+                            is.read();
+                        }
+                    }
+                    is.close();
+                }
+            }
+            catch (IOException e) {
+                // Swallowing because other ClientHttpEngine implementations are swallowing as well.
+                // What is better?  causing a potential leak with inputstream slowly or cause an unexpected
+                // and unhandled io error and potentially cause the service go down?
+                log.warn("Exception while releasing the connection!", e);
+            }
+        }
     }
 }
