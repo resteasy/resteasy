@@ -50,7 +50,6 @@ import static org.junit.Assert.fail;
 public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
     private static final String HELLO_WORLD = "Hello World!";
-    private static final Duration CLIENT_TIMEOUT_DURATION = Duration.ofMillis(50);
     private static final int CONNECTION_POOL_SIZE = 10;
     private static final Duration SERVER_DELAY_BETWEEN_ELEMENTS_WHILE_STREAMING = Duration.ofMillis(10);
     private static int SERVER_ELEMENT_COUNT = 10;
@@ -58,7 +57,6 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     private static final AtomicInteger numOfTimeStreamingEndpointCalled = new AtomicInteger(0);
 
     private static final DisposableServer mockServer = setupMockServer();
-    private static final Client client = setupClient();
 
     //CHECKSTYLE.OFF: RegexpSinglelineJava
     private static final PrintStream systemErr = System.err;
@@ -76,7 +74,6 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         System.setErr(systemErr);
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
         mockServer.dispose();
-        client.close();
     }
 
     @After
@@ -92,6 +89,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     public void testExceptionInClientResponseFilterDoesNotLeakMemory() throws ExecutionException, InterruptedException {
 
         final AtomicInteger numOfCalls = new AtomicInteger(0);
+        final Client client = setupClient(Duration.ofSeconds(2));
 
         final ClientResponseFilter exceptionThrowerFilter = new ClientResponseFilter() {
             @Override
@@ -114,17 +112,8 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
                 fail("An exception from filter chain was expected!");
             } catch (final Exception e) {
-
-                if(e.getCause() instanceof TimeoutException) {
-                    // First few requests can be slow as connection pool is being setup.
-                    // So, ignore TimeoutException if it is on the first call.
-                    if(i > 5) {
-                        fail("A TimeoutException was not expected!  Element: " + i);
-                    }
-                } else {
-                    // Swallow the exception..
-                    assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getMessage());
-                }
+                // Swallow the exception..
+                assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getMessage());
             }
         }
 
@@ -134,12 +123,14 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         // Connection pool size is 10.  So, being able to make all these calls also verifies that connections are
         // are not leaked, because idle-timeout is set to a high number.
         assertTrue(numOfCalls.get() >= CALL_COUNT - 50); // Some calls may have timed out.
+
+        client.close();
     }
 
     @Test
     @Ignore // Until https://github.com/reactor/reactor-netty/issues/876 is addressed.
     public void testTimeoutWhileReadingBytesFromWireDoesNotLeakMemory() throws ExecutionException, InterruptedException {
-
+        final Client client = setupClient(Duration.ofMillis(50));
         final WebTarget webTarget = client.target("/slowstream");
         final Response FALL_BACK_RESPONSE = Response.status(500).entity("TimeoutException").build();
 
@@ -162,6 +153,8 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         assertThat(errContent.toString(), not(containsString("LEAK")));
         // Some calls may have timed before making the call.
         assertTrue(numOfTimeStreamingEndpointCalled.get() >= CALL_COUNT - 50);
+
+        client.close();
     }
 
     private static ByteBuf toByteBuf(final int i) {
@@ -200,7 +193,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                 .bindNow();
     }
 
-    private static Client setupClient() {
+    private static Client setupClient(final Duration timeout) {
 
         final String connectionPoolName = "ReactorNettyClientHttpEngineByteBufReleaseTest-Connection-Pool";
 
@@ -221,7 +214,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get(),
-                        CLIENT_TIMEOUT_DURATION);
+                        timeout);
 
         final ClientBuilder builder = ClientBuilder.newBuilder();
         final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;
