@@ -520,6 +520,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    }
 
    @Override
+   public ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor)
+   {
+      return asyncExecutor(executorService, cleanupExecutor);
+   }
+
+   @Override
    public ResteasyClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
    {
       this.scheduledExecutorService = scheduledExecutorService;

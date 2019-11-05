@@ -223,6 +223,8 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
 
    public abstract long getConnectionTimeout(TimeUnit unit);
 
+   public abstract ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor);
+
    @Override
    public abstract ResteasyClient build();
 
