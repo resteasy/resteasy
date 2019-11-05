@@ -231,11 +231,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         } else {
             resteasyClientBuilder = builderDelegate;
         }
-        // this is rest easy default
-        ExecutorService executorService = this.executorService != null ? this.executorService : Executors.newFixedThreadPool(10);
 
-        ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(executorService);
-        resteasyClientBuilder.executorService(executor);
+        if (this.executorService != null) {
+           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(this.executorService);
+           resteasyClientBuilder.executorService(executor);
+        } else {
+           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(Executors.newCachedThreadPool());
+           resteasyClientBuilder.executorService(executor, true);
+        }
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
         resteasyClientBuilder.register(HEADERS_REQUEST_FILTER);
