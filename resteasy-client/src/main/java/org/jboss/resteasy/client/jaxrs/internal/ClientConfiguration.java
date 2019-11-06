@@ -163,13 +163,13 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    @Override
    public Set<Class<?>> getClasses()
    {
-      return providerFactory.getProviderClasses();
+      return providerFactory.getClasses();
    }
 
    @Override
    public Set<Object> getInstances()
    {
-      return providerFactory.getProviderInstances();
+      return providerFactory.getInstances();
    }
 
    @Override
