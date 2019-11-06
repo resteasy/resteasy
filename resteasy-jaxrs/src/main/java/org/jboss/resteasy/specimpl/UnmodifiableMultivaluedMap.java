@@ -180,4 +180,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
       return delegate.isEmpty();
    }
 
+   @Override
+   public String toString()
+   {
+      return delegate.toString();
+   }
 }
