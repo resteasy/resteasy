@@ -10,13 +10,18 @@ import org.jboss.resteasy.annotations.Stream;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Path("/")
 public class ReactorResource
 {
+   static final AtomicInteger monoEndpointCounter = new AtomicInteger(0);
+
    @Path("mono")
    @GET
    public Mono<String> mono()
    {
+      monoEndpointCounter.incrementAndGet();
       return Mono.just("got it");
    }
 

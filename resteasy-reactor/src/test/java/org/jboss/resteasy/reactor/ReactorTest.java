@@ -76,9 +76,14 @@ public class ReactorTest
 
    @Test
    public void testMono() throws Exception {
+      assertEquals(0, ReactorResource.monoEndpointCounter.get());
       Mono<Response> mono = client.target(generateURL("/mono")).request().rx(MonoRxInvoker.class).get();
+      Thread.sleep(1_000);
+      // Make HTTP call does not happen until a subscription happens.
+      assertEquals(0, ReactorResource.monoEndpointCounter.get());
       mono.subscribe((Response r) -> {value.set(r.readEntity(String.class)); latch.countDown();});
       latch.await();
+      assertEquals(1, ReactorResource.monoEndpointCounter.get());
       assertEquals("got it", value.get());
    }
 

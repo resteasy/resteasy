@@ -1,6 +1,7 @@
 package org.jboss.resteasy.reactor;
 
 import java.util.concurrent.CompletionStage;
+import java.util.function.Supplier;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.AsyncClientResponseProvider;
@@ -12,14 +13,20 @@ public class MonoProvider implements AsyncResponseProvider<Mono<?>>, AsyncClient
 {
 
    @Override
-   public CompletionStage<?> toCompletionStage(Mono<?> asyncResponse)
+   public CompletionStage<?> toCompletionStage(final Mono<?> asyncResponse)
    {
       return asyncResponse.toFuture();
    }
 
    @Override
-   public Mono<?> fromCompletionStage(CompletionStage<?> completionStage)
+   public Mono<?> fromCompletionStage(final CompletionStage<?> completionStage)
    {
       return Mono.fromFuture(completionStage.toCompletableFuture());
+   }
+
+   @Override
+   public Mono<?> fromCompletionStage(final Supplier<CompletionStage<?>> completionStageSupplier)
+   {
+      return Mono.fromFuture(() -> completionStageSupplier.get().toCompletableFuture());
    }
 }
