@@ -14,16 +14,19 @@ import java.util.Map;
 public class BaseServletConfigSource {
     protected ConfigSource source;
     protected final boolean available;
-    private volatile String name;
+    private final String name;
 
     public BaseServletConfigSource(final boolean available, final Class<?> sourceClass) {
         this.available = available;
         if (available) {
             try {
                 source = (ConfigSource)sourceClass.newInstance();
+                name = source.getName();
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            name = toString();
         }
     }
 
@@ -42,16 +45,6 @@ public class BaseServletConfigSource {
     }
 
     public String getName() {
-       if (name == null) {
-          synchronized(this) {
-             if (name == null) {
-                if (!available) {
-                   name = toString();
-                }
-                name = source.getName();
-             }
-          }
-       }
        return name;
     }
 }
