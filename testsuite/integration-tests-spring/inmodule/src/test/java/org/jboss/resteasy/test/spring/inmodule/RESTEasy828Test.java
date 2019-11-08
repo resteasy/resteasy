@@ -4,15 +4,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.springmvc.ResteasySpringDispatcherServlet;
 import org.jboss.resteasy.test.spring.inmodule.resource.RESTEasy828Resource;
 
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.After;
@@ -25,7 +22,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
@@ -36,7 +32,6 @@ import java.util.logging.LoggingPermission;
 public class RESTEasy828Test {
 
    static Client client;
-   private static final String ERROR_MESSAGE = "Got unexpected entity from the server";
 
    private String generateURL(String path) {
       return PortProviderUtil.generateURL(path, RESTEasy828Test.class.getSimpleName());
@@ -48,7 +43,7 @@ public class RESTEasy828Test {
    }
 
    @After
-   public void after() throws Exception {
+   public void after() {
       client.close();
    }
 
@@ -89,9 +84,6 @@ public class RESTEasy828Test {
               .withTransitivity()
               .asFile());
 
-
-      archive.as(ZipExporter.class).exportTo(
-              new File("/tmp/RESTEasy828Test.war"), true);
 
       // Permission needed for "arquillian.debug" to run
       // "suppressAccessChecks" required for access to arquillian-core.jar
