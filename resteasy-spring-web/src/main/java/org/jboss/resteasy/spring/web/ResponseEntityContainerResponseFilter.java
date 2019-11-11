@@ -13,7 +13,13 @@ public class ResponseEntityContainerResponseFilter implements ContainerResponseF
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        ResponseEntity responseEntity = (ResponseEntity) responseContext.getEntity();
+        // a Spring Web RestControllerAdvice can potentially handle the conversion of a ResponseEntity into a Response
+        // before this has been handled so we need to be defensive about that we expect here
+        Object entity = responseContext.getEntity();
+        if (!(entity instanceof ResponseEntity)) {
+            return;
+        }
+        ResponseEntity<?> responseEntity = (ResponseEntity<?>) entity;
         responseContext.setStatus(responseEntity.getStatusCodeValue());
         responseContext.setEntity(responseEntity.getBody());
         for (Map.Entry<String, List<String>> entry : responseEntity.getHeaders().entrySet()) {
