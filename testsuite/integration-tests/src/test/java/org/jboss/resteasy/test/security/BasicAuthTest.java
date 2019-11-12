@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -49,6 +50,7 @@ import java.util.Hashtable;
 @ServerSetup({BasicAuthTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({ExpectedFailingOnWildFly18.class}) //WFLY-12655
 public class BasicAuthTest {
 
    private static final String WRONG_RESPONSE = "Wrong response content.";
