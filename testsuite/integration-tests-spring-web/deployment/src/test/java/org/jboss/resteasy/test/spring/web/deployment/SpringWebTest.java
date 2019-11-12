@@ -58,12 +58,70 @@ public class SpringWebTest {
     }
 
     @Test
+    public void verifyGetToMethodWithoutForwardSlash() {
+        WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/yolo");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "yolo", str);
+    }
+
+    @Test
     public void verifyGetUsingDefaultValue() {
         WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/hello2");
         Response response = target.request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         Assert.assertEquals("Unexpected response content from the server", "hello world", str);
+    }
+
+    @Test
+    public void verifyPathWithWildcard() {
+        WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/wildcard/whatever/world");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "world", str);
+    }
+
+    @Test
+    public void verifyPathWithMultipleWildcards() {
+        WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/wildcard2/something/folks/somethingelse");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "folks", str);
+    }
+
+    @Test
+    public void verifyPathWithAntStyleWildCard() {
+        WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + "/antwildcard/whatever/we/want");
+        Response response = target.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        String str = response.readEntity(String.class);
+        Assert.assertEquals("Unexpected response content from the server", "ant", str);
+    }
+
+    @Test
+    public void verifyPathWithCharacterWildCard() {
+        for (char c : new char[]{'t', 'r'}) {
+            WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + String.format("/ca%cs", c));
+            Response response = target.request().get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            String str = response.readEntity(String.class);
+            Assert.assertEquals("Unexpected response content from the server", "single", str);
+        }
+    }
+
+    @Test
+    public void verifyPathWithMultipleCharacterWildCards() {
+        for (String path : new String[]{"/cars/shop/info", "/cart/show/info"}) {
+            WebTarget target = client.target(getBaseURL() + TestController.CONTROLLER_PATH + path);
+            Response response = target.request().get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            String str = response.readEntity(String.class);
+            Assert.assertEquals("Unexpected response content from the server", "multiple", str);
+        }
     }
 
     @Test

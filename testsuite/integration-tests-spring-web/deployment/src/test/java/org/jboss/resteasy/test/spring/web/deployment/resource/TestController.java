@@ -24,6 +24,11 @@ public class TestController {
         return "hello " + name;
     }
 
+    @GetMapping("yolo")
+    public String yolo() {
+        return "yolo";
+    }
+
     @GetMapping("/hello2")
     public String stringWithDefaultParamValue(@RequestParam(name = "name", defaultValue = "world") String name) {
         return "hello " + name;
@@ -32,6 +37,31 @@ public class TestController {
     @GetMapping("/hello3")
     public String stringWithNameValue(@RequestParam(name = "name") String name) {
         return "hello " + name;
+    }
+
+    @GetMapping("/wildcard/*/{name}")
+    public String pathWithWildcard(@PathVariable("name") String name) {
+        return name;
+    }
+
+    @RequestMapping(value = "/wildcard2/*/{name}/*", method = RequestMethod.GET)
+    public String pathWithMultipleWildcards(@PathVariable("name") String name) {
+        return name;
+    }
+
+    @GetMapping("/antwildcard/**")
+    public String pathWithAntStyleWildcard() {
+        return "ant";
+    }
+
+    @GetMapping("/ca?s")
+    public String pathWithCharacterWildCard() {
+        return "single";
+    }
+
+    @GetMapping("/car?/s?o?/info")
+    public String pathWithMultipleCharacterWildCards() {
+        return "multiple";
     }
 
     @GetMapping("/int/{num}")
