@@ -83,7 +83,7 @@ public class SpringResourceBuilder extends ResourceBuilder {
             if (methodRequestMapping != null) {
                 final String methodPath = methodRequestMapping.getFirstPath();
                 if (methodPath != null) {
-                    resourceMethodBuilder.path(methodPath);
+                    resourceMethodBuilder.path(replaceSpringWebWildcards(methodPath));
                 }
             }
 
@@ -93,6 +93,42 @@ public class SpringResourceBuilder extends ResourceBuilder {
             }
             resourceMethodBuilder.buildMethod();
         }
+    }
+
+    private String replaceSpringWebWildcards(String methodPath) {
+        if (methodPath.contains("/**")) {
+            methodPath = methodPath.replace("/**", "{unsetPlaceHolderVar:.*}");
+        }
+        if (methodPath.contains("/*")) {
+            methodPath = methodPath.replace("/*", "/{unusedPlaceHolderVar}");
+        }
+        /*
+         * Spring Web allows the use of '?' to capture a single character. We support this by
+         * converting each url path using it to a JAX-RS syntax of variable followed by a regex.
+         * So '/car?/s?o?/info' would become '/{notusedPlaceHolderVar:car.}/{notusedPlaceHolderVar:s.o.}/info'
+         */
+        String[] parts = methodPath.split("/");
+        if (parts.length > 0) {
+            StringBuilder sb = new StringBuilder(methodPath.startsWith("/") ? "/" : "");
+            for (String part : parts) {
+                if (part.isEmpty()) {
+                    continue;
+                }
+                if (!sb.toString().endsWith("/")) {
+                    sb.append("/");
+                }
+                if ((part.startsWith("{") && part.endsWith("}")) || !part.contains("?")) {
+                    sb.append(part);
+                } else {
+                    sb.append("{notusedPlaceHolderVar:").append(part.replace('?', '.')).append("}");
+                }
+            }
+            if (methodPath.endsWith("/")) {
+                sb.append("/");
+            }
+            methodPath = sb.toString();
+        }
+        return methodPath;
     }
 
     private void handleConsumes(ResourceClassBuilder resourceClassBuilder, Method method, ResourceMethodBuilder resourceMethodBuilder) {
