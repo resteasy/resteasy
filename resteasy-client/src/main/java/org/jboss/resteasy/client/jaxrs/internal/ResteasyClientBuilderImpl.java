@@ -10,6 +10,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
+import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -356,6 +357,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
          if (ResteasyProviderFactory.peekInstance() != null)
          {
             providerFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
+         }
+         // Execution of 'if' above overwrites providerFactory clientRequestFilterRegistry
+         // Reregister provider as appropriate.
+         if (RegisterBuiltin.isGZipEnabled()) {
+            providerFactory.registerProvider(AcceptEncodingGZIPFilter.class, true);
          }
       }
       return providerFactory;

@@ -24,7 +24,6 @@ import org.jboss.resteasy.core.providerfactory.ClientHelper;
 import org.jboss.resteasy.core.providerfactory.NOOPServerHelper;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
-import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -181,13 +180,12 @@ public class RegisterBuiltin
          }
       }
       if (isGZipEnabled()) {
-         factory.registerProvider(AcceptEncodingGZIPFilter.class, true);
          factory.registerProvider(GZIPDecodingInterceptor.class, true);
          factory.registerProvider(GZIPEncodingInterceptor.class, true);
       }
    }
 
-   private static boolean isGZipEnabled() {
+   public static boolean isGZipEnabled() {
       return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
          @Override
          public Boolean run() {
