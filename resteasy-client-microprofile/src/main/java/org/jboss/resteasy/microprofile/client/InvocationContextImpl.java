@@ -34,7 +34,7 @@ public class InvocationContextImpl implements InvocationContext {
 
     private Object[] args;
 
-    private int position;
+    private final int position;
 
     private final Map<String, Object> contextData;
 
@@ -47,11 +47,15 @@ public class InvocationContextImpl implements InvocationContext {
      * @param chain
      */
     public InvocationContextImpl(final Object target, final Method method, final Object[] args, final List<InterceptorInvocation> chain) {
+        this(target, method, args, chain, 0);
+    }
+
+    private InvocationContextImpl(final Object target, final Method method, final Object[] args, final List<InterceptorInvocation> chain, final int position) {
         this.target = target;
         this.method = method;
         this.args = args;
         this.contextData = new HashMap<>();
-        this.position = 0;
+        this.position = position;
         this.chain = chain;
     }
 
@@ -60,12 +64,11 @@ public class InvocationContextImpl implements InvocationContext {
     }
 
     protected Object invokeNext() throws Exception {
-        int oldPosition = position;
-        try {
-            return chain.get(position++).invoke(this);
-        } finally {
-            position = oldPosition;
-        }
+        return chain.get(position).invoke(nextContext());
+    }
+
+    private InvocationContext nextContext() {
+        return new InvocationContextImpl(target, method, args, chain, position + 1);
     }
 
     protected Object interceptorChainCompleted() throws Exception {
@@ -160,7 +163,6 @@ public class InvocationContextImpl implements InvocationContext {
         Object invoke(InvocationContext ctx) throws Exception {
             return interceptor.intercept(InterceptionType.AROUND_INVOKE, interceptorInstance, ctx);
         }
-
     }
 
 }
