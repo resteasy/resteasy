@@ -344,7 +344,7 @@ server.deploy(deployment);]]></programlisting>
         <para><programlisting>        &lt;dependency&gt;
             &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
             &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
-            &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
+            &lt;version&gt;4.4.1.Final&lt;/version&gt;
             &lt;/dependency&gt;
 
         </programlisting></para>
