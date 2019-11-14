@@ -313,6 +313,9 @@ public abstract class AbstractBuiltResponse extends Response
    public void close()
    {
       isClosed = true;
+      if (ResteasyProviderFactory.peekInstance() != null) {
+         ResteasyProviderFactory.clearInstanceIfEqual(ResteasyProviderFactory.peekInstance());
+      }
    }
 
    @Override
