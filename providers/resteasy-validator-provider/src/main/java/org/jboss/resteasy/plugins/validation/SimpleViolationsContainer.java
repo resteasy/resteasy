@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.validation;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,8 +24,6 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
 {
    private static final long serialVersionUID = -7895854137980651539L;
 
-   private boolean ejbsPresent;
-
    public SimpleViolationsContainer(final Object target)
    {
       super(target);
@@ -45,7 +42,11 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
    @Override
    public void addViolations(Set<ConstraintViolation<Object>> cvs)
    {
-      if (!ejbsPresent(cvs) || getViolations().size() == 0)
+      if (cvs.size() == 0)
+      {
+         return;
+      }
+      if (getViolations().size() == 0)
       {
          getViolations().addAll(cvs);
          return;
@@ -95,12 +96,12 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       // Can't compare leaf bean instance: one might be a proxy while the other isn't.
       // Compare classes as an approximation.
 
-      if (cv1.getRootBeanClass() != null ? !compareClass(cv1.getRootBeanClass(), cv2.getRootBeanClass()) : cv2.getRootBeanClass() != null)
+      if (cv1.getRootBeanClass() != null ? !compareRootBeanClass(cv1, cv2) : cv2.getRootBeanClass() != null)
       {
          return false;
       }
 
-      if (cv1.getLeafBean() != null ? !compareClass(cv1.getLeafBean().getClass(), cv2.getLeafBean().getClass()) : cv2.getLeafBean() != null)
+      if (cv1.getLeafBean() != null ? !compareLeafBeanClass(cv1, cv2) : cv2.getLeafBean() != null)
       {
          return false;
       }
@@ -135,13 +136,32 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       return true;
    }
 
-   private static boolean compareClass(Class<?> c1, Class<?> c2)
+   private static boolean compareRootBeanClass(ConstraintViolation<?> cv1, ConstraintViolation<?> cv2)
    {
-      while (c1.isSynthetic() && !Object.class.equals(c1))
+      Class<?> c1 = cv1.getRootBeanClass();
+      while ((c1.isSynthetic() || isEJBProxy(c1)) && !Object.class.equals(c1))
       {
          c1 = c1.getSuperclass();
       }
-      while (c2.isSynthetic() && !Object.class.equals(c2))
+      Class<?> c2 = cv2.getRootBeanClass();
+      while ((c2.isSynthetic() || isEJBProxy(c2)) && !Object.class.equals(c2))
+      {
+         c2 = c2.getSuperclass();
+      }
+      return c1.equals(c2);
+   }
+
+   private static boolean compareLeafBeanClass(ConstraintViolation<?> cv1, ConstraintViolation<?> cv2)
+   {
+      Object o1 = cv1.getLeafBean();
+      Class<?> c1 = o1.getClass();
+      while ((c1.isSynthetic() || isEJBProxy(c1)) && !Object.class.equals(c1))
+      {
+         c1 = c1.getSuperclass();
+      }
+      Object o2 = cv2.getLeafBean();
+      Class<?> c2 = o2.getClass();
+      while ((c2.isSynthetic() || isEJBProxy(c2)) && !Object.class.equals(c2))
       {
          c2 = c2.getSuperclass();
       }
@@ -284,67 +304,13 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       return true;
    }
 
-   private boolean ejbsPresent(Set<ConstraintViolation<Object>> set1)
-   {
-      if (ejbsPresent)
-      {
-         return true;
-      }
-      for (ConstraintViolation<Object> cv : set1)
-      {
-         if (isEjb(cv.getLeafBean().getClass()))
-         {
-            ejbsPresent = true;
-            return true;
-         }
-      }
-      return false;
-   }
-
-   private static boolean isEjb(Class<?> clazz)
-   {
-      while (clazz != null)
-      {
-         for (Annotation a : clazz.getAnnotations())
-         {
-            if (isEjbAnnotation(getRealClass(a.annotationType())))
-            {
-               return true;
-            }
-         }
-         for (Class<?> intf : clazz.getInterfaces())
-         {
-            for (Annotation a : intf.getAnnotations())
-            {
-               if (isEjbAnnotation(getRealClass(a.annotationType())))
-               {
-                  return true;
-               }
-            }
-         }
-         clazz = clazz.getSuperclass();
-      }
-      return false;
-   }
-
-   private static boolean isEjbAnnotation(Class<?> c)
-   {
-      if ("javax.ejb.Stateless".equals(c.getName()) ||
-            "javax.ejb.Stateful".equals(c.getName()) |
-            "javax.ejb.Singleton".equals(c.getName()))
-      {
-         return true;
-      }
-      return false;
-
-   }
-
-   private static <T> Class<?> getRealClass(Class<?> clazz)
-   {
-      while (clazz.isSynthetic())
-      {
-         clazz = clazz.getSuperclass();
-      }
-      return clazz;
+   /**
+    * Determine whether an object is indeed a valid EJB proxy object created by this API.
+    *
+    * @param object the object to test
+    * @return {@code true} if it is an EJB proxy, {@code false} otherwise
+    */
+   private static boolean isEJBProxy(final Class<?> clazz) {
+      return clazz.getName().contains("$$$view");
    }
 }
