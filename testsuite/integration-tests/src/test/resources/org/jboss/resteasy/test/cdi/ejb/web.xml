@@ -1,0 +1,24 @@
+<web-app>
+
+   <display-name>Archetype Created Web Application</display-name>
+   
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher
+        </servlet-class>
+    </servlet>
+    
+   <servlet-mapping>
+      <servlet-name>Resteasy</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   
+   <context-param>
+      <param-name>resteasy.jndi.resources</param-name>
+      <param-value>
+         java:global/EJBCDIValidationEJBProxyTest/EJBCDIValidationEJBProxyGreeterResource
+      </param-value>
+   </context-param>
+
+</web-app>
