@@ -84,6 +84,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
                   MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
 
             ObjectMapper mapper = getObjectMapper();
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
 
             JsonNode result = null;
