@@ -2,6 +2,8 @@ package org.jboss.resteasy.jwt;
 
 import javax.ws.rs.ext.ContextResolver;
 
+import org.jboss.resteasy.plugins.providers.jackson.WhiteListPolymorphicTypeValidatorBuilder;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,11 +21,12 @@ public class JWTContextResolver implements ContextResolver<ObjectMapper>
    public JWTContextResolver()
    {
       mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+      mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
    }
 
    public JWTContextResolver(final boolean indent)
    {
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+      this();
       if (indent)
       {
          mapper.enable(SerializationFeature.INDENT_OUTPUT);
