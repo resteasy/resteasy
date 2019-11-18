@@ -76,6 +76,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
             msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
                   MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
             ObjectMapper mapper = getObjectMapper();
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
             JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
             JsonNode result = patch.apply(targetJson);
