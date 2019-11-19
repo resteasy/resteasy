@@ -41,6 +41,8 @@
         <container.qualifier.manual.ssl.wrong>jbossas-manual-ssl-wrong</container.qualifier.manual.ssl.wrong>
         <container.qualifier.manual.ssl.wildcard>jbossas-manual-ssl-wildcard</container.qualifier.manual.ssl.wildcard>
         <container.qualifier.manual.ssl.sni>jbossas-manual-ssl-sni</container.qualifier.manual.ssl.sni>
+        <!-- https://issues.jboss.org/browse/RESTEASY-2411 -->
+        <additionalJvmArgs>-Dresteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land -Dresteasy.jackson.deserialization.whitelist.allowIfSubType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land</additionalJvmArgs>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
