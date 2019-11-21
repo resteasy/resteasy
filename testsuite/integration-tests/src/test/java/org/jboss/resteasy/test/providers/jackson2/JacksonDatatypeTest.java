@@ -165,7 +165,7 @@ public class JacksonDatatypeTest {
    @Test
    public void testDatatypeSupportedDuration() throws Exception {
       String strResponse = requestHelper("duration", DEPLOYMENT_WITH_DATATYPE);
-      Assert.assertThat("Wrong conversion of Duration", strResponse, containsString("5.000000006"));
+      Assert.assertThat("Wrong conversion of Duration", strResponse, containsString("PT5.000000006S"));
    }
 
    /**
