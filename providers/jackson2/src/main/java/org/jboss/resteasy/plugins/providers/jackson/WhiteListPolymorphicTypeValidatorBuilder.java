@@ -20,14 +20,16 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
       if (allowIfBaseType != null) {
          StringTokenizer st = new StringTokenizer(allowIfBaseType, ",", false);
          while (st.hasMoreTokens()) {
-            allowIfBaseType(st.nextToken());
+            String t = st.nextToken();
+            allowIfBaseType("*".equals(t) ? "" : t);
          }
       }
       String allowIfSubType = c.getOptionalValue(SUB_TYPE_PROP, String.class).orElse(null);
       if (allowIfSubType != null) {
          StringTokenizer st = new StringTokenizer(allowIfSubType, ",", false);
          while (st.hasMoreTokens()) {
-            allowIfSubType(st.nextToken());
+            String t = st.nextToken();
+            allowIfSubType("*".equals(t) ? "" : t);
          }
       }
    }
