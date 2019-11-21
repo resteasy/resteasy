@@ -89,7 +89,7 @@ public class WhiteListPolymorphicTypeValidatorCatchAllTest {
 
     @Test
     public void testAircraft() throws Exception {
-        String response = sendPost(new TestPolymorphicType(new Automobile()));
+        String response = sendPost(new TestPolymorphicType(new Aircraft()));
         logger.info("response: " + response);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.contains("Response code: " + HttpResponseCodes.SC_CREATED));
