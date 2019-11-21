@@ -49,6 +49,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Produces({"application/json", "application/*+json", "text/json"})
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
+   private static final boolean WRITE_DURATIONS_AS_TIMESTAMPS = getProperty(
+         "resteasy.jackson.serialization.writeDurationsAsTimestamps",
+         SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS.enabledByDefault());
+
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
@@ -172,6 +176,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
          mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, WRITE_DURATIONS_AS_TIMESTAMPS);
          endpoint = _configForWriting(mapper, annotations, null);
 
           // and cache for future reuse
@@ -279,5 +284,18 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       }
    }
 
-
+   private static boolean getProperty(String propertyName, boolean def) {
+      final SecurityManager sm = System.getSecurityManager();
+      if (sm != null) {
+         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            @Override
+            public Boolean run() {
+               String p = System.getProperty(propertyName);
+               return p != null ? Boolean.valueOf(p) : def;
+            }
+         });
+      }
+      String p = System.getProperty(propertyName);
+      return p != null ? Boolean.valueOf(p) : def;
+   }
 }
