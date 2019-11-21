@@ -54,8 +54,8 @@ public class WhiteListPolymorphicTypeValidatorTest {
         WebArchive war = TestUtil.prepareArchive(WhiteListPolymorphicTypeValidatorTest.class.getSimpleName());
         war.addClass(WhiteListPolymorphicTypeValidatorTest.class);
         Map<String, String> contextParam = new HashMap<>();
-        contextParam.put("jackson.deserialization.whitelist.allowIfBaseType.prefix", Automobile.class.getPackage().getName());
-        contextParam.put("jackson.deserialization.whitelist.allowIfSubType.prefix", Automobile.class.getPackage().getName());
+        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", Automobile.class.getPackage().getName());
+        contextParam.put("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", Automobile.class.getPackage().getName());
         return TestUtil.finishContainerPrepare(war, contextParam, JaxRsActivator.class, TestRESTService.class,
                 TestPolymorphicType.class, AbstractVehicle.class, Automobile.class, Aircraft.class);
     }
