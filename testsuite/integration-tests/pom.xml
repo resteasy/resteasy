@@ -26,7 +26,7 @@
         <container.qualifier.managed.encoding>jbossas-managed-encoding</container.qualifier.managed.encoding>
         <container.qualifier.manual.gzip>jbossas-manual-gzip</container.qualifier.manual.gzip>
         <!-- https://issues.jboss.org/browse/RESTEASY-2411 -->
-        <additionalJvmArgs>-Dresteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land -Dresteasy.jackson.deserialization.whitelist.allowIfSubType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land -Dresteasy.jackson.serialization.writeDurationsAsTimestamps=false</additionalJvmArgs>
+        <additionalJvmArgs>-Dresteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land -Dresteasy.jackson.deserialization.whitelist.allowIfSubType.prefix=org.jboss.resteasy.test.providers.jackson2.whitelist.model.land</additionalJvmArgs>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
