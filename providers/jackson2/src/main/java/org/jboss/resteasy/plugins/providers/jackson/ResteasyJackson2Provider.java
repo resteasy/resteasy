@@ -50,8 +50,7 @@ import java.util.Arrays;
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
    private static final boolean WRITE_DURATIONS_AS_TIMESTAMPS = getProperty(
-         "resteasy.jackson.serialization.writeDurationsAsTimestamps",
-         SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS.enabledByDefault());
+         "resteasy.jackson.serialization.writeDurationsAsTimestamps", false);
 
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
