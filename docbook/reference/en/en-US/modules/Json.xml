@@ -295,4 +295,45 @@ public class ObjectWriterModifierFilter implements Filter {
 </programlisting>
         </para>
     </sect1>
+
+    <sect1 id="Polymorphic_Typing_deserialization">
+        <title>Polymorphic Typing deserialization</title>
+        <para>
+           Due to numerous CVEs for a specific kind of Polymorphic Deserialization (see details in FasterXML Jackson documentation), starting from Jackson 2.10 users have a mean to allow only specified classes to be deserialized. RESTEasy enables this feature by default and allows controlling the contents of whitelist of allowed classes/packages using MicroProfile Config.
+
+<table frame="topbot">
+                <tgroup cols="3" rowsep="1" colsep="1">
+                    <thead>
+                        <row>
+                            <entry>
+                                Property
+                            </entry>
+                            <entry>
+                                Description
+                            </entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                resteasy.jackson.deserialization.whitelist.allowIfBaseType
+                            </entry>
+                            <entry>
+                                Method for appending matcher that will allow all subtypes in cases where nominal base type's class name starts with specific prefix. "*" can be used for allowing any class.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.jackson.deserialization.whitelist.allowIfSubType
+                            </entry>
+                            <entry>
+                                Method for appending matcher that will allow specific subtype (regardless of declared base type) in cases where subclass name starts with specified prefix. "*" can be used for allowing any class.
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
+    </sect1>
+
 </chapter>
