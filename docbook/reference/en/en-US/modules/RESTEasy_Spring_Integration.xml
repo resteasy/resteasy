@@ -1,13 +1,12 @@
 <chapter id="RESTEasy_Spring_Integration">
     <title>Spring Integration</title>
-    <para>RESTEasy integrates with Springframework in various forms. In this chapter we introduce two forms of
-        integration.
+    <para>RESTEasy integrates with Springframework in various forms. In this chapter we introduce different methods to
+        integrate Springframework with RESTEasy.
     </para>
-    <section id="SpringBeanProcessor">
+    <section id="BasicIntegration">
         <title>Basic Integration</title>
-        <para>For Maven users, you must use the <code>resteasy-spring</code> artifact. Otherwise, the jar is available
-            in the
-            downloaded distribution.
+        <para>For Maven users, you must use the <code>resteasy-spring</code> artifact. And here is the dependency you
+            should use:
         </para>
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
@@ -17,12 +16,12 @@
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
             <code>BeanPostProcessor</code>
-            that processes JAX-RS annotations when a bean is created by a <code>BeanFactory</code>. What does this
-            mean? RESTEasy will automatically scan for <code>@Provider</code> and JAX-RS resource annotations on your
+            that processes JAX-RS annotations when a bean is created by a <code>BeanFactory</code>. And it will
+            automatically scan for <code>@Provider</code> and JAX-RS resource annotations on your
             bean class and
             register them as JAX-RS resources.
         </para>
-        <para>Here is the content that you should add into your <code>web.xml</code> file
+        <para>Here is the content that you should add into your <code>web.xml</code> file:
         </para>
         <programlisting><![CDATA[<listener>
     <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
@@ -32,11 +31,57 @@
     <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
 </listener>]]></programlisting>
         <para>
-            The <code>SpringContextLoaderListener</code> must be declared after <code>ResteasyBootstrap</code> as it
+            Please note that the <code>SpringContextLoaderListener</code> must be declared after <code>
+            ResteasyBootstrap
+        </code> as it
             uses
             <code>ServletContext</code>
             attributes initialized by it.
         </para>
+        <para>
+            And you can configure the Springframework to scan for the JAX-RS resources and beans in a Spring
+            configuration file. The content of the file is shown as follow:
+        </para>
+        <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:component-scan base-package="org.jboss.resteasy.examples.springbasic">
+        <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
+    </context:component-scan>
+    <context:annotation-config/>
+
+</beans>]]></programlisting>
+        <para>
+            Let's say the above file is named <code>resteasy-spring-basic.xml</code>, then in your <code>web.xml</code> the
+            can be configured like this:
+        </para>
+        <programlisting><![CDATA[<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:resteasy-spring-basic.xml</param-value>
+</context-param>]]></programlisting>
+        <para>In addition, you need to configure your RESTEasy servlet in <code>web.xml</code>. Here is the example:
+        </para>
+        <programlisting><![CDATA[<servlet>
+    <servlet-name>Resteasy</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>Resteasy</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+</servlet-mapping>]]></programlisting>
+        <para>To see a complete example of the above basic usage, please check the <ulink
+                url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-basic">Basic Example
+        </ulink> we provided.
+        </para>
+    </section>
+    <section id="Advanced Configuration">
+        <title>Advanced Configuration</title>
         <para>
             If you do not use a Spring <code>ContextLoaderListener</code> to create your bean factories, then you can
             manually
@@ -60,8 +105,6 @@
             RESTEasy will inject any <code>@*Param</code> annotated fields or setters before the request is dispatched.
         </para>
         <para>
-        </para>
-        <para>
             NOTE: You can only use auto-proxied beans with our base Spring integration. You will have undesirable
             affects if you are doing handcoded proxying with Spring, i.e., with <code>ProxyFactoryBean</code>. If you
             are using
@@ -80,7 +123,9 @@
             <code>@GET</code>
             resource methods. Setup requires you using the Spring <code>DispatcherServlet</code> in your <code>web.xml
         </code> file, as well
-            as importing the <code>springmvc-resteasy.xml</code> file into your base Spring beans xml file. Here's an example <code>web.xml</code>
+            as importing the <code>springmvc-resteasy.xml</code> file into your base Spring beans xml file. Here's an
+            example
+            <code>web.xml</code>
             file:
         </para>
         <programlisting><![CDATA[<web-app>
@@ -96,7 +141,8 @@
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
 </web-app>]]></programlisting>
-        <para>Then within your main Spring beans xml, import the <code>springmvc-resteasy.xml</code> file</para>
+        <para>Then within your main Spring beans xml, import the <code>springmvc-resteasy.xml</code> file
+        </para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
@@ -109,7 +155,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....]]></programlisting>
         <para>
-            You can specify resteasy configuration options by overriding the <code>resteasy.deployment</code> bean which is an
+            You can specify resteasy configuration options by overriding the <code>resteasy.deployment</code> bean which
+            is an
             instance
             of <code>ResteasyDeployment</code>. Here's an example of adding media type suffix mappings as well
             as enabling the RESTEasy asynchronous job service.
