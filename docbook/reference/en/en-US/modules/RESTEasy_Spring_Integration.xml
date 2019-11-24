@@ -32,41 +32,55 @@
     <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
 </listener>]]></programlisting>
         <para>
-            The SpringContextLoaderListener must be declared after ResteasyBootstrap as it uses ServletContext
+            The <code>SpringContextLoaderListener</code> must be declared after <code>ResteasyBootstrap</code> as it
+            uses
+            <code>ServletContext</code>
             attributes initialized by it.
         </para>
         <para>
-
-            If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually
-            register the RESTEasy BeanFactoryPostProcessor by allocating an instance of
-            org.jboss.resteasy.plugins.spring.SpringBeanProcessor. You can obtain instances of a ResteasyProviderFactory
-            and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and
-            org.jboss.resteasy.spi.Registry. (Really the string FQN of these classes). There is also a
-            org.jboss.resteasy.plugins.spring.SpringBeanProcessorServletAware, that will automatically inject references
-            to the Registry and ResteasyProviderFactory from the Servlet Context. (that is, if you have used
-            RestasyBootstrap to bootstrap Resteasy).
+            If you do not use a Spring <code>ContextLoaderListener</code> to create your bean factories, then you can
+            manually
+            register the RESTEasy <code>BeanFactoryPostProcessor</code> by allocating an instance of the RESTEasy
+            <code>SpringBeanProcessor</code>.
+        </para>
+        <para>You can obtain instances of a
+            <code>ResteasyProviderFactory</code>
+            and <code>Registry</code> from the <code>ServletContext</code> attributes.
+        </para>
+        <para>
+            There is also a
+            <code>SpringBeanProcessorServletAware</code>, that will automatically inject references
+            to the <code>Registry</code> and <code>ResteasyProviderFactory</code> from the <code>ServletContext</code>.
+            That is, if you have used <code>RestasyBootstrap</code> to bootstrap Resteasy.
         </para>
         <para>
             Our Spring integration supports both singletons and the "prototype" scope. RESTEasy handles injecting
-            @Context references. Constructor injection is not supported though. Also, with the "prototype" scope,
-            RESTEasy will inject any @*Param annotated fields or setters before the request is dispatched.
+            <code>@Context</code>
+            references. Constructor injection is not supported though. Also, with the "prototype" scope,
+            RESTEasy will inject any <code>@*Param</code> annotated fields or setters before the request is dispatched.
         </para>
         <para>
         </para>
         <para>
             NOTE: You can only use auto-proxied beans with our base Spring integration. You will have undesirable
-            affects if you are doing handcoded proxying with Spring, i.e., with ProxyFactoryBean. If you are using
+            affects if you are doing handcoded proxying with Spring, i.e., with <code>ProxyFactoryBean</code>. If you
+            are using
             auto-proxied beans, you will be ok.
         </para>
     </section>
     <section id="SpringMVC">
         <title>Spring MVC Integration</title>
         <para>
-            RESTEasy can also integrate with the Spring DispatcherServlet. The advantages of using this are that you
-            have a simpler web.xml file, you can dispatch to either Spring controllers or RESTEasy from under the same
-            base URL, and finally, the most important, you can use Spring ModelAndView objects as return arguments from
-            @GET resource methods. Setup requires you using the Spring DispatcherServlet in your web.xml file, as well
-            as importing the springmvc-resteasy.xml file into your base Spring beans xml file. Here's an example web.xml
+            RESTEasy can also integrate with the Spring <code>DispatcherServlet</code>. The advantages of using this are
+            that you
+            have a simpler <code>web.xml</code> file, you can dispatch to either Spring controllers or RESTEasy from
+            under the same
+            base URL, and finally, the most important, you can use Spring <code>ModelAndView</code> objects as return
+            arguments from
+            <code>@GET</code>
+            resource methods. Setup requires you using the Spring <code>DispatcherServlet</code> in your <code>web.xml
+        </code> file, as well
+            as importing the <code>springmvc-resteasy.xml</code> file into your base Spring beans xml file. Here's an example <code>web.xml</code>
             file:
         </para>
         <programlisting><![CDATA[<web-app>
@@ -82,7 +96,7 @@
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
 </web-app>]]></programlisting>
-        <para>Then within your main Spring beans xml, import the springmvc-resteasy.xml file</para>
+        <para>Then within your main Spring beans xml, import the <code>springmvc-resteasy.xml</code> file</para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
@@ -95,9 +109,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....]]></programlisting>
         <para>
-            You can specify resteasy configuration options by overriding the resteasy.deployment bean which is an
+            You can specify resteasy configuration options by overriding the <code>resteasy.deployment</code> bean which is an
             instance
-            of org.jboss.resteasy.spi.ResteasyDeployment. Here's an example of adding media type suffix mappings as well
+            of <code>ResteasyDeployment</code>. Here's an example of adding media type suffix mappings as well
             as enabling the RESTEasy asynchronous job service.
         </para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
