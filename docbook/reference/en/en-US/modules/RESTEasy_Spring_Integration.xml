@@ -1,38 +1,36 @@
 <chapter id="RESTEasy_Spring_Integration">
     <title>Spring Integration</title>
-    <para>RESTEasy integrates with Spring 3.0.x. We are interested in other forms of Spring integration, so please help
-        contribute.
+    <para>RESTEasy integrates with Springframework in various forms. In this chapter we introduce two forms of
+        integration.
     </para>
     <section id="SpringBeanProcessor">
         <title>Basic Integration</title>
-        <para>For Maven users, you must use the resteasy-spring artifact. Otherwise, the jar is available in the
+        <para>For Maven users, you must use the <code>resteasy-spring</code> artifact. Otherwise, the jar is available
+            in the
             downloaded distribution.
         </para>
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
-    <version>whatever version you are using</version>
+    <version>4.5.0-SNAPSHOT</version>
 </dependency>]]></programlisting>
         <para>
-            RESTEasy comes with its own Spring ContextLoaderListener that registers a RESTEasy specific
-            BeanPostProcessor that processes JAX-RS annotations when a bean is created by a BeanFactory. What does this
-            mean? RESTEasy will automatically scan for @Provider and JAX-RS resource annotations on your bean class and
+            RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
+            <code>BeanPostProcessor</code>
+            that processes JAX-RS annotations when a bean is created by a <code>BeanFactory</code>. What does this
+            mean? RESTEasy will automatically scan for <code>@Provider</code> and JAX-RS resource annotations on your
+            bean class and
             register them as JAX-RS resources.
         </para>
-        <para>Here is what you have to do with your web.xml file</para>
-        <programlisting><![CDATA[<web-app>
-   <display-name>Archetype Created Web Application</display-name>
+        <para>Here is the content that you should add into your <code>web.xml</code> file
+        </para>
+        <programlisting><![CDATA[<listener>
+    <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+</listener>
 
-   <listener>
-      <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-   </listener>
-
-   <listener>
-      <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
-   </listener>
-
-   ...
-</web-app>]]></programlisting>
+<listener>
+    <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+</listener>]]></programlisting>
         <para>
             The SpringContextLoaderListener must be declared after ResteasyBootstrap as it uses ServletContext
             attributes initialized by it.
@@ -335,22 +333,28 @@ server.deploy(deployment);]]></programlisting>
     <section>
         <title>Processing Spring Web REST annotations in RESTEasy</title>
         <para>
-            RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated with @RestController)
-            and handle related REST requests without delegating to Spring MVC. This functionality is currently experimental.
+            RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated
+            with @RestController)
+            and handle related REST requests without delegating to Spring MVC. This functionality is currently
+            experimental.
         </para>
         <para>
-            In order for RESTEasy to be able to process Spring @RestController, you first need to include the following dependency.
+            In order for RESTEasy to be able to process Spring @RestController, you first need to include the following
+            dependency.
         </para>
-        <para><programlisting>        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
-            &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
-            &lt;/dependency&gt;
+        <para>
+            <programlisting>&lt;dependency&gt;
+                &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+                &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
+                &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
+                &lt;/dependency&gt;
 
-        </programlisting></para>
+            </programlisting>
+        </para>
         <para>
             Currently RESTEasy does not auto-scan for @RestController annotated classes,
-            so you need to add all @RestController annotated classes to your web.xml file as shown in the following example.
+            so you need to add all @RestController annotated classes to your web.xml file as shown in the following
+            example.
         </para>
         <programlisting><![CDATA[<web-app>
    <display-name>RESTEasy application using Spring REST annotations</display-name>
@@ -364,7 +368,8 @@ server.deploy(deployment);]]></programlisting>
 </web-app>]]></programlisting>
     </section>
     <para>
-        In the example above, Controller1 and Controller2 are registered and are expected to be annotated with @RestController.
+        In the example above, Controller1 and Controller2 are registered and are expected to be annotated with
+        @RestController.
     </para>
     <para>
         The list of the currently supported annotations can be found below
@@ -442,8 +447,10 @@ server.deploy(deployment);]]></programlisting>
         </tgroup>
     </table>
     <para>
-        Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is supported as
+        Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is
+        supported as
         is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
-        <literal>javax.servlet.http.HttpServletResponse</literal> as method parameters
+        <literal>javax.servlet.http.HttpServletResponse</literal>
+        as method parameters
     </para>
 </chapter>
