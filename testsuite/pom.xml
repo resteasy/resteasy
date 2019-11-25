@@ -154,7 +154,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>17.0.0.Final</server.version>
+                <server.version>18.0.1.Final</server.version>
             </properties>
         </profile>
         <profile>
@@ -162,7 +162,7 @@
             <activation>
                 <property>
                     <name>server.version</name>
-                    <value>18.0.0.Final</value>
+                    <value>18.0.1.Final</value>
                 </property>
             </activation>
             <properties>
