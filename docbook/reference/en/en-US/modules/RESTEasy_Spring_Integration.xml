@@ -83,9 +83,9 @@
     <section id="Advanced Configuration">
         <title>Advanced Configuration</title>
         <para>
-            If you do not use a Spring <code>ContextLoaderListener</code> to create your bean factories, then you can
-            manually
-            register the RESTEasy <code>BeanFactoryPostProcessor</code> by allocating an instance of the RESTEasy
+            If you do not use the <code>SpringContextLoaderListener</code> provided by RESTEasy, and want to create your
+            bean factories, then you can manually
+            register the RESTEasy <code>BeanFactoryPostProcessor</code> by creating an instance of the RESTEasy
             <code>SpringBeanProcessor</code>.
         </para>
         <para>You can obtain instances of a
@@ -94,7 +94,7 @@
         </para>
         <para>
             There is also a
-            <code>SpringBeanProcessorServletAware</code>, that will automatically inject references
+            <code>SpringBeanProcessorServletAware</code>, and it will automatically inject references
             to the <code>Registry</code> and <code>ResteasyProviderFactory</code> from the <code>ServletContext</code>.
             That is, if you have used <code>RestasyBootstrap</code> to bootstrap Resteasy.
         </para>
