@@ -90,28 +90,33 @@
         </ulink> we provided.
         </para>
     </section>
-    <section id="Advanced Configuration">
-        <title>Advanced Configuration</title>
+    <section id="CustomizedConfiguration">
+        <title>Customized Configuration</title>
         <para>
-            If you do not use the <code>SpringContextLoaderListener</code> provided by RESTEasy, and want to create your
-            bean factories, then you can manually
+            If you do not want to use the <code>SpringContextLoaderListener</code> provided by RESTEasy, and want to
+            create your bean factories, then you can manually
             register the RESTEasy <code>BeanFactoryPostProcessor</code> by creating an instance of the RESTEasy
             <code>SpringBeanProcessor</code>.
         </para>
-        <para>You can obtain instances of a
-            <code>ResteasyProviderFactory</code>
-            and <code>Registry</code> from the <code>ServletContext</code> attributes.
-        </para>
-        <para>
-            There is also a
-            <code>SpringBeanProcessorServletAware</code>, and it will automatically inject references
-            to the <code>Registry</code> and <code>ResteasyProviderFactory</code> from the <code>ServletContext</code>.
-            And you must configure the <code>RestasyBootstrap</code> into the scope to create the <code>
+        <para>And you must configure the <code>RestasyBootstrap</code> into the scope to create the <code>
             ResteasyDeployment
         </code> so the relative
             classes can be fetched from <code>ServletContext</code>.
         </para>
-
+        <para>
+            There is also a
+            <code>SpringBeanProcessorServletAware</code>
+            class that implements the <code>ServletContextAware</code> interface provided by Springframework.
+            The <code>SpringBeanProcessorServletAware</code> can be used to fetch the
+            <code>Registry</code>
+            and <code>ResteasyProviderFactory</code> from the <code>ServletContext</code>.
+        </para>
+        <para>To demonstrate the above process, we have also provide an example. Please check the
+            <ulink url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-customized">Spring and
+                Resteasy Customized Example
+            </ulink>
+            we provided.
+        </para>
         <para>
             Our Spring integration supports both singletons and the "prototype" scope. RESTEasy handles injecting
             <code>@Context</code>
