@@ -55,8 +55,11 @@ public class SpringResourceBuilder extends ResourceBuilder {
                                  Method implementation)
     {
         Method method = getAnnotatedMethod(root, implementation);
+        if (method == null) {
+            return;
+        }
         Set<String> httpMethods = getHttpMethods(method);
-        if (method != null && httpMethods != null)
+        if (httpMethods != null)
         {
             ResourceMethodBuilder resourceMethodBuilder = resourceClassBuilder.method(implementation, method);
 

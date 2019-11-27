@@ -103,4 +103,8 @@ public class TestController {
     public String injectHttpServletRequest(HttpServletRequest httpServletRequest) {
         return httpServletRequest.getRequestURL().toString();
     }
+
+    public void doNothing() {
+
+    }
 }
