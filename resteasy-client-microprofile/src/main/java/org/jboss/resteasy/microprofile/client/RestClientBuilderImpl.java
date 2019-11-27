@@ -450,10 +450,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     }
 
     private static Object newInstanceOf(Class<?> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (Throwable t) {
-            throw new RuntimeException("Failed to register " + clazz, t);
+        if (PROVIDER_FACTORY != null) {
+            return PROVIDER_FACTORY.injectedInstance(clazz);
+        } else {
+            try {
+                return clazz.newInstance();
+            } catch (Throwable t) {
+                throw new RuntimeException("Failed to register " + clazz, t);
+            }
         }
     }
 
