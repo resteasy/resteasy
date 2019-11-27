@@ -75,6 +75,16 @@
     <servlet-name>Resteasy</servlet-name>
     <url-pattern>/rest/*</url-pattern>
 </servlet-mapping>]]></programlisting>
+        <para>Instead of using <code>HttpServletDispatcher</code> for deployment, you can also use the <code>
+            FilterDispatcher
+        </code> in <code>web.xml</code>:
+        </para>
+        <programlisting><![CDATA[<filter>
+    <filter-name>resteasy-filter</filter-name>
+    <filter-class>
+        org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+    </filter-class>
+</filter>]]></programlisting>
         <para>To see a complete example of the above basic usage, please check the <ulink
                 url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-basic">Basic Example
         </ulink> we provided.
@@ -96,8 +106,12 @@
             There is also a
             <code>SpringBeanProcessorServletAware</code>, and it will automatically inject references
             to the <code>Registry</code> and <code>ResteasyProviderFactory</code> from the <code>ServletContext</code>.
-            That is, if you have used <code>RestasyBootstrap</code> to bootstrap Resteasy.
+            And you must configure the <code>RestasyBootstrap</code> into the scope to create the <code>
+            ResteasyDeployment
+        </code> so the relative
+            classes can be fetched from <code>ServletContext</code>.
         </para>
+
         <para>
             Our Spring integration supports both singletons and the "prototype" scope. RESTEasy handles injecting
             <code>@Context</code>
