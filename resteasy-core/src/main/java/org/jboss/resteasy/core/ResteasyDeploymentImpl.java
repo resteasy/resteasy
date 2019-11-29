@@ -78,7 +78,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private Registry registry;
    private Dispatcher dispatcher;
    private ResteasyProviderFactory providerFactory;
-   private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
+//   private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    private String paramMapping;
    private Map<String, Object> properties = new TreeMap<String, Object>();
    protected boolean statisticsEnabled;
@@ -135,33 +135,34 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          }
       }
 
-      if (deploymentSensitiveFactoryEnabled)
-      {
-         // the ThreadLocalResteasyProviderFactory pushes and pops this deployments parentProviderFactory
-         // on a ThreadLocal stack.  This allows each application/WAR to have their own parentProviderFactory
-         // and still be able to call ResteasyProviderFactory.getInstance()
-         if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
-         {
-            if (ResteasyProviderFactory.peekInstance() == null || !(ResteasyProviderFactory.peekInstance() instanceof ThreadLocalResteasyProviderFactory))
-            {
-
-               threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory);
-               ResteasyProviderFactory.setInstance(threadLocalProviderFactory);
-            }
-            else
-            {
-               ThreadLocalResteasyProviderFactory.push(providerFactory);
-            }
-         }
-         else
-         {
-            ThreadLocalResteasyProviderFactory.push(providerFactory);
-         }
-      }
-      else
-      {
-         ResteasyProviderFactory.setInstance(providerFactory);
-      }
+//      if (deploymentSensitiveFactoryEnabled)
+//      {
+//         // the ThreadLocalResteasyProviderFactory pushes and pops this deployments parentProviderFactory
+//         // on a ThreadLocal stack.  This allows each application/WAR to have their own parentProviderFactory
+//         // and still be able to call ResteasyProviderFactory.getInstance()
+//         if (!(providerFactory instanceof ThreadLocalResteasyProviderFactory))
+//         {
+//            if (ResteasyProviderFactory.peekInstance() == null || !(ResteasyProviderFactory.peekInstance() instanceof ThreadLocalResteasyProviderFactory))
+//            {
+//
+//               threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory);
+//               ResteasyProviderFactory.setInstance(threadLocalProviderFactory);
+//            }
+//            else
+//            {
+//               ThreadLocalResteasyProviderFactory.push(providerFactory);
+//            }
+//         }
+//         else
+//         {
+//            ThreadLocalResteasyProviderFactory.push(providerFactory);
+//         }
+//      }
+//      else
+//      {
+//         ResteasyProviderFactory.setInstance(providerFactory);
+//      }
+      ResteasyProviderFactory.setInstance(providerFactory);
 
 
       if (asyncJobServiceEnabled)
@@ -582,7 +583,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          ((AsynchronousDispatcher) dispatcher).stop();
       }
 
-      ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
+//      ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
       ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
    }
 

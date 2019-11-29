@@ -8,7 +8,9 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -41,7 +43,9 @@ import org.jboss.resteasy.spi.statistics.StatisticsController;
 @SuppressWarnings({"rawtypes"})
 public abstract class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
-   private static volatile ResteasyProviderFactory instance;
+   private static final Map<ClassLoader, ResteasyProviderFactory> classLoaderProviderFactories = new WeakHashMap<>(4); //null key in case of missing threadcontext classloader
+
+   private static final ResteasyProviderFactoryBuilder builder = ServiceLoader.load(ResteasyProviderFactoryBuilder.class).iterator().next(); //TODO fallback in case of no such element?
 
    private static boolean registerBuiltinByDefault = true;
 
@@ -69,6 +73,23 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
          boolean unwrapAsync);
 
 
+   private static ResteasyProviderFactory getInstance(boolean create, ClassLoader loader) {
+      ResteasyProviderFactory rpf = classLoaderProviderFactories.get(loader);
+      if (create && rpf == null)
+      {
+         synchronized (classLoaderProviderFactories)
+         {
+            rpf = classLoaderProviderFactories.get(loader);
+            if (rpf == null)
+            {
+               rpf = builder.newInstance(registerBuiltinByDefault);
+               classLoaderProviderFactories.put(loader, rpf);
+            }
+         }
+      }
+      return rpf;
+   }
+
    /**
     * Will not initialize singleton if not set.
     *
@@ -76,28 +97,14 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
     */
    public static ResteasyProviderFactory peekInstance()
    {
-      return instance;
+      return getInstance(false, getContextClassLoader());
    }
 
    public static synchronized void clearInstanceIfEqual(ResteasyProviderFactory factory)
    {
-      if (instance == factory)
-      {
-         instance = null;
-         RuntimeDelegate.setInstance(null);
-      }
+      ClassLoader loader = getContextClassLoader();
+      classLoaderProviderFactories.remove(loader, getInstance(false, loader));
    }
-
-   public static synchronized void setInstance(ResteasyProviderFactory factory)
-   {
-      synchronized (RD_LOCK)
-      {
-         instance = factory;
-      }
-      RuntimeDelegate.setInstance(factory);
-   }
-
-   static final Object RD_LOCK = new Object();
 
    /**
     * Initializes ResteasyProviderFactory singleton if not set.
@@ -106,60 +113,35 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate implements
     */
    public static ResteasyProviderFactory getInstance()
    {
-      ResteasyProviderFactory result = instance;
-      if (result == null)
-      { // First check (no locking)
-         synchronized (RD_LOCK)
-         {
-            result = instance;
-            if (result == null)
-            { // Second check (with locking)
-               RuntimeDelegate runtimeDelegate = RuntimeDelegate.getInstance();
-               if (runtimeDelegate instanceof ResteasyProviderFactory)
-               {
-                  instance = result = (ResteasyProviderFactory) runtimeDelegate;
-               }
-               else
-               {
-                  instance = result = newInstance(); //TODO use reflection directly, to avoid circular dependency
-               }
-               if (registerBuiltinByDefault)
-                  instance.registerBuiltin();
-            }
-         }
-      }
-      return instance;
+      return getInstance(true, getContextClassLoader());
+   }
+
+   public static void setInstance(final ResteasyProviderFactory rpf) {
+      classLoaderProviderFactories.put(getContextClassLoader(), rpf);
    }
 
    public static ResteasyProviderFactory newInstance()
    {
-      //TODO implement this differently: call getInstance(), retrieve the class, classloader, constructor from it, store locally in singletons, use those starting from now.
-      try
-      {
-         ClassLoader loader = null;
-         if (System.getSecurityManager() == null) {
-            loader = Thread.currentThread().getContextClassLoader();
-         } else {
-            try {
-               loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                  @Override
-                  public ClassLoader run() throws Exception {
-                     return Thread.currentThread().getContextClassLoader();
-                  }
-               });
-            } catch (PrivilegedActionException pae) {
-               throw new RuntimeException(pae);
-            }
-         }
+      return builder.newInstance(false);
+   }
 
-         return (ResteasyProviderFactory) loader
-               .loadClass("org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl").getDeclaredConstructor().newInstance();
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
+   private static ClassLoader getContextClassLoader() {
+      if (System.getSecurityManager() == null) {
+         return Thread.currentThread().getContextClassLoader();
+      } else {
+         try {
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
+               @Override
+               public ClassLoader run() throws Exception {
+                  return Thread.currentThread().getContextClassLoader();
+               }
+            });
+         } catch (PrivilegedActionException pae) {
+            throw new RuntimeException(pae);
+         }
       }
    }
+
 
    public static void setRegisterBuiltinByDefault(boolean registerBuiltinByDefault)
    {
