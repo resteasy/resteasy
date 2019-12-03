@@ -19,7 +19,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestContextImpl;
 
 import javax.ws.rs.client.ClientRequestContext;
-import java.lang.reflect.Field;
+
 import java.lang.reflect.Method;
 
 /**
@@ -33,18 +33,11 @@ public class ClientRequestContextUtils {
      * @return the method
      */
     public static Method getMethod(ClientRequestContext requestContext) {
-        ClientInvocation invocation = shellClientInvocation(requestContext);
-        return invocation.getClientInvoker().getMethod();
-    }
-
-    private static ClientInvocation shellClientInvocation(ClientRequestContext requestContext) {
-        try {
-            Field invocationField = ClientRequestContextImpl.class.getDeclaredField("invocation");
-            invocationField.setAccessible(true);
-            return (ClientInvocation) invocationField.get(requestContext);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException("Failed to get ClientInvocation from request context. Is RestEasy client used underneath?", e);
+        if(requestContext instanceof ClientRequestContextImpl == false) {
+            throw new RuntimeException("Failed to get ClientInvocation from request context. Is RestEasy client used underneath?");
         }
+        ClientInvocation invocation = ((ClientRequestContextImpl)requestContext).getInvocation();
+        return invocation.getClientInvoker().getMethod();
     }
 
     private ClientRequestContextUtils() {
