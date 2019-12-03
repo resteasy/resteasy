@@ -52,6 +52,7 @@ import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory.CloseableContext;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
 
@@ -433,8 +434,7 @@ public class ClientInvocation implements Invocation
    @Override
    public ClientResponse invoke()
    {
-      Providers current = pushProvidersContext();
-      try
+      try(CloseableContext ctx = pushProvidersContext())
       {
          ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
          ClientResponse aborted = filterRequest(requestContext);
@@ -450,10 +450,6 @@ public class ClientInvocation implements Invocation
             e.getResponse().close();
          }
          throw e;
-      }
-      finally
-      {
-         popProvidersContext(current);
       }
    }
 
@@ -563,18 +559,11 @@ public class ClientInvocation implements Invocation
 
    // internals
 
-   private Providers pushProvidersContext()
+   private CloseableContext pushProvidersContext()
    {
-      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      CloseableContext ret = ResteasyProviderFactory.addCloseableContextDataLevel();
       ResteasyProviderFactory.pushContext(Providers.class, configuration);
-      return current;
-   }
-
-   private void popProvidersContext(Providers current)
-   {
-      ResteasyProviderFactory.popContextData(Providers.class);
-      if (current != null)
-         ResteasyProviderFactory.pushContext(Providers.class, current);
+      return ret;
    }
 
    protected ClientResponse filterRequest(ClientRequestContextImpl requestContext)
@@ -654,8 +643,7 @@ public class ClientInvocation implements Invocation
          InvocationCallback<T> callback, final AsyncClientHttpEngine.ResultExtractor<T> extractor)
    {
       final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-      Providers current = pushProvidersContext();
-      try
+      try(CloseableContext ctx = pushProvidersContext())
       {
          ClientResponse aborted = filterRequest(requestContext);
          if (aborted != null)
@@ -672,10 +660,6 @@ public class ClientInvocation implements Invocation
          callFailedNoThrow(callback, ex);
          return new CompletedFuture<T>(null, new ExecutionException(ex));
       }
-      finally
-      {
-         popProvidersContext(current);
-      }
 
       return asyncHttpEngine.submit(this, buffered, callback, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
@@ -683,14 +667,9 @@ public class ClientInvocation implements Invocation
          @Override
          public T extractResult(ClientResponse response)
          {
-            Providers current = pushProvidersContext();
-            try
+            try (CloseableContext ctx = pushProvidersContext())
             {
                return extractor.extractResult(filterResponse(requestContext, response));
-            }
-            finally
-            {
-               popProvidersContext(current);
             }
          }
       });

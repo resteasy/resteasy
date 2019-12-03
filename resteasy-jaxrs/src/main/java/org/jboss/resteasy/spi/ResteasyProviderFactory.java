@@ -227,6 +227,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   public interface CloseableContext extends AutoCloseable {
+      @Override
+      void close();
+   }
+
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
@@ -737,6 +742,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextualData.setLast(map = new HashMap<Class<?>, Object>());
       }
       return map;
+   }
+
+   public static CloseableContext addCloseableContextDataLevel()
+   {
+      addContextDataLevel();
+      return () -> removeContextDataLevel();
    }
 
    public static Map<Class<?>, Object> addContextDataLevel()
