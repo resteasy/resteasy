@@ -210,7 +210,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -218,7 +218,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -226,7 +226,7 @@ public class ResteasyClientImpl implements ResteasyClient
    {
       abortIfClosed();
       if (uriBuilder == null) throw new NullPointerException(Messages.MESSAGES.uriBuilderWasNull());
-      return new ClientWebTarget(this, uriBuilder, configuration);
+      return createClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
@@ -235,7 +235,7 @@ public class ResteasyClientImpl implements ResteasyClient
       abortIfClosed();
       if (link == null) throw new NullPointerException(Messages.MESSAGES.linkWasNull());
       URI uri = link.getUri();
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -249,4 +249,15 @@ public class ResteasyClientImpl implements ResteasyClient
 
    }
 
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, String uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, URI uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClientImpl client, UriBuilder uriBuilder, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uriBuilder, configuration);
+   }
 }

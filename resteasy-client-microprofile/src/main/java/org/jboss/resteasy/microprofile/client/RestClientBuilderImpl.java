@@ -26,10 +26,11 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
-import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
+import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
+import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
@@ -40,11 +41,11 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
+
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -91,29 +92,23 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     }
 
     public RestClientBuilderImpl() {
-        ClientBuilder availableBuilder = ClientBuilder.newBuilder();
+        builderDelegate = new MpClientBuilderImpl();
 
-        if (availableBuilder instanceof ResteasyClientBuilder) {
-            builderDelegate = (ResteasyClientBuilder) availableBuilder;
-
-            if (PROVIDER_FACTORY != null) {
-                ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
-                if (ResteasyProviderFactory.peekInstance() != null) {
-                    localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
-                }
-                builderDelegate.providerFactory(localProviderFactory);
+        if (PROVIDER_FACTORY != null) {
+            ResteasyProviderFactory localProviderFactory = new LocalResteasyProviderFactory(PROVIDER_FACTORY);
+            if (ResteasyProviderFactory.peekInstance() != null) {
+                localProviderFactory.initializeClientProviders(ResteasyProviderFactory.getInstance());
             }
+            builderDelegate.providerFactory(localProviderFactory);
+        }
 
-            configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
+        configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
-            try {
-                // configuration MP may not be available.
-                config = ConfigProvider.getConfig();
-            } catch (Throwable e) {
+        try {
+            // configuration MP may not be available.
+            config = ConfigProvider.getConfig();
+        } catch (Throwable e) {
 
-            }
-        } else {
-            throw new IllegalStateException("Incompatible client builder found " + availableBuilder.getClass());
         }
     }
 
