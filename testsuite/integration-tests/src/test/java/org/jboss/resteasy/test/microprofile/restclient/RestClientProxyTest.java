@@ -2,12 +2,16 @@ package org.jboss.resteasy.test.microprofile.restclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -130,4 +134,24 @@ public class RestClientProxyTest
       assertEquals("OK", client.client());
    }
 
+   @Test
+   public void testAsyncClient404() throws Exception
+   {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
+
+      assertNotNull(client);
+      CountDownLatch latch = new CountDownLatch(1);
+      AtomicReference<Throwable> value = new AtomicReference<Throwable>();
+      value.set(null);
+      CompletionStage<String> cs = client.asyncClient404();
+      cs.whenComplete((String s, Throwable t) -> {
+         value.set(t.getCause());
+         latch.countDown();
+      });
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      assertTrue(value.get() instanceof WebApplicationException);
+      assertEquals(Response.Status.NOT_FOUND.getStatusCode(), ((WebApplicationException)value.get()).getResponse().getStatus());
+   }
 }
