@@ -13,7 +13,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -86,7 +85,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     @Test
-    public void testExceptionInClientResponseFilterDoesNotLeakMemory() throws ExecutionException, InterruptedException {
+    public void testExceptionInClientResponseFilterDoesNotLeakMemory() throws Exception {
 
         final AtomicInteger numOfCalls = new AtomicInteger(0);
         final Client client = setupClient(Duration.ofSeconds(2));
@@ -107,13 +106,15 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         for(int i=0; i < CALL_COUNT; i++) {
             try {
                 webTarget.request()
+                        .rx()
                         .get()
-                        .close(); // If it is successful, make sure to close (but, won't be successful).
+                        .toCompletableFuture()
+                        .get();
 
                 fail("An exception from filter chain was expected!");
             } catch (final Exception e) {
                 // Swallow the exception..
-                assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getMessage());
+                assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getCause().getMessage());
             }
         }
 
@@ -128,7 +129,6 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     @Test
-    @Ignore // Until https://github.com/reactor/reactor-netty/issues/876 is addressed.
     public void testTimeoutWhileReadingBytesFromWireDoesNotLeakMemory() throws ExecutionException, InterruptedException {
         final Client client = setupClient(Duration.ofMillis(50));
         final WebTarget webTarget = client.target("/slowstream");
