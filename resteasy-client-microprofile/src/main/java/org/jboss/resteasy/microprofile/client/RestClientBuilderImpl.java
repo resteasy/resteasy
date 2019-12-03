@@ -24,11 +24,12 @@ import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptorFactor
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
+import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -37,11 +38,11 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ParamConverterProvider;
+
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -77,20 +78,14 @@ class RestClientBuilderImpl implements RestClientBuilder {
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
 
     RestClientBuilderImpl() {
-        ClientBuilder availableBuilder = ClientBuilder.newBuilder();
+        builderDelegate = new MpClientBuilderImpl();
+        configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
 
-        if (availableBuilder instanceof ResteasyClientBuilder) {
-            builderDelegate = (ResteasyClientBuilder) availableBuilder;
-            configurationWrapper = new ConfigurationWrapper(builderDelegate.getConfiguration());
+        try {
+            // configuration MP may not be available.
+            config = ConfigProvider.getConfig();
+        } catch (Throwable e) {
 
-            try {
-                // configuration MP may not be available.
-                config = ConfigProvider.getConfig();
-            } catch (Throwable e) {
-
-            }
-        } else {
-            throw new IllegalStateException("Incompatible client builder found " + availableBuilder.getClass());
         }
     }
 

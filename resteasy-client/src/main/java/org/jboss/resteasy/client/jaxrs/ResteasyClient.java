@@ -210,7 +210,7 @@ public class ResteasyClient implements Client
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -218,7 +218,7 @@ public class ResteasyClient implements Client
    {
       abortIfClosed();
       if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -226,7 +226,7 @@ public class ResteasyClient implements Client
    {
       abortIfClosed();
       if (uriBuilder == null) throw new NullPointerException(Messages.MESSAGES.uriBuilderWasNull());
-      return new ClientWebTarget(this, uriBuilder, configuration);
+      return createClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
@@ -235,7 +235,7 @@ public class ResteasyClient implements Client
       abortIfClosed();
       if (link == null) throw new NullPointerException(Messages.MESSAGES.linkWasNull());
       URI uri = link.getUri();
-      return new ClientWebTarget(this, uri, configuration);
+      return createClientWebTarget(this, uri, configuration);
    }
 
    @Override
@@ -248,4 +248,15 @@ public class ResteasyClient implements Client
       else return target.request();
    }
 
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClient client, String uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClient client, URI uri, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uri, configuration);
+   }
+
+   protected ResteasyWebTarget createClientWebTarget(ResteasyClient client, UriBuilder uriBuilder, ClientConfiguration configuration) {
+       return new ClientWebTarget(client, uriBuilder, configuration);
+   }
 }

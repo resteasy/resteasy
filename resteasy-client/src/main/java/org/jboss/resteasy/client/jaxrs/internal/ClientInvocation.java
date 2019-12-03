@@ -577,7 +577,7 @@ public class ClientInvocation implements Invocation
          ResteasyProviderFactory.pushContext(Providers.class, current);
    }
 
-   private ClientResponse filterRequest(ClientRequestContextImpl requestContext)
+   protected ClientResponse filterRequest(ClientRequestContextImpl requestContext)
    {
       ClientRequestFilter[] requestFilters = getRequestFilters();
       ClientResponse aborted = null;
