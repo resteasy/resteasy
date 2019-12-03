@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -162,23 +163,26 @@ public class ProxyInvocationHandler implements InvocationHandler {
             try {
                 return method.invoke(target, args);
             } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof ExceptionMapping.HandlerException) {
-                    ((ExceptionMapping.HandlerException)e.getCause()).mapException(method);
+                Throwable cause = e.getCause();
+                if (cause instanceof CompletionException) {
+                    cause = cause.getCause();
                 }
-                if (e.getCause() instanceof ResponseProcessingException) {
-                    ResponseProcessingException rpe = (ResponseProcessingException) e.getCause();
-                    Throwable cause = rpe.getCause();
+                if (cause instanceof ExceptionMapping.HandlerException) {
+                    ((ExceptionMapping.HandlerException)cause).mapException(method);
+                }
+                if (cause instanceof ResponseProcessingException) {
+                    ResponseProcessingException rpe = (ResponseProcessingException) cause;
+                    cause = rpe.getCause();
                     if (cause instanceof RuntimeException) {
                         throw cause;
                     }
                 } else {
-                    Throwable targetException = e.getTargetException();
-                    if (targetException instanceof ProcessingException &&
-                            targetException.getCause() instanceof ClientHeaderFillingException) {
-                        throw targetException.getCause().getCause();
+                    if (cause instanceof ProcessingException &&
+                            cause.getCause() instanceof ClientHeaderFillingException) {
+                        throw cause.getCause().getCause();
                     }
-                    if (targetException instanceof RuntimeException) {
-                        throw targetException;
+                    if (cause instanceof RuntimeException) {
+                        throw cause;
                     }
                 }
                 throw e;
