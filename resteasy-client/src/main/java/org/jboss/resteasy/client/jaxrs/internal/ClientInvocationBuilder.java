@@ -58,6 +58,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
       this.invocation = invocation;
    }
 
+   /**
+    * exposes the client invocation for easier integration with other libraries
+    * @return the underlying client invocation
+    */
+   public ClientInvocation getClientInvocation() {
+       return invocation;
+   }
+
    @Override
    public Invocation.Builder accept(String... mediaTypes)
    {

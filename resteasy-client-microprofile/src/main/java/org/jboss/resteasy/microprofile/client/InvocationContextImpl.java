@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 
 public class InvocationContextImpl implements InvocationContext {
 
@@ -75,15 +76,19 @@ public class InvocationContextImpl implements InvocationContext {
         try {
             return method.invoke(target, args);
         } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof ExceptionMapping.HandlerException) {
-                ((ExceptionMapping.HandlerException)e.getCause()).mapException(method);
+            Throwable cause = e.getCause();
+            if (cause instanceof CompletionException) {
+                cause = cause.getCause();
             }
-            if (e.getCause() instanceof ResponseProcessingException) {
-                ResponseProcessingException rpe = (ResponseProcessingException) e.getCause();
+            if (cause instanceof ExceptionMapping.HandlerException) {
+                ((ExceptionMapping.HandlerException)cause).mapException(method);
+            }
+            if (cause instanceof ResponseProcessingException) {
+                ResponseProcessingException rpe = (ResponseProcessingException) cause;
                 // Note that the default client engine leverages a single connection
                 // MP FT: we need to close the response otherwise we would not be able to retry if the method returns javax.ws.rs.core.Response
                 rpe.getResponse().close();
-                Throwable cause = rpe.getCause();
+                cause = rpe.getCause();
                 if (cause instanceof RuntimeException) {
                     throw (RuntimeException) cause;
                 }
