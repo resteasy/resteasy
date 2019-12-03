@@ -15,7 +15,10 @@
  */
 package org.jboss.resteasy.microprofile.client.header;
 
+import static org.jboss.resteasy.microprofile.client.utils.ListCastUtils.castToListOfStrings;
+
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
+import org.jboss.resteasy.microprofile.client.impl.MpClientInvocation;
 import org.jboss.resteasy.microprofile.client.utils.ClientRequestContextUtils;
 
 import javax.annotation.Priority;
@@ -23,52 +26,24 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.ServiceLoader;
-
-import static org.jboss.resteasy.microprofile.client.utils.ListCastUtils.castToListOfStrings;
 
 
 /**
  * First the headers from `@ClientHeaderParam` annotations are applied,
  * they can be overwritten by JAX-RS `@HeaderParam` (coming in the `requestContext`)
  *
- * Then, if a `ClientHeadersFactory` is defined, all the headers, together with headers from `IncomingHeadersProvider`,
+ * Then, if a `ClientHeadersFactory` is defined, all the headers, together with incoming container headers,
  * are passed to it and it can overwrite them.
  */
 @Priority(Integer.MIN_VALUE)
 public class ClientHeadersRequestFilter implements ClientRequestFilter {
 
-    private static final IncomingHeadersProvider noIncomingHeadersProvider = MultivaluedHashMap::new;
-
-    private static final IncomingHeadersProvider incomingHeadersProvider;
-
-    static {
-        incomingHeadersProvider = initializeProvider();
-    }
-
-    private static IncomingHeadersProvider initializeProvider() {
-        ServiceLoader<IncomingHeadersProvider> providerLoader =
-                ServiceLoader.load(IncomingHeadersProvider.class);
-
-        Iterator<IncomingHeadersProvider> providers = providerLoader.iterator();
-
-        if (!providers.hasNext()) {
-            return noIncomingHeadersProvider;
-        }
-
-        IncomingHeadersProvider result = providers.next();
-        if (providers.hasNext()) {
-            throw new RuntimeException("Multiple " + IncomingHeadersProvider.class.getCanonicalName() + "'s " +
-                    "registered, expecting at most one.");
-        }
-
-        return result;
-    }
+    private static final MultivaluedMap<String, String> EMPTY_MAP = new MultivaluedHashMap<>();
 
     @Override
     public void filter(ClientRequestContext requestContext) {
@@ -85,15 +60,17 @@ public class ClientHeadersRequestFilter implements ClientRequestFilter {
                 (key, values) -> headers.put(key, castToListOfStrings(values))
         );
 
-        factory.map(f -> updateHeaders(headers, f))
+        MultivaluedMap<String,String> containerHeaders = (MultivaluedMap<String, String>) requestContext.getProperty(MpClientInvocation.CONTAINER_HEADERS);
+        if(containerHeaders == null)
+            containerHeaders = EMPTY_MAP;
+        // stupid final rules
+        MultivaluedMap<String,String> incomingHeaders = containerHeaders;
+
+        factory.map(f -> f.update(incomingHeaders, headers))
                 .orElse(headers)
                 .forEach(
                         (key, values) -> requestContext.getHeaders().put(key, castToListOfObjects(values))
                 );
-    }
-
-    private MultivaluedMap<String, String> updateHeaders(MultivaluedMap<String, String> headers, ClientHeadersFactory factory) {
-        return factory.update(incomingHeadersProvider.getIncomingHeaders(), headers);
     }
 
     private static List<Object> castToListOfObjects(List<String> values) {
