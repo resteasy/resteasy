@@ -57,6 +57,7 @@ public class SpringContextLoaderListener extends ContextLoaderListener
       super.contextInitialized(event);
    }
 
+   @Deprecated
    protected ContextLoader createContextLoader()
    {
       return new SpringContextLoader();
