@@ -49,6 +49,7 @@ import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine.ResultExtractor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
@@ -478,8 +479,7 @@ public class ClientInvocation implements Invocation
    @Override
    public ClientResponse invoke()
    {
-      Providers current = pushProvidersContext();
-      try
+      try(CloseableContext ctx = pushProvidersContext())
       {
          ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
          ClientResponse aborted = filterRequest(requestContext);
@@ -495,10 +495,6 @@ public class ClientInvocation implements Invocation
             e.getResponse().close();
          }
          throw e;
-      }
-      finally
-      {
-         popProvidersContext(current);
       }
    }
 
@@ -663,21 +659,14 @@ public class ClientInvocation implements Invocation
    }
    // internals
 
-   private Providers pushProvidersContext()
+   private CloseableContext pushProvidersContext()
    {
-      Providers current = ResteasyContext.getContextData(Providers.class);
+      CloseableContext ret = ResteasyContext.addCloseableContextDataLevel();
       ResteasyContext.pushContext(Providers.class, configuration);
-      return current;
+      return ret;
    }
 
-   private void popProvidersContext(Providers current)
-   {
-      ResteasyContext.popContextData(Providers.class);
-      if (current != null)
-         ResteasyContext.pushContext(Providers.class, current);
-   }
-
-   private ClientResponse filterRequest(ClientRequestContextImpl requestContext)
+   protected ClientResponse filterRequest(ClientRequestContextImpl requestContext)
    {
       ClientRequestFilter[] requestFilters = getRequestFilters();
       ClientResponse aborted = null;
@@ -741,8 +730,7 @@ public class ClientInvocation implements Invocation
            final Function<Exception, Q> exceptionFn)
    {
       final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-      Providers current = pushProvidersContext();
-      try
+      try(CloseableContext ctx = pushProvidersContext())
       {
          ClientResponse aborted = filterRequest(requestContext);
          if (aborted != null)
@@ -757,20 +745,11 @@ public class ClientInvocation implements Invocation
       {
          exceptionFn.apply(ex);
       }
-      finally
-      {
-         popProvidersContext(current);
-      }
 
       return asyncHttpEngineSubmitFn.apply(response -> {
-         Providers currentProviders = pushProvidersContext();
-         try
+         try(CloseableContext ctx = pushProvidersContext())
          {
             return extractor.extractResult(filterResponse(requestContext, response));
-         }
-         finally
-         {
-            popProvidersContext(currentProviders);
          }
       });
    }
