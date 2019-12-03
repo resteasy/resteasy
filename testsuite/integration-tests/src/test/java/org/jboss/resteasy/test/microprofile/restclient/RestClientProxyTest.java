@@ -41,6 +41,8 @@ public class RestClientProxyTest
    {
       WebArchive war = TestUtil.prepareArchive(RestClientProxyTest.class.getSimpleName());
       war.addClass(RestClientProxyTest.class);
+      war.addClass(HelloResource.class);
+      war.addClass(HeaderPropagator.class);
       war.addPackage(HelloResource.class.getPackage());
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addClass(PortProviderUtil.class);
@@ -104,6 +106,28 @@ public class RestClientProxyTest
       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
       assertEquals("foo", value.get());
+   }
+
+   @Test
+   public void testHeadersPropagation() throws Exception
+   {
+      RestClientBuilder builder = RestClientBuilder.newBuilder();
+      HelloClient client = builder.baseUrl(new URL(generateURL(""))).build(HelloClient.class);
+
+      assertNotNull(client);
+      CountDownLatch latch = new CountDownLatch(1);
+      AtomicReference<String> value = new AtomicReference<String>();
+      value.set(null);
+      CompletionStage<String> cs = client.asyncClient();
+      cs.whenComplete((String s, Throwable t) -> {
+         value.set(s);
+         latch.countDown();
+      });
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      assertEquals("OK", value.get());
+
+      assertEquals("OK", client.client());
    }
 
 }
