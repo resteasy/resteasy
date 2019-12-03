@@ -1,16 +1,21 @@
 package org.jboss.resteasy.microprofile.client.async;
 
-import java.util.Collection;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
+import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptor;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.microprofile.client.ExceptionMapping;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.SyncInvoker;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.microprofile.rest.client.ext.AsyncInvocationInterceptor;
-import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author <a href="mailto:bburke@redhat.com">Bill Burke</a>
@@ -19,21 +24,50 @@ import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerImpl;
  */
 public class AsyncInterceptorRxInvoker extends CompletionStageRxInvokerImpl
 {
+   private Method method;
+
    public AsyncInterceptorRxInvoker(final SyncInvoker builder, final ExecutorService executor)
    {
       super(builder, executor);
+      setupMethod(builder);
    }
 
    public AsyncInterceptorRxInvoker(final SyncInvoker builder)
    {
       super(builder);
+      setupMethod(builder);
    }
 
-   private static <T> CompletionStage<T> whenComplete(CompletionStage<T> stage) {
+   private void setupMethod(SyncInvoker builder)
+   {
+      // we must capture the method to unwrap the exception
+      method = ((ClientInvocationBuilder)builder).getClientInvocation().getClientInvoker().getMethod();
+   }
+
+   private static <T> CompletionStage<T> whenComplete(CompletionStage<T> stage, Method method) {
       final Collection<AsyncInvocationInterceptor> asyncInvocationInterceptors = AsyncInvocationInterceptorHandler.threadBoundInterceptors.get();
       AsyncInvocationInterceptorHandler.threadBoundInterceptors.remove();
 
-      return stage.whenComplete((o, throwable) -> {
+      return stage.handle((ret, t) -> {
+         if(t != null) {
+            if(t instanceof CompletionException) {
+               t = t.getCause();
+            }
+            if (t instanceof ExceptionMapping.HandlerException) {
+               try
+               {
+                  // make sure we map the exception in async mode
+                  ((ExceptionMapping.HandlerException)t).mapException(method);
+               } catch (Exception e)
+               {
+                  SynchronousDispatcher.rethrow(e);
+               }
+           }
+           // don't forget to rethrow
+           SynchronousDispatcher.rethrow(t);
+         }
+         return ret;
+      }).whenComplete((o, throwable) -> {
          if (asyncInvocationInterceptors != null ) {
             asyncInvocationInterceptors.forEach(AsyncInvocationInterceptor::removeContext);
          }
@@ -43,165 +77,165 @@ public class AsyncInterceptorRxInvoker extends CompletionStageRxInvokerImpl
    @Override
    public CompletionStage<Response> get()
    {
-      return whenComplete(super.get());
+      return whenComplete(super.get(), method);
    }
 
    @Override
    public <T> CompletionStage<T> get(Class<T> responseType)
    {
-      return whenComplete(super.get(responseType));
+      return whenComplete(super.get(responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> get(GenericType<T> responseType)
    {
-      return whenComplete(super.get(responseType));
+      return whenComplete(super.get(responseType), method);
    }
 
    @Override
    public CompletionStage<Response> put(Entity<?> entity)
    {
-      return whenComplete(super.put(entity));
+      return whenComplete(super.put(entity), method);
    }
 
    @Override
    public <T> CompletionStage<T> put(Entity<?> entity, Class<T> clazz)
    {
-      return whenComplete(super.put(entity, clazz));
+      return whenComplete(super.put(entity, clazz), method);
    }
 
    @Override
    public <T> CompletionStage<T> put(Entity<?> entity, GenericType<T> type)
    {
-      return whenComplete(super.put(entity, type));
+      return whenComplete(super.put(entity, type), method);
    }
 
    @Override
    public CompletionStage<Response> post(Entity<?> entity)
    {
-      return whenComplete(super.post(entity));
+      return whenComplete(super.post(entity), method);
    }
 
    @Override
    public <T> CompletionStage<T> post(Entity<?> entity, Class<T> clazz)
    {
-      return whenComplete(super.post(entity, clazz));
+      return whenComplete(super.post(entity, clazz), method);
    }
 
    @Override
    public <T> CompletionStage<T> post(Entity<?> entity, GenericType<T> type)
    {
-      return whenComplete(super.post(entity, type));
+      return whenComplete(super.post(entity, type), method);
    }
 
    @Override
    public CompletionStage<Response> delete()
    {
-      return whenComplete(super.delete());
+      return whenComplete(super.delete(), method);
    }
 
    @Override
    public <T> CompletionStage<T> delete(Class<T> responseType)
    {
-      return whenComplete(super.delete(responseType));
+      return whenComplete(super.delete(responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> delete(GenericType<T> responseType)
    {
-      return whenComplete(super.delete(responseType));
+      return whenComplete(super.delete(responseType), method);
    }
 
    @Override
    public CompletionStage<Response> head()
    {
-      return whenComplete(super.head());
+      return whenComplete(super.head(), method);
    }
 
    @Override
    public CompletionStage<Response> options()
    {
-      return whenComplete(super.options());
+      return whenComplete(super.options(), method);
    }
 
    @Override
    public <T> CompletionStage<T> options(Class<T> responseType)
    {
-      return whenComplete(super.options(responseType));
+      return whenComplete(super.options(responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> options(GenericType<T> responseType)
    {
-      return whenComplete(super.options(responseType));
+      return whenComplete(super.options(responseType), method);
    }
 
    @Override
    public CompletionStage<Response> trace()
    {
-      return whenComplete(super.trace());
+      return whenComplete(super.trace(), method);
    }
 
    @Override
    public <T> CompletionStage<T> trace(Class<T> responseType)
    {
-      return whenComplete(super.trace(responseType));
+      return whenComplete(super.trace(responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> trace(GenericType<T> responseType)
    {
-      return whenComplete(super.trace(responseType));
+      return whenComplete(super.trace(responseType), method);
    }
 
    @Override
    public CompletionStage<Response> method(String name)
    {
-      return whenComplete(super.method(name));
+      return whenComplete(super.method(name), method);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Class<T> responseType)
    {
-      return whenComplete(super.method(name, responseType));
+      return whenComplete(super.method(name, responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, GenericType<T> responseType)
    {
-      return whenComplete(super.method(name, responseType));
+      return whenComplete(super.method(name, responseType), method);
    }
 
    @Override
    public CompletionStage<Response> method(String name, Entity<?> entity)
    {
-      return whenComplete(super.method(name, entity));
+      return whenComplete(super.method(name, entity), method);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Entity<?> entity, Class<T> responseType)
    {
-      return whenComplete(super.method(name, entity, responseType));
+      return whenComplete(super.method(name, entity, responseType), method);
    }
 
    @Override
    public <T> CompletionStage<T> method(String name, Entity<?> entity, GenericType<T> responseType)
    {
-      return whenComplete(super.method(name, entity, responseType));
+      return whenComplete(super.method(name, entity, responseType), method);
    }
 
    public CompletionStage<Response> patch(Entity<?> entity)
    {
-      return whenComplete(super.patch(entity));
+      return whenComplete(super.patch(entity), method);
    }
 
    public <T> CompletionStage<T> patch(Entity<?> entity, Class<T> responseType)
    {
-      return whenComplete(super.patch(entity, responseType));
+      return whenComplete(super.patch(entity, responseType), method);
    }
 
    public <T> CompletionStage<T> patch(Entity<?> entity, GenericType<T> responseType)
    {
-      return whenComplete(super.patch(entity, responseType));
+      return whenComplete(super.patch(entity, responseType), method);
    }
 }
