@@ -12,6 +12,11 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 @SuppressWarnings("unchecked")
 public final class ResteasyContext
 {
+   public interface CloseableContext extends AutoCloseable {
+      @Override
+      void close();
+   }
+
    private static final ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
 
    private static final int maxForwards = 20;
@@ -66,6 +71,12 @@ public final class ResteasyContext
       Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
       contextualData.push(map);
       return map;
+   }
+
+   public static CloseableContext addCloseableContextDataLevel()
+   {
+      addContextDataLevel();
+      return () -> removeContextDataLevel();
    }
 
    public static int getContextDataLevelCount()
