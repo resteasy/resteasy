@@ -11,8 +11,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.resteasy.microprofile.client.ExceptionMapping;
-import org.jboss.resteasy.microprofile.client.ExceptionMapping.HandlerException;
 import org.junit.Assert;
 
 import io.reactivex.Single;
@@ -77,5 +75,11 @@ public class HelloResource {
        Assert.assertEquals("got-a-value", propagatedHeader);
        Assert.assertEquals("got-a-value", nonPropagatedHeader);
        return rest.clientTarget();
+    }
+
+    @GET
+    @Path("async-client-404")
+    public CompletionStage<String> asyncClient404(){
+       return rest.asyncClient404Target();
     }
 }
