@@ -50,4 +50,12 @@ public interface HelloClient {
     @ClientHeaderParam(name = "X-Propagated", value = "got-a-value")
     @ClientHeaderParam(name = "X-Not-Propagated", value = "got-a-value")
     String client();
+
+    @GET
+    @Path("async-client-404")
+    CompletionStage<String> asyncClient404();
+
+    @GET
+    @Path("async-client-404-target")
+    CompletionStage<String> asyncClient404Target();
 }
