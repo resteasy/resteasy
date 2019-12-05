@@ -27,6 +27,7 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"unchecked", "rawtypes"})
+@Deprecated
 public abstract class ReaderUtility
 {
    private ResteasyProviderFactory factory;
