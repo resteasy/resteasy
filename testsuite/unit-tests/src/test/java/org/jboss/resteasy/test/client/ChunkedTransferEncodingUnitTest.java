@@ -1,6 +1,10 @@
 package org.jboss.resteasy.test.client;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -9,11 +13,12 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
-import org.jboss.resteasy.test.client.resource.FakeHttpServer;
+import org.jboss.resteasy.test.common.FakeHttpServer;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xnio.streams.Streams;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -32,8 +37,46 @@ public class ChunkedTransferEncodingUnitTest
    }
 
    @Rule
-   public FakeHttpServer fakeHttpServer = new FakeHttpServer();
+   public FakeHttpServer fakeHttpServer = new FakeHttpServer(server -> {
 
+      FakeHttpServer.dummyMethods(server);
+
+      // for ChunkedTransferEncodingUnitTest
+      server.createContext("/chunked", exchange -> {
+         final byte[] response;
+         final int length;
+         final int status;
+         switch (exchange.getRequestMethod().toUpperCase()) {
+            case "POST": {
+               ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+               Streams.copyStream(exchange.getRequestBody(), buffer);
+
+               String transferEncoding = exchange.getRequestHeaders().getFirst("Transfer-Encoding");
+               if ("chunked".equalsIgnoreCase(transferEncoding)
+                       && Arrays.equals(buffer.toByteArray(), "file entity".getBytes())) {
+                  response = "ok".getBytes();
+                  status = 200;
+               } else {
+                  response = "not ok".getBytes();
+                  status = 400;
+               }
+
+               length = response.length;
+               break;
+            }
+
+            default:
+               response = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
+               length = response.length;
+               status = 405;
+               break;
+         }
+
+         exchange.sendResponseHeaders(status, length);
+         OutputStream os = exchange.getResponseBody();
+         os.write(response);
+         os.close();
+      });});
 
    @Test
    public void testChunkedTarget() throws Exception {
