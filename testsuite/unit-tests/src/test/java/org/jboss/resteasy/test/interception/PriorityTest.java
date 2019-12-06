@@ -37,7 +37,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.interception.resource.FakeHttpServer;
+import org.jboss.resteasy.test.common.FakeHttpServer;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter3;
@@ -62,7 +62,7 @@ public class PriorityTest {
    private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
 
    @Rule
-   public FakeHttpServer fakeHttpServer = new FakeHttpServer();
+   public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
 
    /**
     * @tpTestDetails Test for classes implements ContainerResponseFilter.

@@ -51,7 +51,7 @@ import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessa
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader4;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader5;
 import org.jboss.resteasy.test.client.resource.ConfigurationInheritanceTestMessageBodyReader6;
-import org.jboss.resteasy.test.client.resource.FakeHttpServer;
+import org.jboss.resteasy.test.common.FakeHttpServer;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,7 +76,7 @@ public class ConfigurationInheritanceTest extends ResteasyProviderFactory {
    private static final String ERROR_MSG = "Error during client-side registration";
 
    @Rule
-   public FakeHttpServer fakeHttpServer = new FakeHttpServer();
+   public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
 
    /**
     * @tpTestDetails Register items to clientBuilder.
