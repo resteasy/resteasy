@@ -100,7 +100,7 @@
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
-        <version.io.projectreactor>Californium-SR12</version.io.projectreactor>
+        <version.io.projectreactor>Dysprosium-SR2</version.io.projectreactor>
 
     </properties>
 

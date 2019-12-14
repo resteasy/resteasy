@@ -86,7 +86,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     @Test
-    public void testExceptionInClientResponseFilterDoesNotLeakMemory() throws ExecutionException, InterruptedException {
+    public void testExceptionInClientResponseFilterDoesNotLeakMemory() throws Exception {
 
         final AtomicInteger numOfCalls = new AtomicInteger(0);
         final Client client = setupClient(Duration.ofSeconds(2));
@@ -107,13 +107,15 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         for(int i=0; i < CALL_COUNT; i++) {
             try {
                 webTarget.request()
+                        .rx()
                         .get()
-                        .close(); // If it is successful, make sure to close (but, won't be successful).
+                        .toCompletableFuture()
+                        .get();
 
                 fail("An exception from filter chain was expected!");
             } catch (final Exception e) {
                 // Swallow the exception..
-                assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getMessage());
+                assertEquals("Exception from exceptionThrowerFilter!", e.getCause().getCause().getMessage());
             }
         }
 
@@ -128,7 +130,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     @Test
-    @Ignore // Until https://github.com/reactor/reactor-netty/issues/876 is addressed.
+    @Ignore() // Flaky test on slow hosts (Travis)
     public void testTimeoutWhileReadingBytesFromWireDoesNotLeakMemory() throws ExecutionException, InterruptedException {
         final Client client = setupClient(Duration.ofMillis(50));
         final WebTarget webTarget = client.target("/slowstream");
@@ -148,7 +150,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                 .forEach(response ->
                         assertEquals("A TimeoutException was expected!", FALL_BACK_RESPONSE, response));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         assertThat(errContent.toString(), not(containsString("LEAK")));
         // Some calls may have timed before making the call.
