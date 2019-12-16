@@ -325,7 +325,7 @@ public class MyApplication extends Application
         <programlisting><![CDATA[
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs</artifactId>
+    <artifactId>resteasy-core</artifactId>
     <version>${resteasy.version}</version>
 </dependency>
 <dependency>
@@ -1065,13 +1065,13 @@ public abstract class Application
     <para>
         JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
         communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
-        consists of resteasy-jaxrs and resteasy-client. You can access them by way of maven:
+        consists of resteasy-core and resteasy-client. You can access them by way of maven:
     </para>
 
 <programlisting><![CDATA[
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-jaxrs</artifactId>
+    <artifactId>resteasy-core</artifactId>
     <version>${resteasy.version}</version>
 </dependency>
 <dependency>
