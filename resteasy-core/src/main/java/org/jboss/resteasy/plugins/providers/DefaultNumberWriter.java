@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -16,7 +17,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -24,7 +27,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  */
 @Provider
 @Produces("text/plain")
-public class DefaultNumberWriter implements MessageBodyWriter<Number>
+public class DefaultNumberWriter implements MessageBodyWriter<Number>, AsyncMessageBodyWriter<Number>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -44,6 +47,15 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
    {
       byte[] bytes = convertToBytes(n, mediaType);
       entityStream.write(bytes);
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Number n, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      byte[] bytes = convertToBytes(n, mediaType);
+      return entityStream.rxWrite(bytes);
    }
 
    private byte[] convertToBytes(Number n, MediaType mediaType)

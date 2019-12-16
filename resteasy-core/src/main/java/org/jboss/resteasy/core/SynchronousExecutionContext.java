@@ -3,10 +3,13 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -225,5 +228,22 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
 
    }
 
+   @Override
+   public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+      try
+      {
+         f.run();
+         return CompletableFuture.completedFuture(null);
+      } catch (Exception e)
+      {
+         CompletableFuture<Void> ret = new CompletableFuture<>();
+         ret.completeExceptionally(e);
+         return ret;
+      }
+   }
 
+   @Override
+   public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+      return f;
+   }
 }

@@ -6,11 +6,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 
-class BlockingAsyncOutputStream extends AsyncOutputStream {
+public class BlockingAsyncOutputStream extends AsyncOutputStream {
 
     private OutputStream outputStream;
 
-    BlockingAsyncOutputStream(final OutputStream outputStream) {
+    public BlockingAsyncOutputStream(final OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 

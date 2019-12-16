@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.ReadFromStream;
@@ -26,6 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -374,6 +377,23 @@ public class MockHttpRequest extends BaseHttpRequest
          {
             return true;
          }
+
+        @Override
+        public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+            CompletableFuture<Void> ret = new CompletableFuture<>();
+            try {
+                f.run();
+                ret.complete(null);
+            } catch (Exception e) {
+                ret.completeExceptionally(e);
+            }
+            return ret;
+        }
+
+        @Override
+        public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+            return f;
+        }
       };
    }
 

@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -8,6 +10,7 @@ import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -77,23 +80,37 @@ public class ChunkOutputStream extends AsyncOutputStream
       write(b, off, len, null);
    }
 
-   private void write(byte[] b, int off, int len, Handler<AsyncResult<Void>> handler) throws IOException
+   private void write(byte[] b, int off, int len, Handler<AsyncResult<CompositeFuture>> handler) throws IOException
    {
       int dataLengthLeftToWrite = len;
       int dataToWriteOffset = off;
       int spaceLeftInCurrentChunk;
+      List<Future> futures;
+      if(handler != null) {
+         futures = new ArrayList<>();
+      } else {
+         futures = null;
+      }
       while ((spaceLeftInCurrentChunk = chunkSize - buffer.length()) < dataLengthLeftToWrite)
       {
          buffer.appendBytes(b, dataToWriteOffset, spaceLeftInCurrentChunk);
          dataToWriteOffset = dataToWriteOffset + spaceLeftInCurrentChunk;
          dataLengthLeftToWrite = dataLengthLeftToWrite - spaceLeftInCurrentChunk;
-         flush(handler);
+         Future<Void> future;
+         if(handler != null) {
+            future = Future.future();
+            futures.add(future);
+         } else {
+            future = null;
+         }
+         flush(future);
       }
       if (dataLengthLeftToWrite > 0)
       {
          buffer.appendBytes(b, dataToWriteOffset, dataLengthLeftToWrite);
-         if(handler != null)
-            handler.handle(Future.succeededFuture());
+      }
+      if(handler != null) {
+         CompositeFuture.all(futures).setHandler(handler);
       }
    }
 

@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
 /**
@@ -150,21 +152,27 @@ public class ServerResponseWriter
             writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
          }
 
-         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-               providerFactory, entity, type, generic, annotations, mt,
-               jaxrsResponse.getMetadata(), os, request, onWriteComplete);
-
          RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
          final long timestamp = tracingLogger.timestamp("WI_SUMMARY");
-         try {
-            writerContext.proceed();
-         } finally {
-            tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext.getProcessedInterceptorCount());
-         }
 
-         if(sendHeaders) {
-            response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
-            callback.commit(); // just in case the output stream is never used
+         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
+               providerFactory, entity, type, generic, annotations, mt,
+               jaxrsResponse.getMetadata(), os, request, onComplete);
+
+         CompletionStage<Void> writerAction = writerContext.getStarted().whenComplete((v, t) -> {
+            tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext.getProcessedInterceptorCount());
+
+            if(t == null && sendHeaders) {
+               response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
+               callback.commit(); // just in case the output stream is never used
+            }
+         });
+
+         try {
+            writerAction.toCompletableFuture().getNow(null); // give a chance at non-async exceptions to be propagated up
+         } catch(CompletionException x) {
+            // make sure we unwrap these horrors
+            SynchronousDispatcher.rethrow(x.getCause());
          }
       });
    }

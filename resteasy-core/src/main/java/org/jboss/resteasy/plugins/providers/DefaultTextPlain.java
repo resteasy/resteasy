@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.TypeConverter;
 
@@ -18,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 @Provider
 @Produces("text/plain")
 @Consumes("text/plain")
-public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
+public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter, AsyncMessageBodyWriter
 {
    public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -67,5 +71,25 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
       String charset = mediaType.getParameters().get("charset");
       if (charset == null) entityStream.write(o.toString().getBytes(StandardCharsets.UTF_8));
       else entityStream.write(o.toString().getBytes(charset));
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Object o, Class type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap httpHeaders, AsyncOutputStream entityStream)
+   {
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null)
+         return entityStream.rxWrite(o.toString().getBytes(StandardCharsets.UTF_8));
+      else {
+         try
+         {
+            return entityStream.rxWrite(o.toString().getBytes(charset));
+         } catch (UnsupportedEncodingException e)
+         {
+            CompletableFuture<Void> ret = new CompletableFuture<>();
+            ret.completeExceptionally(e);
+            return ret;
+         }
+      }
    }
 }

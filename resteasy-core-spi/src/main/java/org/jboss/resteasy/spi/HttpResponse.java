@@ -48,5 +48,4 @@ public interface HttpResponse extends Closeable
    }
 
    void flushBuffer() throws IOException;
-
 }

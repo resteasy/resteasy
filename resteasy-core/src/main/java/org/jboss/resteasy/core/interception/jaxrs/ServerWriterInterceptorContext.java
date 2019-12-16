@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -17,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
@@ -29,6 +31,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    private HttpRequest request;
    private Consumer<Throwable> onWriteComplete;
+   private MessageBodyWriter writer;
 
    public ServerWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
                                          final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
@@ -46,9 +49,11 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      return ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
-              type, genericType, annotations, mediaType, tracingLogger);
-
+      if(writer == null) {
+         writer = ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
+               type, genericType, annotations, mediaType, tracingLogger);
+      }
+      return writer;
    }
    @Override
    void throwWriterNotFoundException()
@@ -63,10 +68,35 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   public CompletionStage<Void> getStarted()
+   {
+      return aroundWriteTo(super.getStarted());
+   }
+
+   @SuppressWarnings(value = "unchecked")
    protected CompletionStage<Void> writeTo(MessageBodyWriter writer) throws IOException
    {
-      return super.writeTo(writer).whenComplete((v, t) -> {
+      return request.getAsyncContext().executeBlockingIo(() -> writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream),
+            interceptors != null && interceptors.length > 0);
+   }
+
+   @SuppressWarnings(value = "unchecked")
+   protected CompletionStage<Void> writeTo(AsyncMessageBodyWriter writer)
+   {
+      return request.getAsyncContext().executeAsyncIo(
+            writer.asyncWriteTo(entity, type, genericType, annotations, mediaType, headers, (AsyncOutputStream)outputStream));
+   }
+
+   private CompletionStage<Void> aroundWriteTo(CompletionStage<Void> ret)
+   {
+      return ret.whenComplete((v, t) -> {
+         // make sure we unwrap these horrors
+         if(t instanceof CompletionException)
+            t = t.getCause();
          onWriteComplete.accept(t);
+         // make sure we complete any async request after we've written the body or exception
+         if(request.getAsyncContext().isSuspended())
+            request.getAsyncContext().complete();
       });
    }
 

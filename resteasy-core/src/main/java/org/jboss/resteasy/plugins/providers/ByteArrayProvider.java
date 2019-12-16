@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.ReadFromStream;
@@ -17,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,7 +28,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>
+public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>, AsyncMessageBodyWriter<byte[]>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -53,5 +56,14 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       entityStream.write(bytes);
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(byte[] bytes, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      return entityStream.rxWrite(bytes);
    }
 }

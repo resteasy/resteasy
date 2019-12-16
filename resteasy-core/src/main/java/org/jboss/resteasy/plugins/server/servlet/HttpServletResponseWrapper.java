@@ -179,7 +179,8 @@ public class HttpServletResponseWrapper implements HttpResponse
 
       private void queue(AsyncOperation op)
       {
-         HttpRequest resteasyRequest = factory.getContextData(HttpRequest.class);
+         // fetch it from the context directly to avoid having to restore the context just in case we're invoked on a context-less thread
+         HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
          if(request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
             synchronized(this) {
                ServletOutputStream os;
@@ -319,5 +320,4 @@ public class HttpServletResponseWrapper implements HttpResponse
    {
       response.flushBuffer();
    }
-
 }

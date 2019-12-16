@@ -123,6 +123,15 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
          application.getClass().getClassLoader());
    }
 
+   public UndertowJaxrsServer deploy(Application application, String contextPath) {
+       ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
+       resteasyDeployment.setApplication(application);
+       resteasyDeployment.start();
+       return deploy(resteasyDeployment,
+          serverHelper.checkContextPath(contextPath),
+          application.getClass().getClassLoader());
+    }
+
    public UndertowJaxrsServer deploy(Class<? extends Application> application) {
       ResteasyDeployment resteasyDeployment = new ResteasyDeploymentImpl();
       resteasyDeployment.setApplicationClass(application.getName());

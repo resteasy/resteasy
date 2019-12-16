@@ -1,6 +1,10 @@
 package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
+import org.jboss.resteasy.spi.BlockingAsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 
@@ -11,6 +15,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
@@ -22,13 +27,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 @ConstrainedTo(RuntimeType.SERVER)
-public class ServerCacheInterceptor implements WriterInterceptor
+public class ServerCacheInterceptor implements WriterInterceptor, AsyncWriterInterceptor
 {
    protected ServerCache cache;
 
@@ -88,35 +94,76 @@ public class ServerCacheInterceptor implements WriterInterceptor
       }
    }
 
+   private CacheControl getCacheControl(MultivaluedMap<String, Object> headers) {
+       if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitFilter.DO_NOT_CACHE_RESPONSE) != null)
+       {
+          return null;
+       }
+
+       Object occ = headers.getFirst(HttpHeaders.CACHE_CONTROL);
+       if (occ == null)
+       {
+          return null;
+       }
+       CacheControl cc = null;
+
+       if (occ instanceof CacheControl) cc = (CacheControl) occ;
+       else
+       {
+          cc = CacheControl.valueOf(occ.toString());
+       }
+
+       if (cc.isNoCache())
+       {
+          return null;
+       }
+       return cc;
+   }
+
+   private byte[] handleCaching(ByteArrayOutputStream buffer, CacheControl cc, MultivaluedMap<String, Object> headers, MediaType mediaType) {
+       byte[] entity = buffer.toByteArray();
+       Object etagObject = headers.getFirst(HttpHeaders.ETAG);
+       String etag = null;
+       if (etagObject == null)
+       {
+          etag = createHash(entity);
+          headers.putSingle(HttpHeaders.ETAG, etag);
+       }
+       else // use application provided ETag if it exists
+       {
+          etag = etagObject.toString();
+       }
+
+       if (!cc.isPrivate() && !cc.isNoStore()) {
+          MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
+          if (headers.containsKey(HttpHeaders.VARY)) {
+             for (Object varyHeader : headers.get(HttpHeaders.VARY)) {
+                if (request.getMutableHeaders().containsKey(varyHeader)) {
+                   varyHeaders.addAll((String) varyHeader, request.getMutableHeaders().get(varyHeader));
+                }
+             }
+          }
+          cache.add(request.getUri().getRequestUri().toString(), mediaType, cc, headers, entity, etag, varyHeaders);
+       }
+
+       // check to see if ETags are the same.  If they are, we don't need to send a response back.
+       Response.ResponseBuilder validatedResponse = validation.evaluatePreconditions(new EntityTag(etag));
+       if (validatedResponse != null)
+       {
+          throw new NoLogWebApplicationException(validatedResponse.status(Response.Status.NOT_MODIFIED).cacheControl(cc).header(HttpHeaders.ETAG, etag).build());
+       }
+       return entity;
+   }
+
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
 
-      if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitFilter.DO_NOT_CACHE_RESPONSE) != null)
-      {
-         context.proceed();
-         return;
-      }
-
-      Object occ = context.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
-      if (occ == null)
-      {
-         context.proceed();
-         return;
-      }
-      CacheControl cc = null;
-
-      if (occ instanceof CacheControl) cc = (CacheControl) occ;
-      else
-      {
-         cc = CacheControl.valueOf(occ.toString());
-      }
-
-      if (cc.isNoCache())
-      {
-         context.proceed();
-         return;
+      CacheControl cc = getCacheControl(context.getHeaders());
+      if(cc == null) {
+          context.proceed();
+          return;
       }
 
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -125,44 +172,32 @@ public class ServerCacheInterceptor implements WriterInterceptor
       {
          context.setOutputStream(buffer);
          context.proceed();
-         byte[] entity = buffer.toByteArray();
-         Object etagObject = context.getHeaders().getFirst(HttpHeaders.ETAG);
-         String etag = null;
-         if (etagObject == null)
-         {
-            etag = createHash(entity);
-            context.getHeaders().putSingle(HttpHeaders.ETAG, etag);
-         }
-         else // use application provided ETag if it exists
-         {
-            etag = etagObject.toString();
-         }
 
-         if (!cc.isPrivate() && !cc.isNoStore()) {
-            MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
-            if (context.getHeaders().containsKey(HttpHeaders.VARY)) {
-               for (Object varyHeader : context.getHeaders().get(HttpHeaders.VARY)) {
-                  if (request.getMutableHeaders().containsKey(varyHeader)) {
-                     varyHeaders.addAll((String) varyHeader, request.getMutableHeaders().get(varyHeader));
-                  }
-               }
-            }
-            cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag, varyHeaders);
-         }
-
-         // check to see if ETags are the same.  If they are, we don't need to send a response back.
-         Response.ResponseBuilder validatedResponse = validation.evaluatePreconditions(new EntityTag(etag));
-         if (validatedResponse != null)
-         {
-            throw new NoLogWebApplicationException(validatedResponse.status(Response.Status.NOT_MODIFIED).cacheControl(cc).header(HttpHeaders.ETAG, etag).build());
-         }
-
+         byte[] entity = handleCaching(buffer, cc, context.getHeaders(), context.getMediaType());
          old.write(entity);
       }
       finally
       {
          context.setOutputStream(old);
       }
+   }
 
+   @Override
+   public CompletionStage<Void> asyncAroundWriteTo(AsyncWriterInterceptorContext context) {
+       LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+
+       CacheControl cc = getCacheControl(context.getHeaders());
+       if(cc == null) {
+           return context.asyncProceed();
+       }
+
+       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+       AsyncOutputStream old = context.getAsyncOutputStream();
+       context.setAsyncOutputStream(new BlockingAsyncOutputStream(buffer));
+       return context.asyncProceed()
+               .thenCompose(v -> {
+                   byte[] entity = handleCaching(buffer, cc, context.getHeaders(), context.getMediaType());
+                   return old.rxWrite(entity);
+               }).whenComplete((v, t) -> context.setAsyncOutputStream(old));
    }
 }

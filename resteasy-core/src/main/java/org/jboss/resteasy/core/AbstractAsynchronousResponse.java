@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
@@ -33,6 +34,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected HttpResponse response;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
+   protected AsyncWriterInterceptor[] asyncWriterInterceptors;
    protected Annotation[] annotations;
    protected TimeoutHandler timeoutHandler;
    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
@@ -134,6 +136,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    public void setWriterInterceptors(WriterInterceptor[] writerInterceptors)
    {
       this.writerInterceptors = writerInterceptors;
+   }
+
+   @Override
+   public AsyncWriterInterceptor[] getAsyncWriterInterceptors()
+   {
+      return asyncWriterInterceptors;
    }
 
    @Override

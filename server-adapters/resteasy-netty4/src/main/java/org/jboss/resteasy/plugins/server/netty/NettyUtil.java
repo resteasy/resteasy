@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.util.concurrent.FastThreadLocalThread;
+
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
@@ -103,5 +105,9 @@ public class NettyUtil
          requestHeaders.add(header.getKey(), header.getValue());
       }
       return requestHeaders;
+   }
+
+   public static boolean isIoThread() {
+       return Thread.currentThread() instanceof FastThreadLocalThread;
    }
 }
