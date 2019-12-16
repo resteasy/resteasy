@@ -148,18 +148,6 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
    @Override
-   // This method is synchronized to protect against premature calling of finalize by the GC
-   protected synchronized void finalize() throws Throwable
-   {
-      if (isClosed()) return;
-      try {
-         close();
-      }
-      catch (Exception ignored) {
-      }
-   }
-
-   @Override
    protected HeaderValueProcessor getHeaderValueProcessor()
    {
       return configuration;

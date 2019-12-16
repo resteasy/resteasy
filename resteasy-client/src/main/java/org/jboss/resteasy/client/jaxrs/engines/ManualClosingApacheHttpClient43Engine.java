@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -289,7 +290,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
          cleanUpAfterExecute(httpMethod);
       }
 
-      ClientResponse response = new ClientResponse(request.getClientConfiguration(), request.getTracingLogger())
+      ClientResponse response = new FinalizedClientResponse(request.getClientConfiguration(), request.getTracingLogger())
       {
          InputStream stream;
 

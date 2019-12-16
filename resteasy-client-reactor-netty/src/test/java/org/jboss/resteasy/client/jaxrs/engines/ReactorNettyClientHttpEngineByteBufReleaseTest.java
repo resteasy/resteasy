@@ -44,6 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -159,6 +160,51 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
         client.close();
     }
 
+    @Test
+    public void testLeakDetectionOnMissingClientResponseClose() throws Exception {
+        final Client client = setupClient(Duration.ofSeconds(2), false);
+        for(int i=0; i < CALL_COUNT; i++) {
+            final Response response = client
+                .target("/hello")
+                .request()
+                .rx()
+                .get()
+                .toCompletableFuture()
+                .get();
+        }
+        // It's a ByteBuf leak that is actually asserted here on missing close on response.
+        assertThat(errContent.toString(), containsString("LEAK"));
+        client.close();
+    }
+
+    @Test
+    public void testRestEasyClientResponseWithFinalize() throws Exception {
+        final Client client = setupClient(Duration.ofSeconds(2), true);
+        final Response response = client
+                .target("/hello")
+                .request()
+                .rx()
+                .get()
+                .toCompletableFuture()
+                .get();
+
+        assertNotNull(response.getClass().getDeclaredMethod("finalize"));
+        assertTrue(response.getClass().getSimpleName().contains("FinalizedRestEasyClientResponse"));
+    }
+
+    @Test(expected = java.lang.NoSuchMethodException.class)
+    public void testDefaultRestEasyClientResponseWithoutFinalize() throws Exception {
+        final Client client = setupClient(Duration.ofSeconds(2));
+        final Response response = client
+                .target("/hello")
+                .request()
+                .rx()
+                .get()
+                .toCompletableFuture()
+                .get();
+        response.getClass().getDeclaredMethod("finalize");
+    }
+
     private static ByteBuf toByteBuf(final int i) {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -196,6 +242,10 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
     }
 
     private static Client setupClient(final Duration timeout) {
+        return setupClient(timeout, false);
+    }
+
+    private static Client setupClient(final Duration timeout, final Boolean finalizedResponse) {
 
         final String connectionPoolName = "ReactorNettyClientHttpEngineByteBufReleaseTest-Connection-Pool";
 
@@ -216,7 +266,8 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                         httpClient,
                         new DefaultChannelGroup(new DefaultEventExecutor()),
                         HttpResources.get(),
-                        timeout);
+                        timeout,
+                        finalizedResponse);
 
         final ClientBuilder builder = ClientBuilder.newBuilder();
         final ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)builder;

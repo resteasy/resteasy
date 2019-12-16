@@ -23,6 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
@@ -185,7 +186,7 @@ public class InMemoryClientEngine implements ClientHttpEngine
       return null;
    }
 
-   public static class InMemoryClientResponse extends ClientResponse
+   public static class InMemoryClientResponse extends FinalizedClientResponse
    {
       private InputStream stream;
 

@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -58,7 +59,7 @@ public class URLConnectionEngine implements ClientHttpEngine
       }
 
       //Creating response with stream content
-      ClientResponse response = new ClientResponse(request.getClientConfiguration(), RESTEasyTracingLogger.empty())
+      ClientResponse response = new FinalizedClientResponse(request.getClientConfiguration(), RESTEasyTracingLogger.empty())
       {
          private InputStream stream;
 
