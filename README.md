@@ -27,19 +27,24 @@ Issues are kept in [JIRA](https://issues.redhat.com/projects/RESTEASY/issues).
 
 ## Build
 
-After pulling down a clone of the RESTEasy repository run
+Currently RESTEasy can be built with JDK 1.8 and 11.
+
+If you want to purely build the project without running the tests, you need to pull down a clone of the RESTEasy repository and run:
 
 ```bash
-$ mvn install
+$ mvn install -Dmaven.test.skip=true
 ```
 
-Currently it can be built using JDK 1.8 and 11.
-
-If you don't have the JBoss Nexus repository configured in your own local Maven settings, you might need to add enable the `jboss-repository` profile:
+If you want to build the project with testings run, you may need to specify a profile to use, and may need to configure the Wildfly version you want to run the tests with. Here is an example:
 
 ```bash
-mvn -Pjboss-repository install
+$ export SERVER_VERSION=17.0.0.Final
+$ mvn -B -Pjboss-repository -fae -Dserver.version=$SERVER_VERSION install
 ```
+
+You may want to check our [Travis CI](https://github.com/resteasy/Resteasy/blob/master/.travis.yml) configuration to see our testing configuration matrix as build example.
+
+And the example of full build processes can be checked [here](https://travis-ci.org/resteasy/Resteasy).
 
 ## Contribute
 
