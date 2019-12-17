@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -22,6 +23,8 @@ import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ServerResponseWriter;
+import org.jboss.resteasy.plugins.server.Cleanable;
+import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -86,6 +89,28 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                asyncResponse.complete();
             }
          }
+         clearContextData();
+      }
+   }
+
+   public void clearContextData()
+   {
+      Map<Class<?>, Object> map = ResteasyContext.getContextDataMap(false);
+      Cleanables cleanables = map != null ? (Cleanables) map.get(Cleanables.class) : null;
+      if (cleanables != null)
+      {
+         for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
+         {
+            try
+            {
+               it.next().clean();
+            }
+            catch(Exception e)
+            {
+               // Empty
+            }
+         }
+         ResteasyContext.clearContextData();
       }
    }
 
