@@ -4,7 +4,7 @@
 
 - Fork the repo
 - Create a new branch
-- Create a [JIRA issue](https://issues.jboss.org/projects/RESTEASY/issues)
+- Create a [JIRA issue](https://issues.redhat.com/projects/RESTEASY/issues)
 - Create a pull request
 - Agree with the Apache License 2.0 terms(shown in the example in below).
 
