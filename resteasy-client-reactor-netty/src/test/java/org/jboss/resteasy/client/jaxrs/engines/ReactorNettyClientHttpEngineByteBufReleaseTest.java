@@ -162,7 +162,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
     @Test
     public void testLeakDetectionOnMissingClientResponseClose() throws Exception {
-        final Client client = setupClient(Duration.ofSeconds(2), false);
+        final Client client = setupClient(Duration.ofSeconds(10), false);
         for(int i=0; i < CALL_COUNT; i++) {
             final Response response = client
                 .target("/hello")
@@ -170,7 +170,7 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
                 .rx()
                 .get()
                 .toCompletableFuture()
-                .get();
+                .get(10, TimeUnit.SECONDS);
         }
         // It's a ByteBuf leak that is actually asserted here on missing close on response.
         assertThat(errContent.toString(), containsString("LEAK"));
@@ -179,14 +179,14 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
     @Test
     public void testRestEasyClientResponseWithFinalize() throws Exception {
-        final Client client = setupClient(Duration.ofSeconds(2), true);
+        final Client client = setupClient(Duration.ofSeconds(10), true);
         final Response response = client
                 .target("/hello")
                 .request()
                 .rx()
                 .get()
                 .toCompletableFuture()
-                .get();
+                .get(10, TimeUnit.SECONDS);
 
         assertNotNull(response.getClass().getDeclaredMethod("finalize"));
         assertTrue(response.getClass().getSimpleName().contains("FinalizedRestEasyClientResponse"));
@@ -194,14 +194,15 @@ public class ReactorNettyClientHttpEngineByteBufReleaseTest {
 
     @Test(expected = java.lang.NoSuchMethodException.class)
     public void testDefaultRestEasyClientResponseWithoutFinalize() throws Exception {
-        final Client client = setupClient(Duration.ofSeconds(2));
+        final Client client = setupClient(Duration.ofSeconds(10));
         final Response response = client
                 .target("/hello")
                 .request()
                 .rx()
                 .get()
                 .toCompletableFuture()
-                .get();
+                .get(10, TimeUnit.SECONDS);
+
         response.getClass().getDeclaredMethod("finalize");
     }
 
