@@ -23,7 +23,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AbortedResponse extends ClientResponse
+public class AbortedResponse extends FinalizedClientResponse
 {
    @SuppressWarnings("unchecked")
    public AbortedResponse(final ClientConfiguration configuration,final Response response)

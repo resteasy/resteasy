@@ -560,6 +560,16 @@ public class ReactorNettyClientHttpEngineTest {
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
     }
+    @Test
+    public void testFinalizeResponse() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
+
+        final CompletionStage<Response> completionStage = timeoutClient.target(url("/hello")).request().rx().get();
+        final Response response = completionStage.toCompletableFuture().get();
+        assertEquals(200, response.getStatus());
+        assertEquals(HELLO_WORLD, response.readEntity(String.class));
+    }
+
 
     private static String incrementAge(final String json) {
         final int length = json.length();

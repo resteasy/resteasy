@@ -33,6 +33,8 @@ import java.util.concurrent.Future;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpHeaders;
+import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 public class VertxClientHttpEngine implements AsyncClientHttpEngine {
@@ -258,12 +260,12 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
         InputStreamAdapter adapter = new InputStreamAdapter(clientResponse, 4 * 1024);
 
-        class RestEasyClientResponse extends ClientResponse {
+        class RestEasyClientResponse extends FinalizedClientResponse {
 
             private InputStream is;
 
             private RestEasyClientResponse(final ClientConfiguration configuration) {
-                super(configuration);
+                super(configuration, RESTEasyTracingLogger.empty());
                 this.is = adapter;
             }
 

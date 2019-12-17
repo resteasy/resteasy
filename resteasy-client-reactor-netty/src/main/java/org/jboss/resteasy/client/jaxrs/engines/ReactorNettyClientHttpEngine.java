@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.BiFunction;
 
 import static java.util.Objects.requireNonNull;
 import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_LENGTH;
@@ -45,19 +46,22 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
     private final ChannelGroup channelGroup;
     private final ConnectionProvider connectionProvider;
     private final Optional<Duration> requestTimeout;
+    private final BiFunction<ClientConfiguration, InputStream, ClientResponse> fnClientResponse;
 
     /**
      * Constructor for ReactorNettyClientHttpEngine
      *
-     * @param httpClient The {@link HttpClient} instance to be used by this {@link AsyncClientHttpEngine}
-     * @param channelGroup The {@link ChannelGroup} instance used by the provided {@link HttpClient}
+     * @param httpClient         The {@link HttpClient} instance to be used by this {@link AsyncClientHttpEngine}
+     * @param channelGroup       The {@link ChannelGroup} instance used by the provided {@link HttpClient}
      * @param connectionProvider The {@link ConnectionProvider} instance used to create the provided {@link HttpClient}
-     * @param requestTimeout The {@link Optional<Duration>} instance used to configure requestTimeout on response
+     * @param requestTimeout     The {@link Optional<Duration>} instance used to configure requestTimeout on response
+     * @param useFinalizedResponse Used to configure for using {@link RestEasyClientResponse} with `finalize` method
      */
     private ReactorNettyClientHttpEngine(final HttpClient httpClient,
-                                        final ChannelGroup channelGroup,
-                                        final ConnectionProvider connectionProvider,
-                                        final Optional<Duration> requestTimeout) {
+                                         final ChannelGroup channelGroup,
+                                         final ConnectionProvider connectionProvider,
+                                         final Optional<Duration> requestTimeout,
+                                         final Boolean useFinalizedResponse) {
         this.httpClient = requireNonNull(httpClient);
         this.channelGroup = requireNonNull(channelGroup);
         this.connectionProvider = requireNonNull(connectionProvider);
@@ -70,19 +74,38 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                     if(duration.isZero())
                         throw new IllegalArgumentException("Required non zero value for requestTimeout");
                 });
+
+        this.fnClientResponse = useFinalizedResponse ?
+                FinalizedRestEasyClientResponse::new
+                : RestEasyClientResponse::new;
     }
 
     public ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
                                         final ConnectionProvider connectionProvider) {
-        this(httpClient, channelGroup, connectionProvider, Optional.empty());
+        this(httpClient, channelGroup, connectionProvider, Optional.empty(), false);
     }
 
     public ReactorNettyClientHttpEngine(final HttpClient httpClient,
                                         final ChannelGroup channelGroup,
                                         final ConnectionProvider connectionProvider,
                                         final Duration requestTimeout) {
-        this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout));
+        this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout), false);
+    }
+
+    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
+                                        final ChannelGroup channelGroup,
+                                        final ConnectionProvider connectionProvider,
+                                        final Boolean useResponseFinalize) {
+        this(httpClient, channelGroup, connectionProvider, Optional.empty(), useResponseFinalize);
+    }
+
+    public ReactorNettyClientHttpEngine(final HttpClient httpClient,
+                                        final ChannelGroup channelGroup,
+                                        final ConnectionProvider connectionProvider,
+                                        final Duration requestTimeout,
+                                        final Boolean useResponseFinalize) {
+        this(httpClient, channelGroup, connectionProvider, Optional.of(requestTimeout), useResponseFinalize);
     }
 
     @Override
@@ -262,7 +285,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                                               final HttpClientResponse reactorNettyResponse,
                                               final InputStream inputStream) {
 
-        final ClientResponse restEasyClientResponse = new RestEasyClientResponse(clientConfiguration, inputStream);
+        final ClientResponse restEasyClientResponse = fnClientResponse.apply(clientConfiguration, inputStream);
         restEasyClientResponse.setStatus(reactorNettyResponse.status().code());
 
         final MultivaluedMap<String, Object> resteasyHeaders =  restEasyClientResponse.getHeaders();
@@ -272,7 +295,7 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         return restEasyClientResponse;
     }
 
-    private class RestEasyClientResponse extends ClientResponse {
+    private static class RestEasyClientResponse extends ClientResponse {
 
         private InputStream is;
 
@@ -315,5 +338,26 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
                 log.warn("Exception while releasing the connection!", e);
             }
         }
+    }
+
+    // RestEasyClientResponse that adds a finalize method as safety net
+    private class FinalizedRestEasyClientResponse extends RestEasyClientResponse {
+
+        FinalizedRestEasyClientResponse(final ClientConfiguration configuration, final InputStream is) {
+            super(configuration, is);
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+
+            if (isClosed()) return;
+            try {
+                log.warn("RestEasyClientResponse was leaked. Ensure all resources are freed via calling close()");
+                close();
+            } catch (Exception e) {
+                log.warn("Exception while close() during finalize()", e);
+            }
+        }
+
     }
 }
