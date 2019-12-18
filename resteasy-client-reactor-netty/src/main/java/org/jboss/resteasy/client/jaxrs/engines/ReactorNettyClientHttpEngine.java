@@ -193,12 +193,23 @@ public class ReactorNettyClientHttpEngine implements AsyncClientHttpEngine {
         return requestTimeout
                 .map(duration -> responseMono.timeout(duration))
                 .orElse(responseMono)
-                .map(response -> {
+                .<T>handle((response, sink) -> {
                     try {
-                        return extractor.extractResult(response);
-                    } catch (Exception e) {
-                        response.close();
-                        throw e;
+                        sink.next(extractor.extractResult(response));
+                    } catch (final Exception e) {
+                        try {
+                            // We release the connection instead of closing it because the WebApplicationException
+                            // *may* make use of the response.  However, since we are releasing the
+                            // connection here, handlers of the rethrown exception will not be able
+                            // to use the stream (we ASSume buffering happened).  An alternative is
+                            // to force handlers to be responsible for closing the response; however,
+                            // that does open the possibility of leaks..  But then again, so do
+                            // several paths you can take with the Client API.
+                            response.releaseConnection();
+                        } catch (final IOException ie) {
+                            log.warn("There was a problem releasing the connection in an error scenario.", ie);
+                        }
+                        sink.error(e);
                     }
                 })
                 .toFuture();

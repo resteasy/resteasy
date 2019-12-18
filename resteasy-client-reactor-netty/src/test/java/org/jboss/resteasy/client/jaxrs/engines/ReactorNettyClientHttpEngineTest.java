@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import static org.hamcrest.CoreMatchers.containsString;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,6 +20,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.resources.ConnectionProvider;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -126,12 +128,20 @@ public class ReactorNettyClientHttpEngineTest {
                             QueryStringDecoder query = new QueryStringDecoder(request.uri());
                             return response.sendString(Mono.just(query.rawQuery()));
                         })
+                        .get("/json", (request, response) ->
+                            response.addHeader(HttpHeaderNames.CONTENT_TYPE, "application/json")
+                                .sendString(Mono.just("[]")))
                         .post("/birthday", (request, response) ->
                             response.addHeader(HttpHeaderNames.CONTENT_TYPE, "application/json")
                                     .sendString(
                                             request.receive()
                                                     .asString()
                                                     .map(json -> incrementAge(json))))
+                        .get("/response500",(req, resp) ->
+                            resp
+                                .status(500)
+                                .addHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain")
+                                .sendString(Mono.just("oh nos!")))
                         .post("/headers", (request, response) ->
                             response.sendString(
                                 Mono.just(
@@ -560,16 +570,28 @@ public class ReactorNettyClientHttpEngineTest {
         assertEquals(200, response.getStatus());
         assertEquals(HELLO_WORLD, response.readEntity(String.class));
     }
+
     @Test
-    public void testFinalizeResponse() throws Exception {
-        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
-
-        final CompletionStage<Response> completionStage = timeoutClient.target(url("/hello")).request().rx().get();
-        final Response response = completionStage.toCompletableFuture().get();
-        assertEquals(200, response.getStatus());
-        assertEquals(HELLO_WORLD, response.readEntity(String.class));
+    public void test500ResponseBodyClosedState() throws Exception {
+        try {
+            setupClient(HttpClient.create())
+                .target(url("/response500"))
+                .request()
+                .rx()
+                .get(String.class)
+                .toCompletableFuture()
+                .get();
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof InternalServerErrorException) {
+                final Response r = ((InternalServerErrorException)e.getCause()).getResponse();
+                if (r instanceof ClientResponse) {
+                    assertFalse(((ClientResponse)r).isClosed());
+                    return;
+                }
+            }
+            throw e;
+        }
     }
-
 
     private static String incrementAge(final String json) {
         final int length = json.length();
