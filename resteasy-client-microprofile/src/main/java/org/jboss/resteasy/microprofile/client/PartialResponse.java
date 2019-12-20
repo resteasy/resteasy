@@ -15,8 +15,6 @@
  */
 package org.jboss.resteasy.microprofile.client;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.core.EntityTag;
@@ -76,7 +74,7 @@ public class PartialResponse extends Response implements Serializable {
 
         if (entityType.isAssignableFrom(String.class)) {
             return (T) readStringEntity(entityStream);
-        }  else {
+        } else {
             throw notSupported();
         }
     }
@@ -203,10 +201,9 @@ public class PartialResponse extends Response implements Serializable {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public MultivaluedMap<String, Object> getMetadata() {
-        MultivaluedMap<String, Object> metaData = new MultivaluedMapImpl<String, Object>();
-        // TODO
-        return metaData;
+        return (MultivaluedMap) responseContext.getHeaders();
     }
 
     @Override
