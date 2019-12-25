@@ -31,13 +31,6 @@ public class FilterBootstrap extends ListenerBootstrap
       return deployment;
    }
 
-   public String getParameter(String name)
-   {
-      String val = config.getInitParameter(name);
-      if (val == null) val = super.getParameter(name);
-      return val;
-   }
-
    @Override
    public String getInitParameter(String name)
    {

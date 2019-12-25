@@ -32,8 +32,8 @@ To get around this problem you will need to use the security annotations defined
 <para>
 
 RESTEasy JAX-RS supports the @RolesAllowed, @PermitAll and @DenyAll annotations on JAX-RS methods.   By default though, RESTEasy does not recognize these annotations.  You have to 
-configure RESTEasy to turn on role-based security by setting a context parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
-functionality instead of RESTEasy.
+configure RESTEasy to turn on role-based security by setting the appropriate parameter.  NOTE!!!  Do not turn on this switch if you are using EJBs.  The EJB container will provide this
+functionality instead of RESTEasy. To configure this switch as a context-param, do this:
 
 </para>
 <programlisting>
@@ -46,6 +46,8 @@ functionality instead of RESTEasy.
    </context-param>
 </web-app>]]>
 </programlisting>
+
+<para>See <xref linkend="microprofile_config"/> for more information about application configuration. </para>
 
 <para>There is a bit of quirkiness with this approach.   You will have to declare all roles used within the RESTEasy JAX-RS war file that you are using in your JAX-RS classes and set up a security constraint that permits all of these roles access to every URL handled by the JAX-RS runtime.  You'll just have to trust that RESTEasy JAX-RS authorizes properly.
 </para>

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -11,7 +12,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -94,22 +94,14 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
       private int getMaxUses()
       {
-         maxUses = DEFAULT_MAX_USES;
-         ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
-         if (context != null)
+         try
          {
-            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
-            if (s != null)
-            {
-               try
-               {
-                  maxUses = Integer.parseInt(s);
-               }
-               catch (NumberFormatException e)
-               {
-                  LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, Integer.toString(DEFAULT_MAX_USES));
-               }
-            }
+            maxUses = ConfigProvider.getConfig().getOptionalValue(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, int.class).orElse(DEFAULT_MAX_USES);
+         }
+         catch (IllegalArgumentException e)
+         {
+            LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, Integer.toString(DEFAULT_MAX_USES));
+            maxUses = DEFAULT_MAX_USES;
          }
          return maxUses;
       }

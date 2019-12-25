@@ -188,8 +188,8 @@ class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
-        String proxyHost = System.getProperty("http.proxyHost");
+           ConfigProvider.getConfig().getOptionalValue("http.nonProxyHosts", String.class).orElse("localhost|127.*|[::1]").split("|"));
+        String proxyHost = ConfigProvider.getConfig().getOptionalValue("http.proxyHost", String.class).orElse(null);
 
         T actualClient;
         ResteasyClient client;
@@ -199,7 +199,7 @@ class RestClientBuilderImpl implements RestClientBuilder {
             // Use proxy, if defined
             resteasyClientBuilder = builderDelegate.defaultProxy(
                     proxyHost,
-                    Integer.parseInt(System.getProperty("http.proxyPort", "80")));
+                    ConfigProvider.getConfig().getOptionalValue("http.proxyPort", int.class).orElse(80));
         } else {
             resteasyClientBuilder = builderDelegate;
         }

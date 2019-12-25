@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.Filter;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -36,11 +38,13 @@ public class FilterDispatcher implements Filter, HttpRequestFactory, HttpRespons
 
    public void init(FilterConfig servletConfig) throws ServletException
    {
+      Map<Class<?>, Object> map = ResteasyProviderFactory.getContextDataMap();
+      map.put(ServletContext.class, servletConfig.getServletContext());
+      map.put(FilterConfig.class, servletConfig);
       servletContainerDispatcher = new ServletContainerDispatcher();
       FilterBootstrap bootstrap = new FilterBootstrap(servletConfig);
       servletContext = servletConfig.getServletContext();
       servletContainerDispatcher.init(servletContext, bootstrap, this, this);
-      servletContainerDispatcher.getDispatcher().getDefaultContextObjects().put(FilterConfig.class, servletConfig);
 
    }
 

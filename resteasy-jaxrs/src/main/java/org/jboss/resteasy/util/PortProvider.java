@@ -15,6 +15,7 @@
  */
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 
 /**
  * Utility class that provides a port number for the Resteasy embedded container.
@@ -46,7 +47,7 @@ public class PortProvider
    public static int getPort()
    {
       int port = -1;
-      String property = System.getenv(ENV_VAR_NAME);
+      String property =  ResteasyConfigProvider.getConfig().getOptionalValue(ENV_VAR_NAME, String.class).orElse(null);
       if (property != null)
       {
          try
@@ -60,7 +61,7 @@ public class PortProvider
 
       if (port == -1)
       {
-         property = System.getProperty(PROPERTY_NAME);
+         property = ResteasyConfigProvider.getConfig().getOptionalValue(PROPERTY_NAME, String.class).orElse(null);
          if (property != null)
          {
             try
@@ -89,7 +90,8 @@ public class PortProvider
    public static String getHost()
    {
       String host = null;
-      String property = System.getenv(ENV_VAR_HOSTNAME);
+      String property = ResteasyConfigProvider.getConfig().getOptionalValue(ENV_VAR_HOSTNAME, String.class).orElse(null);
+
       if (property != null)
       {
          host = property;
@@ -97,7 +99,7 @@ public class PortProvider
 
       if (host == null)
       {
-         property = System.getProperty(PROPERTY_HOSTNAME);
+         property = ResteasyConfigProvider.getConfig().getOptionalValue(PROPERTY_HOSTNAME, String.class).orElse(null);
          if (property != null)
          {
             host = property;

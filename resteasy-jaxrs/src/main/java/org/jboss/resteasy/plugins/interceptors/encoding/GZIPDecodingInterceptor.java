@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import javax.annotation.Priority;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
@@ -13,10 +12,10 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
 
 import org.jboss.resteasy.core.interception.ServerReaderInterceptorContext;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -131,28 +130,14 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
          return maxSize;
       }
 
-      int size = -1;
-      ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
-      if (context != null)
+      try
       {
-         String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT);
-         if (s != null)
-         {
-            try
-            {
-               size = Integer.parseInt(s);
-            }
-            catch (NumberFormatException e)
-            {
-               LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, Integer.toString(DEFAULT_MAX_SIZE));
-            }
-         }
+         return ResteasyConfigProvider.getConfig().getOptionalValue(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, int.class).orElse(DEFAULT_MAX_SIZE);
       }
-      if (size == -1)
+      catch (IllegalArgumentException e)
       {
-         size = DEFAULT_MAX_SIZE;
+         LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_GZIP_MAX_INPUT, Integer.toString(DEFAULT_MAX_SIZE));
+         return DEFAULT_MAX_SIZE;
       }
-
-      return size;
    }
 }

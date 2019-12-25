@@ -27,6 +27,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStrea
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -106,7 +107,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     * <br>
     * Defaults to JVM temp directory.
     */
-   private File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
+   private File fileUploadTempFileDir = new File(ResteasyConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
    protected int responseBufferSize = 8192;
 
    public ApacheHttpClient4Executor()

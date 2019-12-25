@@ -28,6 +28,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.Constants;
@@ -126,7 +127,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
     * <br>
     * Defaults to JVM temp directory.
     */
-   protected File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
+   protected File fileUploadTempFileDir = new File(ResteasyConfigProvider.getConfig().getOptionalValue("java.io.tmpdir", String.class).orElse(null));
 
 
    public ApacheHttpClient4Engine()

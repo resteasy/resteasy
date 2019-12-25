@@ -61,7 +61,8 @@ POST http://example.com/myservice?oneway=true
    </sect1>
    <sect1 id="async_job_setup">
      <title>Setup and Configuration</title>
-     <para>You must enable the Asynchronous Job Service in your web.xml file as it is not turned on by default.</para>
+     <para>You must enable the Asynchronous Job Service, as it is not turned on by default. If the relevant configuration properties are configured
+     in web.xml, it would look like the following: </para>
 <programlisting>
 <![CDATA[
 <web-app>
@@ -102,5 +103,7 @@ POST http://example.com/myservice?oneway=true
 </web-app>
 ]]>
 </programlisting>
+
+   <para>See <xref linkend="microprofile_config"/> for more information about application configuration.</para>
    </sect1>
 </chapter>

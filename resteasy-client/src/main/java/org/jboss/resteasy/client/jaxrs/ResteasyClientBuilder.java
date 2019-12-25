@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -399,7 +400,7 @@ public class ResteasyClientBuilder extends ClientBuilder
 
          if (!AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
          {
-            final String propertyValue = System.getProperty("resteasy.client.providers.annotations.disabled");
+            final String propertyValue = ResteasyConfigProvider.getConfig().getOptionalValue("resteasy.client.providers.annotations.disabled", String.class).orElse(null);
             return (propertyValue == null) ? Boolean.FALSE : Boolean.valueOf(propertyValue.isEmpty() ? "true" : propertyValue);
          }))
          {

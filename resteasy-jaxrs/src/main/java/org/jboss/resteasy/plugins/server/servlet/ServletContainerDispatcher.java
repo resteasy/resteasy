@@ -14,6 +14,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.GetRestful;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,17 @@ public class ServletContainerDispatcher
    protected ResteasyDeployment deployment = null;
    protected HttpRequestFactory requestFactory;
    protected HttpResponseFactory responseFactory;
+   protected ServletConfig servletConfig;
+
+   public ServletContainerDispatcher(final ServletConfig servletConfig)
+   {
+      this.servletConfig = servletConfig;
+      ResteasyProviderFactory.pushContext(ServletConfig.class, servletConfig);
+   }
+
+   public ServletContainerDispatcher()
+   {
+   }
 
    public Dispatcher getDispatcher()
    {
@@ -102,27 +114,32 @@ public class ServletContainerDispatcher
                   Application app = ResteasyDeployment.createApplication(application.trim(), dispatcher, providerFactory);
                   // push context data so we can inject it
                   processApplication(app);
+                  servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+                  if (servletMappingPrefix == null) servletMappingPrefix = "";
+                  servletMappingPrefix = servletMappingPrefix.trim();
                }
                finally
                {
                   ResteasyProviderFactory.removeContextDataLevel();
                }
             }
+            else
+            {
+               servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+               if (servletMappingPrefix == null) servletMappingPrefix = "";
+               servletMappingPrefix = servletMappingPrefix.trim();
+            }
          }
-         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
-         if (servletMappingPrefix == null) servletMappingPrefix = "";
-         servletMappingPrefix = servletMappingPrefix.trim();
       }
       else
       {
+         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+         if (servletMappingPrefix == null) servletMappingPrefix = "";
+         servletMappingPrefix = servletMappingPrefix.trim();
          deployment = bootstrap.createDeployment();
          deployment.start();
          dispatcher = deployment.getDispatcher();
          providerFactory = deployment.getProviderFactory();
-
-         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
-         if (servletMappingPrefix == null) servletMappingPrefix = "";
-         servletMappingPrefix = servletMappingPrefix.trim();
       }
    }
 
@@ -222,6 +239,7 @@ public class ServletContainerDispatcher
             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
 
             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+            dispatcher.getDefaultContextObjects().put(ServletConfig.class, servletConfig);
             if (handleNotFound)
             {
                dispatcher.invoke(in, theResponse);

@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
@@ -144,7 +145,7 @@ public class RegisterBuiltin
       if (AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
          @Override
          public Boolean run() {
-            final String value = System.getProperty("resteasy.allowGzip");
+            final String value = ResteasyConfigProvider.getConfig().getOptionalValue("resteasy.allowGzip", String.class).orElse(null);
             if ("".equals(value)) return Boolean.FALSE;
             return Boolean.parseBoolean(value);
          }

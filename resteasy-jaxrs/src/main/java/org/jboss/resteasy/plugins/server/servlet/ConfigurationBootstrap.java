@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -347,4 +348,8 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
       }
    }
 
+   public String getParameter(String name)
+   {
+      return ResteasyConfigProvider.getConfig().getOptionalValue(name, String.class).orElse(null);
+   }
 }
