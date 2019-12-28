@@ -25,6 +25,7 @@ import javax.ws.rs.core.FeatureContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,7 @@ public class ResteasyDeployment
    protected List<String> scannedJndiComponentResources = new ArrayList<String>();
    protected List<String> jndiComponentResources = new ArrayList<String>();
    protected List<String> providerClasses = new ArrayList<String>();
+   protected Set<String> disabledProviderClasses = new HashSet<String>();
    protected List<Class> actualProviderClasses = new ArrayList<Class>();
    protected List<Object> providers = new ArrayList<Object>();
    protected boolean securityEnabled = false;
@@ -261,7 +263,7 @@ public class ResteasyDeployment
          if (registerBuiltin)
          {
             providerFactory.setRegisterBuiltins(true);
-            RegisterBuiltin.register(providerFactory);
+            RegisterBuiltin.register(providerFactory, disabledProviderClasses);
 
             // having problems using form parameters from container for a couple of TCK tests.  I couldn't figure out
             // why, specifically:
@@ -331,6 +333,7 @@ public class ResteasyDeployment
 
       jndiComponentResources.addAll(other.getJndiComponentResources());
       providerClasses.addAll(other.getProviderClasses());
+      disabledProviderClasses.addAll(other.getDisabledProviderClasses());
       actualProviderClasses.addAll(other.getActualProviderClasses());
       providers.addAll(other.getProviders());
 
@@ -406,7 +409,10 @@ public class ResteasyDeployment
       {
          for (String provider : scannedProviderClasses)
          {
-            registerProvider(provider);
+            if (!disabledProviderClasses.contains(provider))
+            {
+               registerProvider(provider);
+            }
          }
       }
 
@@ -414,20 +420,28 @@ public class ResteasyDeployment
       {
          for (String provider : providerClasses)
          {
-            registerProvider(provider);
+            if (!getDisabledProviderClasses().contains(provider))
+            {
+               registerProvider(provider);
+            }
          }
       }
       if (providers != null)
       {
          for (Object provider : providers)
          {
-            providerFactory.registerProviderInstance(provider);
+            if (!disabledProviderClasses.contains(provider.getClass().getName()))
+            {
+               providerFactory.registerProviderInstance(provider);
+            }
          }
       }
-
       for (Class actualProviderClass : actualProviderClasses)
       {
-         providerFactory.registerProvider(actualProviderClass);
+         if (!disabledProviderClasses.contains(actualProviderClass.getName()))
+         {
+            providerFactory.registerProvider(actualProviderClass);
+         }
       }
 
       // All providers should be registered before resources because of interceptors.
@@ -764,6 +778,16 @@ public class ResteasyDeployment
    public void setProviderClasses(List<String> providerClasses)
    {
       this.providerClasses = providerClasses;
+   }
+
+   public Set<String> getDisabledProviderClasses()
+   {
+      return disabledProviderClasses;
+   }
+
+   public void setDisabledProviderClasses(Set<String> disabledProviderClasses)
+   {
+      this.disabledProviderClasses = disabledProviderClasses;
    }
 
    public List<Object> getProviders()

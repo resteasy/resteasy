@@ -77,6 +77,12 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
          for (String pr : p) deployment.getProviderClasses().add(pr.trim());
       }
 
+      String disableProviders = getParameter(ResteasyContextParameters.RESTEASY_DISABLE_PROVIDERS);
+      if (disableProviders != null && ! "".equals(disableProviders.trim()))
+      {
+         String[] p = disableProviders.split(",");
+         for (String pr : p) deployment.getDisabledProviderClasses().add(pr.trim());
+      }
 
       String resourceMethodInterceptors = getParameter(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS);
 

@@ -9,6 +9,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 public interface ResteasyContextParameters
 {
    String RESTEASY_PROVIDERS = "resteasy.providers";
+   String RESTEASY_DISABLE_PROVIDERS = "resteasy.disable.providers";
 
    /**
     * this is deprecated

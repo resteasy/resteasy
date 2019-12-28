@@ -10,10 +10,12 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.ext.Providers;
 
@@ -34,6 +36,11 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
+      register(factory, Collections.emptySet());
+   }
+
+   public static void register(ResteasyProviderFactory factory, Set<String> disabledProviders)
+   {
       final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
             ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
             : factory;
@@ -43,7 +50,7 @@ public class RegisterBuiltin
             return;
          try
          {
-            registerProviders(factory);
+            registerProviders(factory, disabledProviders);
          }
          catch (Exception e)
          {
@@ -53,7 +60,7 @@ public class RegisterBuiltin
       }
    }
 
-   public static void registerProviders(ResteasyProviderFactory factory) throws Exception
+   public static void registerProviders(ResteasyProviderFactory factory, Set<String> disabledProviders) throws Exception
    {
       Enumeration<URL> en;
       if (System.getSecurityManager() == null)
@@ -101,6 +108,7 @@ public class RegisterBuiltin
             {
                line = line.trim();
                if (line.equals("")) continue;
+               if (disabledProviders.contains(line)) continue;
                origins.put(line, url);
             }
          }
