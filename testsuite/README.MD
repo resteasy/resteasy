@@ -81,13 +81,6 @@ Run testsuite or test with the Wildfly with security manager enabled:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dsecurity.manager
 
-### Remote server
-Run testsuite or test connecting to a running server:
-
-> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Darquillian.remote
-
-Keep in mind that the remote server needs to be started with the option `-Dnode=127.0.0.1` or the binding IP in order for some tests to work properly.
-
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``
 
