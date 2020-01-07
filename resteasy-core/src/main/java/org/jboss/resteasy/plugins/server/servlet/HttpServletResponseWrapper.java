@@ -21,16 +21,16 @@ public class HttpServletResponseWrapper implements HttpResponse
    protected MultivaluedMap<String, Object> outputHeaders;
    protected ResteasyProviderFactory factory;
    protected OutputStream outputStream = new DeferredOutputStream();
-   protected AtomicBoolean abortWithException = new AtomicBoolean(false);
+   protected AtomicBoolean suppressExceptionDuringChunkedTransfer = new AtomicBoolean(false);
 
    @Override
-   public void setAbortWithException(boolean abortWithException) {
-      this.abortWithException.set(abortWithException);
+   public void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {
+      this.suppressExceptionDuringChunkedTransfer.set(suppressExceptionDuringChunkedTransfer);
    }
 
    @Override
-   public boolean abortWithException() {
-      return abortWithException.get();
+   public boolean suppressExceptionDuringChunkedTransfer() {
+      return suppressExceptionDuringChunkedTransfer.get();
    }
 
    /**

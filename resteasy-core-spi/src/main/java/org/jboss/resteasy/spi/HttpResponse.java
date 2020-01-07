@@ -45,9 +45,9 @@ public interface HttpResponse extends Closeable
    void flushBuffer() throws IOException;
 
    // RESTEASY-1784
-   default void setAbortWithException(boolean abortWithException) {};
+   default void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {};
 
-   default boolean abortWithException() {
+   default boolean suppressExceptionDuringChunkedTransfer() {
       return false;
    }
 }
