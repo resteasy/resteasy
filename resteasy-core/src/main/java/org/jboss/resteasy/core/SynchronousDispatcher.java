@@ -493,13 +493,6 @@ public class SynchronousDispatcher implements Dispatcher
       catch (CompletionException e)
       {
          //logger.error("invoke() failed mapping exception", e);
-//         try {
-//            byte[] b = new byte[1024];
-//            response.getOutputStream().write(b);
-//            System.out.println("-+_+_+_+" + new String(b, "UTF-8"));
-//         } catch (IOException ex) {
-//            ex.printStackTrace();
-//         }
          writeException(request, response, e.getCause(), t->{});
          return;
       }
