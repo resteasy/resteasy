@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -20,6 +21,17 @@ public class HttpServletResponseWrapper implements HttpResponse
    protected MultivaluedMap<String, Object> outputHeaders;
    protected ResteasyProviderFactory factory;
    protected OutputStream outputStream = new DeferredOutputStream();
+   protected AtomicBoolean abortWithException = new AtomicBoolean(false);
+
+   @Override
+   public void setAbortWithException(boolean abortWithException) {
+      this.abortWithException.set(abortWithException);
+   }
+
+   @Override
+   public boolean abortWithException() {
+      return abortWithException.get();
+   }
 
    /**
     * RESTEASY-684 wants to defer access to outputstream until a write happens

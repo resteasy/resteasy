@@ -44,4 +44,9 @@ public interface HttpResponse extends Closeable
 
    void flushBuffer() throws IOException;
 
+   default void setAbortWithException(boolean abortWithException) {};
+
+   default boolean abortWithException() {
+      return false;
+   }
 }
