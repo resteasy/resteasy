@@ -8,7 +8,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
