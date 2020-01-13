@@ -32,6 +32,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 /*
@@ -76,7 +78,12 @@ public class PatchMethodFilter implements ContainerRequestFilter
             msgBodyWriter.writeTo(object, object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
                   MediaType.APPLICATION_JSON_TYPE, new MultivaluedTreeMap<String, Object>(), tmpOutputStream);
             ObjectMapper mapper = getObjectMapper();
-            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+            PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
+            //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
+            //be sure to keep that in synch if changing anything here.
+            if (ptv == null || ptv instanceof LaissezFaireSubTypeValidator) {
+               mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+            }
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
             JsonPatch patch = JsonPatch.fromJson(mapper.readValue(request.getInputStream(), JsonNode.class));
             JsonNode result = patch.apply(targetJson);
