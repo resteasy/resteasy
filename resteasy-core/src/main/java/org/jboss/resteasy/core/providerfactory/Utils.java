@@ -1,17 +1,5 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
-
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
@@ -22,6 +10,17 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.PickConstructor;
+
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Utils

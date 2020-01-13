@@ -141,7 +141,7 @@ public class ServerResponseWriter
          {
             writerInterceptors = method.getWriterInterceptors();
          }
-         else
+         else if (providerFactory.getServerWriterInterceptorRegistry() != null)
          {
             writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
          }

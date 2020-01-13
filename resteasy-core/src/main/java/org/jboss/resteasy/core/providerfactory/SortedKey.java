@@ -1,9 +1,9 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import javax.ws.rs.Priorities;
-
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.util.Types;
+
+import javax.ws.rs.Priorities;
 
 /**
  * Allow us to sort message body implementations that are more specific for their types

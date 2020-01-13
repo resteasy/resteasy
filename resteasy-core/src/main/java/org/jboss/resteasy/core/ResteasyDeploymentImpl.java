@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.eclipse.microprofile.config.Config;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.microprofile.config.ResteasyConfigProvider;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -56,32 +57,58 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    private InjectorFactory injectorFactory;
    private Application application;
    private boolean registerBuiltin = true;
-   private List<String> scannedResourceClasses = new ArrayList<String>();
-   private List<String> scannedProviderClasses = new ArrayList<String>();
-   private List<String> scannedJndiComponentResources = new ArrayList<String>();
-   private Map<String, List<String>> scannedResourceClassesWithBuilder = new HashMap<>();
-   private List<String> jndiComponentResources = new ArrayList<String>();
-   private List<String> providerClasses = new ArrayList<String>();
-   private List<Class> actualProviderClasses = new ArrayList<Class>();
-   private List<Object> providers = new ArrayList<Object>();
+   private List<String> scannedResourceClasses;
+   private List<String> scannedProviderClasses;
+   private List<String> scannedJndiComponentResources;
+   private Map<String, List<String>> scannedResourceClassesWithBuilder;
+   private List<String> jndiComponentResources;
+   private List<String> providerClasses;
+   private List<Class> actualProviderClasses ;
+   private List<Object> providers;
    private boolean securityEnabled = false;
-   private List<String> jndiResources = new ArrayList<String>();
-   private List<String> resourceClasses = new ArrayList<String>();
-   private List<String> unwrappedExceptions = new ArrayList<String>();
-   private List<Class> actualResourceClasses = new ArrayList<Class>();
-   private List<ResourceFactory> resourceFactories = new ArrayList<ResourceFactory>();
-   private List<Object> resources = new ArrayList<Object>();
-   private Map<String, String> mediaTypeMappings = new HashMap<String, String>();
-   private Map<String, String> languageExtensions = new HashMap<String, String>();
-   private Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
-   private Map<String, String> constructedDefaultContextObjects = new HashMap<String, String>();
+   private List<String> jndiResources;
+   private List<String> resourceClasses;
+   private List<String> unwrappedExceptions;
+   private List<Class> actualResourceClasses;
+   private List<ResourceFactory> resourceFactories;
+   private List<Object> resources;
+   private Map<String, String> mediaTypeMappings;
+   private Map<String, String> languageExtensions;
+   private Map<Class, Object> defaultContextObjects;
+   private Map<String, String> constructedDefaultContextObjects;
    private Registry registry;
    private Dispatcher dispatcher;
    private ResteasyProviderFactory providerFactory;
    private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    private String paramMapping;
-   private Map<String, Object> properties = new TreeMap<String, Object>();
+   private Map<String, Object> properties;
    protected boolean statisticsEnabled;
+
+   public ResteasyDeploymentImpl() {
+      scannedResourceClasses = new ArrayList<String>();
+      scannedProviderClasses = new ArrayList<String>();
+      scannedJndiComponentResources = new ArrayList<String>();
+      scannedResourceClassesWithBuilder = new HashMap<>();
+      jndiComponentResources = new ArrayList<String>();
+      providerClasses = new ArrayList<String>();
+      actualProviderClasses = new ArrayList<Class>();
+      providers = new ArrayList<Object>();
+      jndiResources = new ArrayList<String>();
+      resourceClasses = new ArrayList<String>();
+      unwrappedExceptions = new ArrayList<String>();
+      actualResourceClasses = new ArrayList<Class>();
+      resourceFactories = new ArrayList<ResourceFactory>();
+      resources = new ArrayList<Object>();
+      mediaTypeMappings = new HashMap<String, String>();
+      languageExtensions = new HashMap<String, String>();
+      defaultContextObjects = new HashMap<Class, Object>();
+      constructedDefaultContextObjects = new HashMap<String, String>();
+      properties = new TreeMap<String, Object>();
+   }
+
+   public ResteasyDeploymentImpl(final boolean quarkus) {
+
+   }
 
    public void start()
    {
@@ -100,7 +127,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    {
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers
-      if (providerFactory == null) providerFactory = ResteasyProviderFactory.newInstance();
+      if (providerFactory == null) providerFactory = new ResteasyProviderFactoryImpl();
       providerFactory.setRegisterBuiltins(registerBuiltin);
       providerFactory.getStatisticsController().setEnabled(statisticsEnabled);
 
@@ -110,7 +137,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       Config config = ResteasyConfigProvider.getConfig();
       tracingText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_TYPE, String.class).orElse(null);
       thresholdText = config.getOptionalValue(ResteasyContextParameters.RESTEASY_TRACING_THRESHOLD, String.class).orElse(null);
-      Object context = getDefaultContextObjects().get(ResteasyConfiguration.class);
+      Object context = getDefaultContextObjects() == null ? null : getDefaultContextObjects().get(ResteasyConfiguration.class);
 
       if (tracingText != null) {
          providerFactory.property(ResteasyContextParameters.RESTEASY_TRACING_TYPE, tracingText);
@@ -177,7 +204,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          asyncDispatcher.setMaxWaitMilliSeconds(asyncJobServiceMaxWait);
          asyncDispatcher.setThreadPoolSize(asyncJobServiceThreadPoolSize);
          asyncDispatcher.setBasePath(asyncJobServiceBasePath);
-         asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
+         if (unwrappedExceptions != null) asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
          asyncDispatcher.start();
       }
       else
@@ -189,7 +216,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          } else {
             dis = (SynchronousDispatcher) dispatcher;
          }
-         dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
+         if (unwrappedExceptions != null)  dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
       }
       registry = dispatcher.getRegistry();
       if (widerRequestMatching)
@@ -198,7 +225,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       }
 
 
-      dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
+      if (defaultContextObjects != null) dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
       dispatcher.getDefaultContextObjects().put(Configurable.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Configuration.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
@@ -321,6 +348,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             }
             suffixNegotiationFilter.setLanguageMappings(languageExtensions);
          }
+         ((ResteasyProviderFactoryImpl)providerFactory).lockSnapshots();
       }
       finally
       {
@@ -428,9 +456,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          }
       }
 
-      for (Class actualProviderClass : actualProviderClasses)
-      {
-         providerFactory.registerProvider(actualProviderClass);
+      if (actualProviderClasses != null) {
+         for (Class actualProviderClass : actualProviderClasses) {
+            providerFactory.registerProvider(actualProviderClass);
+         }
       }
 
       // All providers should be registered before resources because of interceptors.
@@ -540,14 +569,16 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          }
       }
 
-      for (Class actualResourceClass : actualResourceClasses)
-      {
-         registry.addPerRequestResource(actualResourceClass);
+      if (actualResourceClasses != null) {
+         for (Class actualResourceClass : actualResourceClasses) {
+            registry.addPerRequestResource(actualResourceClass);
+         }
       }
 
-      for (ResourceFactory factory : resourceFactories)
-      {
-         registry.addResourceFactory(factory);
+      if (resourceFactories != null) {
+         for (ResourceFactory factory : resourceFactories) {
+            registry.addResourceFactory(factory);
+         }
       }
       registry.checkAmbiguousUri();
    }

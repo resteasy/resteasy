@@ -1,7 +1,8 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.util.Map;
-import java.util.Set;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -11,128 +12,133 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
-
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.spi.AsyncClientResponseProvider;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A ClientHelper that does nothing, useful to save memory when creating a ResteasyProviderFactory for server side only
  */
 @SuppressWarnings("rawtypes")
-public final class NOOPClientHelper extends ClientHelper
-{
-   public static final NOOPClientHelper INSTANCE = new NOOPClientHelper(null);
+public final class NOOPClientHelper extends ClientHelper {
+   public static final NOOPClientHelper SINGLETON = new NOOPClientHelper();
 
-   public NOOPClientHelper(final ResteasyProviderFactoryImpl rpf)
-   {
-      super(rpf);
+   private NOOPClientHelper() {
    }
 
    @Override
-   protected void initializeDefault()
-   {
-      //NOOP
-   }
-
-   @Override
-   protected void initialize(ResteasyProviderFactoryImpl parent)
-   {
-      //NOOP
-   }
-
-   @Override
-   protected void initializeClientProviders(ResteasyProviderFactory factory)
-   {
-      //NOOP
-   }
-
-   @Override
-   protected JaxrsInterceptorRegistry<ReaderInterceptor> getClientReaderInterceptorRegistry(ResteasyProviderFactory parent)
-   {
+   protected RxInvokerProvider<?> getRxInvokerProviderFromReactiveClass(Class<?> clazz) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected JaxrsInterceptorRegistry<WriterInterceptor> getClientWriterInterceptorRegistry(ResteasyProviderFactory parent)
-   {
+   protected boolean isReactive(Class<?> clazz) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilterRegistry(ResteasyProviderFactory parent)
-   {
+   protected void processProviderContracts(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts, Map<Class<?>, Integer> newContracts) {
+   }
+
+   @Override
+   protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
+   }
+
+   @Override
+   protected JaxrsInterceptorRegistry<ClientRequestFilter> getRequestFiltersForWrite() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters(ResteasyProviderFactory parent)
-   {
+   protected JaxrsInterceptorRegistry<ClientResponseFilter> getResponseFiltersForWrite() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected Set<DynamicFeature> getClientDynamicFeatures(ResteasyProviderFactory parent)
-   {
+   protected Map<Class<?>, AsyncClientResponseProvider> getAsyncClientResponseProvidersForWrite() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected Map<Class<?>, AsyncClientResponseProvider> getAsyncClientResponseProviders(ResteasyProviderFactory parent)
-   {
+   protected Map<Class<?>, Class<? extends RxInvokerProvider<?>>> getReactiveClassesForWrite() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected RxInvokerProvider<?> getRxInvokerProviderFromReactiveClass(Class<?> clazz)
-   {
+   public JaxrsInterceptorRegistry<ClientRequestFilter> getRequestFilters() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected boolean isReactive(Class<?> clazz)
-   {
+   public JaxrsInterceptorRegistry<ClientResponseFilter> getResponseFilters() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected void processProviderContracts(Class provider, Integer priorityOverride, boolean isBuiltin,
-         Map<Class<?>, Integer> contracts, Map<Class<?>, Integer> newContracts, ResteasyProviderFactoryImpl parent)
-   {
-      //NOOP
-   }
-
-   @Override
-   protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
-         Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts, ResteasyProviderFactoryImpl parent)
-   {
-      //NOOP
-   }
-
-   @Override
-   protected MediaTypeMap<SortedKey<MessageBodyReader>> getClientMessageBodyReaders(ResteasyProviderFactoryImpl parent)
-   {
+   public Map<Class<?>, AsyncClientResponseProvider> getAsyncClientResponseProviders() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getClientMessageBodyWriters(ResteasyProviderFactoryImpl parent)
-   {
+   public Map<Class<?>, Class<? extends RxInvokerProvider<?>>> getReactiveClasses() {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, int priority,
-         boolean isBuiltin, ResteasyProviderFactoryImpl parent)
-   {
-      //NOOP
+   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, int priority, boolean isBuiltin) {
    }
 
    @Override
-   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority,
-         boolean isBuiltin, ResteasyProviderFactoryImpl parent)
-   {
-      //NOOP
+   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority, boolean isBuiltin) {
+   }
+
+   @Override
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReadersForWrite() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getMessageBodyWritersForWrite() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   protected JaxrsInterceptorRegistry<ReaderInterceptor> getReaderInterceptorRegistryForWrite() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   protected JaxrsInterceptorRegistry<WriterInterceptor> getWriterInterceptorRegistryForWrite() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   protected Set<DynamicFeature> getDynamicFeaturesForWrite() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReaders() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public MediaTypeMap<SortedKey<MessageBodyWriter>> getMessageBodyWriters() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public JaxrsInterceptorRegistry<ReaderInterceptor> getReaderInterceptorRegistry() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public JaxrsInterceptorRegistry<WriterInterceptor> getWriterInterceptorRegistry() {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Set<DynamicFeature> getDynamicFeatures() {
+      throw new UnsupportedOperationException();
    }
 }
+

@@ -298,7 +298,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
       final long totalTimestamp = tracingLogger.timestamp("REQUEST_FILTER_SUMMARY");
 
-      while(currentFilter < requestFilters.length)
+      while(requestFilters != null && currentFilter < requestFilters.length)
       {
          ContainerRequestFilter filter = requestFilters[currentFilter++];
          try
@@ -351,7 +351,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             }
          }
       }
-      tracingLogger.logDuration("REQUEST_FILTER_SUMMARY", totalTimestamp, requestFilters.length);
+      tracingLogger.logDuration("REQUEST_FILTER_SUMMARY", totalTimestamp, requestFilters == null ? 0 : requestFilters.length);
       // here it means we reached the last filter
       // some frameworks don't support async request filters, in which case suspend() is forbidden
       // so if we get here we're still synchronous and don't have a continuation, which must be in

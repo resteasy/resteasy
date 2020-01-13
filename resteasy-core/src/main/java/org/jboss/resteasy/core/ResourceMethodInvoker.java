@@ -2,9 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
-import org.jboss.resteasy.core.providerfactory.NOOPClientHelper;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.core.providerfactory.ServerHelper;
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -24,7 +22,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.Parameter;
@@ -38,6 +35,7 @@ import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -48,7 +46,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.sse.SseEventSink;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -118,17 +115,17 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       };
 
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(providerFactory) {
-         @Override
-         protected void initializeUtils()
+      Set<DynamicFeature> serverDynamicFeatures = providerFactory.getServerDynamicFeatures();
+      if (serverDynamicFeatures != null && !serverDynamicFeatures.isEmpty()) {
+         this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(RuntimeType.SERVER, providerFactory);
+         for (DynamicFeature feature : serverDynamicFeatures)
          {
-            clientHelper = NOOPClientHelper.INSTANCE;
-            serverHelper = new ServerHelper(this);
+            feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
          }
-      };
-      for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
-      {
-         feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
+         ((ResteasyProviderFactoryImpl)this.resourceMethodProviderFactory).lockSnapshots();
+      } else {
+         // if no dynamic features, we don't need to copy the parent.
+         this.resourceMethodProviderFactory = providerFactory;
       }
 
       this.methodInjector = injector.createMethodInjector(method, resourceMethodProviderFactory);
@@ -246,7 +243,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    @Override
-   public void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory)
+   public void registryUpdated(JaxrsInterceptorRegistry registry, JaxrsInterceptorRegistry.InterceptorFactory factory)
    {
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
@@ -417,7 +414,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       try {
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
+         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, getRequestFilters(),
             () -> invokeOnTargetAfterFilter(request, response, target));
          // let it handle the continuation
          return requestContext.filter();
@@ -614,8 +611,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
    {
       asyncResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
-      asyncResponse.setWriterInterceptors(writerInterceptors);
-      asyncResponse.setResponseFilters(responseFilters);
+      asyncResponse.setWriterInterceptors(getWriterInterceptors());
+      asyncResponse.setResponseFilters(getResponseFilters());
       if (asyncResponse instanceof ResourceMethodInvokerAwareResponse) {
          ((ResourceMethodInvokerAwareResponse)asyncResponse).setMethod(this);
       }

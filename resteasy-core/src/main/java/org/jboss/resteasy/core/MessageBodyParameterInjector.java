@@ -115,6 +115,10 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                       declaringClass, target);
    }
 
+   protected ReaderInterceptor[] getReaderInterceptors() {
+      return this.interceptors;
+   }
+
    public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (mediaType.isWildcardType() || mediaType.isWildcardSubtype() ||
@@ -199,7 +203,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
             is = new InputStreamToByteArray(is);
 
          }
-         AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
+         AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(getReaderInterceptors(), factory, type,
                  genericType, annotations, mediaType, request
                  .getMutableHeaders(), is, request);
 

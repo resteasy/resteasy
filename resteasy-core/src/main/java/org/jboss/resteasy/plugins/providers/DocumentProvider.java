@@ -39,11 +39,12 @@ import java.lang.reflect.Type;
 @Consumes({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
 {
-   private final TransformerFactory transformerFactory;
-   private final DocumentBuilderFactory documentBuilder;
+   private TransformerFactory transformerFactory;
+   private DocumentBuilderFactory documentBuilder;
    private boolean expandEntityReferences = false;
    private boolean enableSecureProcessingFeature = true;
    private boolean disableDTDs = true;
+   private volatile boolean init;
 
    public DocumentProvider()
    {
@@ -51,11 +52,24 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       this(ResteasyContext.getContextData(ResteasyConfiguration.class));
    }
 
+   private void lazyInit() {
+      boolean init = this.init;
+      if (!init) {
+         synchronized (this) {
+            init = this.init;
+            if (!init) {
+               this.init = true;
+               this.documentBuilder = DocumentBuilderFactory.newInstance();
+               this.transformerFactory = TransformerFactory.newInstance();
+            }
+         }
+      }
+
+   }
+
    public DocumentProvider(final @Context ResteasyConfiguration config)
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : DocumentProvider", getClass().getName());
-      this.documentBuilder = DocumentBuilderFactory.newInstance();
-      this.transformerFactory = TransformerFactory.newInstance();
       try
       {
          String s = config.getParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
@@ -97,6 +111,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
          throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
+      lazyInit();
       try
       {
          documentBuilder.setExpandEntityReferences(expandEntityReferences);

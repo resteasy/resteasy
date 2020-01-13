@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.core.MediaType;
@@ -124,60 +125,71 @@ public class MediaTypeMap<T>
    // This composite is subtype+*  i.e. atom+* rss+*
    public static final Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
 
-   private static class SubtypeMap<T>
+   private class SubtypeMap<T>
    {
       private volatile Map<String, List<Entry<T>>> index;
       private volatile Map<String, List<Entry<T>>> compositeIndex;
       private volatile Map<String, List<Entry<T>>> wildCompositeIndex;
-      private final CopyOnWriteArrayList<Entry<T>> wildcards;
-      private final CopyOnWriteArrayList<Entry<T>> all;
+      private volatile List<Entry<T>> wildcards;
+      private volatile List<Entry<T>> all;
 
       private SubtypeMap() {
          index = new HashMap<>();
          compositeIndex = new HashMap<>();
          wildCompositeIndex = new HashMap<>();
-         wildcards = new CopyOnWriteArrayList<>();
-         all = new CopyOnWriteArrayList<>();
+         wildcards = new ArrayList<>();
+         all = new ArrayList<>();
       }
 
       private SubtypeMap(final SubtypeMap<T> subtypeMap) {
          index = subtypeMap.index;
          compositeIndex = subtypeMap.compositeIndex;
          wildCompositeIndex = subtypeMap.wildCompositeIndex;
-         wildcards = new CopyOnWriteArrayList<>(subtypeMap.wildcards);
-         all = new CopyOnWriteArrayList<>(subtypeMap.all);
+         wildcards = subtypeMap.wildcards;
+         all = subtypeMap.all;
       }
 
-      private void add(final MediaType type, final T obj)
+      private void add(Entry<T> entry)
       {
-         final Entry<T> entry = new Entry<>(type, obj);
-         all.add(entry);
+         List<Entry<T>> newAll = all;
+         if (lockSnapshots) {
+            newAll = new ArrayList<>(all.size() + 1);
+            newAll.addAll(all);
+         }
+         newAll.add(entry);
 
-         final Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(type.getSubtype());
-         final Matcher wildCompositeMatcher = WILD_SUBTYPE_COMPOSITE_PATTERN.matcher(type.getSubtype());
+         final Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(entry.mediaType.getSubtype());
+         final Matcher wildCompositeMatcher = WILD_SUBTYPE_COMPOSITE_PATTERN.matcher(entry.mediaType.getSubtype());
 
-         index = copy(index);
-         compositeIndex = copy(compositeIndex);
-         wildCompositeIndex = copy(wildCompositeIndex);
 
-         if (type.isWildcardSubtype()) wildcards.add(entry);
+         if (entry.mediaType.isWildcardSubtype()) wildcards.add(entry);
          else if (matcher.matches())
          {
-            add(compositeIndex, matcher.group(1), entry);
+            Map<String, List<Entry<T>>> newCompositeIndex = compositeIndex;
+            if (lockSnapshots) newCompositeIndex = copy(compositeIndex);
+            add(newCompositeIndex, matcher.group(1), entry);
+            compositeIndex = newCompositeIndex;
          }
          else if (wildCompositeMatcher.matches())
          {
-            add(wildCompositeIndex, wildCompositeMatcher.group(1), entry);
+            Map<String, List<Entry<T>>> newWildCompositeIndex = wildCompositeIndex;
+            if (lockSnapshots) newWildCompositeIndex = (wildCompositeIndex);
+            add(newWildCompositeIndex, wildCompositeMatcher.group(1), entry);
+            wildCompositeIndex = newWildCompositeIndex;
          }
          else
          {
-            add(index, type.getSubtype(), entry);
+            Map<String, List<Entry<T>>> newIndex = index;
+            if (lockSnapshots) newIndex = copy(index);
+            add(newIndex, entry.mediaType.getSubtype(), entry);
+            index = newIndex;
          }
+         all = newAll;
       }
 
       private Map<String, List<Entry<T>>> copy(final Map<String, List<Entry<T>>> original) {
          final Map<String, List<Entry<T>>> copy = new HashMap<>(original.size());
-         original.forEach((key, value) -> copy.put(key, new CopyOnWriteArrayList<>(value)));
+         original.forEach((key, value) -> copy.put(key, new ArrayList<>(value)));
          return copy;
       }
 
@@ -277,21 +289,38 @@ public class MediaTypeMap<T>
       }
    }
 
-   private volatile Map<String, SubtypeMap<T>> index = new HashMap<>();
-   private volatile Map<CachedMediaTypeAndClass, List<T>> classCache = new HashMap<>();
-   private final CopyOnWriteArrayList<Entry<T>> wildcards;
-   private final CopyOnWriteArrayList<Entry<T>> all;
+   private volatile Map<String, SubtypeMap<T>> index;
+   private volatile Map<CachedMediaTypeAndClass, List<T>> classCache = Collections.EMPTY_MAP;
+   private List<Entry<T>> wildcards;
+   private List<Entry<T>> everything;
+   private boolean lockSnapshots;
 
    public MediaTypeMap() {
-      wildcards  = new CopyOnWriteArrayList<>();
-      all        = new CopyOnWriteArrayList<>();
+      index = new HashMap<>();
+      wildcards = new ArrayList<>();
+      everything = new ArrayList<>();
    }
 
+   /**
+    * Shallow copy, any additional adds will deep copy
+    *
+    * @param mediaTypeMap
+    */
    public MediaTypeMap(final MediaTypeMap<T> mediaTypeMap) {
+      lockSnapshots = true;
       index      = mediaTypeMap.index;
-      wildcards  = new CopyOnWriteArrayList<>(mediaTypeMap.wildcards);
-      all        = new CopyOnWriteArrayList<>(mediaTypeMap.all);
+      wildcards  = mediaTypeMap.wildcards;
+      everything        = mediaTypeMap.everything;
       classCache = mediaTypeMap.classCache;
+   }
+
+   /**
+    * After this is called, all new adds will deep copy itself.
+    *
+    */
+   public void lockSnapshots() {
+      //if (!lockSnapshots) Collections.sort(everything);
+      lockSnapshots = true;
    }
 
    /**
@@ -306,24 +335,58 @@ public class MediaTypeMap<T>
               new MediaType(type.getType().toLowerCase(), type.getSubtype().toLowerCase(), type.getParameters());
       final Entry<T> entry = new Entry<>(newType, obj);
 
+      add(entry);
+   }
+
+   /**
+    * Add an object to the media type map.  This is synchronized to serialize adds.
+    *
+    * @param mediaType media type
+    * @param obj object
+    */
+   public synchronized void add(String mediaType, final T obj)
+   {
+      final MediaType newType = MediaTypeHeaderDelegate.parse(mediaType.toLowerCase());
+      final Entry<T> entry = new Entry<>(newType, obj);
+      add(entry);
+   }
+
+   protected void add(Entry<T> entry) {
       classCache = new HashMap<>();
 
-      all.add(entry);
-      Collections.sort(all);
+      List<Entry<T>> newAll = everything;
+      if (lockSnapshots) {
+         newAll = new ArrayList<>(everything.size() + 1);
+         newAll.addAll(everything);
+         // don't sort until we are done adding
+      }
+      newAll.add(entry);
+      Collections.sort(newAll);
 
-      final Map<String, SubtypeMap<T>> oldIndex = index;
-      index = new HashMap<>();
-      oldIndex.forEach((key, value) -> index.put(key, new SubtypeMap<>(value)));
 
-      if (newType.isWildcardType())
+      if (entry.mediaType.isWildcardType())
       {
-         wildcards.add(entry);
+         List<Entry<T>> newWild = wildcards;
+         if (lockSnapshots) {
+            newWild = new ArrayList<>(wildcards.size() + 1);
+            newWild.addAll(wildcards);
+         }
+         newWild.add(entry);
+         wildcards = newWild;
       }
       else
       {
-         index.putIfAbsent(newType.getType(), new SubtypeMap<>());
-         index.get(newType.getType()).add(newType, obj);
+         Map<String, SubtypeMap<T>> newIndex = index;
+         if (lockSnapshots) {
+            Map<String, SubtypeMap<T>> finalIndex = new HashMap<>();
+            newIndex = finalIndex;
+            index.forEach((key, value) -> finalIndex.put(key, new SubtypeMap<>(value)));
+         }
+         newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+         newIndex.get(entry.mediaType.getType()).add(entry);
+         index = newIndex;
       }
+      everything = newAll;
    }
 
 
@@ -351,16 +414,16 @@ public class MediaTypeMap<T>
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
-         return convert(all);
+         return convert(everything);
       }
       else
       {
-         matches.addAll(wildcards);
          SubtypeMap<T> indexed = index.get(accept.getType());
          if (indexed != null)
          {
             matches.addAll(indexed.getPossible(accept));
          }
+         matches.addAll(wildcards);
       }
       Collections.sort(matches);
       return convert(matches);
@@ -388,16 +451,16 @@ public class MediaTypeMap<T>
       List<Entry<T>> matches = new ArrayList<Entry<T>>();
       if (accept.isWildcardType())
       {
-         matches.addAll(all);
+         matches.addAll(everything);
       }
       else
       {
-         matches.addAll(wildcards);
          SubtypeMap<T> indexed = index.get(accept.getType());
          if (indexed != null)
          {
             matches.addAll(indexed.getPossible(accept));
          }
+         matches.addAll(wildcards);
       }
       Collections.sort(matches, new TypedEntryComparator(type));
       cached = convert(matches);

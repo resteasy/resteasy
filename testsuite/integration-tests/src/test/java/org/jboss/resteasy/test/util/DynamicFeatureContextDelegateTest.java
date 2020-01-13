@@ -182,9 +182,9 @@ public class DynamicFeatureContextDelegateTest
       ResteasyProviderFactory resteasyProviderFactory = ResteasyProviderFactory.newInstance();
       DynamicFeatureContextDelegate featureContext = new DynamicFeatureContextDelegate(resteasyProviderFactory);
       featureContext.register(new CustomDynamicFeature());
-      Assert.assertTrue(resteasyProviderFactory.getServerDynamicFeatures().isEmpty());
+      Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
       featureContext.register(CustomDynamicFeature.class);
-      Assert.assertTrue(resteasyProviderFactory.getServerDynamicFeatures().isEmpty());
+      Assert.assertNull(resteasyProviderFactory.getServerDynamicFeatures());
    }
 
 }

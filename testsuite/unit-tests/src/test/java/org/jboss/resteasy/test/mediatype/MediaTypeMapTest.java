@@ -21,6 +21,22 @@ public class MediaTypeMapTest {
    @Test
    public void testMatching() {
       MediaTypeMap<String> map = new MediaTypeMap<String>();
+      test(map);
+      MediaTypeMap<String> locked = new MediaTypeMap<String>();
+      locked.lockSnapshots();
+      test(locked);
+   }
+
+   @Test
+   public void testMatchingString() {
+      MediaTypeMap<String> map = new MediaTypeMap<String>();
+      testString(map);
+      MediaTypeMap<String> locked = new MediaTypeMap<String>();
+      locked.lockSnapshots();
+      testString(locked);
+   }
+
+   protected void test(MediaTypeMap<String> map) {
       String defaultPlainText = "defaultPlainText";
       map.add(new MediaType("text", "plain"), defaultPlainText);
       String jaxb = "jaxb";
@@ -34,6 +50,27 @@ public class MediaTypeMapTest {
       String app = "app";
       map.add(new MediaType("application", "*"), app);
 
+      evalMapping(map, defaultPlainText, jaxb, wildcard, allText, allXML, app);
+   }
+
+   protected void testString(MediaTypeMap<String> map) {
+      String defaultPlainText = "defaultPlainText";
+      map.add(MediaType.TEXT_PLAIN, defaultPlainText);
+      String jaxb = "jaxb";
+      map.add(MediaType.TEXT_XML, jaxb);
+      String wildcard = "wildcard";
+      map.add(MediaType.WILDCARD, wildcard);
+      String allText = "allText";
+      map.add("text/*", allText);
+      String allXML = "allXML";
+      map.add("text/*+xml", allXML);
+      String app = "app";
+      map.add("application/*", app);
+
+      evalMapping(map, defaultPlainText, jaxb, wildcard, allText, allXML, app);
+   }
+
+   private void evalMapping(MediaTypeMap<String> map, String defaultPlainText, String jaxb, String wildcard, String allText, String allXML, String app) {
       List<String> list = map.getPossible(new MediaType("text", "plain"));
       Assert.assertNotNull("Media types for \"text, plain\" is empty", list);
       Assert.assertEquals("The list of media types doesn't contain expected number of elements", 3, list.size());
