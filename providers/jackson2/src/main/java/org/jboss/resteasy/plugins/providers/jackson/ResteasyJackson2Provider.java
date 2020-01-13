@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -160,7 +162,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
-         mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
+         //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
+         //be sure to keep that in synch if changing anything here.
+         if (ptv == null || ptv instanceof LaissezFaireSubTypeValidator) {
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         }
          endpoint = _configForReading(mapper, annotations, null);
          _readers.put(key, endpoint);
       }
@@ -222,7 +229,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
-         mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         PolymorphicTypeValidator ptv = mapper.getPolymorphicTypeValidator();
+         //the check is protected by test org.jboss.resteasy.test.providers.jackson2.whitelist.JacksonConfig,
+         //be sure to keep that in synch if changing anything here.
+         if (ptv == null || ptv instanceof LaissezFaireSubTypeValidator) {
+            mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
+         }
          mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, WRITE_DURATIONS_AS_TIMESTAMPS);
          endpoint = _configForWriting(mapper, annotations, null);
 
