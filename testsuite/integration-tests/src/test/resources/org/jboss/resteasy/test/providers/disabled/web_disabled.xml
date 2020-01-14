@@ -1,0 +1,8 @@
+<web-app>
+
+    <context-param>
+        <param-name>resteasy.disable.providers</param-name>
+        <param-value>org.jboss.resteasy.plugins.providers.StringTextStar, org.jboss.resteasy.test.providers.disabled.resource.FooReaderWriter</param-value>
+    </context-param>
+
+</web-app>
