@@ -151,18 +151,20 @@ public class MediaTypeMap<T>
 
       private void add(Entry<T> entry)
       {
-         List<Entry<T>> newAll = all;
          if (lockSnapshots) {
-            newAll = new ArrayList<>(all.size() + 1);
-            newAll.addAll(all);
+            all = copyAndAdd(all, entry);
+         } else {
+            all.add(entry);
          }
-         newAll.add(entry);
 
          final Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(entry.mediaType.getSubtype());
          final Matcher wildCompositeMatcher = WILD_SUBTYPE_COMPOSITE_PATTERN.matcher(entry.mediaType.getSubtype());
 
 
-         if (entry.mediaType.isWildcardSubtype()) wildcards.add(entry);
+         if (entry.mediaType.isWildcardSubtype()) {
+            if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
+            else wildcards.add(entry);
+         }
          else if (matcher.matches())
          {
             Map<String, List<Entry<T>>> newCompositeIndex = compositeIndex;
@@ -184,7 +186,6 @@ public class MediaTypeMap<T>
             add(newIndex, entry.mediaType.getSubtype(), entry);
             index = newIndex;
          }
-         all = newAll;
       }
 
       private Map<String, List<Entry<T>>> copy(final Map<String, List<Entry<T>>> original) {
@@ -228,6 +229,14 @@ public class MediaTypeMap<T>
             return matches;
          }
       }
+   }
+
+   static <A> List<A> copyAndAdd(List<A> a, A entry) {
+      // reduce internal array copying
+      ArrayList<A> newList = new ArrayList<A>(a.size() + 1);
+      newList.add(entry);
+      newList.addAll(0, a);
+      return newList;
    }
 
    private static class CachedMediaTypeAndClass
@@ -290,9 +299,9 @@ public class MediaTypeMap<T>
    }
 
    private volatile Map<String, SubtypeMap<T>> index;
-   private volatile Map<CachedMediaTypeAndClass, List<T>> classCache = Collections.EMPTY_MAP;
-   private List<Entry<T>> wildcards;
-   private List<Entry<T>> everything;
+   private Map<CachedMediaTypeAndClass, List<T>> classCache;
+   private volatile List<Entry<T>> wildcards;
+   private volatile List<Entry<T>> everything;
    private boolean lockSnapshots;
 
    public MediaTypeMap() {
@@ -352,27 +361,23 @@ public class MediaTypeMap<T>
    }
 
    protected void add(Entry<T> entry) {
-      classCache = new HashMap<>();
+      classCache = null;
 
       List<Entry<T>> newAll = everything;
       if (lockSnapshots) {
-         newAll = new ArrayList<>(everything.size() + 1);
-         newAll.addAll(everything);
-         // don't sort until we are done adding
+         newAll = copyAndAdd(everything, entry);
+         Collections.sort(newAll);
+         everything = newAll;
+      } else {
+         everything.add(entry);
+         Collections.sort(everything);
       }
-      newAll.add(entry);
-      Collections.sort(newAll);
 
 
       if (entry.mediaType.isWildcardType())
       {
-         List<Entry<T>> newWild = wildcards;
-         if (lockSnapshots) {
-            newWild = new ArrayList<>(wildcards.size() + 1);
-            newWild.addAll(wildcards);
-         }
-         newWild.add(entry);
-         wildcards = newWild;
+         if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
+         else wildcards.add(entry);
       }
       else
       {
@@ -442,9 +447,11 @@ public class MediaTypeMap<T>
       CachedMediaTypeAndClass cacheEntry = null;
       if (useCache)
       {
-         cacheEntry = new CachedMediaTypeAndClass(type, accept);
-         cached = classCache.get(cacheEntry);
-         if (cached != null) return cached;
+         if (classCache != null) {
+            cacheEntry = new CachedMediaTypeAndClass(type, accept);
+            cached = classCache.get(cacheEntry);
+            if (cached != null) return cached;
+         }
       }
 
       accept = new MediaType(accept.getType().toLowerCase(), accept.getSubtype().toLowerCase(), accept.getParameters());
@@ -464,7 +471,15 @@ public class MediaTypeMap<T>
       }
       Collections.sort(matches, new TypedEntryComparator(type));
       cached = convert(matches);
-      if (useCache) classCache.put(cacheEntry, cached);
+      if (useCache) {
+         // don't care about variable volatility.  Really rare to add entries post boot
+         Map<CachedMediaTypeAndClass, List<T>> cache = classCache;
+         if (classCache == null) {
+            cache = new HashMap<>();
+            classCache = cache;
+         }
+         cache.put(cacheEntry, cached);
+      }
       return cached;
 
    }
