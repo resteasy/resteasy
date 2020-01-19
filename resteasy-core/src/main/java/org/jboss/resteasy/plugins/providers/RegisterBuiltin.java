@@ -83,6 +83,47 @@ public class RegisterBuiltin
 
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
    {
+      Map<String, URL> origins = scanBuiltins();
+      for (final Entry<String, URL> entry : origins.entrySet())
+      {
+         final String line = entry.getKey();
+         try
+         {
+            Class clazz;
+            if (System.getSecurityManager() == null)
+            {
+               clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+            }
+            else
+            {
+               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
+               {
+                  @Override
+                  public Class run() throws ClassNotFoundException
+                  {
+                     return Thread.currentThread().getContextClassLoader().loadClass(line);
+                  }
+               });
+            }
+
+            factory.registerProvider(clazz, true);
+         }
+         catch (NoClassDefFoundError e)
+         {
+            LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
+         }
+         catch (ClassNotFoundException | PrivilegedActionException ex)
+         {
+            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
+         }
+      }
+      if (isGZipEnabled()) {
+         factory.registerProvider(GZIPDecodingInterceptor.class, true);
+         factory.registerProvider(GZIPEncodingInterceptor.class, true);
+      }
+   }
+
+   public static Map<String, URL> scanBuiltins() throws IOException, PrivilegedActionException {
       Enumeration<URL> en;
       if (System.getSecurityManager() == null)
       {
@@ -137,43 +178,7 @@ public class RegisterBuiltin
             is.close();
          }
       }
-      for (final Entry<String, URL> entry : origins.entrySet())
-      {
-         final String line = entry.getKey();
-         try
-         {
-            Class clazz;
-            if (System.getSecurityManager() == null)
-            {
-               clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
-            }
-            else
-            {
-               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
-               {
-                  @Override
-                  public Class run() throws ClassNotFoundException
-                  {
-                     return Thread.currentThread().getContextClassLoader().loadClass(line);
-                  }
-               });
-            }
-
-            factory.registerProvider(clazz, true);
-         }
-         catch (NoClassDefFoundError e)
-         {
-            LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
-         }
-         catch (ClassNotFoundException | PrivilegedActionException ex)
-         {
-            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
-         }
-      }
-      if (isGZipEnabled()) {
-         factory.registerProvider(GZIPDecodingInterceptor.class, true);
-         factory.registerProvider(GZIPEncodingInterceptor.class, true);
-      }
+      return origins;
    }
 
    public static boolean isGZipEnabled() {

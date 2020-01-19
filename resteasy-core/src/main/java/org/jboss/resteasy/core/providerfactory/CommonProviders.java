@@ -110,28 +110,19 @@ public class CommonProviders {
       if (Utils.isA(provider, ReaderInterceptor.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider);
-         JaxrsInterceptorRegistry<ReaderInterceptor> registry = getReaderInterceptorRegistryForWrite();
-         registry.registerClass(provider, priority);
-         attachedReaderInterceptors = false;
-         readerInterceptorRegistry = registry;
+         addReaderInterceptor(provider, priority);
          newContracts.put(ReaderInterceptor.class, priority);
       }
       if (Utils.isA(provider, WriterInterceptor.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, WriterInterceptor.class, provider);
-         JaxrsInterceptorRegistry<WriterInterceptor> registry = getWriterInterceptorRegistryForWrite();
-         registry.registerClass(provider, priority);
-         attachedWriterInterceptors = false;
-         writerInterceptorRegistry = registry;
+         addWriterInterceptor(provider, priority);
          newContracts.put(WriterInterceptor.class, priority);
       }
       if (Utils.isA(provider, DynamicFeature.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, DynamicFeature.class, provider);
-         Set<DynamicFeature> registry = getDynamicFeaturesForWrite();
-         registry.add((DynamicFeature) rpf.injectedInstance(provider));
-         attachedFeatures = false;
-         dynamicFeatures = registry;
+         addDynamicFeature(provider);
          newContracts.put(DynamicFeature.class, priority);
       }
    }
@@ -211,7 +202,7 @@ public class CommonProviders {
       }
       else
       {
-         registry.add(MediaType.WILDCARD, key);
+         registry.addWildcard(key);
       }
       attachedMessageBodyReaders = false;
       messageBodyReaders = registry;
@@ -315,4 +306,95 @@ public class CommonProviders {
       }
    }
 
+   // for quarkus
+
+   public void addDynamicFeature(Class provider) {
+      Set<DynamicFeature> registry = getDynamicFeaturesForWrite();
+      registry.add((DynamicFeature) rpf.injectedInstance(provider));
+      attachedFeatures = false;
+      dynamicFeatures = registry;
+   }
+
+   public void addWriterInterceptor(Class provider, int priority) {
+      JaxrsInterceptorRegistry<WriterInterceptor> registry = getWriterInterceptorRegistryForWrite();
+      registry.registerClass(provider, priority);
+      attachedWriterInterceptors = false;
+      writerInterceptorRegistry = registry;
+   }
+
+   public void addReaderInterceptor(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ReaderInterceptor> registry = getReaderInterceptorRegistryForWrite();
+      registry.registerClass(provider, priority);
+      attachedReaderInterceptors = false;
+      readerInterceptorRegistry = registry;
+   }
+
+   public void addWildcardMBR(SortedKey<MessageBodyReader> mbr) {
+      MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
+      registry.addWildcard(mbr);
+      attachedMessageBodyReaders = false;
+      messageBodyReaders = registry;
+   }
+
+   public void addSubtypeWildMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr) {
+      MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
+      registry.addWildSubtype(mediaType, mbr);
+      attachedMessageBodyReaders = false;
+      messageBodyReaders = registry;
+   }
+
+   public void addRegularMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr) {
+      MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
+      registry.addRegular(mediaType, mbr);
+      attachedMessageBodyReaders = false;
+      messageBodyReaders = registry;
+   }
+
+   public void addCompositeWildcardMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr, String baseSubtype) {
+      MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
+      registry.addCompositeWild(mediaType, mbr, baseSubtype);
+      attachedMessageBodyReaders = false;
+      messageBodyReaders = registry;
+   }
+
+   public void addWildcardCompositeMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr, String baseSubtype) {
+      MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
+      registry.addWildComposite(mediaType, mbr, baseSubtype);
+      attachedMessageBodyReaders = false;
+      messageBodyReaders = registry;
+   }
+
+   public void addWildcardMBW(SortedKey<MessageBodyWriter> mbw) {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();
+      registry.addWildcard(mbw);
+      attachedMessageBodyWriters = false;
+      messageBodyWriters = registry;
+   }
+
+   public void addRegularMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw) {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();
+      registry.addRegular(mediaType, mbw);
+      attachedMessageBodyWriters = false;
+      messageBodyWriters = registry;
+   }
+   public void addSubtypeWildMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw) {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();
+      registry.addWildSubtype(mediaType, mbw);
+      attachedMessageBodyWriters = false;
+      messageBodyWriters = registry;
+   }
+
+   public void addCompositeWildcardMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw, String baseSubtype) {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();
+      registry.addCompositeWild(mediaType, mbw, baseSubtype);
+      attachedMessageBodyWriters = false;
+      messageBodyWriters = registry;
+   }
+
+   public void addWildcardCompositeMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw, String baseSubtype) {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();
+      registry.addWildComposite(mediaType, mbw, baseSubtype);
+      attachedMessageBodyWriters = false;
+      messageBodyWriters = registry;
+   }
 }

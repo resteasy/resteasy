@@ -125,6 +125,22 @@ public class MediaTypeMap<T>
    // This composite is subtype+*  i.e. atom+* rss+*
    public static final Pattern WILD_SUBTYPE_COMPOSITE_PATTERN = Pattern.compile("([^\\+]+)\\+\\*");
 
+   public static String compositeWildSubtype(String subtype) {
+      final Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(subtype);
+      if (matcher.matches()) {
+         return matcher.group(1);
+      }
+      return null;
+   }
+
+   public static String wildCompositeSubtype(String subtype) {
+      final Matcher matcher = WILD_SUBTYPE_COMPOSITE_PATTERN.matcher(subtype);
+      if (matcher.matches()) {
+         return matcher.group(1);
+      }
+      return null;
+   }
+
    private class SubtypeMap<T>
    {
       private volatile Map<String, List<Entry<T>>> index;
@@ -149,42 +165,67 @@ public class MediaTypeMap<T>
          all = subtypeMap.all;
       }
 
+
       private void add(Entry<T> entry)
       {
-         if (lockSnapshots) {
-            all = copyAndAdd(all, entry);
-         } else {
-            all.add(entry);
-         }
-
          final Matcher matcher = COMPOSITE_SUBTYPE_WILDCARD_PATTERN.matcher(entry.mediaType.getSubtype());
          final Matcher wildCompositeMatcher = WILD_SUBTYPE_COMPOSITE_PATTERN.matcher(entry.mediaType.getSubtype());
 
 
          if (entry.mediaType.isWildcardSubtype()) {
-            if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
-            else wildcards.add(entry);
+            addWildcard(entry);
          }
          else if (matcher.matches())
          {
-            Map<String, List<Entry<T>>> newCompositeIndex = compositeIndex;
-            if (lockSnapshots) newCompositeIndex = copy(compositeIndex);
-            add(newCompositeIndex, matcher.group(1), entry);
-            compositeIndex = newCompositeIndex;
+            String baseSubType = matcher.group(1);
+            addCompositeWild(entry, baseSubType);
          }
          else if (wildCompositeMatcher.matches())
          {
-            Map<String, List<Entry<T>>> newWildCompositeIndex = wildCompositeIndex;
-            if (lockSnapshots) newWildCompositeIndex = (wildCompositeIndex);
-            add(newWildCompositeIndex, wildCompositeMatcher.group(1), entry);
-            wildCompositeIndex = newWildCompositeIndex;
+            String base = wildCompositeMatcher.group(1);
+            addWildComposite(entry, base);
          }
          else
          {
-            Map<String, List<Entry<T>>> newIndex = index;
-            if (lockSnapshots) newIndex = copy(index);
-            add(newIndex, entry.mediaType.getSubtype(), entry);
-            index = newIndex;
+            addRegular(entry);
+         }
+      }
+
+      private void addRegular(Entry<T> entry) {
+         Map<String, List<Entry<T>>> newIndex = index;
+         if (lockSnapshots) newIndex = copy(index);
+         add(newIndex, entry.mediaType.getSubtype(), entry);
+         index = newIndex;
+         merge(entry);
+      }
+
+      private void addWildComposite(Entry<T> entry, String base) {
+         Map<String, List<Entry<T>>> newWildCompositeIndex = wildCompositeIndex;
+         if (lockSnapshots) newWildCompositeIndex = (wildCompositeIndex);
+         add(newWildCompositeIndex, base, entry);
+         wildCompositeIndex = newWildCompositeIndex;
+         merge(entry);
+      }
+
+      private void addCompositeWild(Entry<T> entry, String baseSubType) {
+         Map<String, List<Entry<T>>> newCompositeIndex = compositeIndex;
+         if (lockSnapshots) newCompositeIndex = copy(compositeIndex);
+         add(newCompositeIndex, baseSubType, entry);
+         compositeIndex = newCompositeIndex;
+         merge(entry);
+      }
+
+      private void addWildcard(Entry<T> entry) {
+         if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
+         else wildcards.add(entry);
+         merge(entry);
+      }
+
+      private void merge(Entry<T> entry) {
+         if (lockSnapshots) {
+            all = copyAndAdd(all, entry);
+         } else {
+            all.add(entry);
          }
       }
 
@@ -360,9 +401,90 @@ public class MediaTypeMap<T>
       add(entry);
    }
 
-   protected void add(Entry<T> entry) {
-      classCache = null;
+   public synchronized void addWildcard(final T obj) {
+      final Entry<T> entry = new Entry<>(MediaType.WILDCARD_TYPE, obj);
+      addWildcard(entry);
+   }
 
+
+   protected void add(Entry<T> entry) {
+      if (entry.mediaType.isWildcardType())
+      {
+         addWildcard(entry);
+      }
+      else
+      {
+         Map<String, SubtypeMap<T>> newIndex = copyIndex();
+         newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+         newIndex.get(entry.mediaType.getType()).add(entry);
+         index = newIndex;
+         mergeEverything(entry);
+      }
+   }
+
+   private Map<String, SubtypeMap<T>> copyIndex() {
+      Map<String, SubtypeMap<T>> newIndex = index;
+      if (lockSnapshots) {
+         Map<String, SubtypeMap<T>> finalIndex = new HashMap<>();
+         newIndex = finalIndex;
+         index.forEach((key, value) -> finalIndex.put(key, new SubtypeMap<>(value)));
+      }
+      return newIndex;
+   }
+
+   private void addWildcard(Entry<T> entry) {
+      if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
+      else wildcards.add(entry);
+      mergeEverything(entry);
+   }
+
+   public synchronized void addRegular(MediaType mediaType, T obj) {
+      final Entry<T> entry = new Entry<>(mediaType, obj);
+      Map<String, SubtypeMap<T>> newIndex = copyIndex();
+      newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+      SubtypeMap<T> subtypeMap = newIndex.get(entry.mediaType.getType());
+      subtypeMap.addRegular(entry);
+      index = newIndex;
+      mergeEverything(entry);
+   }
+
+   public synchronized void addCompositeWild(MediaType mediaType, T obj, String baseSubtype) {
+      final Entry<T> entry = new Entry<>(mediaType, obj);
+      Map<String, SubtypeMap<T>> newIndex = copyIndex();
+      newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+      SubtypeMap<T> subtypeMap = newIndex.get(entry.mediaType.getType());
+
+      subtypeMap.addCompositeWild(entry, baseSubtype);
+
+      index = newIndex;
+      mergeEverything(entry);
+   }
+
+   public synchronized void addWildComposite(MediaType mediaType, T obj, String baseSubtype) {
+      final Entry<T> entry = new Entry<>(mediaType, obj);
+      Map<String, SubtypeMap<T>> newIndex = copyIndex();
+      newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+      SubtypeMap<T> subtypeMap = newIndex.get(entry.mediaType.getType());
+
+      subtypeMap.addWildComposite(entry, baseSubtype);
+
+      index = newIndex;
+      mergeEverything(entry);
+   }
+
+   public synchronized void addWildSubtype(MediaType mediaType, T obj) {
+      final Entry<T> entry = new Entry<>(mediaType, obj);
+      Map<String, SubtypeMap<T>> newIndex = copyIndex();
+      newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
+      SubtypeMap<T> subtypeMap = newIndex.get(entry.mediaType.getType());
+
+      subtypeMap.addWildcard(entry);
+
+      index = newIndex;
+      mergeEverything(entry);
+   }
+
+   private void mergeEverything(Entry<T> entry) {
       List<Entry<T>> newAll = everything;
       if (lockSnapshots) {
          newAll = copyAndAdd(everything, entry);
@@ -372,26 +494,7 @@ public class MediaTypeMap<T>
          everything.add(entry);
          Collections.sort(everything);
       }
-
-
-      if (entry.mediaType.isWildcardType())
-      {
-         if (lockSnapshots) wildcards = copyAndAdd(wildcards, entry);
-         else wildcards.add(entry);
-      }
-      else
-      {
-         Map<String, SubtypeMap<T>> newIndex = index;
-         if (lockSnapshots) {
-            Map<String, SubtypeMap<T>> finalIndex = new HashMap<>();
-            newIndex = finalIndex;
-            index.forEach((key, value) -> finalIndex.put(key, new SubtypeMap<>(value)));
-         }
-         newIndex.putIfAbsent(entry.mediaType.getType(), new SubtypeMap<>());
-         newIndex.get(entry.mediaType.getType()).add(entry);
-         index = newIndex;
-      }
-      everything = newAll;
+      classCache = null;
    }
 
 

@@ -43,45 +43,45 @@ import java.util.TreeMap;
  */
 public class ResteasyDeploymentImpl implements ResteasyDeployment
 {
-   private boolean widerRequestMatching;
-   private boolean useContainerFormParams = false;
-   private boolean deploymentSensitiveFactoryEnabled = false;
-   private boolean asyncJobServiceEnabled = false;
-   private boolean addCharset = true;
-   private int asyncJobServiceMaxJobResults = 100;
-   private long asyncJobServiceMaxWait = 300000;
-   private int asyncJobServiceThreadPoolSize = 100;
-   private String asyncJobServiceBasePath = "/asynch/jobs";
-   private String applicationClass;
-   private String injectorFactoryClass;
-   private InjectorFactory injectorFactory;
-   private Application application;
-   private boolean registerBuiltin = true;
-   private List<String> scannedResourceClasses;
-   private List<String> scannedProviderClasses;
-   private List<String> scannedJndiComponentResources;
-   private Map<String, List<String>> scannedResourceClassesWithBuilder;
-   private List<String> jndiComponentResources;
-   private List<String> providerClasses;
-   private List<Class> actualProviderClasses ;
-   private List<Object> providers;
-   private boolean securityEnabled = false;
-   private List<String> jndiResources;
-   private List<String> resourceClasses;
-   private List<String> unwrappedExceptions;
-   private List<Class> actualResourceClasses;
-   private List<ResourceFactory> resourceFactories;
-   private List<Object> resources;
-   private Map<String, String> mediaTypeMappings;
-   private Map<String, String> languageExtensions;
-   private Map<Class, Object> defaultContextObjects;
-   private Map<String, String> constructedDefaultContextObjects;
-   private Registry registry;
-   private Dispatcher dispatcher;
-   private ResteasyProviderFactory providerFactory;
-   private ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
-   private String paramMapping;
-   private Map<String, Object> properties;
+   protected boolean widerRequestMatching;
+   protected boolean useContainerFormParams = false;
+   protected boolean deploymentSensitiveFactoryEnabled = false;
+   protected boolean asyncJobServiceEnabled = false;
+   protected boolean addCharset = true;
+   protected int asyncJobServiceMaxJobResults = 100;
+   protected long asyncJobServiceMaxWait = 300000;
+   protected int asyncJobServiceThreadPoolSize = 100;
+   protected String asyncJobServiceBasePath = "/asynch/jobs";
+   protected String applicationClass;
+   protected String injectorFactoryClass;
+   protected InjectorFactory injectorFactory;
+   protected Application application;
+   protected boolean registerBuiltin = true;
+   protected List<String> scannedResourceClasses;
+   protected List<String> scannedProviderClasses;
+   protected List<String> scannedJndiComponentResources;
+   protected Map<String, List<String>> scannedResourceClassesWithBuilder;
+   protected List<String> jndiComponentResources;
+   protected List<String> providerClasses;
+   protected List<Class> actualProviderClasses ;
+   protected List<Object> providers;
+   protected boolean securityEnabled = false;
+   protected List<String> jndiResources;
+   protected List<String> resourceClasses;
+   protected List<String> unwrappedExceptions;
+   protected List<Class> actualResourceClasses;
+   protected List<ResourceFactory> resourceFactories;
+   protected List<Object> resources;
+   protected Map<String, String> mediaTypeMappings;
+   protected Map<String, String> languageExtensions;
+   protected Map<Class, Object> defaultContextObjects;
+   protected Map<String, String> constructedDefaultContextObjects;
+   protected Registry registry;
+   protected Dispatcher dispatcher;
+   protected ResteasyProviderFactory providerFactory;
+   protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
+   protected String paramMapping;
+   protected Map<String, Object> properties;
    protected boolean statisticsEnabled;
 
    public ResteasyDeploymentImpl() {
@@ -125,6 +125,187 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
    @SuppressWarnings(value = {"unchecked", "deprecation"})
    private void startInternal()
    {
+      initializeFactory();
+      initializeDispatcher();
+      pushContext();
+
+      try
+      {
+         initializeObjects();
+
+         if (securityEnabled)
+         {
+            providerFactory.register(RoleBasedSecurityFeature.class);
+         }
+
+
+         if (registerBuiltin)
+         {
+            providerFactory.setRegisterBuiltins(true);
+            RegisterBuiltin.register(providerFactory);
+
+            // having problems using form parameters from container for a couple of TCK tests.  I couldn't figure out
+            // why, specifically:
+            // com/sun/ts/tests/jaxrs/spec/provider/standardhaspriority/JAXRSClient.java#readWriteMapProviderTest_from_standalone                                               Failed. Test case throws exception: [JAXRSCommonClient] null failed!  Check output for cause of failure.
+            // com/sun/ts/tests/jaxrs/spec/provider/standardwithjaxrsclient/JAXRSClient.java#mapElementProviderTest_from_standalone                                             Failed. Test case throws exception: returned MultivaluedMap is null
+            providerFactory.registerProviderInstance(new ServerFormUrlEncodedProvider(useContainerFormParams), null, null, true);
+         }
+         else
+         {
+            providerFactory.setRegisterBuiltins(false);
+         }
+
+
+         // register all providers
+         registration();
+
+         registerMappers();
+         ((ResteasyProviderFactoryImpl)providerFactory).lockSnapshots();
+      }
+      finally
+      {
+         ResteasyContext.removeContextDataLevel();
+      }
+   }
+
+   protected void registerMappers() {
+      if (paramMapping != null)
+      {
+         providerFactory.getContainerRequestFilterRegistry().registerSingleton(new AcceptParameterHttpPreprocessor(paramMapping));
+      }
+
+      AcceptHeaderByFileSuffixFilter suffixNegotiationFilter = null;
+      if (mediaTypeMappings != null)
+      {
+         Map<String, MediaType> extMap = new HashMap<String, MediaType>();
+         for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
+         {
+            String value = ext.getValue();
+            extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
+         }
+
+         if (suffixNegotiationFilter == null)
+         {
+            suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
+            providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
+         }
+         suffixNegotiationFilter.setMediaTypeMappings(extMap);
+      }
+
+
+      if (languageExtensions != null)
+      {
+         if (suffixNegotiationFilter == null)
+         {
+            suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
+            providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
+         }
+         suffixNegotiationFilter.setLanguageMappings(languageExtensions);
+      }
+   }
+
+   protected void pushContext() {
+      // push context data so we can inject it
+      Map contextDataMap = ResteasyContext.getContextDataMap();
+      contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+   }
+
+   protected void initializeObjects() {
+      if (injectorFactory == null && injectorFactoryClass != null)
+      {
+         try
+         {
+            Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
+            injectorFactory = (InjectorFactory) clazz.newInstance();
+         }
+         catch (ClassNotFoundException cnfe)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToFindInjectorFactory(), cnfe);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateInjectorFactory(), e);
+         }
+      }
+      if (injectorFactory != null)
+      {
+         providerFactory.setInjectorFactory(injectorFactory);
+      }
+      // feed context data map with constructed objects
+      // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
+      if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
+      {
+         for (Map.Entry<String, String> entry : constructedDefaultContextObjects.entrySet())
+         {
+            Class<?> key = null;
+            try
+            {
+               key = Thread.currentThread().getContextClassLoader().loadClass(entry.getKey());
+            }
+            catch (ClassNotFoundException e)
+            {
+               throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextObject(entry.getKey()), e);
+            }
+            Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
+            LogMessages.LOGGER.creatingContextObject(entry.getKey(), entry.getValue());
+            defaultContextObjects.put(key, obj);
+            dispatcher.getDefaultContextObjects().put(key, obj);
+            ResteasyContext.getContextDataMap().put(key, obj);
+
+         }
+      }
+
+      if (applicationClass != null)
+      {
+         application = createApplication(applicationClass, dispatcher, providerFactory);
+      }
+   }
+
+   protected void initializeDispatcher() {
+      if (asyncJobServiceEnabled)
+      {
+         AsynchronousDispatcher asyncDispatcher;
+         if (dispatcher == null) {
+            asyncDispatcher = new AsynchronousDispatcher(providerFactory);
+            dispatcher = asyncDispatcher;
+         } else {
+            asyncDispatcher = (AsynchronousDispatcher) dispatcher;
+         }
+         asyncDispatcher.setMaxCacheSize(asyncJobServiceMaxJobResults);
+         asyncDispatcher.setMaxWaitMilliSeconds(asyncJobServiceMaxWait);
+         asyncDispatcher.setThreadPoolSize(asyncJobServiceThreadPoolSize);
+         asyncDispatcher.setBasePath(asyncJobServiceBasePath);
+         if (unwrappedExceptions != null) asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
+         asyncDispatcher.start();
+      }
+      else
+      {
+         SynchronousDispatcher dis;
+         if (dispatcher == null) {
+            dis = new SynchronousDispatcher(providerFactory);
+            dispatcher = dis;
+         } else {
+            dis = (SynchronousDispatcher) dispatcher;
+         }
+         if (unwrappedExceptions != null)  dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
+      }
+      registry = dispatcher.getRegistry();
+      if (widerRequestMatching)
+      {
+         ((ResourceMethodRegistry)registry).setWiderMatching(widerRequestMatching);
+      }
+
+      if (defaultContextObjects != null) dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
+      dispatcher.getDefaultContextObjects().put(Configurable.class, providerFactory);
+      dispatcher.getDefaultContextObjects().put(Configuration.class, providerFactory);
+      dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
+      dispatcher.getDefaultContextObjects().put(Registry.class, registry);
+      dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
+      dispatcher.getDefaultContextObjects().put(InternalDispatcher.class, InternalDispatcher.getInstance());
+      dispatcher.getDefaultContextObjects().put(ResteasyDeployment.class, this);
+   }
+
+   protected void initializeFactory() {
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = new ResteasyProviderFactoryImpl();
@@ -188,171 +369,6 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
       else
       {
          ResteasyProviderFactory.setInstance(providerFactory);
-      }
-
-
-      if (asyncJobServiceEnabled)
-      {
-         AsynchronousDispatcher asyncDispatcher;
-         if (dispatcher == null) {
-            asyncDispatcher = new AsynchronousDispatcher(providerFactory);
-            dispatcher = asyncDispatcher;
-         } else {
-            asyncDispatcher = (AsynchronousDispatcher) dispatcher;
-         }
-         asyncDispatcher.setMaxCacheSize(asyncJobServiceMaxJobResults);
-         asyncDispatcher.setMaxWaitMilliSeconds(asyncJobServiceMaxWait);
-         asyncDispatcher.setThreadPoolSize(asyncJobServiceThreadPoolSize);
-         asyncDispatcher.setBasePath(asyncJobServiceBasePath);
-         if (unwrappedExceptions != null) asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
-         asyncDispatcher.start();
-      }
-      else
-      {
-         SynchronousDispatcher dis;
-         if (dispatcher == null) {
-            dis = new SynchronousDispatcher(providerFactory);
-            dispatcher = dis;
-         } else {
-            dis = (SynchronousDispatcher) dispatcher;
-         }
-         if (unwrappedExceptions != null)  dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
-      }
-      registry = dispatcher.getRegistry();
-      if (widerRequestMatching)
-      {
-         ((ResourceMethodRegistry)registry).setWiderMatching(widerRequestMatching);
-      }
-
-
-      if (defaultContextObjects != null) dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
-      dispatcher.getDefaultContextObjects().put(Configurable.class, providerFactory);
-      dispatcher.getDefaultContextObjects().put(Configuration.class, providerFactory);
-      dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
-      dispatcher.getDefaultContextObjects().put(Registry.class, registry);
-      dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
-      dispatcher.getDefaultContextObjects().put(InternalDispatcher.class, InternalDispatcher.getInstance());
-      dispatcher.getDefaultContextObjects().put(ResteasyDeployment.class, this);
-
-      // push context data so we can inject it
-      Map contextDataMap = ResteasyContext.getContextDataMap();
-      contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-
-      try
-      {
-         if (injectorFactory == null && injectorFactoryClass != null)
-         {
-            try
-            {
-               Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(injectorFactoryClass);
-               injectorFactory = (InjectorFactory) clazz.newInstance();
-            }
-            catch (ClassNotFoundException cnfe)
-            {
-               throw new RuntimeException(Messages.MESSAGES.unableToFindInjectorFactory(), cnfe);
-            }
-            catch (Exception e)
-            {
-               throw new RuntimeException(Messages.MESSAGES.unableToInstantiateInjectorFactory(), e);
-            }
-         }
-         if (injectorFactory != null)
-         {
-            providerFactory.setInjectorFactory(injectorFactory);
-         }
-         // feed context data map with constructed objects
-         // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
-         if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
-         {
-            for (Map.Entry<String, String> entry : constructedDefaultContextObjects.entrySet())
-            {
-               Class<?> key = null;
-               try
-               {
-                  key = Thread.currentThread().getContextClassLoader().loadClass(entry.getKey());
-               }
-               catch (ClassNotFoundException e)
-               {
-                  throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextObject(entry.getKey()), e);
-               }
-               Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
-               LogMessages.LOGGER.creatingContextObject(entry.getKey(), entry.getValue());
-               defaultContextObjects.put(key, obj);
-               dispatcher.getDefaultContextObjects().put(key, obj);
-               contextDataMap.put(key, obj);
-
-            }
-         }
-
-         if (securityEnabled)
-         {
-            providerFactory.register(RoleBasedSecurityFeature.class);
-         }
-
-
-         if (registerBuiltin)
-         {
-            providerFactory.setRegisterBuiltins(true);
-            RegisterBuiltin.register(providerFactory);
-
-            // having problems using form parameters from container for a couple of TCK tests.  I couldn't figure out
-            // why, specifically:
-            // com/sun/ts/tests/jaxrs/spec/provider/standardhaspriority/JAXRSClient.java#readWriteMapProviderTest_from_standalone                                               Failed. Test case throws exception: [JAXRSCommonClient] null failed!  Check output for cause of failure.
-            // com/sun/ts/tests/jaxrs/spec/provider/standardwithjaxrsclient/JAXRSClient.java#mapElementProviderTest_from_standalone                                             Failed. Test case throws exception: returned MultivaluedMap is null
-            providerFactory.registerProviderInstance(new ServerFormUrlEncodedProvider(useContainerFormParams), null, null, true);
-         }
-         else
-         {
-            providerFactory.setRegisterBuiltins(false);
-         }
-
-         if (applicationClass != null)
-         {
-            application = createApplication(applicationClass, dispatcher, providerFactory);
-
-         }
-
-         // register all providers
-         registration();
-
-         if (paramMapping != null)
-         {
-            providerFactory.getContainerRequestFilterRegistry().registerSingleton(new AcceptParameterHttpPreprocessor(paramMapping));
-         }
-
-         AcceptHeaderByFileSuffixFilter suffixNegotiationFilter = null;
-         if (mediaTypeMappings != null)
-         {
-            Map<String, MediaType> extMap = new HashMap<String, MediaType>();
-            for (Map.Entry<String, String> ext : mediaTypeMappings.entrySet())
-            {
-               String value = ext.getValue();
-               extMap.put(ext.getKey().trim(), MediaType.valueOf(value.trim()));
-            }
-
-            if (suffixNegotiationFilter == null)
-            {
-               suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
-               providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
-            }
-            suffixNegotiationFilter.setMediaTypeMappings(extMap);
-         }
-
-
-         if (languageExtensions != null)
-         {
-            if (suffixNegotiationFilter == null)
-            {
-               suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
-               providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
-            }
-            suffixNegotiationFilter.setLanguageMappings(languageExtensions);
-         }
-         ((ResteasyProviderFactoryImpl)providerFactory).lockSnapshots();
-      }
-      finally
-      {
-         ResteasyContext.removeContextDataLevel();
       }
    }
 
@@ -421,17 +437,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
 
    public void registration()
    {
-      boolean useScanning = true;
-      if (application != null)
-      {
-         dispatcher.getDefaultContextObjects().put(Application.class, application);
-         ResteasyContext.getContextDataMap().put(Application.class, application);
-         if (processApplication(application))
-         {
-            // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
-            useScanning = false;
-         }
-      }
+      boolean useScanning = registerApplication();
 
       if (useScanning && scannedProviderClasses != null)
       {
@@ -461,7 +467,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
             providerFactory.registerProvider(actualProviderClass);
          }
       }
+      registerResources(useScanning);
 
+   }
+
+   protected void registerResources(boolean useScanning) {
       // All providers should be registered before resources because of interceptors.
       // interceptors must exist as they are applied only once when the resource is registered.
 
@@ -581,6 +591,21 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment
          }
       }
       registry.checkAmbiguousUri();
+   }
+
+   protected boolean registerApplication() {
+      boolean useScanning = true;
+      if (application != null)
+      {
+         dispatcher.getDefaultContextObjects().put(Application.class, application);
+         ResteasyContext.getContextDataMap().put(Application.class, application);
+         if (processApplication(application))
+         {
+            // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
+            useScanning = false;
+         }
+      }
+      return useScanning;
    }
 
    private void registerJndiComponentResource(String resource)

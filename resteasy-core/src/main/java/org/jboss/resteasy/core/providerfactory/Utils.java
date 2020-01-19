@@ -58,6 +58,10 @@ public final class Utils
             return p;
       }
       // Check for weld proxy.
+      return getPriority(component);
+   }
+
+   public static int getPriority(Class<?> component) {
       component = component.isSynthetic() ? component.getSuperclass() : component;
       Priority priority = component.getAnnotation(Priority.class);
       if (priority == null)
@@ -65,7 +69,7 @@ public final class Utils
       return priority.value();
    }
 
-   static void injectProperties(ResteasyProviderFactory rpf, Class declaring, Object obj)
+   public static void injectProperties(ResteasyProviderFactory rpf, Class declaring, Object obj)
    {
       rpf.getInjectorFactory().createPropertyInjector(declaring, rpf).inject(obj, false).toCompletableFuture()
             .getNow(null);
@@ -83,7 +87,7 @@ public final class Utils
             .toCompletableFuture().getNow(null);
    }
 
-   static <T> T createProviderInstance(ResteasyProviderFactory rpf, Class<? extends T> clazz)
+   public static <T> T createProviderInstance(ResteasyProviderFactory rpf, Class<? extends T> clazz)
    {
       ConstructorInjector constructorInjector = createConstructorInjector(rpf, clazz);
 

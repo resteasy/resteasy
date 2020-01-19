@@ -106,27 +106,20 @@ public class ClientHelper extends CommonProviders
       if (Utils.isA(provider, ClientRequestFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider);
-         JaxrsInterceptorRegistry<ClientRequestFilter> registry = getRequestFiltersForWrite();
-         registry.registerClass(provider, priority);
-         attachedRequestFilters = false;
-         requestFilters = registry;
+         addClientRequestFilter(provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
       }
       if (Utils.isA(provider, ClientResponseFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider);
-         JaxrsInterceptorRegistry<ClientResponseFilter> registry = getResponseFiltersForWrite();
-         registry.registerClass(provider, priority);
-         attachedResponseFilters = false;
-         responseFilters = registry;
+         addClientResponseFilter(provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
       }
       if (Utils.isA(provider, AsyncClientResponseProvider.class, contracts))
       {
          try
          {
-            addAsyncClientResponseProvider(
-                    rpf.createProviderInstance((Class<? extends AsyncClientResponseProvider>) provider), provider);
+            addAsyncClientResponseProvider(provider);
             newContracts.put(AsyncClientResponseProvider.class,
                     Utils.getPriority(priorityOverride, contracts, AsyncClientResponseProvider.class, provider));
          }
@@ -139,16 +132,44 @@ public class ClientHelper extends CommonProviders
       {
          int priority = Utils.getPriority(priorityOverride, contracts, RxInvokerProvider.class, provider);
          newContracts.put(RxInvokerProvider.class, priority);
-         Class<?> clazz = Types.getTemplateParameterOfInterface(provider, RxInvokerProvider.class);
-         clazz = Types.getTemplateParameterOfInterface(clazz, RxInvoker.class);
-         if (clazz != null)
-         {
-            Map<Class<?>, Class<? extends RxInvokerProvider<?>>> registry = getReactiveClassesForWrite();
-            registry.put(clazz, provider);
-            attachedReactive = false;
-            reactiveClasses = registry;
-         }
+         addReactiveClass(provider);
       }
+   }
+
+   public void addReactiveClass(Class provider) {
+      Class<?> clazz = Types.getTemplateParameterOfInterface(provider, RxInvokerProvider.class);
+      clazz = Types.getTemplateParameterOfInterface(clazz, RxInvoker.class);
+      if (clazz != null)
+      {
+         addReactiveClass(provider, clazz);
+      }
+   }
+
+   public void addReactiveClass(Class provider, Class<?> clazz) {
+      Map<Class<?>, Class<? extends RxInvokerProvider<?>>> registry = getReactiveClassesForWrite();
+      registry.put(clazz, provider);
+      attachedReactive = false;
+      reactiveClasses = registry;
+   }
+
+   public void addAsyncClientResponseProvider(Class provider) {
+      AsyncClientResponseProvider providerInstance = rpf.createProviderInstance((Class<? extends AsyncClientResponseProvider>) provider);
+      addAsyncClientResponseProvider(
+              providerInstance, provider);
+   }
+
+   public void addClientResponseFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ClientResponseFilter> registry = getResponseFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedResponseFilters = false;
+      responseFilters = registry;
+   }
+
+   public void addClientRequestFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ClientRequestFilter> registry = getRequestFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedRequestFilters = false;
+      requestFilters = registry;
    }
 
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,

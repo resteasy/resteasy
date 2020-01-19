@@ -128,27 +128,20 @@ public class ServerHelper extends CommonProviders
       if (Utils.isA(provider, ContainerRequestFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider);
-         JaxrsInterceptorRegistry<ContainerRequestFilter> registry = getRequestFiltersForWrite();
-         registry.registerClass(provider, priority);
-         attachedRequestFilters = false;
-         requestFilters = registry;
+         addContainerRequestFilter(provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (Utils.isA(provider, ContainerResponseFilter.class, contracts))
       {
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider);
-         JaxrsInterceptorRegistry<ContainerResponseFilter> registry = getResponseFiltersForWrite();
-         registry.registerClass(provider, priority);
-         attachedResponseFilters = false;
-         responseFilters = registry;
+         addContainerResponseFilter(provider, priority);
          newContracts.put(ContainerResponseFilter.class, priority);
       }
       if (Utils.isA(provider, AsyncResponseProvider.class, contracts))
       {
          try
          {
-            addAsyncResponseProvider(rpf.createProviderInstance((Class<? extends AsyncResponseProvider>) provider),
-                    provider);
+            addAsyncResponseProvider(provider);
             newContracts.put(AsyncResponseProvider.class,
                     Utils.getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider));
          }
@@ -161,7 +154,7 @@ public class ServerHelper extends CommonProviders
       {
          try
          {
-            addAsyncStreamProvider(rpf.createProviderInstance((Class<? extends AsyncStreamProvider>) provider), provider);
+            addAsyncStreamProvider(provider);
             newContracts.put(AsyncStreamProvider.class,
                     Utils.getPriority(priorityOverride, contracts, AsyncStreamProvider.class, provider));
          }
@@ -174,8 +167,7 @@ public class ServerHelper extends CommonProviders
       {
          try
          {
-            addExceptionMapper(rpf.createProviderInstance((Class<? extends ExceptionMapper>) provider), provider,
-                    isBuiltin);
+            addExceptionMapper(provider, isBuiltin);
             newContracts.put(ExceptionMapper.class,
                     Utils.getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
          }
@@ -184,6 +176,35 @@ public class ServerHelper extends CommonProviders
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
+   }
+
+   public void addExceptionMapper(Class provider, boolean isBuiltin) {
+      addExceptionMapper(rpf.createProviderInstance((Class<? extends ExceptionMapper>) provider), provider,
+              isBuiltin);
+   }
+
+   public void addAsyncStreamProvider(Class provider) {
+      addAsyncStreamProvider(rpf.createProviderInstance((Class<? extends AsyncStreamProvider>) provider), provider);
+   }
+
+   public void addAsyncResponseProvider(Class provider) {
+      AsyncResponseProvider providerInstance = rpf.createProviderInstance((Class<? extends AsyncResponseProvider>) provider);
+      addAsyncResponseProvider(providerInstance,
+              provider);
+   }
+
+   public void addContainerResponseFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ContainerResponseFilter> registry = getResponseFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedResponseFilters = false;
+      responseFilters = registry;
+   }
+
+   public void addContainerRequestFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ContainerRequestFilter> registry = getRequestFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedRequestFilters = false;
+      requestFilters = registry;
    }
 
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
