@@ -385,12 +385,14 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       }
 
       boolean resetProxy = false;
+      boolean hasSetupNewProxy = false;
       if (this.defaultProxy == null) {
          resetProxy = true;
          // check for proxy config parameters
          setProxyIfNeeded(config);
+         hasSetupNewProxy = this.defaultProxy != null;
       }
-      ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
+      ClientHttpEngine engine = httpEngine != null && !hasSetupNewProxy ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
       if (resetProxy) {
          this.defaultProxy = null;
       }
