@@ -317,13 +317,21 @@ public class InjectorFactoryImpl implements InjectorFactory
             }
 
             @Override
-            public CompletionStage<Object> inject(boolean unwrapAsync) {
-                return delegate.inject(unwrapAsync).thenApply(this::wrap);
+            public Object inject(boolean unwrapAsync) {
+                Object injectedValue = delegate.inject(unwrapAsync);
+                if (injectedValue != null && injectedValue instanceof CompletionStage) {
+                    return ((CompletionStage<Object>)injectedValue).thenApply(this::wrap);
+                }
+                return wrap(injectedValue);
             }
 
             @Override
-            public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-                return delegate.inject(request, response, unwrapAsync).thenApply(this::wrap);
+            public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
+                Object injectedValue = delegate.inject(request, response, unwrapAsync);
+                if (injectedValue != null && injectedValue instanceof CompletionStage) {
+                    return ((CompletionStage<Object>)injectedValue).thenApply(this::wrap);
+                }
+                return wrap(injectedValue);
             }
 
             public Object wrap(Object value) {

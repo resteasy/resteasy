@@ -1,7 +1,10 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.util.Map;
-import java.util.Set;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -10,12 +13,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
-
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.spi.AsyncResponseProvider;
-import org.jboss.resteasy.spi.AsyncStreamProvider;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A ServerHelper that does nothing, useful to save memory when creating a ResteasyProviderFactory for client side only

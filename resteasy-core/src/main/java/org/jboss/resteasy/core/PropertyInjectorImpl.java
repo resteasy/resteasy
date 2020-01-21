@@ -141,35 +141,56 @@ public class PropertyInjectorImpl implements PropertyInjector
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         ret = ret.thenCompose(v -> entry.getValue().inject(request, response, unwrapAsync)
-               .thenAccept(value -> {
-                  try
-                  {
-                     entry.getKey().set(target, value);
-                  }
-                  catch (IllegalAccessException e)
-                  {
-                     throw new InternalServerErrorException(e);
-                  }
-               }));
+         Object injectValue = entry.getValue().inject(request, response, unwrapAsync);
+         if (injectValue != null && injectValue instanceof CompletionStage) {
+            ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectValue)
+                    .thenAccept(value -> {
+                       try
+                       {
+                          entry.getKey().set(target, value);
+                       }
+                       catch (IllegalAccessException e)
+                       {
+                          throw new InternalServerErrorException(e);
+                       }
+                    }));
+         } else {
+            try {
+               entry.getKey().set(target, injectValue);
+            } catch (IllegalAccessException e) {
+               throw new InternalServerErrorException(e);
+            }
+         }
       }
       for (SetterMethod setter : setters)
       {
-         ret = ret.thenCompose(v -> setter.extractor.inject(request, response, unwrapAsync)
-               .thenAccept(value -> {
-                  try
-                  {
-                     setter.method.invoke(target, value);
-                  }
-                  catch (IllegalAccessException e)
-                  {
-                     throw new InternalServerErrorException(e);
-                  }
-                  catch (InvocationTargetException e)
-                  {
-                     throw new ApplicationException(e.getCause());
-                  }
-               }));
+         Object injectedValue = setter.extractor.inject(request, response, unwrapAsync);
+         if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
+                    .thenAccept(value -> {
+                       try
+                       {
+                          setter.method.invoke(target, value);
+                       }
+                       catch (IllegalAccessException e)
+                       {
+                          throw new InternalServerErrorException(e);
+                       }
+                       catch (InvocationTargetException e)
+                       {
+                          throw new ApplicationException(e.getCause());
+                       }
+                    }));
+         } else {
+            try {
+               setter.method.invoke(target, injectedValue);
+            } catch (IllegalAccessException e) {
+               throw new InternalServerErrorException(e);
+            } catch (InvocationTargetException e) {
+               throw new ApplicationException(e.getCause());
+            }
+
+         }
       }
       return ret;
    }
@@ -180,35 +201,67 @@ public class PropertyInjectorImpl implements PropertyInjector
       CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
-         ret = ret.thenCompose(v -> entry.getValue().inject(unwrapAsync)
-               .thenAccept(value -> {
-                  try
-                  {
-                     entry.getKey().set(target, value);
-                  }
-                  catch (IllegalAccessException e)
-                  {
-                     throw new InternalServerErrorException(e);
-                  }
-               }));
+         Object injectedValue = entry.getValue().inject(unwrapAsync);
+         if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
+                    .thenAccept(value -> {
+                       try
+                       {
+                          entry.getKey().set(target, value);
+                       }
+                       catch (IllegalAccessException e)
+                       {
+                          throw new InternalServerErrorException(e);
+                       }
+                    }));
+
+         } else {
+            try
+            {
+               entry.getKey().set(target, injectedValue);
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new InternalServerErrorException(e);
+            }
+
+         }
       }
       for (SetterMethod setter : setters)
       {
-         ret = ret.thenCompose(v -> setter.extractor.inject(unwrapAsync)
-               .thenAccept(value -> {
-                  try
-                  {
-                     setter.method.invoke(target, value);
-                  }
-                  catch (IllegalAccessException e)
-                  {
-                     throw new InternalServerErrorException(e);
-                  }
-                  catch (InvocationTargetException e)
-                  {
-                     throw new ApplicationException(e.getCause());
-                  }
-               }));
+         Object injectedValue = setter.extractor.inject(unwrapAsync);
+         if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
+                    .thenAccept(value -> {
+                       try
+                       {
+                          setter.method.invoke(target, value);
+                       }
+                       catch (IllegalAccessException e)
+                       {
+                          throw new InternalServerErrorException(e);
+                       }
+                       catch (InvocationTargetException e)
+                       {
+                          throw new ApplicationException(e.getCause());
+                       }
+                    }));
+
+         } else {
+            try
+            {
+               setter.method.invoke(target, injectedValue);
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new InternalServerErrorException(e);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new ApplicationException(e.getCause());
+            }
+
+         }
       }
       return ret;
    }

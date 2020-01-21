@@ -1,13 +1,12 @@
 package org.jboss.resteasy.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.BadRequestException;
-
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.ThreadLocalStack;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.UriInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public final class ResteasyContext

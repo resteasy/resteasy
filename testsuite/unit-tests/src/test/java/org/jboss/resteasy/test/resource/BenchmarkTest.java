@@ -4,20 +4,17 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
-import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.Dispatcher;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * @tpSubChapter Profiler helper tests
@@ -44,79 +41,58 @@ public class BenchmarkTest {
    public static class HelloResource {
       @GET
       @Produces("text/plain")
-      public String hello() {
+      public String get() {
          return "hello world";
       }
 
       @POST
       @Produces("text/plain")
       @Consumes("text/plain")
-      public String hello(String name) {
+      public String post(String name) {
          return "Hello " + name;
       }
 
-   }
-
-
-   //@Test
-   public void testPerRequest() throws Exception
-   {
-      System.gc();
-      //System.out.println("Starting in");
-      for (int i = 30; i >= 1; i--) {
-          //System.out.println(i);
-          Thread.sleep(1000);
+      @GET
+      @Path("{id}")
+      @Produces("text/plain")
+      public String getPath(@PathParam("id") int id) {
+         return "hello world " + id;
       }
-      //System.out.println("start");
-      testRaw();
-      //System.out.println("done");
-      Thread.sleep(30000);
+
+
    }
 
-   private static final int first = 14442; // 2000000
-   private static final int BENCH = 4000000;
-   private static final int PROFILE = 2000;
+   private static final int ITERATIONS=1000000;
+
    //@Test
-   public void testRaw() {
+   public void runPathGet() {
       long start = System.currentTimeMillis();
-      for (int i = 0; i < 5; i++) {
-        MockHttpRequest request = MockHttpRequest.create("GET", "/hello", "", "");
-        MockHttpResponse response = new MockHttpResponse();
-        dispatcher.invoke(request, response);
-     }
+      for (int i = 0; i < ITERATIONS; i++) {
+         testPathGet();
+      }
       long end = System.currentTimeMillis() - start;
-      //System.out.println("time took: " + end);
+      //System.out.println("Took " + end);
    }
 
-   //@Test
-   public void testOne() {
+   public void testPathGet() {
+      MockHttpRequest request = MockHttpRequest.create("GET", "/hello/1", "", "");
+      MockHttpResponse response = new MockHttpResponse();
+      dispatcher.invoke(request, response);
+
+   }
+   public void testPlainGet() {
       MockHttpRequest request = MockHttpRequest.create("GET", "/hello", "", "");
       MockHttpResponse response = new MockHttpResponse();
       dispatcher.invoke(request, response);
-      UriInfo uriInfo = request.getUri();
+
+   }
+   public void testPlainPost() {
+      MockHttpRequest request = MockHttpRequest.create("GET", "/hello", "", "");
+      request.contentType("text/plain").content("world".getBytes());
+      MockHttpResponse response = new MockHttpResponse();
+      dispatcher.invoke(request, response);
 
    }
 
-    //@Test
-   public void testUriInfoOptimized() {
-      long start = System.currentTimeMillis();
-      for (int i = 0; i < BENCH; i++) {
-         ResteasyUriInfo uriInfo = new ResteasyUriInfo("http://localhost:8080/hello", "");
-         uriInfo.getMatchingPath();
-      }
-      long end = System.currentTimeMillis() - start;
-      //System.out.println("time took: " + end);
-
-   }
-
-   @Test
-   public void testContextPath() {
-      ResteasyUriInfo uriInfo = new ResteasyUriInfo("http://localhost:8080/hello/world", "/hello");
-      Assert.assertEquals("/world", uriInfo.getMatchingPath());
-      uriInfo = new ResteasyUriInfo("http://localhost:8080/hello/world", "/hello");
-      Assert.assertEquals("/world", uriInfo.getMatchingPath());
-      Assert.assertEquals("/world", uriInfo.getPath());
-
-   }
 
 }

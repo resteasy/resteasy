@@ -1,9 +1,8 @@
 package org.jboss.resteasy.core.request;
 
+import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.math.MathContext;
-
-import javax.ws.rs.core.MediaType;
 
 
 /**

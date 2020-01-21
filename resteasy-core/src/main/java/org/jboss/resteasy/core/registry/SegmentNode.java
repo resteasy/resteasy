@@ -22,7 +22,6 @@ import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;

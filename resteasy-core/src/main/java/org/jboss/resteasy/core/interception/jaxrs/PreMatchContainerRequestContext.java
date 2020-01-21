@@ -1,5 +1,21 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -11,23 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -6,10 +6,9 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.BadRequestException;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -17,8 +16,6 @@ import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -50,23 +47,23 @@ public class QueryParamInjector extends StringParameterInjector implements Value
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       if (encode)
       {
          List<String> list = request.getUri().getQueryParameters(false).get(encodedName);
-         return CompletableFuture.completedFuture(extractValues(list));
+         return extractValues(list);
       }
       else
       {
          List<String> list = request.getUri().getQueryParameters().get(paramName);
-         return CompletableFuture.completedFuture(extractValues(list));
+         return extractValues(list);
 
       }
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectQueryParam());
    }

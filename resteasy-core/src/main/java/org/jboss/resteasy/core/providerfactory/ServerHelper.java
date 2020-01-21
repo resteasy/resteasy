@@ -1,10 +1,16 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistryImpl;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistryImpl;
+import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistryImpl;
+import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistryImpl;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.spi.util.Types;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -18,18 +24,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
-
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistryImpl;
-import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistryImpl;
-import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistryImpl;
-import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistryImpl;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.AsyncResponseProvider;
-import org.jboss.resteasy.spi.AsyncStreamProvider;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.spi.util.Types;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  *

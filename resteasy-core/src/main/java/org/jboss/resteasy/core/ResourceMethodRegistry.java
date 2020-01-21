@@ -1,9 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import org.jboss.resteasy.core.registry.RootClassNode;
 import org.jboss.resteasy.core.registry.RootNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
@@ -23,8 +19,8 @@ import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.AnnotationResolver;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
@@ -32,6 +28,9 @@ import org.jboss.resteasy.util.IsHttpMethod;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

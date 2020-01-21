@@ -50,20 +50,20 @@ public class ContextParameterInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
-      if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
+      if (rawType.equals(Providers.class)) return factory;
       if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
       }
       else if (rawType.equals(Sse.class))
       {
-         return CompletableFuture.completedFuture(new SseImpl());
+         return new SseImpl();
       }
-      return CompletableFuture.completedFuture(createProxy());
+      return createProxy();
    }
 
    private static boolean hasAsyncContextData(ResteasyProviderFactory factory, Type genericType)
