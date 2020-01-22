@@ -11,11 +11,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.ConstructorParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
+
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-
 import javax.ws.rs.WebApplicationException;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -77,9 +76,15 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          for (ValueInjector extractor : params)
          {
             int ifinal = i++;
-            stage = stage.thenCompose(v ->
-                    extractor.inject(input, response, unwrapAsync)
-                            .thenAccept(value -> args[ifinal] = value));
+            Object injectedObject = extractor.inject(input, response, unwrapAsync);
+            if (injectedObject != null && injectedObject instanceof CompletionStage) {
+               stage = stage.thenCompose(v ->
+                       ((CompletionStage<Object>)injectedObject)
+                               .thenAccept(value -> args[ifinal] = value));
+            } else {
+               args[ifinal] = CompletionStageHolder.resolve(injectedObject);
+            }
+
          }
          return stage.thenApply(v -> args);
       }
@@ -98,7 +103,13 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          for (ValueInjector extractor : params)
          {
             int ifinal = i++;
-            stage = stage.thenCompose(v -> extractor.inject(unwrapAsync).thenAccept(value -> args[ifinal] = value));
+            Object injectedObject = extractor.inject(unwrapAsync);
+            if (injectedObject != null && injectedObject instanceof CompletionStage) {
+               stage = stage.thenCompose(v -> ((CompletionStage<Object>)injectedObject).thenAccept(value -> args[ifinal] = value));
+
+            } else {
+               args[ifinal] = CompletionStageHolder.resolve(injectedObject);
+            }
          }
          return stage.thenApply(v -> args);
       }

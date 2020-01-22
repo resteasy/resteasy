@@ -6,8 +6,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ValueInjector;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,13 +22,13 @@ public class AsynchronousResponseInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new IllegalStateException(Messages.MESSAGES.cannotInjectAsynchronousResponse());
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       ResteasyAsynchronousResponse asynchronousResponse = null;
       if (timeout == -1)
@@ -44,6 +42,6 @@ public class AsynchronousResponseInjector implements ValueInjector
       ResourceMethodInvoker invoker =  (ResourceMethodInvoker)request.getAttribute(ResourceMethodInvoker.class.getName());
       invoker.initializeAsync(asynchronousResponse);
 
-      return CompletableFuture.completedFuture(asynchronousResponse);
+      return asynchronousResponse;
    }
 }

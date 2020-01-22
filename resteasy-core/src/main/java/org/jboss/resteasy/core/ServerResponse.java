@@ -1,9 +1,10 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import java.lang.reflect.Type;
-import java.lang.annotation.Annotation;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

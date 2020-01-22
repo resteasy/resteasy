@@ -14,9 +14,8 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.BadRequestException;
-
+import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
@@ -93,8 +92,13 @@ public class MethodInjectorImpl implements MethodInjector
             for (ValueInjector extractor : params)
             {
                int j = i++;
-               ret = ret.thenCompose(v -> extractor.inject(input, response, true)
-                                       .thenApply(value -> args[j] = value));
+               Object injectedObject = extractor.inject(input, response, true);
+               if (injectedObject != null && injectedObject instanceof CompletionStage) {
+                  ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedObject)
+                          .thenApply(value -> args[j] = value));
+               } else {
+                  args[j] = CompletionStageHolder.resolve(injectedObject);
+               }
             }
             return ret.thenApply(v -> args);
          }

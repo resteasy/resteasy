@@ -7,13 +7,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
 import javax.ws.rs.HeaderParam;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,14 +25,14 @@ public class HeaderParamInjector extends StringParameterInjector implements Valu
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       List<String> list = request.getHttpHeaders().getRequestHeaders().get(paramName);
-      return CompletableFuture.completedFuture(extractValues(list));
+      return extractValues(list);
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectHeaderParam());
    }

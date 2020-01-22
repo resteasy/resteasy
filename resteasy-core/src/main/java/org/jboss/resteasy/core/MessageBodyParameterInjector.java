@@ -1,20 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.ReaderInterceptor;
-
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ServerReaderInterceptorContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -26,12 +11,24 @@ import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
+import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ThreadLocalStack;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ReaderInterceptor;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -134,12 +131,12 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
 
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       Object o = getBody();
       if (o != null)
       {
-         return CompletableFuture.completedFuture(o);
+         return o;
       }
       MediaType mediaType = request.getHttpHeaders().getMediaType();
       if (mediaType == null)
@@ -222,7 +219,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
             final byte[] bytes = isba.toByteArray();
-            return CompletableFuture.completedFuture(new MarshalledEntity()
+            return new MarshalledEntity()
             {
                @Override
                public byte[] getMarshalledBytes()
@@ -235,11 +232,11 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                {
                   return obj;
                }
-            });
+            };
          }
          else
          {
-            return CompletableFuture.completedFuture(obj);
+            return obj;
          }
       }
       catch (Exception e)
@@ -256,7 +253,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectMessageBody(this.target));
    }

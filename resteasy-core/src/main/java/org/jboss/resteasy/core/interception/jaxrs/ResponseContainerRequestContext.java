@@ -5,7 +5,6 @@ import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-
 import java.io.InputStream;
 import java.net.URI;
 
