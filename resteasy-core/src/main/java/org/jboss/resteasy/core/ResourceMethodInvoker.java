@@ -9,8 +9,10 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -399,6 +401,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          rtn = internalInvokeOnTarget(request, response, target);
       }
+      catch (Failure failure) {
+         throw failure;
+      }
+      catch (ApplicationException appException) {
+         throw appException;
+      }
       catch (RuntimeException ex)
       {
          throw new ProcessingException(ex);
@@ -586,26 +594,39 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
-   private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
+   private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
-      return this.methodInjector.invoke(request, response, target)
-            .handle((ret, exception) -> {
-               // on success
-               if (exception == null && postResourceMethodInvokers != null) {
-                  postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-               }
-               // finally
-               if (postResourceMethodInvokers != null) {
-                  postResourceMethodInvokers.clear();
-               }
-               if(exception != null)
-               {
-                  SynchronousDispatcher.rethrow(exception);
-                  // never reached
-                  return null;
-               }
-               return ret;
-            });
+      try {
+         return this.methodInjector.invoke(request, response, target)
+               .handle((ret, exception) -> {
+                  // on success
+                  if (exception == null && postResourceMethodInvokers != null) {
+                     postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+                  }
+                  // finally
+                  if (postResourceMethodInvokers != null) {
+                     postResourceMethodInvokers.clear();
+                  }
+                  if(exception != null)
+                  {
+                     SynchronousDispatcher.rethrow(exception);
+                     // never reached
+                     return null;
+                  }
+                  return ret;
+               });
+      } catch (Failure failure) {
+         if (postResourceMethodInvokers != null) {
+            postResourceMethodInvokers.clear();
+         }
+         SynchronousDispatcher.rethrow(failure);
+      } catch (ApplicationException e) {
+         if (postResourceMethodInvokers != null) {
+            postResourceMethodInvokers.clear();
+         }
+         SynchronousDispatcher.rethrow(e);
+      }
+      throw new RuntimeException("SHOULD NEVER REACH HERE");
    }
 
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)

@@ -26,10 +26,10 @@ public interface MethodInjector
     *
     * @param request http request
     * @param response http response
-    * @return array of arguments
+    * @return array of arguments or CompletionStage
     * @throws Failure if application failure occurred
     */
-   CompletionStage<Object[]> injectArguments(HttpRequest request, HttpResponse response) throws Failure;
+   Object injectArguments(HttpRequest request, HttpResponse response) throws Failure;
 
    ValueInjector[] getParams();
 

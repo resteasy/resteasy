@@ -21,6 +21,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Produces;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,38 +68,47 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo)request.getUri();
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
-      return methodInjector.injectArguments(request, response)
-         .exceptionally(t -> {
+      Object obj = methodInjector.injectArguments(request, response);
+      if (obj == null || !(obj instanceof CompletionStage)) {
+         return CompletableFuture.completedFuture(constructLocator(locator, uriInfo, (Object[])obj));
+      }
+      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
+
+      return stagedArgs.exceptionally(t -> {
             if(t.getCause() instanceof NotFoundException && lastException != null)
                throw lastException;
             SynchronousDispatcher.rethrow(t);
             // never reached
             return null;
          }).thenApply(args -> {
-            try
-            {
-               uriInfo.pushCurrentResource(locator);
-               Object subResource = method.getMethod().invoke(locator, args);
-               if (subResource instanceof Class)
-               {
-                  subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
-               }
-               return subResource;
+         return constructLocator(locator, uriInfo, args);
+      });
+   }
 
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new InternalServerErrorException(e);
-            }
-            catch (InvocationTargetException e)
-            {
-               throw new ApplicationException(e.getCause());
-            }
-            catch (SecurityException e)
-            {
-               throw new ApplicationException(e.getCause());
-            }
-         });
+   private Object constructLocator(Object locator, ResteasyUriInfo uriInfo, Object[] args) {
+      try
+      {
+         uriInfo.pushCurrentResource(locator);
+         Object subResource = method.getMethod().invoke(locator, args);
+         if (subResource instanceof Class)
+         {
+            subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
+         }
+         return subResource;
+
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new InternalServerErrorException(e);
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new ApplicationException(e.getCause());
+      }
+      catch (SecurityException e)
+      {
+         throw new ApplicationException(e.getCause());
+      }
    }
 
    public Method getMethod()

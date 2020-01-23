@@ -80,7 +80,7 @@ public class MethodInjectorImpl implements MethodInjector
    }
 
    @Override
-   public CompletionStage<Object[]> injectArguments(HttpRequest input, HttpResponse response)
+   public Object injectArguments(HttpRequest input, HttpResponse response)
    {
       try
       {
@@ -88,22 +88,24 @@ public class MethodInjectorImpl implements MethodInjector
          {
             Object[] args = new Object[params.length];
             int i = 0;
-            CompletionStage<Object> ret = CompletableFuture.completedFuture(null);
+            CompletionStage<Object> ret = null;
             for (ValueInjector extractor : params)
             {
                int j = i++;
                Object injectedObject = extractor.inject(input, response, true);
                if (injectedObject != null && injectedObject instanceof CompletionStage) {
+                  if (ret == null) ret = CompletableFuture.completedFuture(null);
                   ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedObject)
                           .thenApply(value -> args[j] = value));
                } else {
                   args[j] = CompletionStageHolder.resolve(injectedObject);
                }
             }
-            return ret.thenApply(v -> args);
+            if (ret == null) return args;
+            else return ret.thenApply(v -> args);
          }
          else
-            return CompletableFuture.completedFuture(null);
+            return null;
       }
       catch (WebApplicationException we)
       {
@@ -122,8 +124,12 @@ public class MethodInjectorImpl implements MethodInjector
 
    public CompletionStage<Object> invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
-      return injectArguments(request, httpResponse)
-            .thenApply(args -> invoke(request, httpResponse, resource, args));
+      Object obj = injectArguments(request, httpResponse);
+      if (obj == null || !(obj instanceof CompletionStage)) {
+         return CompletableFuture.completedFuture(invoke(request, httpResponse, resource, (Object[])obj));
+      }
+      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
+      return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
    }
 
    private Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource, Object[] args)

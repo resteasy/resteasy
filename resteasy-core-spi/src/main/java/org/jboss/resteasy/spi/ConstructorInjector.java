@@ -38,7 +38,7 @@ public interface ConstructorInjector
     * @param unwrapAsync unwrap async
     * @return array of arguments
     */
-   CompletionStage<Object[]> injectableArguments(boolean unwrapAsync);
+   Object injectableArguments(boolean unwrapAsync);
 
    /**
     * Create an argument list inside the scope of an HTTP request.
@@ -51,5 +51,5 @@ public interface ConstructorInjector
     * @return array of arguments
     * @throws Failure if failure occurred
     */
-   CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure;
+   Object injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure;
 }

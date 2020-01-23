@@ -78,13 +78,13 @@ public class CdiConstructorInjector implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object[]> injectableArguments(boolean unwrapAsync)
+   public Object injectableArguments(boolean unwrapAsync)
    {
-      return CompletableFuture.completedFuture(new Object[0]);
+      return null;
    }
 
    @Override
-   public CompletionStage<Object[]> injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure
+   public Object injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure
    {
       return injectableArguments(unwrapAsync);
    }
