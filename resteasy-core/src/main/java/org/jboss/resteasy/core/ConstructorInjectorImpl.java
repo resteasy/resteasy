@@ -121,11 +121,13 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          return null;
    }
 
-   public CompletionStage<Object> construct(HttpRequest request, HttpResponse httpResponse, boolean unwrapAsync) throws Failure, ApplicationException, WebApplicationException
+   public Object construct(HttpRequest request, HttpResponse httpResponse, boolean unwrapAsync) throws Failure, ApplicationException, WebApplicationException
    {
       Object obj = injectableArguments(request, httpResponse, unwrapAsync);
 
-      if (obj == null || !(obj instanceof CompletionStage)) return CompletableFuture.completedFuture(constructInRequest((Object[])obj));
+      if (obj == null || !(obj instanceof CompletionStage)) {
+         return constructInRequest((Object[])obj);
+      }
 
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
       return stagedArgs.exceptionally(e -> {
@@ -196,10 +198,12 @@ public class ConstructorInjectorImpl implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object> construct(boolean unwrapAsync)
+   public Object construct(boolean unwrapAsync)
    {
       Object obj = injectableArguments(unwrapAsync);
-      if (obj == null || !(obj instanceof CompletionStage)) return CompletableFuture.completedFuture(constructOutsideRequest((Object[])obj));
+      if (obj == null || !(obj instanceof CompletionStage)) {
+         return constructOutsideRequest((Object[])obj);
+      }
 
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
       return stagedArgs

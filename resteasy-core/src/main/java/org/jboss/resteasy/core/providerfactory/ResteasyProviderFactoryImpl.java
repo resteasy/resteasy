@@ -93,6 +93,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -1390,10 +1391,14 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-      return (T) constructorInjector.construct(false).thenCompose(obj -> {
-         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
-         return propertyInjector.inject(obj, false).thenApply(val -> obj);
-      }).toCompletableFuture().getNow(null);
+      Object obj =  constructorInjector.construct(false);
+      PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
+      if (obj instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)obj;
+         return (T)stage.thenCompose(target -> propertyInjector.inject(target, false)
+                 .thenApply(v -> target)).toCompletableFuture().getNow(null);
+      }
+      return (T)propertyInjector.inject(obj, false).thenApply(v -> obj).toCompletableFuture().getNow(null);
    }
 
    /**
@@ -1416,7 +1421,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       else
       {
          ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         obj = constructorInjector.construct(request, response, false).toCompletableFuture().getNow(null);
+         obj = constructorInjector.construct(request, response, false);
+         if (obj instanceof CompletionStage) {
+            obj = ((CompletionStage<Object>)obj).toCompletableFuture().getNow(null);
+         }
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 

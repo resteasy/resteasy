@@ -17,8 +17,6 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * This ConstructorInjector implementation uses CDI's BeanManager to obtain
@@ -39,7 +37,7 @@ public class CdiConstructorInjector implements ConstructorInjector
    }
 
    @Override
-   public CompletionStage<Object> construct(boolean unwrapAsync)
+   public Object construct(boolean unwrapAsync)
    {
       Set<Bean<?>> beans = manager.getBeans(type);
 
@@ -68,11 +66,11 @@ public class CdiConstructorInjector implements ConstructorInjector
 
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
-      return CompletableFuture.completedFuture(manager.getReference(bean, type, context));
+      return manager.getReference(bean, type, context);
    }
 
    @Override
-   public CompletionStage<Object> construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException
+   public Object construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException
    {
       return construct(unwrapAsync);
    }

@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Created by Simon Ström on 7/17/14.
@@ -43,8 +44,12 @@ public class QueryInjector implements ValueInjector {
 
    @Override
    public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-      return constructorInjector.construct(unwrapAsync)
-            .thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
-                                 .thenApply(v -> target));
+      Object obj =  constructorInjector.construct(unwrapAsync);
+      if (obj instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)obj;
+         return stage.thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
+                 .thenApply(v -> target));
+      }
+      return propertyInjector.inject(request, response, obj, unwrapAsync).thenApply(v -> obj);
    }
 }

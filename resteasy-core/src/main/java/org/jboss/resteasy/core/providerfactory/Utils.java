@@ -21,6 +21,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Utils
@@ -91,8 +92,11 @@ public final class Utils
    {
       ConstructorInjector constructorInjector = createConstructorInjector(rpf, clazz);
 
-      T provider = (T) constructorInjector.construct(false).toCompletableFuture().getNow(null);
-      return provider;
+      Object obj = constructorInjector.construct(false);
+      if (obj instanceof CompletionStage) {
+         obj = ((CompletionStage<Object>)obj).toCompletableFuture().getNow(null);
+      }
+      return (T)obj;
    }
 
    private static <T> ConstructorInjector createConstructorInjector(ResteasyProviderFactory rpf, Class<? extends T> clazz)

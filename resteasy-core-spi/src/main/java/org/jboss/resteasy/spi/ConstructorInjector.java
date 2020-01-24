@@ -1,7 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import java.util.concurrent.CompletionStage;
-
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -13,9 +11,9 @@ public interface ConstructorInjector
    /**
     * Construct outside the scope of an HTTP request.  Useful for singleton factories.
     * @param unwrapAsync unwrap async
-    * @return constructed object
+    * @return constructed object or a CompletionStage<Object> if construction is async
     */
-   CompletionStage<Object> construct(boolean unwrapAsync);
+   Object construct(boolean unwrapAsync);
 
    /**
     * Construct inside the scope of an HTTP request.
@@ -23,12 +21,12 @@ public interface ConstructorInjector
     * @param request http request
     * @param response http response
     * @param unwrapAsync unwrap async
-    * @return constructed object
+    * @return constructed object or a CompletionStage<Object> if construction is async
     * @throws Failure if failure occurred
     * @throws WebApplicationException if application exception occurred
     * @throws ApplicationException if application exception occurred
     */
-   CompletionStage<Object> construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
+   Object construct(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure, WebApplicationException, ApplicationException;
 
    /**
     * Create an arguments list from injectable tings outside the scope of an HTTP request.  Useful for singleton factories
@@ -36,7 +34,7 @@ public interface ConstructorInjector
     * the arguments.
     *
     * @param unwrapAsync unwrap async
-    * @return array of arguments
+    * @return array of arguments or a CompletionStage<Object[]> if args is async
     */
    Object injectableArguments(boolean unwrapAsync);
 
@@ -48,7 +46,7 @@ public interface ConstructorInjector
     * @param request http request
     * @param response http response
     * @param unwrapAsync unwrap async
-    * @return array of arguments
+    * @return array of arguments or a CompletionStage<Object[]> if args is async
     * @throws Failure if failure occurred
     */
    Object injectableArguments(HttpRequest request, HttpResponse response, boolean unwrapAsync) throws Failure;

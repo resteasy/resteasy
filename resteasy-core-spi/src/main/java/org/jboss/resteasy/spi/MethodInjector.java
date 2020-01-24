@@ -26,7 +26,7 @@ public interface MethodInjector
     *
     * @param request http request
     * @param response http response
-    * @return array of arguments or CompletionStage
+    * @return array of arguments or CompletionStage<Object[]> if args need to be constructed async
     * @throws Failure if application failure occurred
     */
    Object injectArguments(HttpRequest request, HttpResponse response) throws Failure;
