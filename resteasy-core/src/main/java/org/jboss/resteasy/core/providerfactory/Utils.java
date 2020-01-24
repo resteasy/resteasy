@@ -72,19 +72,26 @@ public final class Utils
 
    public static void injectProperties(ResteasyProviderFactory rpf, Class declaring, Object obj)
    {
-      rpf.getInjectorFactory().createPropertyInjector(declaring, rpf).inject(obj, false).toCompletableFuture()
-            .getNow(null);
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(declaring, rpf).inject(obj, false);
+      if (propertyStage != null) {
+         propertyStage.toCompletableFuture()
+                 .getNow(null);
+      }
    }
 
    static void injectProperties(ResteasyProviderFactory rpf, Object obj)
    {
-      rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(obj, false).toCompletableFuture()
-            .getNow(null);
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(obj, false);
+      if (propertyStage != null) {
+         propertyStage.toCompletableFuture()
+                 .getNow(null);
+      }
    }
 
    static void injectProperties(ResteasyProviderFactory rpf, Object obj, HttpRequest request, HttpResponse response)
    {
-      rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(request, response, obj, false)
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(request, response, obj, false);
+      if (propertyStage != null) propertyStage
             .toCompletableFuture().getNow(null);
    }
 

@@ -93,6 +93,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -1395,10 +1396,19 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
       if (obj instanceof CompletionStage) {
          CompletionStage<Object> stage = (CompletionStage<Object>)obj;
-         return (T)stage.thenCompose(target -> propertyInjector.inject(target, false)
-                 .thenApply(v -> target)).toCompletableFuture().getNow(null);
+         return (T)stage.thenCompose(target -> {
+            CompletionStage<Void> propertyStage = propertyInjector.inject(target, false);
+            if (propertyStage != null) {
+               return propertyStage
+                       .thenApply(v -> target);
+            } else {
+               return CompletableFuture.completedFuture(target);
+            }
+         }).toCompletableFuture().getNow(null);
       }
-      return (T)propertyInjector.inject(obj, false).thenApply(v -> obj).toCompletableFuture().getNow(null);
+      CompletionStage<Void> propertyStage = propertyInjector.inject(obj, false);
+      if (propertyStage == null) return (T)obj;
+      return (T) propertyStage.thenApply(v -> obj).toCompletableFuture().getNow(null);
    }
 
    /**
@@ -1428,7 +1438,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      propertyInjector.inject(request, response, obj, false).toCompletableFuture().getNow(null);
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, obj, false);
+      if (propertyStage != null) propertyStage.toCompletableFuture().getNow(null);
       return (T) obj;
    }
 

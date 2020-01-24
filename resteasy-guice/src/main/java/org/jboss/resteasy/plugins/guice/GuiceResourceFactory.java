@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Provider;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.jboss.resteasy.spi.HttpRequest;
@@ -37,7 +38,8 @@ public class GuiceResourceFactory implements ResourceFactory
    public CompletionStage<Object> createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
    {
       final Object resource = provider.get();
-      return propertyInjector.inject(request, response, resource, true)
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, resource, true);
+      return propertyStage == null ? CompletableFuture.completedFuture(resource) : propertyStage
             .thenApply(v -> resource);
    }
 

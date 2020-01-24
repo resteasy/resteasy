@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 
 import java.lang.reflect.Constructor;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -47,9 +48,13 @@ public class QueryInjector implements ValueInjector {
       Object obj =  constructorInjector.construct(unwrapAsync);
       if (obj instanceof CompletionStage) {
          CompletionStage<Object> stage = (CompletionStage<Object>)obj;
-         return stage.thenCompose(target -> propertyInjector.inject(request, response, target, unwrapAsync)
-                 .thenApply(v -> target));
+         return stage.thenCompose(target -> {
+            CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, target, unwrapAsync);
+            return propertyStage == null ? CompletableFuture.completedFuture(target) : propertyStage
+                    .thenApply(v -> target);
+         });
       }
-      return propertyInjector.inject(request, response, obj, unwrapAsync).thenApply(v -> obj);
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, obj, unwrapAsync);
+      return propertyStage == null ? obj : propertyStage.thenApply(v -> obj);
    }
 }

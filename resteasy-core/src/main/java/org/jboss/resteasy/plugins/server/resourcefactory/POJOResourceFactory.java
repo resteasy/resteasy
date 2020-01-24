@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.resourcefactory;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -68,11 +69,15 @@ public class POJOResourceFactory implements ResourceFactory
    {
       Object obj = constructorInjector.construct(request, response, true);
       if (obj instanceof CompletionStage) {
-         return ((CompletionStage<Object>)obj).thenCompose(target -> propertyInjector.inject(request, response, target, true)
-                 .thenApply(v -> target));
+         return ((CompletionStage<Object>)obj).thenCompose(target -> {
+            CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, target, true);
+            return propertyStage == null ? CompletableFuture.completedFuture(target) : propertyStage
+                    .thenApply(v -> target);
+         });
 
       }
-      return propertyInjector.inject(request, response, obj, true)
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, obj, true);
+      return propertyStage == null ? CompletableFuture.completedFuture(obj) : propertyStage
               .thenApply(v -> obj);
    }
 
