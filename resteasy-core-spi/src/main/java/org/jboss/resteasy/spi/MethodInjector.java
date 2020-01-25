@@ -1,7 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import java.util.concurrent.CompletionStage;
-
 /**
  * Will invoke a method in the context of an HTTP request.  Does all the parameter injection for you.
  *
@@ -16,10 +14,10 @@ public interface MethodInjector
     * @param request http request
     * @param response http response
     * @param target target object
-    * @return returned object
+    * @return returned object or CompletionStage<Object> if arguments need async
     * @throws Failure if application failure occurred
     */
-   CompletionStage<Object> invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException;
+   Object invoke(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException;
 
    /**
     * Create the arguments that would be used to invoke the method in the context of an HTTP request.

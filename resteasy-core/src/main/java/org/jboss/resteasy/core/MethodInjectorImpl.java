@@ -122,13 +122,19 @@ public class MethodInjectorImpl implements MethodInjector
       }
    }
 
-   public CompletionStage<Object> invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
+   @Override
+   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
-      Object obj = injectArguments(request, httpResponse);
-      if (obj == null || !(obj instanceof CompletionStage)) {
-         return CompletableFuture.completedFuture(invoke(request, httpResponse, resource, (Object[])obj));
+      Object argsObj = injectArguments(request, httpResponse);
+      if (argsObj == null || !(argsObj instanceof CompletionStage)) {
+         Object returnObj = invoke(request, httpResponse, resource, (Object[]) argsObj);
+         if (returnObj instanceof CompletionStage) {
+            return new CompletionStageHolder((CompletionStage)returnObj);
+         } else {
+            return returnObj;
+         }
       }
-      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
+      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)argsObj;
       return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
    }
 

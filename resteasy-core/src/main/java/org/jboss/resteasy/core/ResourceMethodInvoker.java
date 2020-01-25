@@ -597,36 +597,37 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
       try {
-         return this.methodInjector.invoke(request, response, target)
-               .handle((ret, exception) -> {
-                  // on success
-                  if (exception == null && postResourceMethodInvokers != null) {
-                     postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-                  }
-                  // finally
-                  if (postResourceMethodInvokers != null) {
-                     postResourceMethodInvokers.clear();
-                  }
-                  if(exception != null)
-                  {
-                     SynchronousDispatcher.rethrow(exception);
-                     // never reached
-                     return null;
-                  }
-                  return ret;
-               });
-      } catch (Failure failure) {
+          Object methodResponse = this.methodInjector.invoke(request, response, target);
+          CompletionStage<Object> stage = null;
+          if (methodResponse != null && methodResponse instanceof CompletionStage) {
+            stage = (CompletionStage<Object>)methodResponse;
+          } else {
+              stage = CompletableFuture.completedFuture(CompletionStageHolder.resolve(methodResponse));
+          }
+          return stage
+                      .handle((ret, exception) -> {
+                          // on success
+                          if (exception == null && postResourceMethodInvokers != null) {
+                              postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+                          }
+                          // finally
+                          if (postResourceMethodInvokers != null) {
+                              postResourceMethodInvokers.clear();
+                          }
+                          if (exception != null) {
+                              SynchronousDispatcher.rethrow(exception);
+                              // never reached
+                              return null;
+                          }
+                          return ret;
+                      });
+
+      } catch (RuntimeException failure) {
          if (postResourceMethodInvokers != null) {
             postResourceMethodInvokers.clear();
          }
-         SynchronousDispatcher.rethrow(failure);
-      } catch (ApplicationException e) {
-         if (postResourceMethodInvokers != null) {
-            postResourceMethodInvokers.clear();
-         }
-         SynchronousDispatcher.rethrow(e);
+         throw failure;
       }
-      throw new RuntimeException("SHOULD NEVER REACH HERE");
    }
 
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
