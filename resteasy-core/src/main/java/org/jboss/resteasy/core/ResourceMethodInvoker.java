@@ -396,10 +396,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    {
       ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-      CompletionStage<Object> rtn = null;
       try
       {
-         rtn = internalInvokeOnTarget(request, response, target);
+         Object rtn = internalInvokeOnTarget(request, response, target);
+         if (rtn != null && rtn instanceof CompletionStage) {
+            return (CompletionStage<Object>)rtn;
+         } else {
+            return CompletableFuture.completedFuture(rtn);
+         }
       }
       catch (Failure failure) {
          throw failure;
@@ -412,7 +416,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          throw new ProcessingException(ex);
 
       }
-      return rtn;
    }
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
@@ -470,9 +473,15 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       try
       {
-         CompletionStage<BuiltResponse> stage = internalInvokeOnTarget(request, response, target)
-               .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
-         return stage.toCompletableFuture().getNow(null);
+         Object ret = internalInvokeOnTarget(request, response, target);
+         if (ret != null && ret instanceof CompletionStage) {
+            CompletionStage<Object> retStage = (CompletionStage<Object>)ret;
+            CompletionStage<BuiltResponse> stage = retStage
+                    .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
+            return stage.toCompletableFuture().getNow(null);
+         } else {
+            return afterInvoke(request, asyncResponseConsumer, CompletionStageHolder.resolve(ret));
+         }
       }
       catch (CompletionException ex)
       {
@@ -594,34 +603,41 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
-   private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
+   private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
       try {
           Object methodResponse = this.methodInjector.invoke(request, response, target);
           CompletionStage<Object> stage = null;
           if (methodResponse != null && methodResponse instanceof CompletionStage) {
-            stage = (CompletionStage<Object>)methodResponse;
+             stage = (CompletionStage<Object>)methodResponse;
+             return stage
+                     .handle((ret, exception) -> {
+                        // on success
+                        if (exception == null && postResourceMethodInvokers != null) {
+                           postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+                        }
+                        // finally
+                        if (postResourceMethodInvokers != null) {
+                           postResourceMethodInvokers.clear();
+                        }
+                        if (exception != null) {
+                           SynchronousDispatcher.rethrow(exception);
+                           // never reached
+                           return null;
+                        }
+                        return ret;
+                     });
           } else {
-              stage = CompletableFuture.completedFuture(CompletionStageHolder.resolve(methodResponse));
+             // on success
+             if (postResourceMethodInvokers != null) {
+                postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+             }
+             // finally
+             if (postResourceMethodInvokers != null) {
+                postResourceMethodInvokers.clear();
+             }
+             return methodResponse;
           }
-          return stage
-                      .handle((ret, exception) -> {
-                          // on success
-                          if (exception == null && postResourceMethodInvokers != null) {
-                              postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-                          }
-                          // finally
-                          if (postResourceMethodInvokers != null) {
-                              postResourceMethodInvokers.clear();
-                          }
-                          if (exception != null) {
-                              SynchronousDispatcher.rethrow(exception);
-                              // never reached
-                              return null;
-                          }
-                          return ret;
-                      });
-
       } catch (RuntimeException failure) {
          if (postResourceMethodInvokers != null) {
             postResourceMethodInvokers.clear();
