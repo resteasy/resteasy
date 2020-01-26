@@ -54,6 +54,14 @@ public class SynchronousDispatcher implements Dispatcher
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
+
+   {
+      // This is to make sure LogMessages are preloaded as profiler shows a runtime hit
+      // This will also insure that this initialization is done at static init time when loaded with Graal
+      // Not a big deal if you remove this.
+      LogMessages preload = LogMessages.LOGGER;
+   }
+
    public SynchronousDispatcher(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;

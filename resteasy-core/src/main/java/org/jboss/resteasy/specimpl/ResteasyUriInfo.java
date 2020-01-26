@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -454,13 +455,24 @@ public class ResteasyUriInfo implements UriInfo
    {
       if (decode)
       {
-         if (matchedUris == null) matchedUris = new LinkedList<String>();
-         return matchedUris;
+         if (matchedUris == null) {
+            if (encodedMatchedUris != null) {
+               // This method is rarely called in user code, so just decode it on demand.
+               matchedUris = new LinkedList<String>();
+               for (String match : encodedMatchedUris) {
+                  String decoded = Encode.decode(match);
+                  matchedUris.add(decoded);
+               }
+            } else {
+               return Collections.EMPTY_LIST;
+            }
+         }
+         return Collections.unmodifiableList(matchedUris);
       }
       else
       {
-         if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
-         return encodedMatchedUris;
+         if (encodedMatchedUris == null) return Collections.EMPTY_LIST;
+         return Collections.unmodifiableList(encodedMatchedUris);
       }
    }
 
@@ -503,12 +515,11 @@ public class ResteasyUriInfo implements UriInfo
       int start = (encoded.startsWith("/")) ? 1 : 0;
       int end = (encoded.endsWith("/")) ? encoded.length() - 1 : encoded.length();
       encoded = start < end ? encoded.substring(start, end) : "";
-      String decoded = Encode.decode(encoded);
       if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
       encodedMatchedUris.add(0, encoded);
-
-      if (matchedUris == null) matchedUris = new LinkedList<String>();
-      matchedUris.add(0, decoded);
+      // Don't decode and add to matchedUris as getMatchedURIs() is rarely called in user code
+      // So, we just clear matchedUris every time its invoked.
+      matchedUris = null;
    }
 
    @Override

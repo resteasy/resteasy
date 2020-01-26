@@ -76,11 +76,12 @@ public class ResourcePropertyInjector implements PropertyInjector
    @Override
    public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (FieldInjector injector : fields)
       {
           Object injectedObject = injector.injector.inject(request, response, unwrapAsync);
           if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
               ret = ret.thenCompose(v ->
                       ((CompletionStage<Object>)injectedObject)
                               .thenAccept(value -> {
@@ -106,6 +107,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       {
           Object injectedObject = injector.injector.inject(request, response, unwrapAsync);
           if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
               ret = ret.thenCompose(v ->
                       ((CompletionStage<Object>)injectedObject)
                               .thenAccept(value -> {
@@ -144,11 +146,12 @@ public class ResourcePropertyInjector implements PropertyInjector
    @Override
    public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (FieldInjector injector : fields)
       {
           Object injectedObject = injector.injector.inject(unwrapAsync);
           if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
               ret = ret.thenCompose(v ->
                       ((CompletionStage<Object>)injectedObject)
                               .thenAccept(value -> {
@@ -177,6 +180,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       {
           Object injectedObject = injector.injector.inject(unwrapAsync);
           if (injectedObject != null && injectedObject instanceof CompletionStage) {
+              if (ret == null) ret = CompletableFuture.completedFuture(null);
               ret = ret.thenCompose(v ->
                       ((CompletionStage<Object>)injectedObject)
                               .thenAccept(value -> {

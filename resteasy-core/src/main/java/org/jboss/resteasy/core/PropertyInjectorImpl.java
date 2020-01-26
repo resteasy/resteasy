@@ -138,11 +138,12 @@ public class PropertyInjectorImpl implements PropertyInjector
    @Override
    public CompletionStage<Void> inject(HttpRequest request, HttpResponse response, Object target, boolean unwrapAsync) throws Failure
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
          Object injectValue = entry.getValue().inject(request, response, unwrapAsync);
          if (injectValue != null && injectValue instanceof CompletionStage) {
+            if (ret == null) ret = CompletableFuture.completedFuture(null);
             ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectValue)
                     .thenAccept(value -> {
                        try
@@ -166,6 +167,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       {
          Object injectedValue = setter.extractor.inject(request, response, unwrapAsync);
          if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            if (ret == null) ret = CompletableFuture.completedFuture(null);
             ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
                     .thenAccept(value -> {
                        try
@@ -198,11 +200,12 @@ public class PropertyInjectorImpl implements PropertyInjector
    @Override
    public CompletionStage<Void> inject(Object target, boolean unwrapAsync)
    {
-      CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
+      CompletionStage<Void> ret = null;
       for (Map.Entry<Field, ValueInjector> entry : fieldMap.entrySet())
       {
          Object injectedValue = entry.getValue().inject(unwrapAsync);
          if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            if (ret == null) ret = CompletableFuture.completedFuture(null);
             ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
                     .thenAccept(value -> {
                        try
@@ -231,6 +234,7 @@ public class PropertyInjectorImpl implements PropertyInjector
       {
          Object injectedValue = setter.extractor.inject(unwrapAsync);
          if (injectedValue != null && injectedValue instanceof CompletionStage) {
+            if (ret == null) ret = CompletableFuture.completedFuture(null);
             ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedValue)
                     .thenAccept(value -> {
                        try
