@@ -129,27 +129,27 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       return method.getMethod();
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
       Object resource = resolveTarget(request, response);
       if (resource instanceof CompletionStage) {
-         return ((CompletionStage<Object>)resource).thenCompose(target -> invokeOnTargetObject(request, response, target));
+         return ((CompletionStage<Object>)resource).thenApply(target -> invokeOnTargetObject(request, response, target)).toCompletableFuture().getNow(null);
       }
       return invokeOnTargetObject(request, response, resource);
 
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object locator)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
       Object resource = resolveTargetFromLocator(request, response, locator);
       if (resource instanceof CompletionStage) {
-         return ((CompletionStage<Object>)resource).thenCompose(target -> invokeOnTargetObject(request, response, target));
+         return ((CompletionStage<Object>)resource).thenApply(target -> invokeOnTargetObject(request, response, target)).toCompletableFuture().getNow(null);
       }
       return invokeOnTargetObject(request, response, resource);
 
    }
 
-   protected CompletionStage<BuiltResponse> invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

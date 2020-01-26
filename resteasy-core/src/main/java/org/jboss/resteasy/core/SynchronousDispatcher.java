@@ -431,7 +431,7 @@ public class SynchronousDispatcher implements Dispatcher
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
          logger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         jaxrsResponse = invoker.invoke(request, response);
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -473,7 +473,7 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         jaxrsResponse = invoker.invoke(request, response);
 
          tracingLogger.log("DISPATCH_RESPONSE", jaxrsResponse);
 

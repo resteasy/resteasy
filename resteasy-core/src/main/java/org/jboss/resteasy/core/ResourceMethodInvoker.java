@@ -363,13 +363,13 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
       Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
       if (resource instanceof CompletionStage) {
          CompletionStage<Object> stage = (CompletionStage<Object>)resource;
          return stage
-                 .thenCompose(target -> invoke(request, response, target));
+                 .thenApply(target -> invoke(request, response, target)).toCompletableFuture().getNow(null);
       }
       return invoke(request, response, resource);
    }
@@ -387,7 +387,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return invokeOnTargetDryRun(request, response, target);
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object target)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
@@ -397,9 +397,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
       }
       uriInfo.pushCurrentResource(target);
-      BuiltResponse rtn = invokeOnTarget(request, response, target);
-      // FIXME: async
-      return CompletableFuture.completedFuture(rtn);
+      return invokeOnTarget(request, response, target);
    }
 
    protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
@@ -434,11 +432,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       final long msTimeStamp = methodStatisticsLogger.timestamp();
       try {
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
-
-         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, getRequestFilters(),
-            () -> invokeOnTargetAfterFilter(request, response, target));
-         // let it handle the continuation
-         return requestContext.filter();
+         if (requestFilters != null && requestFilters.length > 0) {
+            PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
+                    () -> invokeOnTargetAfterFilter(request, response, target));
+            // let it handle the continuation
+            return requestContext.filter();
+         } else {
+            return invokeOnTargetAfterFilter(request, response, target);
+         }
       } finally {
          methodStatisticsLogger.duration(msTimeStamp);
          if (resource instanceof SingletonResource) {
@@ -488,6 +489,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             CompletionStage<Object> retStage = (CompletionStage<Object>)ret;
             CompletionStage<BuiltResponse> stage = retStage
                     .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
+            // if async isn't finished, return null.  Container will assume that its a suspended request
             return stage.toCompletableFuture().getNow(null);
          } else {
             return afterInvoke(request, asyncResponseConsumer, CompletionStageHolder.resolve(ret));
