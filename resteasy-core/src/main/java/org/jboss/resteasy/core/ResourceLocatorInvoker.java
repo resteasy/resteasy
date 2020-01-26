@@ -57,20 +57,33 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    }
 
 
-   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response)
+   protected Object resolveTarget(HttpRequest request, HttpResponse response)
    {
-      return this.resource.createResource(request, response, providerFactory)
-            .thenCompose(resource -> createResource(request, response, resource));
+      Object locatorResource = this.resource.createResource(request, response, providerFactory);
+      if (locatorResource instanceof CompletionStage) {
+         CompletionStage<Object> locatorStage = (CompletionStage<Object>)locatorResource;
+         return locatorStage
+                 .thenCompose(resource -> {
+                    Object located = resolveTargetFromLocator(request, response, resource);
+                    if (located instanceof CompletionStage) {
+                       return (CompletionStage<Object>)located;
+                    } else {
+                       return CompletableFuture.completedFuture(located);
+                    }
+                 });
+      } else {
+         return resolveTargetFromLocator(request, response, locatorResource);
 
+      }
    }
 
-   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, Object locator)
+   protected Object resolveTargetFromLocator(HttpRequest request, HttpResponse response, Object locator)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo)request.getUri();
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
       Object obj = methodInjector.injectArguments(request, response);
       if (obj == null || !(obj instanceof CompletionStage)) {
-         return CompletableFuture.completedFuture(constructLocator(locator, uriInfo, (Object[])obj));
+         return constructLocator(locator, uriInfo, (Object[])obj);
       }
       CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
 
@@ -118,14 +131,22 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
    {
-      return createResource(request, response)
-            .thenCompose(target -> invokeOnTargetObject(request, response, target));
+      Object resource = resolveTarget(request, response);
+      if (resource instanceof CompletionStage) {
+         return ((CompletionStage<Object>)resource).thenCompose(target -> invokeOnTargetObject(request, response, target));
+      }
+      return invokeOnTargetObject(request, response, resource);
+
    }
 
    public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      return createResource(request, response, locator)
-            .thenCompose(target -> invokeOnTargetObject(request, response, target));
+      Object resource = resolveTargetFromLocator(request, response, locator);
+      if (resource instanceof CompletionStage) {
+         return ((CompletionStage<Object>)resource).thenCompose(target -> invokeOnTargetObject(request, response, target));
+      }
+      return invokeOnTargetObject(request, response, resource);
+
    }
 
    protected CompletionStage<BuiltResponse> invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)

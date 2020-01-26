@@ -353,15 +353,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response) {
-      return resource.createResource(request, response, resourceMethodProviderFactory)
-            .thenCompose(target -> invokeDryRun(request, response, target));
+      Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
+      if (resource instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)resource;
+         return stage
+                 .thenCompose(target -> invokeDryRun(request, response, target));
+      }
+      return invokeDryRun(request, response, resource);
    }
 
 
    public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
    {
-      return resource.createResource(request, response, resourceMethodProviderFactory)
-            .thenCompose(target -> invoke(request, response, target));
+      Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
+      if (resource instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)resource;
+         return stage
+                 .thenCompose(target -> invoke(request, response, target));
+      }
+      return invoke(request, response, resource);
    }
 
    public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response, Object target)

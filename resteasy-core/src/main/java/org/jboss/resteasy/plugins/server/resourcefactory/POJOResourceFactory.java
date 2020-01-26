@@ -65,7 +65,7 @@ public class POJOResourceFactory implements ResourceFactory
       this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(resourceClass, factory);
    }
 
-   public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
+   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       Object obj = constructorInjector.construct(request, response, true);
       if (obj instanceof CompletionStage) {
@@ -77,7 +77,7 @@ public class POJOResourceFactory implements ResourceFactory
 
       }
       CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, obj, true);
-      return propertyStage == null ? CompletableFuture.completedFuture(obj) : propertyStage
+      return propertyStage == null ? obj : propertyStage
               .thenApply(v -> obj);
    }
 
