@@ -85,7 +85,7 @@
         <version.json.patch>1.9</version.json.patch>
 
         <!-- MicroProfile versions -->
-        <version.microprofile.restclient>1.3.4</version.microprofile.restclient>
+        <version.microprofile.restclient>1.4-RC1</version.microprofile.restclient>
         <version.microprofile.config>1.3</version.microprofile.config>
         <version.microprofile.context-propagation>1.0.1</version.microprofile.context-propagation>
 
