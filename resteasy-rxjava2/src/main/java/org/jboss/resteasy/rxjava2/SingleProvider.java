@@ -2,6 +2,7 @@ package org.jboss.resteasy.rxjava2;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Supplier;
 
 import javax.ws.rs.ext.Provider;
 
@@ -41,5 +42,11 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>, AsyncCl
    public Single<?> fromCompletionStage(CompletionStage<?> completionStage)
    {
       return Single.fromFuture(completionStage.toCompletableFuture());
+   }
+
+   @Override
+   public Single<?> fromCompletionStage(final Supplier<CompletionStage<?>> completionStageSupplier)
+   {
+      return Single.defer(() -> fromCompletionStage(completionStageSupplier.get()));
    }
 }

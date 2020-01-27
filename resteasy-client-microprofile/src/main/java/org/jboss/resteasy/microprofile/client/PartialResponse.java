@@ -1,21 +1,4 @@
-/**
- * Copyright 2015-2017 Red Hat, Inc, and individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.microprofile.client;
-
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientResponseContext;
@@ -76,7 +59,7 @@ public class PartialResponse extends Response implements Serializable {
 
         if (entityType.isAssignableFrom(String.class)) {
             return (T) readStringEntity(entityStream);
-        }  else {
+        } else {
             throw notSupported();
         }
     }
@@ -203,10 +186,9 @@ public class PartialResponse extends Response implements Serializable {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public MultivaluedMap<String, Object> getMetadata() {
-        MultivaluedMap<String, Object> metaData = new MultivaluedMapImpl<String, Object>();
-        // TODO
-        return metaData;
+        return (MultivaluedMap) responseContext.getHeaders();
     }
 
     @Override
