@@ -81,7 +81,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
                if (stage == null) stage = CompletableFuture.completedFuture(null);
                stage = stage.thenCompose(v ->
                        ((CompletionStage<Object>)injectedObject)
-                               .thenAccept(value -> args[ifinal] = value));
+                               .thenAccept(value -> args[ifinal] = CompletionStageHolder.resolve(value)));
             } else {
                args[ifinal] = CompletionStageHolder.resolve(injectedObject);
             }
@@ -108,7 +108,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
             Object injectedObject = extractor.inject(unwrapAsync);
             if (injectedObject != null && injectedObject instanceof CompletionStage) {
                if (stage == null) stage = CompletableFuture.completedFuture(null);
-               stage = stage.thenCompose(v -> ((CompletionStage<Object>)injectedObject).thenAccept(value -> args[ifinal] = value));
+               stage = stage.thenCompose(v -> ((CompletionStage<Object>)injectedObject).thenAccept(value -> args[ifinal] = CompletionStageHolder.resolve(value)));
 
             } else {
                args[ifinal] = CompletionStageHolder.resolve(injectedObject);

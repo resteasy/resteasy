@@ -96,7 +96,7 @@ public class MethodInjectorImpl implements MethodInjector
                if (injectedObject != null && injectedObject instanceof CompletionStage) {
                   if (ret == null) ret = CompletableFuture.completedFuture(null);
                   ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedObject)
-                          .thenApply(value -> args[j] = value));
+                          .thenApply(value -> args[j] = CompletionStageHolder.resolve(value)));
                } else {
                   args[j] = CompletionStageHolder.resolve(injectedObject);
                }

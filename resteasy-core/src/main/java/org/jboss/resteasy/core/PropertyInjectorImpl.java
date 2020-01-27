@@ -148,7 +148,7 @@ public class PropertyInjectorImpl implements PropertyInjector
                     .thenAccept(value -> {
                        try
                        {
-                          entry.getKey().set(target, value);
+                          entry.getKey().set(target, CompletionStageHolder.resolve(value));
                        }
                        catch (IllegalAccessException e)
                        {
@@ -172,7 +172,7 @@ public class PropertyInjectorImpl implements PropertyInjector
                     .thenAccept(value -> {
                        try
                        {
-                          setter.method.invoke(target, value);
+                          setter.method.invoke(target, CompletionStageHolder.resolve(value));
                        }
                        catch (IllegalAccessException e)
                        {
@@ -210,7 +210,7 @@ public class PropertyInjectorImpl implements PropertyInjector
                     .thenAccept(value -> {
                        try
                        {
-                          entry.getKey().set(target, value);
+                          entry.getKey().set(target, CompletionStageHolder.resolve(value));
                        }
                        catch (IllegalAccessException e)
                        {
@@ -239,7 +239,7 @@ public class PropertyInjectorImpl implements PropertyInjector
                     .thenAccept(value -> {
                        try
                        {
-                          setter.method.invoke(target, value);
+                          setter.method.invoke(target, CompletionStageHolder.resolve(value));
                        }
                        catch (IllegalAccessException e)
                        {
