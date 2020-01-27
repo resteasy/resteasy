@@ -4,6 +4,7 @@ import org.eclipse.microprofile.rest.client.RestClientDefinitionException;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 import org.eclipse.microprofile.rest.client.ext.DefaultClientHeadersFactoryImpl;
+import org.jboss.resteasy.microprofile.client.RestClientExtension;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -63,6 +64,12 @@ public class ClientHeaderProviders {
     private static Optional<ClientHeadersFactory> getCustomHeadersFactory(RegisterClientHeaders annotation, Class<?> source) {
         Class<? extends ClientHeadersFactory> factoryClass = annotation.value();
         if (factoryClass != null) {
+            if (RestClientExtension.isCDIActive()) {
+                Object factory = RestClientExtension.construct(factoryClass);
+                if (factory != null) {
+                    return Optional.of(factoryClass.cast(factory));
+                }
+            }
             try {
                 return Optional.of(factoryClass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
