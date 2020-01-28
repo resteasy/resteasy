@@ -204,21 +204,35 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         T actualClient;
         ResteasyClient client;
 
-        String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST)).filter(String.class::isInstance).map(String.class::cast).orElse(null);
-        Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT)).filter(Integer.class::isInstance).map(Integer.class::cast).orElse(null);
-        String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME)).filter(String.class::isInstance).map(String.class::cast).orElse(null);
-
-
         ResteasyClientBuilder resteasyClientBuilder;
         if (envProxyHost != null && !noProxyHosts.contains(baseURI.getHost())) {
-            // Use proxy, if defined
+            // Use proxy, if defined in the env variables
             resteasyClientBuilder = builderDelegate.defaultProxy(
                     envProxyHost,
                     Integer.parseInt(System.getProperty("http.proxyPort", "80")));
-        } else if (userProxyHost != null && userProxyPort != null) {
-            resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
         } else {
-            resteasyClientBuilder = builderDelegate;
+            // Search for proxy settings passed in the client builder, if passed and use them if found
+            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
+                    .filter(Integer.class::isInstance)
+                    .map(Integer.class::cast)
+                    .orElse(null);
+
+            String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            if (userProxyHost != null && userProxyPort != null) {
+                resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
+            } else {
+                //no proxy
+                resteasyClientBuilder = builderDelegate;
+            }
         }
 
         if (this.executorService != null) {
