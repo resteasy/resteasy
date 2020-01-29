@@ -5,6 +5,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -19,12 +20,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Locale;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -218,4 +221,57 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
       }
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(IIOImage t, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      ImageWriter writer = IIOImageProviderHelper.getImageWriterByMediaType(mediaType);
+      ImageWriteParam param;
+      if (mediaType.equals(MediaType.valueOf("image/jpeg")))
+      {
+         param = new JPEGImageWriteParam(Locale.US);
+      }
+      else
+      {
+         param = writer.getDefaultWriteParam();
+      }
+
+      /*
+       * If the image output type supports compression, set it to the highest
+       * maximum
+       */
+      ImageWriterParams writerParams = org.jboss.resteasy.spi.util.FindAnnotation.findAnnotation(annotations,
+              ImageWriterParams.class);
+      if (writerParams != null)
+      {
+         if (param.canWriteCompressed())
+         {
+            final int cm = writerParams.compressionMode();
+            param.setCompressionMode(cm);
+            if (ImageWriteParam.MODE_EXPLICIT == cm) {
+               param.setCompressionQuality(writerParams.compressionQuality());
+            }
+         }
+      }
+      else if (param.canWriteCompressed())
+      {
+         param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+         param.setCompressionQuality(1.0f);
+      }
+      ByteArrayOutputStream buff = new ByteArrayOutputStream(2048);
+      try
+      {
+         ImageOutputStream ios = ImageIO.createImageOutputStream(buff);
+         writer.setOutput(ios);
+         IIOImage img = new IIOImage(t.getRenderedImage(), null, null);
+         writer.write(null, img, param);
+         return entityStream.rxWrite(buff.toByteArray())
+               .whenComplete((v, x) -> writer.dispose());
+      } catch (IOException e)
+      {
+         return ProviderHelper.completedException(e);
+      }
+   }
 }

@@ -27,9 +27,9 @@ public class BlockingAsyncOutputStream extends AsyncOutputStream {
     }
 
     @Override
-    public CompletionStage<Void> rxWrite(byte[] bytes) {
+    public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length) {
         try {
-            outputStream.write(bytes);
+            outputStream.write(bytes, offset, length);
         } catch (IOException e) {
             CompletableFuture<Void> ret = new CompletableFuture<>();
             ret.completeExceptionally(e);

@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.NoContent;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -11,7 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,11 +23,13 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
@@ -35,7 +38,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
 @Consumes({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
-public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWriter<Source>
+public class SourceProvider implements MessageBodyReader<Source>, AsyncMessageBodyWriter<Source>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -96,6 +99,39 @@ public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWri
       catch (TransformerException ex)
       {
          throw new InternalServerErrorException(ex);
+      }
+   }
+
+   public CompletionStage<Void> asyncWriteTo(Source source, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      try
+      {
+         if (source instanceof StreamSource)
+         {
+            StreamSource stream = (StreamSource) source;
+            InputSource inputStream;
+
+            if (stream.getInputStream() == null && stream.getReader() != null) {
+               inputStream = new InputSource(stream.getReader());
+            } else {
+               inputStream = new InputSource(stream.getInputStream());
+            }
+
+            inputStream.setCharacterStream(inputStream.getCharacterStream());
+            inputStream.setPublicId(stream.getPublicId());
+            inputStream.setSystemId(source.getSystemId());
+            source = new SAXSource(SAXParserFactory.newInstance().newSAXParser().getXMLReader(), inputStream);
+         }
+
+         ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+         StreamResult sr = new StreamResult(bos);
+         TransformerFactory.newInstance().newTransformer().transform(source, sr);
+         return entityStream.rxWrite(bos.toByteArray());
+      }
+      catch (SAXException | ParserConfigurationException | TransformerException ex)
+      {
+         return ProviderHelper.completedException(new InternalServerErrorException(ex));
       }
    }
 }

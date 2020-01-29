@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -21,6 +22,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.util.NoContent;
 import org.xml.sax.InputSource;
@@ -139,4 +141,13 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       super.writeTo(t, typeArg, genericType, annotations, mediaType, httpHeaders, outputStream);
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(JAXBElement<?> t, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream outputStream) {
+       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+       Class<?> typeArg = Object.class;
+       if (genericType != null) typeArg = Types.getTypeArgument(genericType);
+       return super.asyncWriteTo(t, typeArg, genericType, annotations, mediaType, httpHeaders, outputStream);
+   }
 }

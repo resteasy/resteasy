@@ -6,10 +6,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -18,7 +18,11 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
+
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 
 /**
@@ -42,7 +46,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 @Produces("application/x-java-serialized-object")
 @Consumes("application/x-java-serialized-object")
 @Deprecated
-public class SerializableProvider implements MessageBodyReader<Serializable>, MessageBodyWriter<Serializable>
+public class SerializableProvider implements MessageBodyReader<Serializable>, AsyncMessageBodyWriter<Serializable>
 {
    public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
    public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
@@ -69,6 +73,24 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
       ObjectOutputStream oos = new ObjectOutputStream(bos);
       oos.writeObject(t);
       oos.close();
+   }
+
+   public CompletionStage<Void> asyncWriteTo(Serializable t, Class<?> type, Type genericType,
+                       Annotation[] annotations, MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      try
+      {
+         ObjectOutputStream oos = new ObjectOutputStream(bos);
+         oos.writeObject(t);
+         oos.close();
+      } catch (IOException e)
+      {
+         return ProviderHelper.completedException(e);
+      }
+      return entityStream.rxWrite(bos.toByteArray());
    }
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

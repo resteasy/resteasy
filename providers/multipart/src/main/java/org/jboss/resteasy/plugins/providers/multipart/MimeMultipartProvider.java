@@ -1,7 +1,9 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 
@@ -15,11 +17,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 /**
  * A provider to handle multipart representations. This implementation will be
@@ -200,5 +204,25 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
          throw new WriterException(e);
       }
 
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(MimeMultipart mimeMultipart, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream) {
+       try
+       {
+          LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+          // replace the Content-Type header to include the boundry
+          // information
+          httpHeaders.putSingle("Content-Type", MediaType.valueOf(mimeMultipart.getContentType()));
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+          mimeMultipart.writeTo(bos);
+          return entityStream.rxWrite(bos.toByteArray());
+       }
+       catch (MessagingException | IOException e)
+       {
+          return ProviderHelper.completedException(new WriterException(e));
+       }
    }
 }

@@ -10,18 +10,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.AccessController;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartFilename;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
@@ -31,7 +34,7 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
  */
 @Provider
 @Produces("multipart/form-data")
-public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWriter implements MessageBodyWriter<Object>
+public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWriter implements AsyncMessageBodyWriter<Object>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -45,54 +48,68 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
 
    public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
-      MultipartFormDataOutput multipart = new MultipartFormDataOutput();
 
-      Class<?> theType = type;
-      while (theType != null && !theType.equals(Object.class))
-      {
-         getFields(theType, multipart, obj);
-         theType = theType.getSuperclass();
-      }
+      write(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
 
-      for (Method method : type.getMethods())
-      {
-         if ((method.isAnnotationPresent(FormParam.class)
-                 || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
-                 && method.getName().startsWith("get") && method.getParameterTypes().length == 0
-                 && method.isAnnotationPresent(PartType.class))
-         {
-            FormParam param = method.getAnnotation(FormParam.class);
-            String name;
-            if(param != null) {
-                name = param.value();
-            } else {
-                org.jboss.resteasy.annotations.jaxrs.FormParam param2 = method.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
-                name = param2.value();
-                if(name == null || name.isEmpty())
-                    name = Introspector.decapitalize(method.getName().substring(3));
-            }
-            Object value = null;
-            try
-            {
-               value = method.invoke(obj);
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new WriterException(e);
-            }
-            catch (InvocationTargetException e)
-            {
-               throw new WriterException(e.getCause());
-            }
-            PartType partType = method.getAnnotation(PartType.class);
-            String filename = getFilename(method);
+   }
 
-            multipart.addFormData(name, value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()), filename);
-         }
-      }
+   private MultipartFormDataOutput getMultipart(Object obj, Class<?> type) throws IOException {
+       MultipartFormDataOutput multipart = new MultipartFormDataOutput();
 
-      write(multipart, mediaType, httpHeaders, entityStream);
+       Class<?> theType = type;
+       while (theType != null && !theType.equals(Object.class))
+       {
+          getFields(theType, multipart, obj);
+          theType = theType.getSuperclass();
+       }
 
+       for (Method method : type.getMethods())
+       {
+          if ((method.isAnnotationPresent(FormParam.class)
+                  || method.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
+                  && method.getName().startsWith("get") && method.getParameterTypes().length == 0
+                  && method.isAnnotationPresent(PartType.class))
+          {
+             FormParam param = method.getAnnotation(FormParam.class);
+             String name;
+             if(param != null) {
+                 name = param.value();
+             } else {
+                 org.jboss.resteasy.annotations.jaxrs.FormParam param2 = method.getAnnotation(org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+                 name = param2.value();
+                 if(name == null || name.isEmpty())
+                     name = Introspector.decapitalize(method.getName().substring(3));
+             }
+             Object value = null;
+             try
+             {
+                value = method.invoke(obj);
+             }
+             catch (IllegalAccessException e)
+             {
+                throw new WriterException(e);
+             }
+             catch (InvocationTargetException e)
+             {
+                throw new WriterException(e.getCause());
+             }
+             PartType partType = method.getAnnotation(PartType.class);
+             String filename = getFilename(method);
+
+             multipart.addFormData(name, value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()), filename);
+          }
+       }
+       return multipart;
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                                             MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
+       try {
+           return asyncWrite(getMultipart(obj, type), mediaType, httpHeaders, entityStream);
+       } catch (IOException e) {
+           return ProviderHelper.completedException(e);
+       }
    }
 
    protected String getFilename(AccessibleObject method)

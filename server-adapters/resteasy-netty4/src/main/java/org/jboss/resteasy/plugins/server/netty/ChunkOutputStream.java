@@ -128,7 +128,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
    }
 
    @Override
-   public CompletionStage<Void> rxWrite(byte[] bytes)
+   public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
    {
       CompletableFuture<Void> ret = new CompletableFuture<>();
       try
@@ -140,7 +140,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
             else
                ret.completeExceptionally(v.cause());
          });
-         write(bytes, 0, bytes.length, promise);
+         write(bytes, offset, length, promise);
       } catch (IOException e)
       {
          ret.completeExceptionally(e);

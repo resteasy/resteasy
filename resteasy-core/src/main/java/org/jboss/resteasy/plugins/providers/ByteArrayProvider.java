@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +27,7 @@ import java.util.concurrent.CompletionStage;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBodyWriter<byte[]>, AsyncMessageBodyWriter<byte[]>
+public class ByteArrayProvider implements MessageBodyReader<byte[]>, AsyncMessageBodyWriter<byte[]>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

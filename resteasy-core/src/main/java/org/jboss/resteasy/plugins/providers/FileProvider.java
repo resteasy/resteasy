@@ -4,12 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -18,13 +20,14 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
@@ -37,7 +40,7 @@ import org.jboss.resteasy.util.NoContent;
 @Produces("*/*")
 @Consumes("*/*")
 public class FileProvider implements MessageBodyReader<File>,
-      MessageBodyWriter<File>
+      AsyncMessageBodyWriter<File>
 {
    private static final String PREFIX = "pfx";
 
@@ -215,6 +218,99 @@ public class FileProvider implements MessageBodyReader<File>,
       {
          inputStream.close();
       }
+   }
+
+   public CompletionStage<Void> asyncWriteTo(File uploadFile, Class<?> type, Type genericType,
+                       Annotation[] annotations, MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders,
+                       AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
+      HttpHeaders headers = ResteasyContext.getContextData(HttpHeaders.class);
+      if (headers == null)
+      {
+         return writeIt(uploadFile, entityStream);
+      }
+      String range = headers.getRequestHeaders().getFirst("Range");
+      if (range == null)
+      {
+         return writeIt(uploadFile, entityStream);
+      }
+      range = range.trim();
+      int byteUnit = range.indexOf("bytes=");
+      if ( byteUnit < 0)
+      {
+         //must start with 'bytes'
+         return writeIt(uploadFile, entityStream);
+      }
+      range = range.substring("bytes=".length());
+      if (range.indexOf(',') > -1)
+      {
+         // we don't support this
+         return writeIt(uploadFile, entityStream);
+      }
+      int separator = range.indexOf('-');
+      if (separator < 0)
+      {
+         return writeIt(uploadFile, entityStream);
+      }
+      else if (separator == 0)
+      {
+         long fileSize = uploadFile.length();
+         long begin = Long.parseLong(range);
+         if (fileSize + begin < 1)
+         {
+            return writeIt(uploadFile, entityStream);
+         }
+         return ProviderHelper.completedException(new FileRangeException(mediaType, uploadFile, fileSize + begin, fileSize - 1));
+      }
+      else
+      {
+         try
+         {
+            long fileSize = uploadFile.length();
+            long begin = Long.parseLong(range.substring(0, separator));
+            if (begin >= fileSize)
+            {
+               throw new WebApplicationException(416);
+            }
+            long end;
+            if (range.endsWith("-"))
+            {
+               end = fileSize - 1;
+            }
+            else
+            {
+               String substring = range.substring(separator + 1);
+               end = Long.parseLong(substring);
+            }
+            /*
+            if (begin == 0 && end + 1 >= fileSize)
+            {
+               writeIt(uploadFile, entityStream);
+               return;
+            }
+            */
+            return ProviderHelper.completedException(new FileRangeException(mediaType, uploadFile, begin, end));
+         }
+         catch (NumberFormatException e)
+         {
+            return writeIt(uploadFile, entityStream);
+         }
+      }
+   }
+
+   protected CompletionStage<Void> writeIt(File uploadFile, AsyncOutputStream entityStream)
+   {
+      try
+      {
+         InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
+         return ProviderHelper.writeToAndCloseInput(inputStream, entityStream);
+      } catch (FileNotFoundException e)
+      {
+         return ProviderHelper.completedException(e);
+      }
+
    }
 
    private static class FileHolder implements Cleanable

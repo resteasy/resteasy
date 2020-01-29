@@ -14,7 +14,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
@@ -27,7 +26,7 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
  */
 @Provider
 @Produces("text/plain")
-public class DefaultNumberWriter implements MessageBodyWriter<Number>, AsyncMessageBodyWriter<Number>
+public class DefaultNumberWriter implements AsyncMessageBodyWriter<Number>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

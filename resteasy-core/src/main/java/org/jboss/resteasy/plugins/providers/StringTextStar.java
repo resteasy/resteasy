@@ -10,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -29,7 +27,7 @@ import java.util.concurrent.CompletionStage;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class StringTextStar implements MessageBodyReader<String>, MessageBodyWriter<String>, AsyncMessageBodyWriter<String>
+public class StringTextStar implements MessageBodyReader<String>, AsyncMessageBodyWriter<String>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -86,9 +84,7 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
             return entityStream.rxWrite(o.getBytes(charset));
          } catch (UnsupportedEncodingException e)
          {
-            CompletableFuture<Void> ret = new CompletableFuture<>();
-            ret.completeExceptionally(e);
-            return ret;
+            return ProviderHelper.completedException(e);
          }
       }
    }

@@ -88,10 +88,10 @@ public class CommitHeaderAsyncOutputStream extends AsyncOutputStream
    }
 
    @Override
-   public CompletionStage<Void> rxWrite(byte[] bytes)
+   public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
    {
       commit();
-      return delegate.rxWrite(bytes);
+      return delegate.rxWrite(bytes, offset, length);
    }
 
 }

@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
@@ -25,7 +24,7 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 @SuppressWarnings("rawtypes")
 @Provider
 @Produces("text/plain")
-public class DefaultBooleanWriter implements MessageBodyWriter<Boolean>, AsyncMessageBodyWriter<Boolean>
+public class DefaultBooleanWriter implements AsyncMessageBodyWriter<Boolean>
 {
 
    @Override

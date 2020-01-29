@@ -27,6 +27,8 @@ import org.jboss.resteasy.util.MediaTypeHelper;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
+// FIXME: this does not implement AsyncMessageBodyWriter, but I think the current implementation is flawed as we read chars and write
+// them as if they were bytes, which will never work outside of ASCII
 public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWriter<Reader>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

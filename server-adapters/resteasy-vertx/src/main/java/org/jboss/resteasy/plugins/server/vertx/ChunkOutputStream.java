@@ -155,12 +155,12 @@ public class ChunkOutputStream extends AsyncOutputStream
    }
 
    @Override
-   public CompletionStage<Void> rxWrite(byte[] bytes)
+   public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
    {
       CompletableFuture<Void> ret = new CompletableFuture<>();
       try
       {
-         write(bytes, 0, bytes.length, res -> {
+         write(bytes, offset, length, res -> {
             if(res.succeeded())
                ret.complete(null);
             else

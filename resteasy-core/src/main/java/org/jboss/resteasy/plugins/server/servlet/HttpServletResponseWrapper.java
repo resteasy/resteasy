@@ -50,11 +50,15 @@ public class HttpServletResponseWrapper implements HttpResponse
    {
 
       private byte[] bytes;
+      private int offset;
+      private int length;
 
-      public WriteOperation(final OutputStream stream, final byte[] bytes)
+      public WriteOperation(final OutputStream stream, final byte[] bytes, final int offset, final int length)
       {
          super(stream);
          this.bytes = bytes;
+         this.offset = offset;
+         this.length = length;
       }
 
       @Override
@@ -62,7 +66,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       {
          try
          {
-            stream.write(bytes);
+            stream.write(bytes, offset, length);
             // we only are complete if isReady says we're good to write, otherwise
             // we will be complete in the next onWritePossible or onError
             if(sos == null || sos.isReady()) {
@@ -170,9 +174,9 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
 
       @Override
-      public CompletionStage<Void> rxWrite(byte[] bytes)
+      public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
       {
-         AsyncOperation op = new WriteOperation(this, bytes);
+         AsyncOperation op = new WriteOperation(this, bytes, offset, length);
          queue(op);
          return op.future;
       }

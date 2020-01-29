@@ -6,10 +6,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 /**
  * The {@link MessageBodyWriter} implementation to serialize
@@ -21,7 +26,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("multipart/related")
 public class MultipartRelatedWriter extends AbstractMultipartRelatedWriter
-      implements MessageBodyWriter<MultipartRelatedOutput>
+      implements AsyncMessageBodyWriter<MultipartRelatedOutput>
 {
 
    public boolean isWriteable(Class<?> type, Type genericType,
@@ -47,4 +52,11 @@ public class MultipartRelatedWriter extends AbstractMultipartRelatedWriter
               entityStream);
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(MultipartRelatedOutput multipartRelatedOutput, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream) {
+       return asyncWriteRelated(multipartRelatedOutput, mediaType, httpHeaders,
+                                entityStream);
+   }
 }
