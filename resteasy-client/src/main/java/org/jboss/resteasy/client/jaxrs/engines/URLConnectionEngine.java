@@ -167,7 +167,7 @@ public class URLConnectionEngine implements ClientHttpEngine
    {
       Proxy proxy = null;
       if (this.proxyHost != null && this.proxyPort != null) {
-         new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
+         proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
       } else {
          proxy = Proxy.NO_PROXY;
       }
