@@ -434,7 +434,8 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             return PROVIDER_FACTORY.injectedInstance(clazz);
         } else {
             try {
-                return clazz.newInstance();
+                ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
+                return rpf.injectedInstance(clazz);
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to register " + clazz, t);
             }
