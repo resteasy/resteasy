@@ -70,6 +70,14 @@ public class ClientHeaderProviders {
                     return Optional.of(factoryClass.cast(factory));
                 }
             }
+            try {
+                return Optional.of(factoryClass.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RestClientDefinitionException(
+                        "Failed to instantiate " + factoryClass.getCanonicalName() + ", the client header factory for " + source.getCanonicalName(),
+                        e
+                );
+            }
             return Optional.of(ResteasyProviderFactory.getInstance().injectedInstance(factoryClass));
         } else {
             return Optional.empty();
