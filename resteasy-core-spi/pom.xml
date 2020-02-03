@@ -46,13 +46,13 @@
         </dependency>
 
         <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <scope>provided</scope>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <!--

@@ -29,6 +29,12 @@ public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder
             clientEngine.setConnectTimeout((int) resteasyClientBuilder.getConnectionTimeout(TimeUnit.MILLISECONDS));
         }
 
+        if (resteasyClientBuilder.getDefaultProxyPort() > 0 && resteasyClientBuilder.getDefaultProxyHostname() != null) {
+            clientEngine.setProxyPort(resteasyClientBuilder.getDefaultProxyPort());
+            clientEngine.setProxyHost(resteasyClientBuilder.getDefaultProxyHostname());
+            clientEngine.setProxyScheme(resteasyClientBuilder.getDefaultProxyScheme());
+        }
+
         return clientEngine;
     }
 }

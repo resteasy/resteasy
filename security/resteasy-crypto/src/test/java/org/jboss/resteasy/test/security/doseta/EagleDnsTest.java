@@ -1,15 +1,17 @@
 package org.jboss.resteasy.test.security.doseta;
 
-import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Test;
-import se.unlogic.eagledns.EagleDNS;
+import java.net.URL;
+import java.util.Hashtable;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.net.URL;
-import java.util.Hashtable;
+
+import org.jboss.logging.Logger;
+import org.junit.Assert;
+import org.junit.Test;
+
+import se.unlogic.eagledns.EagleDNS;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
