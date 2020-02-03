@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.xml.sax.InputSource;
 
@@ -35,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.concurrent.CompletionStage;
 
 /**
  * <p>
@@ -85,14 +83,6 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       JAXBElement<?> result = wrapInJAXBElement(t, type);
       super.writeTo(result, type, genericType, annotations, mediaType, httpHeaders, entityStream);
-   }
-
-   @Override
-   public CompletionStage<Void> asyncWriteTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                                             MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
-       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-       JAXBElement<?> result = wrapInJAXBElement(t, type);
-       return super.asyncWriteTo(result, type, genericType, annotations, mediaType, httpHeaders, entityStream);
    }
 
    @Override

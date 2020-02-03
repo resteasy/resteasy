@@ -25,7 +25,6 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.jboss.resteasy.core.ResteasyContext;
@@ -42,7 +41,7 @@ import org.jboss.resteasy.spi.BlockingAsyncOutputStream;
  */
 @Provider
 @Priority(Priorities.ENTITY_CODER)
-public class DigitalSigningInterceptor implements WriterInterceptor, AsyncWriterInterceptor, ContainerResponseFilter, ClientRequestFilter
+public class DigitalSigningInterceptor implements AsyncWriterInterceptor, ContainerResponseFilter, ClientRequestFilter
 {
 
    protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)

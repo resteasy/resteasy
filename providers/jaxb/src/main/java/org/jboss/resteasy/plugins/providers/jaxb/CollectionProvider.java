@@ -24,7 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
@@ -42,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -57,7 +57,7 @@ import org.xml.sax.InputSource;
 @Provider
 @Produces({"application/xml", "application/*+xml", "text/xml", "text/*+xml"})
 @Consumes({"application/xml", "application/*+xml", "text/xml", "text/*+xml"})
-public class CollectionProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
+public class CollectionProvider implements MessageBodyReader<Object>, AsyncBufferedMessageBodyWriter<Object>
 {
    @Context
    protected Providers providers;

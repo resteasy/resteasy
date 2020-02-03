@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.atom;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
@@ -16,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 @Provider
 @Produces("application/atom+*")
 @Consumes("application/atom+*")
-public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyWriter<Entry>
+public class AtomEntryProvider implements MessageBodyReader<Entry>, AsyncBufferedMessageBodyWriter<Entry>
 {
    @Context
    protected Providers providers;

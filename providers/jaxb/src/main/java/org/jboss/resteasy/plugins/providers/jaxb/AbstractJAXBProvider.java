@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,7 +7,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -23,12 +21,11 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.TypeConverter;
@@ -41,7 +38,7 @@ import org.xml.sax.InputSource;
  * @version $Revision:$
  * @param <T> type
  */
-public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
+public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T> implements AsyncBufferedMessageBodyWriter<T>
 {
    @Context
    protected Providers providers;
@@ -157,30 +154,6 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       catch (JAXBException e)
       {
          throw new JAXBMarshalException(e);
-      }
-   }
-
-   @Override
-   public CompletionStage<Void> asyncWriteTo(T t,
-                       Class<?> type,
-                       Type genericType,
-                       Annotation[] annotations,
-                       MediaType mediaType,
-                       MultivaluedMap<String, Object> httpHeaders,
-                       AsyncOutputStream outputStream)
-   {
-      try
-      {
-         LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-         Marshaller marshaller = getMarshaller(type, annotations, mediaType);
-         marshaller = decorateMarshaller(type, annotations, mediaType, marshaller);
-         ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
-         marshaller.marshal(t, bos);
-         return outputStream.rxWrite(bos.toByteArray());
-      }
-      catch (JAXBException e)
-      {
-         return ProviderHelper.completedException(new JAXBMarshalException(e));
       }
    }
 

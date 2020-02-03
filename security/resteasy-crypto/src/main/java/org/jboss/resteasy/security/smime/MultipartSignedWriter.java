@@ -3,6 +3,7 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.WriterException;
 
@@ -12,7 +13,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Produces("multipart/signed")
-public class MultipartSignedWriter implements MessageBodyWriter<SignedOutput>
+public class MultipartSignedWriter implements AsyncBufferedMessageBodyWriter<SignedOutput>
 {
    static
    {

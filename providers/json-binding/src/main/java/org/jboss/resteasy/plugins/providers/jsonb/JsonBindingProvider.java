@@ -17,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.input.ProxyInputStream;
@@ -37,7 +36,7 @@ import org.jboss.resteasy.util.DelegatingOutputStream;
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Priority(Priorities.USER-100)
 public class JsonBindingProvider extends AbstractJsonBindingProvider
-      implements MessageBodyReader<Object>, MessageBodyWriter<Object>, AsyncMessageBodyWriter<Object> {
+      implements MessageBodyReader<Object>, AsyncMessageBodyWriter<Object> {
 
    private final boolean disabled;
 

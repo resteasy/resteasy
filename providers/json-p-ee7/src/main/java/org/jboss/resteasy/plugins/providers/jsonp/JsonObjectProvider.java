@@ -15,8 +15,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
@@ -25,7 +25,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
  */
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class JsonObjectProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonObject>, MessageBodyWriter<JsonObject>
+public class JsonObjectProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonObject>, AsyncBufferedMessageBodyWriter<JsonObject>
 {
 
 

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;
@@ -23,14 +23,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Provider that reads and writes org.w3c.dom.Document.
@@ -41,7 +38,7 @@ import java.util.concurrent.CompletionStage;
 @Provider
 @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
 @Consumes({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
-public class DocumentProvider extends AbstractEntityProvider<Document>
+public class DocumentProvider extends AbstractEntityProvider<Document> implements AsyncBufferedMessageBodyWriter<Document>
 {
    private TransformerFactory transformerFactory;
    private DocumentBuilderFactory documentBuilder;
@@ -163,26 +160,6 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       catch (TransformerException te)
       {
          throw new WriterException(te);
-      }
-   }
-
-   @Override
-   public CompletionStage<Void> asyncWriteTo(Document document, Class<?> clazz, Type type,
-                       Annotation[] annotation, MediaType mediaType,
-                       MultivaluedMap<String, Object> headers, AsyncOutputStream output)
-   {
-      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-      try
-      {
-         DOMSource source = new DOMSource(document);
-         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-         StreamResult result = new StreamResult(bytes);
-         transformerFactory.newTransformer().transform(source, result);
-         return ProviderHelper.writeTo(new ByteArrayInputStream(bytes.toByteArray()), output);
-      }
-      catch (TransformerException te)
-      {
-         return ProviderHelper.completedException(te);
       }
    }
 }
