@@ -13,8 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.plugins.server.netty.NettyUtil;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 @Provider

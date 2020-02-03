@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

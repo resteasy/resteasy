@@ -1,4 +1,4 @@
-package org.jboss.resteasy.core.interception.jaxrs;
+package org.jboss.resteasy.core.messagebody;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 public interface AsyncBufferedMessageBodyWriter<T> extends AsyncMessageBodyWriter<T>

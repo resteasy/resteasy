@@ -6,7 +6,7 @@ package org.jboss.resteasy.plugins.providers;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

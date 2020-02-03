@@ -21,9 +21,9 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.util.DelegatingOutputStream;

@@ -3,7 +3,7 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
-import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.spi.WriterException;
 

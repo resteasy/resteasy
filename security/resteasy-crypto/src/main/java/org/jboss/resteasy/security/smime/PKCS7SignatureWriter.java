@@ -10,11 +10,11 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 

@@ -15,8 +15,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletionStage;
 
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 /**

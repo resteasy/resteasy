@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.AsyncWriterInterceptor;
 import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;

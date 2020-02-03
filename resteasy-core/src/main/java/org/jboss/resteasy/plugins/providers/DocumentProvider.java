@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;

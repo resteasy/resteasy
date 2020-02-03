@@ -1,8 +1,8 @@
 package org.jboss.resteasy.security.smime;
 
-import org.jboss.resteasy.core.interception.jaxrs.AsyncMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 

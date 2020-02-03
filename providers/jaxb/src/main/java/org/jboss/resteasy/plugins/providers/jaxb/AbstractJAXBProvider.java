@@ -21,8 +21,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.core.interception.jaxrs.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
