@@ -74,7 +74,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          throws JAXBException
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
-      JAXBContextFinder finder = resolver.getContext(type);
+      JAXBContextFinder finder = resolver != null ? resolver.getContext(type) : null;
       if (finder == null)
       {
          if (reader) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
