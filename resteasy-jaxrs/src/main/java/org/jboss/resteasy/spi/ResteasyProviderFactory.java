@@ -289,6 +289,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Set<Class<?>> featureClasses;
    protected Set<Object> featureInstances;
    protected Map<Class<?>, Class<? extends RxInvokerProvider<?>>> reactiveClasses;
+   private boolean initialized = false;
 
    protected ResourceBuilder resourceBuilder;
    private StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
@@ -355,10 +356,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       providerClasses = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderClasses());
       providerInstances = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getProviderInstances());
       classContracts = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClassContracts());
-      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyReaders().clone();
-      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getServerMessageBodyWriters().clone();
-      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyReaders().clone();
-      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : parent.getClientMessageBodyWriters().clone();
+      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyReaders());
+      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyWriters());
+      clientMessageBodyReaders = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getClientMessageBodyReaders());
+      clientMessageBodyWriters = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getClientMessageBodyWriters());
       sortedExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getSortedExceptionMappers());
       exceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getExceptionMappers());
       clientExceptionMappers = parent == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(parent.getClientExceptionMappers());
@@ -371,7 +372,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers()
                .entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       sortedParamConverterProviders = Collections.synchronizedSortedSet(parent == null ? new TreeSet<>() : new TreeSet<>(parent.getSortedParamConverterProviders()));
@@ -411,6 +412,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegateIfAbsent(LinkHeader.class, new LinkHeaderDelegate());
       addHeaderDelegateIfAbsent(javax.ws.rs.core.Link.class, new LinkDelegate());
       addHeaderDelegateIfAbsent(Date.class, new DateDelegate());
+      initialized = true;
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()
@@ -572,7 +574,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public Set<Class<?>> getProviderClasses()
    {
-      if (providerClasses == null && parent != null) return parent.getProviderClasses();
+      if (initialized) {
+         return providerClasses;
+      }
+
       Set<Class<?>> set = new HashSet<Class<?>>();
       if (parent != null) set.addAll(parent.getProviderClasses());
       set.addAll(providerClasses);
@@ -586,7 +591,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public Set<Object> getProviderInstances()
    {
-      if (providerInstances == null && parent != null) return parent.getProviderInstances();
+      if (initialized) {
+         return providerInstances;
+      }
+
       Set<Object> set = new HashSet<Object>();
       if (parent != null) set.addAll(parent.getProviderInstances());
       set.addAll(providerInstances);
@@ -1079,7 +1087,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (serverMessageBodyReaders == null)
       {
-         serverMessageBodyReaders = parent.getServerMessageBodyReaders().clone();
+         serverMessageBodyReaders = new MediaTypeMap(parent.getServerMessageBodyReaders());
       }
       if (consumeMime != null)
       {
@@ -1099,7 +1107,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (clientMessageBodyReaders == null)
       {
-         clientMessageBodyReaders = parent.getClientMessageBodyReaders().clone();
+         clientMessageBodyReaders = new MediaTypeMap(parent.getClientMessageBodyReaders());
       }
       if (consumeMime != null)
       {
@@ -1164,7 +1172,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (serverMessageBodyWriters == null)
       {
-         serverMessageBodyWriters = parent.getServerMessageBodyWriters().clone();
+         serverMessageBodyWriters = new MediaTypeMap(parent.getServerMessageBodyWriters());
       }
       if (consumeMime != null)
       {
@@ -1186,7 +1194,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (clientMessageBodyWriters == null)
       {
-         clientMessageBodyWriters = parent.getClientMessageBodyWriters().clone();
+         clientMessageBodyWriters = new MediaTypeMap(parent.getClientMessageBodyWriters());
       }
       if (consumeMime != null)
       {
@@ -1491,7 +1499,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
          {
-            contextResolvers.put(entry.getKey(), entry.getValue().clone());
+            contextResolvers.put(entry.getKey(), new MediaTypeMap<>(entry.getValue()));
          }
       }
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
@@ -2960,7 +2968,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public Collection<Feature> getEnabledFeatures()
    {
-      if (enabledFeatures == null && parent != null) return parent.getEnabledFeatures();
+      if (initialized) {
+         return enabledFeatures;
+      }
+
       Set<Feature> set = new HashSet<Feature>();
       if (parent != null) set.addAll(parent.getEnabledFeatures());
       set.addAll(enabledFeatures);
