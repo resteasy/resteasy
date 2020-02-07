@@ -95,7 +95,7 @@
 
         <version.io.reactivex.rxjava2-rxjava>2.2.14</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
-        <version.org.hibernate.validator>6.0.18.Final</version.org.hibernate.validator>
+        <version.org.hibernate.validator>6.1.0.Final</version.org.hibernate.validator>
         <version.org.jboss.marshalling.jboss-marshalling>2.0.6.Final</version.org.jboss.marshalling.jboss-marshalling>
         <version.rest-assured>3.3.0</version.rest-assured>
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
