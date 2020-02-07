@@ -1,12 +1,10 @@
 package org.jboss.resteasy.core.request;
 
-import javax.ws.rs.BadRequestException;
-
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.MediaType;
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;

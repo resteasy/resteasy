@@ -943,6 +943,17 @@ public class ResourceBuilder
       return methods;
    }
 
+   private static boolean isHttpMethod(Method method)
+   {
+      for (Annotation annotation : method.getAnnotations())
+      {
+         HttpMethod http = annotation.annotationType().getAnnotation(HttpMethod.class);
+         if (http != null)
+            return true;
+      }
+      return false;
+   }
+
    @Deprecated
    public static Method findAnnotatedMethod(final Class<?> root, final Method implementation)
    {
@@ -964,7 +975,7 @@ public class ResourceBuilder
       }
 
       // Check the method itself for JAX-RS annotations
-      if (implementation.isAnnotationPresent(Path.class) || getHttpMethods(implementation) != null)
+      if (implementation.isAnnotationPresent(Path.class) || isHttpMethod(implementation))
       {
          return implementation;
       }
@@ -993,7 +1004,7 @@ public class ResourceBuilder
             continue;
          }
 
-         if (overriddenMethod.isAnnotationPresent(Path.class) || getHttpMethods(overriddenMethod) != null)
+         if (overriddenMethod.isAnnotationPresent(Path.class) || isHttpMethod(overriddenMethod))
          {
             return overriddenMethod;
          }
@@ -1023,7 +1034,7 @@ public class ResourceBuilder
                continue;
             }
             if (!overriddenInterfaceMethod.isAnnotationPresent(Path.class)
-                  && getHttpMethods(overriddenInterfaceMethod) == null)
+                  && !isHttpMethod(overriddenInterfaceMethod))
             {
                if (overriddenInterfaceMethod.isAnnotationPresent(Produces.class)
                      || overriddenInterfaceMethod.isAnnotationPresent(Consumes.class))

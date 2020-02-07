@@ -1,17 +1,5 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
-
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
@@ -22,6 +10,18 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.util.PickConstructor;
+
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.Variant;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class Utils
@@ -59,6 +59,10 @@ public final class Utils
             return p;
       }
       // Check for weld proxy.
+      return getPriority(component);
+   }
+
+   public static int getPriority(Class<?> component) {
       component = component.isSynthetic() ? component.getSuperclass() : component;
       Priority priority = component.getAnnotation(Priority.class);
       if (priority == null)
@@ -66,30 +70,40 @@ public final class Utils
       return priority.value();
    }
 
-   static void injectProperties(ResteasyProviderFactory rpf, Class declaring, Object obj)
+   public static void injectProperties(ResteasyProviderFactory rpf, Class declaring, Object obj)
    {
-      rpf.getInjectorFactory().createPropertyInjector(declaring, rpf).inject(obj, false).toCompletableFuture()
-            .getNow(null);
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(declaring, rpf).inject(obj, false);
+      if (propertyStage != null) {
+         propertyStage.toCompletableFuture()
+                 .getNow(null);
+      }
    }
 
    static void injectProperties(ResteasyProviderFactory rpf, Object obj)
    {
-      rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(obj, false).toCompletableFuture()
-            .getNow(null);
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(obj, false);
+      if (propertyStage != null) {
+         propertyStage.toCompletableFuture()
+                 .getNow(null);
+      }
    }
 
    static void injectProperties(ResteasyProviderFactory rpf, Object obj, HttpRequest request, HttpResponse response)
    {
-      rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(request, response, obj, false)
+      CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(request, response, obj, false);
+      if (propertyStage != null) propertyStage
             .toCompletableFuture().getNow(null);
    }
 
-   static <T> T createProviderInstance(ResteasyProviderFactory rpf, Class<? extends T> clazz)
+   public static <T> T createProviderInstance(ResteasyProviderFactory rpf, Class<? extends T> clazz)
    {
       ConstructorInjector constructorInjector = createConstructorInjector(rpf, clazz);
 
-      T provider = (T) constructorInjector.construct(false).toCompletableFuture().getNow(null);
-      return provider;
+      Object obj = constructorInjector.construct(false);
+      if (obj instanceof CompletionStage) {
+         obj = ((CompletionStage<Object>)obj).toCompletableFuture().getNow(null);
+      }
+      return (T)obj;
    }
 
    private static <T> ConstructorInjector createConstructorInjector(ResteasyProviderFactory rpf, Class<? extends T> clazz)

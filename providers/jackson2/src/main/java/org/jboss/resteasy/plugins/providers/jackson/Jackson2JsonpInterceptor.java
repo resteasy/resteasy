@@ -96,7 +96,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
    static {
       DEFAULT_MAPPER = new ObjectMapper();
       DEFAULT_MAPPER.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
-      jsonpCompatibleMediaTypes.add(MediaType.APPLICATION_JSON_TYPE  , MediaType.APPLICATION_JSON_TYPE.toString());
+      jsonpCompatibleMediaTypes.add(MediaType.APPLICATION_JSON  , MediaType.APPLICATION_JSON_TYPE.toString());
       jsonpCompatibleMediaTypes.add(APPLICATION_JAVASCRIPT_MEDIA_TYPE, APPLICATION_JAVASCRIPT_MEDIA_TYPE.toString());
       jsonpCompatibleMediaTypes.add(APPLICATION_PLUS_JSON_TYPE       , APPLICATION_PLUS_JSON_TYPE.toString());
       jsonpCompatibleMediaTypes.add(TEXT_JSON_TYPE                   , TEXT_JSON_TYPE.toString());

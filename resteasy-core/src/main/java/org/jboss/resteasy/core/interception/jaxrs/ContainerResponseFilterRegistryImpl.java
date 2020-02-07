@@ -1,11 +1,10 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import java.util.Collections;
-import java.util.List;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.container.ContainerResponseFilter;
-
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

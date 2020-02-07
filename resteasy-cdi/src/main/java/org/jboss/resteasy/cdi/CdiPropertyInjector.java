@@ -11,7 +11,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -50,7 +49,7 @@ public class CdiPropertyInjector implements PropertyInjector
       {
          return delegate.inject(target, unwrapAsync);
       }
-      return CompletableFuture.completedFuture(null);
+      return null;
    }
 
    @Override
@@ -65,7 +64,7 @@ public class CdiPropertyInjector implements PropertyInjector
          }
          return delegate.inject(request, response, actualTarget, unwrapAsync);
       }
-      return CompletableFuture.completedFuture(null);
+      return null;
    }
 
    @Override

@@ -1,25 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
@@ -41,6 +21,25 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Providers;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -55,6 +54,14 @@ public class SynchronousDispatcher implements Dispatcher
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean bufferExceptionEntityRead = false;
    protected boolean bufferExceptionEntity = true;
+
+   {
+      // This is to make sure LogMessages are preloaded as profiler shows a runtime hit
+      // This will also insure that this initialization is done at static init time when loaded with Graal
+      // Not a big deal if you remove this.
+      LogMessages preload = LogMessages.LOGGER;
+   }
+
    public SynchronousDispatcher(final ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
@@ -432,7 +439,7 @@ public class SynchronousDispatcher implements Dispatcher
          RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
          logger.log("DISPATCH_RESPONSE", jaxrsResponse);
 
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         jaxrsResponse = invoker.invoke(request, response);
          if (request.getAsyncContext().isSuspended())
          {
             /**
@@ -474,7 +481,7 @@ public class SynchronousDispatcher implements Dispatcher
       Response jaxrsResponse = null;
       try
       {
-         jaxrsResponse = invoker.invoke(request, response).toCompletableFuture().getNow(null);
+         jaxrsResponse = invoker.invoke(request, response);
 
          tracingLogger.log("DISPATCH_RESPONSE", jaxrsResponse);
 

@@ -1,24 +1,5 @@
 package org.jboss.resteasy.core.providerfactory;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.WriterInterceptor;
-
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistryImpl;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistryImpl;
@@ -27,220 +8,142 @@ import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistryImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.util.Types;
+
+import javax.ws.rs.ConstrainedTo;
+import javax.ws.rs.RuntimeType;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ServerHelper
+public class ServerHelper extends CommonProviders
 {
-   private final ResteasyProviderFactoryImpl rpf;
-   private MediaTypeMap<SortedKey<MessageBodyReader>> serverMessageBodyReaders;
-   private MediaTypeMap<SortedKey<MessageBodyWriter>> serverMessageBodyWriters;
-   private JaxrsInterceptorRegistry<ContainerRequestFilter> containerRequestFilterRegistry;
-   private JaxrsInterceptorRegistry<ContainerResponseFilter> containerResponseFilterRegistry;
-   private JaxrsInterceptorRegistry<ReaderInterceptor> serverReaderInterceptorRegistry;
-   private JaxrsInterceptorRegistry<WriterInterceptor> serverWriterInterceptorRegistry;
-   private Set<DynamicFeature> serverDynamicFeatures;
-   private Map<Class<?>, AsyncResponseProvider> asyncResponseProviders;
-   private Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
+   protected boolean attachedRequestFilters;
+   protected JaxrsInterceptorRegistry<ContainerRequestFilter> requestFilters;
+   protected boolean attachedResponseFilters;
+   protected JaxrsInterceptorRegistry<ContainerResponseFilter> responseFilters;
+   protected boolean attachedAsyncResponseProviders;
+   protected Map<Class<?>, AsyncResponseProvider> asyncResponseProviders;
+   protected boolean attachedAsyncStreamProviders;
+   protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
+   protected boolean attachedExceptionMappers;
+   protected Map<Class<?>, SortedKey<ExceptionMapper>> exceptionMappers;
 
-   public ServerHelper(final ResteasyProviderFactoryImpl rpf)
-   {
-      this.rpf = rpf;
+   public ServerHelper() {
    }
 
-   protected void initialize(ResteasyProviderFactoryImpl parent)
-   {
-      serverDynamicFeatures = parent == null ? new CopyOnWriteArraySet<>() : new CopyOnWriteArraySet<>(parent.getServerDynamicFeatures());
-      asyncResponseProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncResponseProviders());
-      asyncStreamProviders = parent == null ? new ConcurrentHashMap<>(4) : new ConcurrentHashMap<>(parent.getAsyncStreamProviders());
-
-      serverMessageBodyReaders = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyReaders());
-      serverMessageBodyWriters = parent == null ? new MediaTypeMap<>() : new MediaTypeMap(parent.getServerMessageBodyWriters());
-      containerRequestFilterRegistry = parent == null ? new ContainerRequestFilterRegistryImpl(rpf) : parent.getContainerRequestFilterRegistry().clone(rpf);
-      containerResponseFilterRegistry = parent == null ? new ContainerResponseFilterRegistryImpl(rpf) : parent.getContainerResponseFilterRegistry().clone(rpf);
-      serverReaderInterceptorRegistry = parent == null ? new ReaderInterceptorRegistryImpl(rpf) : parent.getServerReaderInterceptorRegistry().clone(rpf);
-      serverWriterInterceptorRegistry = parent == null ? new WriterInterceptorRegistryImpl(rpf) : parent.getServerWriterInterceptorRegistry().clone(rpf);
+   public ServerHelper(final ResteasyProviderFactoryImpl rpf) {
+      super(rpf);
+      // for a top level factory, need to allocate registries for listener registration
+      requestFilters = new ContainerRequestFilterRegistryImpl(rpf);
+      responseFilters = new ContainerResponseFilterRegistryImpl(rpf);
+      writerInterceptorRegistry = new WriterInterceptorRegistryImpl(rpf);
+      readerInterceptorRegistry = new ReaderInterceptorRegistryImpl(rpf);
    }
 
-   protected JaxrsInterceptorRegistry<ReaderInterceptor> getServerReaderInterceptorRegistry(ResteasyProviderFactory parent)
-   {
-      if (serverReaderInterceptorRegistry == null && parent != null)
-         return parent.getServerReaderInterceptorRegistry();
-      return serverReaderInterceptorRegistry;
+   // *ForWrite methods assume that there is no snapshotting required like there is for client providers
+   @Override
+   protected JaxrsInterceptorRegistry<ReaderInterceptor> getReaderInterceptorRegistryForWrite() {
+      if (readerInterceptorRegistry == null) {
+         return new ReaderInterceptorRegistryImpl(rpf);
+      } else if (attachedReaderInterceptors) {
+         return readerInterceptorRegistry.clone(rpf);
+      }
+      return readerInterceptorRegistry;
    }
 
-   protected JaxrsInterceptorRegistry<WriterInterceptor> getServerWriterInterceptorRegistry(ResteasyProviderFactory parent)
-   {
-      if (serverWriterInterceptorRegistry == null && parent != null)
-         return parent.getServerWriterInterceptorRegistry();
-      return serverWriterInterceptorRegistry;
+   @Override
+   protected JaxrsInterceptorRegistry<WriterInterceptor> getWriterInterceptorRegistryForWrite() {
+      if (writerInterceptorRegistry == null) {
+         return new WriterInterceptorRegistryImpl(rpf);
+      } else if (attachedReaderInterceptors) {
+         return writerInterceptorRegistry.clone(rpf);
+      }
+      return writerInterceptorRegistry;
    }
 
-   protected JaxrsInterceptorRegistry<ContainerRequestFilter> getContainerRequestFilterRegistry(ResteasyProviderFactory parent)
-   {
-      if (containerRequestFilterRegistry == null && parent != null)
-         return parent.getContainerRequestFilterRegistry();
-      return containerRequestFilterRegistry;
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReadersForWrite() {
+      if (messageBodyReaders == null) {
+         return new MediaTypeMap<>();
+      } else if (attachedMessageBodyReaders) {
+         return new MediaTypeMap<>(messageBodyReaders);
+      }
+      return messageBodyReaders;
    }
 
-   protected JaxrsInterceptorRegistry<ContainerResponseFilter> getContainerResponseFilterRegistry(ResteasyProviderFactory parent)
-   {
-      if (containerResponseFilterRegistry == null && parent != null)
-         return parent.getContainerResponseFilterRegistry();
-      return containerResponseFilterRegistry;
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getMessageBodyWritersForWrite() {
+      if (messageBodyWriters == null) {
+         return new MediaTypeMap<>();
+      } else if (attachedMessageBodyWriters) {
+         return new MediaTypeMap<>(messageBodyWriters);
+      }
+      return messageBodyWriters;
    }
 
-   protected Set<DynamicFeature> getServerDynamicFeatures(ResteasyProviderFactory parent)
-   {
-      if (serverDynamicFeatures == null && parent != null)
-         return parent.getServerDynamicFeatures();
-      return serverDynamicFeatures;
-   }
-
-   protected Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders(ResteasyProviderFactory parent)
-   {
-      if (asyncResponseProviders == null && parent != null)
-         return parent.getAsyncResponseProviders();
-      return asyncResponseProviders;
-   }
-
-   protected Map<Class<?>, AsyncStreamProvider> getAsyncStreamProviders(ResteasyProviderFactory parent)
-   {
-      if (asyncStreamProviders == null && parent != null)
-         return parent.getAsyncStreamProviders();
-      return asyncStreamProviders;
+   public ServerHelper(final ResteasyProviderFactoryImpl rpf, final ServerHelper parent) {
+      super(rpf, parent);
+      if (parent.requestFilters != null) {
+         attachedRequestFilters = true;
+         requestFilters = parent.requestFilters;
+      }
+      if (parent.responseFilters != null) {
+         attachedResponseFilters = true;
+         responseFilters = parent.responseFilters;
+      }
+      if (parent.asyncResponseProviders != null) {
+         attachedAsyncResponseProviders = true;
+         asyncResponseProviders = parent.asyncResponseProviders;
+      }
+      if (parent.asyncStreamProviders != null) {
+         attachedAsyncStreamProviders = true;
+         asyncStreamProviders = parent.asyncStreamProviders;
+      }
+      if (parent.exceptionMappers != null) {
+         attachedExceptionMappers = true;
+         exceptionMappers = parent.exceptionMappers;
+      }
    }
 
    protected void processProviderContracts(Class provider, Integer priorityOverride, boolean isBuiltin,
-         Map<Class<?>, Integer> contracts, Map<Class<?>, Integer> newContracts, ResteasyProviderFactoryImpl parent)
+                                           Map<Class<?>, Integer> contracts,
+                                           Map<Class<?>, Integer> newContracts)
    {
-      if (Utils.isA(provider, MessageBodyReader.class, contracts))
-      {
-         try
-         {
-            int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyReader.class, provider);
-            addMessageBodyReader(Utils.createProviderInstance(rpf, (Class<? extends MessageBodyReader>) provider), provider,
-                  priority, isBuiltin, parent);
-            newContracts.put(MessageBodyReader.class, priority);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
-         }
-      }
-      if (Utils.isA(provider, MessageBodyWriter.class, contracts))
-      {
-         try
-         {
-            int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider);
-            addMessageBodyWriter(Utils.createProviderInstance(rpf, (Class<? extends MessageBodyWriter>) provider), provider,
-                  priority, isBuiltin, parent);
-            newContracts.put(MessageBodyWriter.class, priority);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
-         }
-      }
+      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
+      if (constrainedTo != null && constrainedTo.value() != RuntimeType.SERVER) return;
+
+      super.processProviderContracts(provider, priorityOverride, isBuiltin, contracts, newContracts);
+
       if (Utils.isA(provider, ContainerRequestFilter.class, contracts))
       {
-         if (containerRequestFilterRegistry == null)
-         {
-            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(rpf);
-         }
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider);
-         containerRequestFilterRegistry.registerClass(provider, priority);
+         addContainerRequestFilter(provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (Utils.isA(provider, ContainerResponseFilter.class, contracts))
       {
-         if (containerResponseFilterRegistry == null)
-         {
-            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(rpf);
-         }
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider);
-         containerResponseFilterRegistry.registerClass(provider, priority);
+         addContainerResponseFilter(provider, priority);
          newContracts.put(ContainerResponseFilter.class, priority);
-      }
-      if (Utils.isA(provider, ReaderInterceptor.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider);
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverReaderInterceptorRegistry == null)
-            {
-               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(rpf);
-            }
-            serverReaderInterceptorRegistry.registerClass(provider, priority);
-         }
-         if (constrainedTo == null)
-         {
-            if (serverReaderInterceptorRegistry == null)
-            {
-               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(rpf);
-            }
-            serverReaderInterceptorRegistry.registerClass(provider, priority);
-         }
-         newContracts.put(ReaderInterceptor.class, priority);
-      }
-      if (Utils.isA(provider, WriterInterceptor.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, WriterInterceptor.class, provider);
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverWriterInterceptorRegistry == null)
-            {
-               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(rpf);
-            }
-            serverWriterInterceptorRegistry.registerClass(provider, priority);
-         }
-         if (constrainedTo == null)
-         {
-            if (serverWriterInterceptorRegistry == null)
-            {
-               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(rpf);
-            }
-            serverWriterInterceptorRegistry.registerClass(provider, priority);
-         }
-         newContracts.put(WriterInterceptor.class, priority);
-      }
-      if (Utils.isA(provider, DynamicFeature.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, DynamicFeature.class, provider);
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverDynamicFeatures == null)
-            {
-               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
-            }
-            serverDynamicFeatures.add((DynamicFeature) rpf.injectedInstance(provider));
-         }
-         if (constrainedTo == null)
-         {
-            if (serverDynamicFeatures == null)
-            {
-               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
-            }
-            serverDynamicFeatures.add((DynamicFeature) rpf.injectedInstance(provider));
-         }
-         newContracts.put(DynamicFeature.class, priority);
       }
       if (Utils.isA(provider, AsyncResponseProvider.class, contracts))
       {
          try
          {
-            addAsyncResponseProvider(rpf.createProviderInstance((Class<? extends AsyncResponseProvider>) provider),
-                  provider, parent);
+            addAsyncResponseProvider(provider);
             newContracts.put(AsyncResponseProvider.class,
-                  Utils.getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider));
+                    Utils.getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider));
          }
          catch (Exception e)
          {
@@ -251,138 +154,90 @@ public class ServerHelper
       {
          try
          {
-            addAsyncStreamProvider(rpf.createProviderInstance((Class<? extends AsyncStreamProvider>) provider), provider, parent);
+            addAsyncStreamProvider(provider);
             newContracts.put(AsyncStreamProvider.class,
-                  Utils.getPriority(priorityOverride, contracts, AsyncStreamProvider.class, provider));
+                    Utils.getPriority(priorityOverride, contracts, AsyncStreamProvider.class, provider));
          }
          catch (Exception e)
          {
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateAsyncStreamProvider(), e);
          }
       }
+      if (Utils.isA(provider, ExceptionMapper.class, contracts))
+      {
+         try
+         {
+            addExceptionMapper(provider, isBuiltin);
+            newContracts.put(ExceptionMapper.class,
+                    Utils.getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
+         }
+      }
+   }
 
+   public void addExceptionMapper(Class provider, boolean isBuiltin) {
+      addExceptionMapper(rpf.createProviderInstance((Class<? extends ExceptionMapper>) provider), provider,
+              isBuiltin);
+   }
+
+   public void addAsyncStreamProvider(Class provider) {
+      addAsyncStreamProvider(rpf.createProviderInstance((Class<? extends AsyncStreamProvider>) provider), provider);
+   }
+
+   public void addAsyncResponseProvider(Class provider) {
+      AsyncResponseProvider providerInstance = rpf.createProviderInstance((Class<? extends AsyncResponseProvider>) provider);
+      addAsyncResponseProvider(providerInstance,
+              provider);
+   }
+
+   public void addContainerResponseFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ContainerResponseFilter> registry = getResponseFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedResponseFilters = false;
+      responseFilters = registry;
+   }
+
+   public void addContainerRequestFilter(Class provider, int priority) {
+      JaxrsInterceptorRegistry<ContainerRequestFilter> registry = getRequestFiltersForWrite();
+      registry.registerClass(provider, priority);
+      attachedRequestFilters = false;
+      requestFilters = registry;
    }
 
    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
-         Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts, ResteasyProviderFactoryImpl parent)
+                                                   Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts)
    {
-      if (Utils.isA(provider, MessageBodyReader.class, contracts))
-      {
-         try
-         {
-            int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyReader.class, provider.getClass());
-            addMessageBodyReader((MessageBodyReader) provider, provider.getClass(), priority, builtIn, parent);
-            newContracts.put(MessageBodyReader.class, priority);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
-         }
-      }
-      if (Utils.isA(provider, MessageBodyWriter.class, contracts))
-      {
-         try
-         {
-            int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider.getClass());
-            addMessageBodyWriter((MessageBodyWriter) provider, provider.getClass(), priority, builtIn, parent);
-            newContracts.put(MessageBodyWriter.class, priority);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
-         }
-      }
+      ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+      if (constrainedTo != null && constrainedTo.value() != RuntimeType.SERVER) return;
+
+      super.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
+
       if (Utils.isA(provider, ContainerRequestFilter.class, contracts))
       {
-         if (containerRequestFilterRegistry == null)
-         {
-            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(rpf);
-         }
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider.getClass());
-         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider, priority);
+         JaxrsInterceptorRegistry<ContainerRequestFilter> registry = getRequestFiltersForWrite();
+         registry.registerSingleton((ContainerRequestFilter) provider, priority);
+         attachedRequestFilters = false;
+         requestFilters = registry;
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (Utils.isA(provider, ContainerResponseFilter.class, contracts))
       {
-         if (containerResponseFilterRegistry == null)
-         {
-            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(rpf);
-         }
          int priority = Utils.getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider.getClass());
-         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider, priority);
+         JaxrsInterceptorRegistry<ContainerResponseFilter> registry = getResponseFiltersForWrite();
+         registry.registerSingleton((ContainerResponseFilter) provider, priority);
+         attachedResponseFilters = false;
+         responseFilters = registry;
          newContracts.put(ContainerResponseFilter.class, priority);
-      }
-      if (Utils.isA(provider, ReaderInterceptor.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider.getClass());
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverReaderInterceptorRegistry == null)
-            {
-               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(rpf);
-            }
-            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, priority);
-         }
-         if (constrainedTo == null)
-         {
-            if (serverReaderInterceptorRegistry == null)
-            {
-               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(rpf);
-            }
-            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, priority);
-         }
-         newContracts.put(ReaderInterceptor.class, priority);
-      }
-      if (Utils.isA(provider, WriterInterceptor.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, WriterInterceptor.class, provider.getClass());
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverWriterInterceptorRegistry == null)
-            {
-               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(rpf);
-            }
-            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, priority);
-         }
-         if (constrainedTo == null)
-         {
-            if (serverWriterInterceptorRegistry == null)
-            {
-               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(rpf);
-            }
-            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, priority);
-         }
-         newContracts.put(WriterInterceptor.class, priority);
-      }
-      if (Utils.isA(provider, DynamicFeature.class, contracts))
-      {
-         ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = Utils.getPriority(priorityOverride, contracts, DynamicFeature.class, provider.getClass());
-         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
-         {
-            if (serverDynamicFeatures == null)
-            {
-               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
-            }
-            serverDynamicFeatures.add((DynamicFeature) provider);
-         }
-         if (constrainedTo == null)
-         {
-            if (serverDynamicFeatures == null)
-            {
-               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
-            }
-            serverDynamicFeatures.add((DynamicFeature) provider);
-         }
-         newContracts.put(DynamicFeature.class, priority);
       }
       if (Utils.isA(provider, AsyncResponseProvider.class, contracts))
       {
          try
          {
-            addAsyncResponseProvider((AsyncResponseProvider) provider, provider.getClass(), parent);
+            addAsyncResponseProvider((AsyncResponseProvider) provider, provider.getClass());
             int priority = Utils.getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider.getClass());
             newContracts.put(AsyncResponseProvider.class, priority);
          }
@@ -395,7 +250,7 @@ public class ServerHelper
       {
          try
          {
-            addAsyncStreamProvider((AsyncStreamProvider) provider, provider.getClass(), parent);
+            addAsyncStreamProvider((AsyncStreamProvider) provider, provider.getClass());
             int priority = Utils.getPriority(priorityOverride, contracts, AsyncStreamProvider.class, provider.getClass());
             newContracts.put(AsyncStreamProvider.class, priority);
          }
@@ -404,134 +259,137 @@ public class ServerHelper
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateAsyncStreamProvider(), e);
          }
       }
-   }
-
-   protected MediaTypeMap<SortedKey<MessageBodyReader>> getServerMessageBodyReaders(ResteasyProviderFactoryImpl parent)
-   {
-      if (serverMessageBodyReaders == null && parent != null)
-         return parent.getServerMessageBodyReaders();
-      return serverMessageBodyReaders;
-   }
-
-   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getServerMessageBodyWriters(ResteasyProviderFactoryImpl parent)
-   {
-      if (serverMessageBodyWriters == null && parent != null)
-         return parent.getServerMessageBodyWriters();
-      return serverMessageBodyWriters;
-   }
-
-   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, int priority,
-         boolean isBuiltin, ResteasyProviderFactoryImpl parent)
-   {
-      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider,
-            providerClass, priority, isBuiltin);
-      Utils.injectProperties(rpf, providerClass, provider);
-      Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
-      RuntimeType type = null;
-      ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
-      if (constrainedTo != null)
-         type = constrainedTo.value();
-
-      if ((type == null || type == RuntimeType.SERVER) && serverMessageBodyReaders == null)
+      if (Utils.isA(provider, ExceptionMapper.class, contracts))
       {
-         serverMessageBodyReaders = new MediaTypeMap<>(parent.getServerMessageBodyReaders());
-      }
-      if (consumeMime != null)
-      {
-         for (String consume : consumeMime.value())
+         try
          {
-            if (type == null)
-            {
-               serverMessageBodyReaders.add(MediaType.valueOf(consume), key);
-            }
-            else if (type == RuntimeType.SERVER)
-            {
-               serverMessageBodyReaders.add(MediaType.valueOf(consume), key);
-            }
+            addExceptionMapper((ExceptionMapper) provider, provider.getClass(), builtIn);
+            int priority = Utils.getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
+            newContracts.put(ExceptionMapper.class, priority);
          }
-      }
-      else
-      {
-         if (type == null)
+         catch (Exception e)
          {
-            serverMessageBodyReaders.add(new MediaType("*", "*"), key);
-         }
-         else if (type == RuntimeType.SERVER)
-         {
-            serverMessageBodyReaders.add(new MediaType("*", "*"), key);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
    }
 
-   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority,
-         boolean isBuiltin, ResteasyProviderFactoryImpl parent)
-   {
-      Utils.injectProperties(rpf, providerClass, provider);
-      Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider,
-            providerClass, priority, isBuiltin);
-      RuntimeType type = null;
-      ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
-      if (constrainedTo != null)
-         type = constrainedTo.value();
-
-      if ((type == null || type == RuntimeType.SERVER) && serverMessageBodyWriters == null)
-      {
-         serverMessageBodyWriters = new MediaTypeMap(parent.getServerMessageBodyWriters());
-      }
-      if (consumeMime != null)
-      {
-         for (String consume : consumeMime.value())
-         {
-            //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: " + mime);
-            if (type == null)
-            {
-               serverMessageBodyWriters.add(MediaType.valueOf(consume), key);
-            }
-            else if (type == RuntimeType.SERVER)
-            {
-               serverMessageBodyWriters.add(MediaType.valueOf(consume), key);
-            }
-         }
-      }
-      else
-      {
-         //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: default */*");
-         if (type == null)
-         {
-            serverMessageBodyWriters.add(new MediaType("*", "*"), key);
-         }
-         else if (type == RuntimeType.SERVER)
-         {
-            serverMessageBodyWriters.add(new MediaType("*", "*"), key);
-         }
-      }
-   }
-
-   private void addAsyncResponseProvider(AsyncResponseProvider provider, Class providerClass, ResteasyProviderFactory parent)
+   private void addAsyncResponseProvider(AsyncResponseProvider provider, Class providerClass)
    {
       Type asyncType = Types.getActualTypeArgumentsOfAnInterface(providerClass, AsyncResponseProvider.class)[0];
       Utils.injectProperties(rpf, provider.getClass(), provider);
       Class<?> asyncClass = Types.getRawType(asyncType);
-      if (asyncResponseProviders == null)
-      {
-         asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
-         asyncResponseProviders.putAll(parent.getAsyncResponseProviders());
-      }
-      asyncResponseProviders.put(asyncClass, provider);
+      Map<Class<?>, AsyncResponseProvider> registry = getAsyncResponseProvidersForWrite();
+      registry.put(asyncClass, provider);
+      attachedAsyncResponseProviders = false;
+      asyncResponseProviders = registry;
    }
 
-   private void addAsyncStreamProvider(AsyncStreamProvider provider, Class providerClass, ResteasyProviderFactory parent)
+   private void addAsyncStreamProvider(AsyncStreamProvider provider, Class providerClass)
    {
       Type asyncType = Types.getActualTypeArgumentsOfAnInterface(providerClass, AsyncStreamProvider.class)[0];
       Utils.injectProperties(rpf, provider.getClass(), provider);
       Class<?> asyncClass = Types.getRawType(asyncType);
-      if (asyncStreamProviders == null)
-      {
-         asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
-         asyncStreamProviders.putAll(parent.getAsyncStreamProviders());
-      }
-      asyncStreamProviders.put(asyncClass, provider);
+      Map<Class<?>, AsyncStreamProvider> registry = getAsyncStreamProvidersForWrite();
+      registry.put(asyncClass, provider);
+      attachedAsyncStreamProviders = false;
+      asyncStreamProviders = registry;
    }
 
+   private void addExceptionMapper(ExceptionMapper provider, Class providerClass, boolean isBuiltin)
+   {
+      // Check for weld proxy.
+      if (providerClass.isSynthetic())
+      {
+         providerClass = providerClass.getSuperclass();
+      }
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
+
+      Utils.injectProperties(rpf, providerClass, provider);
+
+      Class<?> exceptionClass = Types.getRawType(exceptionType);
+      if (!Throwable.class.isAssignableFrom(exceptionClass))
+      {
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameterExceptionMapper());
+      }
+       int priority = Utils.getPriority(null, null, ExceptionMapper.class, providerClass);
+      SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, providerClass, priority,
+              isBuiltin);
+      SortedKey<ExceptionMapper> registeredExceptionMapper;
+      if (exceptionMappers != null) {
+         if ((registeredExceptionMapper = exceptionMappers.get(exceptionClass)) != null
+                 && (candidateExceptionMapper.compareTo(registeredExceptionMapper) > 0)) {
+            return;
+         }
+      }
+      Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getExceptionMappersForWrite();
+      mappers.put(exceptionClass, candidateExceptionMapper);
+      attachedExceptionMappers = false;
+      exceptionMappers = mappers;
+   }
+
+   protected JaxrsInterceptorRegistry<ContainerRequestFilter> getRequestFiltersForWrite() {
+      if (requestFilters == null) {
+         return new ContainerRequestFilterRegistryImpl(rpf);
+      } else if (attachedRequestFilters) {
+         return requestFilters.clone(rpf);
+      }
+      return requestFilters;
+   }
+
+   protected JaxrsInterceptorRegistry<ContainerResponseFilter> getResponseFiltersForWrite() {
+      if (responseFilters == null) {
+         return new ContainerResponseFilterRegistryImpl(rpf);
+      } else if (attachedResponseFilters) {
+         return responseFilters.clone(rpf);
+      }
+      return responseFilters;
+   }
+
+   protected Map<Class<?>, AsyncResponseProvider> getAsyncResponseProvidersForWrite() {
+      if (asyncResponseProviders == null) {
+         return new HashMap<>();
+      } else if (lockSnapshots || attachedAsyncResponseProviders) {
+         return new HashMap<>(asyncResponseProviders);
+      }
+      return asyncResponseProviders;
+   }
+
+   protected Map<Class<?>, AsyncStreamProvider> getAsyncStreamProvidersForWrite() {
+      if (asyncStreamProviders == null) {
+         return new HashMap<>();
+      } else if (lockSnapshots || attachedAsyncStreamProviders) {
+         return new HashMap<>(asyncStreamProviders);
+      }
+      return asyncStreamProviders;
+   }
+
+   protected Map<Class<?>, SortedKey<ExceptionMapper>> getExceptionMappersForWrite() {
+      if (exceptionMappers == null) {
+         return new HashMap<>();
+      } else if (lockSnapshots || attachedExceptionMappers) {
+         return new HashMap<>(exceptionMappers);
+      }
+      return exceptionMappers;
+   }
+
+   public JaxrsInterceptorRegistry<ContainerRequestFilter> getRequestFilters() {
+      return requestFilters;
+   }
+
+   public JaxrsInterceptorRegistry<ContainerResponseFilter> getResponseFilters() {
+      return responseFilters;
+   }
+
+   public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders() {
+      return asyncResponseProviders;
+   }
+
+   public Map<Class<?>, AsyncStreamProvider> getAsyncStreamProviders() {
+      return asyncStreamProviders;
+   }
+
+   public Map<Class<?>, SortedKey<ExceptionMapper>> getExceptionMappers() {
+      return exceptionMappers;
+   }
 }

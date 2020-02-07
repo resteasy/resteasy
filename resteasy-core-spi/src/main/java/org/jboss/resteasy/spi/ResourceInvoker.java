@@ -1,7 +1,6 @@
 package org.jboss.resteasy.spi;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.CompletionStage;
 import org.jboss.resteasy.spi.statistics.MethodStatisticsLogger;
 
 import javax.ws.rs.core.Response;
@@ -12,9 +11,9 @@ import javax.ws.rs.core.Response;
  */
 public interface ResourceInvoker
 {
-   CompletionStage<? extends Response> invoke(HttpRequest request, HttpResponse response);
+   Response invoke(HttpRequest request, HttpResponse response);
 
-   CompletionStage<? extends Response> invoke(HttpRequest request, HttpResponse response, Object target);
+   Response invoke(HttpRequest request, HttpResponse response, Object target);
 
    Method getMethod();
 

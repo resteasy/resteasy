@@ -1,14 +1,13 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import java.net.URI;
-import java.util.function.Supplier;
-
-import javax.ws.rs.container.ContainerRequestFilter;
-
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
+
+import javax.ws.rs.container.ContainerRequestFilter;
+import java.net.URI;
+import java.util.function.Supplier;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

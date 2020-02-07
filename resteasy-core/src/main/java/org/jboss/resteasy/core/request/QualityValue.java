@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.request;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import javax.ws.rs.BadRequestException;
 
 /**

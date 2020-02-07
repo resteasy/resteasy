@@ -33,7 +33,7 @@ public class OptionalInjectionTest {
     public void testOptionalStringAbsent() throws Exception {
         MockHttpRequest req = MockHttpRequest.get("/optional/string");
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
 
@@ -41,21 +41,21 @@ public class OptionalInjectionTest {
     public void testOptionalStringPresent() throws Exception {
         MockHttpRequest req = MockHttpRequest.get("/optional/string?value=88");
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
     public void testOptionalHolderAbsent() throws Exception {
         MockHttpRequest req = MockHttpRequest.get("/optional/holder");
         Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
     public void testOptionalHolderPresent() throws Exception {
         MockHttpRequest req = MockHttpRequest.get("/optional/holder?value=88");
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class OptionalInjectionTest {
         req.setInputStream(new ByteArrayInputStream(new byte[0]));
 
         Assert.assertEquals("42", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -74,8 +74,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -85,8 +83,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -100,8 +96,6 @@ public class OptionalInjectionTest {
         MockHttpRequest httpRequest = MockHttpRequest.get("/optional/path/");
         registry.getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity();
     }
 
@@ -111,8 +105,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -124,8 +116,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -135,8 +125,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -147,8 +135,6 @@ public class OptionalInjectionTest {
         Assert.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
-                .toCompletableFuture()
-                .get()
                 .getEntity());
     }
 
@@ -159,7 +145,7 @@ public class OptionalInjectionTest {
         req.addFormHeader("value", "88");
 
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -167,7 +153,7 @@ public class OptionalInjectionTest {
         MockHttpRequest req = MockHttpRequest.get("/optional/int");
 
         Assert.assertEquals("424242", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -175,7 +161,7 @@ public class OptionalInjectionTest {
         MockHttpRequest req = MockHttpRequest.get("/optional/int?value=88");
 
         Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -183,7 +169,7 @@ public class OptionalInjectionTest {
         MockHttpRequest req = MockHttpRequest.get("/optional/double");
 
         Assert.assertEquals("4242.0", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 
     @Test
@@ -191,6 +177,6 @@ public class OptionalInjectionTest {
         MockHttpRequest req = MockHttpRequest.get("/optional/double?value=88.88");
 
         Assert.assertEquals("88.88", registry.getResourceInvoker(req).invoke(req, resp)
-                .toCompletableFuture().get().getEntity());
+                .getEntity());
     }
 }

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.spi;
 
-import java.util.concurrent.CompletionStage;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -15,7 +13,7 @@ public interface ValueInjector
     * @param unwrapAsync unwrap async
     * @return object
     */
-   CompletionStage<Object> inject(boolean unwrapAsync);
+   Object inject(boolean unwrapAsync);
 
    /**
     * Inject inside the context of an HTTP request.
@@ -25,5 +23,5 @@ public interface ValueInjector
     * @param unwrapAsync unwrap async
     * @return object
     */
-   CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync);
+   Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync);
 }

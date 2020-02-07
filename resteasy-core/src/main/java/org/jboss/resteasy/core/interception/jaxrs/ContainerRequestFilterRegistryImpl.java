@@ -1,10 +1,9 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import java.lang.reflect.AccessibleObject;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.container.ContainerRequestFilter;
-
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.lang.reflect.AccessibleObject;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

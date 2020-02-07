@@ -14,7 +14,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +23,6 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -50,20 +48,22 @@ public class ContextParameterInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
+   public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync)
    {
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
-      if (rawType.equals(Providers.class)) return CompletableFuture.completedFuture(factory);
+      if (rawType.equals(Providers.class)) return factory;
       if (!rawType.isInterface() || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
          return unwrapIfRequired(request, factory.getContextData(rawType, genericType, annotations, unwrapAsync), unwrapAsync);
       }
       else if (rawType.equals(Sse.class))
       {
-         return CompletableFuture.completedFuture(new SseImpl());
+         return new SseImpl();
+      } else if (rawType == CompletionStage.class) {
+         return new CompletionStageHolder((CompletionStage)createProxy());
       }
-      return CompletableFuture.completedFuture(createProxy());
+      return createProxy();
    }
 
    private static boolean hasAsyncContextData(ResteasyProviderFactory factory, Type genericType)
@@ -71,7 +71,7 @@ public class ContextParameterInjector implements ValueInjector
       return factory.getAsyncContextInjectors().containsKey(Types.boxPrimitives(genericType));
    }
 
-   private CompletionStage<Object> unwrapIfRequired(HttpRequest request, Object contextData, boolean unwrapAsync)
+   private Object unwrapIfRequired(HttpRequest request, Object contextData, boolean unwrapAsync)
    {
       if(unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
          // FIXME: do not unwrap if we have no request?
@@ -93,8 +93,12 @@ public class ContextParameterInjector implements ValueInjector
             }
          }
          return (CompletionStage<Object>) contextData;
+      } else if (rawType == CompletionStage.class && contextData instanceof CompletionStage) {
+         return new CompletionStageHolder((CompletionStage)contextData);
+      } else if (!unwrapAsync && rawType != CompletionStage.class && contextData instanceof CompletionStage) {
+         throw new LoggableFailure(Messages.MESSAGES.shouldBeUnreachable());
       }
-      return CompletableFuture.completedFuture(contextData);
+      return contextData;
    }
 
    private class GenericDelegatingProxy implements InvocationHandler
@@ -137,26 +141,28 @@ public class ContextParameterInjector implements ValueInjector
    }
 
    @Override
-   public CompletionStage<Object> inject(boolean unwrapAsync)
+   public Object inject(boolean unwrapAsync)
    {
       //if (type.equals(Providers.class)) return factory;
       if (rawType.equals(Application.class) || rawType.equals(SseEventSink.class) || hasAsyncContextData(factory, genericType))
       {
-         return CompletableFuture.completedFuture(factory.getContextData(rawType, genericType, annotations, unwrapAsync));
+         return factory.getContextData(rawType, genericType, annotations, unwrapAsync);
       }
       else if (rawType.equals(Sse.class))
       {
-         return CompletableFuture.completedFuture(new SseImpl());
+         return new SseImpl();
       }
       else if (!rawType.isInterface())
       {
          Object delegate = factory.getContextData(rawType, genericType, annotations, unwrapAsync);
          if (delegate != null) return unwrapIfRequired(null, delegate, unwrapAsync);
-         throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
+         else throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
+      } else if (rawType == CompletionStage.class) {
+         return new CompletionStageHolder((CompletionStage)createProxy());
       }
 
-      return CompletableFuture.completedFuture(createProxy());
-   }
+      return createProxy();
+  }
 
    protected Object createProxy()
    {
