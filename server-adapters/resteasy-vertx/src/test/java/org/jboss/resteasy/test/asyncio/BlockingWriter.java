@@ -19,7 +19,7 @@ public class BlockingWriter implements MessageBodyWriter<BlockingWriterData> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
+        return type == BlockingWriterData.class;
     }
 
     @Override

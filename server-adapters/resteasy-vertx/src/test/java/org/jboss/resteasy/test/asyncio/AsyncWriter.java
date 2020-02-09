@@ -23,7 +23,7 @@ public class AsyncWriter implements AsyncMessageBodyWriter<AsyncWriterData> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
+        return type == AsyncWriterData.class;
     }
 
     @Override
