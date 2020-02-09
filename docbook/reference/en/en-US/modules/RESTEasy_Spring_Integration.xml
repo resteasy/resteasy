@@ -281,17 +281,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </context-param>
 </web-app>]]></programlisting>
         </para>
-        <para>
-            The <code>spring-servlet.xml</code> file must import
-            <code>springmvc-resteasy.xml</code>, and this file is provided by <code>resteasy-spring</code> module by default. In addition a component-scan, declaration of the packages
-            that contain you application classes is needed. At minimum your <code>spring-servlet.xml</code> should
-            contain
-            these statements:
-            <programlisting><![CDATA[<beans>
-    <import resource="classpath:springmvc-resteasy.xml"/>
-    <context:component-scan base-package="org.my.app"/>
-  </beans>]]></programlisting>
-        </para>
+       <para>Above are the usages of RESTEasy Spring MVC integration usages.</para>
     </section>
     <section>
         <title>Spring Boot starter</title>
