@@ -8,6 +8,7 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ReaderInterceptor;
@@ -139,6 +140,97 @@ public final class NOOPClientHelper extends ClientHelper {
    @Override
    public Set<DynamicFeature> getDynamicFeatures() {
       throw new UnsupportedOperationException();
+   }
+
+
+   @Override
+   public void addReactiveClass(Class provider) {
+      // complete
+   }
+
+   @Override
+   public void addReactiveClass(Class provider, Class<?> clazz) {
+      // complete
+   }
+
+   @Override
+   public void addAsyncClientResponseProvider(Class provider) {
+      // complete
+   }
+
+   @Override
+   public void addClientResponseFilter(Class provider, int priority) {
+      // complete
+   }
+
+   @Override
+   public void addClientRequestFilter(Class provider, int priority) {
+      // complete
+   }
+
+   @Override
+   public void addDynamicFeature(Class provider) {
+      // complete
+   }
+
+   @Override
+   public void addWriterInterceptor(Class provider, int priority) {
+      // complete
+   }
+
+   @Override
+   public void addReaderInterceptor(Class provider, int priority) {
+      // complete
+   }
+
+   @Override
+   public void addWildcardMBR(SortedKey<MessageBodyReader> mbr) {
+      // complete
+   }
+
+   @Override
+   public void addSubtypeWildMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr) {
+      // complete
+   }
+
+   @Override
+   public void addRegularMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr) {
+      // complete
+   }
+
+   @Override
+   public void addCompositeWildcardMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr, String baseSubtype) {
+      // complete
+   }
+
+   @Override
+   public void addWildcardCompositeMBR(MediaType mediaType, SortedKey<MessageBodyReader> mbr, String baseSubtype) {
+      // complete
+   }
+
+   @Override
+   public void addWildcardMBW(SortedKey<MessageBodyWriter> mbw) {
+      // complete
+   }
+
+   @Override
+   public void addRegularMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw) {
+      // complete
+   }
+
+   @Override
+   public void addSubtypeWildMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw) {
+      // complete
+   }
+
+   @Override
+   public void addCompositeWildcardMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw, String baseSubtype) {
+      // complete
+   }
+
+   @Override
+   public void addWildcardCompositeMBW(MediaType mediaType, SortedKey<MessageBodyWriter> mbw, String baseSubtype) {
+      // complete
    }
 }
 
