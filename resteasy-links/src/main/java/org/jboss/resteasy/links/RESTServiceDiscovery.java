@@ -155,6 +155,14 @@ public class RESTServiceDiscovery extends ArrayList<RESTServiceDiscovery.AtomLin
       }
    }
 
+   public void addAllLinks(RESTServiceDiscovery restServiceDiscovery) {
+      for (AtomLink link : restServiceDiscovery) {
+         if (!contains(link)) {
+            add(link);
+         }
+      }
+   }
+
    public void addLink(URI uri, String rel) {
       AtomLink link = new AtomLink(uri.toString(), rel);
       if (!contains(link)) {

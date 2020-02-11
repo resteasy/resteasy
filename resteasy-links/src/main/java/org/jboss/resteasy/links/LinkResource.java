@@ -21,6 +21,8 @@ public @interface LinkResource {
     */
    Class<?> value() default Void.class;
 
+   String entityClassName() default "";
+
    /**
     * The link relation. This defaults as follows:
     * <dl>
