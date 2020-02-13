@@ -91,6 +91,7 @@ public interface ResteasyContextParameters {
    String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
 
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
+   String RESTEASY_PATCH_FILTER_DISABLED = "resteasy.patchfilter.disabled";
 
     String RESTEASY_STATISTICS_ENABLED = "resteasy.statistics.enabled";
 
