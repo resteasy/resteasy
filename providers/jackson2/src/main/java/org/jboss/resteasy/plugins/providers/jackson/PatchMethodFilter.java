@@ -11,6 +11,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -51,7 +52,6 @@ public class PatchMethodFilter implements ContainerRequestFilter
 
    public static final MediaType APPLICATION_JSON_MERGE_PATCH_JSON_TYPE = new MediaType("application",
          "merge-patch+json");
-
    private volatile ObjectMapper objectMapper;
 
    @Context
@@ -67,6 +67,8 @@ public class PatchMethodFilter implements ContainerRequestFilter
       {
          HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
          request.setHttpMethod("GET");
+         String patchContentType = requestContext.getMediaType().toString();
+         requestContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD);
          HttpResponse response = ResteasyContext.getContextData(HttpResponse.class);
          Registry methodRegistry = ResteasyContext.getContextData(Registry.class);
          ResourceInvoker resourceInovker = methodRegistry.getResourceInvoker(request);
@@ -93,7 +95,7 @@ public class PatchMethodFilter implements ContainerRequestFilter
                mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
             }
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
-
+            requestContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, patchContentType);
             JsonNode result = null;
             if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
             {
