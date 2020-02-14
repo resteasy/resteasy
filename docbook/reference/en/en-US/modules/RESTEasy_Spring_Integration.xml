@@ -351,20 +351,19 @@ server.deploy(deployment);]]></programlisting>
             experimental.
         </para>
         <para>
-            In order for RESTEasy to be able to process Spring @RestController, you first need to include the following
+            In order for RESTEasy to be able to process Spring <code>@RestController</code>, you first need to include the following
             dependency.
         </para>
         <para>
-            <programlisting>&lt;dependency&gt;
-                &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-                &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
-                &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
-                &lt;/dependency&gt;
-            </programlisting>
+            <programlisting><![CDATA[<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-spring-web</artifactId>
+    <version>4.5.0-SNAPSHOT</version>
+</dependency>]]></programlisting>
         </para>
         <para>
-            Currently RESTEasy does not auto-scan for @RestController annotated classes,
-            so you need to add all @RestController annotated classes to your web.xml file as shown in the following
+            Currently RESTEasy does not auto-scan for <code>@RestController</code> annotated classes,
+            so you need to add all <code>@RestController</code> annotated classes to your <code>web.xml</code> file as shown in the following
             example.
         </para>
         <programlisting><![CDATA[<web-app>
@@ -378,11 +377,11 @@ server.deploy(deployment);]]></programlisting>
    ...
 </web-app>]]></programlisting>
         <para>
-            In the example above, Controller1 and Controller2 are registered and are expected to be annotated with
-            @RestController.
+            In the example above, <code>Controller1</code> and <code>Controller2</code> are registered and are expected to be annotated with
+            <code>@RestController</code>.
         </para>
         <para>
-            The list of the currently supported annotations can be found below
+            The list of the currently supported annotations can be found below:
         </para>
         <table frame="topbot">
             <tgroup cols="2" rowsep="1" colsep="1">
@@ -457,11 +456,11 @@ server.deploy(deployment);]]></programlisting>
             </tgroup>
         </table>
         <para>
-            Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is
+            Furthermore, the use of <code>org.springframework.http.ResponseEntity</code> as a return value is
             supported as
-            is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
-            <literal>javax.servlet.http.HttpServletResponse</literal>
-            as method parameters
+            is the use of <code>javax.servlet.http.HttpServletRequest</code> and
+            <code>javax.servlet.http.HttpServletResponse</code>
+            as method parameters.
         </para>
     </section>
     <section id="SpringBootStarter">
