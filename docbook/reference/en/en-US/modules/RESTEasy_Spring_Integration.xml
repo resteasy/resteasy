@@ -283,40 +283,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </para>
        <para>Above are the usages of RESTEasy Spring MVC integration usages.</para>
     </section>
-    <section>
-        <title>Spring Boot starter</title>
-        <para>
-            The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has
-            developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring
-            Boot starter
-        </ulink> and shared it with the community. You can see below an example of how to use it. Please refer to the <ulink
-                url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation
-        </ulink> on GitHub for further information.
-        </para>
-        <para>
-            First, add dependency <literal>com.paypal.springboot:resteasy-spring-boot-starter</literal> to your Spring
-            Boot application. It is recommended to you use <ulink
-                url="http://search.maven.org/#search%7Cga%7C1%7Cg:com.paypal.springboot">the latest version</ulink>.
-            Second, optionally you can register one or more JAX-RS application classes. To do so, just define it as a
-            Spring bean, and it will be automatically registered. See the example below.
-        </para>
-        <programlisting><![CDATA[package com.sample.app;
-
-import org.springframework.stereotype.Component;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
-@Component
-@ApplicationPath("/sample-app/")
-public class JaxrsApplication extends Application {
-}]]></programlisting>
-        <para>
-            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
-            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
-            providers must be singletons.
-        </para>
-    </section>
-    <section>
+    <section id="SpringUndertow">
         <title>Undertow Embedded Spring Container</title>
         <para>
             We provide a undertow-based embedded spring container module, called "resteasy-undertow-spring". To use it,
@@ -370,12 +337,45 @@ deployment.setClassLoader(BasicSpringTest.class.getClassLoader());
 server.deploy(deployment);]]></programlisting>
         <para>Above is the code example to setup and start UndertowJaxrsSpringServer. To see a complete example, please
             check the <ulink
-                    url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-springMVC">
-                resteasy-springMVC
-            </ulink> as demo app.
+                    url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-undertow">
+                Demo Of Undertow Embedded Spring Container
+            </ulink> as usage example.
         </para>
     </section>
-    <section>
+    <section id="SpringBootStarter">
+        <title>Spring Boot starter</title>
+        <para>
+            The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has
+            developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring
+            Boot starter
+        </ulink> and shared it with the community. You can see below an example of how to use it. Please refer to the <ulink
+                url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation
+        </ulink> on GitHub for further information.
+        </para>
+        <para>
+            First, add dependency <literal>com.paypal.springboot:resteasy-spring-boot-starter</literal> to your Spring
+            Boot application. It is recommended to you use <ulink
+                url="http://search.maven.org/#search%7Cga%7C1%7Cg:com.paypal.springboot">the latest version</ulink>.
+            Second, optionally you can register one or more JAX-RS application classes. To do so, just define it as a
+            Spring bean, and it will be automatically registered. See the example below.
+        </para>
+        <programlisting><![CDATA[package com.sample.app;
+
+import org.springframework.stereotype.Component;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
+@Component
+@ApplicationPath("/sample-app/")
+public class JaxrsApplication extends Application {
+}]]></programlisting>
+        <para>
+            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
+            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
+            providers must be singletons.
+        </para>
+    </section>
+    <section id="SpringUpgradeInWildfly">
         <title>Upgrading in WildFly</title>
         <para>
             <emphasis role="bold">Note.</emphasis>
@@ -389,7 +389,7 @@ server.deploy(deployment);]]></programlisting>
             <![CDATA[modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar]]>.
         </para>
     </section>
-    <section>
+    <section id="SpringWebAnnotation">
         <title>Processing Spring Web REST annotations in RESTEasy</title>
         <para>
             RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated
@@ -407,7 +407,6 @@ server.deploy(deployment);]]></programlisting>
                 &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
                 &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
                 &lt;/dependency&gt;
-
             </programlisting>
         </para>
         <para>
@@ -425,91 +424,91 @@ server.deploy(deployment);]]></programlisting>
 
    ...
 </web-app>]]></programlisting>
+        <para>
+            In the example above, Controller1 and Controller2 are registered and are expected to be annotated with
+            @RestController.
+        </para>
+        <para>
+            The list of the currently supported annotations can be found below
+        </para>
+        <table frame="topbot">
+            <tgroup cols="2" rowsep="1" colsep="1">
+                <thead>
+                    <row>
+                        <entry>Annotation</entry>
+                        <entry>Comment</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>@RestController</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@GetMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PostMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PutMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@DeleteMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PatchMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestParam</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestHeader</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@MatrixVariable</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PathVariable</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@CookieValue</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestBody</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@ResponseStatus</entry>
+                        <entry>Only supported as a method annotation</entry>
+                    </row>
+                    <row>
+                        <entry>@RequestParam</entry>
+                        <entry/>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>
+            Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is
+            supported as
+            is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
+            <literal>javax.servlet.http.HttpServletResponse</literal>
+            as method parameters
+        </para>
     </section>
-    <para>
-        In the example above, Controller1 and Controller2 are registered and are expected to be annotated with
-        @RestController.
-    </para>
-    <para>
-        The list of the currently supported annotations can be found below
-    </para>
-    <table frame="topbot">
-        <tgroup cols="2" rowsep="1" colsep="1">
-            <thead>
-                <row>
-                    <entry>Annotation</entry>
-                    <entry>Comment</entry>
-                </row>
-            </thead>
-            <tbody>
-                <row>
-                    <entry>@RestController</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@GetMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PostMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PutMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@DeleteMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PatchMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestParam</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestHeader</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@MatrixVariable</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PathVariable</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@CookieValue</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestBody</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@ResponseStatus</entry>
-                    <entry>Only supported as a method annotation</entry>
-                </row>
-                <row>
-                    <entry>@RequestParam</entry>
-                    <entry/>
-                </row>
-            </tbody>
-        </tgroup>
-    </table>
-    <para>
-        Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is
-        supported as
-        is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
-        <literal>javax.servlet.http.HttpServletResponse</literal>
-        as method parameters
-    </para>
 </chapter>
