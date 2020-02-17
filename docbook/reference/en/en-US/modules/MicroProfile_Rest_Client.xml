@@ -386,6 +386,14 @@ the interface must be annotated with
 the annotation may include a value field set to an implementation class; without an explicit value, the
 default instance will be used.
 </para>
+
+<para>
+Although a <classname>ClientHeadersFactory</classname> is not officially designated as a provider, it is
+now (as of MicroProfile REST Client specification 1.4) subject to injection. In particular, when an instance of <classname>ClientHeadersFactory</classname>
+is managed by CDI, then CDI injection is mandatory. When a REST Client is executing in the context
+of a JAX-RS implementation, then @Context injection into a <classname>ClientHeadersFactory</classname> is
+currently optional. RESTEasy supports CDI injection and does not currently support @Context injection.
+</para>
 </sect1>
 
 <sect1>
