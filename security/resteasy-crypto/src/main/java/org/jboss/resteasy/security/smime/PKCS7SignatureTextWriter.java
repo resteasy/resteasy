@@ -70,7 +70,7 @@ public class PKCS7SignatureTextWriter implements AsyncMessageBodyWriter<SignedOu
        try
        {
           byte[] encoded = PKCS7SignatureWriter.sign(providers, out);
-          return entityStream.rxWrite(Base64.getEncoder().encodeToString(encoded).getBytes(StandardCharsets.UTF_8));
+          return entityStream.asyncWrite(Base64.getEncoder().encodeToString(encoded).getBytes(StandardCharsets.UTF_8));
        }
        catch (Exception e)
        {

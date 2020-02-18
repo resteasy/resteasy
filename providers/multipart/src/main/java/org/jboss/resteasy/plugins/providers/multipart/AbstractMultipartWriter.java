@@ -85,8 +85,8 @@ public class AbstractMultipartWriter
         byte[] boundaryBytes = ("--" + boundary).getBytes();
 
         return asyncWriteParts(multipartOutput, entityStream, boundaryBytes)
-                .thenCompose(v -> entityStream.rxWrite(boundaryBytes))
-                .thenCompose(v -> entityStream.rxWrite("--".getBytes()));
+                .thenCompose(v -> entityStream.asyncWrite(boundaryBytes))
+                .thenCompose(v -> entityStream.asyncWrite("--".getBytes()));
      }
 
      protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream, byte[] boundaryBytes)
@@ -111,9 +111,9 @@ public class AbstractMultipartWriter
         Type entityGenericType = part.getGenericType();
         AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter) workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-        return entityStream.rxWrite(boundaryBytes)
-                .thenCompose(v -> entityStream.rxWrite("\r\n".getBytes()))
+        return entityStream.asyncWrite(boundaryBytes)
+                .thenCompose(v -> entityStream.asyncWrite("\r\n".getBytes()))
                 .thenCompose(v -> writer.asyncWriteTo(entity, entityType, entityGenericType, null, part.getMediaType(), headers, new HeaderFlushedAsyncOutputStream(headers, entityStream)))
-                .thenCompose(v -> entityStream.rxWrite("\r\n".getBytes()));
+                .thenCompose(v -> entityStream.asyncWrite("\r\n".getBytes()));
      }
 }

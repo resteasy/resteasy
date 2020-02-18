@@ -190,7 +190,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
          //logger.info("*** FORM PROVIDER WRITING: " + new String(bytes));
 
 //      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
-         return entityStream.rxWrite(bytes);
+         return entityStream.asyncWrite(bytes);
       } catch (IOException e)
       {
          return ProviderHelper.completedException(e);

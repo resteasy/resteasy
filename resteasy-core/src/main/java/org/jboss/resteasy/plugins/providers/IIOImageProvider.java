@@ -267,7 +267,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
          writer.setOutput(ios);
          IIOImage img = new IIOImage(t.getRenderedImage(), null, null);
          writer.write(null, img, param);
-         return entityStream.rxWrite(buff.toByteArray())
+         return entityStream.asyncWrite(buff.toByteArray())
                .whenComplete((v, x) -> writer.dispose());
       } catch (IOException e)
       {

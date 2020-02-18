@@ -197,18 +197,18 @@ public class Jackson2JsonpInterceptor implements AsyncWriterInterceptor{
           AsyncOutputWriter writer = new AsyncOutputWriter(context.getAsyncOutputStream());
           CompletionStage<Void> ret = CompletableFuture.completedFuture(null);
           if (wrapInTryCatch) {
-              ret = ret.thenCompose(v -> writer.rxWrite("try{"));
+              ret = ret.thenCompose(v -> writer.asyncWrite("try{"));
           }
-          ret = ret.thenCompose(v -> writer.rxWrite(function + "("))
-                  .thenCompose(v -> writer.rxFlush())
+          ret = ret.thenCompose(v -> writer.asyncWrite(function + "("))
+                  .thenCompose(v -> writer.asyncFlush())
                   .thenCompose(v -> context.asyncProceed())
-                  .thenCompose(v -> writer.rxFlush())
-                  .thenCompose(v -> writer.rxWrite(")"));
+                  .thenCompose(v -> writer.asyncFlush())
+                  .thenCompose(v -> writer.asyncWrite(")"));
 
           if (wrapInTryCatch) {
-              ret = ret.thenCompose(v -> writer.rxWrite("}catch(e){}"));
+              ret = ret.thenCompose(v -> writer.asyncWrite("}catch(e){}"));
           }
-          return ret.thenCompose(v -> writer.rxFlush());
+          return ret.thenCompose(v -> writer.asyncFlush());
        } else {
           return context.asyncProceed();
        }

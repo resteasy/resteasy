@@ -45,13 +45,13 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
             } else {
                value = obj.toString();
             }
-            ret = stream.rxWrite(key.getBytes())
-                    .thenCompose(v -> stream.rxWrite(": ".getBytes()))
-                    .thenCompose(v -> stream.rxWrite(value.getBytes()))
-                    .thenCompose(v -> stream.rxWrite("\r\n".getBytes()));
+            ret = stream.asyncWrite(key.getBytes())
+                    .thenCompose(v -> stream.asyncWrite(": ".getBytes()))
+                    .thenCompose(v -> stream.asyncWrite(value.getBytes()))
+                    .thenCompose(v -> stream.asyncWrite("\r\n".getBytes()));
          }
       }
-      return ret.thenCompose(v -> stream.rxWrite("\r\n".getBytes()));
+      return ret.thenCompose(v -> stream.asyncWrite("\r\n".getBytes()));
    }
 
    @Override
@@ -83,13 +83,13 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
    }
 
    @Override
-    public CompletionStage<Void> rxFlush() {
-       return stream.rxFlush();
+    public CompletionStage<Void> asyncFlush() {
+       return stream.asyncFlush();
     }
 
     @Override
-    public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length) {
+    public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length) {
         return flushHeaders()
-                .thenCompose(v -> stream.rxWrite(bytes, offset, length));
+                .thenCompose(v -> stream.asyncWrite(bytes, offset, length));
     }
 }

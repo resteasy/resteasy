@@ -190,7 +190,7 @@ public class DigitalSigningInterceptor implements AsyncWriterInterceptor, Contai
                       return ret;
                   }
 
-                  return old.rxWrite(body);
+                  return old.asyncWrite(body);
               }).whenComplete((v, t) -> {
                   context.setAsyncOutputStream(old);
                   if(t != null)

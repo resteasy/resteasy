@@ -197,7 +197,7 @@ public class ServerCacheInterceptor implements WriterInterceptor, AsyncWriterInt
        return context.asyncProceed()
                .thenCompose(v -> {
                    byte[] entity = handleCaching(buffer, cc, context.getHeaders(), context.getMediaType());
-                   return old.rxWrite(entity);
+                   return old.asyncWrite(entity);
                }).whenComplete((v, t) -> context.setAsyncOutputStream(old));
    }
 }

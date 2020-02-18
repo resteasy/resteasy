@@ -151,7 +151,7 @@ public class JsonBindingProvider extends AbstractJsonBindingProvider
       Jsonb jsonb = getJsonb(type);
       try
       {
-         return entityStream.rxWrite(jsonb.toJson(t).getBytes(getCharset(mediaType)));
+         return entityStream.asyncWrite(jsonb.toJson(t).getBytes(getCharset(mediaType)));
       } catch (Throwable e)
       {
          CompletableFuture<Void> ret = new CompletableFuture<>();

@@ -63,6 +63,6 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, AsyncMessag
                                              AsyncOutputStream entityStream)
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
-      return entityStream.rxWrite(bytes);
+      return entityStream.asyncWrite(bytes);
    }
 }

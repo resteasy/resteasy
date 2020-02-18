@@ -77,11 +77,11 @@ public class DefaultTextPlain implements MessageBodyReader, AsyncMessageBodyWrit
    {
       String charset = mediaType.getParameters().get("charset");
       if (charset == null)
-         return entityStream.rxWrite(o.toString().getBytes(StandardCharsets.UTF_8));
+         return entityStream.asyncWrite(o.toString().getBytes(StandardCharsets.UTF_8));
       else {
          try
          {
-            return entityStream.rxWrite(o.toString().getBytes(charset));
+            return entityStream.asyncWrite(o.toString().getBytes(charset));
          } catch (UnsupportedEncodingException e)
          {
             return ProviderHelper.completedException(e);

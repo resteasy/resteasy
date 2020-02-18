@@ -81,17 +81,17 @@ public class CommitHeaderAsyncOutputStream extends AsyncOutputStream
    }
 
    @Override
-   public CompletionStage<Void> rxFlush()
+   public CompletionStage<Void> asyncFlush()
    {
       commit();
-      return delegate.rxFlush();
+      return delegate.asyncFlush();
    }
 
    @Override
-   public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
+   public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length)
    {
       commit();
-      return delegate.rxWrite(bytes, offset, length);
+      return delegate.asyncWrite(bytes, offset, length);
    }
 
 }

@@ -218,7 +218,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
           httpHeaders.putSingle("Content-Type", MediaType.valueOf(mimeMultipart.getContentType()));
           ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
           mimeMultipart.writeTo(bos);
-          return entityStream.rxWrite(bos.toByteArray());
+          return entityStream.asyncWrite(bos.toByteArray());
        }
        catch (MessagingException | IOException e)
        {

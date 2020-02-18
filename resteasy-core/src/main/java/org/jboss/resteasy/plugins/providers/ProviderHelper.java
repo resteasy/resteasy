@@ -168,7 +168,7 @@ public final class ProviderHelper
       {
          if ((read = in.read(buf)) != -1)
          {
-            return out.rxWrite(buf, 0, read)
+            return out.asyncWrite(buf, 0, read)
                   .thenCompose(v -> writeTo(in, out, buf));
          }
       } catch (IOException e)

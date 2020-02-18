@@ -221,9 +221,9 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
       {
          for (final String comment : event.getComment().split("\n"))
          {
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.COMMENT_LEAD));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(comment.getBytes(charset)));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.COMMENT_LEAD));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(comment.getBytes(charset)));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
          }
       }
 
@@ -231,21 +231,21 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
       {
          if (event.getName() != null)
          {
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.NAME_LEAD));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(event.getName().getBytes(charset)));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.NAME_LEAD));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(event.getName().getBytes(charset)));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
          }
          if (event.getId() != null)
          {
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.ID_LEAD));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(event.getId().getBytes(charset)));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.ID_LEAD));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(event.getId().getBytes(charset)));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
          }
          if (event.getReconnectDelay() > -1)
          {
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.RETRY_LEAD));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(Long.toString(event.getReconnectDelay()).getBytes(StandardCharsets.UTF_8)));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.RETRY_LEAD));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(Long.toString(event.getReconnectDelay()).getBytes(StandardCharsets.UTF_8)));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
          }
 
          if (event.getData() != null)
@@ -265,7 +265,7 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
             Class<?> finalPayloadClass = payloadClass;
             Type finalPayloadType = payloadType;
 
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.DATA_LEAD));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.DATA_LEAD));
             AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
@@ -281,15 +281,15 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                   boolean isNewLine = false;
 
                   @Override
-                  public CompletionStage<Void> rxFlush()
+                  public CompletionStage<Void> asyncFlush()
                   {
-                     return entityStream.rxFlush();
+                     return entityStream.asyncFlush();
                   }
 
                   @Override
-                  public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
+                  public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length)
                   {
-                     return entityStream.rxWrite(escape(textLike, escape, bytes, offset, length));
+                     return entityStream.asyncWrite(escape(textLike, escape, bytes, offset, length));
                   }
 
                   private byte[] escape(boolean textLike, boolean escape, byte[] data, int offset, int length) {
@@ -355,12 +355,12 @@ public class SseEventProvider implements AsyncMessageBodyWriter<OutboundSseEvent
                      throw new IllegalStateException("Not supported");
                   }
                }));
-            ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+            ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
 
          }
 
       }
-      return ret = ret.thenCompose(v -> entityStream.rxWrite(SseConstants.EOL));
+      return ret = ret.thenCompose(v -> entityStream.asyncWrite(SseConstants.EOL));
    }
 
 }

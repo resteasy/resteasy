@@ -409,7 +409,7 @@ public class AsyncIOResource {
          @Override
          public CompletionStage<Void> asyncWrite(AsyncOutputStream output)
          {
-            return output.rxWrite(OK_BYTES);
+            return output.asyncWrite(OK_BYTES);
          }
        };
     }

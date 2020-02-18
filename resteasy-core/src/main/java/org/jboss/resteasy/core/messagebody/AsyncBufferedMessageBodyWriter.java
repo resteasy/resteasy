@@ -22,7 +22,7 @@ public interface AsyncBufferedMessageBodyWriter<T> extends AsyncMessageBodyWrite
        ByteArrayOutputStream bos = new ByteArrayOutputStream();
        try {
            writeTo(t, type, genericType, annotations, mediaType, httpHeaders, bos);
-           return entityStream.rxWrite(bos.toByteArray());
+           return entityStream.asyncWrite(bos.toByteArray());
        } catch (WebApplicationException | IOException e) {
            return ProviderHelper.completedException(e);
        }

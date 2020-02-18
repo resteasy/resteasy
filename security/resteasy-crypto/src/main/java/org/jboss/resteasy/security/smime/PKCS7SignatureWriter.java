@@ -89,7 +89,7 @@ public class PKCS7SignatureWriter implements AsyncMessageBodyWriter<SignedOutput
        {
           byte[] encoded = sign(providers, out);
           headers.putSingle("Content-Type", "application/pkcs7-signature;micalg=\"sha1\"");
-          return entityStream.rxWrite(encoded);
+          return entityStream.asyncWrite(encoded);
        }
        catch (Exception e)
        {

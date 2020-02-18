@@ -115,7 +115,7 @@ public class EnvelopedWriter implements AsyncMessageBodyWriter<EnvelopedOutput>
                                              AsyncOutputStream entityStream) {
        try
        {
-           return entityStream.rxWrite(getBytes(out, httpHeaders));
+           return entityStream.asyncWrite(getBytes(out, httpHeaders));
        }
        catch (Exception e)
        {

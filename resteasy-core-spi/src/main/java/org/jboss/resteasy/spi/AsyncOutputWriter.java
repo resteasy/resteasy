@@ -13,11 +13,11 @@ public class AsyncOutputWriter {
         this.charset = Charset.defaultCharset();
     }
 
-    public CompletionStage<Void> rxWrite(String s){
-        return asyncOutputStream.rxWrite(s.getBytes(charset));
+    public CompletionStage<Void> asyncWrite(String s){
+        return asyncOutputStream.asyncWrite(s.getBytes(charset));
     }
 
-    public CompletionStage<Void> rxFlush(){
-        return asyncOutputStream.rxFlush();
+    public CompletionStage<Void> asyncFlush(){
+        return asyncOutputStream.asyncFlush();
     }
 }

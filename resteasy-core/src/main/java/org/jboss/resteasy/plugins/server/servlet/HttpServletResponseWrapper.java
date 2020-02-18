@@ -166,7 +166,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
 
       @Override
-      public CompletionStage<Void> rxFlush()
+      public CompletionStage<Void> asyncFlush()
       {
          AsyncOperation op = new FlushOperation(this);
          queue(op);
@@ -174,7 +174,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       }
 
       @Override
-      public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
+      public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length)
       {
          AsyncOperation op = new WriteOperation(this, bytes, offset, length);
          queue(op);

@@ -51,8 +51,8 @@ public class AsyncWriter implements AsyncMessageBodyWriter<AsyncWriterData> {
                     }
                 })
                         : CompletableFuture.completedFuture(null);
-        return start.thenCompose(v -> entityStream.rxWrite(resp.getBytes(Charset.forName("UTF-8"))))
-                .thenCompose(v -> entityStream.rxFlush());
+        return start.thenCompose(v -> entityStream.asyncWrite(resp.getBytes(Charset.forName("UTF-8"))))
+                .thenCompose(v -> entityStream.asyncFlush());
     }
 
 }

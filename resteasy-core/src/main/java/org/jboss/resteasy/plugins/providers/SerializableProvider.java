@@ -90,7 +90,7 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, As
       {
          return ProviderHelper.completedException(e);
       }
-      return entityStream.rxWrite(bos.toByteArray());
+      return entityStream.asyncWrite(bos.toByteArray());
    }
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

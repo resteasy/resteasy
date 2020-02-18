@@ -95,7 +95,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             try {
                // make sure we flush to await for any queued data being sent
                AsyncOutputStream aos = response.getAsyncOutputStream();
-               aos.rxFlush().toCompletableFuture().get();
+               aos.asyncFlush().toCompletableFuture().get();
             }catch(IOException | InterruptedException | ExecutionException x) {
                // ignore it and let's just close
             }finally {
@@ -211,9 +211,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            return;
                         }
                         // eager composition to guarantee ordering
-                        CompletionStage<Void> a = aos.rxWrite(SseConstants.EOL);
-                        CompletionStage<Void> b = aos.rxWrite(SseConstants.EOL);
-                        CompletionStage<Void> c = aos.rxFlush();
+                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.EOL);
+                        CompletionStage<Void> b = aos.asyncWrite(SseConstants.EOL);
+                        CompletionStage<Void> c = aos.asyncFlush();
                         // we've queued a response flush, so avoid a second one being queued
                         responseFlushed = true;
 
@@ -328,8 +328,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                writer.writeTo(event, event.getClass(), null, new Annotation[]{}, mediaType, null, bout);
                AsyncOutputStream aos = response.getAsyncOutputStream();
                // eager composition to guarantee ordering
-               CompletionStage<Void> a = aos.rxWrite(bout.toByteArray());
-               CompletionStage<Void> b = aos.rxFlush();
+               CompletionStage<Void> a = aos.asyncWrite(bout.toByteArray());
+               CompletionStage<Void> b = aos.asyncFlush();
                return a
                      .thenCompose(v -> b)
                      .exceptionally(e -> {

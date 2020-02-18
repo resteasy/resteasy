@@ -15,7 +15,7 @@ public class BlockingAsyncOutputStream extends AsyncOutputStream {
     }
 
     @Override
-    public CompletionStage<Void> rxFlush() {
+    public CompletionStage<Void> asyncFlush() {
         try {
             outputStream.flush();
         } catch (IOException e) {
@@ -27,7 +27,7 @@ public class BlockingAsyncOutputStream extends AsyncOutputStream {
     }
 
     @Override
-    public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length) {
+    public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length) {
         try {
             outputStream.write(bytes, offset, length);
         } catch (IOException e) {

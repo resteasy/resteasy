@@ -81,12 +81,12 @@ public class DefaultBooleanWriter implements AsyncMessageBodyWriter<Boolean>
       }
       try
       {
-         return entityStream.rxWrite(t.toString().getBytes(charset));
+         return entityStream.asyncWrite(t.toString().getBytes(charset));
       }
       catch (UnsupportedEncodingException e)
       {
          // Use default encoding.
-         return entityStream.rxWrite(t.toString().getBytes());
+         return entityStream.asyncWrite(t.toString().getBytes());
       }
    }
 

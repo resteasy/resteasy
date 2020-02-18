@@ -77,11 +77,11 @@ public class StringTextStar implements MessageBodyReader<String>, AsyncMessageBo
    {
       String charset = mediaType.getParameters().get("charset");
       if (charset == null)
-         return entityStream.rxWrite(o.getBytes(StandardCharsets.UTF_8));
+         return entityStream.asyncWrite(o.getBytes(StandardCharsets.UTF_8));
       else {
          try
          {
-            return entityStream.rxWrite(o.getBytes(charset));
+            return entityStream.asyncWrite(o.getBytes(charset));
          } catch (UnsupportedEncodingException e)
          {
             return ProviderHelper.completedException(e);

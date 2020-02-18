@@ -136,7 +136,7 @@ public class ChunkOutputStream extends AsyncOutputStream
    }
 
    @Override
-   public CompletionStage<Void> rxFlush()
+   public CompletionStage<Void> asyncFlush()
    {
       CompletableFuture<Void> ret = new CompletableFuture<>();
       try
@@ -155,7 +155,7 @@ public class ChunkOutputStream extends AsyncOutputStream
    }
 
    @Override
-   public CompletionStage<Void> rxWrite(byte[] bytes, int offset, int length)
+   public CompletionStage<Void> asyncWrite(byte[] bytes, int offset, int length)
    {
       CompletableFuture<Void> ret = new CompletableFuture<>();
       try

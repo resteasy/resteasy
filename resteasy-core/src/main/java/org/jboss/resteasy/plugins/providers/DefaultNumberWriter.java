@@ -54,7 +54,7 @@ public class DefaultNumberWriter implements AsyncMessageBodyWriter<Number>
                                              AsyncOutputStream entityStream)
    {
       byte[] bytes = convertToBytes(n, mediaType);
-      return entityStream.rxWrite(bytes);
+      return entityStream.asyncWrite(bytes);
    }
 
    private byte[] convertToBytes(Number n, MediaType mediaType)

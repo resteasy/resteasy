@@ -84,9 +84,9 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Asyn
          if (c == -1)
          {
             httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(0));
-            return entityStream.rxWrite(new byte[0]); // fix RESTEASY-204
+            return entityStream.asyncWrite(new byte[0]); // fix RESTEASY-204
          }
-         return entityStream.rxWrite(new byte[] {(byte) c})
+         return entityStream.asyncWrite(new byte[] {(byte) c})
                .thenCompose(v -> ProviderHelper.writeToAndCloseInput(inputStream, entityStream));
       } catch (IOException e)
       {
