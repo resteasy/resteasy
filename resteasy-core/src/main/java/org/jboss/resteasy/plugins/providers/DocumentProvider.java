@@ -151,6 +151,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document> implement
          throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      lazyInit();
       try
       {
          DOMSource source = new DOMSource(document);
