@@ -22,16 +22,7 @@ import javax.ws.rs.ext.InterceptorContext;
 import java.util.concurrent.CompletionStage;
 
 /**
- * Context class used by {@link javax.ws.rs.ext.WriterInterceptor}
- * to intercept calls to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
- * The getters and setters in this context class correspond to the
- * parameters of the intercepted method.
- *
- * @author Santiago Pericas-Geertsen
- * @author Bill Burke
- * @see WriterInterceptor
- * @see MessageBodyWriter
- * @since 2.0
+ * Context for {@link AsyncWriterInterceptor} which supports async IO.
  */
 public interface AsyncWriterInterceptorContext extends InterceptorContext {
 
@@ -40,12 +31,13 @@ public interface AsyncWriterInterceptorContext extends InterceptorContext {
      *
      * Interceptors MUST explicitly call this method to continue the execution chain;
      * the call to this method in the last interceptor of the chain will invoke
-     * the wrapped {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
+     * the wrapped {@link AsyncMessageBodyWriter#asyncWriteTo} method.
      *
+     * @return a {@link CompletionStage} indicating completion.
      * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
-     *                             {@code MessageBodyWriter.writeTo} method.
+     *                             {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
      * @throws javax.ws.rs.WebApplicationException
-     *                             thrown by the wrapped {@code MessageBodyWriter.writeTo} method.
+     *                             thrown by the wrapped {@code AsyncMessageBodyWriter.asyncWriteTo} method, in the returned {@link CompletionStage}.
      */
     CompletionStage<Void> asyncProceed();
 
@@ -64,19 +56,19 @@ public interface AsyncWriterInterceptorContext extends InterceptorContext {
     void setEntity(Object entity);
 
     /**
-     * Get the output stream for the object to be written. The runtime
+     * Get the async output stream for the object to be written. The runtime
      * is responsible for closing the output stream.
      *
-     * @return output stream for the object to be written.
+     * @return async output stream for the object to be written.
      */
     AsyncOutputStream getAsyncOutputStream();
 
     /**
-     * Set a new output stream for the object to be written. For example, by wrapping
-     * it with another output stream. The runtime is responsible for closing
-     * the output stream that is set.
+     * Set a new async output stream for the object to be written. For example, by wrapping
+     * it with another async output stream. The runtime is responsible for closing
+     * the async output stream that is set.
      *
-     * @param os new output stream for the object to be written.
+     * @param os new async output stream for the object to be written.
      */
     void setAsyncOutputStream(AsyncOutputStream os);
 
