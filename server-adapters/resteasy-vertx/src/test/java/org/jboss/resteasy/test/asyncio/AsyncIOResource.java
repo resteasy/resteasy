@@ -846,4 +846,45 @@ public class AsyncIOResource {
     public JacksonType getJacksonAsync() {
        return new JacksonType();
     }
+
+    // Throwing
+
+    @Path("throwing/blocking-writer")
+    @GET
+    public BlockingThrowingWriterData getThrowingBlockingWriter() {
+       return new BlockingThrowingWriterData();
+    }
+
+    @Path("throwing/blocking-interceptor")
+    @GET
+    @WithBlockingThrowingWriterInterceptor
+    public CompletionStage<String> getThrowingBlockingInterceptor() {
+       return CompletableFuture.supplyAsync(() -> "KO");
+    }
+
+    @Path("throwing/async-writer-1")
+    @GET
+    public AsyncThrowingWriterData getThrowingAsyncWriter1() {
+       return new AsyncThrowingWriterData(true);
+    }
+
+    @Path("throwing/async-writer-2")
+    @GET
+    public AsyncThrowingWriterData getThrowingAsyncWriter2() {
+       return new AsyncThrowingWriterData(false);
+    }
+
+    @Path("throwing/async-interceptor-1")
+    @GET
+    @WithAsyncThrowingWriterInterceptor(throwNow = true)
+    public String getThrowingAsyncInterceptor1() {
+       return "KO";
+    }
+
+    @Path("throwing/async-interceptor-2")
+    @GET
+    @WithAsyncThrowingWriterInterceptor(throwNow = false)
+    public String getThrowingAsyncInterceptor2() {
+       return "KO";
+    }
 }

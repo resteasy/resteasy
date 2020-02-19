@@ -50,7 +50,9 @@ public class AsyncIOTest
    {
       ResteasyDeployment deployment = VertxContainer.start();
       deployment.getProviderFactory().register(BlockingWriter.class);
+      deployment.getProviderFactory().register(BlockingThrowingWriter.class);
       deployment.getProviderFactory().register(AsyncWriter.class);
+      deployment.getProviderFactory().register(AsyncThrowingWriter.class);
       deployment.getProviderFactory().register(InterceptorFeature.class);
       Registry registry = deployment.getRegistry();
       registry.addPerRequestResource(AsyncIOResource.class);
@@ -97,6 +99,34 @@ public class AsyncIOTest
       target = client.target(generateURL("/async-io/slow-async-writer-on-worker-thread"));
       val = target.request().get(String.class);
       Assert.assertEquals("OK", val);
+   }
+
+   @Test
+   public void testThrowingWritersAndInterceptors() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/async-io/throwing/blocking-writer"));
+      String val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
+
+      target = client.target(generateURL("/async-io/throwing/blocking-interceptor"));
+      val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
+
+      target = client.target(generateURL("/async-io/throwing/async-writer-1"));
+      val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
+
+      target = client.target(generateURL("/async-io/throwing/async-writer-2"));
+      val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
+
+      target = client.target(generateURL("/async-io/throwing/async-interceptor-1"));
+      val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
+
+      target = client.target(generateURL("/async-io/throwing/async-interceptor-2"));
+      val = target.request().get(String.class);
+      Assert.assertEquals("this is fine", val);
    }
 
    @Test
