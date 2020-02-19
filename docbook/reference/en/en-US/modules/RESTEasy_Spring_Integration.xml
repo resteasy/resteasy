@@ -462,6 +462,8 @@ server.deploy(deployment);]]></programlisting>
             <code>javax.servlet.http.HttpServletResponse</code>
             as method parameters.
         </para>
+        <para>To see an example of the usage, please check the <ulink url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-rest">RESTEasy support of Spring REST annotations
+        </ulink> sample project we provided.</para>
     </section>
     <section id="SpringBootStarter">
         <title>Spring Boot starter</title>
