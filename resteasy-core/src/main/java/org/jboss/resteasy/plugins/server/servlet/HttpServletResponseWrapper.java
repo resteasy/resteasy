@@ -254,6 +254,11 @@ public class HttpServletResponseWrapper implements HttpResponse
             lastAsyncOperation.future.completeExceptionally(t);
             lastAsyncOperation = null;
          }
+         while(!asyncQueue.isEmpty()) {
+            AsyncOperation op = asyncQueue.poll();
+            if(!op.future.isDone())
+               op.future.completeExceptionally(t);
+         }
       }
    }
 
