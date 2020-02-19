@@ -45,7 +45,7 @@ public class MultiPromise
       }
    }
 
-   public void readyToForward()
+   public synchronized void readyToForward()
    {
       started = true;
       if(created.get() == 0)
