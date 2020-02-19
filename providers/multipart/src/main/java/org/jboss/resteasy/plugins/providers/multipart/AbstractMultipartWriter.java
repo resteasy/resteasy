@@ -1,5 +1,18 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
@@ -7,23 +20,16 @@ import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class AbstractMultipartWriter
 {
+   protected static final byte[] DOUBLE_DASH_BYTES = "--".getBytes(StandardCharsets.US_ASCII);
+   protected static final byte[] LINE_SEPARATOR_BYTES = "\r\n".getBytes(StandardCharsets.US_ASCII);
+   protected static final byte[] COLON_SPACE_BYTES = ": ".getBytes(StandardCharsets.US_ASCII);
+
    @Context
    protected Providers workers;
 
@@ -34,11 +40,11 @@ public class AbstractMultipartWriter
       if (boundary == null)
          boundary = multipartOutput.getBoundary();
       httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
-      byte[] boundaryBytes = ("--" + boundary).getBytes();
+      byte[] boundaryBytes = ("--" + boundary).getBytes(StandardCharsets.US_ASCII);
 
       writeParts(multipartOutput, entityStream, boundaryBytes);
       entityStream.write(boundaryBytes);
-      entityStream.write("--".getBytes());
+      entityStream.write(DOUBLE_DASH_BYTES);
    }
 
    protected void writeParts(MultipartOutput multipartOutput, OutputStream entityStream, byte[] boundaryBytes)
@@ -56,7 +62,7 @@ public class AbstractMultipartWriter
          throws IOException
    {
       entityStream.write(boundaryBytes);
-      entityStream.write("\r\n".getBytes());
+      entityStream.write(LINE_SEPARATOR_BYTES);
       headers.putAll(part.getHeaders());
       headers.putSingle(HttpHeaderNames.CONTENT_TYPE, part.getMediaType());
 
@@ -73,7 +79,7 @@ public class AbstractMultipartWriter
          }
       };
       writer.writeTo(entity, entityType, entityGenericType, null, part.getMediaType(), headers, new HeaderFlushedOutputStream(headers, partStream));
-      entityStream.write("\r\n".getBytes());
+      entityStream.write(LINE_SEPARATOR_BYTES);
    }
 
    protected CompletionStage<Void> asyncWrite(MultipartOutput multipartOutput, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
@@ -82,11 +88,11 @@ public class AbstractMultipartWriter
         if (boundary == null)
            boundary = multipartOutput.getBoundary();
         httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
-        byte[] boundaryBytes = ("--" + boundary).getBytes();
+        byte[] boundaryBytes = ("--" + boundary).getBytes(StandardCharsets.US_ASCII);
 
         return asyncWriteParts(multipartOutput, entityStream, boundaryBytes)
                 .thenCompose(v -> entityStream.asyncWrite(boundaryBytes))
-                .thenCompose(v -> entityStream.asyncWrite("--".getBytes()));
+                .thenCompose(v -> entityStream.asyncWrite(DOUBLE_DASH_BYTES));
      }
 
      protected CompletionStage<Void> asyncWriteParts(MultipartOutput multipartOutput, AsyncOutputStream entityStream, byte[] boundaryBytes)
@@ -112,8 +118,8 @@ public class AbstractMultipartWriter
         AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter) workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
         LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
         return entityStream.asyncWrite(boundaryBytes)
-                .thenCompose(v -> entityStream.asyncWrite("\r\n".getBytes()))
+                .thenCompose(v -> entityStream.asyncWrite(LINE_SEPARATOR_BYTES))
                 .thenCompose(v -> writer.asyncWriteTo(entity, entityType, entityGenericType, null, part.getMediaType(), headers, new HeaderFlushedAsyncOutputStream(headers, entityStream)))
-                .thenCompose(v -> entityStream.asyncWrite("\r\n".getBytes()));
+                .thenCompose(v -> entityStream.asyncWrite(LINE_SEPARATOR_BYTES));
      }
 }

@@ -6,6 +6,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -45,13 +46,13 @@ public class HeaderFlushedAsyncOutputStream extends AsyncOutputStream {
             } else {
                value = obj.toString();
             }
-            ret = stream.asyncWrite(key.getBytes())
-                    .thenCompose(v -> stream.asyncWrite(": ".getBytes()))
-                    .thenCompose(v -> stream.asyncWrite(value.getBytes()))
-                    .thenCompose(v -> stream.asyncWrite("\r\n".getBytes()));
+            ret = stream.asyncWrite(key.getBytes(StandardCharsets.US_ASCII))
+                    .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.COLON_SPACE_BYTES))
+                    .thenCompose(v -> stream.asyncWrite(value.getBytes(StandardCharsets.US_ASCII)))
+                    .thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES));
          }
       }
-      return ret.thenCompose(v -> stream.asyncWrite("\r\n".getBytes()));
+      return ret.thenCompose(v -> stream.asyncWrite(AbstractMultipartWriter.LINE_SEPARATOR_BYTES));
    }
 
    @Override

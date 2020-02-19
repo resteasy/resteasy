@@ -4,6 +4,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -40,13 +41,13 @@ public class HeaderFlushedOutputStream extends OutputStream {
             } else {
                value = obj.toString();
             }
-            stream.write(key.getBytes());
-            stream.write(": ".getBytes());
-            stream.write(value.getBytes());
-            stream.write("\r\n".getBytes());
+            stream.write(key.getBytes(StandardCharsets.US_ASCII));
+            stream.write(AbstractMultipartWriter.COLON_SPACE_BYTES);
+            stream.write(value.getBytes(StandardCharsets.US_ASCII));
+            stream.write(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
          }
       }
-      stream.write("\r\n".getBytes());
+      stream.write(AbstractMultipartWriter.LINE_SEPARATOR_BYTES);
 
    }
 

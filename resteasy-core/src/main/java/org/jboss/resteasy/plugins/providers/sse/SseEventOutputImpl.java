@@ -211,13 +211,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                            return;
                         }
                         // eager composition to guarantee ordering
-                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.EOL);
-                        CompletionStage<Void> b = aos.asyncWrite(SseConstants.EOL);
-                        CompletionStage<Void> c = aos.asyncFlush();
+                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL);
+                        CompletionStage<Void> b = aos.asyncFlush();
                         // we've queued a response flush, so avoid a second one being queued
                         responseFlushed = true;
 
-                        a.thenCompose(v -> b).thenCompose(v -> c)
+                        a.thenCompose(v -> b)
                         .thenAccept(v -> {
                            ret.complete(null);
                         }).exceptionally(e -> {
