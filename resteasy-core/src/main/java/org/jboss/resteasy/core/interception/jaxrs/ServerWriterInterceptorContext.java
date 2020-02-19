@@ -2,6 +2,8 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -17,6 +19,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,25 +31,30 @@ import java.util.Enumeration;
 public class ServerWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
    private HttpRequest request;
+   private Consumer<Throwable> onWriteComplete;
+   private MessageBodyWriter writer;
 
    public ServerWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
                                          final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
                                          final MediaType mediaType, final MultivaluedMap<String, Object> headers,
                                          final OutputStream outputStream,
-                                         final HttpRequest request)
+                                         final HttpRequest request, final Consumer<Throwable> onWriteComplete)
    {
       // server side must use request instead of provider factory to get tracing logger.
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers, RESTEasyTracingLogger.getInstance(request));
       this.request = request;
+      this.onWriteComplete = onWriteComplete;
    }
 
    @SuppressWarnings(value = "unchecked")
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      return ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
-              type, genericType, annotations, mediaType, tracingLogger);
-
+      if(writer == null) {
+         writer = ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
+               type, genericType, annotations, mediaType, tracingLogger);
+      }
+      return writer;
    }
    @Override
    void throwWriterNotFoundException()
@@ -59,9 +69,36 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
-   protected void writeTo(MessageBodyWriter writer) throws IOException
+   public CompletionStage<Void> getStarted()
    {
-      super.writeTo(writer);
+      return aroundWriteTo(super.getStarted());
+   }
+
+   @SuppressWarnings(value = "unchecked")
+   protected CompletionStage<Void> writeTo(MessageBodyWriter writer) throws IOException
+   {
+      return request.getAsyncContext().executeBlockingIo(() -> writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream),
+            interceptors != null && interceptors.length > 0);
+   }
+
+   @SuppressWarnings(value = "unchecked")
+   protected CompletionStage<Void> writeTo(AsyncMessageBodyWriter writer)
+   {
+      return request.getAsyncContext().executeAsyncIo(
+            writer.asyncWriteTo(entity, type, genericType, annotations, mediaType, headers, (AsyncOutputStream)outputStream));
+   }
+
+   private CompletionStage<Void> aroundWriteTo(CompletionStage<Void> ret)
+   {
+      return ret.whenComplete((v, t) -> {
+         // make sure we unwrap these horrors
+         if(t instanceof CompletionException)
+            t = t.getCause();
+         onWriteComplete.accept(t);
+         // make sure we complete any async request after we've written the body or exception
+         if(request.getAsyncContext().isSuspended())
+            request.getAsyncContext().complete();
+      });
    }
 
    @Override

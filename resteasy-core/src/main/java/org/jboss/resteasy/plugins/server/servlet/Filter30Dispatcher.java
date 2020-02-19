@@ -30,9 +30,9 @@ public class Filter30Dispatcher extends FilterDispatcher
    }
 
    @Override
-   public HttpResponse createResteasyHttpResponse(HttpServletResponse response)
+   public HttpResponse createResteasyHttpResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory()) {
+      return new HttpServletResponseWrapper(response, request, getDispatcher().getProviderFactory()) {
          @Override
          public void addNewCookie(NewCookie cookie)
          {

@@ -78,6 +78,12 @@ public final class ResteasyContext
       return () -> removeContextDataLevel();
    }
 
+   public static CloseableContext addCloseableContextDataLevel(Map<Class<?>,Object> data)
+   {
+      pushContextDataMap(data);
+      return () -> removeContextDataLevel();
+   }
+
    public static int getContextDataLevelCount()
    {
       return contextualData.size();

@@ -400,8 +400,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
       // if we've never been suspended, the caller is valid so let it handle any exception
       if(filterReturnIsMeaningful) {
-         continuation.run();
-         onComplete.accept(null);
+         continuation.run(onComplete);
          return;
       }
       // if we've been suspended then the caller is a filter and have to invoke our continuation
@@ -409,13 +408,14 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       // try to write it out
       try
       {
-         continuation.run();
-         onComplete.accept(null);
-         if(weSuspended)
-         {
-            // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
-            request.getAsyncContext().complete();
-         }
+         continuation.run((t) -> {
+            onComplete.accept(t);
+            if(weSuspended)
+            {
+               // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
+               request.getAsyncContext().complete();
+            }
+         });
       } catch (IOException e)
       {
          LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);

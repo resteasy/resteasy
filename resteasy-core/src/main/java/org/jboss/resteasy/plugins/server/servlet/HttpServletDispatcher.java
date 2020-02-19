@@ -66,9 +66,9 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
    }
 
 
-   public HttpResponse createResteasyHttpResponse(HttpServletResponse response)
+   public HttpResponse createResteasyHttpResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return createServletResponse(response);
+      return createServletResponse(response, request);
    }
 
    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, ResteasyHttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
@@ -77,9 +77,9 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
    }
 
 
-   protected HttpResponse createServletResponse(HttpServletResponse response)
+   protected HttpResponse createServletResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory());
+      return new HttpServletResponseWrapper(response, request, getDispatcher().getProviderFactory());
    }
 
 }

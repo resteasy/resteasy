@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
@@ -25,9 +27,11 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -78,9 +82,26 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public void close()
    {
+      close(true);
+   }
+
+   protected void close(boolean flushBeforeClose)
+   {
       synchronized (lock)
       {
          closed = true;
+         if(flushBeforeClose && responseFlushed) {
+            ResteasyContext.pushContextDataMap(contextDataMap);
+            try {
+               // make sure we flush to await for any queued data being sent
+               AsyncOutputStream aos = response.getAsyncOutputStream();
+               aos.asyncFlush().toCompletableFuture().get();
+            }catch(IOException | InterruptedException | ExecutionException x) {
+               // ignore it and let's just close
+            }finally {
+               ResteasyContext.removeContextDataLevel();
+            }
+         }
          if (asyncContext.isSuspended())
          {
             ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
@@ -116,16 +137,10 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    protected void flushResponseToClient()
    {
-      try
-      {
-         internalFlushResponseToClient(false);
-      }
-      catch (IOException e)
-      {
-      }
+      internalFlushResponseToClient(false);
    }
 
-   private void internalFlushResponseToClient(boolean throwIOException) throws IOException
+   private CompletionStage<Void> internalFlushResponseToClient(boolean throwIOException)
    {
       synchronized (lock)
       {
@@ -182,25 +197,57 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
             try
             {
+               CompletableFuture<Void> ret = new CompletableFuture<>();
                ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response,
                      ResteasyProviderFactory.getInstance(), t -> {
+                        AsyncOutputStream aos;
+                        try
+                        {
+                           aos = response.getAsyncOutputStream();
+                        } catch (IOException x)
+                        {
+                           close(false);
+                           ret.completeExceptionally(x);
+                           return;
+                        }
+                        // eager composition to guarantee ordering
+                        CompletionStage<Void> a = aos.asyncWrite(SseConstants.DOUBLE_EOL);
+                        CompletionStage<Void> b = aos.asyncFlush();
+                        // we've queued a response flush, so avoid a second one being queued
+                        responseFlushed = true;
+
+                        a.thenCompose(v -> b)
+                        .thenAccept(v -> {
+                           ret.complete(null);
+                        }).exceptionally(e -> {
+                           if(e instanceof CompletionException)
+                              e = e.getCause();
+                           if(e instanceof IOException)
+                              close(false);
+                           if(throwIOException)
+                              ret.completeExceptionally(e);
+                           else
+                              ret.completeExceptionally(new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e));
+                           return null;
+                        });
                   }, true);
-               response.getOutputStream().write(SseConstants.EOL);
-               response.getOutputStream().write(SseConstants.EOL);
-               response.flushBuffer();
-               responseFlushed = true;
+               return ret;
             }
             catch (IOException e)
             {
-               close();
+               close(false);
+               CompletableFuture<Void> ret = new CompletableFuture<>();
                if (throwIOException)
                {
-                  throw e;
+                  ret.completeExceptionally(e);
+               } else {
+                  ret.completeExceptionally(new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e));
                }
-               throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
+               return ret;
             }
          }
       }
+      return CompletableFuture.completedFuture(null);
    }
 
    @Override
@@ -216,25 +263,18 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          if (closed)
          {
-            throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
+            CompletableFuture<?> ret = new CompletableFuture<>();
+            ret.completeExceptionally(new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed()));
+            return ret;
          }
-         try
-         {
-            internalFlushResponseToClient(true);
-            writeEvent(event);
-
-         }
-         catch (Exception ex)
-         {
-            CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-            completableFuture.completeExceptionally(ex);
-            return completableFuture;
-         }
-         return CompletableFuture.completedFuture(event);
+         // eager composition to guarantee ordering
+         CompletionStage<Void> a = internalFlushResponseToClient(true);
+         CompletionStage<Void> b = writeEvent(event);
+         return a.thenCompose(v -> b);
       }
    }
 
-   protected void writeEvent(OutboundSseEvent event) throws IOException
+   protected CompletionStage<Void> writeEvent(OutboundSseEvent event)
    {
       synchronized (lock)
       {
@@ -285,28 +325,47 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   ((OutboundSseEventImpl) event).setMediaType(mediaType);
                }
                writer.writeTo(event, event.getClass(), null, new Annotation[]{}, mediaType, null, bout);
-               response.getOutputStream().write(bout.toByteArray());
-               response.flushBuffer();
+               AsyncOutputStream aos = response.getAsyncOutputStream();
+               // eager composition to guarantee ordering
+               CompletionStage<Void> a = aos.asyncWrite(bout.toByteArray());
+               CompletionStage<Void> b = aos.asyncFlush();
+               return a
+                     .thenCompose(v -> b)
+                     .exceptionally(e -> {
+                        if(e instanceof CompletionException)
+                           e = e.getCause();
+                        if(e instanceof IOException)
+                           close(false);
+                        LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
+                        SynchronousDispatcher.rethrow(e);
+                        // never reached
+                        return null;
+                     });
             }
          }
          catch (IOException e)
          {
             //The connection could be broken or closed. whenever IO error happens, mark closed to true to
             //stop event writing
-            close();
+            close(false);
             LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
-            throw e;
+            CompletableFuture<Void> ret = new CompletableFuture<>();
+            ret.completeExceptionally(e);
+            return ret;
          }
          catch (Exception e)
          {
             LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
-            throw new ProcessingException(e);
+            CompletableFuture<Void> ret = new CompletableFuture<>();
+            ret.completeExceptionally(new ProcessingException(e));
+            return ret;
          }
          finally
          {
             ResteasyContext.removeContextDataLevel();
          }
       }
+      return CompletableFuture.completedFuture(null);
    }
 
    private String[] getStreamType(ResourceMethodInvoker method)
@@ -346,7 +405,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
 
    @Override
-   public int hashCode() {
-      return ((Object)this).hashCode();
+   public int hashCode()
+   {
+      // required by checkcode
+      return super.hashCode();
    }
 }

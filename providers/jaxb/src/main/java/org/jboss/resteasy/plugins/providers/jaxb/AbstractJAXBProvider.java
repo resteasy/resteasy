@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
@@ -37,7 +38,7 @@ import org.xml.sax.InputSource;
  * @version $Revision:$
  * @param <T> type
  */
-public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
+public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T> implements AsyncBufferedMessageBodyWriter<T>
 {
    @Context
    protected Providers providers;

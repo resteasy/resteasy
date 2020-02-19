@@ -141,25 +141,31 @@ public class SseBroadcasterImpl implements SseBroadcaster
    public CompletionStage<?> broadcast(OutboundSseEvent event)
    {
       checkClosed();
-      //return event immediately and doesn't block anything
-      return CompletableFuture.runAsync(() -> {
-         outputQueue.forEach(eventSink -> {
-            SseEventSink outputImpl = eventSink;
-            try
-            {
-               outputImpl.send(event).whenComplete((object, err) -> {
-                  if (err != null)
-                  {
-                     notifyOnErrorListeners(eventSink, err);
-                  }
-               });
+      CompletionStage<?> ret = CompletableFuture.completedFuture(null);
+      for (SseEventSink eventSink : outputQueue)
+      {
+         ret = ret.thenCompose(v -> {
+            try {
+               return eventSink.send(event)
+                     .exceptionally(err -> {
+                        // do not propagate the exception to the returned CF
+                        // apparently, the goal is to close this sink and not report the error
+                        // of the broadcast operation
+                        notifyOnErrorListeners(eventSink, err);
+                        return null;
+                     });
             }
-            catch (IllegalStateException e)
+            catch (Exception e)
             {
+               // do not propagate the exception to the returned CF
+               // apparently, the goal is to close this sink and not report the error
+               // of the broadcast operation
                notifyOnErrorListeners(eventSink, e);
+               return CompletableFuture.completedFuture(null);
             }
          });
-      });
+      }
+      return ret;
    }
 
 }

@@ -22,6 +22,8 @@ public class SseConstants
 
    public static final byte[] EOL = "\n".getBytes(StandardCharsets.UTF_8);
 
+   public static final byte[] DOUBLE_EOL = "\n\n".getBytes(StandardCharsets.UTF_8);
+
    //event delimiter can be '\r\r', '\n\n' or '\r\n\r\n'
    public static final byte[] EVENT_DELIMITER = "\r\n\r\n".getBytes(StandardCharsets.UTF_8);
 

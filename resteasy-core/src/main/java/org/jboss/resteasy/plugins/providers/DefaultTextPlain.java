@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.TypeConverter;
 
@@ -9,7 +11,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 @Provider
 @Produces("text/plain")
 @Consumes("text/plain")
-public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
+public class DefaultTextPlain implements MessageBodyReader, AsyncMessageBodyWriter
 {
    public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -67,5 +69,23 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
       String charset = mediaType.getParameters().get("charset");
       if (charset == null) entityStream.write(o.toString().getBytes(StandardCharsets.UTF_8));
       else entityStream.write(o.toString().getBytes(charset));
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Object o, Class type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap httpHeaders, AsyncOutputStream entityStream)
+   {
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null)
+         return entityStream.asyncWrite(o.toString().getBytes(StandardCharsets.UTF_8));
+      else {
+         try
+         {
+            return entityStream.asyncWrite(o.toString().getBytes(charset));
+         } catch (UnsupportedEncodingException e)
+         {
+            return ProviderHelper.completedException(e);
+         }
+      }
    }
 }

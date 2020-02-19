@@ -116,10 +116,10 @@ public class InterceptorResource {
       expectedList.add(InterceptorResponseFilterInterceptor.class);         // InterceptorResponseFilter.filter()
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.isWriteable() // Called as initial check
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.isWriteable() // Called as initial check
-      expectedList.add(InterceptorBookWriterInterceptorInterceptor.class);  // InterceptorBookWriterInterceptor.aroundWriteTo()
-      expectedList.add(InterceptorBookWriterInterceptor.class);             // InterceptorBookWriter.[isWriteable() and writeTo()]
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.isWriteable()
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.isWriteable()                   30
+      expectedList.add(InterceptorBookWriterInterceptorInterceptor.class);  // InterceptorBookWriterInterceptor.aroundWriteTo()
+      expectedList.add(InterceptorBookWriterInterceptor.class);             // InterceptorBookWriter.[isWriteable() and writeTo()]
       expectedList.add(InterceptorOne.class);                      // InterceptorBookWriter.writeTo()
       expectedList.add(InterceptorTwo.class);                      // InterceptorBookWriter.writeTo()
       expectedList.add(InterceptorThree.class);                      // InterceptorBookWriter.writeTo()

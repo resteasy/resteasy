@@ -34,9 +34,9 @@ public class HttpServlet30Dispatcher extends HttpServletDispatcher
    }
 
    @Override
-   protected HttpResponse createServletResponse(HttpServletResponse response)
+   protected HttpResponse createServletResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory()) {
+      return new HttpServletResponseWrapper(response, request, getDispatcher().getProviderFactory()) {
          @Override
          public void addNewCookie(NewCookie cookie)
          {

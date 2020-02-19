@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;
@@ -37,7 +38,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
 @Consumes({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
-public class DocumentProvider extends AbstractEntityProvider<Document>
+public class DocumentProvider extends AbstractEntityProvider<Document> implements AsyncBufferedMessageBodyWriter<Document>
 {
    private TransformerFactory transformerFactory;
    private DocumentBuilderFactory documentBuilder;
@@ -150,6 +151,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
          throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      lazyInit();
       try
       {
          DOMSource source = new DOMSource(document);

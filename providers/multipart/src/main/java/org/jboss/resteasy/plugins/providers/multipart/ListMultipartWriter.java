@@ -5,15 +5,17 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 
 /**
@@ -22,7 +24,7 @@ import org.jboss.resteasy.spi.util.FindAnnotation;
  */
 @Provider
 @Produces("multipart/*")
-public class ListMultipartWriter extends AbstractMultipartWriter implements MessageBodyWriter<List<Object>>
+public class ListMultipartWriter extends AbstractMultipartWriter implements AsyncMessageBodyWriter<List<Object>>
 {
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -45,5 +47,20 @@ public class ListMultipartWriter extends AbstractMultipartWriter implements Mess
          output.addPart(obj, partMediaType);
       }
       write(output, mediaType, httpHeaders, entityStream);
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(List<Object> list, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream) {
+       PartType partType = FindAnnotation.findAnnotation(annotations, PartType.class);
+       MediaType partMediaType = MediaType.valueOf(partType.value());
+
+       MultipartOutput output = new MultipartOutput();
+       for (Object obj : list)
+       {
+          output.addPart(obj, partMediaType);
+       }
+       return asyncWrite(output, mediaType, httpHeaders, entityStream);
    }
 }

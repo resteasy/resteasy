@@ -20,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
@@ -48,7 +49,7 @@ import com.fasterxml.jackson.jaxrs.util.ClassKey;
 @Provider
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
+public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider implements AsyncBufferedMessageBodyWriter<Object>
 {
 
    DecoratorMatcher decoratorMatcher = new DecoratorMatcher();

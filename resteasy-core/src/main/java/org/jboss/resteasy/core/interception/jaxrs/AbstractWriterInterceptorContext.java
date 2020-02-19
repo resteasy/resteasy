@@ -1,7 +1,12 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.tracing.InterceptorTimestampPair;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -16,12 +21,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class AbstractWriterInterceptorContext implements WriterInterceptorContext
+public abstract class AbstractWriterInterceptorContext implements WriterInterceptorContext, AsyncWriterInterceptorContext
 {
    protected RESTEasyTracingLogger tracingLogger;
    protected WriterInterceptor[] interceptors;
@@ -39,7 +47,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    protected int index = 0;
    protected ResteasyProviderFactory providerFactory;
-   private InterceptorTimestampPair<WriterInterceptor> lastTracedInterceptor;
+   private InterceptorTimestampPair<?> lastTracedInterceptor;
 
    // We need tracing logger to log the proceed event.
    // So the new constructor with logger should be used.
@@ -140,7 +148,87 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       this.outputStream = outputStream;
    }
 
+   public void setAsyncOutputStream(AsyncOutputStream asyncOutputStream) {
+      this.outputStream = asyncOutputStream;
+   }
+
+   public AsyncOutputStream getAsyncOutputStream()
+   {
+      return (AsyncOutputStream) outputStream;
+   }
+
+   public CompletionStage<Void> getStarted() {
+      if(outputStream instanceof AsyncOutputStream
+            && getWriter() instanceof AsyncMessageBodyWriter
+            && interceptorsSupportAsyncIo())
+         return asyncProceed();
+      try
+      {
+         return syncProceed();
+      } catch (WebApplicationException | IOException e)
+      {
+         CompletableFuture<Void> ret = new CompletableFuture<>();
+         ret.completeExceptionally(e);
+         return ret;
+      }
+   }
+
+   private boolean interceptorsSupportAsyncIo()
+   {
+      for (WriterInterceptor interceptor : interceptors)
+      {
+         if(interceptor instanceof AsyncWriterInterceptor == false)
+            return false;
+      }
+      return true;
+   }
+
+   protected boolean preferAsyncIo() {
+      return false;
+   }
+
+   public CompletionStage<Void> asyncProceed() {
+      LogMessages.LOGGER.debugf("Interceptor Context: %s,  Method : proceed", getClass().getName());
+
+      if (interceptors == null || index >= interceptors.length)
+      {
+         AsyncMessageBodyWriter writer = (AsyncMessageBodyWriter)getWriter();
+         if (writer!=null) {
+            tracingLogger.log("MBW_WRITE_TO", writer.getClass().getName());
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+         }
+         return writeTo(writer);
+      }
+      else
+      {
+         LogMessages.LOGGER.debugf("WriterInterceptor: %s", interceptors[index].getClass().getName());
+         int x = index;
+         traceBefore(interceptors[x]);
+
+         return ((AsyncWriterInterceptor) interceptors[index++]).asyncAroundWriteTo(this)
+               .whenComplete((v, t) -> traceAfter(interceptors[x]));
+         // we used to pop the index, but the TCK doesn't like this
+      }
+
+   }
+
    public void proceed() throws IOException, WebApplicationException
+   {
+      // we only get here if we have an interceptor, in which case we're never async, so let's block and
+      // get any exception out
+      try
+      {
+         syncProceed().toCompletableFuture().get();
+      } catch (InterruptedException e)
+      {
+         SynchronousDispatcher.rethrow(e);
+      } catch (ExecutionException e)
+      {
+         SynchronousDispatcher.rethrow(e.getCause());
+      }
+   }
+
+   public CompletionStage<Void> syncProceed() throws IOException, WebApplicationException
    {
       LogMessages.LOGGER.debugf("Interceptor Context: %s,  Method : proceed", getClass().getName());
 
@@ -151,7 +239,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
             tracingLogger.log("MBW_WRITE_TO", writer.getClass().getName());
             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
          }
-         writeTo(writer);
+         return writeTo(writer);
       }
       else
       {
@@ -165,6 +253,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
             traceAfter(interceptors[x]);
          }
          // we used to pop the index, but the TCK doesn't like this
+         return CompletableFuture.completedFuture(null);
       }
    }
 
@@ -187,9 +276,16 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    }
 
    @SuppressWarnings(value = "unchecked")
-   protected void writeTo(MessageBodyWriter writer) throws IOException
+   protected CompletionStage<Void> writeTo(MessageBodyWriter writer) throws IOException
    {
-      writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+       writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+       return CompletableFuture.completedFuture(null);
+   }
+
+   @SuppressWarnings(value = "unchecked")
+   protected CompletionStage<Void> writeTo(AsyncMessageBodyWriter writer)
+   {
+       return writer.asyncWriteTo(entity, type, genericType, annotations, mediaType, headers, (AsyncOutputStream) outputStream);
    }
 
    protected MessageBodyWriter getWriter()
