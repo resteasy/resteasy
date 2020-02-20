@@ -281,7 +281,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </context-param>
 </web-app>]]></programlisting>
         </para>
-       <para>Above are the usages of RESTEasy Spring MVC integration usages.</para>
+        <para>Above are the usages of RESTEasy Spring MVC integration usages.</para>
     </section>
     <section id="SpringUndertow">
         <title>Undertow Embedded Spring Container</title>
@@ -351,7 +351,8 @@ server.deploy(deployment);]]></programlisting>
             experimental.
         </para>
         <para>
-            In order for RESTEasy to be able to process Spring <code>@RestController</code>, you first need to include the following
+            In order for RESTEasy to be able to process Spring <code>@RestController</code>, you first need to include
+            the following
             dependency.
         </para>
         <para>
@@ -363,7 +364,8 @@ server.deploy(deployment);]]></programlisting>
         </para>
         <para>
             Currently RESTEasy does not auto-scan for <code>@RestController</code> annotated classes,
-            so you need to add all <code>@RestController</code> annotated classes to your <code>web.xml</code> file as shown in the following
+            so you need to add all <code>@RestController</code> annotated classes to your <code>web.xml</code> file as
+            shown in the following
             example.
         </para>
         <programlisting><![CDATA[<web-app>
@@ -377,7 +379,8 @@ server.deploy(deployment);]]></programlisting>
    ...
 </web-app>]]></programlisting>
         <para>
-            In the example above, <code>Controller1</code> and <code>Controller2</code> are registered and are expected to be annotated with
+            In the example above, <code>Controller1</code> and <code>Controller2</code> are registered and are expected
+            to be annotated with
             <code>@RestController</code>.
         </para>
         <para>
@@ -462,27 +465,34 @@ server.deploy(deployment);]]></programlisting>
             <code>javax.servlet.http.HttpServletResponse</code>
             as method parameters.
         </para>
-        <para>To see an example of the usage, please check the <ulink url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-rest">RESTEasy support of Spring REST annotations
-        </ulink> sample project we provided.</para>
+        <para>To see an example of the usage, please check the <ulink
+                url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-rest">RESTEasy support of
+            Spring REST annotations
+        </ulink> sample project we provided.
+        </para>
     </section>
     <section id="SpringBootStarter">
         <title>Spring Boot starter</title>
         <para>
-            The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has
-            developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring
-            Boot starter
-        </ulink> and shared it with the community. You can see below an example of how to use it. Please refer to the <ulink
-                url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation
-        </ulink> on GitHub for further information.
+            The RESTEasy project has its support for Spring Boot integration. It was originally developed by PayPal team
+            and has been donated to RESTEasy community. The project is currently maintained here:
+            <ulink url="https://github.com/resteasy/resteasy-spring-boot">RESTEasy Spring Boot Starter Project</ulink>.
         </para>
         <para>
-            First, add dependency <literal>com.paypal.springboot:resteasy-spring-boot-starter</literal> to your Spring
-            Boot application. It is recommended to you use <ulink
-                url="http://search.maven.org/#search%7Cga%7C1%7Cg:com.paypal.springboot">the latest version</ulink>.
-            Second, optionally you can register one or more JAX-RS application classes. To do so, just define it as a
-            Spring bean, and it will be automatically registered. See the example below.
+            Here is the usage in brief:
         </para>
-        <programlisting><![CDATA[package com.sample.app;
+        <para>Firstly, add dependency to your Spring Boot application:
+            <programlisting><![CDATA[<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-spring-boot-starter</artifactId>
+   <version>${latest_version_of_restesy_spring_boot}</version>
+   <scope>runtime</scope>
+</dependency>]]></programlisting>
+        </para>
+        <para>
+            And then you can use Spring annotation <code>@Component</code> to register your JAX-RS <code>Application
+        </code> class:
+            <programlisting><![CDATA[package com.sample.app;
 
 import org.springframework.stereotype.Component;
 import javax.ws.rs.ApplicationPath;
@@ -492,10 +502,15 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/sample-app/")
 public class JaxrsApplication extends Application {
 }]]></programlisting>
+        </para>
         <para>
             Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
             automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
             providers must be singletons.
+        </para>
+        <para>To see complete examples, please check the <ulink
+                url="https://github.com/resteasy/resteasy-spring-boot/tree/master/sample-app">sample-app
+        </ulink> in the project codebase.
         </para>
     </section>
     <section id="SpringUpgradeInWildfly">
