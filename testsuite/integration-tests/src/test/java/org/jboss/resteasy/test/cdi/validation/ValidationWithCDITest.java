@@ -88,6 +88,13 @@ public class ValidationWithCDITest
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       ViolationReport report = response.readEntity(ViolationReport.class);
       countViolations(report, 0, 0, 0, 1, 0);
+
+      response = client.target(generateURL("/test/root/entered"))
+              .request()
+              .accept(MediaType.APPLICATION_XML)
+              .get();
+      Assert.assertEquals(200, response.getStatus());
+
    }
 
    /**

@@ -28,6 +28,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.cdi.Utils;
 import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -184,7 +185,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       violationsContainer.addViolations(cvs);
       if ((violationsContainer.isFieldsValidated()
             || !GetRestful.isRootResource(object.getClass())
-            || hasApplicationScope(object))
+            || hasApplicationScope(object)
+            || Utils.isStatelessOrSingleton(method.getDeclaringClass()))
           && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());

@@ -1,8 +1,14 @@
 package org.jboss.resteasy.cdi;
 
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
+import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.HttpMethod;
@@ -145,4 +151,25 @@ public class Utils
       }
       return false;
    }
+
+   /**
+    * Find out if a given class has EJB's {@link javax.ejb.Stateless} or {@link javax.ejb.Singleton} annotation.
+    *
+    * @param clazz the class
+    * @return <code>true</code> if a given class is annotated with {@link javax.ejb.Stateless} or {@link javax.ejb.Singleton}
+    */
+   public static boolean isStatelessOrSingleton(Class<?> clazz) {
+      boolean isSessionBean = clazz.isAnnotationPresent(Stateless.class) || clazz.isAnnotationPresent(Singleton.class);
+      if (!isSessionBean) {
+         InjectorFactory injectorFactory = ResteasyProviderFactory.getInstance().getInjectorFactory();
+         if (injectorFactory instanceof CdiInjectorFactory) {
+            Class<?> beanType = ((CdiInjectorFactory)injectorFactory).getSessionBeanType(clazz);
+            if (beanType != null) {
+               isSessionBean = beanType.isAnnotationPresent(Stateless.class) || beanType.isAnnotationPresent(Singleton.class);
+            }
+         }
+      }
+      return isSessionBean;
+   }
+
 }

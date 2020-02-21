@@ -115,6 +115,13 @@ public class CdiInjectorFactory implements InjectorFactory
       return null;
    }
 
+   Class<?> getSessionBeanType(Type intf) {
+       for (Map.Entry<Class<?>, Type> entry: sessionBeanInterface.entrySet()) {
+           if (entry.getValue().equals(intf)) return entry.getKey();
+       }
+       return null;
+   }
+
    public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory)
    {
       return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass, factory), resourceClass, sessionBeanInterface, manager);
