@@ -8,21 +8,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -31,17 +22,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.ReaderInterceptorContext;
-import javax.ws.rs.ext.WriterInterceptor;
-import javax.ws.rs.ext.WriterInterceptorContext;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.annotation.Annotation;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -66,8 +46,8 @@ public class ContextResolverTest
 
       private Providers provider;
 
-      public HolderClass(HttpHeaders headers, UriInfo info, Application application,
-                         Request request, Providers provider) {
+      public HolderClass(final HttpHeaders headers, final UriInfo info, final Application application,
+                         final Request request, final Providers provider) {
          super();
          this.headers = headers;
          this.info = info;
@@ -98,9 +78,9 @@ public class ContextResolverTest
 
       private Providers provider;
 
-      protected HolderResolver(@Context HttpHeaders headers, @Context UriInfo info,
-                               @Context Application application, @Context Request request,
-                               @Context Providers provider) {
+      protected HolderResolver(final @Context HttpHeaders headers, final @Context UriInfo info,
+                               final @Context Application application, final @Context Request request,
+                               final @Context Providers provider) {
          super();
          this.headers = headers;
          this.info = info;
@@ -109,8 +89,8 @@ public class ContextResolverTest
          this.provider = provider;
       }
 
-      public HolderResolver(@Context HttpHeaders headers, @Context UriInfo info,
-                            @Context Application application, @Context Request request) {
+      public HolderResolver(final @Context HttpHeaders headers, final @Context UriInfo info,
+                            final @Context Application application, final @Context Request request) {
          super();
          this.headers = headers;
          this.info = info;
@@ -118,21 +98,21 @@ public class ContextResolverTest
          this.request = request;
       }
 
-      public HolderResolver(@Context HttpHeaders headers, @Context UriInfo info,
-                            @Context Application application) {
+      public HolderResolver(final @Context HttpHeaders headers, final @Context UriInfo info,
+                            final @Context Application application) {
          super();
          this.headers = headers;
          this.info = info;
          this.application = application;
       }
 
-      public HolderResolver(@Context HttpHeaders headers, @Context UriInfo info) {
+      public HolderResolver(final @Context HttpHeaders headers, final @Context UriInfo info) {
          super();
          this.headers = headers;
          this.info = info;
       }
 
-      public HolderResolver(@Context HttpHeaders headers) {
+      public HolderResolver(final @Context HttpHeaders headers) {
          super();
          this.headers = headers;
       }

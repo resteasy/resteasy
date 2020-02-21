@@ -45,42 +45,35 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class DynamicFeatureTest
 {
 
-   @Path("resource")
-   public static class Resource {
+   public abstract static class AbstractAddFilter implements ContainerResponseFilter {
 
-      @POST
-      @Path("dynamic")
-      public String echo(String echo) {
-         return echo;
+      protected int amount;
+
+      public AbstractAddFilter(final int amount) {
+         this.amount = amount;
       }
 
-      @POST
-      @Path("nobinding")
-      public String noBindingEcho(String echo) {
-         return echo;
+      @Override
+      public void filter(ContainerRequestContext requestContext,
+                         ContainerResponseContext responseContext) throws IOException {
+         int status = responseContext.getStatus();
+         if (status != 500) {
+            String entity = (String) responseContext.getEntity();
+            Integer i = Integer.valueOf(entity);
+            entity = String.valueOf(i + amount);
+            responseContext.setEntity(entity, (Annotation[]) null,
+                    MediaType.WILDCARD_TYPE);
+         }
       }
+
    }
 
-   public static final//
-   String readFromStream(InputStream stream) throws IOException {
-      InputStreamReader isr = new InputStreamReader(stream);
-      return readFromReader(isr);
-   }
-   public static final//
-   String readFromReader(Reader reader) throws IOException {
-      BufferedReader br = new BufferedReader(reader);
-      String entity = br.readLine();
-      br.close();
-      return entity;
-   }
-
-
-   public static abstract class AbstractAddInterceptor
+   public abstract static class AbstractAddInterceptor
            implements ReaderInterceptor, WriterInterceptor {
 
       private int amount;
 
-      public AbstractAddInterceptor(int amount) {
+      public AbstractAddInterceptor(final int amount) {
          this.amount = amount;
       }
 
@@ -112,28 +105,6 @@ public class DynamicFeatureTest
 
    }
 
-   public static abstract class AbstractAddFilter implements ContainerResponseFilter {
-
-      protected int amount;
-
-      public AbstractAddFilter(int amount) {
-         this.amount = amount;
-      }
-
-      @Override
-      public void filter(ContainerRequestContext requestContext,
-                         ContainerResponseContext responseContext) throws IOException {
-         int status = responseContext.getStatus();
-         if (status != 500) {
-            String entity = (String) responseContext.getEntity();
-            Integer i = Integer.valueOf(entity);
-            entity = String.valueOf(i + amount);
-            responseContext.setEntity(entity, (Annotation[]) null,
-                    MediaType.WILDCARD_TYPE);
-         }
-      }
-
-   }
 
    public static class AddTenFilter extends AbstractAddFilter {
 
@@ -155,6 +126,37 @@ public class DynamicFeatureTest
          super(1);
       }
    }
+
+   @Path("resource")
+   public static class Resource {
+
+      @POST
+      @Path("dynamic")
+      public String echo(String echo) {
+         return echo;
+      }
+
+      @POST
+      @Path("nobinding")
+      public String noBindingEcho(String echo) {
+         return echo;
+      }
+   }
+
+   public static final//
+   String readFromStream(InputStream stream) throws IOException {
+      InputStreamReader isr = new InputStreamReader(stream);
+      return readFromReader(isr);
+   }
+   public static final//
+   String readFromReader(Reader reader) throws IOException {
+      BufferedReader br = new BufferedReader(reader);
+      String entity = br.readLine();
+      br.close();
+      return entity;
+   }
+
+
 
 
    @Provider
