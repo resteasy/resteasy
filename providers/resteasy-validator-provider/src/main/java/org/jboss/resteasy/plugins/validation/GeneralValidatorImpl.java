@@ -183,8 +183,9 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       violationsContainer.addViolations(cvs);
       if ((violationsContainer.isFieldsValidated()
             || !GetRestful.isRootResource(object.getClass())
-            || hasApplicationScope(object))
-         && violationsContainer.size() > 0)
+            || hasApplicationScope(object)
+            || GetRestful.isValidEnabledOnParameter(method))
+          && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
