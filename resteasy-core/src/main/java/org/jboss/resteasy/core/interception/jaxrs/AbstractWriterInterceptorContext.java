@@ -33,6 +33,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 {
    protected RESTEasyTracingLogger tracingLogger;
    protected WriterInterceptor[] interceptors;
+   protected boolean requireAsyncIO;
    protected Object entity;
    protected Class type;
    protected Type genericType;
@@ -160,8 +161,10 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    public CompletionStage<Void> getStarted() {
       if(outputStream instanceof AsyncOutputStream
             && getWriter() instanceof AsyncMessageBodyWriter
-            && interceptorsSupportAsyncIo())
+            && interceptorsSupportAsyncIo()) {
+         requireAsyncIO = true;
          return asyncProceed();
+      }
       try
       {
          return syncProceed();
@@ -291,6 +294,8 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    protected MessageBodyWriter getWriter()
    {
       MessageBodyWriter writer = resolveWriter();
+      if(requireAsyncIO && writer instanceof AsyncMessageBodyWriter == false)
+         throw new IllegalStateException("Cannot switch body writer from blocking to asynchronous during writer interceptor run");
 
       if (writer == null)
       {
