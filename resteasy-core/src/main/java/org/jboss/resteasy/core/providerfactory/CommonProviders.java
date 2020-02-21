@@ -261,7 +261,7 @@ public class CommonProviders {
    protected JaxrsInterceptorRegistry<WriterInterceptor> getWriterInterceptorRegistryForWrite() {
       if (writerInterceptorRegistry == null) {
          return new WriterInterceptorRegistryImpl(rpf);
-      } else if (lockSnapshots || attachedReaderInterceptors) {
+      } else if (lockSnapshots || attachedWriterInterceptors) {
          return writerInterceptorRegistry.clone(rpf);
       }
       return writerInterceptorRegistry;

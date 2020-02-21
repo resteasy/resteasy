@@ -202,6 +202,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
             // we don't want to copy these
             attachedParamConverterProviders = true;
             sortedParamConverterProviders = parent.sortedParamConverterProviders;
+            attachedContextResolvers = true;
+            contextResolvers = parent.contextResolvers;
          } else {
             contextResolvers = new ConcurrentHashMap<>();
             for (Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.contextResolvers.entrySet())
@@ -693,6 +695,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
 
    public List<ContextResolver> getContextResolvers(final Class<?> clazz, MediaType type)
    {
+      if (getContextResolvers() == null) return null;
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = getContextResolvers().get(clazz);
       if (resolvers == null)
          return null;

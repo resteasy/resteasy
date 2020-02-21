@@ -68,7 +68,7 @@ public class ServerHelper extends CommonProviders
    protected JaxrsInterceptorRegistry<WriterInterceptor> getWriterInterceptorRegistryForWrite() {
       if (writerInterceptorRegistry == null) {
          return new WriterInterceptorRegistryImpl(rpf);
-      } else if (attachedReaderInterceptors) {
+      } else if (attachedWriterInterceptors) {
          return writerInterceptorRegistry.clone(rpf);
       }
       return writerInterceptorRegistry;
