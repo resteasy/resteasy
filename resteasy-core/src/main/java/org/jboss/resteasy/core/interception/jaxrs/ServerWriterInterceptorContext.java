@@ -32,7 +32,6 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    private HttpRequest request;
    private Consumer<Throwable> onWriteComplete;
-   private MessageBodyWriter writer;
 
    public ServerWriterInterceptorContext(final WriterInterceptor[] interceptors, final ResteasyProviderFactory providerFactory,
                                          final Object entity, final Class type, final Type genericType, final Annotation[] annotations,
@@ -50,12 +49,10 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      if(writer == null) {
-         writer = ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
-               type, genericType, annotations, mediaType, tracingLogger);
-      }
-      return writer;
+      return ((ResteasyProviderFactoryImpl)providerFactory).getServerMessageBodyWriter(
+            type, genericType, annotations, mediaType, tracingLogger);
    }
+
    @Override
    void throwWriterNotFoundException()
    {
