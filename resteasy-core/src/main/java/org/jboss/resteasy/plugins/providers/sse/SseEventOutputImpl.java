@@ -263,9 +263,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          if (closed)
          {
-            CompletableFuture<?> ret = new CompletableFuture<>();
-            ret.completeExceptionally(new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed()));
-            return ret;
+            // FIXME: should be this
+//            CompletableFuture<?> ret = new CompletableFuture<>();
+//            ret.completeExceptionally(new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed()));
+//            return ret;
+            // But the TCK expects a real exception
+            throw new IllegalStateException(Messages.MESSAGES.sseEventSinkIsClosed());
          }
          // eager composition to guarantee ordering
          CompletionStage<Void> a = internalFlushResponseToClient(true);
