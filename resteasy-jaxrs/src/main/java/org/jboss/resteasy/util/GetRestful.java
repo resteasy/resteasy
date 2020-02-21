@@ -1,5 +1,6 @@
 package org.jboss.resteasy.util;
 
+import javax.validation.Valid;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
@@ -127,4 +128,16 @@ public class GetRestful
    {
       return getRootResourceClass(clazz) != null;
    }
+
+   public static boolean isValidEnabledOnParameter(Method method) {
+      for (Annotation[] annotations: method.getParameterAnnotations()) {
+         for (Annotation annotation : annotations) {
+            if (Valid.class.equals(annotation.annotationType())) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
 }
