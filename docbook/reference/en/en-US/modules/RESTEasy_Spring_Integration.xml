@@ -11,7 +11,7 @@
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
-    <version>4.5.0.Final</version>
+    <version>4.6.0-SNAPSHOT</version>
 </dependency>]]></programlisting>
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
@@ -359,7 +359,7 @@ server.deploy(deployment);]]></programlisting>
             <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring-web</artifactId>
-    <version>4.5.0.Final</version>
+    <version>4.6.0-SNAPSHOT</version>
 </dependency>]]></programlisting>
         </para>
         <para>

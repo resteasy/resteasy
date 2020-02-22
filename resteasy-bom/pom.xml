@@ -13,7 +13,7 @@
     <description/>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
-    <version>4.5.0.Final</version>
+    <version>4.6.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
