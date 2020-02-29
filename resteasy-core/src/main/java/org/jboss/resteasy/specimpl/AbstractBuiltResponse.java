@@ -517,11 +517,16 @@ public abstract class AbstractBuiltResponse extends Response
       {
          List<Object> values = headers.get("Link");
          if (values == null) return this;
+
+
          for (Object val : values)
          {
             if (val instanceof Link) addLink((Link)val);
-            else
-            {
+            else if (val instanceof String) {
+               for (String link : ((String) val).split(",")) {
+                  addLink(Link.valueOf(link));
+               }
+            } else {
                String str = factory.toHeaderString(val);
                addLink(Link.valueOf(str));
             }
