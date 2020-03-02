@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Stream;
 import org.reactivestreams.Publisher;
@@ -45,5 +46,13 @@ public class PublisherResponseRawStreamResource {
    @Path("infinite-done")
    public String sseInfiniteDone() {
       return String.valueOf(terminated);
+   }
+
+   @GET
+   @Path("slow-async-io")
+   @Produces(MediaType.TEXT_PLAIN)
+   @Stream(Stream.MODE.RAW)
+   public Publisher<SlowString> slowAsyncWriter() {
+      return Flowable.fromArray(new SlowString("one"), new SlowString("two"));
    }
 }
