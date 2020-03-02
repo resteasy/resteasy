@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
@@ -203,6 +205,39 @@ public class HttpServletResponseWrapper implements HttpResponse
                   // make sure we have something ready to be executed
                   addToQueue(op);
                   os.setWriteListener(this);
+                  request.getAsyncContext().addListener(new AsyncListener() {
+                     @Override
+                     public void onComplete(AsyncEvent event) throws IOException {
+                        synchronized (DeferredOutputStream.this) {
+                           //flush in a blocking manner
+                           if (lastAsyncOperation != null) {
+                              lastAsyncOperation.future.complete(null);
+                              lastAsyncOperation = null;
+                           }
+
+                           while (!asyncQueue.isEmpty()) {
+                              lastAsyncOperation = asyncQueue.poll();
+                              lastAsyncOperation.work(null);
+                           }
+
+                        }
+                     }
+
+                     @Override
+                     public void onTimeout(AsyncEvent event) throws IOException {
+
+                     }
+
+                     @Override
+                     public void onError(AsyncEvent event) throws IOException {
+
+                     }
+
+                     @Override
+                     public void onStartAsync(AsyncEvent event) throws IOException {
+
+                     }
+                  });
                } else if(os.isReady()) {
                   // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
                   // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
