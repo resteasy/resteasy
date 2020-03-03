@@ -157,7 +157,7 @@ public class ServerResponseWriter
 
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
                providerFactory, entity, type, generic, annotations, mt,
-               jaxrsResponse.getMetadata(), os, request, onComplete);
+               jaxrsResponse.getMetadata(), os, request, onWriteComplete);
 
          CompletionStage<Void> writerAction = writerContext.getStarted().whenComplete((v, t) -> {
             tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext.getProcessedInterceptorCount());
