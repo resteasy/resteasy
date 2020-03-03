@@ -89,6 +89,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
             case '[':
             case ']':
             case '=':
+            case '\n':
                return false;
             default:
                break;
