@@ -206,10 +206,8 @@ public class HttpServletResponseWrapper implements HttpResponse
                } else if(os.isReady()) {
                   // it's possible that we startAsync and queue, then queue another event and the stream becomes ready before
                   // onWritePossible is called, which means we need to flush the queue here to guarantee ordering if that happens
+                  addToQueue(op);
                   flushQueue(os);
-                  // we're not allowed to queue work if the output is ready
-                  lastAsyncOperation = op;
-                  op.work(os);
                } else {
                   // just queue
                   addToQueue(op);
