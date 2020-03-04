@@ -17,6 +17,8 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseRawStreamResource;
+import org.jboss.resteasy.test.response.resource.SlowString;
+import org.jboss.resteasy.test.response.resource.SlowStringWriter;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -51,6 +53,7 @@ public class PublisherResponseRawStreamTest {
               new RuntimePermission("modifyThread")
       ), "permissions.xml");
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseRawStreamResource.class,
+            SlowStringWriter.class, SlowString.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
    }
 
@@ -107,5 +110,15 @@ public class PublisherResponseRawStreamTest {
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("true", entity);
+   }
+
+   @Test
+   public void testSlowAsyncWriter() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/slow-async-io")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("onetwo", entity);
    }
 }

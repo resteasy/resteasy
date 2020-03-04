@@ -1,17 +1,5 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
-import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
-import org.jboss.resteasy.spi.AsyncOutputStream;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -22,6 +10,20 @@ import java.util.Enumeration;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.WriterInterceptor;
+
+import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -68,7 +70,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    public CompletionStage<Void> getStarted()
    {
-      return aroundWriteTo(super.getStarted());
+      return aroundWriteTo(() -> super.getStarted());
    }
 
    @SuppressWarnings(value = "unchecked")
@@ -85,16 +87,18 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
             writer.asyncWriteTo(entity, type, genericType, annotations, mediaType, headers, (AsyncOutputStream)outputStream));
    }
 
-   private CompletionStage<Void> aroundWriteTo(CompletionStage<Void> ret)
+   private CompletionStage<Void> aroundWriteTo(Supplier<CompletionStage<Void>> ret)
    {
-      return ret.whenComplete((v, t) -> {
+      boolean startedSuspended = request.getAsyncContext().isSuspended();
+      return ret.get().whenComplete((v, t) -> {
          // make sure we unwrap these horrors
          if(t instanceof CompletionException)
             t = t.getCause();
          onWriteComplete.accept(t);
          // make sure we complete any async request after we've written the body or exception
-         if(request.getAsyncContext().isSuspended())
+         if(!startedSuspended && request.getAsyncContext().isSuspended()) {
             request.getAsyncContext().complete();
+         }
       });
    }
 

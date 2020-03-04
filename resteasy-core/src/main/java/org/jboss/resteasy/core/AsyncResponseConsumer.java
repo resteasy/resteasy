@@ -331,6 +331,8 @@ public abstract class AsyncResponseConsumer
    private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer
    {
       private boolean sentEntity;
+      private volatile boolean onCompleteReceived = false;
+      private volatile boolean sendingEvent = false;
 
       AsyncRawStreamingResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
@@ -375,16 +377,31 @@ public abstract class AsyncResponseConsumer
 
       protected void addNextElement(Object element)
       {
+         sendingEvent = true;
          internalResume(element, t -> {
-            if(t != null)
-            {
-               complete(t);
-            }
-            else
-            {
-               subscription.request(1);
+            synchronized(this) {
+               sendingEvent = false;
+               if(onCompleteReceived) {
+                  super.onComplete();
+               }
+               else if(t != null)
+               {
+                  complete(t);
+               }
+               else
+               {
+                  subscription.request(1);
+               }
             }
          });
+      }
+
+      @Override
+      public synchronized void onComplete()
+      {
+         onCompleteReceived = true;
+         if(sendingEvent == false)
+            super.onComplete();
       }
 
       @Override
