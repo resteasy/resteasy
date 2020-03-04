@@ -1,7 +1,7 @@
 install:
  - mvn -B clean; java -version
 script:
- - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} -Dcheckstyle.skip -Dtest=SSETest,SseTest -DfailIfNoTests=false install; cat testsuite/integration-tests/target/surefire-reports/*.SseTest*.txt; echo THEN; cat server-adapters/resteasy-vertx/target/surefire-reports/*.SSETest*.txt
+ - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} -Dcheckstyle.skip install; cat testsuite/integration-tests/target/surefire-reports/*.SseTest*.txt; echo THEN; cat server-adapters/resteasy-vertx/target/surefire-reports/*.SSETest*.txt
 
 language: java
 jdk:
