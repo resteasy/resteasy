@@ -85,6 +85,7 @@ public class SseTest
             latch.countDown();
          }, ex -> {
                errors.incrementAndGet();
+               ex.printStackTrace();
                logger.error(ex.getMessage(), ex);
                throw new RuntimeException(ex);
             }) ;

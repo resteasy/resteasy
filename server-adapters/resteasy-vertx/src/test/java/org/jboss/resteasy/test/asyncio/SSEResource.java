@@ -34,8 +34,11 @@ public class SSEResource {
       public void run() {
         SseEventSink s = sink;
         s.send(sse.newEvent("HELLO"));
+        System.err.println("going to close");
         s.close();
+        System.err.println("closed");
         isClosed = s.isClosed();
+        System.err.println("is it closed? "+isClosed);
         if (!isClosed)
           return;
         s.close();
