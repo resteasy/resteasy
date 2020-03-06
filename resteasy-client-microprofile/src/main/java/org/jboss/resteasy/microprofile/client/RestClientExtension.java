@@ -8,7 +8,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
@@ -19,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import javax.enterprise.inject.spi.CDI;
 
 public class RestClientExtension implements Extension {
 
@@ -27,13 +27,6 @@ public class RestClientExtension implements Extension {
     private Set<Throwable> errors = new LinkedHashSet<>();
 
     private static BeanManager manager;
-
-    /**
-     * Verify that CDI is active.
-     */
-    public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager) {
-       manager = beanManager;
-     }
 
     public void registerRestClient(@Observes
                                    @WithAnnotations(RegisterRestClient.class) ProcessAnnotatedType<?> type) {
@@ -73,7 +66,15 @@ public class RestClientExtension implements Extension {
     }
 
     public static boolean isCDIActive() {
-       return manager != null;
+        if(manager==null){
+            try {
+                manager = CDI.current().getBeanManager();
+            }catch(IllegalStateException ise){
+               // This happens when a CDIProvider is not available.
+               return false;
+            }
+        }
+        return manager != null;
     }
 
     private static class RestClientData {
