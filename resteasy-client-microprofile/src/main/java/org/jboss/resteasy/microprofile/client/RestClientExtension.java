@@ -105,38 +105,41 @@ public class RestClientExtension implements Extension {
     /**
      * Lifted from CdiConstructorInjector in resteasy-cdi
      */
-    public static Object construct(Class<?> clazz)
-    {
-       Set<Bean<?>> beans = manager.getBeans(clazz);
-       if (beans.size() == 0) {
-          return null;
-       }
+    public static Object construct(Class<?> clazz){
+        
+        if(isCDIActive()){
+            Set<Bean<?>> beans = manager.getBeans(clazz);
+            if (beans.size() == 0) {
+                return null;
+            }
 
-       if (beans.size() > 1)
-       {
-          Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
-          modifiableBeans.addAll(beans);
-          // Ambiguous dependency may occur if a resource has subclasses
-          // Therefore we remove those beans
-          for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();)
-          {
-             Bean<?> bean = iterator.next();
-             if (!bean.getBeanClass().equals(clazz) && !bean.isAlternative())
-             {
-                // remove Beans that have clazz in their type closure but not as a base class
-                iterator.remove();
-             }
-          }
-          beans = modifiableBeans;
-       }
-       Bean<?> bean = manager.resolve(beans);
-       if (bean == null) {
-          return null;
-       }
-       CreationalContext<?> context = manager.createCreationalContext(bean);
-       if (context == null) {
-          return null;
-       }
-       return manager.getReference(bean, clazz, context);
+            if (beans.size() > 1) {
+                Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
+                modifiableBeans.addAll(beans);
+                // Ambiguous dependency may occur if a resource has subclasses
+                // Therefore we remove those beans
+                for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();){
+                    Bean<?> bean = iterator.next();
+                    if (!bean.getBeanClass().equals(clazz) && !bean.isAlternative()){
+                        // remove Beans that have clazz in their type closure but not as a base class
+                        iterator.remove();
+                    }
+                }
+                beans = modifiableBeans;
+            }
+            Bean<?> bean = manager.resolve(beans);
+            if (bean == null) {
+                return null;
+            }
+            CreationalContext<?> context = manager.createCreationalContext(bean);
+            if (context == null) {
+                return null;
+            }
+            return manager.getReference(bean, clazz, context);
+        }else {
+            // CDI is not active.
+            return null;
+        }
+        
     }
 }
