@@ -106,15 +106,14 @@ public class RestClientExtension implements Extension {
      * Lifted from CdiConstructorInjector in resteasy-cdi
      */
     public static Object construct(Class<?> clazz){
-        
         if(isCDIActive()){
             Set<Bean<?>> beans = manager.getBeans(clazz);
-            if (beans.size() == 0) {
+            if (beans.isEmpty()) {
                 return null;
             }
 
             if (beans.size() > 1) {
-                Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
+                Set<Bean<?>> modifiableBeans = new HashSet<>();
                 modifiableBeans.addAll(beans);
                 // Ambiguous dependency may occur if a resource has subclasses
                 // Therefore we remove those beans
@@ -140,6 +139,5 @@ public class RestClientExtension implements Extension {
             // CDI is not active.
             return null;
         }
-        
     }
 }
