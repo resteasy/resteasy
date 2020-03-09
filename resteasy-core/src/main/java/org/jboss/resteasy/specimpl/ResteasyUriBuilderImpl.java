@@ -985,7 +985,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder
          query += param;
       }
       // don't set values if values is null
-      if (values == null) return this;
+      if (values == null || values.length == 0) return this;
       return queryParam(name, values);
    }
 
