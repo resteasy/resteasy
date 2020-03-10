@@ -8,7 +8,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
@@ -19,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import javax.enterprise.inject.spi.CDI;
 
 public class RestClientExtension implements Extension {
 
@@ -27,13 +27,6 @@ public class RestClientExtension implements Extension {
     private Set<Throwable> errors = new LinkedHashSet<>();
 
     private static BeanManager manager;
-
-    /**
-     * Verify that CDI is active.
-     */
-    public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager) {
-       manager = beanManager;
-     }
 
     public void registerRestClient(@Observes
                                    @WithAnnotations(RegisterRestClient.class) ProcessAnnotatedType<?> type) {
@@ -73,7 +66,15 @@ public class RestClientExtension implements Extension {
     }
 
     public static boolean isCDIActive() {
-       return manager != null;
+        if(manager==null){
+            try {
+                manager = CDI.current().getBeanManager();
+            }catch(IllegalStateException ise){
+               // This happens when a CDIProvider is not available.
+               return false;
+            }
+        }
+        return manager != null;
     }
 
     private static class RestClientData {
@@ -104,38 +105,39 @@ public class RestClientExtension implements Extension {
     /**
      * Lifted from CdiConstructorInjector in resteasy-cdi
      */
-    public static Object construct(Class<?> clazz)
-    {
-       Set<Bean<?>> beans = manager.getBeans(clazz);
-       if (beans.size() == 0) {
-          return null;
-       }
+    public static Object construct(Class<?> clazz){
+        if(isCDIActive()){
+            Set<Bean<?>> beans = manager.getBeans(clazz);
+            if (beans.isEmpty()) {
+                return null;
+            }
 
-       if (beans.size() > 1)
-       {
-          Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
-          modifiableBeans.addAll(beans);
-          // Ambiguous dependency may occur if a resource has subclasses
-          // Therefore we remove those beans
-          for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();)
-          {
-             Bean<?> bean = iterator.next();
-             if (!bean.getBeanClass().equals(clazz) && !bean.isAlternative())
-             {
-                // remove Beans that have clazz in their type closure but not as a base class
-                iterator.remove();
-             }
-          }
-          beans = modifiableBeans;
-       }
-       Bean<?> bean = manager.resolve(beans);
-       if (bean == null) {
-          return null;
-       }
-       CreationalContext<?> context = manager.createCreationalContext(bean);
-       if (context == null) {
-          return null;
-       }
-       return manager.getReference(bean, clazz, context);
+            if (beans.size() > 1) {
+                Set<Bean<?>> modifiableBeans = new HashSet<>();
+                modifiableBeans.addAll(beans);
+                // Ambiguous dependency may occur if a resource has subclasses
+                // Therefore we remove those beans
+                for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();){
+                    Bean<?> bean = iterator.next();
+                    if (!bean.getBeanClass().equals(clazz) && !bean.isAlternative()){
+                        // remove Beans that have clazz in their type closure but not as a base class
+                        iterator.remove();
+                    }
+                }
+                beans = modifiableBeans;
+            }
+            Bean<?> bean = manager.resolve(beans);
+            if (bean == null) {
+                return null;
+            }
+            CreationalContext<?> context = manager.createCreationalContext(bean);
+            if (context == null) {
+                return null;
+            }
+            return manager.getReference(bean, clazz, context);
+        }else {
+            // CDI is not active.
+            return null;
+        }
     }
 }
