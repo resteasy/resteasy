@@ -115,7 +115,7 @@ public class SimpleViolationsContainer extends org.jboss.resteasy.api.validation
       {
          ConstraintDescriptorImpl<?> cdi1 = (ConstraintDescriptorImpl<?>) cv1.getConstraintDescriptor();
          ConstraintDescriptorImpl<?> cdi2 = (ConstraintDescriptorImpl<?>) cv2.getConstraintDescriptor();
-         if (cdi1.getElementType() != null ? !cdi1.getElementType().equals(cdi2.getElementType()) : cdi2.getElementType() != null) {
+         if (cdi1.getConstraintLocationKind() != null ? !cdi1.getConstraintLocationKind().equals(cdi2.getConstraintLocationKind()) : cdi2.getConstraintLocationKind() != null) {
             return false;
          }
       }
