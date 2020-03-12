@@ -1,11 +1,16 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SNIServerName;
@@ -30,10 +35,13 @@ import org.apache.http.conn.util.PublicSuffixMatcherLoader;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.ssl.SSLContexts;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
+import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
 
 public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
@@ -75,6 +83,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
       {
          SSLConnectionSocketFactory sslsf = null;
          SSLContext theContext = that.sslContext;
+         Iterator clientConfigProviderIterator = ServiceLoader.load(ClientConfigProvider.class).iterator();
          if (that.disableTrustManager)
          {
             theContext = SSLContext.getInstance("SSL");
@@ -117,6 +126,26 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                protected void prepareSocket(SSLSocket socket) throws IOException
                {
                   that.prepareSocketForSni(socket);
+               }
+            };
+         } else if (clientConfigProviderIterator.hasNext())
+         {
+            // delegate creation of socket to ClientConfigProvider implementation
+            final ClientConfigProvider configProvider = ((ClientConfigProvider) clientConfigProviderIterator.next());
+            sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), verifier) {
+               @Override
+               public Socket createSocket(HttpContext context) throws IOException {
+                  try {
+                     String targetHostUri = context.getAttribute(
+                             HttpCoreContext.HTTP_TARGET_HOST).toString();
+                     if (targetHostUri != null) {
+                        return configProvider.getSSLContext(new URI(targetHostUri)).getSocketFactory().createSocket();
+                     } else {
+                        throw new RuntimeException("URI is not known");
+                     }
+                  } catch (URISyntaxException e) {
+                     throw new RuntimeException(e);
+                  }
                }
             };
          }
