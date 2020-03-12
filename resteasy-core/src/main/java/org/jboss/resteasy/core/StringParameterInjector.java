@@ -765,9 +765,9 @@ public class StringParameterInjector
 
    private String _encode(String strVal) {
       try {
-         return URLEncoder.encode(strVal, StandardCharsets.UTF_8.toString());
+         return URLEncoder.encode(strVal, StandardCharsets.UTF_8.name());
       } catch (UnsupportedEncodingException e) {
-         return e.getMessage();
+         throw new RuntimeException(e);
       }
    }
 
