@@ -28,13 +28,6 @@
     </modules>
 
     <dependencies>
-        <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
-        wildfly-arquillian-container-managed is available -->
-        <dependency>
-            <groupId>org.wildfly.security</groupId>
-            <artifactId>wildfly-elytron</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
