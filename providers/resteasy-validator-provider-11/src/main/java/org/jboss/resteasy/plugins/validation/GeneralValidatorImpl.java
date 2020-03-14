@@ -551,7 +551,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    }
    
    @Override
-   @SuppressWarnings({"rawtypes", "unchecked"})
    public void checkForConstraintViolations(HttpRequest request, Exception e)
    {
       if (e instanceof InvocationTargetException)
@@ -565,18 +564,11 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       
       if (e instanceof ConstraintViolationException)
       {
-         SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
-         ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
-         Set cvs = cve.getConstraintViolations();
-         violationsContainer.addViolations(cvs);
-         if (violationsContainer.size() > 0)
-         {
-            throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
-         }
+    	  checkResteasyViolationException(request, (ConstraintViolationException) e);
       }
       
       Throwable t = e.getCause();
-      while (t != null && !(t instanceof ResteasyViolationException))
+      while (t != null && !(t instanceof ConstraintViolationException))
       {
          t = t.getCause();    
       }
@@ -584,6 +576,23 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          throw ResteasyViolationException.class.cast(t);
       }
+      if (t instanceof ConstraintViolationException)
+      {
+    	  checkResteasyViolationException(request, (ConstraintViolationException) t);
+      }
+   }
+
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   protected void checkResteasyViolationException(HttpRequest request, ConstraintViolationException e)
+   {
+       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
+       ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
+       Set cvs = cve.getConstraintViolations();
+       violationsContainer.addViolations(cvs);
+       if (violationsContainer.size() > 0)
+       {
+          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+       }
    }
    
    protected Validator getValidator(HttpRequest request)
