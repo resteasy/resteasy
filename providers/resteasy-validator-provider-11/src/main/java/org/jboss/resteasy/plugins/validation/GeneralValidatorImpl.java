@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.validation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -11,6 +13,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.validation.Constraint;
 import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintDefinitionException;
 import javax.validation.ConstraintViolation;
@@ -218,7 +221,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    public boolean isValidatable(Class<?> clazz)
    {
       // Called from resteasy-jaxrs.
-      if (cdiActive)
+      if (cdiActive && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz)))
       {
          return false;
       }
@@ -232,7 +235,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       try
       {
          // Called from resteasy-jaxrs.
-         if (cdiActive && injectorFactory instanceof CdiInjectorFactory)
+         if (cdiActive && injectorFactory instanceof CdiInjectorFactory
+               && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz)))
          {
             return false;
          }
@@ -699,5 +703,139 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       Class<?> clazz = o.getClass();
       return clazz.getAnnotation(ApplicationScoped.class) != null;
+   }
+
+   private static boolean hasNoClassOrFieldOrPropertyConstraints(Class<?> clazz)
+   {
+      return !hasClassConstraint(clazz) && !hasFieldConstraint(clazz) && !hasPropertyConstraint(clazz);
+   }
+
+   private static boolean hasPropertyConstraint(Class<?> clazz)
+   {
+      for (Method method : clazz.getDeclaredMethods())
+      {
+         if (isGetter(method))
+         {
+            for (Annotation annotation : method.getAnnotations())
+            {
+               if (isConstraintAnnotation(annotation.annotationType()))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+      for (Class<?> intf : clazz.getInterfaces())
+      {
+         if (hasPropertyConstraint(intf))
+         {
+            return true;
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != null && !superClass.equals(Object.class))
+      {
+         return hasPropertyConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean hasFieldConstraint(Class<?> clazz)
+   {
+      for (Field field : clazz.getDeclaredFields())
+      {
+         for (Annotation annotation : field.getAnnotations())
+         {
+            if (isConstraintAnnotation(annotation.annotationType()))
+            {
+               return true;
+            }
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != null && !superClass.equals(Object.class))
+      {
+         return hasFieldConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean hasClassConstraint(Class<?> clazz)
+   {
+      if (classHasConstraintAnnotation(clazz))
+      {
+         return true;
+      }
+      for (Class<?> intf : clazz.getInterfaces())
+      {
+         if (classHasConstraintAnnotation(intf))
+         {
+            return true;
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != Object.class && superClass != null)
+      {
+         return hasClassConstraint(superClass);
+      }
+      return false;
+   }
+
+   private static boolean classHasConstraintAnnotation(Class<?> clazz)
+   {
+      for (Annotation annotation : clazz.getAnnotations())
+      {
+         if (isConstraintAnnotation(annotation.annotationType()))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static boolean isConstraintAnnotation(Class<?> clazz)
+   {
+      return clazz.isAnnotation() && clazz.getAnnotation(Constraint.class) != null;
+   }
+
+   private static boolean hasEJBScope(Class<?> clazz)
+   {
+      return classHasAnnotations(clazz, new String[] {"javax.ejb.Stateless", "javax.ejb.Stateful", "javax.ejb.Singleton"});
+   }
+
+   private static boolean classHasAnnotations(Class<?> clazz, String[] names)
+   {
+      for (String name : names)
+      {
+         if (isAnnotationPresent(clazz, name))
+         {
+            return true;
+         }
+         for (Class<?> intf : clazz.getInterfaces())
+         {
+            if (isAnnotationPresent(intf, name))
+            {
+               return true;
+            }
+         }
+      }
+      Class<?> superClass = clazz.getSuperclass();
+      if (superClass != Object.class && superClass != null)
+      {
+         return classHasAnnotations(superClass, names);
+      }
+      return false;
+   }
+
+   private static boolean isAnnotationPresent(Class<?> clazz, String name)
+   {
+      for (Annotation annotation : clazz.getAnnotations())
+      {
+         if (annotation.annotationType().getName().equals(name))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }
