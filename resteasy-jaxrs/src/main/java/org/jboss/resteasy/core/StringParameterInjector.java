@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -9,6 +10,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -731,11 +734,11 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (InvocationTargetException e)
          {
@@ -744,7 +747,7 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), targetException);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
          }
       }
       else if (valueOf != null)
@@ -755,7 +758,7 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (InvocationTargetException e)
          {
@@ -764,7 +767,7 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), targetException);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
          }
       }
       try
@@ -773,9 +776,17 @@ public class StringParameterInjector
       }
       catch (Exception e)
       {
-         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
       }
       return null;
+   }
+
+   private String _encode(String strVal) {
+      try {
+         return URLEncoder.encode(strVal, StandardCharsets.UTF_8.name());
+      } catch (UnsupportedEncodingException e) {
+         throw new RuntimeException(e);
+      }
    }
 
    protected void throwProcessingException(String message, Throwable cause)
