@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Test situation where EJBs have parameter violations but no class, field, or property violations.
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-2503
- * @tpSince RESTEasy 4.5
+ * @tpSince RESTEasy 3.6.1.SP9
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -88,7 +88,7 @@ public class EJBParameterViolationsOnlyTest {
 
    /**
     * @tpTestDetails Run tests for stateless EJB
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.6.1.SP9
     */
    @Test
    public void testStateless() throws Exception {
@@ -97,7 +97,7 @@ public class EJBParameterViolationsOnlyTest {
 
    /**
    * @tpTestDetails Run tests for stateful EJB
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.6.1.SP9
     */
    @Test
    public void testStateful() throws Exception {
@@ -106,7 +106,7 @@ public class EJBParameterViolationsOnlyTest {
 
    /**
    * @tpTestDetails Run tests for singleton EJB
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.6.1.SP9
     */
    @Test
    public void testSingleton() throws Exception {
