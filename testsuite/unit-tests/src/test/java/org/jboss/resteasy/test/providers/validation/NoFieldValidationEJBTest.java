@@ -21,7 +21,7 @@ import org.junit.Test;
  * @tpSubChapter Internal validation methods
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test constraint finding methods in GeneralValidatorImpl
- * @tpSince RESTEasy 4.6
+ * @tpSince RESTEasy 3.11.1
  */
 public class NoFieldValidationEJBTest {
 
@@ -122,7 +122,7 @@ public class NoFieldValidationEJBTest {
 
    /**
     * @tpTestDetails Find class constraints
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.11.1
     */
    @Test
    public void testClassConstraints() throws Exception {
@@ -169,7 +169,7 @@ public class NoFieldValidationEJBTest {
 
    /**
     * @tpTestDetails Find field constraints
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.11.1
     */
    @Test
    public void testFieldConstraints() throws Exception {
@@ -226,7 +226,7 @@ public class NoFieldValidationEJBTest {
 
    /**
     * @tpTestDetails Find property constraints
-    * @tpSince RESTEasy 4.5
+    * @tpSince RESTEasy 3.11.1
     */
    @Test
    public void testPropertyConstraints() throws Exception {
