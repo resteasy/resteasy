@@ -11,7 +11,7 @@
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
-    <version>3.11.1-SNAPSHOT</version>
+    <version>3.11.2-SNAPSHOT</version>
 </dependency>]]></programlisting>
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
