@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.apache.james.mime4j.dom.Multipart;
 import org.apache.james.mime4j.dom.field.ContentTypeField;
 import org.apache.james.mime4j.dom.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 public class MultipartRelatedInputImpl extends MultipartInputImpl implements
       MultipartRelatedInput {
-   private Map<String, InputPart> relatedMap = new LinkedHashMap<String, InputPart>();
+   private Map<String, InputPart> relatedMap;
    private String start;
    private String startInfo;
    private String type;
@@ -28,6 +29,11 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
 
    public MultipartRelatedInputImpl(final MediaType contentType, final Providers workers) {
       super(contentType, workers);
+   }
+
+   public MultipartRelatedInputImpl (final Multipart multipart, final Providers workers)
+           throws IOException {
+      super(multipart, workers);
    }
 
    @Override
@@ -38,18 +44,21 @@ public class MultipartRelatedInputImpl extends MultipartInputImpl implements
       start = contentTypeField.getParameter("start");
       startInfo = contentTypeField.getParameter("start-info");
       type = contentTypeField.getParameter("type");
-      rootPart = start == null ? getParts().get(0) : relatedMap.get(start);
+      rootPart = start == null ? getParts().get(0) : getRelatedMap().get(start);
    }
 
    @Override
    protected InputPart extractPart(BodyPart bodyPart) throws IOException {
       InputPart inputPart = super.extractPart(bodyPart);
-      relatedMap
+      getRelatedMap()
             .put(inputPart.getHeaders().getFirst("Content-ID"), inputPart);
       return inputPart;
    }
 
    public Map<String, InputPart> getRelatedMap() {
+      if (relatedMap == null) {
+         relatedMap = new LinkedHashMap<String, InputPart>();
+      }
       return relatedMap;
    }
 
