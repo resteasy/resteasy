@@ -39,6 +39,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -230,7 +232,10 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (userProxyHost != null && userProxyPort != null) {
                 resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
             } else {
-                //no proxy
+                //ProxySelector if applicable       
+                selectHttpProxy()
+                    .ifPresent(proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
+
                 resteasyClientBuilder = builderDelegate;
             }
         }
@@ -284,6 +289,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, asyncInterceptorFactories));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
+    }
+
+    private Optional<InetSocketAddress> selectHttpProxy() {
+        return ProxySelector.getDefault().select(baseURI).stream()
+                .filter(proxy -> proxy.type() == java.net.Proxy.Type.HTTP)
+                .map(java.net.Proxy::address)
+                .map(InetSocketAddress.class::cast)
+                .findFirst();
     }
 
     private boolean isMapperDisabled() {
