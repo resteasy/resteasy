@@ -10,7 +10,6 @@ import javax.annotation.Priority;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -110,23 +109,8 @@ public class PatchMethodFilter implements ContainerRequestFilter
          }
          ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
          Object object;
-         try
-         {
-            object = methodInvoker.invokeDryRun(request, response);
-         }
-         catch (Exception e)
-         {
-            if (e.getCause() instanceof WebApplicationException)
-            {
-               throw e;
-            }
-            else
-            {
-               LogMessages.LOGGER.errorPatchTarget(requestContext.getUriInfo().getRequestUri().toString());
-               throw new ProcessingException("Unexpected error to get the json patch/merge target", e);
-            }
-         }
          try{
+            object = methodInvoker.invokeDryRun(request, response);
             ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
             MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
                   object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
