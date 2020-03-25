@@ -52,6 +52,6 @@ public interface ResteasyContextParameters
    String JAX_RS_2_0_REQUEST_MATCHING = "jaxrs.2.0.request.matching";
 
    String RESTEASY_PREFER_JACKSON_OVER_JSONB = "resteasy.preferJacksonOverJsonB";
-
+   String RESTEASY_PATCH_FILTER_DISABLED = "resteasy.patchfilter.disabled";
    String RESTEASY_STATISTICS_ENABLED = "resteasy.statistics.enabled";
 }

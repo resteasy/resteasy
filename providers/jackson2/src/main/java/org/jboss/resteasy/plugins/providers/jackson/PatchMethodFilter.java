@@ -19,8 +19,10 @@ import javax.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -65,6 +67,16 @@ public class PatchMethodFilter implements ContainerRequestFilter
             && (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())
             || APPLICATION_JSON_MERGE_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType())))
       {
+         ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+         boolean disabled = false;
+         if (context == null) {
+            disabled = Boolean.getBoolean(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED);
+         } else {
+            disabled = Boolean.parseBoolean(context.getParameter(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED));
+         }
+         if (disabled) {
+            return;
+         }
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
          HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
          request.setHttpMethod("GET");
