@@ -3,14 +3,18 @@ package org.jboss.resteasy.plugins.providers.jackson;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -20,6 +24,7 @@ import javax.ws.rs.ext.Providers;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -80,17 +85,48 @@ public class PatchMethodFilter implements ContainerRequestFilter
          HttpRequest request = ResteasyProviderFactory.getContextData(HttpRequest.class);
          HttpResponse response = ResteasyProviderFactory.getContextData(HttpResponse.class);
          request.setHttpMethod("GET");
-         Registry methodRegistry = ResteasyProviderFactory.getContextData(Registry.class);
-         ResourceInvoker resourceInovker = methodRegistry.getResourceInvoker(request);
-         if (resourceInovker == null)
+         List<String> patchContentTypeList = new ArrayList<String>();
+         for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.CONTENT_TYPE))
          {
-            throw new ProcessingException("Get method not found and patch method failed");
+            patchContentTypeList.add(header);
+         }
+         List<String> acceptHeaders = new ArrayList<String>();
+         for (String header : request.getHttpHeaders().getRequestHeader(HttpHeaders.ACCEPT))
+         {
+            acceptHeaders.add(header);
+         }
+         requestContext.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD);
+         requestContext.getHeaders().putSingle(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+         Registry methodRegistry = ResteasyProviderFactory.getContextData(Registry.class);
+         ResourceInvoker resourceInovker = null;
+         try
+         {
+            resourceInovker = methodRegistry.getResourceInvoker(request);
+         }
+         catch (Exception e)
+         {
+            LogMessages.LOGGER.patchTargetMethodNotFound(requestContext.getUriInfo().getRequestUri().toString());
+            throw new ProcessingException("GET method returns the patch/merge json object target not found");
          }
          ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) resourceInovker;
          Object object;
          try
          {
             object = methodInvoker.invokeDryRun(request, response);
+         }
+         catch (Exception e)
+         {
+            if (e.getCause() instanceof WebApplicationException)
+            {
+               throw e;
+            }
+            else
+            {
+               LogMessages.LOGGER.errorPatchTarget(requestContext.getUriInfo().getRequestUri().toString());
+               throw new ProcessingException("Unexpected error to get the json patch/merge target", e);
+            }
+         }
+         try{
             ByteArrayOutputStream tmpOutputStream = new ByteArrayOutputStream();
             MessageBodyWriter msgBodyWriter = ResteasyProviderFactory.getInstance().getMessageBodyWriter(
                   object.getClass(), object.getClass(), methodInvoker.getMethodAnnotations(),
@@ -105,7 +141,8 @@ public class PatchMethodFilter implements ContainerRequestFilter
                mapper.setPolymorphicTypeValidator(new WhiteListPolymorphicTypeValidatorBuilder().build());
             }
             JsonNode targetJson = mapper.readValue(tmpOutputStream.toByteArray(), JsonNode.class);
-
+            requestContext.getHeaders().put(HttpHeaders.CONTENT_TYPE, patchContentTypeList);
+            requestContext.getHeaders().put(HttpHeaders.ACCEPT, acceptHeaders);
             JsonNode result = null;
             if (MediaType.APPLICATION_JSON_PATCH_JSON_TYPE.isCompatible(requestContext.getMediaType()))
             {

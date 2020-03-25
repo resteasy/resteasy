@@ -64,6 +64,13 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 30, value = "Failed to write event {0}", format = Format.MESSAGE_FORMAT)
    void failedToWriteSseEvent(String event, @Cause Throwable cause);
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 40, value = "GET method returns the patch/merge json object target for request {0} not found", format = Format.MESSAGE_FORMAT)
+   void patchTargetMethodNotFound(String requestURI);
+
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 41, value = "Failed to get the patch/merge target for request {0}", format = Format.MESSAGE_FORMAT)
+   void errorPatchTarget(String requestURI);
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //

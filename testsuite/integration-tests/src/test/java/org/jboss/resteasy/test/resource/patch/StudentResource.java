@@ -25,6 +25,7 @@ public class StudentResource
 
    @GET
    @Path("/{id}")
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    public Student getStudent(@PathParam("id") long id)
    {
