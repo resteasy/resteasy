@@ -742,6 +742,19 @@ public class MyApplication extends Application
                                 will not occur.
                             </entry>
 </row>
+                        <row>
+                            <entry>
+                                resteasy.patchfilter.disabled
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Turns off the default patch filter to handle JSON patch and JSON Merge Patch request. 
+                                A customerized patch method filter can be provided to serve the JSON patch and JSON merge
+                                patch request instead.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
