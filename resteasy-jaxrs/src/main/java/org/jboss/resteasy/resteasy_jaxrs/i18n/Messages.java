@@ -696,6 +696,9 @@ public interface Messages
    @Message(id = BASE + 977, value = "Unexpected Number subclass: %s")
    String unexpectedNumberSubclass(String classname);
 
+   @Message(id = BASE + 978, value = "Unsupported enumeration value: %s")
+   String unknownEnumerationValue(String value);
+
    @Message(id = BASE + 980, value = "Unknown interceptor precedence: %s")
    String unknownInterceptorPrecedence(String precedence);
 

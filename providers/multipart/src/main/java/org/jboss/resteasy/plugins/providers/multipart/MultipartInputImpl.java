@@ -28,6 +28,8 @@ import org.apache.james.mime4j.storage.ThresholdStorageProvider;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -174,7 +176,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             MimeStreamParser parser = new MimeStreamParser(null);
 
             StorageProvider storageProvider;
-            if (System.getProperty(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY) != null) {
+            if (ResteasyConfigFactory.getConfig().getValue(DefaultStorageProvider.DEFAULT_STORAGE_PROVIDER_PROPERTY, SOURCE.SYSTEM) != null) {
                storageProvider = DefaultStorageProvider.getInstance();
             } else {
                StorageProvider backend = new CustomTempFileStorageProvider();

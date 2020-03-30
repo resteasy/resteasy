@@ -78,7 +78,8 @@
             <id>default</id>
             <activation>
                 <property>
-                    <name>!forward.compatibility</name>
+                    <name>default</name>
+                    <value>!false</value>
                 </property>
             </activation>
             <modules>
@@ -86,25 +87,28 @@
                 <module>unit-tests</module>
                 <module>integration-tests</module>
                 <module>integration-tests-spring</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>microprofile.on</id>
+            <activation>
+                <property>
+                    <name>!disable.microprofile.tests</name>
+                </property>
+            </activation>
+            <modules>
                 <module>microprofile-tck</module>
             </modules>
         </profile>
-        <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
         <profile>
-            <id>forward.compatibility</id>
+            <id>microprofile.off</id>
             <activation>
                 <property>
-                    <name>forward.compatibility</name>
+                    <name>disable.microprofile.tests</name>
                 </property>
             </activation>
-            <modules>
-                <module>arquillian-utils</module>
-                <module>unit-tests</module>
-                <module>integration-tests</module>
-                <module>integration-tests-spring</module>
-            </modules>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForForwardCompatibility</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.MicroProfileDependent</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <profile>

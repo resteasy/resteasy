@@ -175,7 +175,8 @@ org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
 </programlisting>
            may be included on the classpath
            </listitem>
-           <listitem>Also, the servlet context parameter parameter "resteasy.jsonp.enable" must be set to "true".
+           <listitem>Also, the parameter "resteasy.jsonp.enable" must be set to "true".
+           [See <xref linkend="config_mechanisms"/> for more information about application configuration.]
            </listitem>
         </orderedlist>
     </sect1>

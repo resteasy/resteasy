@@ -4,6 +4,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.StringTokenizer;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
+
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTypeValidator.Builder
@@ -38,10 +41,10 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
          return AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
             public String run() {
-               return System.getProperty(propertyName);
+               return ResteasyConfigFactory.getConfig().getValue(propertyName, SOURCE.SYSTEM);
             }
          });
       }
-      return System.getProperty(propertyName);
+      return ResteasyConfigFactory.getConfig().getValue(propertyName, SOURCE.SYSTEM);
    }
 }

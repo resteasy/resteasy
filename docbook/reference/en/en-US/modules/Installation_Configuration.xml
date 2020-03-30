@@ -13,9 +13,9 @@
         <para>
             In WildFly, RESTEasy and the JAX-RS API are automatically loaded into your deployment's classpath
             if and only if you are deploying a JAX-RS application (as determined by the presence
-            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1. 
+            of JAX-RS annotations). However, only some RESTEasy features are automatically loaded. See Table 3.1.
             If you need any of those libraries which are not loaded automatically, you'll have to bring them in
-            with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:  
+            with a jboss-deployment-structure.xml file in the WEB-INF directory of your WAR file.  Here's an example:
         </para>
         <programlisting><![CDATA[
 <jboss-deployment-structure>
@@ -26,7 +26,7 @@
     </deployment>
 </jboss-deployment-structure>]]></programlisting>
         <para>The <literal>services</literal> attribute must be set to "import" for modules that have default providers
-            in a META-INF/services/javax.ws.rs.ext.Providers file. 
+            in a META-INF/services/javax.ws.rs.ext.Providers file.
         </para>
         <para>
             To get an idea of which RESTEasy modules are loaded by default when JAX-RS services are deployed, please
@@ -266,7 +266,7 @@
             </tgroup>
             </table>
         </para>
-    
+
         <section id="other_resteasy_modules">
         <title>Other RESTEasy modules</title>
             <para>
@@ -287,7 +287,6 @@
 	        </para>
 	    </section>
     </section>
-        
     <section>
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
@@ -307,8 +306,8 @@
 </web-app>]]></programlisting>
         </para>
         <para>
-            Also, RESTEasy context-params (see <xref linkend="configuration_switches"/>)
-            are available if you want to tweak or turn on/off any specific RESTEasy feature.
+            Also, web.xml can supply to RESTEasy init-params and context-params (see <xref linkend="configuration_switches"/>)
+            if you want to tweak or turn on/off any specific RESTEasy feature.
         </para>
         <para>
             Since we're not using a &lt;servlet-mapping&gt; element, we must define a
@@ -331,11 +330,11 @@ public class MyApplication extends Application
             <classname>Application</classname> class (or a subclass thereof)
             which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
             Of course, even in this case it can be used to specify additional information such as context parameters.
-            If there is an <classname>Application</classname> class but it doesn't have an 
+            If there is an <classname>Application</classname> class but it doesn't have an
             <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
             &lt;servlet-mapping&gt; element is required.
         </para>
-        
+
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
             not all RESTEasy modules are bundled with WildFly. For example,
@@ -374,12 +373,12 @@ public class MyApplication extends Application
         <para>
             If you are not using Maven, you can include the necessary jars by hand. If you download
             RESTEasy (from <ulink url="http://resteasy.jboss.org/downloads.html">http://resteasy.jboss.org/downloads.html</ulink>,
-            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.             
+            for example) you will get a file like resteasy-jaxrs-&lt;version&gt;-all.zip.
             If you unzip it you will see a lib/ directory that contains the libraries needed by RESTEasy.
             Copy these, as needed, into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
             within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
-        
+
         <section>
         <title>Servlet 3.0 containers</title>
         <para>
@@ -401,7 +400,7 @@ public class MyApplication extends Application
 </dependency>
 ]]></programlisting>
         </section>
-        
+
         <section>
         <title>Older servlet containers</title>
         <para>
@@ -442,9 +441,297 @@ public class MyApplication extends Application
         </para>
         </section>
     </section>
+    
+    
+    <section id="config_mechanisms">
+        <title>Configuring RESTEasy</title>
+        
+        <para>
+        RESTEasy has two mutually exclusive mechanisms for retrieving configuration parameters
+        (see <xref linkend="configuration_switches"/>).
+        The classic mechanism depends predominantly on context-params and init-params. Alternatively,
+        the Eclipse MicroProfile Config project
+        (<ulink url="https://github.com/eclipse/microprofile-config">https://github.com/eclipse/microprofile-config</ulink>)
+        provides a flexible parameter retrieval mechanism that  RESTEasy will use if the necessary
+        dependencies are available. See <xref linkend="configuring_mp_config"/> for more about that. If 
+        they are not available, it will fall back to the classic mechanism.
+        </para>
+        
+        <section id="microprofile_config">
+        <title>RESTEasy with MicroProfile Config</title>
+        <para>
+            In the presence of the Eclipse MicroProfile Config API jar and an implementation
+            of the API (see <xref linkend="configuring_mp_config"/>), RESTEasy will use the facilities
+            of MicroProfile Config for accessing configuration properties (see <xref linkend="configuration_switches"/>). 
+            MicroProfile Config offers to both RESTEasy users and RESTEasy developers a great deal of
+            flexibility in controlling runtime configuration.	
+        </para>
+        <para>
+            In MicroProfile Config, a <classname>ConfigSource</classname> represents a <classname>Map&lt;String, String&gt;</classname>
+            of property names to values, and a <classname>Config</classname> represents a sequence of <classname>ConfigSource</classname>s,
+            ordered by priority. The priority of a <classname>ConfigSource</classname> is given by an ordinal (represented by an
+            <classname>int</classname>), with a higher value indicating a higher priority. For a given property name, the
+            <classname>ConfigSource</classname>s are searched in order until a value is found.
+        </para>
+        <para>
+            MicroProfile Config mandates the presence of the following <classname>ConfigSource</classname>s:
+        </para>
+        <orderedlist>
+            <listitem>a <classname>ConfigSource</classname> based on System.getProperties() (ordinal = 400)</listitem>
+            <listitem>a <classname>ConfigSource</classname> based on System.getenv() (ordinal = 300)</listitem>
+            <listitem>a <classname>ConfigSource</classname> for each META-INF/microprofile-config.properties file on the ClassPath,
+            separately configurable via a config_ordinal property inside each file (default ordinal = 100)</listitem>
+        </orderedlist>
+        <para>
+            Note that a property which is found among the System properties and which is also in the System environment will be assigned
+            the System property value because of the relative priorities of the <classname>ConfigSource</classname>s.
+        </para>
+        <para>
+            The set of <classname>ConfigSources</classname> is extensible. For example, smallrye-config
+            (<ulink url="https://github.com/smallrye/smallrye-config">https://github.com/smallrye/smallrye-config</ulink>),
+            the implementation of the MicroProfile Config specification currently used by RESTEasy, adds, among others,
+            the following kinds of <classname>ConfigSource</classname>s:
+        </para>
+        <orderedlist>
+            <listitem><classname>PropertiesConfigSource</classname> creates a <classname>ConfigSource</classname> from a
+            Java <classname>Properties</classname> object or a Map&lt;String, String&gt; object or a properties file
+            (referenced by its URL) (default ordinal = 100).</listitem>
+            <listitem><classname>DirConfigSource</classname> creates a <classname>ConfigSource</classname> that will look into a directory
+            where each file corresponds to a property (the file name is the property key and its textual content is the property value).
+            This <classname>ConfigSource</classname> can be used to read configuration from Kubernetes ConfigMap (default ordinal = 100).</listitem>
+        </orderedlist>
+        <para>
+            These can be registered programmatically by using an instance of <classname>ConfigProviderResolver</classname>:
+        </para>
+        <programlisting>
+Config config = new PropertiesConfigSource("file:/// ...");
+ConfigProviderResolver.instance().registerConfig(config, getClass().getClassLoader());
+        </programlisting>
+        <para>where <classname>ConfigProviderResolver</classname> is part of the Eclipse MicroProfile Config API.</para>
+        <para>
+            If the application is running in WildFly, then WildFly provides another set of <classname>ConfigSource</classname>s,
+            as described in the "MicroProfile Config Subsystem Configuration" section of the WildFly Admin guide.
+            You can find the most recent WildFly documentation at <ulink url="https://docs.wildfly.org/">https://docs.wildfly.org/</ulink>.
+        </para>
+        <para>
+            Finally, RESTEasy automatically provides three more <classname>ConfigSource</classname>s:
+        </para>
+        <itemizedlist>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.ServletConfigSource</classname> represents
+            a servlet's &lt;init-param&gt;s from web.xml (ordinal = 60).</listitem>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.FilterConfigSource</classname> represents
+            a filter's &lt;init-param&gt;s from web.xml (ordinal = 50). (See <xref linkend="filter"/> for more information.)
+            </listitem>
+            <listitem><classname>org.jboss.resteasy.microprofile.config.ServletContextConfigSource</classname> represents
+            &lt;context-param&gt;s from web.xml (ordinal = 40).</listitem>
+        </itemizedlist>
+        
+        <section>
+            <title>Using MicroProfileConfig</title>
+            
+            <para>
+                The MicroProfile Config API is very simple. A <classname>Config</classname> may be obtained either
+                programatically:
+            </para>
+            
+            <programlisting>
+Config config = ConfigProvider.getConfig();
+            </programlisting>
+            
+            <para>
+                or, in the presence of CDI, by way of injection:
+            </para>
+            
+            <programlisting>
+@Inject Config config;
+            </programlisting>
+            
+            <para>
+                Once a <classname>Config</classname> has been obtained, a property can be queried. For example,
+            </para>
+            
+            <programlisting>
+String s = config.getValue("prop_name", String.class);
+            </programlisting>
+            
+            <para>
+                or
+            </para>
+            
+            <programlisting>
+String s = config.getOptionalValue("prop_name", String.class).orElse("d'oh");
+            </programlisting>
+            
+            <para>
+                Now, consider a situation in which "prop_name" has been set by <code>System.setProperty("prop_name", "system")</code>
+                and also by
+            </para>
+            
+            <programlisting>
+   &lt;context-param&gt;
+      &lt;param-name&gt;prop_name&lt;/param-name&gt;
+      &lt;param-value&gt;context&lt;/param-value&gt;
+   &lt;/context-param&gt;
+            </programlisting>
+               
+            <para>
+                Then, since the system parameter <classname>ConfigSource</classname> has precedence over (has a higher ordinal than)
+                <classname>ServletContextConfigSource</classname>, <code>config.getValue("prop_name", String.class)</code> will
+                return "system" rather than "context".
+            </para>
+
+        </section>
+        
+        <section id="configuring_mp_config">
+            <title>Configuring MicroProfile Config</title>
+            
+            <para>
+                In order for RESTEasy to take advantage of MicroProfile Config, it
+                will need the Eclipse MicroProfile Config API and also an implementation like SmallRye Config
+                (see <ulink url="https://github.com/smallrye/smallrye-config">https://github.com/smallrye/smallrye-config</ulink>).
+                WildFly 19, for example, has the necessary jars. If they are not provided by the environment,
+                then an application must be configured appropriately. In maven, for example, use
+            </para>
+            
+            <programlisting>
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.eclipse.microprofile.config&lt;/groupId&gt;
+            &lt;artifactId&gt;microprofile-config-api&lt;/artifactId&gt;
+            &lt;scope&gt;compile&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.smallrye.config&lt;/groupId&gt;
+            &lt;artifactId&gt;smallrye-config&lt;/artifactId&gt;
+            &lt;scope&gt;runtime&lt;/scope&gt;
+        &lt;/dependency&gt;
+            </programlisting>
+        </section>
+    </section>
+    
+    <section id="classic_config">
+    <title>RESTEasy's classic configuration mechanism</title>
+    
+    <para>
+    In the absence of the relevant MicroProfile Config jars, RESTEasy falls back to its
+    original behavior to access configuration parameters (see <xref linkend="configuration_switches"/>).
+    In the original mechanism, nearly all of RESTEasy's parameters are servlet init-params and
+    context-params, and which ones are available depends on how a web application invokes RESTEasy.
+    </para>
+    
+    <para>
+    If RESTEasy is invoked as a servlet, as in
+    </para>
+    
+<programlisting>
+&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+
+   &lt;context-param&gt;
+      &lt;param-name&gt;system&lt;/param-name&gt;
+      &lt;param-value&gt;system-context&lt;/param-value&gt;
+   &lt;/context-param&gt;
+   
+   &lt;servlet&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher&lt;/servlet-class&gt;
+
+      &lt;init-param&gt;
+         &lt;param-name&gt;system&lt;/param-name&gt;
+         &lt;param-value&gt;system-init&lt;/param-value&gt;
+      &lt;/init-param&gt;
+      
+   &lt;/servlet&gt;
+
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</programlisting>
+
+   <para>
+   then the servlet specific init-params and the general context-params are available,
+   with the former taking precedence over the latter. For example, the property "system" would
+   have the value "system-init".
+   </para>
+   
+   
+   
+   <para>
+   If RESTEasy is invoked by way of a filter (see <xref linkend="filter"/>), as in
+   </para>
+   
+   <programlisting>
+&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+
+   &lt;context-param&gt;
+      &lt;param-name&gt;system&lt;/param-name&gt;
+      &lt;param-value&gt;system-context&lt;/param-value&gt;
+   &lt;/context-param&gt;
+
+   &lt;filter&gt;
+      &lt;filter-name&gt;Resteasy&lt;/filter-name&gt;
+      &lt;filter-class&gt;org.jboss.resteasy.plugins.server.servlet.FilterDispatcher&lt;/filter-class&gt;
+
+      &lt;init-param&gt;
+         &lt;param-name&gt;system&lt;/param-name&gt;
+         &lt;param-value&gt;system-filter&lt;/param-value&gt;
+      &lt;/init-param&gt;
+
+    &lt;/filter&gt;
+
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;Resteasy&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+&lt;/web-app&gt;
+   </programlisting>
+
+   <para>
+   then the filter specific init-params and the general context-params are available,
+   with the former taking precedence over the latter. For example, the property "system" would
+   have the value "system-filter".
+   </para>
+
+   <para>
+   Finally, if RESTEasy is invoked by way of a ServletContextListener (see <xref linkend="listener"/>), as in
+   </para>
+
+<programlisting>
+&lt;web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"&gt;
+
+   &lt;listener&gt;
+      &lt;listener-class&gt;
+         org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+      &lt;/listener-class&gt;
+   &lt;/listener&gt;
+
+   &lt;context-param&gt;
+      &lt;param-name&gt;system&lt;/param-name&gt;
+      &lt;param-value&gt;system-context&lt;/param-value&gt;
+   &lt;/context-param&gt;
+&lt;/web-app&gt;
+</programlisting>
+ 
+    <para>
+    where <classname>ResteasyBootstrap</classname> is a <classname>ServletContextListener</classname>,
+    then the context-params are available.
+    </para>
+    </section>
+    </section>
+   
     <section id="configuration_switches">
         <title>Configuration switches</title>
-        <para>RESTEasy receives configuration options from &lt;context-param&gt; elements.</para>
+        <para>RESTEasy can receive the following configuration options as described in
+        <xref linkend="config_mechanisms"/>.
+        </para>
         <para>
             <table frame="topbot">
                 <tgroup cols="3" rowsep="1" colsep="1">
@@ -741,7 +1028,7 @@ public class MyApplication extends Application
                                 are escaped to prevent an XSS attack. If this parameter is set to "true", escaping
                                 will not occur.
                             </entry>
-</row>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
@@ -834,10 +1121,10 @@ public abstract class Application
         </para>
 
         <para>
-            
+
         </para>
         <para>
-            <emphasis role="bold">Note. </emphasis>If your web.xml file does not have a 
+            <emphasis role="bold">Note. </emphasis>If your web.xml file does not have a
             &lt;servlet-mapping&gt; element, you must use an <classname>Application</classname> class
             annotated with <classname>@ApplicationPath</classname>.
 
@@ -920,13 +1207,13 @@ public abstract class Application
 
     <section>
     <title>Client side</title>
-    
+
     <para>
         JAX-RS 2.0 conforming implementations such as RESTEasy support a client side framework which simplifies
         communicating with restful applications. In RESTEasy, the minimal set of modules needed for the client framework
         consists of resteasy-jaxrs and resteasy-client. You can access them by way of maven:
     </para>
-    
+
 <programlisting><![CDATA[
 <dependency>
     <groupId>org.jboss.resteasy</groupId>

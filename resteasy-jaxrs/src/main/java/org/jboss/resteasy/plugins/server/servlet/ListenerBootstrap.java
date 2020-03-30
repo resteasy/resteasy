@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,6 +81,11 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    @Override
    public Set<String> getParameterNames()
    {
+      Set<String> set = getResteasyConfigParameterNames();
+      if (set != null)
+      {
+         return set;
+      }
       return getServletContextNames();
    }
 
@@ -99,12 +105,27 @@ public class ListenerBootstrap extends ConfigurationBootstrap
 
    public String getParameter(String name)
    {
-      return servletContext.getInitParameter(name);
+      String val = resteasyConfig.getValue(name);
+      if (val == null) val = servletContext.getInitParameter(name);
+      return val;
    }
 
    @Override
    public String getInitParameter(String name)
    {
       return servletContext.getInitParameter(name);
+   }
+
+   protected Set<String> getResteasyConfigParameterNames()
+   {
+      Iterable<String> iterable = resteasyConfig.getPropertyNames();
+      if (iterable == null)
+      {
+         return null;
+      }
+      Iterator<String> iterator = iterable.iterator();
+      Set<String> set = new HashSet<String>();
+      while (iterator.hasNext()) set.add(iterator.next());
+      return set;
    }
 }
