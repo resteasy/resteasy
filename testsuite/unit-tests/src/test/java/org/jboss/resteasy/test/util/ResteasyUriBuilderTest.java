@@ -57,14 +57,14 @@ public class ResteasyUriBuilderTest {
    public void testReplaceQueryParam() {
       String errorMsg = "Quary param incorrectly replaced";
       String baseAddr = "http://example.com/api";
-      UriBuilder uBuilder = new ResteasyUriBuilderImpl();
+      UriBuilder uBuilder = new ResteasyUriBuilder();
       URI oneUri = uBuilder
               .fromUri(baseAddr + "?foo=bar")
               .replaceQueryParam("foo")
               .build();
       assertEquals(errorMsg, baseAddr, oneUri.toString());
 
-      uBuilder = new ResteasyUriBuilderImpl();
+      uBuilder = new ResteasyUriBuilder();
       URI twoUri = uBuilder
               .fromUri(baseAddr + "?foo=bar&foobar=qux")
               .replaceQueryParam("foo")
