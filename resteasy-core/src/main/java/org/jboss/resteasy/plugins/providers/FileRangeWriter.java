@@ -112,11 +112,15 @@ public class FileRangeWriter implements AsyncMessageBodyWriter<FileRange>
          int len = buf.length > length ? (int)length : buf.length;
          try
          {
-            int read = fis.read(buf, 0, len);
-            if (read != -1)
-            {
-               return entityStream.asyncWrite(buf, 0, read)
-                     .thenCompose(v -> writeTo(fis, length - len, entityStream, buf));
+            int read;
+            while((read = fis.read(buf, 0, len)) != -1){
+               entityStream.asyncWrite(buf, 0, read);
+               length = length - len;
+               if (length > 0) {
+                  len = buf.length > length ? (int) length : buf.length;
+               } else {
+                  break;
+               }
             }
          } catch (IOException e)
          {

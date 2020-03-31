@@ -155,24 +155,14 @@ public final class ProviderHelper
     * @param out output stream
     * @throws IOException if I/O error occurred
     */
-   public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out)
-   {
-      final byte[] buf = new byte[2048];
-      return writeTo(in, out, buf);
-   }
-
-   private static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out, byte[] buf)
-   {
+   public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out) {
+      byte[] buf = new byte[2048];
       int read;
-      try
-      {
-         if ((read = in.read(buf)) != -1)
-         {
-            return out.asyncWrite(buf, 0, read)
-                  .thenCompose(v -> writeTo(in, out, buf));
+      try {
+         while ((read = in.read(buf)) != -1) {
+            out.asyncWrite(buf, 0, read);
          }
-      } catch (IOException e)
-      {
+      } catch (IOException e) {
          return completedException(e);
       }
       return CompletableFuture.completedFuture(null);
