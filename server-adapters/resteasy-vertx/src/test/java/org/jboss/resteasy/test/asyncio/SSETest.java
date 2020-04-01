@@ -18,6 +18,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SSETest
@@ -47,6 +48,7 @@ public class SSETest
    }
 
    @Test
+   @Ignore("FIXME https://issues.redhat.com/browse/RESTEASY-2542")
    public void testSSE() throws Exception
    {
       WebTarget target = client.target(generateURL("/close/closed"));
