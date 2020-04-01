@@ -623,6 +623,49 @@
 
                     </executions>
             </plugin>
+
+            <!-- generate archive needed by project resteasy-quarkus-testsuite -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly/assembly.xml</descriptor>
+                    </descriptors>
+                    <finalName>resteasy-integration-tests-${project.version}-sources</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>trigger-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-integration-tests</artifactId>
+                    <version>${project.version}</version>
+                    <packaging>zip</packaging>
+                    <classifier>sources</classifier>
+                    <file>${project.build.directory}/resteasy-integration-tests-${project.version}-sources.zip</file>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-assembly-zip</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
