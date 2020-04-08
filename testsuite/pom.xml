@@ -108,12 +108,16 @@
             </activation>
             <modules>
                 <module>arquillian-utils</module>
+                <!--
                 <module>unit-tests</module>
+                -->
                 <module>integration-tests</module>
+                <!--
                 <module>integration-tests-spring</module>
                 <module>integration-tests-spring-web</module>
                 <module>integration-tests-embedded</module>
                 <module>microprofile-tck</module>
+                -->
             </modules>
         </profile>
         <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->

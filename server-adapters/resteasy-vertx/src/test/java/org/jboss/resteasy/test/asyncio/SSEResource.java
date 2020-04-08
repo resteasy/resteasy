@@ -34,24 +34,30 @@ public class SSEResource {
   public void send(@Context SseEventSink sink, @Context Sse sse) {
     Thread t = new Thread(new Runnable() {
       public void run() {
+        System.out.println("### entered send ##");
         SseEventSink s = sink;
         s.send(sse.newEvent("HELLO"));
         s.close();
         isClosed = s.isClosed();
-        if (!isClosed)
+        if (!isClosed) {
           return;
+        }
         s.close();
         isClosed = s.isClosed();
-        if (!isClosed)
+        if (!isClosed) {
           return;
+        }
         s.close();
         isClosed = s.isClosed();
-        if (!isClosed)
+        if (!isClosed) {
           return;
+        }
         try {
+          System.out.println("### sending event SOMETHING ##");
           s.send(sse.newEvent("SOMETHING")).exceptionally(t -> {
              if(t instanceof IllegalStateException)
                 exception = true;
+            System.out.println("### returning NULL ##");
              return null;
           });
         } catch (IllegalStateException ise) {

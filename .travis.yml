@@ -1,7 +1,7 @@
 install:
  - mvn -B clean; java -version
 script:
- - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} install
+ - travis_wait 60 mvn -B -Ptravis,jboss-repository -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} install; cat /home/travis/build/rsearls/Resteasy/server-adapters/resteasy-vertx/target/surefire-reports/org.jboss.resteasy.test.asyncio.SSETest-output.txt;
 
 language: java
 jdk:

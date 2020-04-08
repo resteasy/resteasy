@@ -98,6 +98,15 @@
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
         </plugins>
         <pluginManagement>
            <plugins>
@@ -178,20 +187,20 @@
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
                        <executions>
-                           <execution>
-                               <id>i18</id>
-                               <phase>test</phase>
-                               <goals>
-                                   <goal>test</goal>
-                               </goals>
-                               <configuration>
-                                   <skip>false</skip>
-                                   <reuseForks>false</reuseForks>
-                                   <includes>
-                                       <include>**/I18nTestMessages_*.java</include>
-                                   </includes>
-                               </configuration>
-                           </execution>
+                   <execution>
+                       <id>i18</id>
+                       <phase>test</phase>
+                       <goals>
+                           <goal>test</goal>
+                       </goals>
+                       <configuration>
+                           <skip>false</skip>
+                           <reuseForks>false</reuseForks>
+                           <includes>
+                               <include>**/I18nTestMessages_*.java</include>
+                           </includes>
+                       </configuration>
+                   </execution>
                        </executions>
                     </plugin>
                 </plugins>

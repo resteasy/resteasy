@@ -101,6 +101,31 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useFile>false</useFile>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <excludes>
+                        <exclude>org/jboss/resteasy/test/async/**</exclude>
+                        <exclude>org/jboss/resteasy/test/i18n/**</exclude>
+                        <exclude>org/jboss/resteasy/test/resteasy_jaxrs/**</exclude>
+                        <exclude>org/jboss/resteasy/test/ContextResolverTest.java</exclude>
+                        <exclude>org/jboss/resteasy/test/DeploymentTest.java</exclude>
+                        <exclude>org/jboss/resteasy/test/DynamicFeatureTest.java</exclude>
+                        <exclude>org/jboss/resteasy/test/VertxTest.java</exclude>
+                        <exclude>org/jboss/resteasy/test/asyncio/AsyncIOTest.java</exclude>
+                        <exclude>org/jboss/resteasy/test/asyncio/AsyncIOWriterTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>i18n</id>
@@ -150,9 +175,23 @@
                                <configuration>
                                    <skip>false</skip>
                                    <reuseForks>false</reuseForks>
+                               <!--
                                    <includes>
                                        <include>**/I18nTestMessages_*.java</include>
                                    </includes>
+                                -->
+                                   <excludes>
+                                        <exclude>org/jboss/resteasy/test/async/**</exclude>
+                                       <exclude>org/jboss/resteasy/test/i18n/**</exclude>
+                                       <exclude>org/jboss/resteasy/test/resteasy_jaxrs/**</exclude>
+                                       <exclude>org/jboss/resteasy/test/ContextResolverTest.java</exclude>
+                                       <exclude>org/jboss/resteasy/test/DeploymentTest.java</exclude>
+                                       <exclude>org/jboss/resteasy/test/DynamicFeatureTest.java</exclude>
+                                       <exclude>org/jboss/resteasy/test/VertxTest.java</exclude>
+                                       <exclude>org/jboss/resteasy/test/asyncio/AsyncIOTest.java</exclude>
+                                       <exclude>org/jboss/resteasy/test/asyncio/AsyncIOWriterTest.java</exclude>
+
+                                   </excludes>
                                </configuration>
                            </execution>
                        </executions>

@@ -596,6 +596,66 @@
                                     <!-- Tests requires excluding JsonBindingProvider-->
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
                                     <exclude>**/SseJsonEventTest</exclude>
+
+                                    <!-- isolating test SseTest
+                                    -->
+                                    <exclude>org/jboss/resteasy/test/asynch/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/cache/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/cdi/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/client/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/core/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/crypto/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/exception/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/form/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/injection/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/interceptor/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/jsapi/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/microprofile/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/resource/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/response/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/rx/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/security/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/sourceProvider/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/stream/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/tracing/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/util/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/validation/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/wadl/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/warning/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/xxe/**</exclude>
+
+                                    <exclude>org/jboss/resteasy/test/providers/atom/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/custom/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/datasource/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/file/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/html/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/iioimage/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/inputstream/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jackson2/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jaxb/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jsonb/**</exclude>
+
+                                    <exclude>org/jboss/resteasy/test/providers/jsonp/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/map/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/mbw/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/mediatype/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/multipart/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/noproduces/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/plain/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/priority/**</exclude>
+
+
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseBroadcasterTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseBroadcastTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseCORSFilterTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEnablingTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSinkClosingTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSinkTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSourceTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseJsonEventTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SsePostResourceMethodInvokerTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseReconnectTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseSmokeTest.java</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
@@ -609,11 +669,79 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <!--
                                 <includes>
                                     <include>**/JsonBindingAnnotationsJacksonTest.java</include>
                                     <include>**/SseJsonEventTest.java</include>
                                     <include>**/ValidationJaxbTest.java</include>
                                 </includes>
+                                -->
+                                <excludes>
+                                    <!-- Tests requires excluding JsonBindingProvider-->
+                                    <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                    <exclude>**/SseJsonEventTest</exclude>
+
+                                    <!-- isolating test SseTest
+                                    -->
+                                    <exclude>org/jboss/resteasy/test/asynch/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/cache/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/cdi/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/client/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/core/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/crypto/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/exception/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/form/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/injection/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/interceptor/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/jsapi/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/microprofile/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/resource/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/response/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/rx/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/security/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/sourceProvider/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/stream/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/tracing/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/util/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/validation/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/wadl/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/warning/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/xxe/**</exclude>
+
+                                    <exclude>org/jboss/resteasy/test/providers/atom/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/custom/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/datasource/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/file/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/html/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/iioimage/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/inputstream/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jackson2/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jaxb/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/jsonb/**</exclude>
+
+                                    <exclude>org/jboss/resteasy/test/providers/jsonp/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/map/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/mbw/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/mediatype/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/multipart/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/noproduces/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/plain/**</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/priority/**</exclude>
+
+
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseBroadcasterTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseBroadcastTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseCORSFilterTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEnablingTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSinkClosingTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSinkTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseEventSourceTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseJsonEventTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SsePostResourceMethodInvokerTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseReconnectTest.java</exclude>
+                                    <exclude>org/jboss/resteasy/test/providers/sse/SseSmokeTest.java</exclude>
+
+                                </excludes>
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
                                 </classpathDependencyExcludes>
