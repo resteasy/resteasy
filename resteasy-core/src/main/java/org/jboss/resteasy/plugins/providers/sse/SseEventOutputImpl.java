@@ -107,7 +107,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
             if (asyncResponse != null)
             {
-               asyncResponse.complete();
+               try {
+                  asyncResponse.complete();
+               } catch(RuntimeException x) {
+                  Throwable cause = x;
+                  while(cause.getCause() != null)
+                     cause = cause.getCause();
+                  if(cause instanceof IOException) {
+                     // ignore it, we're closed now
+                  }else {
+                     // is this right?
+                     throw x;
+                  }
+               }
             }
          }
          clearContextData();
