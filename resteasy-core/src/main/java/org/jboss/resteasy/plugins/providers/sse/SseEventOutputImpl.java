@@ -20,6 +20,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.SseElementType;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
@@ -40,6 +41,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
+   private static final Logger LOG = Logger.getLogger(SseEventOutputImpl.class);
    private final MessageBodyWriter<OutboundSseEvent> writer;
 
    private final ResteasyAsynchronousContext asyncContext;
@@ -107,7 +109,19 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
             if (asyncResponse != null)
             {
-               asyncResponse.complete();
+               try {
+                  asyncResponse.complete();
+               } catch(RuntimeException x) {
+                  Throwable cause = x;
+                  while(cause.getCause() != null)
+                     cause = cause.getCause();
+                  if(cause instanceof IOException) {
+                     // ignore it, we're closed now
+                  }else {
+                     LOG.debug(cause.getMessage());
+                     return;
+                  }
+               }
             }
          }
          clearContextData();
