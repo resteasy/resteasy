@@ -60,7 +60,6 @@ public class SSETest
         closed = target.request().get(Boolean.class);
         Thread.sleep(200);
         cnt++;
-         System.out.println("### closed: " + closed + "  cnt: " + cnt + " ###");
       }
 
       querySSEAndAssert("CHECK", "/close/check");
@@ -83,13 +82,7 @@ public class SSETest
             });
       source.open();
       try (SseEventSource x = source){
-         String tmpM = cf.get(5, TimeUnit.SECONDS);
-         Assert.assertEquals("returned value is: " + tmpM + " should be: "
-                 +message, message, tmpM);
-         //Assert.assertEquals(message, cf.get(5, TimeUnit.SECONDS));
-      } catch (Exception ee) {
-         Assert.fail("Failed for msg: " + message + "  uri: " + uri);
-         ee.printStackTrace();
+         Assert.assertEquals(message, cf.get(5, TimeUnit.SECONDS));
       }
    }
 }
