@@ -8,8 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-/** require dummy comment here **/
-
 @Path("close")
 public class SSEResource {
 
