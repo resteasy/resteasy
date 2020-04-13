@@ -248,10 +248,26 @@
 	        <title>Upgrading RESTEasy within WildFly</title>
 	        <para>
 	            RESTEasy is bundled with WildFly, but you may want to upgrade RESTEasy in WildFly to the latest version.  The RESTEasy
-	            distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip.  Unzip this file
+                distribution comes with a zip file called <code><![CDATA[resteasy-jboss-modules-<version>.zip]]></code>.  Unzip this file
 	            within the modules/system/layers/base/ directory of the WildFly distribution.  This will configure WildFly
 	            to use new versions of the modules listed in <xref linkend="resteasy_modules_in_wildfly"/>.
 	        </para>
+            <para>
+                To build the <code><![CDATA[resteasy-jboss-modules-<version>.zip]]></code>, enter the <code>jboss-modules</code>
+                directory of the project, and run the following Maven command:
+                <programlisting><![CDATA[$ mvn install]]></programlisting>.
+                It will start to build the modules and finally it will produce the zip file inside "target" directory:
+                <programlisting><![CDATA[$ pwd
+resteasy/jboss-modules
+$ ls target/*.zip
+target/resteasy-jboss-modules-4.6.0-SNAPSHOT-mavenized.zip
+target/resteasy-jboss-modules-4.6.0-SNAPSHOT.zip
+$]]></programlisting>
+            </para>
+            <para>
+                To use the zip file, you need to copy it into Wildfly's "modules" direcotry like this:
+                
+            </para>
 	    </section>
     </section>
 
@@ -299,6 +315,7 @@ public class MyApplication extends Application
             which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
             Of course, even in this case it can be used to specify additional information such as context parameters.
             If there is an <classname>Application</classname> class but it doesn't have an
+
             <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
             &lt;servlet-mapping&gt; element is required.
         </para>
