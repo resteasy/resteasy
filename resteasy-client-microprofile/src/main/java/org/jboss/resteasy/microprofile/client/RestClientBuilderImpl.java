@@ -173,7 +173,7 @@ class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
+                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
         String proxyHost = System.getProperty("http.proxyHost");
 
         T actualClient;
