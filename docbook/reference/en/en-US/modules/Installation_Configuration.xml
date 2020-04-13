@@ -266,7 +266,7 @@ $]]></programlisting>
             </para>
             <para>
                 To use the zip file, you need to copy it into Wildfly's "modules" direcotry like this:
-                
+
             </para>
 	    </section>
     </section>

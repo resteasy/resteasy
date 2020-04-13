@@ -110,7 +110,6 @@
                 <module>resteasy-guice</module>
                 <module>security</module>
                 <module>resteasy-links</module>
-                <module>resteasy-links-extension</module>
                 <module>resteasy-spring</module>
                 <module>resteasy-spring-web</module>
                 <module>resteasy-jsapi</module>
