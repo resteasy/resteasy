@@ -276,6 +276,7 @@ appclient         docs              modules
 ]]></programlisting>
             </para>
             <para>
+                Use the following step to copy and extract the modules zip into Wildfly modules directory:
                 <programlisting><![CDATA[
 $ cp ~/works/resteasy/jboss-modules/target/resteasy-jboss-modules.zip \
 modules/system/layers/base/
