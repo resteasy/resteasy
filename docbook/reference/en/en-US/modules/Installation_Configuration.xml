@@ -255,7 +255,7 @@
             <para>
                 To build the <code><![CDATA[resteasy-jboss-modules-<version>.zip]]></code>, enter the <code>jboss-modules</code>
                 directory of the project, and run the following Maven command:
-                <programlisting><![CDATA[$ mvn install]]></programlisting>.
+                <programlisting><![CDATA[$ mvn install]]></programlisting>
                 It will start to build the modules and finally it will produce the zip file inside "target" directory:
                 <programlisting><![CDATA[$ pwd
 resteasy/jboss-modules
