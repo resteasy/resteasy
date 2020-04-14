@@ -260,17 +260,31 @@
                 <programlisting><![CDATA[$ pwd
 resteasy/jboss-modules
 $ ls target/*.zip
-target/resteasy-jboss-modules-4.6.0-SNAPSHOT-mavenized.zip
-target/resteasy-jboss-modules-4.6.0-SNAPSHOT.zip
-$]]></programlisting>
+target/resteasy-jboss-modules-mavenized.zip
+target/resteasy-jboss-modules.zip
+]]></programlisting>
             </para>
             <para>
-                To use the zip file, you need to copy it into Wildfly's "modules" direcotry like this:
+                To use the zip file, you need to copy it into Wildfly's "modules" directory:
+                <programlisting><![CDATA[$ pwd
+wildfly
+$ ls
+LICENSE.txt       bin               domain            standalone
+README.txt        copyright.txt     jboss-modules.jar welcome-content
+appclient         docs              modules
 
+]]></programlisting>
+            </para>
+            <para>
+                <programlisting><![CDATA[
+$ cp ~/works/resteasy/jboss-modules/target/resteasy-jboss-modules.zip \
+modules/system/layers/base/
+$ cd modules/system/layers/base
+$ unzip resteasy-jboss-modules.zip]]></programlisting>
+                With the above process, the RESTEasy modules are upgraded inside Wildfly.
             </para>
 	    </section>
     </section>
-
     <section>
         <title>Deploying a RESTEasy application to WildFly</title>
         <para>
