@@ -329,7 +329,6 @@ public class MyApplication extends Application
             which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
             Of course, even in this case it can be used to specify additional information such as context parameters.
             If there is an <classname>Application</classname> class but it doesn't have an
-
             <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
             &lt;servlet-mapping&gt; element is required.
         </para>
