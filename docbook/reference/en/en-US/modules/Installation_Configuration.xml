@@ -281,7 +281,8 @@ appclient         docs              modules
 $ cp ~/works/resteasy/jboss-modules/target/resteasy-jboss-modules.zip \
 modules/system/layers/base/
 $ cd modules/system/layers/base
-$ unzip resteasy-jboss-modules.zip]]></programlisting>
+$ unzip resteasy-jboss-modules.zip
+...]]></programlisting>
                 With the above process, the RESTEasy modules are upgraded inside Wildfly.
             </para>
 	    </section>
