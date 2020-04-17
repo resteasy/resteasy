@@ -9,6 +9,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.Assert;
@@ -27,6 +28,19 @@ public class HelloResource {
     @Path("/hello")
     public String hello() {
        return "Hello";
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("/null-path-param/{value}")
+    public String nullPathParam(@PathParam("value") final String value) {
+        return value;
+    }
+
+    @GET
+    @Path("/null-query-param/")
+    public String nullQueryParam(@QueryParam("value") String value) {
+        return value;
     }
 
     @GET
