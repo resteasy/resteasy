@@ -98,9 +98,13 @@ public class ProxyInvocationHandler implements InvocationHandler {
 
                 int index = 0;
                 for (Object arg : args) {
+                    // ParamConverter's are not allowed to be passed null values. If we have a null value do not process
+                    // it through the provider.
+                    if (arg == null) {
+                        continue;
+                    }
 
                     if (parameterAnnotations[index].length > 0) { // does a parameter converter apply?
-
                         ParamConverter<?> converter = ((ParamConverterProvider) p).getConverter(arg.getClass(), null, parameterAnnotations[index]);
                         if (converter != null) {
                             Type[] genericTypes = getGenericTypes(converter.getClass());
