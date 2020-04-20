@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.resource.request;
 
+import java.util.regex.Pattern;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -63,7 +64,9 @@ public class ResteasyRequestTest {
       try {
          Response response = requestWebTarget.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("127.0.0.1/127.0.0.1", response.readEntity(String.class));
+         final String val = response.readEntity(String.class);
+         final String pattern = "^127.0.0.1/.+";
+         Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern), Pattern.matches(pattern, val));
          response.close();
       } catch (Exception e) {
          throw new RuntimeException(e);
