@@ -90,7 +90,7 @@ public class JettyClientEngineTest {
          .get();
 
       assertEquals(200, response.getStatus());
-      assertEquals("Success\n", response.readEntity(String.class));
+      assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
    }
 
    @Test
@@ -117,7 +117,7 @@ public class JettyClientEngineTest {
 
       Response response = cs.toCompletableFuture().get();
       assertEquals(200, response.getStatus());
-      assertEquals("Success\n", response.readEntity(String.class));
+      assertEquals("Success" + System.lineSeparator(), response.readEntity(String.class));
    }
 
    @Test
@@ -143,7 +143,7 @@ public class JettyClientEngineTest {
          .get(String.class);
 
       String response = cs.toCompletableFuture().get();
-      assertEquals("Success\n", response);
+      assertEquals("Success" + System.lineSeparator(), response);
    }
 
    @Test
@@ -242,7 +242,7 @@ public class JettyClientEngineTest {
    @Test
    public void testFilterBufferReplay() throws Exception {
       final String greeting = "Success";
-      final byte[] expected = (greeting + '\n').getBytes(StandardCharsets.UTF_8);
+      final byte[] expected = (greeting + System.lineSeparator()).getBytes(StandardCharsets.UTF_8);
       server.setHandler(new AbstractHandler() {
          @Override
          public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
