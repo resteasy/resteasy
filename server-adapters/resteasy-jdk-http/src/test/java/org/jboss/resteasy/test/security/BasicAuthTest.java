@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.security;
 
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -273,7 +276,7 @@ public class BasicAuthTest
 
       // Generate BASIC scheme object and add it to the local auth cache
       BasicScheme basicAuth = new BasicScheme();
-      HttpHost targetHost = new HttpHost("localhost", 8081);
+      HttpHost targetHost = new HttpHost(getHost(), getPort());
       authCache.put(targetHost, basicAuth);
 
       // Add AuthCache to the execution context

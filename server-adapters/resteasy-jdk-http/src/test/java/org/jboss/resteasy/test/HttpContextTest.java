@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
+import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -41,7 +42,7 @@ public class HttpContextTest
    public static void after() throws Exception
    {
       contextBuilder.cleanup();
-      httpServer.stop(0);
+      httpServer.stop(1);
    }
 
    @Test
