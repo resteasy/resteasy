@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
@@ -296,6 +297,7 @@ public class NettyTest
    {
       WebTarget target = client.target(generateURL("/request"));
       String val = target.request().get(String.class);
-      Assert.assertEquals("127.0.0.1/localhost", val);
+      final String pattern = "^127.0.0.1/.+";
+      Assert.assertTrue(String.format("Expected value '%s' to match pattern '%s'", val, pattern), Pattern.matches(pattern, val));
    }
 }
