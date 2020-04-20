@@ -762,6 +762,7 @@ public class ClientInvocation implements Invocation
          final ResultExtractor<T> extractor)
    {
       return CompletableFuture.supplyAsync(() -> {
+          // FIXME: why does this have no context?
          // ensure the future and the callback see the same result
          ClientResponse response = null;
          try
