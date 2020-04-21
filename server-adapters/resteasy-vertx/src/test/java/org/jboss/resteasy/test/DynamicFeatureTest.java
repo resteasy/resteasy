@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -179,6 +180,8 @@ public class DynamicFeatureTest
       VertxResteasyDeployment deployment = new VertxResteasyDeployment();
       deployment.getActualProviderClasses().add(AddDynamicFeature.class);
       deployment.getActualResourceClasses().add(Resource.class);
+      // TODO (jrp) this needs to be removed, just attempting to rule out a race condition
+      TimeUnit.SECONDS.sleep(2L);
       VertxContainer.start(deployment);
       client = ClientBuilder.newClient();
    }

@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.client.Client;
@@ -46,6 +47,8 @@ public class HttpContextTest
    {
       contextBuilder.cleanup();
       httpServer.stop(0);
+      // TODO (jrp) this needs to be removed, just attempting to rule out a race condition
+      TimeUnit.SECONDS.sleep(2L);
    }
 
    @Test
