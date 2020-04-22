@@ -65,7 +65,8 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer<SunHttpJaxrsServe
    public void stop()
    {
       runtimePort = -1;
-      httpServer.stop(0);
+      // Stop with an arbitrary 10 second delay. This was taken from the VertxJaxrsServer.
+      httpServer.stop(10);
       context.cleanup();
 
       if (deployment != null) {
