@@ -33,7 +33,7 @@ public class Item2ParamConverterProvider implements ParamConverterProvider {
     }
 
     class SomeWAE extends WebApplicationException {
-        SomeWAE(int status) {
+        SomeWAE(final int status) {
             super(status);
         }
     }
