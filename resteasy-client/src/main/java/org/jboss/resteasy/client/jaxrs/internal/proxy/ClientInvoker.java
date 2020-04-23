@@ -121,7 +121,7 @@ public class ClientInvoker implements MethodInvoker
       ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
       if (executor == null)
       {
-         executor = webTarget.getResteasyClient().asyncInvocationExecutor();
+         executor = request.asyncInvocationExecutor();
       }
       RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
       Type type = method.getGenericReturnType();

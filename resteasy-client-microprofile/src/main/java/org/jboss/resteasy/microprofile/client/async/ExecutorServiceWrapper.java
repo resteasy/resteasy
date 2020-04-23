@@ -101,7 +101,7 @@ public class ExecutorServiceWrapper implements ExecutorService {
         return decorator.decorate(command);
     }
 
-    interface Decorator {
+    public interface Decorator {
         Runnable decorate(Runnable runnable);
 
         <T> Callable<T> decorate(Callable<T> runnable);
