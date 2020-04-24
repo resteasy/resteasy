@@ -154,7 +154,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>19.0.0.Beta2</server.version>
+                <server.version>19.0.0.Final</server.version>
             </properties>
         </profile>
         <profile>
