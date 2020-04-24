@@ -25,6 +25,10 @@
             <artifactId>reactive-streams</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.ibm.async</groupId>
+            <artifactId>asyncutil</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
