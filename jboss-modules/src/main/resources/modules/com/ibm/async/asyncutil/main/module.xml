@@ -23,6 +23,11 @@
   -->
 
 <module xmlns="urn:jboss:module:1.5" name="com.ibm.async.asyncutil">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
     <resources>
         <!-- Insert resources here -->
     </resources>
