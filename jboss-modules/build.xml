@@ -31,6 +31,10 @@
             <maven-resource group="org.reactivestreams" artifact="reactive-streams"/>
         </module-def>
 
+        <module-def name="com.ibm.async.asyncutil">
+            <maven-resource group="com.ibm.async" artifact="asyncutil"/>
+        </module-def>
+
         <module-def name="org.eclipse.microprofile.restclient">
             <maven-resource group="org.eclipse.microprofile.rest.client" artifact="microprofile-rest-client-api"/>
         </module-def>

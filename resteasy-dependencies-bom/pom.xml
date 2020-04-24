@@ -101,6 +101,7 @@
         <version.org.springframework>5.2.0.RELEASE</version.org.springframework>
         <version.io.projectreactor>Dysprosium-SR2</version.io.projectreactor>
 
+        <version.asyncutil>0.1.0</version.asyncutil>
     </properties>
 
     <distributionManagement>
@@ -989,6 +990,11 @@
                 <version>${version.io.projectreactor}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.async</groupId>
+                <artifactId>asyncutil</artifactId>
+                <version>${version.asyncutil}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
