@@ -5,12 +5,16 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.test.resource.constructor.resource.ConstructorCookieParamWAEResource;
 import org.jboss.resteasy.test.resource.constructor.resource.ConstructorNoParamsResource;
 import org.jboss.resteasy.test.resource.constructor.resource.ConstructorParams400Resource;
 import org.jboss.resteasy.test.resource.constructor.resource.ConstructorParams404Resource;
 import org.jboss.resteasy.test.resource.constructor.resource.ConstructorParamsMixedResource;
-import org.jboss.resteasy.test.resource.constructor.resource.ItemParamConverterProvider;
+import org.jboss.resteasy.test.resource.constructor.resource.ConstructorQueryParamWAEResource;
 import org.jboss.resteasy.test.resource.constructor.resource.Item;
+import org.jboss.resteasy.test.resource.constructor.resource.Item2;
+import org.jboss.resteasy.test.resource.constructor.resource.Item2ParamConverterProvider;
+import org.jboss.resteasy.test.resource.constructor.resource.ItemParamConverterProvider;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,8 +45,12 @@ public class ResourceConstructorParamsTest {
         war.addClass(ConstructorNoParamsResource.class);
         war.addClass(ItemParamConverterProvider.class);
         war.addClass(Item.class);
+        war.addClass(Item2ParamConverterProvider.class);
+        war.addClass(Item2.class);
         war.addClass(ConstructorParams404Resource.class);
         war.addClass(ConstructorParams400Resource.class);
+        war.addClass(ConstructorCookieParamWAEResource.class);
+        war.addClass(ConstructorQueryParamWAEResource.class);
         return TestUtil.finishContainerPrepare(war, null);
     }
 
@@ -96,6 +104,30 @@ public class ResourceConstructorParamsTest {
                 .cookie("cookieP", "A")
                 .get();
         Assert.assertEquals("Incorrect status code", 400,
+                response.getStatus());
+    }
+
+    @Test
+    public void paramsCookieWebApplicationExceptionTest() {
+        Response response = client.target(generateURL("/paramsWAECookie/get"))
+                .request()
+                .cookie("cookieP", "A")
+                .get();
+
+        // 405 is just a random one to verify WebApplicationException is not wrapped with NotFoundException.
+        Assert.assertEquals("Incorrect status code", 405,
+                response.getStatus());
+    }
+
+    @Test
+    public void paramsQueryWebApplicationExceptionTest() {
+        Response response = client.target(generateURL("/paramsWAEQuery/get"))
+                .queryParam("queryP", "A")
+                .request()
+                .get();
+
+        // 405 is just a random one to verify WebApplicationException is not wrapped with NotFoundException.
+        Assert.assertEquals("Incorrect status code", 405,
                 response.getStatus());
     }
 }
