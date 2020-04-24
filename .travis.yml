@@ -9,21 +9,21 @@ jdk:
   - openjdk11
 env:
   - SERVER_VERSION=18.0.1.Final
-  - SERVER_VERSION=19.0.0.Beta2
-  - SERVER_VERSION=19.0.0.Beta2 ELYTRON=true
+  - SERVER_VERSION=19.0.0.Final
+  - SERVER_VERSION=19.0.0.Final ELYTRON=true
 jobs:
   exclude:
     - jdk: openjdk11
-      env: SERVER_VERSION=19.0.0.Beta2 ELYTRON=true
+      env: SERVER_VERSION=19.0.0.Final ELYTRON=true
   include:
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
       jdk: openjdk8
-      env: SERVER_VERSION=19.0.0.Beta2
+      env: SERVER_VERSION=19.0.0.Final
     - stage: "javadoc"
       script: mvn -B -DskipTests install && mvn -B -Dmaven.javadoc.skip=false javadoc:javadoc
       jdk: openjdk11
-      env: SERVER_VERSION=19.0.0.Beta2
+      env: SERVER_VERSION=19.0.0.Final
 addons:
   hosts:
     - localhost.localdomain
