@@ -36,7 +36,7 @@ public class HttpServletResponseWrapper implements HttpResponse
          this.stream = stream;
       }
       public void work(ServletOutputStream sos) {
-         ResteasyContext.pushgMap(contextDataMap);
+         ResteasyContext.pushContextDataMap(contextDataMap);
          try {
             doWork(sos);
          }finally {
