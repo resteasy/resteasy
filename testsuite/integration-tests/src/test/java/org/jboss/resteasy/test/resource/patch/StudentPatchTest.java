@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.resource.patch;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.HttpMethod;
@@ -11,10 +14,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,7 +35,8 @@ import org.junit.runner.RunWith;
 public class StudentPatchTest {
 
    static Client client;
-
+   static final String PATCH_DEPLOYMENT = "Patch";
+   static final String DISABLED_PATCH_DEPLOYMENT = "DisablePatch";
    @BeforeClass
    public static void setup() {
       client = ClientBuilder.newClient();
@@ -42,10 +48,18 @@ public class StudentPatchTest {
       client = null;
    }
 
-   @Deployment
+   @Deployment(name=PATCH_DEPLOYMENT, order = 1)
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(StudentPatchTest.class.getSimpleName());
       return TestUtil.finishContainerPrepare(war, null, StudentResource.class, Student.class);
+   }
+
+   @Deployment(name=DISABLED_PATCH_DEPLOYMENT, order = 2)
+   public static Archive<?> createDisablePatchFilterDeployment() {
+       WebArchive war = TestUtil.prepareArchive(DISABLED_PATCH_DEPLOYMENT);
+       Map<String, String> contextParam = new HashMap<>();
+       contextParam.put(ResteasyContextParameters.RESTEASY_PATCH_FILTER_DISABLED, "true");
+       return TestUtil.finishContainerPrepare(war, contextParam, StudentResource.class, Student.class);
    }
 
    private String generateURL(String path) {
@@ -53,6 +67,7 @@ public class StudentPatchTest {
    }
 
    @Test
+   @OperateOnDeployment(PATCH_DEPLOYMENT)
    public void testPatchStudent() throws Exception {
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
 
@@ -89,6 +104,7 @@ public class StudentPatchTest {
    }
 
    @Test
+   @OperateOnDeployment(PATCH_DEPLOYMENT)
    public void testMergePatchStudent() throws Exception {
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget base = client.target(generateURL("/students"));
@@ -108,6 +124,31 @@ public class StudentPatchTest {
       Assert.assertEquals("Expected firstname is Alice", "Alice", patchedStudent.getFirstName());
       Assert.assertEquals("Expected school is null", null, patchedStudent.getSchool());
       Assert.assertEquals("Expected gender is null", null, patchedStudent.getGender());
+      client.close();
+   }
+   @Test
+   @OperateOnDeployment(DISABLED_PATCH_DEPLOYMENT)
+   public void testPatchDisabled() throws Exception {
+      ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
+
+      WebTarget base = client.target(PortProviderUtil.generateURL("/students", DISABLED_PATCH_DEPLOYMENT));
+      //add a student, first name is Taylor and school is school1, other fields is null.
+      Student newStudent = new Student().setId(1L).setFirstName("Taylor").setSchool("school1");
+      Response response = base.request().post(Entity.<Student>entity(newStudent, MediaType.APPLICATION_JSON_TYPE));
+      Student s = response.readEntity(Student.class);
+      Assert.assertNotNull("Add student failed", s);
+      Assert.assertEquals("Taylor", s.getFirstName());
+      Assert.assertNull("Last name is not null", s.getLastName());
+      Assert.assertEquals("school1", s.getSchool());
+      Assert.assertNull("Gender is not null", s.getGender());
+
+      WebTarget patchTarget = client.target(PortProviderUtil.generateURL("/students/1", DISABLED_PATCH_DEPLOYMENT));
+      javax.json.JsonArray patchRequest = Json.createArrayBuilder()
+            .add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
+            .add(Json.createObjectBuilder().add("op", "replace").add("path", "/firstName").add("value", "John").build())
+            .build();
+      Response res = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();
+      Assert.assertEquals("Http 400 is expected", 400, res.getStatus());
       client.close();
    }
 

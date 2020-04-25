@@ -19,9 +19,9 @@ import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Produces;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,49 +57,71 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    }
 
 
-   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response)
+   protected Object resolveTarget(HttpRequest request, HttpResponse response)
    {
-      return this.resource.createResource(request, response, providerFactory)
-            .thenCompose(resource -> createResource(request, response, resource));
+      Object locatorResource = this.resource.createResource(request, response, providerFactory);
+      if (locatorResource instanceof CompletionStage) {
+         CompletionStage<Object> locatorStage = (CompletionStage<Object>)locatorResource;
+         return locatorStage
+                 .thenCompose(resource -> {
+                    Object located = resolveTargetFromLocator(request, response, resource);
+                    if (located instanceof CompletionStage) {
+                       return (CompletionStage<Object>)located;
+                    } else {
+                       return CompletableFuture.completedFuture(located);
+                    }
+                 });
+      } else {
+         return resolveTargetFromLocator(request, response, locatorResource);
 
+      }
    }
 
-   protected CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, Object locator)
+   protected Object resolveTargetFromLocator(HttpRequest request, HttpResponse response, Object locator)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo)request.getUri();
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
-      return methodInjector.injectArguments(request, response)
-         .exceptionally(t -> {
+      Object obj = methodInjector.injectArguments(request, response);
+      if (obj == null || !(obj instanceof CompletionStage)) {
+         return constructLocator(locator, uriInfo, (Object[])obj);
+      }
+      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)obj;
+
+      return stagedArgs.exceptionally(t -> {
             if(t.getCause() instanceof NotFoundException && lastException != null)
                throw lastException;
             SynchronousDispatcher.rethrow(t);
             // never reached
             return null;
          }).thenApply(args -> {
-            try
-            {
-               uriInfo.pushCurrentResource(locator);
-               Object subResource = method.getMethod().invoke(locator, args);
-               if (subResource instanceof Class)
-               {
-                  subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
-               }
-               return subResource;
+         return constructLocator(locator, uriInfo, args);
+      });
+   }
 
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new InternalServerErrorException(e);
-            }
-            catch (InvocationTargetException e)
-            {
-               throw new ApplicationException(e.getCause());
-            }
-            catch (SecurityException e)
-            {
-               throw new ApplicationException(e.getCause());
-            }
-         });
+   private Object constructLocator(Object locator, ResteasyUriInfo uriInfo, Object[] args) {
+      try
+      {
+         uriInfo.pushCurrentResource(locator);
+         Object subResource = method.getMethod().invoke(locator, args);
+         if (subResource instanceof Class)
+         {
+            subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
+         }
+         return subResource;
+
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new InternalServerErrorException(e);
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new ApplicationException(e.getCause());
+      }
+      catch (SecurityException e)
+      {
+         throw new ApplicationException(e.getCause());
+      }
    }
 
    public Method getMethod()
@@ -107,19 +129,27 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       return method.getMethod();
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      return createResource(request, response)
-            .thenCompose(target -> invokeOnTargetObject(request, response, target));
+      Object resource = resolveTarget(request, response);
+      if (resource instanceof CompletionStage) {
+         return ((CompletionStage<Object>)resource).thenApply(target -> invokeOnTargetObject(request, response, target)).toCompletableFuture().getNow(null);
+      }
+      return invokeOnTargetObject(request, response, resource);
+
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object locator)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      return createResource(request, response, locator)
-            .thenCompose(target -> invokeOnTargetObject(request, response, target));
+      Object resource = resolveTargetFromLocator(request, response, locator);
+      if (resource instanceof CompletionStage) {
+         return ((CompletionStage<Object>)resource).thenApply(target -> invokeOnTargetObject(request, response, target)).toCompletableFuture().getNow(null);
+      }
+      return invokeOnTargetObject(request, response, resource);
+
    }
 
-   protected CompletionStage<BuiltResponse> invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {

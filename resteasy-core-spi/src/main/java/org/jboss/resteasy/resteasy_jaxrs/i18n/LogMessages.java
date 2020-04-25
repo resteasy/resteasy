@@ -69,6 +69,14 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 35, value = "Cannot register {0} as HeaderDelegate: it has no type parameter", format = Format.MESSAGE_FORMAT)
    void cannotRegisterheaderDelegate(Class<?> clazz);
 
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 40, value = "GET method returns the patch/merge json object target for request {0} not found", format = Format.MESSAGE_FORMAT)
+   void patchTargetMethodNotFound(String requestURI);
+
+   @LogMessage(level = Level.ERROR)
+   @Message(id = BASE + 41, value = "Failed to get the patch/merge target for request {0}", format = Format.MESSAGE_FORMAT)
+   void errorPatchTarget(String requestURI);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

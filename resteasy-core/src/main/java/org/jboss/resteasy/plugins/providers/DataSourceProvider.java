@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
@@ -26,6 +27,7 @@ import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.NoContent;
 
@@ -276,6 +278,22 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          in.close();
       }
 
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(DataSource dataSource, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      try
+      {
+         InputStream in = dataSource.getInputStream();
+         return ProviderHelper.writeToAndCloseInput(in, entityStream);
+      } catch (IOException e)
+      {
+         return ProviderHelper.completedException(e);
+      }
    }
 
    private static class TempFileCleanable implements Cleanable {

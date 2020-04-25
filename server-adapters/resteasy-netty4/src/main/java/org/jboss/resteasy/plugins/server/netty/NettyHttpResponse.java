@@ -1,5 +1,18 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -13,19 +26,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
-
-import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

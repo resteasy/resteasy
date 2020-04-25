@@ -14,9 +14,8 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.BadRequestException;
-
+import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
@@ -81,7 +80,7 @@ public class MethodInjectorImpl implements MethodInjector
    }
 
    @Override
-   public CompletionStage<Object[]> injectArguments(HttpRequest input, HttpResponse response)
+   public Object injectArguments(HttpRequest input, HttpResponse response)
    {
       try
       {
@@ -89,17 +88,24 @@ public class MethodInjectorImpl implements MethodInjector
          {
             Object[] args = new Object[params.length];
             int i = 0;
-            CompletionStage<Object> ret = CompletableFuture.completedFuture(null);
+            CompletionStage<Object> ret = null;
             for (ValueInjector extractor : params)
             {
                int j = i++;
-               ret = ret.thenCompose(v -> extractor.inject(input, response, true)
-                                       .thenApply(value -> args[j] = value));
+               Object injectedObject = extractor.inject(input, response, true);
+               if (injectedObject != null && injectedObject instanceof CompletionStage) {
+                  if (ret == null) ret = CompletableFuture.completedFuture(null);
+                  ret = ret.thenCompose(v -> ((CompletionStage<Object>)injectedObject)
+                          .thenApply(value -> args[j] = CompletionStageHolder.resolve(value)));
+               } else {
+                  args[j] = CompletionStageHolder.resolve(injectedObject);
+               }
             }
-            return ret.thenApply(v -> args);
+            if (ret == null) return args;
+            else return ret.thenApply(v -> args);
          }
          else
-            return CompletableFuture.completedFuture(null);
+            return null;
       }
       catch (WebApplicationException we)
       {
@@ -116,10 +122,20 @@ public class MethodInjectorImpl implements MethodInjector
       }
    }
 
-   public CompletionStage<Object> invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
+   @Override
+   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
-      return injectArguments(request, httpResponse)
-            .thenApply(args -> invoke(request, httpResponse, resource, args));
+      Object argsObj = injectArguments(request, httpResponse);
+      if (argsObj == null || !(argsObj instanceof CompletionStage)) {
+         Object returnObj = invoke(request, httpResponse, resource, (Object[]) argsObj);
+         if (returnObj instanceof CompletionStage) {
+            return new CompletionStageHolder((CompletionStage)returnObj);
+         } else {
+            return returnObj;
+         }
+      }
+      CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>)argsObj;
+      return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
    }
 
    private Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource, Object[] args)

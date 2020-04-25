@@ -9,12 +9,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
@@ -23,7 +24,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
  */
 @Consumes({"application/json", "application/*+json", "text/json"})
 @Produces({"application/json", "application/*+json", "text/json"})
-public class JsonStructureProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonStructure>, MessageBodyWriter<JsonStructure>
+public class JsonStructureProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonStructure>, AsyncBufferedMessageBodyWriter<JsonStructure>
 {
    @Override
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

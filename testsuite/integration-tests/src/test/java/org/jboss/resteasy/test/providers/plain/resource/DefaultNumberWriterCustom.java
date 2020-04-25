@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers.plain.resource;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.DefaultNumberWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 @Provider
 public class DefaultNumberWriterCustom extends DefaultNumberWriter {
@@ -23,5 +25,15 @@ public class DefaultNumberWriterCustom extends DefaultNumberWriter {
       logger.info("DefaultNumberWriterCustom.writeTo()");
       used = true;
       super.writeTo(n, type, genericType, annotations, mediaType, httpHeaders, entityStream);
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Number n, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      logger.info("DefaultNumberWriterCustom.asyncWriteTo()");
+      used = true;
+      return super.asyncWriteTo(n, type, genericType, annotations, mediaType, httpHeaders, entityStream);
    }
 }

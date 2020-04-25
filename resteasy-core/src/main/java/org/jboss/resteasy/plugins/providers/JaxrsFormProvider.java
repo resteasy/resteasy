@@ -7,14 +7,17 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
+
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,7 +26,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 @Provider
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
-public class JaxrsFormProvider implements MessageBodyReader<Form>, MessageBodyWriter<Form>
+public class JaxrsFormProvider implements MessageBodyReader<Form>, AsyncMessageBodyWriter<Form>
 {
    @Override
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -57,5 +60,14 @@ public class JaxrsFormProvider implements MessageBodyReader<Form>, MessageBodyWr
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       new FormUrlEncodedProvider().writeTo(form.asMap(), null, null, annotations, mediaType, httpHeaders, entityStream);
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(Form form, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream)
+   {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
+      return new FormUrlEncodedProvider().asyncWriteTo(form.asMap(), null, null, annotations, mediaType, httpHeaders, entityStream);
    }
 }

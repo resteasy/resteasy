@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.spi.AsyncWriterInterceptor;
+import org.jboss.resteasy.spi.AsyncWriterInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.AcceptParser;
 
@@ -10,11 +12,12 @@ import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,7 +25,7 @@ import java.util.Set;
  */
 @ConstrainedTo(RuntimeType.SERVER)
 @Priority(Priorities.HEADER_DECORATOR)
-public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
+public class ServerContentEncodingAnnotationFilter implements AsyncWriterInterceptor
 {
    protected @Context HttpRequest request;
 
@@ -35,6 +38,12 @@ public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
 
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
+   {
+      setHeader(context.getHeaders());
+      context.proceed();
+   }
+
+   private void setHeader(MultivaluedMap<String, Object> headers)
    {
       List<String> acceptEncoding = request.getHttpHeaders().getRequestHeaders().get(HttpHeaders.ACCEPT_ENCODING);
       if (acceptEncoding != null)
@@ -50,11 +59,17 @@ public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
          {
             if (encodings.contains(encoding.toLowerCase()))
             {
-               context.getHeaders().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+               headers.putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
                break;
             }
          }
       }
-      context.proceed();
+   }
+
+   @Override
+   public CompletionStage<Void> asyncAroundWriteTo(AsyncWriterInterceptorContext context)
+   {
+      setHeader(context.getHeaders());
+      return context.asyncProceed();
    }
 }

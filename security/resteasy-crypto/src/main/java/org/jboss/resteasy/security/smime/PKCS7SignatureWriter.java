@@ -10,9 +10,12 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.WriterException;
 
 import javax.ws.rs.Produces;
@@ -32,6 +35,7 @@ import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateEncodingException;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,7 +43,7 @@ import java.security.cert.CertificateEncodingException;
  */
 @Provider
 @Produces("application/pkcs7-signature")
-public class PKCS7SignatureWriter implements MessageBodyWriter<SignedOutput>
+public class PKCS7SignatureWriter implements AsyncMessageBodyWriter<SignedOutput>
 {
    static
    {
@@ -75,6 +79,22 @@ public class PKCS7SignatureWriter implements MessageBodyWriter<SignedOutput>
       {
          throw new WriterException(e);
       }
+   }
+
+   @Override
+   public CompletionStage<Void> asyncWriteTo(SignedOutput out, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> headers,
+                                             AsyncOutputStream entityStream) {
+       try
+       {
+          byte[] encoded = sign(providers, out);
+          headers.putSingle("Content-Type", "application/pkcs7-signature;micalg=\"sha1\"");
+          return entityStream.asyncWrite(encoded);
+       }
+       catch (Exception e)
+       {
+          return ProviderHelper.completedException(new WriterException(e));
+       }
    }
 
    @SuppressWarnings(value = "unchecked")

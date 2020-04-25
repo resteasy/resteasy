@@ -25,6 +25,8 @@ public interface ResteasyAsynchronousResponse extends AsyncResponse
 
    void setWriterInterceptors(WriterInterceptor[] writerInterceptors);
 
+   AsyncWriterInterceptor[] getAsyncWriterInterceptors();
+
    Annotation[] getAnnotations();
 
    void setAnnotations(Annotation[] annotations);
@@ -32,4 +34,5 @@ public interface ResteasyAsynchronousResponse extends AsyncResponse
    void complete();
 
    void completionCallbacks(Throwable throwable);
+
 }

@@ -11,7 +11,7 @@
         <programlisting><![CDATA[<dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
-    <version>4.5.0-SNAPSHOT</version>
+    <version>4.6.0-SNAPSHOT</version>
 </dependency>]]></programlisting>
         <para>
             RESTEasy comes with its own <code>ContextLoaderListener</code> that registers a RESTEasy specific
@@ -133,34 +133,45 @@
     <section id="SpringMVC">
         <title>Spring MVC Integration</title>
         <para>
-            RESTEasy can also integrate with the Spring <code>DispatcherServlet</code>. The advantages of using this are
-            that you
-            have a simpler <code>web.xml</code> file, you can dispatch to either Spring controllers or RESTEasy from
-            under the same
-            base URL, and finally, the most important, you can use Spring <code>ModelAndView</code> objects as return
-            arguments from
-            <code>@GET</code>
-            resource methods. Setup requires you using the Spring <code>DispatcherServlet</code> in your <code>web.xml
+            RESTEasy can also integrate with the Spring MVC framework. Generally speaking, JAX-RS can be combined with a
+            Spring <code>DispatcherServlet</code> and used in the same web application.
+        </para>
+        <para>
+            An application combined in this way
+            allows you to dispatch to either the Spring controller or the JAX-RS resource
+            using the same base URL. In addition you can use the Spring <code>ModelAndView</code> objects as return
+            arguments from <code>@GET</code> resource methods.
+        </para>
+        <para>The setup requires you to use the Spring <code>DispatcherServlet</code> in your <code>web.xml
         </code> file, as well
             as importing the <code>springmvc-resteasy.xml</code> file into your base Spring beans xml file. Here's an
-            example
-            <code>web.xml</code>
-            file:
+            example <code>web.xml</code> file:
+
+            <programlisting><![CDATA[<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>resteasy-spring-mvc</display-name>
+
+    <servlet>
+        <servlet-name>resteasy-spring-mvc</servlet-name>
+        <servlet-class>org.jboss.resteasy.springmvc.ResteasySpringDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:resteasy-spring-mvc-servlet.xml</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>resteasy-spring-mvc</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+]]></programlisting>
         </para>
-        <programlisting><![CDATA[<web-app>
-   <display-name>Archetype Created Web Application</display-name>
-
-   <servlet>
-      <servlet-name>Spring</servlet-name>
-      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-   </servlet>
-
-   <servlet-mapping>
-      <servlet-name>Spring</servlet-name>
-      <url-pattern>/*</url-pattern>
-   </servlet-mapping>
-</web-app>]]></programlisting>
-        <para>Then within your main Spring beans xml, import the <code>springmvc-resteasy.xml</code> file
+        <para>Then within the <code>resteasy-spring-mvc-servlet.xml</code>, it should import the <code>
+            springmvc-resteasy.xml
+        </code> file:
         </para>
         <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -174,53 +185,28 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 ....]]></programlisting>
         <para>
-            You can specify resteasy configuration options by overriding the <code>resteasy.deployment</code> bean which
-            is an
-            instance
-            of <code>ResteasyDeployment</code>. Here's an example of adding media type suffix mappings as well
-            as enabling the RESTEasy asynchronous job service.
-        </para>
-        <programlisting><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        ">
-
-    <!-- Import basic SpringMVC RESTEasy integration -->
-    <import resource="classpath:springmvc-resteasy.xml" />
-
-    <!-- override the bean definition for deployment -->
-    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
-        <property name="asyncJobServiceEnabled" value="true"/>
-        <property name="mediaTypeMappings">
-            <map>
-                <entry key="json" value="application/json" />
-                <entry key="xml" value="application/xml" />
-            </map>
-        </property>
-    </bean>
-...]]></programlisting>
-    </section>
-    <section id="JaxrsWithSpringMVC">
-        <title>JAX-RS with Spring MVC</title>
-        <para>
-            A JAX-RS Application subclass can be combined with a Spring DispatcherServlet
-            and used in the same web application. An application combined in this way
-            allows you to dispatch to either the Spring controller or the JAX-RS resource
-            using the same base URL. In addition you can use the Spring ModelAndView
-            objects as return arguments from @GET resource methods.
+            And then you need to tell Spring the package to scan for your JAX-RS resource classes:
+            <programlisting><![CDATA[<context:component-scan base-package="org.jboss.resteasy.examples.springmvc"/>
+<context:annotation-config/>]]></programlisting>
+            Above is the basic configuration for Spring MVC framework. To see a complete example, please check the
+            <ulink url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-mvc">Spring MVC
+                Integration Example
+            </ulink>
+            we provided.
         </para>
         <para>
-            Configuring a web application of this type requires a web.xml and spring-servlet.xml
-            file and a reference to springmvc-resteasy.xml. A servlet definition is required
-            for both the Spring DispatcherServlet and the Application subclass in the web.xml,
-            as well as RESTEasy Configuration Switch, resteasy.scan.resources. Here is an example
-            of the minimum configuration information needed in the web.xml.
+            In addition, A <code>javax.ws.rs.core.Application</code> subclass can be combined with a Spring
+            <code>DispatcherServlet</code>
+            and used in the same web application.
         </para>
-        <programlisting><![CDATA[<web-app>
+        <para>
+            A servlet definition is required
+            for both the Spring <code>DispatcherServlet</code> and the <code>javax.ws.rs.core.Application</code> subclass
+            in the <code>web.xml</code>,
+            as well as RESTEasy Configuration Switch, <code>resteasy.scan.resources</code>. Here is an example
+            of the minimum configuration information needed in the <code>web.xml</code>.
+
+            <programlisting><![CDATA[<web-app>
     <servlet>
         <servlet-name>mySpring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -247,6 +233,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <param-value>true</param-value>
     </context-param>
 </web-app>]]></programlisting>
+        </para>
         <para>Note that RESTEasy parameters like resteasy.scan.resources may be set in a variety
             of ways. See
             <xref linkend="microprofile_config"/>
@@ -254,13 +241,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </para>
         <para>
             If your web application contains JAX-RS provider classes the RESTEasy Configuration
-            Switch, resteasy.scan.providers, will also be needed. And if the url-pattern for the
-            JAX-RS Application subclass is other than /* you will need to declare the RESTEasy
-            Configuration Switch, resteasy.servlet.mapping.prefix. This switch can be declare
+            Switch, <code>resteasy.scan.providers</code>, will also be needed. And if the url-pattern for the
+            JAX-RS Application subclass is other than <code>/*</code> you will need to declare the RESTEasy
+            Configuration Switch, <code>resteasy.servlet.mapping.prefix</code>. This switch can be declare
             either as a context-param or as a servlet init-param. It's value must be the text
-            that preceeds the /*. Here is an example of such a web.xml.
-        </para>
-        <programlisting><![CDATA[<web-app>
+            that preceeds the <code>/*</code>. Here is an example of such a <code>web.xml</code>:
+
+            <programlisting><![CDATA[<web-app>
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -293,51 +280,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <param-value>true</param-value>
     </context-param>
 </web-app>]]></programlisting>
-        <para>
-            The spring-servlet.xml file must import springmvc-resteasy.xml, however this file does
-            not need to be present in the archive. In addition a component-scan, declaration of the packages
-            that contain you application classes is needed. At minimum your spring-servlet.xml should contain
-            these statements.
         </para>
-        <programlisting><![CDATA[<beans>
-    <import resource="classpath:springmvc-resteasy.xml"/>
-    <context:component-scan base-package="org.my.app"/>
-  </beans>]]></programlisting>
+        <para>Above are the usages of RESTEasy Spring MVC integration usages.</para>
     </section>
-    <section>
-        <title>Spring Boot starter</title>
-        <para>
-            The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has
-            developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring
-            Boot starter
-        </ulink> and shared it with the community. You can see below an example of how to use it. Please refer to the <ulink
-                url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation
-        </ulink> on GitHub for further information.
-        </para>
-        <para>
-            First, add dependency <literal>com.paypal.springboot:resteasy-spring-boot-starter</literal> to your Spring
-            Boot application. It is recommended to you use <ulink
-                url="http://search.maven.org/#search%7Cga%7C1%7Cg:com.paypal.springboot">the latest version</ulink>.
-            Second, optionally you can register one or more JAX-RS application classes. To do so, just define it as a
-            Spring bean, and it will be automatically registered. See the example below.
-        </para>
-        <programlisting><![CDATA[package com.sample.app;
-
-import org.springframework.stereotype.Component;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
-@Component
-@ApplicationPath("/sample-app/")
-public class JaxrsApplication extends Application {
-}]]></programlisting>
-        <para>
-            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
-            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
-            providers must be singletons.
-        </para>
-    </section>
-    <section>
+    <section id="SpringUndertow">
         <title>Undertow Embedded Spring Container</title>
         <para>
             We provide a undertow-based embedded spring container module, called "resteasy-undertow-spring". To use it,
@@ -391,12 +337,183 @@ deployment.setClassLoader(BasicSpringTest.class.getClassLoader());
 server.deploy(deployment);]]></programlisting>
         <para>Above is the code example to setup and start UndertowJaxrsSpringServer. To see a complete example, please
             check the <ulink
-                    url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-springMVC">
-                resteasy-springMVC
-            </ulink> as demo app.
+                    url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-undertow">
+                Demo Of Undertow Embedded Spring Container
+            </ulink> as usage example.
         </para>
     </section>
-    <section>
+    <section id="SpringWebAnnotation">
+        <title>Processing Spring Web REST annotations in RESTEasy</title>
+        <para>
+            RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated
+            with <code>@RestController</code>)
+            and handle related REST requests without delegating to Spring MVC. This functionality is currently
+            experimental.
+        </para>
+        <para>
+            In order for RESTEasy to be able to process Spring <code>@RestController</code>, you first need to include
+            the following
+            dependency.
+        </para>
+        <para>
+            <programlisting><![CDATA[<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-spring-web</artifactId>
+    <version>4.6.0-SNAPSHOT</version>
+</dependency>]]></programlisting>
+        </para>
+        <para>
+            Currently RESTEasy does not auto-scan for <code>@RestController</code> annotated classes,
+            so you need to add all <code>@RestController</code> annotated classes to your <code>web.xml</code> file as
+            shown in the following
+            example.
+        </para>
+        <programlisting><![CDATA[<web-app>
+   <display-name>RESTEasy application using Spring REST annotations</display-name>
+
+    <context-param>
+        <param-name>resteasy.scanned.resource.classes.with.builder</param-name>
+        <param-value>org.jboss.resteasy.spi.metadata.SpringResourceBuilder:org.example.Controller1,org.example.Controller2</param-value>
+    </context-param>
+
+   ...
+</web-app>]]></programlisting>
+        <para>
+            In the example above, <code>Controller1</code> and <code>Controller2</code> are registered and are expected
+            to be annotated with
+            <code>@RestController</code>.
+        </para>
+        <para>
+            The list of the currently supported annotations can be found below:
+        </para>
+        <table frame="topbot">
+            <tgroup cols="2" rowsep="1" colsep="1">
+                <thead>
+                    <row>
+                        <entry>Annotation</entry>
+                        <entry>Comment</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>@RestController</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@GetMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PostMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PutMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@DeleteMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PatchMapping</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestParam</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestHeader</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@MatrixVariable</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@PathVariable</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@CookieValue</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@RequestBody</entry>
+                        <entry/>
+                    </row>
+                    <row>
+                        <entry>@ResponseStatus</entry>
+                        <entry>Only supported as a method annotation</entry>
+                    </row>
+                    <row>
+                        <entry>@RequestParam</entry>
+                        <entry/>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>
+            Furthermore, the use of <code>org.springframework.http.ResponseEntity</code> as a return value is
+            supported as
+            is the use of <code>javax.servlet.http.HttpServletRequest</code> and
+            <code>javax.servlet.http.HttpServletResponse</code>
+            as method parameters.
+        </para>
+        <para>To see an example of the usage, please check the <ulink
+                url="https://github.com/resteasy/resteasy-examples/tree/master/resteasy-spring-rest">RESTEasy support of
+            Spring REST annotations
+        </ulink> sample project we provided.
+        </para>
+    </section>
+    <section id="SpringBootStarter">
+        <title>Spring Boot starter</title>
+        <para>
+            The RESTEasy project has its support for Spring Boot integration. It was originally developed by PayPal team
+            and has been donated to RESTEasy community. The project is currently maintained here:
+            <ulink url="https://github.com/resteasy/resteasy-spring-boot">RESTEasy Spring Boot Starter Project</ulink>.
+        </para>
+        <para>
+            Here is the usage in brief:
+        </para>
+        <para>Firstly, add dependency to your Spring Boot application:
+            <programlisting><![CDATA[<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-spring-boot-starter</artifactId>
+   <version>${latest_version_of_restesy_spring_boot}</version>
+   <scope>runtime</scope>
+</dependency>]]></programlisting>
+        </para>
+        <para>
+            And then you can use Spring annotation <code>@Component</code> to register your JAX-RS <code>Application
+        </code> class:
+            <programlisting><![CDATA[package com.sample.app;
+
+import org.springframework.stereotype.Component;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
+@Component
+@ApplicationPath("/sample-app/")
+public class JaxrsApplication extends Application {
+}]]></programlisting>
+        </para>
+        <para>
+            Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be
+            automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS
+            providers must be singletons.
+        </para>
+        <para>To see complete examples, please check the <ulink
+                url="https://github.com/resteasy/resteasy-spring-boot/tree/master/sample-app">sample-app
+        </ulink> in the project codebase.
+        </para>
+    </section>
+    <section id="SpringUpgradeInWildfly">
         <title>Upgrading in WildFly</title>
         <para>
             <emphasis role="bold">Note.</emphasis>
@@ -410,127 +527,4 @@ server.deploy(deployment);]]></programlisting>
             <![CDATA[modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar]]>.
         </para>
     </section>
-    <section>
-        <title>Processing Spring Web REST annotations in RESTEasy</title>
-        <para>
-            RESTEasy also provides the ability to process Spring Web REST annotations (i.e. Spring classes annotated
-            with @RestController)
-            and handle related REST requests without delegating to Spring MVC. This functionality is currently
-            experimental.
-        </para>
-        <para>
-            In order for RESTEasy to be able to process Spring @RestController, you first need to include the following
-            dependency.
-        </para>
-        <para>
-            <programlisting>&lt;dependency&gt;
-                &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-                &lt;artifactId&gt;resteasy-spring-web&lt;/artifactId&gt;
-                &lt;version&gt;4.5.0-SNAPSHOT&lt;/version&gt;
-                &lt;/dependency&gt;
-
-            </programlisting>
-        </para>
-        <para>
-            Currently RESTEasy does not auto-scan for @RestController annotated classes,
-            so you need to add all @RestController annotated classes to your web.xml file as shown in the following
-            example.
-        </para>
-        <programlisting><![CDATA[<web-app>
-   <display-name>RESTEasy application using Spring REST annotations</display-name>
-
-    <context-param>
-        <param-name>resteasy.scanned.resource.classes.with.builder</param-name>
-        <param-value>org.jboss.resteasy.spi.metadata.SpringResourceBuilder:org.example.Controller1,org.example.Controller2</param-value>
-    </context-param>
-
-   ...
-</web-app>]]></programlisting>
-    </section>
-    <para>
-        In the example above, Controller1 and Controller2 are registered and are expected to be annotated with
-        @RestController.
-    </para>
-    <para>
-        The list of the currently supported annotations can be found below
-    </para>
-    <table frame="topbot">
-        <tgroup cols="2" rowsep="1" colsep="1">
-            <thead>
-                <row>
-                    <entry>Annotation</entry>
-                    <entry>Comment</entry>
-                </row>
-            </thead>
-            <tbody>
-                <row>
-                    <entry>@RestController</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@GetMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PostMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PutMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@DeleteMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PatchMapping</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestParam</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestHeader</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@MatrixVariable</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@PathVariable</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@CookieValue</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@RequestBody</entry>
-                    <entry/>
-                </row>
-                <row>
-                    <entry>@ResponseStatus</entry>
-                    <entry>Only supported as a method annotation</entry>
-                </row>
-                <row>
-                    <entry>@RequestParam</entry>
-                    <entry/>
-                </row>
-            </tbody>
-        </tgroup>
-    </table>
-    <para>
-        Furthermore, the use of <literal>org.springframework.http.ResponseEntity</literal> as a return value is
-        supported as
-        is the use of <literal>javax.servlet.http.HttpServletRequest</literal> and
-        <literal>javax.servlet.http.HttpServletResponse</literal>
-        as method parameters
-    </para>
 </chapter>

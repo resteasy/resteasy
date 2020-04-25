@@ -4,12 +4,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,7 +21,7 @@ import java.lang.reflect.Type;
  */
 @Provider
 @Produces("multipart/*")
-public class MultipartWriter extends AbstractMultipartWriter implements MessageBodyWriter<MultipartOutput>
+public class MultipartWriter extends AbstractMultipartWriter implements AsyncMessageBodyWriter<MultipartOutput>
 {
 
 
@@ -37,4 +41,10 @@ public class MultipartWriter extends AbstractMultipartWriter implements MessageB
       write(multipartOutput, mediaType, httpHeaders, entityStream);
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(MultipartOutput multipartOutput, Class<?> type, Type genericType, Annotation[] annotations,
+                                             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+                                             AsyncOutputStream entityStream) {
+       return asyncWrite(multipartOutput, mediaType, httpHeaders, entityStream);
+   }
 }

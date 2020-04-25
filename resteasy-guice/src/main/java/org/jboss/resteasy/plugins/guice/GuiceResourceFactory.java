@@ -34,10 +34,11 @@ public class GuiceResourceFactory implements ResourceFactory
    }
 
    @Override
-   public CompletionStage<Object> createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
+   public Object createResource(final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory factory)
    {
       final Object resource = provider.get();
-      return propertyInjector.inject(request, response, resource, true)
+      CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, resource, true);
+      return propertyStage == null ? resource : propertyStage
             .thenApply(v -> resource);
    }
 

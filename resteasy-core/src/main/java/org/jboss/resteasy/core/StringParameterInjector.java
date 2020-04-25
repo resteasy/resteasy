@@ -1,5 +1,19 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.util.Types;
+import org.jboss.resteasy.util.StringToPrimitive;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -9,6 +23,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,20 +40,6 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.RuntimeDelegate;
-import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
-
-import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringParameterUnmarshaller;
-import org.jboss.resteasy.spi.util.Types;
-import org.jboss.resteasy.util.StringToPrimitive;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -682,7 +684,9 @@ public class StringParameterInjector
       if (paramConverter != null)
       {
          try {
-            return paramConverter.fromString(strVal);
+             return paramConverter.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception pce) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), pce);
@@ -692,6 +696,8 @@ public class StringParameterInjector
       {
          try {
          return unmarshaller.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception ue) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), ue);
@@ -701,6 +707,8 @@ public class StringParameterInjector
       {
          try {
             return delegate.fromString(strVal);
+         } catch (WebApplicationException wae) {
+             throw wae;
          } catch (Exception pce) {
             throwProcessingException(Messages.MESSAGES.unableToExtractParameter(
                     getParamSignature(), strVal, target), pce);
@@ -714,11 +722,11 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (InvocationTargetException e)
          {
@@ -727,7 +735,7 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), targetException);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
          }
       }
       else if (valueOf != null)
@@ -738,7 +746,7 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
          }
          catch (InvocationTargetException e)
          {
@@ -747,7 +755,7 @@ public class StringParameterInjector
             {
                throw ((WebApplicationException)targetException);
             }
-            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), targetException);
+            throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), targetException);
          }
       }
       try
@@ -756,9 +764,17 @@ public class StringParameterInjector
       }
       catch (Exception e)
       {
-         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), strVal, target), e);
+         throwProcessingException(Messages.MESSAGES.unableToExtractParameter(getParamSignature(), _encode(strVal), target), e);
       }
       return null;
+   }
+
+   private String _encode(String strVal) {
+      try {
+         return URLEncoder.encode(strVal, StandardCharsets.UTF_8.name());
+      } catch (UnsupportedEncodingException e) {
+         throw new RuntimeException(e);
+      }
    }
 
    public ParamConverter<?> getParamConverter()

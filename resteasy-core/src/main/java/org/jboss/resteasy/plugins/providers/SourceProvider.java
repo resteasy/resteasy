@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.NoContent;
 import org.xml.sax.InputSource;
@@ -11,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -35,7 +35,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
 @Consumes({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
-public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWriter<Source>
+public class SourceProvider implements MessageBodyReader<Source>, AsyncBufferedMessageBodyWriter<Source>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

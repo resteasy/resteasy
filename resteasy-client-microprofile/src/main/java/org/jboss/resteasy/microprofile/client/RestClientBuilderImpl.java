@@ -1,18 +1,3 @@
-/**
- * Copyright 2015-2017 Red Hat, Inc, and individual contributors.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.microprofile.client;
 
 import org.eclipse.microprofile.config.Config;
@@ -27,7 +12,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionClientEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.microprofile.client.async.AsyncInterceptorRxInvokerProvider;
-import org.jboss.resteasy.microprofile.client.async.AsyncInvocationInterceptorHandler;
 import org.jboss.resteasy.microprofile.client.header.ClientHeaderProviders;
 import org.jboss.resteasy.microprofile.client.header.ClientHeadersRequestFilter;
 import org.jboss.resteasy.microprofile.client.impl.MpClientBuilderImpl;
@@ -58,7 +42,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +52,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder.*;
 
 public class RestClientBuilderImpl implements RestClientBuilder {
 
@@ -211,28 +196,47 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         ClassLoader classLoader = aClass.getClassLoader();
 
         List<String> noProxyHosts = Arrays.asList(
-                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("|"));
-        String proxyHost = System.getProperty("http.proxyHost");
+                System.getProperty("http.nonProxyHosts", "localhost|127.*|[::1]").split("\\|"));
+        String envProxyHost = System.getProperty("http.proxyHost");
 
         T actualClient;
         ResteasyClient client;
 
         ResteasyClientBuilder resteasyClientBuilder;
-        if (proxyHost != null && !noProxyHosts.contains(baseURI.getHost())) {
-            // Use proxy, if defined
+        if (envProxyHost != null && !noProxyHosts.contains(baseURI.getHost())) {
+            // Use proxy, if defined in the env variables
             resteasyClientBuilder = builderDelegate.defaultProxy(
-                    proxyHost,
+                    envProxyHost,
                     Integer.parseInt(System.getProperty("http.proxyPort", "80")));
         } else {
-            resteasyClientBuilder = builderDelegate;
+            // Search for proxy settings passed in the client builder, if passed and use them if found
+            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
+                    .filter(Integer.class::isInstance)
+                    .map(Integer.class::cast)
+                    .orElse(null);
+
+            String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .orElse(null);
+
+            if (userProxyHost != null && userProxyPort != null) {
+                resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
+            } else {
+                //no proxy
+                resteasyClientBuilder = builderDelegate;
+            }
         }
 
         if (this.executorService != null) {
-           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(this.executorService);
-           resteasyClientBuilder.executorService(executor);
+           resteasyClientBuilder.executorService(this.executorService);
         } else {
-           ExecutorService executor = AsyncInvocationInterceptorHandler.wrapExecutorService(Executors.newCachedThreadPool());
-           resteasyClientBuilder.executorService(executor, true);
+           resteasyClientBuilder.executorService(Executors.newCachedThreadPool(), true);
         }
         resteasyClientBuilder.register(DEFAULT_MEDIA_TYPE_FILTER);
         resteasyClientBuilder.register(METHOD_INJECTION_FILTER);
@@ -273,7 +277,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         interfaces[1] = RestClientProxy.class;
         interfaces[2] = Closeable.class;
 
-        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client, asyncInterceptorFactories));
+        T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
     }
@@ -489,7 +493,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         } else if (o instanceof ParamConverterProvider) {
             register(o, Priorities.USER);
         } else if (o instanceof AsyncInvocationInterceptorFactory) {
-            asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
+            builderDelegate.asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
         } else {
             builderDelegate.register(o);
         }
@@ -521,7 +525,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             builderDelegate.register(converter, i);
 
         } else if (o instanceof AsyncInvocationInterceptorFactory) {
-            asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
+            builderDelegate.asyncInterceptorFactories.add((AsyncInvocationInterceptorFactory) o);
         } else {
             builderDelegate.register(o, i);
         }
@@ -584,7 +588,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         return builderDelegate;
     }
 
-    private final ResteasyClientBuilder builderDelegate;
+    private final MpClientBuilderImpl builderDelegate;
 
     private final ConfigurationWrapper configurationWrapper;
 
@@ -608,6 +612,4 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
 
     private Set<Object> localProviderInstances = new HashSet<>();
-
-    private final List<AsyncInvocationInterceptorFactory> asyncInterceptorFactories = new ArrayList<>();
 }

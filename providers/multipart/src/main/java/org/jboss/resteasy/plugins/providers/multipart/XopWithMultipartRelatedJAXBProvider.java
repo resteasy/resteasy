@@ -213,5 +213,4 @@ public class XopWithMultipartRelatedJAXBProvider extends
          throw new WebApplicationException(e, response);
       }
    }
-
 }

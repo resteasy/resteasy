@@ -4,6 +4,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
 import org.jboss.resteasy.spi.HttpResponse;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,9 +15,9 @@ public class HtmlServletDispatcher extends HttpServletDispatcher
    private static final long serialVersionUID = 3793362217679129985L;
 
    @Override
-   protected HttpResponse createServletResponse(HttpServletResponse response)
+   protected HttpResponse createServletResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory())
+      return new HttpServletResponseWrapper(response, request, getDispatcher().getProviderFactory())
       {
 
          protected OutputStream getSuperOuptutStream() throws IOException{

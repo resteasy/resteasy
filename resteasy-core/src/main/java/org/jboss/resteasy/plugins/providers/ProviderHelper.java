@@ -3,6 +3,11 @@ package org.jboss.resteasy.plugins.providers;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Variant.VariantListBuilder;
+
+import org.jboss.resteasy.spi.AsyncOutputStream;
+
+import com.ibm.asyncutil.iteration.AsyncTrampoline;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,6 +17,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 
 /**
  * A utility class to provide supporting functionality to various
@@ -127,5 +135,62 @@ public final class ProviderHelper
       {
          out.write(buf, 0, read);
       }
+   }
+
+   /**
+    * @param in input stream
+    * @param out output stream
+    * @throws IOException if I/O error occurred
+    */
+   public static CompletionStage<Void> writeToAndCloseInput(final InputStream in, final AsyncOutputStream out)
+   {
+      return writeTo(in, out).whenComplete((v, t) -> {
+         try {
+            in.close();
+         } catch(IOException x) {
+            throw new RuntimeException(x);
+         }
+      });
+   }
+
+   /**
+    * @param in input stream
+    * @param out output stream
+    * @throws IOException if I/O error occurred
+    */
+   public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out)
+   {
+      final byte[] buf = new byte[2048];
+      return AsyncTrampoline.asyncWhile(
+            read -> read != -1,
+            read -> out.asyncWrite(buf, 0, read).thenApply(v -> asyncRead(in, buf)),
+            asyncRead(in, buf)).thenApply(v -> null);
+   }
+
+   public static int asyncRead(InputStream in, byte[] buf)
+   {
+      try {
+         return in.read(buf);
+      } catch (IOException e)
+      {
+         throw new CompletionException(e);
+      }
+   }
+
+   public static int asyncRead(InputStream in, byte[] buf, int offset, int length)
+   {
+      try {
+         return in.read(buf, offset, length);
+      } catch (IOException e)
+      {
+         throw new CompletionException(e);
+      }
+   }
+
+   public static CompletionStage<Void> completedException(Throwable t)
+   {
+      CompletableFuture<Void> ret = new CompletableFuture<>();
+      ret.completeExceptionally(t);
+      return ret;
    }
 }

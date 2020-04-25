@@ -1,11 +1,11 @@
 package org.jboss.resteasy.spi;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -23,6 +23,11 @@ public interface HttpResponse extends Closeable
 
    OutputStream getOutputStream() throws IOException;
    void setOutputStream(OutputStream os);
+
+   default AsyncOutputStream getAsyncOutputStream() throws IOException {
+       OutputStream os = getOutputStream();
+       return os instanceof AsyncOutputStream ? (AsyncOutputStream)os : new BlockingAsyncOutputStream(os);
+   }
 
    void addNewCookie(NewCookie cookie);
 
@@ -43,7 +48,6 @@ public interface HttpResponse extends Closeable
    }
 
    void flushBuffer() throws IOException;
-
 
    // RESTEASY-1784
    default void setSuppressExceptionDuringChunkedTransfer(boolean suppressExceptionDuringChunkedTransfer) {};

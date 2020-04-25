@@ -2,17 +2,17 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
-import org.jboss.resteasy.core.providerfactory.NOOPClientHelper;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.core.providerfactory.ServerHelper;
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -24,7 +24,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry.InterceptorFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.Parameter;
@@ -38,6 +37,7 @@ import org.jboss.resteasy.util.DynamicFeatureContextDelegate;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -48,7 +48,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.sse.SseEventSink;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -118,17 +117,17 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       };
 
-      this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(providerFactory) {
-         @Override
-         protected void initializeUtils()
+      Set<DynamicFeature> serverDynamicFeatures = providerFactory.getServerDynamicFeatures();
+      if (serverDynamicFeatures != null && !serverDynamicFeatures.isEmpty()) {
+         this.resourceMethodProviderFactory = new ResteasyProviderFactoryImpl(RuntimeType.SERVER, providerFactory);
+         for (DynamicFeature feature : serverDynamicFeatures)
          {
-            clientHelper = NOOPClientHelper.INSTANCE;
-            serverHelper = new ServerHelper(this);
+            feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
          }
-      };
-      for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
-      {
-         feature.configure(resourceInfo, new DynamicFeatureContextDelegate(resourceMethodProviderFactory));
+         ((ResteasyProviderFactoryImpl)this.resourceMethodProviderFactory).lockSnapshots();
+      } else {
+         // if no dynamic features, we don't need to copy the parent.
+         this.resourceMethodProviderFactory = providerFactory;
       }
 
       this.methodInjector = injector.createMethodInjector(method, resourceMethodProviderFactory);
@@ -152,13 +151,22 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       if (validator != null)
       {
-         if (validator instanceof GeneralValidatorCDI)
+         Class<?> clazz = null;
+         if (resource != null && resource.getScannableClass() != null)
          {
-            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(getMethod().getDeclaringClass(), injector);
+            clazz = resource.getScannableClass();
          }
          else
          {
-            isValidatable = validator.isValidatable(getMethod().getDeclaringClass());
+            clazz = getMethod().getDeclaringClass();
+         }
+         if (validator instanceof GeneralValidatorCDI)
+         {
+            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(clazz, injector);
+         }
+         else
+         {
+            isValidatable = validator.isValidatable(clazz);
          }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
@@ -246,7 +254,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    @Override
-   public void registryUpdated(JaxrsInterceptorRegistry registry, InterceptorFactory factory)
+   public void registryUpdated(JaxrsInterceptorRegistry registry, JaxrsInterceptorRegistry.InterceptorFactory factory)
    {
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
@@ -354,15 +362,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    }
 
    public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response) {
-      return resource.createResource(request, response, resourceMethodProviderFactory)
-            .thenCompose(target -> invokeDryRun(request, response, target));
+      Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
+      if (resource instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)resource;
+         return stage
+                 .thenCompose(target -> invokeDryRun(request, response, target));
+      }
+      return invokeDryRun(request, response, resource);
    }
 
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      return resource.createResource(request, response, resourceMethodProviderFactory)
-            .thenCompose(target -> invoke(request, response, target));
+      Object resource = this.resource.createResource(request, response, resourceMethodProviderFactory);
+      if (resource instanceof CompletionStage) {
+         CompletionStage<Object> stage = (CompletionStage<Object>)resource;
+         return stage
+                 .thenApply(target -> invoke(request, response, target)).toCompletableFuture().getNow(null);
+      }
+      return invoke(request, response, resource);
    }
 
    public CompletionStage<Object> invokeDryRun(HttpRequest request, HttpResponse response, Object target)
@@ -378,7 +396,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return invokeOnTargetDryRun(request, response, target);
    }
 
-   public CompletionStage<BuiltResponse> invoke(HttpRequest request, HttpResponse response, Object target)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
@@ -388,26 +406,33 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
       }
       uriInfo.pushCurrentResource(target);
-      BuiltResponse rtn = invokeOnTarget(request, response, target);
-      // FIXME: async
-      return CompletableFuture.completedFuture(rtn);
+      return invokeOnTarget(request, response, target);
    }
 
    protected CompletionStage<Object> invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
-      CompletionStage<Object> rtn = null;
       try
       {
-         rtn = internalInvokeOnTarget(request, response, target);
+         Object rtn = internalInvokeOnTarget(request, response, target);
+         if (rtn != null && rtn instanceof CompletionStage) {
+            return (CompletionStage<Object>)rtn;
+         } else {
+            return CompletableFuture.completedFuture(rtn);
+         }
+      }
+      catch (Failure failure) {
+         throw failure;
+      }
+      catch (ApplicationException appException) {
+         throw appException;
       }
       catch (RuntimeException ex)
       {
          throw new ProcessingException(ex);
 
       }
-      return rtn;
    }
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
@@ -416,11 +441,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       final long msTimeStamp = methodStatisticsLogger.timestamp();
       try {
          ResteasyContext.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
-
-         PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
-            () -> invokeOnTargetAfterFilter(request, response, target));
-         // let it handle the continuation
-         return requestContext.filter();
+         if (requestFilters != null && requestFilters.length > 0) {
+            PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters,
+                    () -> invokeOnTargetAfterFilter(request, response, target));
+            // let it handle the continuation
+            return requestContext.filter();
+         } else {
+            return invokeOnTargetAfterFilter(request, response, target);
+         }
       } finally {
          methodStatisticsLogger.duration(msTimeStamp);
          if (resource instanceof SingletonResource) {
@@ -465,9 +493,16 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       try
       {
-         CompletionStage<BuiltResponse> stage = internalInvokeOnTarget(request, response, target)
-               .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
-         return stage.toCompletableFuture().getNow(null);
+         Object ret = internalInvokeOnTarget(request, response, target);
+         if (ret != null && ret instanceof CompletionStage) {
+            CompletionStage<Object> retStage = (CompletionStage<Object>)ret;
+            CompletionStage<BuiltResponse> stage = retStage
+                    .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
+            // if async isn't finished, return null.  Container will assume that its a suspended request
+            return stage.toCompletableFuture().getNow(null);
+         } else {
+            return afterInvoke(request, asyncResponseConsumer, CompletionStageHolder.resolve(ret));
+         }
       }
       catch (CompletionException ex)
       {
@@ -589,33 +624,54 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
    }
 
-   private CompletionStage<Object> internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) {
+   private Object internalInvokeOnTarget(HttpRequest request, HttpResponse response, Object target) throws Failure, ApplicationException {
       PostResourceMethodInvokers postResourceMethodInvokers = ResteasyContext.getContextData(PostResourceMethodInvokers.class);
-      return this.methodInjector.invoke(request, response, target)
-            .handle((ret, exception) -> {
-               // on success
-               if (exception == null && postResourceMethodInvokers != null) {
-                  postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
-               }
-               // finally
-               if (postResourceMethodInvokers != null) {
-                  postResourceMethodInvokers.clear();
-               }
-               if(exception != null)
-               {
-                  SynchronousDispatcher.rethrow(exception);
-                  // never reached
-                  return null;
-               }
-               return ret;
-            });
+      try {
+          Object methodResponse = this.methodInjector.invoke(request, response, target);
+          CompletionStage<Object> stage = null;
+          if (methodResponse != null && methodResponse instanceof CompletionStage) {
+             stage = (CompletionStage<Object>)methodResponse;
+             return stage
+                     .handle((ret, exception) -> {
+                        // on success
+                        if (exception == null && postResourceMethodInvokers != null) {
+                           postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+                        }
+                        // finally
+                        if (postResourceMethodInvokers != null) {
+                           postResourceMethodInvokers.clear();
+                        }
+                        if (exception != null) {
+                           SynchronousDispatcher.rethrow(exception);
+                           // never reached
+                           return null;
+                        }
+                        return ret;
+                     });
+          } else {
+             // on success
+             if (postResourceMethodInvokers != null) {
+                postResourceMethodInvokers.getInvokers().forEach(e -> e.invoke());
+             }
+             // finally
+             if (postResourceMethodInvokers != null) {
+                postResourceMethodInvokers.clear();
+             }
+             return methodResponse;
+          }
+      } catch (RuntimeException failure) {
+         if (postResourceMethodInvokers != null) {
+            postResourceMethodInvokers.clear();
+         }
+         throw failure;
+      }
    }
 
    public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
    {
       asyncResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
-      asyncResponse.setWriterInterceptors(writerInterceptors);
-      asyncResponse.setResponseFilters(responseFilters);
+      asyncResponse.setWriterInterceptors(getWriterInterceptors());
+      asyncResponse.setResponseFilters(getResponseFilters());
       if (asyncResponse instanceof ResourceMethodInvokerAwareResponse) {
          ((ResourceMethodInvokerAwareResponse)asyncResponse).setMethod(this);
       }

@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.providers;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.util.FindAnnotation;
 import org.jboss.resteasy.util.NoContent;
 
@@ -14,7 +16,6 @@ import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +30,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionStage;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,7 +41,7 @@ import java.util.Map;
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
 @ConstrainedTo(RuntimeType.CLIENT)
-public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
+public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, AsyncMessageBodyWriter<MultivaluedMap>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
@@ -131,6 +133,16 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public void writeTo(MultivaluedMap data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+      byte[] bytes = getBytes(data, mediaType, annotations);
+      //logger.info("*** FORM PROVIDER WRITING: " + new String(bytes));
+
+//      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
+      entityStream.write(bytes);
+
+   }
+
+   private byte[] getBytes(MultivaluedMap data, MediaType mediaType, Annotation[] annotations) throws IOException
+   {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       @SuppressWarnings(value = "unchecked")
       MultivaluedMap<String, String> formData = (MultivaluedMap<String, String>)data;
@@ -164,12 +176,24 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
          writer.flush();
       }
 
-      byte[] bytes = baos.toByteArray();
-      //logger.info("*** FORM PROVIDER WRITING: " + new String(bytes));
-
-//      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
-      entityStream.write(bytes);
-
+      return baos.toByteArray();
    }
 
+   @Override
+   public CompletionStage<Void> asyncWriteTo(MultivaluedMap data, Class<?> type, Type genericType,
+                                             Annotation[] annotations, MediaType mediaType,
+                                             MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream)
+   {
+      try
+      {
+         byte[] bytes = getBytes(data, mediaType, annotations);
+         //logger.info("*** FORM PROVIDER WRITING: " + new String(bytes));
+
+//      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
+         return entityStream.asyncWrite(bytes);
+      } catch (IOException e)
+      {
+         return ProviderHelper.completedException(e);
+      }
+   }
 }

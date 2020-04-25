@@ -1,7 +1,7 @@
 package org.jboss.resteasy.microprofile.client;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
 import org.jboss.resteasy.plugins.providers.IIOImageProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -21,7 +21,7 @@ public class ProviderFactoryTest {
     @Test
     public void testCustomProvider() {
         try {
-            ResteasyProviderFactory provider = new ResteasyProviderFactoryImpl(null, true);
+            ResteasyProviderFactory provider = new LocalResteasyProviderFactory();
             provider.registerProvider(IIOImageProvider.class);
             RestClientBuilderImpl.setProviderFactory(provider);
 

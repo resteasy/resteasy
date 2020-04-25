@@ -1,23 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
@@ -35,6 +17,23 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.sse.OutboundSseEvent;
+import javax.ws.rs.sse.SseEventSink;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
@@ -332,6 +331,8 @@ public abstract class AsyncResponseConsumer
    private static class AsyncRawStreamingResponseConsumer extends AsyncStreamResponseConsumer
    {
       private boolean sentEntity;
+      private volatile boolean onCompleteReceived = false;
+      private volatile boolean sendingEvent = false;
 
       AsyncRawStreamingResponseConsumer(final ResourceMethodInvoker method, final AsyncStreamProvider<?> asyncStreamProvider)
       {
@@ -376,16 +377,31 @@ public abstract class AsyncResponseConsumer
 
       protected void addNextElement(Object element)
       {
+         sendingEvent = true;
          internalResume(element, t -> {
-            if(t != null)
-            {
-               complete(t);
-            }
-            else
-            {
-               subscription.request(1);
+            synchronized(this) {
+               sendingEvent = false;
+               if(onCompleteReceived) {
+                  super.onComplete();
+               }
+               else if(t != null)
+               {
+                  complete(t);
+               }
+               else
+               {
+                  subscription.request(1);
+               }
             }
          });
+      }
+
+      @Override
+      public synchronized void onComplete()
+      {
+         onCompleteReceived = true;
+         if(sendingEvent == false)
+            super.onComplete();
       }
 
       @Override

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>4.5.0-SNAPSHOT</version>
+        <version>4.6.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-cache-core</artifactId>
@@ -15,12 +15,14 @@
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.transaction</groupId>
-                    <artifactId>jboss-transaction-api_1.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+           <groupId>jakarta.inject</groupId>
+           <artifactId>jakarta.inject-api</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>jakarta.enterprise</groupId>
+           <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.marshalling</groupId>

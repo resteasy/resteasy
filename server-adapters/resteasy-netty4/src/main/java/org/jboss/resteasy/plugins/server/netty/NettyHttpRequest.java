@@ -1,26 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.channel.ChannelHandlerContext;
-
-import org.jboss.resteasy.core.AbstractAsynchronousResponse;
-import org.jboss.resteasy.core.AbstractExecutionContext;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
-import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
-import org.jboss.resteasy.specimpl.ResteasyUriInfo;
-
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -29,8 +8,34 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.core.AbstractAsynchronousResponse;
+import org.jboss.resteasy.core.AbstractExecutionContext;
+import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
+import org.jboss.resteasy.spi.NotImplementedYetException;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.RunnableWithException;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client
@@ -245,7 +250,50 @@ public class NettyHttpRequest extends BaseHttpRequest
          }
       }
 
+      @Override
+      public CompletionStage<Void> executeAsyncIo(CompletionStage<Void> f) {
+          // check if this CF is already resolved
+          CompletableFuture<Void> ret = f.toCompletableFuture();
+          // if it's not resolved, we may need to suspend
+          if(!ret.isDone() && !isSuspended()) {
+              suspend();
+          }
+          return ret;
+      }
 
+      @Override
+      public CompletionStage<Void> executeBlockingIo(RunnableWithException f, boolean hasInterceptors) {
+          if(!NettyUtil.isIoThread()) {
+              // we're blocking
+              try {
+                  f.run();
+              } catch (Exception e) {
+                  CompletableFuture<Void> ret = new CompletableFuture<>();
+                  ret.completeExceptionally(e);
+                  return ret;
+              }
+              return CompletableFuture.completedFuture(null);
+          } else if(!hasInterceptors) {
+              Map<Class<?>, Object> context = ResteasyContext.getContextDataMap();
+              // turn any sync request into async
+              if(!isSuspended()) {
+                  suspend();
+              }
+              return CompletableFuture.runAsync(() -> {
+                  try(CloseableContext newContext = ResteasyContext.addCloseableContextDataLevel(context)){
+                      f.run();
+                  } catch (RuntimeException e) {
+                      throw e;
+                  } catch (Exception e) {
+                      throw new RuntimeException(e);
+                  }
+              });
+          } else {
+             CompletableFuture<Void> ret = new CompletableFuture<>();
+             ret.completeExceptionally(new RuntimeException("Cannot use blocking IO with interceptors when we're on the IO thread"));
+             return ret;
+          }
+      }
 
       /**
        * Netty implementation of {@link AsyncResponse}.

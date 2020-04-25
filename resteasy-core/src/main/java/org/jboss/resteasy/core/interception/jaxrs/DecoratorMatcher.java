@@ -102,7 +102,7 @@ public class DecoratorMatcher
          mediaTypes = produces.value();
       }
       for (String pType : mediaTypes) {
-         typeMap.add(MediaType.valueOf(pType), decoratorAnnotation);
+         typeMap.add(pType, decoratorAnnotation);
       }
    }
 

@@ -55,9 +55,9 @@ public class FilterDispatcher implements Filter, HttpRequestFactory, HttpRespons
    }
 
 
-   public HttpResponse createResteasyHttpResponse(HttpServletResponse response)
+   public HttpResponse createResteasyHttpResponse(HttpServletResponse response, HttpServletRequest request)
    {
-      return new HttpServletResponseWrapper(response, getDispatcher().getProviderFactory());
+      return new HttpServletResponseWrapper(response, request, getDispatcher().getProviderFactory());
    }
 
    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException

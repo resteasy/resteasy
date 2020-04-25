@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import javax.ws.rs.ext.ReaderInterceptor;
-
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.ext.ReaderInterceptor;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
