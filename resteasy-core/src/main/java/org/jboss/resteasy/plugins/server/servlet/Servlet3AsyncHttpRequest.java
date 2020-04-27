@@ -253,11 +253,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 
          protected void handleTimeout()
          {
+            if (done || cancelled) return;
             if (timeoutHandler != null)
             {
                timeoutHandler.handleTimeout(this);
             }
-            if (done) return;
             resume(new ServiceUnavailableException());
          }
 
