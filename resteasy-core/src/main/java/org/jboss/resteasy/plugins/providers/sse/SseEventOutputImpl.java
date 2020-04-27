@@ -113,7 +113,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   asyncResponse.complete();
                } catch(RuntimeException x) {
                   Throwable cause = x;
-                  while(cause.getCause() != null)
+                  while(cause.getCause() != null && cause.getCause() != cause)
                      cause = cause.getCause();
                   if(cause instanceof IOException) {
                      // ignore it, we're closed now
