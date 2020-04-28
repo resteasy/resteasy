@@ -38,6 +38,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -209,28 +211,9 @@ public class RestClientBuilderImpl implements RestClientBuilder {
                     envProxyHost,
                     Integer.parseInt(System.getProperty("http.proxyPort", "80")));
         } else {
-            // Search for proxy settings passed in the client builder, if passed and use them if found
-            String userProxyHost = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_HOST))
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .orElse(null);
-
-            Integer userProxyPort = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_PORT))
-                    .filter(Integer.class::isInstance)
-                    .map(Integer.class::cast)
-                    .orElse(null);
-
-            String userProxyScheme = Optional.ofNullable(getConfiguration().getProperty(PROPERTY_PROXY_SCHEME))
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .orElse(null);
-
-            if (userProxyHost != null && userProxyPort != null) {
-                resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
-            } else {
-                //no proxy
-                resteasyClientBuilder = builderDelegate;
-            }
+            selectHttpProxy().ifPresent(proxyAddress -> builderDelegate.defaultProxy(
+                    proxyAddress.getHostString(), proxyAddress.getPort()));
+            resteasyClientBuilder = builderDelegate;
         }
 
         if (this.executorService != null) {
@@ -586,6 +569,14 @@ public class RestClientBuilderImpl implements RestClientBuilder {
 
     ResteasyClientBuilder getBuilderDelegate() {
         return builderDelegate;
+    }
+
+    private Optional<InetSocketAddress> selectHttpProxy() {
+        return ProxySelector.getDefault().select(baseURI).stream()
+                .filter(proxy -> proxy.type() == java.net.Proxy.Type.HTTP)
+                .map(java.net.Proxy::address)
+                .map(InetSocketAddress.class::cast)
+                .findFirst();
     }
 
     private final MpClientBuilderImpl builderDelegate;
