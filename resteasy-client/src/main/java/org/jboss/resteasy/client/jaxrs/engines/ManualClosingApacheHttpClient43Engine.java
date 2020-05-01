@@ -31,6 +31,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
@@ -546,14 +547,18 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
       AbstractHttpEntity entityToBuild = null;
       DeferredFileOutputStream memoryManagedOutStream = writeRequestBodyToOutputStream(request);
 
+      MediaType mediaType = request.getHeaders().getMediaType();
+
       if (memoryManagedOutStream.isInMemory())
       {
          ByteArrayEntity entityToBuildByteArray = new ByteArrayEntity(memoryManagedOutStream.getData());
-         entityToBuildByteArray
-               .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, request.getHeaders().getMediaType().toString()));
-         entityToBuild = entityToBuildByteArray;
+         if (mediaType != null) {
+            entityToBuildByteArray
+                    .setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mediaType.toString()));
+            entityToBuild = entityToBuildByteArray;
+         }
       }
-      else
+      else if (mediaType != null)
       {
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(),
                request.getHeaders().getMediaType().toString());
