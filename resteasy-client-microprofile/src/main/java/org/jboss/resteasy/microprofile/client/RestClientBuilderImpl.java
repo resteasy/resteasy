@@ -232,7 +232,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             if (userProxyHost != null && userProxyPort != null) {
                 resteasyClientBuilder = builderDelegate.defaultProxy(userProxyHost, userProxyPort, userProxyScheme);
             } else {
-                //ProxySelector if applicable       
+                //ProxySelector if applicable
                 selectHttpProxy()
                     .ifPresent(proxyAddress -> builderDelegate.defaultProxy(proxyAddress.getHostString(), proxyAddress.getPort()));
 
