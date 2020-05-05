@@ -78,7 +78,8 @@ public class PublisherResponseNoStreamTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("[\"one\",\"two\"]", entity);
+      Assert.assertTrue(entity.startsWith("[\"0-1\",\"1-1\""));
+      Assert.assertTrue(entity.endsWith(",\"29-1\"]"));
 
       // make sure the completion callback was called with no error
       request = client.target(generateURL("/callback-called-no-error/text")).request();

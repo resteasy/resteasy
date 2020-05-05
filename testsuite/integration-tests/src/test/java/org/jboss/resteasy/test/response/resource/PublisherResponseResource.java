@@ -13,8 +13,10 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 @Path("")
@@ -107,7 +109,12 @@ public class PublisherResponseResource {
    @Path("sse")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public Publisher<String> sse() {
-      return Flowable.fromArray("one", "two");
+      return Flowable.create(source ->{
+         for(int i=0;i<30;i++) {
+            source.onNext(i+"-"+ ResteasyProviderFactory.getContextDataLevelCount());
+         }
+         source.onComplete();
+      }, BackpressureStrategy.BUFFER);
    }
 
    @GET

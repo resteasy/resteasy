@@ -8,8 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 @Path("")
@@ -22,7 +24,12 @@ public class PublisherResponseRawStreamResource {
    @Produces("application/json")
    @Stream(Stream.MODE.RAW)
    public Publisher<String> chunked() {
-      return Flowable.fromArray("one", "two");
+      return Flowable.create(source ->{
+         for(int i=0;i<30;i++) {
+            source.onNext(i+"-"+ ResteasyProviderFactory.getContextDataLevelCount());
+         }
+         source.onComplete();
+      }, BackpressureStrategy.BUFFER);
    }
 
    @GET
