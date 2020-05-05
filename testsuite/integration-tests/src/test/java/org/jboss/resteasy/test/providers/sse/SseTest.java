@@ -36,6 +36,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -255,6 +256,7 @@ public class SseTest
    //with LastEventId and receive the missed events
    @Test
    @InSequence(5)
+   @Ignore("FIXME https://issues.redhat.com/browse/RESTEASY-2542")
    public void testReconnect() throws Exception
    {
       int proxyPort = 9090;
