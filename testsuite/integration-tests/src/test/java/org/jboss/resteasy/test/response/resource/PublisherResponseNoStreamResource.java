@@ -11,8 +11,10 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 @Path("")
@@ -26,7 +28,12 @@ public class PublisherResponseNoStreamResource {
    @Produces("application/json")
    public Publisher<String> text(@Context HttpRequest req) {
       req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text"));
-      return Flowable.fromArray("one", "two");
+      return Flowable.create(source ->{
+         for(int i=0;i<30;i++) {
+            source.onNext(i+"-"+ResteasyProviderFactory.getContextDataLevelCount());
+         }
+         source.onComplete();
+      }, BackpressureStrategy.BUFFER);
    }
 
    @GET
