@@ -88,7 +88,7 @@ public class AnotherPublisherResponseTest {
          source.register(evt -> {
             String data = evt.readData(String.class);
             collector.add(data);
-            if (collector.size() >= 2)
+            if (collector.size() >= 30)
             {
                future.complete(null);
             }
@@ -101,10 +101,10 @@ public class AnotherPublisherResponseTest {
          });
          source.open();
          future.get(5000, TimeUnit.SECONDS);
-         Assert.assertEquals(2, collector.size());
+         Assert.assertEquals(30, collector.size());
          Assert.assertEquals(0, errors.size());
-         Assert.assertTrue(collector.contains("one"));
-         Assert.assertTrue(collector.contains("two"));
+         Assert.assertTrue(collector.contains("0-1"));
+         Assert.assertTrue(collector.contains("1-1"));
       }
       client.close();
    }
