@@ -190,7 +190,7 @@ public class PublisherResponseTest {
       source.register(evt -> {
          String data = evt.readData(String.class);
          collector.add(data);
-         if(collector.size() >= 2) {
+         if(collector.size() >= 30) {
             future.complete(null);
          }
       }, t -> {
@@ -203,10 +203,10 @@ public class PublisherResponseTest {
       source.open();
       future.get();
       source.close();
-      Assert.assertEquals(2, collector.size());
+      Assert.assertEquals(30, collector.size());
       Assert.assertEquals(0, errors.size());
-      Assert.assertEquals("one", collector.get(0));
-      Assert.assertEquals("two", collector.get(1));
+      Assert.assertEquals("0-1", collector.get(0));
+      Assert.assertEquals("1-1", collector.get(1));
    }
 
    /**

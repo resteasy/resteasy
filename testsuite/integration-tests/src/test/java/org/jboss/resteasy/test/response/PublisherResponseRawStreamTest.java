@@ -83,7 +83,8 @@ public class PublisherResponseRawStreamTest {
       Response response = request.get();
       String entity = response.readEntity(String.class);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("onetwo", entity);
+      Assert.assertTrue(entity.startsWith("0-11-12-1"));
+      Assert.assertTrue(entity.endsWith("29-1"));
    }
 
    /**
