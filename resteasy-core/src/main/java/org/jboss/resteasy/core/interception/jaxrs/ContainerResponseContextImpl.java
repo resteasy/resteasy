@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -298,9 +299,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          return;
       }
 
-      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
-      try {
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
          filter();
       }catch(Throwable t) {
          // don't throw to client
@@ -320,8 +320,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       }
       else
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         writeException(t);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            writeException(t);
+         }
       }
    }
 

@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception.jaxrs;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -233,8 +234,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    {
       if(suspended && !inFilter)
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         httpRequest.getAsyncContext().getAsyncResponse().resume(response);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            httpRequest.getAsyncContext().getAsyncResponse().resume(response);
+         }
       }
       else
       {
@@ -255,9 +257,8 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          return;
       }
 
-      ResteasyContext.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
-      try {
+      try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
          filter();
       }catch(Throwable t) {
          // don't throw to client
@@ -277,8 +278,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
       }
       else
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         writeException(t);
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
+            writeException(t);
+         }
       }
    }
 
