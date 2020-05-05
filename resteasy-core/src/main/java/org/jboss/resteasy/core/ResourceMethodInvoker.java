@@ -107,7 +107,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          @Override
          public Method getResourceMethod()
          {
-            return ResourceMethodInvoker.this.method.getAnnotatedMethod();
+            return ResourceMethodInvoker.this.method.getMethod();
          }
 
          @Override
