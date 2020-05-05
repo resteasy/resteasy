@@ -29,6 +29,7 @@ import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.plugins.server.Cleanable;
 import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -93,15 +94,12 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       {
          closed = true;
          if(flushBeforeClose && responseFlushed) {
-            ResteasyContext.pushContextDataMap(contextDataMap);
-            try {
+            try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
                // make sure we flush to await for any queued data being sent
                AsyncOutputStream aos = response.getAsyncOutputStream();
                aos.asyncFlush().toCompletableFuture().get();
             }catch(IOException | InterruptedException | ExecutionException x) {
                // ignore it and let's just close
-            }finally {
-               ResteasyContext.removeContextDataLevel();
             }
          }
          if (asyncContext.isSuspended())
@@ -295,8 +293,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       synchronized (lock)
       {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         try
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap))
          {
             if (event != null)
             {
@@ -376,10 +373,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             CompletableFuture<Void> ret = new CompletableFuture<>();
             ret.completeExceptionally(new ProcessingException(e));
             return ret;
-         }
-         finally
-         {
-            ResteasyContext.removeContextDataLevel();
          }
       }
       return CompletableFuture.completedFuture(null);

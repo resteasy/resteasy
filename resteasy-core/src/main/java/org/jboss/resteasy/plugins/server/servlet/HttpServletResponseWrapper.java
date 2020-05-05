@@ -16,6 +16,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -36,11 +37,8 @@ public class HttpServletResponseWrapper implements HttpResponse
          this.stream = stream;
       }
       public void work(ServletOutputStream sos) {
-         ResteasyContext.pushContextDataMap(contextDataMap);
-         try {
+         try(CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)){
             doWork(sos);
-         }finally {
-            ResteasyContext.removeContextDataLevel();
          }
       }
       protected abstract void doWork(ServletOutputStream sos);
