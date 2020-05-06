@@ -14,10 +14,6 @@
   <name>MicroProfile Rest Client TCK</name>
   <packaging>jar</packaging>
 
-  <properties>
-    <skip.mp.tck>false</skip.mp.tck>
-  </properties>
-
   <dependencies>
 
     <!-- REST Client implementation-->
@@ -115,7 +111,7 @@
       <plugin>
         <groupId>uk.co.automatictester</groupId>
         <artifactId>wiremock-maven-plugin</artifactId>
-        <version>6.0.0</version>
+        <version>4.1.0</version>
         <executions>
           <execution>
             <phase>generate-test-sources</phase>
@@ -123,25 +119,15 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <skip>${skip.mp.tck}</skip>
               <dir>target/classes</dir>
               <params>--port=8765</params>
             </configuration>
           </execution>
-        </executions><dependencies>
-        <dependency>
-          <groupId>com.github.tomakehurst</groupId>
-          <artifactId>wiremock</artifactId>
-          <version>2.26.3</version>
-        </dependency>
-      </dependencies>
+        </executions>
       </plugin>
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>${skip.mp.tck}</skip>
-        </configuration>
         <executions>
           <execution>
             <id>default-test</id>
@@ -163,18 +149,4 @@
 
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>skip-mp-tck</id>
-      <activation>
-        <os>
-          <family>Windows</family>
-        </os>
-      </activation>
-      <properties>
-        <skip.mp.tck>true</skip.mp.tck>
-      </properties>
-    </profile>
-  </profiles>
 </project>
