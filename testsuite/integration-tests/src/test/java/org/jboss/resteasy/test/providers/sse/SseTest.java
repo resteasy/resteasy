@@ -42,7 +42,6 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore("FIXME https://issues.redhat.com/browse/RESTEASY-2542")
 public class SseTest
 {
 
@@ -257,6 +256,7 @@ public class SseTest
    //with LastEventId and receive the missed events
    @Test
    @InSequence(5)
+   @Ignore("FIXME https://issues.redhat.com/browse/RESTEASY-2542")
    public void testReconnect() throws Exception
    {
       int proxyPort = 9090;
