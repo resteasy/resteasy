@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.cdi.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooException;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooExceptionMapper;
 import org.jboss.resteasy.test.cdi.basic.resource.EjbExceptionUnwrapFooResource;
@@ -20,6 +21,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -109,6 +111,9 @@ public class EjbExceptionUnwrapTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Category({
+      ExpectedFailingWithStandaloneMicroprofileConfiguration.class  //  fails because /basic is not found (MP is missing EJB3)
+   })
    public void testLocatingResource() throws Exception {
       {
          Response response = client.target(generateURL("/locating/basic")).request().get();

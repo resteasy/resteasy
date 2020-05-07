@@ -11,6 +11,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -50,7 +51,7 @@ import java.util.Hashtable;
 @ServerSetup({BasicAuthTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({ExpectedFailingOnWildFly18.class}) //WFLY-12655
+@Category({ExpectedFailingOnWildFly18.class})   //WFLY-12655
 public class BasicAuthTest {
 
    private static final String WRONG_RESPONSE = "Wrong response content.";
@@ -136,6 +137,10 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testProxy() throws Exception {
       BasicAuthBaseProxy proxy = authorizedClient.target(generateURL("/")).proxyBuilder(BasicAuthBaseProxy.class).build();
       Assert.assertEquals(WRONG_RESPONSE, proxy.get(), "hello");
@@ -147,6 +152,10 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testProxyFailure() throws Exception {
       BasicAuthBaseProxy proxy = noAutorizationClient.target(generateURL("/")).proxyBuilder(BasicAuthBaseProxy.class).build();
       try {
@@ -163,6 +172,10 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testSecurity() throws Exception {
       // authorized client
       {
@@ -217,6 +230,10 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.0.16
     */
    @Test
+   @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testSecurityFailure() throws Exception {
       {
             Response response = noAutorizationClient.target(generateURL("/secured")).request().get();
@@ -262,7 +279,11 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.1.1
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
+   @Category({
+        NotForForwardCompatibility.class,
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testContentTypeWithForbiddenMessage() {
       Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
@@ -275,6 +296,10 @@ public class BasicAuthTest {
     * @tpSince RESTEasy 3.1.1
     */
    @Test
+   @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+   })
    public void testContentTypeWithUnauthorizedMessage() {
       Response response = noAutorizationClient.target(generateURL("/secured/denyWithContentType")).request().get();
       Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
@@ -287,6 +312,10 @@ public class BasicAuthTest {
      * @tpSince RESTEasy 3.7.0
      */
     @Test
+    @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    })
     public void testWithClientRequestFilterAuthorizedUser() {
         Response response = authorizedClientUsingRequestFilter.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -298,6 +327,10 @@ public class BasicAuthTest {
      * @tpSince RESTEasy 3.7.0
      */
     @Test
+    @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    })
     public void testWithClientRequestFilterWrongPassword(){
         Response response = unauthorizedClientUsingRequestFilterWithWrongPassword.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
@@ -309,6 +342,10 @@ public class BasicAuthTest {
      * @tpSince RESTEasy 3.7.0
      */
     @Test
+    @Category({
+        // MP is missing security, setup fails: "operation" => "add","address" => [("subsystem" => "security"),("security-domain" => "jaxrsSecDomain")]} failed
+        ExpectedFailingWithStandaloneMicroprofileConfiguration.class
+    })
     public void testWithClientRequestFilterUnauthorizedUser() {
         Response response = unauthorizedClientUsingRequestFilter.target(generateURL("/secured/authorized")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
