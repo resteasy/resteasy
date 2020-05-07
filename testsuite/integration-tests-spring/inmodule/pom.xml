@@ -153,6 +153,28 @@
                 </plugins>
             </build>
         </profile>
+        <!-- 
+            Test against MicroProfile config.
+            standalone-microprofile.xml is used to replace occurrences of
+            standalone-full.xml in Arquillian configuration (arquillian.xml)
+        -->
+        <profile>
+            <id>standalone.microprofile.profile</id>
+            <activation>
+                <property>
+                    <name>ts.standalone.microprofile</name>
+                </property>
+            </activation>
+            <properties>
+                <jboss.server.config.file.name>standalone-microprofile.xml</jboss.server.config.file.name>
+                <!--
+                    Excluding those tests that would need modules 
+                    which are in standalone-full.xml but not in 
+                    standalone-microprofile.xml
+                -->
+                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration</additional.surefire.excluded.groups>
+            </properties>
+        </profile>
     </profiles>
 
     <build>

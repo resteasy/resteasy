@@ -1,7 +1,7 @@
 install:
  - mvn -B clean
 script:
- - travis_wait 60 mvn -B -Ptravis -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} install
+ - travis_wait 60 mvn -B -Ptravis -fae -Dserver.version=$SERVER_VERSION ${ELYTRON:+-Delytron} ${STANDALONE_MICROPROFILE:+-Dts.standalone.microprofile} install
 
 language: java
 jdk:
@@ -9,8 +9,9 @@ jdk:
   - openjdk11
 env:
   - SERVER_VERSION=18.0.1.Final
-  - SERVER_VERSION=19.0.0.Beta2
-  - SERVER_VERSION=19.0.0.Beta2 ELYTRON=true
+  - SERVER_VERSION=19.0.0.Final
+  - SERVER_VERSION=19.0.0.Final ELYTRON=true
+  - SERVER_VERSION=19.0.0.Final STANDALONE_MICROPROFILE=true
 jobs:
   exclude:
     - jdk: openjdk11
