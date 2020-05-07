@@ -324,9 +324,27 @@ public class SseResource
             try (SseEventSink sink = eventSink)
             {
                logger.info("sending 3 events");
-               eventSink.send(builder.data("thing1").build());
-               eventSink.send(builder.data("thing2").build());
-               eventSink.send(builder.data("thing3").build());
+               eventSink.send(builder.data("thing1").build()).handle((v, t) -> {
+                  if(t != null)
+                     logger.error("First SSE send", t);
+                  else
+                     logger.info("First SSE send OK");
+                  return v;
+               });
+               eventSink.send(builder.data("thing2").build()).handle((v, t) -> {
+                  if(t != null)
+                     logger.error("Second SSE send", t);
+                  else
+                     logger.info("Second SSE send OK");
+                  return v;
+               });
+               eventSink.send(builder.data("thing3").build()).handle((v, t) -> {
+                  if(t != null)
+                     logger.error("Third SSE send", t);
+                  else
+                     logger.info("Third SSE send OK");
+                  return v;
+               });
                logger.info("sent 3 events");
             }
          }

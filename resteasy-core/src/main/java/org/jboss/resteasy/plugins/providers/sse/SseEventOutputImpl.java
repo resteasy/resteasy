@@ -100,6 +100,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                aos.asyncFlush().toCompletableFuture().get();
             }catch(IOException | InterruptedException | ExecutionException x) {
                // ignore it and let's just close
+               LOG.error("Failure to flush in close/flush", x);
             }finally {
                ResteasyContext.removeContextDataLevel();
             }
@@ -116,8 +117,10 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                   while(cause.getCause() != null && cause.getCause() != cause)
                      cause = cause.getCause();
                   if(cause instanceof IOException) {
+                     LOG.error("IOException in close/complete", x);
                      // ignore it, we're closed now
                   }else {
+                     LOG.error("Exception in close/complete", x);
                      LOG.debug(cause.getMessage());
                      return;
                   }
