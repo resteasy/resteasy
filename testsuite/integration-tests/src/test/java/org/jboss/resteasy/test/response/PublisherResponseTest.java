@@ -103,7 +103,7 @@ public class PublisherResponseTest {
       Assert.assertEquals(Arrays.asList(new String[] {"one", "two"}), list);
 
       // make sure the completion callback was called with no error
-      Builder request = client.target(generateURL("/callback-called-no-error")).request();
+      Builder request = client.target(generateURL("/callback-called-no-error/text")).request();
       Response response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -129,7 +129,7 @@ public class PublisherResponseTest {
       Assert.assertEquals("Got it", cee.getResponse().readEntity(String.class));
 
       // make sure the completion callback was called with with an error
-      Builder request = client.target(generateURL("/callback-called-with-error")).request();
+      Builder request = client.target(generateURL("/callback-called-with-error/text-error-immediate")).request();
       Response response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -150,7 +150,7 @@ public class PublisherResponseTest {
       Assert.assertEquals("Got it", entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error/text-error-deferred")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();

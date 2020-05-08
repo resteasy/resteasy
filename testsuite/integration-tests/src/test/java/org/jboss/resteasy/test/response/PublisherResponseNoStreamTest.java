@@ -81,7 +81,7 @@ public class PublisherResponseNoStreamTest {
       Assert.assertEquals("[\"one\",\"two\"]", entity);
 
       // make sure the completion callback was called with no error
-      request = client.target(generateURL("/callback-called-no-error")).request();
+      request = client.target(generateURL("/callback-called-no-error/text")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -101,7 +101,7 @@ public class PublisherResponseNoStreamTest {
       Assert.assertEquals("Got it", entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error/text-error-immediate")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -121,7 +121,7 @@ public class PublisherResponseNoStreamTest {
       Assert.assertEquals("Got it", entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error/text-error-deferred")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();

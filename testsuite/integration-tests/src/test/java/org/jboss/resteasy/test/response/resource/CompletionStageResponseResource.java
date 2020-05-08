@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.annotations.jaxrs.QueryParam;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import io.reactivex.Single;
@@ -27,7 +28,7 @@ public class CompletionStageResponseResource {
    @Path("text")
    @Produces("text/plain")
    public CompletionStage<String> text(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text"));
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -116,7 +117,7 @@ public class CompletionStageResponseResource {
    @Path("exception/delay")
    @Produces("text/plain")
    public CompletionStage<String> exceptionDelay(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/delay"));
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -138,7 +139,7 @@ public class CompletionStageResponseResource {
    @Path("exception/delay-wrapped")
    @Produces("text/plain")
    public CompletionStage<String> exceptionDelayWrapped(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/delay-wrapped"));
       CompletableFuture<String> cs = CompletableFuture.completedFuture("OK");
       ExecutorService executor = Executors.newSingleThreadExecutor();
       return cs.thenApplyAsync(text -> {
@@ -156,7 +157,7 @@ public class CompletionStageResponseResource {
    @Path("exception/immediate/runtime")
    @Produces("text/plain")
    public CompletionStage<String> exceptionImmediateRuntime(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/immediate/runtime"));
       throw new RuntimeException(EXCEPTION + ": expect stacktrace");
    }
 
@@ -164,21 +165,21 @@ public class CompletionStageResponseResource {
    @Path("exception/immediate/notruntime")
    @Produces("text/plain")
    public CompletionStage<String> exceptionImmediateNotRuntime(@Context HttpRequest req) throws Exception {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("exception/immediate/notruntime"));
       throw new Exception( EXCEPTION + ": expect stacktrace");
    }
 
    @GET
    @Path("callback-called-no-error")
-   public String callbackCalledNoError() {
-      AsyncResponseCallback.assertCalled(false);
+   public String callbackCalledNoError(@QueryParam String p) {
+      AsyncResponseCallback.assertCalled(p, false);
       return "OK";
    }
 
    @GET
    @Path("callback-called-with-error")
-   public String callbackCalledWithError() {
-      AsyncResponseCallback.assertCalled(true);
+   public String callbackCalledWithError(@QueryParam String p) {
+      AsyncResponseCallback.assertCalled(p, true);
       return "OK";
    }
 
