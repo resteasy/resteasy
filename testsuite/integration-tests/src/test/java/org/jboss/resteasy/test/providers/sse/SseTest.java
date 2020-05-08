@@ -2,8 +2,9 @@ package org.jboss.resteasy.test.providers.sse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -74,8 +75,8 @@ public class SseTest
    {
       final CountDownLatch latch = new CountDownLatch(5);
       final AtomicInteger errors = new AtomicInteger(0);
-      final List<String> results = new ArrayList<String>();
-      final List<String> sent = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
+      final List<String> sent = Collections.synchronizedList(new ArrayList<String>());
       Client client = ClientBuilder.newBuilder().build();
       WebTarget target = client.target(generateURL("/service/server-sent-events"));
       SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -121,7 +122,7 @@ public class SseTest
    public void testLastEventId() throws Exception
    {
       final CountDownLatch missedEventLatch = new CountDownLatch(3);
-      final List<String> missedEvents = new ArrayList<String>();
+      final List<String> missedEvents = Collections.synchronizedList(new ArrayList<String>());
       Client c = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget lastEventTarget = c.target(generateURL("/service/server-sent-events"));
       SseEventSourceImpl lastEventSource = (SseEventSourceImpl) SseEventSource.target(lastEventTarget).build();
@@ -147,7 +148,7 @@ public class SseTest
    @InSequence(3)
    public void testSseEvent() throws Exception
    {
-      final List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       final CountDownLatch latch = new CountDownLatch(6);
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
@@ -226,6 +227,7 @@ public class SseTest
       Assert.assertTrue("Waiting for repeatable broadcast events to be delivered has timed out.",
             latch4.await(20, TimeUnit.SECONDS));
 
+      eventSource.close();
       client.close();
       CountDownLatch latch5 = new CountDownLatch(5);
       CountDownLatch latch6 = new CountDownLatch(5);
@@ -263,7 +265,7 @@ public class SseTest
       SimpleProxyServer proxy = new SimpleProxyServer(PortProviderUtil.getHost(), PortProviderUtil.getPort(), proxyPort);
       proxy.start();
       final CountDownLatch latch = new CountDownLatch(10);
-      final List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       final AtomicInteger errors = new AtomicInteger(0);
       ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       String requestPath = PortProviderUtil.generateURL("/service/server-sent-events",
@@ -324,8 +326,8 @@ public class SseTest
    {
       final CountDownLatch latch = new CountDownLatch(1);
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
-      WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
-      List<Throwable> errorList = new ArrayList<Throwable>();
+      final WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
+      final List<Throwable> errorList = Collections.synchronizedList(new ArrayList<Throwable>());
       Thread t = new Thread(new Runnable()
       {
          @Override
@@ -361,7 +363,7 @@ public class SseTest
    {
       final CountDownLatch latch = new CountDownLatch(7);
       final AtomicInteger errors = new AtomicInteger(0);
-      final SortedSet<String> results = new TreeSet<String>();
+      final Set<String> results = Collections.synchronizedSet(new TreeSet<String>());
       Client client = ClientBuilder.newBuilder().build();
       WebTarget target = client.target(generateURL("/service/server-sent-events"));
       SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -408,7 +410,7 @@ public class SseTest
    {
       final CountDownLatch latch = new CountDownLatch(3);
       final AtomicInteger errors = new AtomicInteger(0);
-      final List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       final List<String> sent = new ArrayList<String>();
       sent.add("foo1\nbar");
       sent.add("foo2\nbar");
@@ -448,7 +450,7 @@ public class SseTest
    {
       final CountDownLatch latch = new CountDownLatch(1);
       final AtomicInteger errors = new AtomicInteger(0);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       Client client = ClientBuilder.newBuilder().build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/xmlevent"));
       SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -493,7 +495,7 @@ public class SseTest
    @InSequence(12)
    public void testNoReconnectAfterEventSinkClose() throws Exception
    {
-      List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/closeAfterSent"));
       SseEventSourceImpl sourceImpl = (SseEventSourceImpl)SseEventSource.target(target).build();

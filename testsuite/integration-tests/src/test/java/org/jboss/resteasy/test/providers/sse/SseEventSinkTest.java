@@ -63,7 +63,7 @@ public class SseEventSinkTest
       Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/stopevent"))
             .request();
       isOpenRequest.get();
-
+      isOpenClient.close();
    }
 
    @Test
@@ -99,8 +99,10 @@ public class SseEventSinkTest
 
       eventSource.close();
       Assert.assertFalse("Closed eventSource state is expceted", eventSource.isOpen());
+      client.close();
 
-      WebTarget messageTarget = ClientBuilder.newClient().target(generateURL("/service/server-sent-events"));
+      client = ClientBuilder.newClient();
+      WebTarget messageTarget = client.target(generateURL("/service/server-sent-events"));
       for (int counter = 0; counter < 5; counter++)
       {
          String msg = "messageAfterClose";
@@ -110,6 +112,7 @@ public class SseEventSinkTest
       Assert.assertTrue("EventSource should not receive msg after it is closed",
             results.indexOf("messageAfterClose") == -1);
       Assert.assertFalse("EventSink close is expected ", isOpenRequest.get().readEntity(Boolean.class));
-
+      isOpenClient.close();
+      client.close();
    }
 }

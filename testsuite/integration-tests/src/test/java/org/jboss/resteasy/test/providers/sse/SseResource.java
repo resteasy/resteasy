@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers.sse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,13 +48,13 @@ public class SseResource
 
    private volatile SseBroadcaster sseBroadcaster;
 
-   private Object openLock = new Object();
+   private final Object openLock = new Object();
 
    private volatile boolean sending = true;
 
-   private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
+   private final List<OutboundSseEvent> eventsStore = Collections.synchronizedList(new ArrayList<OutboundSseEvent>());
 
-   private AtomicInteger noContentCount = new AtomicInteger();
+   private final AtomicInteger noContentCount = new AtomicInteger();
 
    private static final Logger logger = Logger.getLogger(SseResource.class);
 

@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.sse;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class SseJsonEventTest
    public void testWithoutProvider() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(1);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = ClientBuilder.newClient();
       try
@@ -100,7 +101,7 @@ public class SseJsonEventTest
    public void testEventWithCustomProvider() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(1);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = ClientBuilder.newClient();
       try

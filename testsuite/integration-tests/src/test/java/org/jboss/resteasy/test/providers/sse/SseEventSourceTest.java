@@ -20,6 +20,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +49,7 @@ public class SseEventSourceTest {
    @Test
    public void testSseEventSourceOnEventCallback() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       Client client = ClientBuilder.newBuilder().build();
       try {
          WebTarget target = client.target(generateURL("/sse/eventssimple"));
@@ -79,7 +80,7 @@ public class SseEventSourceTest {
    @Test
    public void testSseEventSourceOnEventOnErrorCallback() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       final AtomicInteger errors = new AtomicInteger(0);
       Client client = ClientBuilder.newBuilder().build();
       try {
@@ -115,7 +116,7 @@ public class SseEventSourceTest {
    @Test
    public void testSseEventSourceOnEventOnErrorOnCompleteCallback() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
-      final List<InboundSseEvent> results = new ArrayList<InboundSseEvent>();
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<InboundSseEvent>());
       final AtomicInteger errors = new AtomicInteger(0);
       final AtomicInteger completed = new AtomicInteger(0);
       Client client = ClientBuilder.newBuilder().build();

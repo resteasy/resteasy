@@ -4,7 +4,6 @@ import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeMessageBodyWriter;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeUser;
@@ -23,6 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseSmokeTest {
-   private static final Logger logger = Logger.getLogger(SseSmokeTest.class);
    static Client client;
 
    @Deployment
@@ -61,7 +60,7 @@ public class SseSmokeTest {
     */
    @Test
    public void testSmoke() throws Exception {
-      final List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       WebTarget target = client.target(generateURL("/sse/events"));
       SseEventSource msgEventSource = SseEventSource.target(target).build();
 

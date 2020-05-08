@@ -25,13 +25,13 @@ public class SimpleProxyServer
    private static final Logger log = Logger.getLogger(SimpleProxyServer.class);
 
    // Target host
-   private String host;
+   private final String host;
 
    // Remote port
-   private int remotePort;
+   private final int remotePort;
 
    // Local port where client will connect
-   private int localPort;
+   private final int localPort;
 
    // Is there request for termination?
    private volatile boolean terminateRequest = false;
@@ -39,7 +39,7 @@ public class SimpleProxyServer
    // Main thread was terminated?
    private volatile boolean terminated = true;
 
-   private ServerSocket ss = null;
+   private volatile ServerSocket ss = null;
 
    /**
     * Create a new SimpleProxyServer.
@@ -174,15 +174,15 @@ public class SimpleProxyServer
 
       private static final int BUFFER_SIZE = 32768;
 
-      private Socket clientSocket = null;
+      private final Socket clientSocket;
 
-      private Socket serverSocket = null;
+      private volatile Socket serverSocket = null;
 
-      private String host;
+      private final String host;
 
-      private int remotePort;
+      private final int remotePort;
 
-      private SimpleProxyServer controllableProxy;
+      private final SimpleProxyServer controllableProxy;
 
       /**
        * Create a new ProxyThread.

@@ -64,18 +64,13 @@ public class SsePostResourceMethodInvokerTest {
       try {
          WebTarget baseTarget = client.target(generateURL(WITHOUT_EXCEPTION_REQUEST_FILTER))
                .path(SsePostResourceMethodInvokerTestResource.BASE_PATH);
-         try {
-            Response response = baseTarget.request(MediaType.SERVER_SENT_EVENTS_TYPE).buildGet().submit().get(10,
-                  TimeUnit.SECONDS);
-            try {
-               Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            } finally {
-               client.close();
-            }
-         } catch (TimeoutException e) {
-            Assert.fail("Sse initial 200 ok response is expected when resource method resource returns first.");
-         }
+         Response response = baseTarget.request(MediaType.SERVER_SENT_EVENTS_TYPE).buildGet().submit().get(10,
+               TimeUnit.SECONDS);
+         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+      } catch (TimeoutException e) {
+         Assert.fail("Sse initial 200 ok response is expected when resource method resource returns first.");
       } finally {
+         client.close();
          client = ClientBuilder.newClient();
          try {
             client.target(generateURL(WITHOUT_EXCEPTION_REQUEST_FILTER))

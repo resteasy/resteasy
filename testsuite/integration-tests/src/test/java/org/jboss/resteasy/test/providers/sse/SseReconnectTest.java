@@ -23,6 +23,7 @@ import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +94,7 @@ public class SseReconnectTest {
    public void testSseEndpointUnavailable() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
       final AtomicInteger errors = new AtomicInteger(0);
-      final List<String> results = new ArrayList<String>();
+      final List<String> results = Collections.synchronizedList(new ArrayList<String>());
       Client client = ClientBuilder.newBuilder().build();
       try {
          WebTarget target = client.target(generateURL("/reconnect/unavailable"));
@@ -126,9 +127,9 @@ public class SseReconnectTest {
    @Test
    public void testReconnectDelayIsUsed() throws Exception
    {
-      CountDownLatch latch = new CountDownLatch(1);
-      List<InboundSseEvent> results = new ArrayList<>();
-      AtomicInteger errorCount = new AtomicInteger();
+      final CountDownLatch latch = new CountDownLatch(1);
+      final List<InboundSseEvent> results = Collections.synchronizedList(new ArrayList<>());
+      final AtomicInteger errorCount = new AtomicInteger();
       Client client = ClientBuilder.newBuilder().build();
       try
       {

@@ -18,13 +18,10 @@ public class ExecutorServletContextListener implements ServletContextListener
 
    private static final Logger logger = Logger.getLogger(ExecutorServletContextListener.class);
 
-   private ExecutorService executors = null;
-
    @Override
    public void contextInitialized(ServletContextEvent sce)
    {
-      executors = Executors.newCachedThreadPool();
-      sce.getServletContext().setAttribute(TEST_EXECUTOR, executors);
+      sce.getServletContext().setAttribute(TEST_EXECUTOR, Executors.newCachedThreadPool());
 
    }
 

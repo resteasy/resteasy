@@ -274,7 +274,7 @@ public class SseBroadcasterTest
       return new SseEventSink()
       {
 
-         private boolean closed;
+         private volatile boolean closed;
 
          @Override
          public CompletionStage<?> send(OutboundSseEvent event)
