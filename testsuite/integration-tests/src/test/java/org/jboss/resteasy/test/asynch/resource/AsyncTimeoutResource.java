@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 
+
 @Path("/")
 public class AsyncTimeoutResource {
     private static boolean timeout = false;
