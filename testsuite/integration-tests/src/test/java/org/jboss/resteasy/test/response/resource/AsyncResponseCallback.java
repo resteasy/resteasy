@@ -8,7 +8,7 @@ import javax.ws.rs.container.CompletionCallback;
 public class AsyncResponseCallback implements CompletionCallback {
 
    private static CountDownLatch latch;
-   private static Throwable error;
+   private static volatile Throwable error;
 
    public AsyncResponseCallback()
    {
