@@ -20,7 +20,7 @@ public class AsyncTimeoutResource {
             timeout = true;
             latch.countDown();
         });
-        response.setTimeout(1, TimeUnit.SECONDS);
+        response.setTimeout(2, TimeUnit.SECONDS);
         response.resume("Async hello");
     }
 
