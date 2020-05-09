@@ -17,6 +17,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class SseBroadcasterImpl implements SseBroadcaster
@@ -62,7 +63,13 @@ public class SseBroadcasterImpl implements SseBroadcaster
          //is it necessay to close the subsribed SseEventSink ?
          outputQueue.forEach(eventSink -> {
             eventSink.close();
-            notifyOnCloseListeners(eventSink);
+            try {
+               eventSink.close();
+            } catch (RuntimeException e) {
+               LogMessages.LOGGER.debug(e.getLocalizedMessage());
+            } finally {
+               notifyOnCloseListeners(eventSink);
+            }
          });
       }
       finally
