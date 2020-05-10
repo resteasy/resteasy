@@ -212,12 +212,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
-                <version>${version.org.jboss.weld.se.weld-se-core}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>${version.org.glassfish.jaxb.jaxb}</version>
@@ -559,11 +553,6 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>
                 <version>${version.org.codehaus.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.tomakehurst</groupId>
-                <artifactId>wiremock</artifactId>
-                <version>${version.com.github.tomakehurst.wiremock}</version>
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>
