@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.form;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.test.form.resource.ResteasyUseContainerFormParamsFilter;
 import org.jboss.resteasy.test.form.resource.ResteasyUseContainerFormParamsResource;
 import org.jboss.resteasy.utils.PortProviderUtil;

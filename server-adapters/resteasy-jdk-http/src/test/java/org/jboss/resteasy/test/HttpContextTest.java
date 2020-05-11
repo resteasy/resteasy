@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
-import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
