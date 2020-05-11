@@ -89,7 +89,7 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
 
       // make sure the completion callback was called with no error
-      request = client.target(generateURL("/callback-called-no-error")).request();
+      request = client.target(generateURL("/callback-called-no-error?p=text")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -176,7 +176,7 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error?p=exception/delay")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -197,7 +197,7 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(CompletionStageResponseResource.EXCEPTION, entity);
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error?p=exception/delay-wrapped")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -218,7 +218,7 @@ public class CompletionStageResponseTest {
       response.close();
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error?p=exception/immediate/runtime")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
@@ -239,7 +239,7 @@ public class CompletionStageResponseTest {
       response.close();
 
       // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
+      request = client.target(generateURL("/callback-called-with-error?p=exception/immediate/notruntime")).request();
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       response.close();
