@@ -20,8 +20,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public abstract class AsyncResponseFilter implements ContainerResponseFilter {
 
-   private String name;
-   private String callbackException;
+   private final String name;
+   private volatile String callbackException;
    private static final Logger LOG = Logger.getLogger(AsyncRequestFilter.class);
 
    public AsyncResponseFilter(final String name)

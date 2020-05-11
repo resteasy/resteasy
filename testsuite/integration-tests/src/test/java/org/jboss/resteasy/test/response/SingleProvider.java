@@ -16,7 +16,7 @@ public class SingleProvider implements AsyncResponseProvider<Single<?>>
 
    private static class SingleAdaptor<T> extends CompletableFuture<T>
    {
-      private Disposable subscription;
+      private final Disposable subscription;
 
       SingleAdaptor(final Single<T> observable)
       {
