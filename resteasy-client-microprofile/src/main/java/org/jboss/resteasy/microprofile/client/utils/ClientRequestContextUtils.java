@@ -25,6 +25,19 @@ public class ClientRequestContextUtils {
         return invocation.getClientInvoker().getMethod();
     }
 
+    /**
+     * Get {@link Class} for the client call from {@link ClientRequestContext}
+     * @param requestContext the context
+     * @return the class
+     */
+    public static Class<?> getDeclaringClass(ClientRequestContext requestContext) {
+        if(requestContext instanceof ClientRequestContextImpl == false) {
+            throw new RuntimeException("Failed to get ClientInvocation from request context. Is RestEasy client used underneath?");
+        }
+        ClientInvocation invocation = ((ClientRequestContextImpl)requestContext).getInvocation();
+        return invocation.getClientInvoker().getDeclaring();
+    }
+
     private ClientRequestContextUtils() {
     }
 }
