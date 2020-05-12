@@ -57,6 +57,10 @@ public class SimpleProxyServer
       this.localPort = localPort;
    }
 
+   public boolean isStarted() {
+      return ss != null;
+   }
+
    /**
     * Start proxy
     */
