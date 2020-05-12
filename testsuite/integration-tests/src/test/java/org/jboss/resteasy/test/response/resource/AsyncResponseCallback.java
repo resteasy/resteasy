@@ -7,8 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.container.CompletionCallback;
 
+import org.jboss.logging.Logger;
+
 public class AsyncResponseCallback implements CompletionCallback {
 
+   private final Logger logger = Logger.getLogger(AsyncResponseCallback.class);
    private static Map<String, CountDownLatch> latches = new ConcurrentHashMap<String, CountDownLatch>();
    private static Map<String, Throwable> errors = new ConcurrentHashMap<String, Throwable>();
    private final String s;
@@ -23,9 +26,12 @@ public class AsyncResponseCallback implements CompletionCallback {
    @Override
    public void onComplete(Throwable throwable)
    {
+      logger.info("[onComplete][s = " + s + "] throwable is " + (throwable != null ? "NOT null" : "null") + " , latch count = " + latches.get(s).getCount());
       latches.get(s).countDown();
-      if (throwable != null)
-         errors.put(s, throwable);
+      if (throwable != null) {
+         Throwable old = errors.put(s, throwable);
+         logger.info("[onComplete][s = " + s + "] old throwable was " + (old != null ? "NOT null" : "null"));
+      }
    }
 
    public static void assertCalled(String s, boolean withError)
