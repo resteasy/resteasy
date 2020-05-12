@@ -27,11 +27,11 @@ public class AsyncResponseCallback implements CompletionCallback {
    public void onComplete(Throwable throwable)
    {
       logger.info("[onComplete][s = " + s + "] throwable is " + (throwable != null ? "NOT null" : "null") + " , latch count = " + latches.get(s).getCount());
-      latches.get(s).countDown();
       if (throwable != null) {
          Throwable old = errors.put(s, throwable);
          logger.info("[onComplete][s = " + s + "] old throwable was " + (old != null ? "NOT null" : "null"));
       }
+      latches.get(s).countDown();
    }
 
    public static void assertCalled(String s, boolean withError)
