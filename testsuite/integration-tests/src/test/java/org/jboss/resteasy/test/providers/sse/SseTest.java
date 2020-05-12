@@ -258,6 +258,12 @@ public class SseTest
       int proxyPort = 9090;
       SimpleProxyServer proxy = new SimpleProxyServer(PortProviderUtil.getHost(), PortProviderUtil.getPort(), proxyPort);
       proxy.start();
+      int maxWaits = 30;
+      while(!proxy.isStarted()) {
+         Assert.assertTrue(maxWaits-- > 0);
+         logger.info("Proxy not started yet, sleeping 100ms");
+         Thread.sleep(100);
+      }
       final CountDownLatch latch = new CountDownLatch(10);
       final List<String> results = new ArrayList<String>();
       final AtomicInteger errors = new AtomicInteger(0);
