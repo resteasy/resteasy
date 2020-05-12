@@ -36,7 +36,7 @@ public class ClientHeadersFactoryCDITest {
 
       @Inject
       @RestClient
-      private TestResourceIntf service;
+      private SubClassResourceIntf service;
 
       public String work() {
          return service.hello("Stefano");
@@ -44,15 +44,17 @@ public class ClientHeadersFactoryCDITest {
    }
 
    @Path("/")
-   @RegisterRestClient(baseUri="http://localhost:8081")
-   @RegisterClientHeaders(TestClientHeadersFactory.class)
-   @ClientHeaderParam(name="IntfHeader", value="intfValue")
    public interface TestResourceIntf {
 
       @Path("hello/{h}")
       @GET
       String hello(@PathParam("h") String h);
    }
+
+   @RegisterRestClient(baseUri="http://localhost:8081")
+   @RegisterClientHeaders(TestClientHeadersFactory.class)
+   @ClientHeaderParam(name="IntfHeader", value="intfValue")
+   public interface SubClassResourceIntf extends TestResourceIntf {};
 
    @Path("/")
    public static class TestResource {
@@ -102,7 +104,7 @@ public class ClientHeadersFactoryCDITest {
    public static void init() throws Exception {
       Weld weld = new Weld();
       weld.addBeanClass(Worker.class);
-      weld.addBeanClass(TestResourceIntf.class);
+      weld.addBeanClass(SubClassResourceIntf.class);
       weld.addBeanClass(TestClientHeadersFactory.class);
       weld.addBeanClass(Counter.class);
       container = weld.initialize();
