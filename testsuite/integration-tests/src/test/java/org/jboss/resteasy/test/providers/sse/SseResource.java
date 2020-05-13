@@ -64,9 +64,9 @@ public class SseResource
    {
       synchronized (outputLock)
       {
-         if (this.eventSink != null && !this.eventSink.isClosed())
+         if (eventSink.isClosed())
          {
-            throw new IllegalStateException("Server sink already served.");
+            throw new IllegalStateException("SseEvnet sink is closed");
          }
       }
       this.eventSink = eventSink;
