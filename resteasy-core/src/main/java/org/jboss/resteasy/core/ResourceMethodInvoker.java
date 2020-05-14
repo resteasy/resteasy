@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.Stream;
 import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.core.registry.SegmentNode;
+import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -160,13 +161,20 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          {
             clazz = getMethod().getDeclaringClass();
          }
-         if (validator instanceof GeneralValidatorCDI)
+         if (resource instanceof JndiComponentResourceFactory)
          {
-            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(clazz, injector);
+            isValidatable = true;
          }
          else
          {
-            isValidatable = validator.isValidatable(clazz);
+            if (validator instanceof GeneralValidatorCDI)
+            {
+               isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(clazz, injector);
+            }
+            else
+            {
+               isValidatable = validator.isValidatable(clazz);
+            }
          }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
