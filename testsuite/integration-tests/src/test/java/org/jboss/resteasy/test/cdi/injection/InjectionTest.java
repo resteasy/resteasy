@@ -24,6 +24,7 @@ import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
@@ -59,6 +60,7 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -71,6 +73,9 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+})
 public class InjectionTest extends AbstractInjectionTestBase {
    protected static final Logger log = LogManager.getLogger(InjectionTest.class.getName());
 

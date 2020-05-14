@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -21,6 +22,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedReader;
@@ -48,6 +50,9 @@ import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
 
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class    //  java.lang.ClassNotFoundException: javax.faces.webapp.FacesServlet (MP is missing JSF)
+})
 public class CDIResourceTest {
 
    protected static final Logger logger = LogManager.getLogger(CDIResourceTest.class.getName());

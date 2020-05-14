@@ -81,6 +81,15 @@ Run testsuite or test with the Wildfly with security manager enabled:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dsecurity.manager
 
+### Use standalone-micoprofile.xml configuration
+Starting with Wildfly 19.0.0.Final, a set of new files were added to the 
+distribution in order to start the server up with a MicroProfile-oriented 
+configuration. 
+Passing the `-Dts.standalone.microprofile` property to Maven will force
+the usage of `standalone-microprofile.xml` configuration file:
+
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dts.standalone.microprofile
+
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``
 
