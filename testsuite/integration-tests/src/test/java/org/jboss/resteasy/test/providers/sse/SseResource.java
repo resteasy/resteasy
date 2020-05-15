@@ -66,7 +66,7 @@ public class SseResource
       {
          if (eventSink.isClosed())
          {
-            throw new IllegalStateException("SseEvnet sink is closed");
+            throw new IllegalStateException("SseEvent sink is closed");
          }
       }
       this.eventSink = eventSink;

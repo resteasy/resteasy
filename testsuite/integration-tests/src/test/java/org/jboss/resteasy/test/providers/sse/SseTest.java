@@ -89,6 +89,7 @@ public class SseTest
                throw new RuntimeException(ex);
             }) ;
          eventSource.open();
+         //Workaround for https://issues.redhat.com/browse/RESTEASY-2585
          Thread.sleep(1000);
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
@@ -375,6 +376,7 @@ public class SseTest
                throw new RuntimeException(ex);
             });
          eventSource.open();
+         //Workaround for https://issues.redhat.com/browse/RESTEASY-2585
          Thread.sleep(1000);
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
