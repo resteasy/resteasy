@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,6 +33,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
 
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
@@ -153,11 +154,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             {
                //set back to client 200 OK to implies the SseEventOutput is ready
                ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
-               Produces produces = method.getMethod().getAnnotation(Produces.class);
-               if (produces != null & contains(produces.value(), MediaType.SERVER_SENT_EVENTS))
+               MediaType[] mediaTypes = method.getProduces();
+               if (mediaTypes != null &&  Arrays.asList(mediaTypes).contains(MediaType.SERVER_SENT_EVENTS_TYPE))
                {
                   // @Produces("text/event-stream")
-                  SseElementType sseElementType = method.getMethod().getAnnotation(SseElementType.class);
+                  SseElementType sseElementType = FindAnnotation.findAnnotation(method.getMethodAnnotations(), SseElementType.class);
                   if (sseElementType != null)
                   {
                      // Get element media type from @SseElementType.
@@ -175,7 +176,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
                }
                else
                {
-                  Stream stream = method.getMethod().getAnnotation(Stream.class);
+                  Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(), Stream.class);
                   if (stream != null)
                   {
                      // Get element media type from @Produces.
@@ -325,7 +326,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private String[] getStreamType(ResourceMethodInvoker method)
    {
-      Stream stream = method.getMethod().getAnnotation(Stream.class);
+      Stream stream = FindAnnotation.findAnnotation(method.getMethodAnnotations(), Stream.class);
       Stream.MODE mode = stream != null ? stream.value() : null;
       if (mode == null)
       {
@@ -340,18 +341,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          return new String[] {"application", "x-stream-raw"};
       }
       throw new RuntimeException(Messages.MESSAGES.expectedStreamModeGeneralOrRaw(mode));
-   }
-
-   private boolean contains(String[] ss, String t)
-   {
-      for (String s : ss)
-      {
-         if (s.startsWith(t))
-         {
-            return true;
-         }
-      }
-      return false;
    }
 
    @Override
