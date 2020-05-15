@@ -4,7 +4,7 @@
 
 RESTEasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
 
-The project page can be found at [https://resteasy.jboss.org](https://resteasy.jboss.org).
+The project page can be found at [https://resteasy.github.io](https://resteasy.github.io).
 
 ## JAX-RS
 
@@ -12,14 +12,14 @@ RESTEasy is a JBoss project that provides various frameworks to help you build R
 
 ## Getting started with RESTEasy
 
-- Read a [book](https://resteasy.jboss.org/books.html)
+- Read a [book](https://resteasy.github.io/books)
 - Check out the [examples](https://github.com/resteasy/resteasy-examples) in the repository.
-- Read the [documentation](https://resteasy.jboss.org/docs).
-- The blog is [here](https://resteasy.jboss.org/blogs).
+- Read the [documentation](https://resteasy.github.io/docs).
+- The blog is [here](https://resteasy.github.io//blogs).
 
 ## Documentation
 
-To read the documentation you can [read it online](https://resteasy.jboss.org/docs).
+To read the documentation you can [read it online](https://resteasy.github.io/docs).
 
 ## Issues
 
