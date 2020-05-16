@@ -12,6 +12,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeterResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeting;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -24,6 +25,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -34,6 +36,9 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing EJB3
+})
 public class EJBCDIValidationEJBProxyTest {
 
    private static final String VALID_REQUEST = "{\n"
@@ -50,6 +55,7 @@ public class EJBCDIValidationEJBProxyTest {
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(EJBCDIValidationEJBProxyTest.class.getSimpleName());
       war.addClass(EJBCDIValidationEJBProxyGreeting.class);
+      war.addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.setWebXML(EJBCDIValidationEJBProxyTest.class.getPackage(), "web.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(

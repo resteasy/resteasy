@@ -81,12 +81,14 @@ Run testsuite or test with the Wildfly with security manager enabled:
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dsecurity.manager
 
-### Remote server
-Run testsuite or test connecting to a running server:
+### Use standalone-micoprofile.xml configuration
+Starting with Wildfly 19.0.0.Final, a set of new files were added to the 
+distribution in order to start the server up with a MicroProfile-oriented 
+configuration. 
+Passing the `-Dts.standalone.microprofile` property to Maven will force
+the usage of `standalone-microprofile.xml` configuration file:
 
-> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Darquillian.remote
-
-Keep in mind that the remote server needs to be started with the option `-Dnode=127.0.0.1` or the binding IP in order for some tests to work properly.
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dts.standalone.microprofile
 
 ### Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``

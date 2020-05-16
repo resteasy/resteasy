@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonLocalIF;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonRootResource;
 import org.jboss.resteasy.test.cdi.basic.resource.SingletonSubResource;
@@ -18,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -33,6 +35,9 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // java.lang.NoClassDefFoundError: javax/ejb/EJBException (MP is missing EJB3)
+})
 public class SingletonTest {
    static Client client;
    protected static final Logger logger = LogManager.getLogger(SingletonTest.class.getName());

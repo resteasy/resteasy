@@ -39,7 +39,7 @@ public class ClientHeadersRequestFilter implements ClientRequestFilter {
         Optional<ClientHeaderProvider> handler = ClientHeaderProviders.getProvider(method);
         handler.ifPresent(h -> h.addHeaders(headers));
 
-        Optional<ClientHeadersFactory> factory = ClientHeaderProviders.getFactory(method.getDeclaringClass());
+        Optional<ClientHeadersFactory> factory = ClientHeaderProviders.getFactory(ClientRequestContextUtils.getDeclaringClass(requestContext));
 
         requestContext.getHeaders().forEach(
                 (key, values) -> headers.put(key, castToListOfStrings(values))

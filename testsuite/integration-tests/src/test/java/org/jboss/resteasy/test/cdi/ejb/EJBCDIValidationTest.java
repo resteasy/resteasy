@@ -13,6 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationApplication;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationSingletonResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatefulResource;
@@ -27,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -41,13 +43,14 @@ public class EJBCDIValidationTest {
 
    private static Client client;
 
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
       WebArchive war = TestUtil.prepareArchive(EJBCDIValidationTest.class.getSimpleName());
       war.addClasses(EJBCDIValidationApplication.class)
       .addClasses(EJBCDIValidationStatelessResource.class)
       .addClasses(EJBCDIValidationStatefulResource.class)
       .addClasses(EJBCDIValidationSingletonResource.class)
+      .addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
       .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
               new HibernateValidatorPermission("accessPrivateMembers")
@@ -74,6 +77,7 @@ public class EJBCDIValidationTest {
     * @tpSince RESTEasy 4.0.0
     */
    @Test
+   @Category({ExpectedFailingWithStandaloneMicroprofileConfiguration.class})
    public void testStateless() {
       // Expect property, parameter violations.
       WebTarget base = client.target(generateURL("/rest/stateless/"));
@@ -134,6 +138,7 @@ public class EJBCDIValidationTest {
     * @tpSince RESTEasy 4.0.0
     */
    @Test
+   @Category({ExpectedFailingWithStandaloneMicroprofileConfiguration.class})
    public void testSingleton() {
       doTestSingleton(1); // Expect property violation when EJB resource gets created.
       doTestSingleton(0); // EJB resource has been created: expect no property violation.

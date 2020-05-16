@@ -97,9 +97,10 @@ public class DeploymentTest
       deployment.getRegistry().addPerInstanceResource(Resource.class);
       Vertx vertx = Vertx.factory.vertx();
       Client client = ClientBuilder.newClient();
+      HttpServer server = null;
       try
       {
-         HttpServer server = vertx.createHttpServer();
+         server = vertx.createHttpServer();
          server.requestHandler(new VertxRequestHandler(vertx, deployment));
          final CompletableFuture<Void> listenLatch = new CompletableFuture<>();
          server.listen(TestPortProvider.getPort(), new Handler<AsyncResult<HttpServer>>()
@@ -123,6 +124,9 @@ public class DeploymentTest
       } finally
       {
          client.close();
+         if (server != null) {
+            server.close();
+         }
          vertx.close();
          deployment.stop();
       }

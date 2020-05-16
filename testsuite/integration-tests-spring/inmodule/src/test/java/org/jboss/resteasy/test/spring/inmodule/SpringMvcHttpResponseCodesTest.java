@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -168,6 +169,7 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
+   @Category(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
    public void testNotAuthorizedException() {
       Response response = nonAutorizedClient.target(generateURL("/secured/json")).request()
             .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
@@ -180,7 +182,7 @@ public class SpringMvcHttpResponseCodesTest {
     * @tpSince RESTEasy 3.1.0
     */
    @Test
-   @Category(NotForForwardCompatibility.class)
+   @Category({NotForForwardCompatibility.class, ExpectedFailingWithStandaloneMicroprofileConfiguration.class})
    public void testForbiddenException() {
       Response response = userAuthorizedClient.target(generateURL("/secured/json")).request()
             .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
@@ -188,7 +190,7 @@ public class SpringMvcHttpResponseCodesTest {
    }
 
    @Test
-   @Category(NotForForwardCompatibility.class)
+   @Category({NotForForwardCompatibility.class, ExpectedFailingWithStandaloneMicroprofileConfiguration.class})
    public void testOK() {
       Response response = authorizedClient.target(generateURL("/secured/json")).request()
             .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));

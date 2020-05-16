@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.reactivestreams.Publisher;
 
@@ -27,7 +28,7 @@ public class PublisherResponseResource {
    @Produces("application/json")
    @Stream
    public Publisher<String> text(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text"));
       return Flowable.fromArray("one", "two");
    }
 
@@ -46,9 +47,9 @@ public class PublisherResponseResource {
    }
 
    @GET
-   @Path("callback-called-no-error")
-   public String callbackCalledNoError() {
-      AsyncResponseCallback.assertCalled(false);
+   @Path("callback-called-no-error/{p}")
+   public String callbackCalledNoError(@PathParam String p) {
+      AsyncResponseCallback.assertCalled(p, false);
       return "OK";
    }
 
@@ -57,7 +58,7 @@ public class PublisherResponseResource {
    @Produces("application/json")
    @Stream
    public Publisher<String> textErrorImmediate(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text-error-immediate"));
       throw new AsyncResponseException();
    }
 
@@ -66,14 +67,14 @@ public class PublisherResponseResource {
    @Produces("application/json")
    @Stream
    public Publisher<String> textErrorDeferred(@Context HttpRequest req) {
-      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback("text-error-deferred"));
       return Flowable.error(new AsyncResponseException());
    }
 
    @GET
-   @Path("callback-called-with-error")
-   public String callbackCalledWithError() {
-      AsyncResponseCallback.assertCalled(true);
+   @Path("callback-called-with-error/{p}")
+   public String callbackCalledWithError(@PathParam String p) {
+      AsyncResponseCallback.assertCalled(p, true);
       return "OK";
    }
 
