@@ -1,5 +1,7 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -11,7 +13,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -68,6 +69,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private static class SecureRandomWrapper
    {
       private static final int DEFAULT_MAX_USES = 100;
+      private static final String DEFAULT_MAX_USES_STRING = "100";
       private SecureRandom random;
       private int maxUses = -1;
       private int uses = 0; // uses > maxUses so that context parameters will get checked upon first use.
@@ -94,22 +96,15 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
       private int getMaxUses()
       {
-         maxUses = DEFAULT_MAX_USES;
-         ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
-         if (context != null)
+         try
          {
-            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
-            if (s != null)
-            {
-               try
-               {
-                  maxUses = Integer.parseInt(s);
-               }
-               catch (NumberFormatException e)
-               {
-                  LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, Integer.toString(DEFAULT_MAX_USES));
-               }
-            }
+            String s = ResteasyConfigFactory.getConfig().getValue(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, SOURCE.SERVLET_CONTEXT, DEFAULT_MAX_USES_STRING);
+            maxUses = Integer.parseInt(s);
+         }
+         catch (IllegalArgumentException e)
+         {
+            LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, Integer.toString(DEFAULT_MAX_USES));
+            maxUses = DEFAULT_MAX_USES;
          }
          return maxUses;
       }

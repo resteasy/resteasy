@@ -33,7 +33,8 @@ public class FilterBootstrap extends ListenerBootstrap
 
    public String getParameter(String name)
    {
-      String val = config.getInitParameter(name);
+      String val = resteasyConfig.getValue(name);
+      if (val == null) val = config.getInitParameter(name);
       if (val == null) val = super.getParameter(name);
       return val;
    }
@@ -47,7 +48,12 @@ public class FilterBootstrap extends ListenerBootstrap
    @Override
    public Set<String> getParameterNames()
    {
-      Set<String> set = super.getInitParameterNames();
+      Set<String> set = getResteasyConfigParameterNames();
+      if (set != null)
+      {
+         return set;
+      }
+      set = super.getInitParameterNames();
       Enumeration<String> en = config.getInitParameterNames();
       while (en.hasMoreElements()) set.add(en.nextElement());
       return set;

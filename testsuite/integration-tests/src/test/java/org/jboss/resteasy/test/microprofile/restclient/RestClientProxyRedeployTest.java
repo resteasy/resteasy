@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.MicroProfileDependent;
 import org.jboss.resteasy.test.microprofile.restclient.resource.RestClientProxyRedeployRemoteService;
 import org.jboss.resteasy.test.microprofile.restclient.resource.RestClientProxyRedeployResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -17,16 +18,19 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(MicroProfileDependent.class)
 public class RestClientProxyRedeployTest
 {
    @Deployment(name="deployment1", order = 1)
    public static Archive<?> deploy1() {
       WebArchive war = TestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "1");
       war.addClass(RestClientProxyRedeployRemoteService.class);
+      war.addClass(MicroProfileDependent.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient"), "MANIFEST.MF");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);
@@ -36,6 +40,7 @@ public class RestClientProxyRedeployTest
    public static Archive<?> deploy2() {
       WebArchive war = TestUtil.prepareArchive(RestClientProxyRedeployTest.class.getSimpleName() + "2");
       war.addClass(RestClientProxyRedeployRemoteService.class);
+      war.addClass(MicroProfileDependent.class);
       war.addAsManifestResource(new StringAsset("Dependencies: org.eclipse.microprofile.restclient"), "MANIFEST.MF");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       return TestUtil.finishContainerPrepare(war, null, RestClientProxyRedeployResource.class);

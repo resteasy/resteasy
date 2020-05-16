@@ -3,6 +3,9 @@ package org.jboss.resteasy.skeleton.key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -24,7 +27,7 @@ public class EnvUtil
       while (matcher.find())
       {
          String envVar = matcher.group(1);
-         String envVal = System.getProperty(envVar);
+         String envVal = ResteasyConfigFactory.getConfig().getValue(envVar, SOURCE.SYSTEM);
          if (envVal == null) envVal = "NOT-SPECIFIED";
          matcher.appendReplacement(buf, envVal.replace("\\", "\\\\"));
       }

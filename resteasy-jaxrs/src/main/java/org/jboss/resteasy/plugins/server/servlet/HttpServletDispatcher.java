@@ -5,14 +5,17 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,10 +34,12 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
    public void init(ServletConfig servletConfig) throws ServletException
    {
       super.init(servletConfig);
-      servletContainerDispatcher = new ServletContainerDispatcher();
+      Map<Class<?>, Object> map = ResteasyProviderFactory.getContextDataMap();
+      map.put(ServletContext.class, servletConfig.getServletContext());
+      map.put(ServletConfig.class, servletConfig);
+      servletContainerDispatcher = new ServletContainerDispatcher(servletConfig);
       ServletBootstrap bootstrap = new ServletBootstrap(servletConfig);
       servletContainerDispatcher.init(servletConfig.getServletContext(), bootstrap, this, this);
-      servletContainerDispatcher.getDispatcher().getDefaultContextObjects().put(ServletConfig.class, servletConfig);
 
    }
 

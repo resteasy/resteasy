@@ -1,0 +1,57 @@
+<web-app>
+   <listener>
+      <listener-class>
+         org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+      </listener-class>
+   </listener>
+
+  <!-- ** INSERT YOUR LISTENERS HERE!!!! -->
+
+   <context-param>
+      <param-name>system</param-name>
+      <param-value>system-context</param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>init</param-name>
+      <param-value>init-context</param-value>
+   </context-param>
+
+   <context-param>
+      <param-name>filter</param-name>
+      <param-value>filter-context</param-value>
+   </context-param>
+   
+   <context-param>
+      <param-name>context</param-name>
+      <param-value>context-context</param-value>
+   </context-param>
+   
+   <servlet>
+      <servlet-name>Resteasy</servlet-name>
+      <servlet-class>
+         org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+      </servlet-class>
+      
+      <init-param>
+         <param-name>javax.ws.rs.Application</param-name>
+         <param-value>org.jboss.resteasy.utils.TestApplication</param-value>
+        </init-param>
+        
+      <init-param>
+         <param-name>system</param-name>
+         <param-value>system-init</param-value>
+      </init-param>
+      
+      <init-param>
+         <param-name>init</param-name>
+         <param-value>init-init</param-value>
+      </init-param>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>Resteasy</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+
+</web-app>

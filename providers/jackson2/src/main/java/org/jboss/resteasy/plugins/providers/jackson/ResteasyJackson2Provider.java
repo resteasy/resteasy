@@ -21,6 +21,8 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
+import org.jboss.resteasy.microprofile.config.ResteasyConfig.SOURCE;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -349,12 +351,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
             @Override
             public Boolean run() {
-               String p = System.getProperty(propertyName);
+               String p = ResteasyConfigFactory.getConfig().getValue(propertyName, SOURCE.SYSTEM);
                return p != null ? Boolean.valueOf(p) : def;
             }
          });
       }
-      String p = System.getProperty(propertyName);
+      String p = ResteasyConfigFactory.getConfig().getValue(propertyName, SOURCE.SYSTEM);
       return p != null ? Boolean.valueOf(p) : def;
    }
 }

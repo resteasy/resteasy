@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.microprofile.config.ResteasyConfig;
+import org.jboss.resteasy.microprofile.config.ResteasyConfigFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -19,6 +21,7 @@ import java.util.Map;
 public abstract class ConfigurationBootstrap implements ResteasyConfiguration
 {
    private ResteasyDeployment deployment = new ResteasyDeployment();
+   protected ResteasyConfig resteasyConfig = ResteasyConfigFactory.getConfig();
 
 
    public ResteasyDeployment createDeployment()
@@ -352,5 +355,4 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration
          deployment.getUnwrappedExceptions().add(resource);
       }
    }
-
 }
