@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import org.infinispan.marshall.core.ExternallyMarshallable;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
@@ -28,6 +29,11 @@ import java.security.NoSuchAlgorithmException;
 @ConstrainedTo(RuntimeType.SERVER)
 public class ServerCacheInterceptor implements WriterInterceptor
 {
+   static
+   {
+      ExternallyMarshallable.addToWhiteList(InfinispanCache.CacheEntry.class.getName());
+   }
+
    protected ServerCache cache;
 
    public ServerCacheInterceptor(final ServerCache cache)
