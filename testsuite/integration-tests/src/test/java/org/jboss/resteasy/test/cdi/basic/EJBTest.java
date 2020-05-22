@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.cdi.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBApplication;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBBook;
 import org.jboss.resteasy.test.cdi.basic.resource.EJBBookReader;
@@ -26,6 +27,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
@@ -52,6 +54,10 @@ import static org.junit.Assert.assertEquals;
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
+
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing EJB3
+})
 public class EJBTest {
 
    private static Logger log = Logger.getLogger(EJBTest.class);
@@ -76,6 +82,7 @@ public class EJBTest {
          .addClasses(EJBBookReader.class, EJBBookReaderImpl.class)
          .addClasses(EJBBookWriterImpl.class)
          .addClasses(EJBResourceParent.class, EJBLocalResource.class, EJBRemoteResource.class, EJBBookResource.class)
+         .addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
          .setWebXML(EJBTest.class.getPackage(), "ejbtest_web.xml")
          .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       // Arquillian in the deployment

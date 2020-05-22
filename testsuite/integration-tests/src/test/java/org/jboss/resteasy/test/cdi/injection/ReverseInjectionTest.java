@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.cdi.injection;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -47,6 +48,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.jms.Connection;
@@ -79,7 +81,6 @@ import java.util.logging.LoggingPermission;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 /**
  * @tpSubChapter CDI
  * @tpChapter Integration tests
@@ -93,6 +94,9 @@ import static org.junit.Assert.assertTrue;
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
+@Category({
+    ExpectedFailingWithStandaloneMicroprofileConfiguration.class // MP is missing jboss.naming.context.java.jboss.exported.jms.RemoteConnectionFactory
+})
 public class ReverseInjectionTest extends AbstractInjectionTestBase {
    private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
 
@@ -146,6 +150,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
             .addClasses(ReverseInjectionEJBHolderRemote.class, ReverseInjectionEJBHolderLocal.class, ReverseInjectionEJBHolder.class)
             .addClasses(ReverseInjectionResource.class)
             .addClasses(CDIInjectionNewBean.class, CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
+            .addClass(ExpectedFailingWithStandaloneMicroprofileConfiguration.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             .addAsResource(ReverseInjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
       // Arquillian in the deployment

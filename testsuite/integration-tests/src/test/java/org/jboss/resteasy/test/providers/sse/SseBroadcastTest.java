@@ -4,6 +4,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.sse.resource.SseBroadcastResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -13,6 +14,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -49,6 +51,9 @@ public class SseBroadcastTest {
     * @tpSince RESTEasy 3.5.0
     */
    @Test
+   @Category({
+      ExpectedFailingWithStandaloneMicroprofileConfiguration.class  // server broadcaster of SseBroadcastResource.java does not get created
+   })
    public void testBroadcasterMultipleSinks() throws Exception {
       final CountDownLatch latch = new CountDownLatch(3);
       final AtomicInteger errors = new AtomicInteger(0);
@@ -116,6 +121,9 @@ public class SseBroadcastTest {
     * @tpSince RESTEasy 3.5.0
     */
    @Test
+   @Category({
+      ExpectedFailingWithStandaloneMicroprofileConfiguration.class  // server broadcaster dpoes not get created
+   })
    public void testBroadcasterOnCloseCallbackCloseBroadsCasterOnServer() throws Exception {
       final CountDownLatch latch = new CountDownLatch(1);
       final AtomicInteger errors = new AtomicInteger(0);
