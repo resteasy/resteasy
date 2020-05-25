@@ -1,4 +1,4 @@
-package org.jboss.resteasy.links;
+package org.jboss.resteasy.links.impl;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -17,49 +17,67 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.links.ELProvider;
+import org.jboss.resteasy.links.LinkELProvider;
+import org.jboss.resteasy.links.LinkResource;
+import org.jboss.resteasy.links.LinksProvider;
+import org.jboss.resteasy.links.ParamBinding;
+import org.jboss.resteasy.links.RESTServiceDiscovery;
+import org.jboss.resteasy.links.ResourceFacade;
 import org.jboss.resteasy.links.i18n.LogMessages;
 import org.jboss.resteasy.links.i18n.Messages;
-import org.jboss.resteasy.links.impl.AbstractLinksProvider;
-import org.jboss.resteasy.links.impl.BeanUtils;
-import org.jboss.resteasy.links.impl.EL;
-import org.jboss.resteasy.links.impl.ServiceDiscoveryException;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
 
-public class ObjectLinksProvider extends AbstractLinksProvider<Object> {
+public final class ObjectLinksProvider implements LinksProvider<Object> {
+
+    private final UriInfo uriInfo;
+
+    private final ServiceMethodsRegistry registry;
+
+    private final EJBConstraintChecker ejbConstraintChecker;
 
     public ObjectLinksProvider(final UriInfo uriInfo, final ResourceMethodRegistry resourceMethodRegistry) {
-        super(uriInfo, resourceMethodRegistry);
+        this.uriInfo = uriInfo;
+        this.registry = new ServiceMethodsRegistry(resourceMethodRegistry);
+        this.ejbConstraintChecker = new EJBConstraintChecker();
     }
 
     public RESTServiceDiscovery getLinks(Object entity) {
-        RESTServiceDiscovery restServiceDiscovery = new RESTServiceDiscovery();
-
-        for (Method method : serviceMethods) {
-            for (LinkResource linkResource : getLinkResources(method)) {
-                processLinkResource(method, entity, restServiceDiscovery, linkResource);
+        RESTServiceDiscovery links = new RESTServiceDiscovery();
+        for (Method method : registry.getMethods()) {
+            for (LinkResource linkResource : registry.getLinkResources(method)) {
+                Class<?> type = registry.getServiceType(linkResource, method);
+                if (type.isInstance(entity) && checkConstraint(linkResource, entity, method)) {
+                    addInstanceService(method, entity, linkResource, links);
+                } else if (isResourceFacade(entity, type) && checkConstraint(linkResource, type, method)) {
+                    addCollectionService(method, (ResourceFacade<?>) entity, linkResource.rel(), links);
+                }
             }
         }
-        return restServiceDiscovery;
+        return links;
     }
 
-    private void processLinkResource(Method m, Object entity, RESTServiceDiscovery ret, LinkResource service) {
-        String rel = service.rel();
-        // if we have uri templates, we need a compatible instance
-        Class<?> type = getServiceType(service, m);
-        if (type.isInstance(entity)) {
-            if (checkConstraint(service, entity, m)) {
-                addInstanceService(m, entity, uriInfo, ret, service, rel);
-            }
-        } else if (entity instanceof ResourceFacade<?> && ((ResourceFacade<?>) entity).facadeFor() == type) {
-            if (checkConstraint(service, type, m)) {
-                addCollectionService(m, (ResourceFacade<?>) entity, uriInfo, ret, service, rel);
+    public RESTServiceDiscovery getLinks(Object entity, ClassLoader classLoader) {
+        RESTServiceDiscovery links = new RESTServiceDiscovery();
+        for (Method method : registry.getMethods()) {
+            for (LinkResource linkResource : registry.getLinkResources(method)) {
+                Class<?> type = registry.getServiceType(linkResource, method, classLoader);
+                if (type.isInstance(entity) && checkConstraint(linkResource, entity, method, classLoader)) {
+                    addInstanceService(method, entity, linkResource, links);
+                } else if (isResourceFacade(entity, type) && checkConstraint(linkResource, type, method, classLoader)) {
+                    addCollectionService(method, (ResourceFacade<?>) entity, linkResource.rel(), links);
+                }
             }
         }
+        return links;
     }
 
-    private void addCollectionService(Method m, ResourceFacade<?> entity, UriInfo uriInfo,
-            RESTServiceDiscovery ret, LinkResource service, String rel) {
-        Map<String, ? extends Object> pathParameters = entity.pathParameters();
+    private boolean isResourceFacade(Object entity, Class<?> type) {
+        return entity instanceof ResourceFacade<?> && ((ResourceFacade<?>) entity).facadeFor() == type;
+    }
+
+    private void addCollectionService(Method m, ResourceFacade<?> entity, String rel, RESTServiceDiscovery links) {
+        Map<String, ?> pathParameters = entity.pathParameters();
         // do we need any path parameters?
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
         if (m.isAnnotationPresent(Path.class)) {
@@ -83,18 +101,16 @@ public class ObjectLinksProvider extends AbstractLinksProvider<Object> {
                 rel = "add";
             }
         }
-        ret.addLink(uri, rel);
+        links.addLink(uri, rel);
     }
 
-    private void addInstanceService(Method m, Object entity,
-            UriInfo uriInfo, RESTServiceDiscovery ret, LinkResource service,
-            String rel) {
+    private void addInstanceService(Method m, Object entity, LinkResource linkResource, RESTServiceDiscovery links) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
         if (m.isAnnotationPresent(Path.class)) {
             uriBuilder.path(m);
         }
-        URI uri = buildURI(uriBuilder, service, entity, m);
-
+        URI uri = buildURI(uriBuilder, linkResource, entity, m);
+        String rel = linkResource.rel();
         if (rel.length() == 0) {
             if (m.isAnnotationPresent(GET.class)) {
                 Class<?> type = m.getReturnType();
@@ -111,7 +127,7 @@ public class ObjectLinksProvider extends AbstractLinksProvider<Object> {
                 rel = "remove";
             }
         }
-        ret.addLink(uri, rel);
+        links.addLink(uri, rel);
     }
 
     private URI buildURI(UriBuilder uriBuilder, LinkResource service,
@@ -159,11 +175,19 @@ public class ObjectLinksProvider extends AbstractLinksProvider<Object> {
 
     private boolean checkConstraint(LinkResource service, Object object, Method m) {
         String constraint = service.constraint();
-        if (constraint == null || constraint.length() == 0) {
-            return checkEJBConstraint(m);
+        if (constraint.length() == 0) {
+            return ejbConstraintChecker.check(m);
         }
         Boolean ret = evaluateELBoolean(m, getELContext(m, object), constraint);
-        return ret != null && ret.booleanValue();
+        return ret != null && ret;
+    }
+
+    private boolean checkConstraint(LinkResource service, Object object, Method m, ClassLoader classLoader) {
+        if (service.constraint().length() == 0) {
+            return ejbConstraintChecker.check(m, classLoader);
+        }
+        Boolean ret = evaluateELBoolean(m, getELContext(m, object), service.constraint());
+        return ret != null && ret;
     }
 
     private ELContext getELContext(Method m, Object base) {
@@ -182,7 +206,7 @@ public class ObjectLinksProvider extends AbstractLinksProvider<Object> {
         }
         Class<? extends ELProvider> elProviderClass = linkElProvider.value();
         try {
-            return elProviderClass.newInstance();
+            return elProviderClass.getDeclaredConstructor().newInstance();
         } catch (Exception x) {
             LogMessages.LOGGER.error(Messages.MESSAGES.couldNotInstantiateELProviderClass(elProviderClass.getName()), x);
             throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToInstantiateELProvider(elProviderClass.getName()),
