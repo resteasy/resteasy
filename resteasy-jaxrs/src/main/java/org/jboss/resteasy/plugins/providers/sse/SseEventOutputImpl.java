@@ -50,7 +50,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private final Map<Class<?>, Object> contextDataMap;
 
-   private boolean responseFlushed = false;
+   private volatile boolean responseFlushed = false;
 
    private final Object lock = new Object();
 
@@ -80,6 +80,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public void close()
    {
+      // avoid even attempting to get a lock if someone else has closed it or is closing it
+      if (closed) return;
       synchronized (lock)
       {
          closed = true;
@@ -141,6 +143,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
 
    private void internalFlushResponseToClient(boolean throwIOException) throws IOException
    {
+      // avoid even attempting to get a lock if someone else has flushed the response
+      if (responseFlushed) return;
       synchronized (lock)
       {
          if (!responseFlushed)
