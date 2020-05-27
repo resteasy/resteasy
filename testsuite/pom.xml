@@ -130,7 +130,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>19.0.0.Final</server.version>
+                <server.version>20.0.0.Beta1</server.version>
             </properties>
         </profile>
         <profile>
