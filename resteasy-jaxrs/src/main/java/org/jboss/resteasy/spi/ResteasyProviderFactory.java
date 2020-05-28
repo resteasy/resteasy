@@ -758,6 +758,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return () -> removeContextDataLevel();
    }
 
+   public static CloseableContext addCloseableContextDataLevel(Map<Class<?>,Object> data)
+   {
+      pushContextDataMap(data);
+      return ResteasyProviderFactory::removeContextDataLevel;
+   }
+
    public static Map<Class<?>, Object> addContextDataLevel()
    {
       if (getContextDataLevelCount() == maxForwards)

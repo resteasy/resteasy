@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory.CloseableContext;
 
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -171,51 +172,40 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      Response response = null;
-      if (entity == null)
-      {
-         response = Response.noContent().build();
-      }
-      else if (entity instanceof Response)
-      {
-         response = (Response) entity;
-      }
-      else
-      {
-         if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
-         MediaType type = method.resolveContentType(request, entity);
-         BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
-         if (!(entity instanceof GenericEntity))
-         {
-            jaxrsResponse.setGenericType(method.getGenericReturnType());
+      try (CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap)) {
+         Response response = null;
+         if (entity == null) {
+            response = Response.noContent().build();
+         } else if (entity instanceof Response) {
+            response = (Response) entity;
+         } else {
+            if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
+            MediaType type = method.resolveContentType(request, entity);
+            BuiltResponse jaxrsResponse = (BuiltResponse) Response.ok(entity, type).build();
+            if (!(entity instanceof GenericEntity)) {
+               jaxrsResponse.setGenericType(method.getGenericReturnType());
+            }
+            jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
+            response = jaxrsResponse;
          }
-         jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
-         response = jaxrsResponse;
-      }
-      try
-      {
-         dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
-            if(t != null)
-            {
-               internalResume(t, t2 -> {
-                  onComplete.accept(t);
-                  // callbacks done by internalResume
-               });
-            }
-            else
-            {
-               onComplete.accept(null);
-               completionCallbacks(null);
-            }
-         });
-      }
-      catch (Throwable e)
-      {
-         return internalResume(e, t -> {
-            onComplete.accept(e);
-            // callbacks done by internalResume
-         });
+         try {
+            dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+               if (t != null) {
+                  internalResume(t, t2 -> {
+                     onComplete.accept(t);
+                     // callbacks done by internalResume
+                  });
+               } else {
+                  onComplete.accept(null);
+                  completionCallbacks(null);
+               }
+            });
+         } catch (Throwable e) {
+            return internalResume(e, t -> {
+               onComplete.accept(e);
+               // callbacks done by internalResume
+            });
+         }
       }
       return true;
    }
@@ -228,11 +218,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
-         onComplete.accept(t);
-         completionCallbacks(exc);
-      });
+      try(CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap)){
+         dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
+            onComplete.accept(t);
+            completionCallbacks(exc);
+         });
+      }
       return true;
    }
 

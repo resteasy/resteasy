@@ -32,6 +32,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory.CloseableContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -300,9 +301,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          return;
       }
 
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
-      try {
+      try (CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap)) {
          filter();
       }catch(Throwable t) {
          // don't throw to client
@@ -322,8 +322,9 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       }
       else
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-         writeException(t);
+         try (CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap)) {
+            writeException(t);
+         }
       }
    }
 
