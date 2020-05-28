@@ -257,8 +257,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       synchronized (lock)
       {
-         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-         try
+         try (ResteasyProviderFactory.CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap))
          {
             if (event != null)
             {
@@ -320,10 +319,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          {
             LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
             throw new ProcessingException(e);
-         }
-         finally
-         {
-            ResteasyProviderFactory.removeContextDataLevel();
          }
       }
    }
