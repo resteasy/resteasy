@@ -89,8 +89,6 @@ public class SseTest
                throw new RuntimeException(ex);
             }) ;
          eventSource.open();
-         //Workaround for https://issues.redhat.com/browse/RESTEASY-2585
-         Thread.sleep(1000);
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          for (int counter = 0; counter < 5; counter++)
@@ -382,8 +380,6 @@ public class SseTest
                throw new RuntimeException(ex);
             });
          eventSource.open();
-         //Workaround for https://issues.redhat.com/browse/RESTEASY-2585
-         Thread.sleep(1000);
          Client messageClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).connectionPoolSize(10).build();
          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
          messageTarget.request().post(Entity.text("data0a"));
