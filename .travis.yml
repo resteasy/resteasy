@@ -11,7 +11,7 @@ env:
   - SERVER_VERSION=18.0.1.Final
   - SERVER_VERSION=19.0.0.Final
   - SERVER_VERSION=19.0.0.Final ELYTRON=true
-  - SERVER_VERSION=19.0.0.Final STANDALONE_MICROPROFILE=true
+  - SERVER_VERSION=20.0.0.Beta1 STANDALONE_MICROPROFILE=true
 jobs:
   exclude:
     - jdk: openjdk11

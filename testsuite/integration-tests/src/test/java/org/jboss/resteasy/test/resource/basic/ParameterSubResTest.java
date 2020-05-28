@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.resource.basic.resource.ApplicationScopeObject;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorResource;
@@ -31,7 +30,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -46,9 +44,6 @@ import java.util.logging.LoggingPermission;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({
-    ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11.class // MP OpenAPI JAX-RS annotations scanner fails on deployment resources with a NPE
-})
 public class ParameterSubResTest {
 
    static Client client;
@@ -68,7 +63,6 @@ public class ParameterSubResTest {
       war.addClass(RequestScopedObject.class);
       war.addClass(ParameterSubResSub.class);
       war.addClass(ParameterSubResSubImpl.class);
-      war.addClass(ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11.class);
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
             new LoggingPermission("control", "")
