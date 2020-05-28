@@ -4,7 +4,6 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsAbstract;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsEntity;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsImpl;
@@ -15,7 +14,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.HttpMethod;
@@ -37,9 +35,6 @@ import java.util.Collection;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({
-    ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11.class // MP OpenAPI JAX-RS annotations scanner fails on deployment resources with a NPE
-})
 public class AnnotationInheritanceGenericsTest {
 
    private static final String TEST_NAME = AnnotationInheritanceGenericsTest.class.getSimpleName();

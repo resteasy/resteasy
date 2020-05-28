@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.client.proxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -25,7 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -44,9 +42,6 @@ import static org.jboss.resteasy.test.client.proxy.resource.GenericEntities.Gene
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({
-    ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11.class // MP OpenAPI JAX-RS annotations scanner fails on deployment resources with a NPE
-})
 public class GenericProxyTest {
    private static ResteasyClient client;
 

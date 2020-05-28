@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.path;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11;
 import org.jboss.resteasy.test.resource.path.resource.LocatorSubResourceReturningThisParamEntityPrototype;
 import org.jboss.resteasy.test.resource.path.resource.LocatorSubResourceReturningThisParamEntityWithConstructor;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -14,7 +13,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.DefaultValue;
@@ -34,9 +32,6 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({
-    ExpectedFailingBecauseOfSmallRyeMicroprofileOpenApi11.class // MP OpenAPI JAX-RS annotations scanner fails on deployment resources with a StackOverflowError
-})
 public class LocatorSubResourceReturningThisTest {
 
    @Path("resource")
