@@ -32,6 +32,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory.CloseableContext;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -104,25 +105,23 @@ public abstract class AsyncResponseConsumer
 
    protected void internalResume(Object entity, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+      try (CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap))
+      {
+         HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+         HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
 
-      BuiltResponse builtResponse = createResponse(entity, httpRequest);
-      try
-      {
-         sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
-            if(e != null)
-            {
-               exceptionWhileResuming(e);
-            }
+         BuiltResponse builtResponse = createResponse(entity, httpRequest);
+         try {
+            sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
+               if (e != null) {
+                  exceptionWhileResuming(e);
+               }
+               onComplete.accept(e);
+            });
+         } catch (Throwable e) {
+            exceptionWhileResuming(e);
             onComplete.accept(e);
-         });
-      }
-      catch (Throwable e)
-      {
-         exceptionWhileResuming(e);
-         onComplete.accept(e);
+         }
       }
    }
 
@@ -151,15 +150,17 @@ public abstract class AsyncResponseConsumer
 
    protected void internalResume(Throwable t, Consumer<Throwable> onComplete)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
-      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      try {
-         dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
-      }catch(Throwable t2) {
-         // ignore t2 and report the original exception without going through filters
-         dispatcher.unhandledAsynchronousException(httpResponse, t);
-         onComplete.accept(t);
+      try (CloseableContext c = ResteasyProviderFactory.addCloseableContextDataLevel(contextDataMap))
+      {
+         HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+         HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+         try {
+            dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
+         }catch(Throwable t2) {
+            // ignore t2 and report the original exception without going through filters
+            dispatcher.unhandledAsynchronousException(httpResponse, t);
+            onComplete.accept(t);
+         }
       }
    }
 
