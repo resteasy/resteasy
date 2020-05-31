@@ -128,6 +128,16 @@
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>${skip.mp.tck}</skip>
+          <excludes>
+             <!-- https://github.com/eclipse/microprofile-rest-client/issues/265 -->
+             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutBuilderIndependentOfMPConfigTest</exclude>
+             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutTest</exclude>
+             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigTest</exclude>
+             <exclude>org.eclipse.microprofile.rest.client.tck.timeout.TimeoutViaMPConfigWithConfigKeyTest</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>default-test</id>
