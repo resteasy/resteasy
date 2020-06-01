@@ -172,7 +172,7 @@
                     which are in standalone-full.xml but not in 
                     standalone-microprofile.xml
                 -->
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration</additional.surefire.excluded.groups>
+                <microprofile.excluded.groups>org.jboss.resteasy.category.ExpectedFailingWithStandaloneMicroprofileConfiguration</microprofile.excluded.groups>
             </properties>
         </profile>
     </profiles>
