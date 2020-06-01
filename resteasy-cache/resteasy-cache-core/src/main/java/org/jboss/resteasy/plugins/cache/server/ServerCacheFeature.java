@@ -6,6 +6,7 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.plugins.cache.server.i18n.Messages;
@@ -71,19 +72,21 @@ public class ServerCacheFeature implements Feature
    protected ServerCache getDefaultCache()
    {
       GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
+         .defaultCacheName("resteasy-default-cache")
          .globalJmxStatistics()
          .allowDuplicateDomains(true)
          .enable()
-         .jmxDomain("custom-cache")
+         .jmxDomain("resteasy-default-cache")
          .build();
       Configuration configuration = new ConfigurationBuilder()
-         .eviction()
-         .strategy(EvictionStrategy.LIRS)
-         .maxEntries(100)
+         .memory()
+         .evictionType(EvictionType.COUNT)
+         .evictionStrategy(EvictionStrategy.LIRS)
+         .size(100)
          .jmxStatistics().enable()
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
-      Cache<Object, Object> c = manager.getCache("custom-cache");
+      Cache<Object, Object> c = manager.getCache("resteasy-default-cache");
       return new InfinispanCache(c);
    }
 
