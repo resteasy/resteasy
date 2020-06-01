@@ -4,16 +4,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 import java.util.Map;
 
-import org.infinispan.marshall.core.ExternallyMarshallable;
-
 @JsonRootName("user")
 public class StoredUser extends User
 {
-   static
-   {
-      ExternallyMarshallable.addToWhiteList(StoredUser.class.getName());
-   }
-
    private Map<String, String> credentials;
 
    public Map<String, String> getCredentials()

@@ -4,15 +4,8 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 import java.io.Serializable;
 
-import org.infinispan.marshall.core.ExternallyMarshallable;
-
 @JsonRootName("role")
 public class Role implements Serializable {
-
-   static
-   {
-      ExternallyMarshallable.addToWhiteList(Role.class.getName());
-   }
 
    private String id;
 
