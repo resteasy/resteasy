@@ -6,6 +6,7 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.keystone.core.i18n.LogMessages;
@@ -172,7 +173,7 @@ public class SkeletonKeyApplication
 
    protected Cache getDefaultCache()
    {
-      GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
+      GlobalConfiguration gconfig = new GlobalConfigurationBuilder().defaultCacheName("custom-cache")
          .globalJmxStatistics()
          .allowDuplicateDomains(true)
          .enable()
@@ -180,9 +181,10 @@ public class SkeletonKeyApplication
          .build();
 
       Configuration configuration = new ConfigurationBuilder()
-         .eviction()
-         .strategy(EvictionStrategy.NONE)
-         .maxEntries(1000)
+          .memory()
+          .evictionType(EvictionType.COUNT)
+          .evictionStrategy(EvictionStrategy.NONE)
+          .size(1000)
          .jmxStatistics().enable()
          .build();
       ConfigurationBuilder configBuilder = new ConfigurationBuilder().read(configuration);

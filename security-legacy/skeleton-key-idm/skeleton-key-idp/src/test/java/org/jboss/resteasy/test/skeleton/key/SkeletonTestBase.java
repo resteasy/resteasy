@@ -16,6 +16,7 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.logging.Logger;
@@ -111,7 +112,7 @@ public class SkeletonTestBase
 
    public static Cache getDefaultCache()
    {
-      GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
+      GlobalConfiguration gconfig = new GlobalConfigurationBuilder().defaultCacheName("custom-cache")
          .globalJmxStatistics()
          .allowDuplicateDomains(true)
          .enable()
@@ -119,10 +120,11 @@ public class SkeletonTestBase
          .build();
 
       Configuration configuration = new ConfigurationBuilder()
-         .eviction()
-         .strategy(EvictionStrategy.NONE)
-         .maxEntries(5000)
-      .jmxStatistics().enable()
+         .memory()
+         .evictionType(EvictionType.COUNT)
+         .evictionStrategy(EvictionStrategy.NONE)
+         .size(5000)
+         .jmxStatistics().enable()
          .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       return manager.getCache("custom-cache");

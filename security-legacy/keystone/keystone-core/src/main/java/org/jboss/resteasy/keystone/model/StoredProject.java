@@ -6,19 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.infinispan.marshall.core.ExternallyMarshallable;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class StoredProject implements Serializable
 {
-   static
-   {
-      ExternallyMarshallable.addToWhiteList(StoredProject.class.getName());
-   }
-
    private Project project;
    private Map<String, Set<String>> userRoles = new HashMap<String, Set<String>>();
    private Map<String, String> userNameIds = new HashMap<String, String>();
