@@ -69,6 +69,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
    protected List<String> sniHostNames = new ArrayList<>();
    protected boolean trustSelfSignedCertificates = true;
    protected boolean cookieManagementEnabled;
+   protected boolean disableAutomaticRetries = false;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -681,4 +682,13 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder
       return cookieManagementEnabled;
    }
 
+   @Override
+   public ResteasyClientBuilder disableAutomaticRetries() {
+      this.disableAutomaticRetries = true;
+      return this;
+   }
+   @Override
+   public boolean isDisableAutomaticRetries() {
+      return disableAutomaticRetries;
+   }
 }

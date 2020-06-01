@@ -223,6 +223,12 @@ public abstract class ResteasyClientBuilder extends ClientBuilder
 
    public abstract long getConnectionTimeout(TimeUnit unit);
 
+   /**
+    * boolean, notify apache to disable its automatic retries.
+    */
+   public abstract ResteasyClientBuilder disableAutomaticRetries();
+   public abstract boolean isDisableAutomaticRetries();
+
    public abstract ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor);
 
    @Override
