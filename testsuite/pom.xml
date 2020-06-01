@@ -16,6 +16,7 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
+        <microprofile.excluded.groups></microprofile.excluded.groups>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <!-- Optional property for jacoco report generation -->
@@ -46,7 +47,7 @@
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                         <security.provider>${security.provider}</security.provider>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups},${microprofile.excluded.groups}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -108,7 +109,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>org.jboss.resteasy.category.MicroProfileDependent</additional.surefire.excluded.groups>
+                <microprofile.excluded.groups>org.jboss.resteasy.category.MicroProfileDependent</microprofile.excluded.groups>
             </properties>
         </profile>
         <profile>
