@@ -205,6 +205,9 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
          {
             httpClientBuilder.disableCookieManagement();
          }
+         if (that.isDisableAutomaticRetries()) {
+            httpClientBuilder.disableAutomaticRetries();
+         }
          httpClient = httpClientBuilder.build();
       }
       else {
@@ -220,6 +223,9 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                if (!that.isCookieManagementEnabled())
                {
                   httpClientBuilder.disableCookieManagement();
+               }
+               if (that.isDisableAutomaticRetries()) {
+                  httpClientBuilder.disableAutomaticRetries();
                }
                return httpClientBuilder.build();
             }
