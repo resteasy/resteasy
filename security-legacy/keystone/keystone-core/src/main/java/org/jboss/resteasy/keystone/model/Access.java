@@ -10,15 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.infinispan.marshall.core.ExternallyMarshallable;
-
 @JsonRootName("access")
 public class Access implements Serializable {
-
-   static
-   {
-      ExternallyMarshallable.addToWhiteList(Access.class.getName());
-   }
 
    @JsonIgnoreProperties(ignoreUnknown = true)
    public static final class Token implements Serializable {

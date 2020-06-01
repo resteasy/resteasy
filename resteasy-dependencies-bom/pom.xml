@@ -58,7 +58,7 @@
         <version.org.glassfish.jakarta.el>3.0.3.jbossorg-2</version.org.glassfish.jakarta.el>
         <version.org.glassfish.jakarta.json>1.1.6</version.org.glassfish.jakarta.json>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
-        <version.org.infinispan>9.4.19.Final</version.org.infinispan>
+        <version.org.infinispan>10.1.8.Final</version.org.infinispan>
         <version.org.jacoco>0.8.2</version.org.jacoco>
         <version.org.javassist>3.23.2-GA</version.org.javassist>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
