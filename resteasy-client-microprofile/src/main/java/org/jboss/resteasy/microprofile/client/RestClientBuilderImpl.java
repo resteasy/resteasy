@@ -67,12 +67,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     public static final MethodInjectionFilter METHOD_INJECTION_FILTER = new MethodInjectionFilter();
     public static final ClientHeadersRequestFilter HEADERS_REQUEST_FILTER = new ClientHeadersRequestFilter();
 
-    static boolean SSL_ENABLED = true;
     static ResteasyProviderFactory PROVIDER_FACTORY;
-
-    public static void setSslEnabled(boolean enabled) {
-        SSL_ENABLED = enabled;
-    }
 
     public static void setProviderFactory(ResteasyProviderFactory providerFactory) {
         PROVIDER_FACTORY = providerFactory;
@@ -260,13 +255,12 @@ public class RestClientBuilderImpl implements RestClientBuilder {
             resteasyClientBuilder.connectTimeout(connectTimeout, connectTimeoutUnit);
         }
 
-        if (!SSL_ENABLED) {
+        if (useURLConnection()) {
             resteasyClientBuilder.httpEngine(new URLConnectionClientEngineBuilder().resteasyClientBuilder(resteasyClientBuilder).build());
             resteasyClientBuilder.sslContext(null);
             resteasyClientBuilder.trustStore(null);
             resteasyClientBuilder.keyStore(null, "");
         }
-
         client = resteasyClientBuilder
                 .build();
         client.register(AsyncInterceptorRxInvokerProvider.class);
@@ -285,6 +279,19 @@ public class RestClientBuilderImpl implements RestClientBuilder {
         T proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, new ProxyInvocationHandler(aClass, actualClient, getLocalProviderInstances(), client));
         ClientHeaderProviders.registerForClass(aClass, proxy);
         return proxy;
+    }
+
+    /**
+     * Determines whether or not to default to using the URLConnection instead of the Apache HTTP Client.
+     * If the {@code org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient} system property is {@code true},
+     * then this method returns {@code true}. In all other cases it returns {@code false}
+     */
+    private boolean useURLConnection() {
+        if (useURLConnection == null) {
+            String defaultToURLConnection = System.getProperty("org.jboss.resteasy.microprofile.defaultToURLConnectionHttpClient", "false");
+            useURLConnection = defaultToURLConnection.toLowerCase().equals("true");
+        }
+        return useURLConnection;
     }
 
     private Optional<InetSocketAddress> selectHttpProxy() {
@@ -622,6 +629,7 @@ public class RestClientBuilderImpl implements RestClientBuilder {
     private KeyStore keyStore;
     private String keystorePassword;
     private HostnameVerifier hostnameVerifier;
+    private Boolean useURLConnection;
 
 
     private Set<Object> localProviderInstances = new HashSet<>();
