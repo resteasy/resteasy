@@ -27,6 +27,9 @@ public class NettyUtil
    public static ResteasyUriInfo extractUriInfo(HttpRequest request, String contextPath, String protocol)
    {
       String host = HttpHeaders.getHost(request, "unknown");
+      if ("".equals(host)) {
+         host = "unknown";
+      }
       String uri = request.getUri();
 
       String uriString;
