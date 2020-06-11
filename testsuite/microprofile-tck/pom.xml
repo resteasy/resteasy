@@ -38,7 +38,6 @@
     <dependency>
       <groupId>org.eclipse.microprofile.rest.client</groupId>
       <artifactId>microprofile-rest-client-tck</artifactId>
-      <version>1.4.2</version>
       <scope>test</scope>
     </dependency>
 
