@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-testsuite</artifactId>
-    <version>4.5.4.Final</version>
+    <version>4.5.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -38,6 +38,7 @@
     <dependency>
       <groupId>org.eclipse.microprofile.rest.client</groupId>
       <artifactId>microprofile-rest-client-tck</artifactId>
+      <version>1.4.2</version>
       <scope>test</scope>
     </dependency>
 
